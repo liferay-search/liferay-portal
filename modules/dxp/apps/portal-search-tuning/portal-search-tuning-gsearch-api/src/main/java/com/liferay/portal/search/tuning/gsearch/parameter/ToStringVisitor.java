@@ -19,6 +19,24 @@ package com.liferay.portal.search.tuning.gsearch.parameter;
  */
 public interface ToStringVisitor {
 
-	public String visit(Parameter parameter);
+	public String visit(BooleanParameter parameter) throws Exception;
+	
+	public String visit(DateParameter parameter, String outputDateFormat)
+		throws Exception;
 
+	public String visit(DoubleParameter parameter) throws Exception;
+
+	public String visit(FloatParameter parameter) throws Exception;
+
+	public String visit(IntegerArrayParameter parameter) throws Exception;
+
+	public String visit(IntegerParameter parameter) throws Exception;
+
+	public String visit(LongArrayParameter parameter) throws Exception;
+
+	public String visit(LongParameter parameter) throws Exception;
+
+	public String visit(StringArrayParameter parameter) throws Exception;
+
+	public String visit(StringParameter parameter) throws Exception;
 }

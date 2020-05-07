@@ -37,7 +37,11 @@ public class RequestParameterContributorFactoryImpl
 		return serviceComponentReference.getServiceComponent();
 	}
 
-	protected void addRequestParameterContributor(
+	@Reference(
+		cardinality = ReferenceCardinality.MULTIPLE,
+		policy = ReferencePolicy.DYNAMIC
+	)
+	protected void registerRequestParameterContributor(
 		RequestParameterContributor parameterContributor,
 		Map<String, Object> properties) {
 
@@ -69,12 +73,14 @@ public class RequestParameterContributorFactoryImpl
 				_requestParameterContributors.put(
 					type, serviceComponentReference);
 			}
+		} else {
+			_requestParameterContributors.put(type, serviceComponentReference);
 		}
 	}
-
-	protected void removeRequestParameterContributor(
-		RequestParameterContributor parameterContributor,
-		Map<String, Object> properties) {
+	
+	protected void unregisterRequestParameterContributor(
+			RequestParameterContributor parameterContributor,
+			Map<String, Object> properties) {
 
 		String type = (String)properties.get("type");
 
@@ -88,13 +94,6 @@ public class RequestParameterContributorFactoryImpl
 	private static final Log _log = LogFactoryUtil.getLog(
 		RequestParameterContributorFactoryImpl.class);
 
-	@Reference(
-		bind = "addRequestParameterContributor",
-		cardinality = ReferenceCardinality.MULTIPLE,
-		policy = ReferencePolicy.DYNAMIC,
-		service = RequestParameterContributor.class,
-		unbind = "removeRequestParameterContributor"
-	)
 	private volatile Map
 		<String, ServiceComponentReference<RequestParameterContributor>>
 			_requestParameterContributors = new ConcurrentHashMap<>();

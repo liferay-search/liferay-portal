@@ -15,7 +15,7 @@
 package com.liferay.portal.search.tuning.gsearch.spi.query;
 
 import com.liferay.portal.search.query.Query;
-import com.liferay.portal.search.tuning.gsearch.constants.Occur;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.values.Occur;
 import com.liferay.portal.search.tuning.gsearch.context.SearchRequestContext;
 import com.liferay.portal.search.tuning.gsearch.exception.SearchRequestDataException;
 

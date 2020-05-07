@@ -18,10 +18,10 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
-import com.liferay.portal.search.tuning.gsearch.configuration.constants.ParameterConfigurationKeys;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.RequestParameterConfigurationKeys;
+import com.liferay.portal.search.tuning.gsearch.impl.util.GSearchUtil;
 import com.liferay.portal.search.tuning.gsearch.parameter.IntegerParameter;
 import com.liferay.portal.search.tuning.gsearch.parameter.SearchParameterData;
-import com.liferay.portal.search.tuning.gsearch.util.GSearchUtil;
 
 import java.util.Optional;
 
@@ -46,7 +46,7 @@ public class IntegerParameterContributor
 		JSONObject configurationJsonObject) {
 
 		String parameterName = configurationJsonObject.getString(
-			ParameterConfigurationKeys.PARAMETER_NAME);
+			RequestParameterConfigurationKeys.PARAMETER_NAME.getJsonKey());
 
 		String valueString = ParamUtil.getString(
 			httpServletRequest, parameterName);
@@ -57,7 +57,7 @@ public class IntegerParameterContributor
 		if (!valueOptional.isPresent()) {
 			valueOptional = GSearchUtil.stringToIntegerOptional(
 				configurationJsonObject.getString(
-					ParameterConfigurationKeys.DEFAULT));
+					RequestParameterConfigurationKeys.DEFAULT.getJsonKey()));
 		}
 
 		if (!valueOptional.isPresent()) {
@@ -68,7 +68,7 @@ public class IntegerParameterContributor
 
 		Optional<Integer> minValue = GSearchUtil.stringToIntegerOptional(
 			configurationJsonObject.getString(
-				ParameterConfigurationKeys.MIN_VALUE));
+				RequestParameterConfigurationKeys.MIN_VALUE.getJsonKey()));
 
 		if (minValue.isPresent() &&
 			(Integer.compare(value, minValue.get()) < 0)) {
@@ -82,7 +82,7 @@ public class IntegerParameterContributor
 
 		Optional<Integer> maxValue = GSearchUtil.stringToIntegerOptional(
 			configurationJsonObject.getString(
-				ParameterConfigurationKeys.MAX_VALUE));
+				RequestParameterConfigurationKeys.MAX_VALUE.getJsonKey()));
 
 		if (maxValue.isPresent() &&
 			(Integer.compare(value, maxValue.get()) > 0)) {
@@ -95,7 +95,7 @@ public class IntegerParameterContributor
 		}
 
 		String parameterRole = configurationJsonObject.getString(
-			ParameterConfigurationKeys.ROLE);
+			RequestParameterConfigurationKeys.ROLE.getJsonKey());
 
 		searchParameterData.addParameter(
 			new IntegerParameter(

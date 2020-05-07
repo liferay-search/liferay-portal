@@ -24,9 +24,9 @@ import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.document.Document;
 import com.liferay.portal.search.tuning.gsearch.context.SearchRequestContext;
+import com.liferay.portal.search.tuning.gsearch.impl.util.GSearchUtil;
 import com.liferay.portal.search.tuning.gsearch.results.ResultAttributes;
 import com.liferay.portal.search.tuning.gsearch.spi.results.item.ResultItemBuilder;
-import com.liferay.portal.search.tuning.gsearch.util.GSearchUtil;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

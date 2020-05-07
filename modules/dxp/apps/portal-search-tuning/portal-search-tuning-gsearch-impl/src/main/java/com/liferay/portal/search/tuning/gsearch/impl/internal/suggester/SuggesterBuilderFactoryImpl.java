@@ -55,7 +55,11 @@ public class SuggesterBuilderFactoryImpl implements SuggesterBuilderFactory {
 		);
 	}
 
-	protected void addSuggesterBuilder(
+	@Reference(
+		cardinality = ReferenceCardinality.MULTIPLE,
+		policy = ReferencePolicy.DYNAMIC 
+	)
+	protected void registerSuggesterBuilder(
 		SuggesterBuilder suggesterBuilder, Map<String, Object> properties) {
 
 		String type = (String)properties.get("type");
@@ -72,7 +76,7 @@ public class SuggesterBuilderFactoryImpl implements SuggesterBuilderFactory {
 		_suggesterBuilders.put(type, suggesterBuilder);
 	}
 
-	protected void removeSuggesterBuilder(
+	protected void unregisterSuggesterBuilder(
 		SuggesterBuilder suggesterBuilder, Map<String, Object> properties) {
 
 		String type = (String)properties.get("type");
@@ -83,12 +87,6 @@ public class SuggesterBuilderFactoryImpl implements SuggesterBuilderFactory {
 	private static final Log _log = LogFactoryUtil.getLog(
 		SuggesterBuilderFactoryImpl.class);
 
-	@Reference(
-		bind = "addSuggesterBuilder",
-		cardinality = ReferenceCardinality.MULTIPLE,
-		policy = ReferencePolicy.DYNAMIC, service = SuggesterBuilder.class,
-		unbind = "removeSuggesterBuilder"
-	)
 	private volatile Map<String, SuggesterBuilder> _suggesterBuilders =
 		new HashMap<>();
 

@@ -21,7 +21,7 @@ import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.portal.search.tuning.gsearch.configuration.constants.ParameterConfigurationKeys;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.RequestParameterConfigurationKeys;
 import com.liferay.portal.search.tuning.gsearch.message.Message;
 import com.liferay.portal.search.tuning.gsearch.message.Severity;
 import com.liferay.portal.search.tuning.gsearch.parameter.DateParameter;
@@ -60,7 +60,7 @@ public class DateParameterContributor implements RequestParameterContributor {
 		}
 
 		String parameterName = configurationJsonObject.getString(
-			ParameterConfigurationKeys.PARAMETER_NAME);
+			RequestParameterConfigurationKeys.PARAMETER_NAME.getJsonKey());
 
 		String dateString = ParamUtil.getString(
 			httpServletRequest, parameterName);
@@ -74,7 +74,7 @@ public class DateParameterContributor implements RequestParameterContributor {
 
 		if (date != null) {
 			String parameterRole = configurationJsonObject.getString(
-				ParameterConfigurationKeys.ROLE);
+				RequestParameterConfigurationKeys.ROLE.getJsonKey());
 
 			searchParameterData.addParameter(
 				new DateParameter(
@@ -88,10 +88,7 @@ public class DateParameterContributor implements RequestParameterContributor {
 		JSONObject configurationJsonObject, String dateString) {
 
 		String dateFormat = configurationJsonObject.getString(
-			ParameterConfigurationKeys.DATE_FORMAT);
-
-		Boolean lowerBound = configurationJsonObject.getBoolean(
-			ParameterConfigurationKeys.DATE_LOWER_BOUND, false);
+			RequestParameterConfigurationKeys.DATE_FORMAT.getJsonKey());
 
 		ThemeDisplay themeDisplay =
 			(ThemeDisplay)httpServletRequest.getAttribute(
@@ -109,12 +106,6 @@ public class DateParameterContributor implements RequestParameterContributor {
 		try {
 			LocalDate localDate = LocalDate.parse(
 				dateString, dateTimeFormatter);
-
-			// Use the beginning of the next day as the range end date.
-
-			if (!lowerBound) {
-				localDate = localDate.plusDays(1);
-			}
 
 			Date value = GregorianCalendar.from(
 				localDate.atStartOfDay(timeZone.toZoneId())
@@ -139,13 +130,15 @@ public class DateParameterContributor implements RequestParameterContributor {
 
 		if (Validator.isNull(
 				configurationJsonObject.getString(
-					ParameterConfigurationKeys.DATE_FORMAT))) {
+					RequestParameterConfigurationKeys.DATE_FORMAT.
+						getJsonKey()))) {
 
 			searchParameterData.addMessage(
 				new Message(
 					Severity.ERROR, "core", "core.error.undefined-date-format",
 					null, null, configurationJsonObject,
-					ParameterConfigurationKeys.DATE_FORMAT, null));
+					RequestParameterConfigurationKeys.DATE_FORMAT.getJsonKey(),
+					null));
 			valid = false;
 		}
 

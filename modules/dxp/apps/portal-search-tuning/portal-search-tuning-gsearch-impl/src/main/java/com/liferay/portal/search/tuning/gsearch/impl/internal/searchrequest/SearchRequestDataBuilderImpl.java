@@ -26,18 +26,20 @@ import com.liferay.portal.search.query.BooleanQuery;
 import com.liferay.portal.search.query.Queries;
 import com.liferay.portal.search.query.Query;
 import com.liferay.portal.search.query.TermQuery;
-import com.liferay.portal.search.tuning.gsearch.configuration.constants.AggregationConfigurationKeys;
-import com.liferay.portal.search.tuning.gsearch.configuration.constants.ClauseConfigurationKeys;
-import com.liferay.portal.search.tuning.gsearch.configuration.constants.FacetConfigurationKeys;
-import com.liferay.portal.search.tuning.gsearch.constants.ClauseContext;
-import com.liferay.portal.search.tuning.gsearch.constants.FilterMode;
-import com.liferay.portal.search.tuning.gsearch.constants.Occur;
-import com.liferay.portal.search.tuning.gsearch.constants.Operator;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.AggregationConfigurationKeys;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.ClauseConfigurationKeys;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.CommonConfigurationKeys;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.FacetConfigurationKeys;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.values.ClauseContext;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.values.FilterMode;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.values.Occur;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.values.Operator;
 import com.liferay.portal.search.tuning.gsearch.context.SearchRequestContext;
 import com.liferay.portal.search.tuning.gsearch.exception.SearchRequestDataException;
 import com.liferay.portal.search.tuning.gsearch.impl.internal.aggregations.AggregationBuilderFactory;
 import com.liferay.portal.search.tuning.gsearch.impl.internal.clause.ClauseBuilderFactory;
 import com.liferay.portal.search.tuning.gsearch.impl.internal.clause.condition.ClauseConditionHandlerFactory;
+import com.liferay.portal.search.tuning.gsearch.impl.util.ContextVariableUtil;
 import com.liferay.portal.search.tuning.gsearch.message.Message;
 import com.liferay.portal.search.tuning.gsearch.message.Severity;
 import com.liferay.portal.search.tuning.gsearch.parameter.Parameter;
@@ -46,7 +48,6 @@ import com.liferay.portal.search.tuning.gsearch.spi.aggregation.AggregationBuild
 import com.liferay.portal.search.tuning.gsearch.spi.clause.ClauseBuilder;
 import com.liferay.portal.search.tuning.gsearch.spi.clause.ClauseConditionHandler;
 import com.liferay.portal.search.tuning.gsearch.spi.query.QueryContributor;
-import com.liferay.portal.search.tuning.gsearch.util.ContextVariableUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,22 +105,22 @@ public class SearchRequestDataBuilderImpl implements SearchRequestDataBuilder {
 				aggregationConfigurationJsonArray.getJSONObject(i);
 
 			boolean enabled = aggregationJsonObject.getBoolean(
-				AggregationConfigurationKeys.ENABLED, false);
+				AggregationConfigurationKeys.ENABLED.getJsonKey(), false);
 
 			if (!enabled) {
 				continue;
 			}
 
 			String type = aggregationJsonObject.getString(
-				AggregationConfigurationKeys.TYPE);
+				CommonConfigurationKeys.TYPE.getJsonKey());
 
 			try {
 				JSONObject aggregationConfigurationJsonObject =
 					aggregationJsonObject.getJSONObject(
-						AggregationConfigurationKeys.BODY);
+						AggregationConfigurationKeys.BODY.getJsonKey());
 
 				String name = aggregationConfigurationJsonObject.getString(
-					AggregationConfigurationKeys.NAME);
+					AggregationConfigurationKeys.NAME.getJsonKey());
 
 				AggregationBuilder aggregationBuilder =
 					_aggregationBuilderFactory.getBuilder(type);
@@ -138,7 +139,7 @@ public class SearchRequestDataBuilderImpl implements SearchRequestDataBuilder {
 					// Facet
 
 					if (aggregationJsonObject.has(
-							FacetConfigurationKeys.FACET)) {
+							AggregationConfigurationKeys.FACET.getJsonKey())) {
 
 						addFacetFilters(
 							searchRequestContext, searchRequestData,
@@ -152,7 +153,7 @@ public class SearchRequestDataBuilderImpl implements SearchRequestDataBuilder {
 						Severity.ERROR, "core",
 						"core.error.unknown-aggregation-type", iae.getMessage(),
 						iae, aggregationJsonObject,
-						AggregationConfigurationKeys.TYPE, type));
+						CommonConfigurationKeys.TYPE.getJsonKey(), type));
 			}
 			catch (Exception e) {
 				searchRequestContext.addMessage(
@@ -178,7 +179,7 @@ public class SearchRequestDataBuilderImpl implements SearchRequestDataBuilder {
 				clauseConfigurationJSonArray.getJSONObject(i);
 
 			if (!clauseConfigurationJsonObject.getBoolean(
-					ClauseConfigurationKeys.ENABLED, false)) {
+					ClauseConfigurationKeys.ENABLED.getJsonKey(), false)) {
 
 				continue;
 			}
@@ -191,7 +192,7 @@ public class SearchRequestDataBuilderImpl implements SearchRequestDataBuilder {
 			if (applyClauses) {
 				JSONArray clauseJsonArray =
 					clauseConfigurationJsonObject.getJSONArray(
-						ClauseConfigurationKeys.CLAUSES);
+						ClauseConfigurationKeys.CLAUSES.getJsonKey());
 
 				JSONObject clauseJsonObject = null;
 				JSONObject queryJsonObject = null;
@@ -200,7 +201,7 @@ public class SearchRequestDataBuilderImpl implements SearchRequestDataBuilder {
 					clauseJsonObject = clauseJsonArray.getJSONObject(j);
 
 					String type = clauseJsonObject.getString(
-						ClauseConfigurationKeys.TYPE);
+						ClauseConfigurationKeys.TYPE.getJsonKey());
 
 					try {
 						ClauseBuilder clauseBuilder =
@@ -210,7 +211,8 @@ public class SearchRequestDataBuilderImpl implements SearchRequestDataBuilder {
 							ContextVariableUtil.parseConfigurationVariables(
 								searchRequestContext,
 								clauseJsonObject.getJSONObject(
-									ClauseConfigurationKeys.QUERY));
+									ClauseConfigurationKeys.QUERY.
+										getJsonKey()));
 
 						Optional<Query> clauseOptional =
 							clauseBuilder.buildClause(
@@ -219,7 +221,7 @@ public class SearchRequestDataBuilderImpl implements SearchRequestDataBuilder {
 						if (clauseOptional.isPresent()) {
 							_addClause(
 								searchRequestContext, searchRequestData,
-								queryJsonObject, clauseOptional.get());
+								clauseJsonObject, clauseOptional.get());
 						}
 					}
 					catch (IllegalArgumentException iae) {
@@ -228,7 +230,8 @@ public class SearchRequestDataBuilderImpl implements SearchRequestDataBuilder {
 								Severity.ERROR, "core",
 								"core.error.unknown-query-type",
 								iae.getMessage(), iae, clauseJsonObject,
-								ClauseConfigurationKeys.TYPE, type));
+								CommonConfigurationKeys.TYPE.getJsonKey(),
+								type));
 
 						if (_log.isWarnEnabled()) {
 							_log.warn(iae.getMessage(), iae);
@@ -266,13 +269,14 @@ public class SearchRequestDataBuilderImpl implements SearchRequestDataBuilder {
 		BooleanQuery facetPostFilterQuery = _queries.booleanQuery();
 
 		JSONObject facetConfigurationJsonObject =
-			aggregationJsonObject.getJSONObject(FacetConfigurationKeys.FACET);
+			aggregationJsonObject.getJSONObject(
+				AggregationConfigurationKeys.FACET.getJsonKey());
 
 		for (Parameter parameter :
 				searchRequestContext.getSearchParameterData().getParameters()) {
 
 			String parameterName = facetConfigurationJsonObject.getString(
-				FacetConfigurationKeys.PARAMETER_NAME);
+				CommonConfigurationKeys.PARAMETER_NAME.getJsonKey());
 
 			if (!parameter.getName().equals("facet." + parameterName)) {
 				continue;
@@ -280,7 +284,7 @@ public class SearchRequestDataBuilderImpl implements SearchRequestDataBuilder {
 
 			try {
 				boolean enabled = facetConfigurationJsonObject.getBoolean(
-					FacetConfigurationKeys.ENABLED);
+					FacetConfigurationKeys.ENABLED.getJsonKey());
 
 				if (!enabled) {
 					continue;
@@ -328,7 +332,7 @@ public class SearchRequestDataBuilderImpl implements SearchRequestDataBuilder {
 
 		JSONArray conditionsJsonArray =
 			clauseConfigurationJsonObject.getJSONArray(
-				ClauseConfigurationKeys.CONDITIONS);
+				ClauseConfigurationKeys.CONDITIONS.getJsonKey());
 
 		if ((conditionsJsonArray == null) ||
 			(conditionsJsonArray.length() == 0)) {
@@ -343,28 +347,28 @@ public class SearchRequestDataBuilderImpl implements SearchRequestDataBuilder {
 				i);
 
 			String handler = conditionJsonObject.getString(
-				ClauseConfigurationKeys.HANDLER);
+				ClauseConfigurationKeys.HANDLER.getJsonKey());
 
 			try {
 				ClauseConditionHandler clauseConditionHandler =
 					_clauseConditionHandlerFactory.getHandler(handler);
 
-				String occurString = conditionJsonObject.getString(
-					ClauseConfigurationKeys.OCCUR);
+				String operatorString = conditionJsonObject.getString(
+					ClauseConfigurationKeys.OPERATOR.getJsonKey());
 
-				Occur occur = _getItemOccur(occurString);
+				Operator operator = _getOperator(operatorString);
 
 				JSONObject configurationJsonObject =
 					conditionJsonObject.getJSONObject(
-						ClauseConfigurationKeys.CONFIGURATION);
+						ClauseConfigurationKeys.CONFIGURATION.getJsonKey());
 
 				boolean conditionTrue = clauseConditionHandler.isTrue(
 					searchRequestContext, configurationJsonObject);
 
-				if (occur.equals(Occur.MUST) && !conditionTrue) {
+				if (operator.equals(Operator.AND) && !conditionTrue) {
 					return false;
 				}
-				else if (occur.equals(Occur.MUST_NOT) && conditionTrue) {
+				else if (operator.equals(Operator.NOT) && conditionTrue) {
 					return false;
 				}
 				else if (conditionTrue) {
@@ -372,12 +376,15 @@ public class SearchRequestDataBuilderImpl implements SearchRequestDataBuilder {
 				}
 			}
 			catch (IllegalArgumentException iae) {
+
+				// TODO _getOperator too
+
 				searchRequestContext.addMessage(
 					new Message(
 						Severity.ERROR, "core",
 						"core.error.unknown-clause-condition-handler",
 						iae.getMessage(), iae, conditionJsonObject,
-						ClauseConfigurationKeys.HANDLER, handler));
+						ClauseConfigurationKeys.HANDLER.getJsonKey(), handler));
 
 				if (_log.isWarnEnabled()) {
 					_log.warn(iae.getMessage(), iae);
@@ -456,7 +463,7 @@ public class SearchRequestDataBuilderImpl implements SearchRequestDataBuilder {
 
 		ClauseContext clauseContext;
 		String clauseContextString = queryJsonObject.getString(
-			ClauseConfigurationKeys.CONTEXT);
+			ClauseConfigurationKeys.CONTEXT.getJsonKey());
 
 		try {
 			clauseContext = _getClauseContext(clauseContextString);
@@ -466,7 +473,8 @@ public class SearchRequestDataBuilderImpl implements SearchRequestDataBuilder {
 				new Message(
 					Severity.ERROR, "core", "core.error.unknown-clause-context",
 					iae.getMessage(), iae, queryJsonObject,
-					ClauseConfigurationKeys.CONTEXT, clauseContextString));
+					ClauseConfigurationKeys.CONTEXT.getJsonKey(),
+					clauseContextString));
 
 			if (_log.isWarnEnabled()) {
 				_log.warn(iae.getMessage(), iae);
@@ -477,7 +485,7 @@ public class SearchRequestDataBuilderImpl implements SearchRequestDataBuilder {
 
 		Occur occur;
 		String occurString = queryJsonObject.getString(
-			ClauseConfigurationKeys.OCCUR);
+			ClauseConfigurationKeys.OCCUR.getJsonKey());
 
 		try {
 			occur = _getItemOccur(occurString);
@@ -487,7 +495,7 @@ public class SearchRequestDataBuilderImpl implements SearchRequestDataBuilder {
 				new Message(
 					Severity.ERROR, "core", "core.error.unknown-occur-value",
 					iae.getMessage(), iae, queryJsonObject,
-					ClauseConfigurationKeys.OCCUR, occurString));
+					ClauseConfigurationKeys.OCCUR.getJsonKey(), occurString));
 
 			return;
 		}
@@ -551,15 +559,16 @@ public class SearchRequestDataBuilderImpl implements SearchRequestDataBuilder {
 		BooleanQuery query = _queries.booleanQuery();
 
 		String indexField = facetConfigurationJsonObject.getString(
-			FacetConfigurationKeys.INDEX_FIELD);
+			FacetConfigurationKeys.INDEX_FIELD.getJsonKey());
 
 		if (Validator.isBlank(indexField)) {
 			indexField = facetConfigurationJsonObject.getString(
-				FacetConfigurationKeys.PARAMETER_NAME);
+				CommonConfigurationKeys.PARAMETER_NAME.getJsonKey());
 		}
 
 		String filterModeString = facetConfigurationJsonObject.getString(
-			FacetConfigurationKeys.FILTER_MODE, FilterMode.PRE.name());
+			FacetConfigurationKeys.FILTER_MODE.getJsonKey(),
+			FilterMode.PRE.getjsonValue());
 		FilterMode filterMode;
 
 		try {
@@ -571,15 +580,16 @@ public class SearchRequestDataBuilderImpl implements SearchRequestDataBuilder {
 					Severity.ERROR, "core",
 					"core.error.unknown-facet-filter-mode", iae.getMessage(),
 					iae, facetConfigurationJsonObject,
-					FacetConfigurationKeys.FILTER_MODE, filterModeString));
+					FacetConfigurationKeys.FILTER_MODE.getJsonKey(),
+					filterModeString));
 
 			return;
 		}
 
 		String multiValueOperatorString =
 			facetConfigurationJsonObject.getString(
-				FacetConfigurationKeys.MULTI_VALUE_OPERATOR,
-				Operator.OR.name());
+				FacetConfigurationKeys.MULTI_VALUE_OPERATOR.getJsonKey(),
+				Operator.OR.getjsonValue());
 		Operator multiValueOperator;
 
 		try {
@@ -591,7 +601,7 @@ public class SearchRequestDataBuilderImpl implements SearchRequestDataBuilder {
 					Severity.ERROR, "core",
 					"core.error.unknown-facet-multi-value-operator",
 					iae.getMessage(), iae, facetConfigurationJsonObject,
-					FacetConfigurationKeys.MULTI_VALUE_OPERATOR,
+					FacetConfigurationKeys.MULTI_VALUE_OPERATOR.getJsonKey(),
 					multiValueOperatorString));
 
 			return;

@@ -22,7 +22,6 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.query.BooleanQuery;
 import com.liferay.portal.search.searcher.SearchRequest;
-import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.searcher.SearchRequestBuilderFactory;
 import com.liferay.portal.search.spi.searcher.SearchRequestContributor;
 import com.liferay.portal.search.tuning.gsearch.configuration.service.SearchConfigurationLocalService;
@@ -30,9 +29,6 @@ import com.liferay.portal.search.tuning.gsearch.constants.SearchContextAttribute
 import com.liferay.portal.search.tuning.gsearch.context.SearchRequestContext;
 import com.liferay.portal.search.tuning.gsearch.searchrequest.SearchRequestData;
 import com.liferay.portal.search.tuning.gsearch.util.SearchClientHelper;
-
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -81,17 +77,16 @@ public class GSearchSearchRequestContributor
 			SearchRequestData searchRequestData =
 				_searchClientHelper.getSearchRequestData(searchRequestContext);
 
-			Optional<BooleanQuery> queryOptional =
-				searchRequestData.getQueryOptional();
+			BooleanQuery query = searchRequestData.getQuery();
 
-			if (!queryOptional.isPresent()) {
+			if (!query.hasClauses()) {
 				return searchRequest;
 			}
 
 			return _searchRequestBuilderFactory.builder(
 				searchRequest
 			).query(
-				queryOptional.get()
+				query
 			).indexes(
 				searchRequestContext.getIndexNames()
 			).build();
@@ -104,16 +99,11 @@ public class GSearchSearchRequestContributor
 	}
 
 	private SearchContext _getSearchContext(SearchRequest searchRequest) {
-		SearchRequestBuilder searchRequestBuilder =
-			_searchRequestBuilderFactory.builder(searchRequest);
-
-		AtomicReference<SearchContext> searchContextReference =
-			new AtomicReference<>();
-
-		searchRequestBuilder.withSearchContext(
-			searchContext -> searchContextReference.set(searchContext));
-
-		return searchContextReference.get();
+		return _searchRequestBuilderFactory.builder(
+			searchRequest
+		).withSearchContextGet(
+			searchContext -> searchContext
+		);
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

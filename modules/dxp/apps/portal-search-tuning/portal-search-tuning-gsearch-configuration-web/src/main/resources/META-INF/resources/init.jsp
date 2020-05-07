@@ -44,7 +44,7 @@ page import="com.liferay.portal.kernel.util.WebKeys" %><%@
 page import="com.liferay.petra.string.StringPool" %><%@
 
 page import="com.liferay.portal.search.tuning.gsearch.configuration.constants.SearchConfigurationActionKeys"%><%@
-page import="com.liferay.portal.search.tuning.gsearch.configuration.constants.SearchConfigurationKeys"%><%@
+page import="com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.SearchConfigurationKeys"%><%@
 page import="com.liferay.portal.search.tuning.gsearch.configuration.constants.SearchConfigurationTypes"%><%@
 page import="com.liferay.portal.search.tuning.gsearch.configuration.model.SearchConfiguration" %><%@
 page import="com.liferay.portal.search.tuning.gsearch.configuration.web.internal.constants.SearchConfigurationMVCCommandNames" %><%@

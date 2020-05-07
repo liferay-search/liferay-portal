@@ -18,10 +18,10 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
-import com.liferay.portal.search.tuning.gsearch.configuration.constants.ParameterConfigurationKeys;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.RequestParameterConfigurationKeys;
+import com.liferay.portal.search.tuning.gsearch.impl.util.GSearchUtil;
 import com.liferay.portal.search.tuning.gsearch.parameter.LongParameter;
 import com.liferay.portal.search.tuning.gsearch.parameter.SearchParameterData;
-import com.liferay.portal.search.tuning.gsearch.util.GSearchUtil;
 
 import java.util.Optional;
 
@@ -33,7 +33,7 @@ import org.osgi.service.component.annotations.Component;
  * @author Petteri Karttunen
  */
 @Component(
-	immediate = true, property = "type=lon g",
+	immediate = true, property = "type=long",
 	service = RequestParameterContributor.class
 )
 public class LongParameterContributor implements RequestParameterContributor {
@@ -45,7 +45,7 @@ public class LongParameterContributor implements RequestParameterContributor {
 		JSONObject configurationJsonObject) {
 
 		String parameterName = configurationJsonObject.getString(
-			ParameterConfigurationKeys.PARAMETER_NAME);
+			RequestParameterConfigurationKeys.PARAMETER_NAME.getJsonKey());
 
 		String valueString = ParamUtil.getString(
 			httpServletRequest, parameterName);
@@ -56,7 +56,7 @@ public class LongParameterContributor implements RequestParameterContributor {
 		if (!valueOptional.isPresent()) {
 			valueOptional = GSearchUtil.stringToLongOptional(
 				configurationJsonObject.getString(
-					ParameterConfigurationKeys.DEFAULT));
+					RequestParameterConfigurationKeys.DEFAULT.getJsonKey()));
 		}
 
 		if (!valueOptional.isPresent()) {
@@ -67,7 +67,7 @@ public class LongParameterContributor implements RequestParameterContributor {
 
 		Optional<Long> minValue = GSearchUtil.stringToLongOptional(
 			configurationJsonObject.getString(
-				ParameterConfigurationKeys.MIN_VALUE));
+				RequestParameterConfigurationKeys.MIN_VALUE.getJsonKey()));
 
 		if (minValue.isPresent() && (Long.compare(value, minValue.get()) < 0)) {
 			if (_log.isWarnEnabled()) {
@@ -79,7 +79,7 @@ public class LongParameterContributor implements RequestParameterContributor {
 
 		Optional<Long> maxValue = GSearchUtil.stringToLongOptional(
 			configurationJsonObject.getString(
-				ParameterConfigurationKeys.MAX_VALUE));
+				RequestParameterConfigurationKeys.MAX_VALUE.getJsonKey()));
 
 		if (maxValue.isPresent() && (Long.compare(value, maxValue.get()) > 0)) {
 			if (_log.isWarnEnabled()) {
@@ -90,7 +90,7 @@ public class LongParameterContributor implements RequestParameterContributor {
 		}
 
 		String parameterRole = configurationJsonObject.getString(
-			ParameterConfigurationKeys.ROLE);
+			RequestParameterConfigurationKeys.ROLE.getJsonKey());
 
 		searchParameterData.addParameter(
 			new LongParameter(

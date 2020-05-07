@@ -20,6 +20,10 @@ package com.liferay.portal.search.tuning.gsearch.constants;
 public class SearchContextAttributeKeys {
 
 	public static final String IP_ADDRESS = "ipAddress";
-	public static final String SEARCH_CONFIGURATION_ID = "searchConfigurationId";
+
+	public static final String SEARCH_CONFIGURATION_ID =
+		"searchConfigurationId";
+
 	public static final String USER_ID = "userId";
+
 }

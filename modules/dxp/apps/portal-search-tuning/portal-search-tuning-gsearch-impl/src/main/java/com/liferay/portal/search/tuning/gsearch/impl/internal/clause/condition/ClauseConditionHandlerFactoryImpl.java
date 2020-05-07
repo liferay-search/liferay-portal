@@ -59,7 +59,11 @@ public class ClauseConditionHandlerFactoryImpl
 		);
 	}
 
-	protected void addClauseClauseConditionHandler(
+	@Reference(
+		cardinality = ReferenceCardinality.MULTIPLE,
+		policy = ReferencePolicy.DYNAMIC
+	)
+	protected void registerClauseConditionHandler(
 		ClauseConditionHandler clauseConditionHandler,
 		Map<String, Object> properties) {
 
@@ -90,10 +94,12 @@ public class ClauseConditionHandlerFactoryImpl
 			if (previousReference.compareTo(serviceComponentReference) < 0) {
 				_clauseConditionHandlers.put(name, serviceComponentReference);
 			}
+		} else {
+			_clauseConditionHandlers.put(name, serviceComponentReference);
 		}
 	}
 
-	protected void removeClauseConditionHandler(
+	protected void unregisterClauseConditionHandler(
 		ClauseConditionHandler clauseConditionHandler,
 		Map<String, Object> properties) {
 
@@ -109,13 +115,6 @@ public class ClauseConditionHandlerFactoryImpl
 	private static final Log _log = LogFactoryUtil.getLog(
 		ClauseConditionHandlerFactoryImpl.class);
 
-	@Reference(
-		bind = "addClauseClauseConditionHandler",
-		cardinality = ReferenceCardinality.MULTIPLE,
-		policy = ReferencePolicy.DYNAMIC,
-		service = ClauseConditionHandler.class,
-		unbind = "removeClauseConditionHandler"
-	)
 	private volatile Map
 		<String, ServiceComponentReference<ClauseConditionHandler>>
 			_clauseConditionHandlers = new ConcurrentHashMap<>();

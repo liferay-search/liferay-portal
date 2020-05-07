@@ -20,10 +20,10 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.search.tuning.gsearch.configuration.constants.AggregationConfigurationKeys;
-import com.liferay.portal.search.tuning.gsearch.configuration.constants.FacetConfigurationKeys;
-import com.liferay.portal.search.tuning.gsearch.configuration.constants.ParameterConfigurationKeys;
-import com.liferay.portal.search.tuning.gsearch.configuration.constants.SearchConfigurationKeys;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.AggregationConfigurationKeys;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.FacetConfigurationKeys;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.RequestParameterConfigurationKeys;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.SearchConfigurationKeys;
 import com.liferay.portal.search.tuning.gsearch.impl.internal.aggregations.facet.FacetHandlerFactory;
 import com.liferay.portal.search.tuning.gsearch.impl.internal.parameter.SearchParameterDataImpl;
 import com.liferay.portal.search.tuning.gsearch.impl.internal.request.parameter.contributor.RequestParameterContributor;
@@ -67,7 +67,7 @@ public class RequestParameterBuilderImpl implements RequestParameterBuilder {
 
 		JSONArray aggregationConfigurationJsonArray =
 			searchConfigurationJsonObject.getJSONArray(
-				AggregationConfigurationKeys.AGGREGATION_CONFIGURATION);
+				SearchConfigurationKeys.AGGREGATION_CONFIGURATION.getJsonKey());
 
 		if ((aggregationConfigurationJsonArray == null) ||
 			(aggregationConfigurationJsonArray.length() == 0)) {
@@ -80,14 +80,14 @@ public class RequestParameterBuilderImpl implements RequestParameterBuilder {
 				aggregationConfigurationJsonArray.getJSONObject(i);
 
 			JSONObject facetJsonObject = aggregationJsonObject.getJSONObject(
-				FacetConfigurationKeys.FACET);
+				AggregationConfigurationKeys.FACET.getJsonKey());
 
 			if (facetJsonObject == null) {
 				continue;
 			}
 
 			boolean enabled = facetJsonObject.getBoolean(
-				FacetConfigurationKeys.ENABLED);
+				AggregationConfigurationKeys.ENABLED.getJsonKey());
 
 			if (!enabled) {
 				continue;
@@ -105,7 +105,7 @@ public class RequestParameterBuilderImpl implements RequestParameterBuilder {
 		SearchParameterData searchParameterData, JSONObject facetJsonObject) {
 
 		String parameterName = facetJsonObject.getString(
-			SearchConfigurationKeys.PARAMETER_NAME);
+			FacetConfigurationKeys.PARAMETER_NAME.getJsonKey());
 
 		if (ParamUtil.getString(httpServletRequest, parameterName) == null) {
 			return;
@@ -113,7 +113,7 @@ public class RequestParameterBuilderImpl implements RequestParameterBuilder {
 
 		try {
 			String handler = facetJsonObject.getString(
-				FacetConfigurationKeys.HANDLER, "default");
+				FacetConfigurationKeys.HANDLER.getJsonKey(), "default");
 
 			FacetHandler facetHandler = _facetHandlerFactory.getHandler(
 				handler);
@@ -126,7 +126,7 @@ public class RequestParameterBuilderImpl implements RequestParameterBuilder {
 				new Message(
 					Severity.ERROR, "core", "core.error.unknown-facet-handler",
 					null, null, facetJsonObject,
-					ParameterConfigurationKeys.TYPE, null));
+					RequestParameterConfigurationKeys.TYPE.getJsonKey(), null));
 			_log.error(iae.getMessage(), iae);
 		}
 	}
@@ -137,7 +137,7 @@ public class RequestParameterBuilderImpl implements RequestParameterBuilder {
 		JSONObject parameterJsonObject) {
 
 		String type = parameterJsonObject.getString(
-			ParameterConfigurationKeys.TYPE);
+			RequestParameterConfigurationKeys.TYPE.getJsonKey());
 
 		try {
 			RequestParameterContributor requestParameterContributor =
@@ -151,7 +151,7 @@ public class RequestParameterBuilderImpl implements RequestParameterBuilder {
 				new Message(
 					Severity.ERROR, "core", "core.error.unknown-parameter-type",
 					null, null, parameterJsonObject,
-					ParameterConfigurationKeys.TYPE, null));
+					RequestParameterConfigurationKeys.TYPE.getJsonKey(), null));
 			_log.error(iae.getMessage(), iae);
 		}
 	}
@@ -163,7 +163,8 @@ public class RequestParameterBuilderImpl implements RequestParameterBuilder {
 
 		JSONArray parameterConfigurationJsonArray =
 			searchConfigurationJsonObject.getJSONArray(
-				ParameterConfigurationKeys.PARAMETER_CONFIGURATION);
+				SearchConfigurationKeys.REQUEST_PARAMETER_CONFIGURATION.
+					getJsonKey());
 
 		if ((parameterConfigurationJsonArray == null) ||
 			(parameterConfigurationJsonArray.length() == 0)) {
@@ -191,14 +192,17 @@ public class RequestParameterBuilderImpl implements RequestParameterBuilder {
 
 		if (Validator.isNull(
 				configurationJsonObject.getString(
-					ParameterConfigurationKeys.PARAMETER_NAME))) {
+					RequestParameterConfigurationKeys.PARAMETER_NAME.
+						getJsonKey()))) {
 
 			searchParameterData.addMessage(
 				new Message(
 					Severity.ERROR, "core",
 					"core.error.undefined-parameter-name", null, null,
 					configurationJsonObject,
-					ParameterConfigurationKeys.PARAMETER_NAME, null));
+					RequestParameterConfigurationKeys.PARAMETER_NAME.
+						getJsonKey(),
+					null));
 			valid = false;
 		}
 
@@ -213,27 +217,30 @@ public class RequestParameterBuilderImpl implements RequestParameterBuilder {
 
 		if (Validator.isNull(
 				configurationJsonObject.getString(
-					ParameterConfigurationKeys.PARAMETER_NAME))) {
+					RequestParameterConfigurationKeys.PARAMETER_NAME.
+						getJsonKey()))) {
 
 			searchParameterData.addMessage(
 				new Message(
 					Severity.ERROR, "core",
 					"core.error.undefined-parameter-name", null, null,
 					configurationJsonObject,
-					ParameterConfigurationKeys.PARAMETER_NAME, null));
+					RequestParameterConfigurationKeys.PARAMETER_NAME.
+						getJsonKey(),
+					null));
 			valid = false;
 		}
 
 		if (Validator.isNull(
 				configurationJsonObject.getString(
-					ParameterConfigurationKeys.TYPE))) {
+					RequestParameterConfigurationKeys.TYPE.getJsonKey()))) {
 
 			searchParameterData.addMessage(
 				new Message(
 					Severity.ERROR, "core",
 					"core.error.undefined-parameter-type", null, null,
-					configurationJsonObject, ParameterConfigurationKeys.TYPE,
-					null));
+					configurationJsonObject,
+					RequestParameterConfigurationKeys.TYPE.getJsonKey(), null));
 			valid = false;
 		}
 

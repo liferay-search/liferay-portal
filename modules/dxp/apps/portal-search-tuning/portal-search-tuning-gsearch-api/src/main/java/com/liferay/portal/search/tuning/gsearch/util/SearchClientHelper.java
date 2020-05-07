@@ -24,8 +24,6 @@ import com.liferay.portal.search.tuning.gsearch.exception.SearchRequestDataExcep
 import com.liferay.portal.search.tuning.gsearch.results.ResultAttributes;
 import com.liferay.portal.search.tuning.gsearch.searchrequest.SearchRequestData;
 
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -51,8 +49,7 @@ public interface SearchClientHelper {
 
 	public JSONObject getSearchResults(
 		SearchRequestContext searchRequestContext,
-		SearchSearchResponse searchResponse,
-		ResultAttributes resultAttributes);
+		SearchSearchResponse searchResponse, ResultAttributes resultAttributes);
 
 	public JSONObject search(
 			HttpServletRequest httpServletRequest,

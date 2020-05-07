@@ -16,10 +16,10 @@ package com.liferay.portal.search.tuning.gsearch.impl.internal.request.parameter
 
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.ParamUtil;
-import com.liferay.portal.search.tuning.gsearch.configuration.constants.ParameterConfigurationKeys;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.RequestParameterConfigurationKeys;
+import com.liferay.portal.search.tuning.gsearch.impl.util.GSearchUtil;
 import com.liferay.portal.search.tuning.gsearch.parameter.SearchParameterData;
 import com.liferay.portal.search.tuning.gsearch.parameter.StringParameter;
-import com.liferay.portal.search.tuning.gsearch.util.GSearchUtil;
 
 import java.util.Optional;
 
@@ -43,7 +43,7 @@ public class StringParameterContributor implements RequestParameterContributor {
 		JSONObject configurationJsonObject) {
 
 		String parameterName = configurationJsonObject.getString(
-			ParameterConfigurationKeys.PARAMETER_NAME);
+			RequestParameterConfigurationKeys.PARAMETER_NAME.getJsonKey());
 
 		String value = ParamUtil.getString(httpServletRequest, parameterName);
 
@@ -52,7 +52,7 @@ public class StringParameterContributor implements RequestParameterContributor {
 		if (!valueOptional.isPresent()) {
 			valueOptional = GSearchUtil.toStringOptional(
 				configurationJsonObject.getString(
-					ParameterConfigurationKeys.DEFAULT));
+					RequestParameterConfigurationKeys.DEFAULT.getJsonKey()));
 		}
 
 		if (!valueOptional.isPresent()) {
@@ -60,7 +60,7 @@ public class StringParameterContributor implements RequestParameterContributor {
 		}
 
 		String parameterRole = configurationJsonObject.getString(
-			ParameterConfigurationKeys.ROLE);
+			RequestParameterConfigurationKeys.ROLE.getJsonKey());
 
 		searchParameterData.addParameter(
 			new StringParameter(

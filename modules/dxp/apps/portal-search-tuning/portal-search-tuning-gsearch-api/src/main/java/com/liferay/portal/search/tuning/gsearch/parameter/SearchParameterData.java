@@ -27,8 +27,6 @@ public interface SearchParameterData {
 	public void addMessage(Message message);
 
 	public void addParameter(Parameter parameter);
-	
-	public List<Message> getMessages();
 
 	public Optional<Parameter> getByConfigurationVariableName(String name);
 
@@ -36,9 +34,12 @@ public interface SearchParameterData {
 
 	public Optional<Parameter> getByRole(String role);
 
+	public List<Message> getMessages();
+
 	public List<Parameter> getParameters();
 
 	public boolean hasErrors();
 
 	public boolean hasParameters();
+
 }

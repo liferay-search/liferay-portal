@@ -24,14 +24,13 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
-import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextFactory;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
-import com.liferay.portal.search.tuning.gsearch.configuration.constants.SearchConfigurationKeys;
 import com.liferay.portal.search.tuning.gsearch.configuration.constants.SearchConfigurationPortletKeys;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.SearchConfigurationKeys;
 import com.liferay.portal.search.tuning.gsearch.configuration.exception.SearchConfigurationValidationException;
 import com.liferay.portal.search.tuning.gsearch.configuration.model.SearchConfiguration;
 import com.liferay.portal.search.tuning.gsearch.configuration.service.SearchConfigurationService;
@@ -85,7 +84,7 @@ public class EditSearchConfigurationMVCActionCommand
 		String cmd = ParamUtil.getString(actionRequest, Constants.CMD);
 
 		try {
-			ServiceContext serviceContext = ServiceContextFactory.getInstance(
+			com.liferay.portal.kernel.service.ServiceContext serviceContext = ServiceContextFactory.getInstance(
 				SearchConfiguration.class.getName(), actionRequest);
 
 			if (Constants.ADD.equals(cmd)) {
@@ -142,19 +141,7 @@ public class EditSearchConfigurationMVCActionCommand
 			SearchConfigurationWebKeys.CLAUSE_CONFIGURATION_INDEXES);
 
 		JSONObject configuration = JSONUtil.put(
-			SearchConfigurationKeys.CLAUSE_CONFIGURATION, clauseConfiguration);
-
-		JSONArray misspellings = _getAutoFieldValues(
-			actionRequest, SearchConfigurationWebKeys.MISSPELLING,
-			SearchConfigurationWebKeys.MISSPELLING_INDEXES);
-
-		configuration.put(SearchConfigurationKeys.MISSPELLINGS, misspellings);
-
-		JSONArray synonyms = _getAutoFieldValues(
-			actionRequest, SearchConfigurationWebKeys.SYNONYM,
-			SearchConfigurationWebKeys.SYNONYM_INDEXES);
-
-		configuration.put(SearchConfigurationKeys.SYNONYMS, synonyms);
+			SearchConfigurationKeys.CLAUSE_CONFIGURATION.getJsonKey(), clauseConfiguration);
 
 		return configuration.toString();
 	}

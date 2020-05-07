@@ -18,13 +18,19 @@ package com.liferay.portal.search.tuning.gsearch.parameter;
  * @author Petteri Karttunen
  */
 public class ParameterDefinition {
-	
-	public ParameterDefinition(String variable, String className, String descriptionKey) {
+
+	public ParameterDefinition(
+		String variable, String className, String descriptionKey) {
 
 		_variable = variable;
 		_className = className;
 		_descriptionKey = descriptionKey;
 	}
+
+	public String getClassName() {
+		return _className;
+	}
+
 	public String getDescriptionKey() {
 		return _descriptionKey;
 	}
@@ -33,11 +39,8 @@ public class ParameterDefinition {
 		return _variable;
 	}
 
-	public String getClassName() {
-		return _className;
-	}
-	
-	private String _className;
-	private String _descriptionKey;
-	private String _variable;
+	private final String _className;
+	private final String _descriptionKey;
+	private final String _variable;
+
 }

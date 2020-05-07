@@ -24,9 +24,9 @@ import com.liferay.portal.search.tuning.gsearch.parameter.SearchParameterData;
 public interface GeoLocationDataProvider {
 
 	public JSONObject getGeoLocationData(
-			SearchParameterData searchParameterData, String ipAddress);
+		SearchParameterData searchParameterData, String ipAddress);
 
 	public GeoLocationPoint getGeoLocationPoint(
-			SearchParameterData searchParameterData, String ipAddress);
+		SearchParameterData searchParameterData, String ipAddress);
 
 }

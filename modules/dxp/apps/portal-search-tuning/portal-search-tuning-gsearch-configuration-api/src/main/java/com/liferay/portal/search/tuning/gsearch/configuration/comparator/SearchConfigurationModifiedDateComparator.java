@@ -21,77 +21,84 @@ import com.liferay.portal.search.tuning.gsearch.configuration.model.SearchConfig
 /**
  * @author Petteri Karttunen
  */
-public class SearchConfigurationModifiedDateComparator 
+public class SearchConfigurationModifiedDateComparator
 	extends OrderByComparator<SearchConfiguration> {
-	
-		public static final String ORDER_BY_ASC =
-			"SearchConfiguration.modifiedDate ASC, SearchConfiguration.searchConfigurationId ASC";
 
-		public static final String[] ORDER_BY_CONDITION_FIELDS = {"modifiedDate"};
+	public static final String ORDER_BY_ASC =
+		"SearchConfiguration.modifiedDate ASC, " +
+			"SearchConfiguration.searchConfigurationId ASC";
 
-		public static final String ORDER_BY_DESC =
-			"SearchConfiguration.modifiedDate DESC, SearchConfiguration.searchConfigurationId DESC";
+	public static final String[] ORDER_BY_CONDITION_FIELDS = {"modifiedDate"};
 
-		public static final String[] ORDER_BY_FIELDS = {"modifiedDate", "searchConfigurationId"};
+	public static final String ORDER_BY_DESC =
+		"SearchConfiguration.modifiedDate DESC, " +
+			"SearchConfiguration.searchConfigurationId DESC";
 
-		public SearchConfigurationModifiedDateComparator() {
-			this(false);
-		}
+	public static final String[] ORDER_BY_FIELDS = {
+		"modifiedDate", "searchConfigurationId"
+	};
 
-		public SearchConfigurationModifiedDateComparator(boolean ascending) {
-			_ascending = ascending;
-		}
+	public SearchConfigurationModifiedDateComparator() {
+		this(false);
+	}
 
-		@Override
-		public int compare(
-				SearchConfiguration searchConfiguration1, 
-				SearchConfiguration searchConfiguration2) {
-			int value = DateUtil.compareTo(
-					searchConfiguration1.getModifiedDate(), 
-					searchConfiguration2.getModifiedDate());
+	public SearchConfigurationModifiedDateComparator(boolean ascending) {
+		_ascending = ascending;
+	}
 
-			if (value == 0) {
-				if (searchConfiguration1.getSearchConfigurationId() < 
-						searchConfiguration2.getSearchConfigurationId()) {
-					value = -1;
-				}
-				else if (searchConfiguration1.getSearchConfigurationId() > 
+	@Override
+	public int compare(
+		SearchConfiguration searchConfiguration1,
+		SearchConfiguration searchConfiguration2) {
+
+		int value = DateUtil.compareTo(
+			searchConfiguration1.getModifiedDate(),
+			searchConfiguration2.getModifiedDate());
+
+		if (value == 0) {
+			if (searchConfiguration1.getSearchConfigurationId() <
 					searchConfiguration2.getSearchConfigurationId()) {
-					value = 1;
-				}
+
+				value = -1;
 			}
+			else if (searchConfiguration1.getSearchConfigurationId() >
+						searchConfiguration2.getSearchConfigurationId()) {
 
-			if (_ascending) {
-				return value;
+				value = 1;
 			}
-
-			return -value;
 		}
 
-		@Override
-		public String getOrderBy() {
-			if (_ascending) {
-				return ORDER_BY_ASC;
-			}
-
-			return ORDER_BY_DESC;
+		if (_ascending) {
+			return value;
 		}
 
-		@Override
-		public String[] getOrderByConditionFields() {
-			return ORDER_BY_CONDITION_FIELDS;
+		return -value;
+	}
+
+	@Override
+	public String getOrderBy() {
+		if (_ascending) {
+			return ORDER_BY_ASC;
 		}
 
-		@Override
-		public String[] getOrderByFields() {
-			return ORDER_BY_FIELDS;
-		}
+		return ORDER_BY_DESC;
+	}
 
-		@Override
-		public boolean isAscending() {
-			return _ascending;
-		}
+	@Override
+	public String[] getOrderByConditionFields() {
+		return ORDER_BY_CONDITION_FIELDS;
+	}
 
-		private final boolean _ascending;
-		
+	@Override
+	public String[] getOrderByFields() {
+		return ORDER_BY_FIELDS;
+	}
+
+	@Override
+	public boolean isAscending() {
+		return _ascending;
+	}
+
+	private final boolean _ascending;
+
 }

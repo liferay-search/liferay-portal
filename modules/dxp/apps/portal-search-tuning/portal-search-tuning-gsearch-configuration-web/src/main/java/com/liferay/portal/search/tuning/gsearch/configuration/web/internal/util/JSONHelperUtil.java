@@ -50,6 +50,10 @@ public class JSONHelperUtil {
 
 		JSONArray section = configurationObject.getJSONArray(key);
 
+		if (section == null) {
+			return new String[0];
+		}
+		
 		String[] array = new String[section.length()];
 
 		for (int i = 0; i < section.length(); i++) {

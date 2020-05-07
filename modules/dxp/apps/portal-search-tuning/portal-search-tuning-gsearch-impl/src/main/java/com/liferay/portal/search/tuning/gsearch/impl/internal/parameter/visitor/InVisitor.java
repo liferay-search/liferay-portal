@@ -4,6 +4,7 @@ import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.search.tuning.gsearch.exception.ParameterEvaluationException;
+import com.liferay.portal.search.tuning.gsearch.impl.util.ClauseConditionUtil;
 import com.liferay.portal.search.tuning.gsearch.parameter.BooleanParameter;
 import com.liferay.portal.search.tuning.gsearch.parameter.DateParameter;
 import com.liferay.portal.search.tuning.gsearch.parameter.DoubleParameter;
@@ -15,7 +16,6 @@ import com.liferay.portal.search.tuning.gsearch.parameter.LongParameter;
 import com.liferay.portal.search.tuning.gsearch.parameter.Parameter;
 import com.liferay.portal.search.tuning.gsearch.parameter.StringArrayParameter;
 import com.liferay.portal.search.tuning.gsearch.parameter.StringParameter;
-import com.liferay.portal.search.tuning.gsearch.util.ClauseConditionUtil;
 
 /**
  * @author Petteri Karttunen

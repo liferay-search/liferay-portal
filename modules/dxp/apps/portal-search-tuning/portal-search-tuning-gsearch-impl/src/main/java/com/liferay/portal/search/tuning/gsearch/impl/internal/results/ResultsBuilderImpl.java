@@ -31,15 +31,15 @@ import com.liferay.portal.search.engine.adapter.search.SearchSearchResponse;
 import com.liferay.portal.search.highlight.HighlightField;
 import com.liferay.portal.search.hits.SearchHit;
 import com.liferay.portal.search.hits.SearchHits;
-import com.liferay.portal.search.tuning.gsearch.configuration.constants.FacetConfigurationKeys;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.FacetConfigurationKeys;
 import com.liferay.portal.search.tuning.gsearch.constants.JSONResponseKeys;
 import com.liferay.portal.search.tuning.gsearch.context.SearchRequestContext;
 import com.liferay.portal.search.tuning.gsearch.impl.internal.aggregations.facet.FacetHandlerFactory;
+import com.liferay.portal.search.tuning.gsearch.impl.util.GSearchUtilOldTobeRemoved;
 import com.liferay.portal.search.tuning.gsearch.results.ResultAttributes;
 import com.liferay.portal.search.tuning.gsearch.spi.aggregation.facet.FacetHandler;
 import com.liferay.portal.search.tuning.gsearch.spi.results.item.ResultItemBuilder;
 import com.liferay.portal.search.tuning.gsearch.spi.results.item.ResultItemContributor;
-import com.liferay.portal.search.tuning.gsearch.util.GSearchUtilOldTobeRemoved;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -167,10 +167,10 @@ public class ResultsBuilderImpl implements ResultsBuilder {
 			}
 
 			String facetFieldName = facetConfigurationJsonObject.getString(
-				FacetConfigurationKeys.INDEX_FIELD);
+				FacetConfigurationKeys.INDEX_FIELD.getJsonKey());
 
 			String facetHandlerName = facetConfigurationJsonObject.getString(
-				FacetConfigurationKeys.HANDLER);
+				FacetConfigurationKeys.HANDLER.getJsonKey());
 
 			for (Map.Entry<String, AggregationResult> entry :
 					aggregations.entrySet()) {

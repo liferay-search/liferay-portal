@@ -22,10 +22,10 @@ import com.liferay.portal.kernel.search.IndexWriterHelper;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.engine.adapter.search.SearchSearchResponse;
 import com.liferay.portal.search.hits.SearchHits;
-import com.liferay.portal.search.tuning.gsearch.configuration.constants.KeywordIndexingConfigurationKeys;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.KeywordIndexingConfigurationKeys;
 import com.liferay.portal.search.tuning.gsearch.context.SearchRequestContext;
+import com.liferay.portal.search.tuning.gsearch.impl.util.GSearchJsonUtil;
 import com.liferay.portal.search.tuning.gsearch.spi.query.postprocessor.QueryPostProcessor;
-import com.liferay.portal.search.tuning.gsearch.util.GSearchJsonUtil;
 
 import java.util.Optional;
 
@@ -51,7 +51,7 @@ public class KeywordIndexerPostProcessor implements QueryPostProcessor {
 			configurationJsonObjectOptional.get();
 
 		boolean enabled = configurationJsonObject.getBoolean(
-			KeywordIndexingConfigurationKeys.ENABLED);
+			KeywordIndexingConfigurationKeys.ENABLED.getJsonKey());
 
 		if (!enabled) {
 			return true;
@@ -62,7 +62,7 @@ public class KeywordIndexerPostProcessor implements QueryPostProcessor {
 		String keywords = searchRequestContext.getKeywords();
 
 		int hitsThreshold = configurationJsonObject.getInt(
-			KeywordIndexingConfigurationKeys.HITS_THRESHOLD, 2);
+			KeywordIndexingConfigurationKeys.HITS_THRESHOLD.getJsonKey(), 2);
 
 		if (!Validator.isBlank(keywords) &&
 			(searchHits.getTotalHits() >= hitsThreshold)) {
@@ -96,7 +96,7 @@ public class KeywordIndexerPostProcessor implements QueryPostProcessor {
 		JSONObject configurationJsonObject, String keywords) {
 
 		JSONArray excludedWordsJsonArray = configurationJsonObject.getJSONArray(
-			KeywordIndexingConfigurationKeys.FILTERED_WORDS);
+			KeywordIndexingConfigurationKeys.BLACKLIST.getJsonKey());
 
 		if ((excludedWordsJsonArray == null) ||
 			(excludedWordsJsonArray.length() == 0)) {
@@ -108,7 +108,8 @@ public class KeywordIndexerPostProcessor implements QueryPostProcessor {
 			excludedWordsJsonArray);
 
 		String splitter = configurationJsonObject.getString(
-			KeywordIndexingConfigurationKeys.FILTER_SPLITTER, " ");
+			KeywordIndexingConfigurationKeys.BLACKLIST_SPLITTER.getJsonKey(),
+			" ");
 
 		try {
 			String[] keywordArray = keywords.split(splitter);

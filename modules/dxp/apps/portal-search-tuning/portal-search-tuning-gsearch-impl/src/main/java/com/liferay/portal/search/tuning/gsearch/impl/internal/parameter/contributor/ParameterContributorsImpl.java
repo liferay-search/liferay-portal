@@ -17,12 +17,14 @@ package com.liferay.portal.search.tuning.gsearch.impl.internal.parameter.contrib
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.search.SearchContext;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.tuning.gsearch.parameter.Parameter;
 import com.liferay.portal.search.tuning.gsearch.parameter.ParameterDefinition;
 import com.liferay.portal.search.tuning.gsearch.parameter.SearchParameterData;
 import com.liferay.portal.search.tuning.gsearch.spi.parameter.ParameterContributor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -109,22 +111,36 @@ public class ParameterContributorsImpl implements ParameterContributors {
 		return parameterDefinitionList.toArray(new ParameterDefinition[0]);
 	}
 
-	protected void addContextParameterProvider(
+	@Reference(
+		cardinality = ReferenceCardinality.MULTIPLE,
+		policy = ReferencePolicy.DYNAMIC
+	)
+	protected void registerContextParameterProvider(
 		ParameterContributor parameterContributor,
 		Map<String, Object> properties) {
 
-		String type = (String)properties.get("name");
+		String name = (String)properties.get("name");
+		if (Validator.isBlank(name)) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(
+					"Unable to add facet handler " +
+						parameterContributor.getClass(
+						).getName() + ". Name property empty.");
+			}
 
-		_parameterContributors.put(type, parameterContributor);
+			return;
+		}
+		
+		_parameterContributors.put(name, parameterContributor);
 	}
 
-	protected void removeContextParameterProvider(
+	protected void unregisterContextParameterProvider(
 		ParameterContributor parameterContributor,
 		Map<String, Object> properties) {
 
-		String type = (String)properties.get("name");
+		String name = (String)properties.get("name");
 
-		_parameterContributors.remove(type);
+		_parameterContributors.remove(name);
 	}
 
 	private ParameterContributor _getProviderByName(String name)
@@ -160,12 +176,6 @@ public class ParameterContributorsImpl implements ParameterContributors {
 	private static final Log _log = LogFactoryUtil.getLog(
 		ParameterContributorsImpl.class);
 
-	@Reference(
-		bind = "addContextParameterProvider",
-		cardinality = ReferenceCardinality.MULTIPLE,
-		policy = ReferencePolicy.DYNAMIC, service = ParameterContributor.class,
-		unbind = "removeContextParameterProvider"
-	)
-	private volatile Map<String, ParameterContributor> _parameterContributors;
+	private volatile Map<String, ParameterContributor> _parameterContributors = new HashMap<String, ParameterContributor>();
 
 }

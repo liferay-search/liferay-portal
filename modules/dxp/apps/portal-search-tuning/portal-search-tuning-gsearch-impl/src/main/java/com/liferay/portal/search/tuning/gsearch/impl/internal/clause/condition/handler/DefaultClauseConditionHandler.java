@@ -17,9 +17,8 @@ package com.liferay.portal.search.tuning.gsearch.impl.internal.clause.condition.
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.search.tuning.gsearch.configuration.constants.AggregationConfigurationKeys;
-import com.liferay.portal.search.tuning.gsearch.configuration.constants.ClauseConfigurationKeys;
-import com.liferay.portal.search.tuning.gsearch.constants.EvaluationType;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.ClauseConfigurationKeys;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.values.EvaluationType;
 import com.liferay.portal.search.tuning.gsearch.context.SearchRequestContext;
 import com.liferay.portal.search.tuning.gsearch.exception.ParameterEvaluationException;
 import com.liferay.portal.search.tuning.gsearch.impl.internal.parameter.visitor.AnyWordInVisitor;
@@ -57,7 +56,7 @@ public class DefaultClauseConditionHandler implements ClauseConditionHandler {
 		}
 
 		String parameterName = conditionJsonObject.getString(
-			ClauseConfigurationKeys.PARAMETER_NAME);
+			ClauseConfigurationKeys.PARAMETER_NAME.getJsonKey());
 
 		Optional<Parameter> parameterOptional =
 			searchRequestContext.getSearchParameterData(
@@ -70,14 +69,15 @@ public class DefaultClauseConditionHandler implements ClauseConditionHandler {
 				new Message(
 					Severity.ERROR, "core",
 					"core.error.unknown-clause-condition-parameter", null, null,
-					conditionJsonObject, ClauseConfigurationKeys.PARAMETER_NAME,
+					conditionJsonObject,
+					ClauseConfigurationKeys.PARAMETER_NAME.getJsonKey(),
 					parameterName));
 
 			return false;
 		}
 
 		String evaluationTypeString = conditionJsonObject.getString(
-			ClauseConfigurationKeys.EVALUATION_TYPE);
+			ClauseConfigurationKeys.EVALUATION_TYPE.getJsonKey());
 
 		EvaluationType evaluationType;
 
@@ -91,7 +91,7 @@ public class DefaultClauseConditionHandler implements ClauseConditionHandler {
 					"core.error.unknown-clause-condition-evaluation-type",
 					illegalArgumentException.getMessage(),
 					illegalArgumentException, conditionJsonObject,
-					ClauseConfigurationKeys.EVALUATION_TYPE,
+					ClauseConfigurationKeys.EVALUATION_TYPE.getJsonKey(),
 					evaluationTypeString));
 
 			return false;
@@ -191,7 +191,7 @@ public class DefaultClauseConditionHandler implements ClauseConditionHandler {
 					Severity.ERROR, "core",
 					"core.error.unable-to-resolve-clause-condition-handler",
 					null, null, conditionJsonObject,
-					ClauseConfigurationKeys.EVALUATION_TYPE,
+					ClauseConfigurationKeys.EVALUATION_TYPE.getJsonKey(),
 					evaluationType.name(
 					).toLowerCase()));
 
@@ -225,40 +225,41 @@ public class DefaultClauseConditionHandler implements ClauseConditionHandler {
 
 		if (Validator.isNull(
 				conditionJsonObject.getString(
-					ClauseConfigurationKeys.PARAMETER_NAME))) {
+					ClauseConfigurationKeys.PARAMETER_NAME.getJsonKey()))) {
 
 			searchRequestContext.addMessage(
 				new Message(
 					Severity.ERROR, "core",
 					"core.error.clause-condition-parameter-not-defined", null,
 					null, conditionJsonObject,
-					AggregationConfigurationKeys.FIELD, null));
+					ClauseConfigurationKeys.PARAMETER_NAME.getJsonKey(), null));
 			valid = false;
 		}
 
 		if (Validator.isNull(
 				conditionJsonObject.getString(
-					ClauseConfigurationKeys.EVALUATION_TYPE))) {
+					ClauseConfigurationKeys.EVALUATION_TYPE.getJsonKey()))) {
 
 			searchRequestContext.addMessage(
 				new Message(
 					Severity.ERROR, "core",
 					"core.error.clause-condition-evaluation-type-not-defined",
 					null, null, conditionJsonObject,
-					AggregationConfigurationKeys.FIELD, null));
+					ClauseConfigurationKeys.EVALUATION_TYPE.getJsonKey(),
+					null));
 			valid = false;
 		}
 
 		if (Validator.isNull(
 				conditionJsonObject.getString(
-					ClauseConfigurationKeys.MATCH_VALUE))) {
+					ClauseConfigurationKeys.MATCH_VALUE.getJsonKey()))) {
 
 			searchRequestContext.addMessage(
 				new Message(
 					Severity.ERROR, "core",
 					"core.error.clause-condition-match-value-not-defined", null,
 					null, conditionJsonObject,
-					AggregationConfigurationKeys.FIELD, null));
+					ClauseConfigurationKeys.MATCH_VALUE.getJsonKey(), null));
 			valid = false;
 		}
 

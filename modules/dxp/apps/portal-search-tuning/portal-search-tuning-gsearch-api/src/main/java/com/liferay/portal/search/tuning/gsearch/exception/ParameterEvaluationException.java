@@ -26,7 +26,6 @@ public class ParameterEvaluationException extends PortalException {
 	}
 
 	public ParameterEvaluationException(Message message) {
-		super();
 		_message = message;
 	}
 

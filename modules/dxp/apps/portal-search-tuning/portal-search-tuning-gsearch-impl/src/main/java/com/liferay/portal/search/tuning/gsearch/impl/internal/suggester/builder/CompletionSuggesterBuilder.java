@@ -18,8 +18,7 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.search.suggest.CompletionSuggester;
 import com.liferay.portal.kernel.search.suggest.Suggester;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.search.tuning.gsearch.configuration.constants.suggester.CompletionSuggesterConfigurationKeys;
-import com.liferay.portal.search.tuning.gsearch.configuration.constants.suggester.SuggesterConfigurationKeys;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.suggester.CommonSuggesterConfigurationKeys;
 import com.liferay.portal.search.tuning.gsearch.context.SearchRequestContext;
 import com.liferay.portal.search.tuning.gsearch.spi.suggester.SuggesterBuilder;
 
@@ -49,10 +48,10 @@ public class CompletionSuggesterBuilder
 		}
 
 		String field = configurationJsonObject.getString(
-			SuggesterConfigurationKeys.FIELD);
+			CommonSuggesterConfigurationKeys.FIELD.getJsonKey());
 
 		String text = configurationJsonObject.getString(
-			SuggesterConfigurationKeys.TEXT,
+			CommonSuggesterConfigurationKeys.TEXT.getJsonKey(),
 			searchRequestContext.getKeywords());
 
 		text = text.toLowerCase();
@@ -62,29 +61,30 @@ public class CompletionSuggesterBuilder
 
 		if (Validator.isNull(
 				configurationJsonObject.get(
-					CompletionSuggesterConfigurationKeys.ANALYZER))) {
+					CommonSuggesterConfigurationKeys.ANALYZER.getJsonKey()))) {
 
 			completionSuggester.setAnalyzer(
 				configurationJsonObject.getString(
-					CompletionSuggesterConfigurationKeys.ANALYZER));
+					CommonSuggesterConfigurationKeys.ANALYZER.getJsonKey()));
 		}
 
 		if (Validator.isNull(
 				configurationJsonObject.get(
-					CompletionSuggesterConfigurationKeys.SHARD_SIZE))) {
+					CommonSuggesterConfigurationKeys.SHARD_SIZE.
+						getJsonKey()))) {
 
 			completionSuggester.setShardSize(
 				configurationJsonObject.getInt(
-					CompletionSuggesterConfigurationKeys.SHARD_SIZE));
+					CommonSuggesterConfigurationKeys.SHARD_SIZE.getJsonKey()));
 		}
 
 		if (Validator.isNull(
 				configurationJsonObject.get(
-					CompletionSuggesterConfigurationKeys.SIZE))) {
+					CommonSuggesterConfigurationKeys.SIZE.getJsonKey()))) {
 
 			completionSuggester.setSize(
 				configurationJsonObject.getInt(
-					CompletionSuggesterConfigurationKeys.SIZE));
+					CommonSuggesterConfigurationKeys.SIZE.getJsonKey()));
 		}
 
 		return Optional.of(completionSuggester);

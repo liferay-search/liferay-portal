@@ -102,7 +102,7 @@ String redirect = ParamUtil.getString(request, "redirect", currentURL);
 			>
 
 				<%
-				String[] synonyms = JSONHelperUtil.getConfigurationSection(searchConfiguration, SearchConfigurationKeys.SYNONYMS);
+				String[] synonyms = JSONHelperUtil.getConfigurationSection(searchConfiguration, "synonyms");
 
 					for (int i = 0; i < synonyms.length; i++) {
 						String value = synonyms[i];
@@ -126,7 +126,7 @@ String redirect = ParamUtil.getString(request, "redirect", currentURL);
 			>
 
 				<%
-				String[] misspellings = JSONHelperUtil.getConfigurationSection(searchConfiguration, SearchConfigurationKeys.MISSPELLINGS);
+				String[] misspellings = JSONHelperUtil.getConfigurationSection(searchConfiguration, "misspellings");
 
 					for (int i = 0; i < misspellings.length; i++) {
 						String value = misspellings[i];
@@ -152,7 +152,7 @@ String redirect = ParamUtil.getString(request, "redirect", currentURL);
 		>
 
 			<%
-			String[] clauseConfiguration = JSONHelperUtil.getConfigurationSection(searchConfiguration, SearchConfigurationKeys.CLAUSE_CONFIGURATION);
+			String[] clauseConfiguration = JSONHelperUtil.getConfigurationSection(searchConfiguration, SearchConfigurationKeys.CLAUSE_CONFIGURATION.getJsonKey());
 
 			for (int i = 0; i < clauseConfiguration.length; i++) {
 				String value = clauseConfiguration[i];

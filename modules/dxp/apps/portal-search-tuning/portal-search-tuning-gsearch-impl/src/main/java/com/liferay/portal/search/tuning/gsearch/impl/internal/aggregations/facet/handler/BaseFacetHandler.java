@@ -24,8 +24,7 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.aggregation.AggregationResult;
 import com.liferay.portal.search.aggregation.bucket.Bucket;
 import com.liferay.portal.search.aggregation.bucket.TermsAggregationResult;
-import com.liferay.portal.search.tuning.gsearch.configuration.constants.FacetConfigurationKeys;
-import com.liferay.portal.search.tuning.gsearch.configuration.constants.SearchConfigurationKeys;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.FacetConfigurationKeys;
 import com.liferay.portal.search.tuning.gsearch.constants.JSONResponseKeys;
 import com.liferay.portal.search.tuning.gsearch.context.SearchRequestContext;
 import com.liferay.portal.search.tuning.gsearch.parameter.SearchParameterData;
@@ -50,10 +49,10 @@ public abstract class BaseFacetHandler implements FacetHandler {
 		JSONObject configurationJsonObject) {
 
 		String parameterName = configurationJsonObject.getString(
-			SearchConfigurationKeys.PARAMETER_NAME);
+			FacetConfigurationKeys.PARAMETER_NAME.getJsonKey());
 
 		boolean multiValue = configurationJsonObject.getBoolean(
-			FacetConfigurationKeys.MULTI_VALUE, true);
+			FacetConfigurationKeys.MULTI_VALUE.getJsonKey(), true);
 
 		if (multiValue) {
 			String[] value = ParamUtil.getStringValues(
@@ -110,7 +109,7 @@ public abstract class BaseFacetHandler implements FacetHandler {
 		resultObject.put(
 			JSONResponseKeys.PARAMETER_NAME,
 			configurationJsonObject.getString(
-				FacetConfigurationKeys.PARAMETER_NAME));
+				FacetConfigurationKeys.PARAMETER_NAME.getJsonKey()));
 
 		resultObject.put(JSONResponseKeys.VALUES, termsArray);
 

@@ -18,10 +18,10 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
-import com.liferay.portal.search.tuning.gsearch.configuration.constants.ParameterConfigurationKeys;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.RequestParameterConfigurationKeys;
+import com.liferay.portal.search.tuning.gsearch.impl.util.GSearchJsonUtil;
 import com.liferay.portal.search.tuning.gsearch.parameter.IntegerArrayParameter;
 import com.liferay.portal.search.tuning.gsearch.parameter.SearchParameterData;
-import com.liferay.portal.search.tuning.gsearch.util.GSearchJsonUtil;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -47,7 +47,7 @@ public class IntegerArrayParameterContributor
 		JSONObject configurationJsonObject) {
 
 		String parameterName = configurationJsonObject.getString(
-			ParameterConfigurationKeys.PARAMETER_NAME);
+			RequestParameterConfigurationKeys.PARAMETER_NAME.getJsonKey());
 
 		String[] stringValueArray = ParamUtil.getStringValues(
 			httpServletRequest, parameterName);
@@ -57,7 +57,7 @@ public class IntegerArrayParameterContributor
 				Optional<String[]> valueOptional =
 					GSearchJsonUtil.getStringArrayOptional(
 						configurationJsonObject,
-						ParameterConfigurationKeys.DEFAULT);
+						RequestParameterConfigurationKeys.DEFAULT.getJsonKey());
 
 				if (valueOptional.isPresent()) {
 					stringValueArray = valueOptional.get();
@@ -75,7 +75,7 @@ public class IntegerArrayParameterContributor
 			);
 
 			String parameterRole = configurationJsonObject.getString(
-				ParameterConfigurationKeys.ROLE);
+				RequestParameterConfigurationKeys.ROLE.getJsonKey());
 
 			searchParameterData.addParameter(
 				new IntegerArrayParameter(

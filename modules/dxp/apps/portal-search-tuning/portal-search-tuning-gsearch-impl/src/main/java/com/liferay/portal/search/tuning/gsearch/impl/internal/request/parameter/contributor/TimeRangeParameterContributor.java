@@ -16,10 +16,10 @@ package com.liferay.portal.search.tuning.gsearch.impl.internal.request.parameter
 
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.ParamUtil;
-import com.liferay.portal.search.tuning.gsearch.configuration.constants.ParameterConfigurationKeys;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.RequestParameterConfigurationKeys;
+import com.liferay.portal.search.tuning.gsearch.impl.util.GSearchUtil;
 import com.liferay.portal.search.tuning.gsearch.parameter.DateParameter;
 import com.liferay.portal.search.tuning.gsearch.parameter.SearchParameterData;
-import com.liferay.portal.search.tuning.gsearch.util.GSearchUtil;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -46,7 +46,7 @@ public class TimeRangeParameterContributor
 		JSONObject configurationJsonObject) {
 
 		String parameterName = configurationJsonObject.getString(
-			ParameterConfigurationKeys.PARAMETER_NAME);
+			RequestParameterConfigurationKeys.PARAMETER_NAME.getJsonKey());
 
 		String valueString = ParamUtil.getString(
 			httpServletRequest, parameterName);
@@ -86,7 +86,7 @@ public class TimeRangeParameterContributor
 		}
 
 		String parameterRole = configurationJsonObject.getString(
-			ParameterConfigurationKeys.ROLE);
+			RequestParameterConfigurationKeys.ROLE.getJsonKey());
 
 		searchParameterData.addParameter(
 			new DateParameter(

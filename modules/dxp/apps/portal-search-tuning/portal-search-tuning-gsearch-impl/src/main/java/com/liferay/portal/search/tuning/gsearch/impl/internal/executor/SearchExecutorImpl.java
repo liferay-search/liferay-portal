@@ -14,22 +14,23 @@
 
 package com.liferay.portal.search.tuning.gsearch.impl.internal.executor;
 
+import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.aggregation.Aggregation;
 import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
 import com.liferay.portal.search.engine.adapter.search.SearchSearchRequest;
 import com.liferay.portal.search.engine.adapter.search.SearchSearchResponse;
 import com.liferay.portal.search.sort.Sort;
-import com.liferay.portal.search.tuning.gsearch.configuration.constants.HighlightConfigurationKeys;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.HighlightConfigurationKeys;
 import com.liferay.portal.search.tuning.gsearch.context.SearchRequestContext;
+import com.liferay.portal.search.tuning.gsearch.impl.util.GSearchJsonUtil;
 import com.liferay.portal.search.tuning.gsearch.searchrequest.SearchRequestData;
 import com.liferay.portal.search.tuning.gsearch.spi.query.postprocessor.QueryPostProcessor;
 
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -107,7 +108,12 @@ public class SearchExecutorImpl implements SearchExecutor {
 		return searchResponse;
 	}
 
-	protected void addQueryPostProcessor(
+	
+	@Reference(
+		cardinality = ReferenceCardinality.MULTIPLE,
+		policy = ReferencePolicy.DYNAMIC
+	)
+	protected void registerQueryPostProcessor(
 		QueryPostProcessor queryPostProcessor, Map<String, Object> properties) {
 
 		String name = (String)properties.get("name");
@@ -124,7 +130,7 @@ public class SearchExecutorImpl implements SearchExecutor {
 		_queryPostProcessors.put(name, queryPostProcessor);
 	}
 
-	protected void removeQueryPostProcessor(
+	protected void unregisterQueryPostProcessor(
 		QueryPostProcessor queryPostProcessor, Map<String, Object> properties) {
 
 		String name = (String)properties.get("name");
@@ -180,22 +186,6 @@ public class SearchExecutorImpl implements SearchExecutor {
 		}
 	}
 
-	private String[] _getHighlightFieldNames(String fieldNames) {
-		fieldNames = StringUtil.trim(fieldNames);
-
-		if (Validator.isBlank(fieldNames)) {
-			return new String[0];
-		}
-
-		return Arrays.stream(
-			fieldNames.split(",")
-		).map(
-			String::trim
-		).toArray(
-			String[]::new
-		);
-	}
-
 	private void _setAggregations(
 		SearchSearchRequest searchRequest, List<Aggregation> aggregations) {
 
@@ -220,62 +210,61 @@ public class SearchExecutorImpl implements SearchExecutor {
 
 		if (Validator.isNotNull(
 				highlightConfigurationJsonObject.get(
-					HighlightConfigurationKeys.ENABLED))) {
+					HighlightConfigurationKeys.ENABLED.getJsonKey()))) {
 
 			searchRequest.setHighlightEnabled(
 				highlightConfigurationJsonObject.getBoolean(
-					HighlightConfigurationKeys.ENABLED));
+					HighlightConfigurationKeys.ENABLED.getJsonKey()));
 		}
 
 		if (Validator.isNotNull(
 				highlightConfigurationJsonObject.get(
-					HighlightConfigurationKeys.FRAGMENT_SIZE))) {
+					HighlightConfigurationKeys.FRAGMENT_SIZE.getJsonKey()))) {
 
 			searchRequest.setHighlightFragmentSize(
 				highlightConfigurationJsonObject.getInt(
-					HighlightConfigurationKeys.FRAGMENT_SIZE));
+					HighlightConfigurationKeys.FRAGMENT_SIZE.getJsonKey()));
 		}
 
 		if (Validator.isNotNull(
 				highlightConfigurationJsonObject.get(
-					HighlightConfigurationKeys.SNIPPET_SIZE))) {
+					HighlightConfigurationKeys.SNIPPET_SIZE.getJsonKey()))) {
 
 			searchRequest.setHighlightSnippetSize(
 				highlightConfigurationJsonObject.getInt(
-					HighlightConfigurationKeys.SNIPPET_SIZE));
+					HighlightConfigurationKeys.SNIPPET_SIZE.getJsonKey()));
 		}
 
 		if (Validator.isNotNull(
 				highlightConfigurationJsonObject.get(
-					HighlightConfigurationKeys.REQUIRE_FIELD_MATCH))) {
+					HighlightConfigurationKeys.REQUIRE_FIELD_MATCH.
+						getJsonKey()))) {
 
 			searchRequest.setHighlightRequireFieldMatch(
 				highlightConfigurationJsonObject.getBoolean(
-					HighlightConfigurationKeys.REQUIRE_FIELD_MATCH));
+					HighlightConfigurationKeys.REQUIRE_FIELD_MATCH.
+						getJsonKey()));
 		}
 
 		if (Validator.isNotNull(
 				highlightConfigurationJsonObject.get(
-					HighlightConfigurationKeys.FIELD_NAMES))) {
+					HighlightConfigurationKeys.FIELD_NAMES.getJsonKey()))) {
 
-			String fieldNames = highlightConfigurationJsonObject.getString(
-				HighlightConfigurationKeys.FIELD_NAMES);
+			JSONArray fieldNamesJsonArray =
+				highlightConfigurationJsonObject.getJSONArray(
+					HighlightConfigurationKeys.FIELD_NAMES.getJsonKey());
 
-			searchRequest.setHighlightFieldNames(
-				_getHighlightFieldNames(fieldNames));
+			String[] fieldNames = GSearchJsonUtil.jsonArrayToStringArray(
+				fieldNamesJsonArray);
+
+			searchRequest.setHighlightFieldNames(fieldNames);
 		}
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		SearchExecutorImpl.class);
 
-	@Reference(
-		bind = "addQueryPostProcessor",
-		cardinality = ReferenceCardinality.MULTIPLE,
-		policy = ReferencePolicy.DYNAMIC, service = QueryPostProcessor.class,
-		unbind = "removeQueryPostProcessor"
-	)
-	private volatile Map<String, QueryPostProcessor> _queryPostProcessors;
+	private volatile Map<String, QueryPostProcessor> _queryPostProcessors = new HashMap<String, QueryPostProcessor>();
 
 	@Reference
 	private SearchEngineAdapter _searchEngineAdapter;

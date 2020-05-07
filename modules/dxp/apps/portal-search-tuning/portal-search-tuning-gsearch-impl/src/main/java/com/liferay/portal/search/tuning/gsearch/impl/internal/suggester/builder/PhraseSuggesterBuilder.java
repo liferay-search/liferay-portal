@@ -20,8 +20,8 @@ import com.liferay.portal.kernel.search.suggest.PhraseSuggester;
 import com.liferay.portal.kernel.search.suggest.Suggester;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.search.tuning.gsearch.configuration.constants.suggester.PhraseSuggesterConfigurationKeys;
-import com.liferay.portal.search.tuning.gsearch.configuration.constants.suggester.SuggesterConfigurationKeys;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.suggester.CommonSuggesterConfigurationKeys;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.suggester.PhraseSuggesterConfigurationKeys;
 import com.liferay.portal.search.tuning.gsearch.context.SearchRequestContext;
 import com.liferay.portal.search.tuning.gsearch.spi.suggester.SuggesterBuilder;
 
@@ -50,10 +50,10 @@ public class PhraseSuggesterBuilder
 		}
 
 		String field = configurationJsonObject.getString(
-			SuggesterConfigurationKeys.FIELD);
+			CommonSuggesterConfigurationKeys.FIELD.getJsonKey());
 
 		String text = configurationJsonObject.getString(
-			SuggesterConfigurationKeys.TEXT,
+			CommonSuggesterConfigurationKeys.TEXT.getJsonKey(),
 			searchRequestContext.getKeywords());
 
 		text = text.toLowerCase();
@@ -63,120 +63,132 @@ public class PhraseSuggesterBuilder
 
 		if (Validator.isNull(
 				configurationJsonObject.get(
-					PhraseSuggesterConfigurationKeys.ANALYZER))) {
+					CommonSuggesterConfigurationKeys.ANALYZER.getJsonKey()))) {
 
 			phraseSuggester.setAnalyzer(
 				configurationJsonObject.getString(
-					PhraseSuggesterConfigurationKeys.ANALYZER));
+					CommonSuggesterConfigurationKeys.ANALYZER.getJsonKey()));
 		}
 
 		if (Validator.isNull(
 				configurationJsonObject.get(
-					PhraseSuggesterConfigurationKeys.COLLATE))) {
+					PhraseSuggesterConfigurationKeys.COLLATE.getJsonKey()))) {
 
 			_setCollate(phraseSuggester, configurationJsonObject);
 		}
 
 		if (Validator.isNotNull(
 				configurationJsonObject.get(
-					PhraseSuggesterConfigurationKeys.CONFIDENCE))) {
+					PhraseSuggesterConfigurationKeys.CONFIDENCE.
+						getJsonKey()))) {
 
 			phraseSuggester.setConfidence(
 				GetterUtil.getFloat(
 					configurationJsonObject.get(
-						PhraseSuggesterConfigurationKeys.CONFIDENCE)));
+						PhraseSuggesterConfigurationKeys.CONFIDENCE.
+							getJsonKey())));
 		}
 
 		if (Validator.isNull(
 				configurationJsonObject.get(
-					PhraseSuggesterConfigurationKeys.DIRECT_GENERATOR))) {
+					PhraseSuggesterConfigurationKeys.DIRECT_GENERATOR.
+						getJsonKey()))) {
 
 			_setCandidateGenerator(phraseSuggester, configurationJsonObject);
 		}
 
 		if (Validator.isNull(
 				configurationJsonObject.get(
-					PhraseSuggesterConfigurationKeys.FORCE_UNIGRAMS))) {
+					PhraseSuggesterConfigurationKeys.FORCE_UNIGRAMS.
+						getJsonKey()))) {
 
 			phraseSuggester.setForceUnigrams(
 				configurationJsonObject.getBoolean(
-					PhraseSuggesterConfigurationKeys.FORCE_UNIGRAMS));
+					PhraseSuggesterConfigurationKeys.FORCE_UNIGRAMS.
+						getJsonKey()));
 		}
 
 		if (Validator.isNotNull(
 				configurationJsonObject.get(
-					PhraseSuggesterConfigurationKeys.GRAM_SIZE))) {
+					PhraseSuggesterConfigurationKeys.GRAM_SIZE.getJsonKey()))) {
 
 			phraseSuggester.setGramSize(
 				configurationJsonObject.getInt(
-					PhraseSuggesterConfigurationKeys.GRAM_SIZE));
+					PhraseSuggesterConfigurationKeys.GRAM_SIZE.getJsonKey()));
 		}
 
 		if (Validator.isNotNull(
 				configurationJsonObject.get(
-					PhraseSuggesterConfigurationKeys.MAX_ERRORS))) {
+					PhraseSuggesterConfigurationKeys.MAX_ERRORS.
+						getJsonKey()))) {
 
 			phraseSuggester.setMaxErrors(
 				GetterUtil.getFloat(
 					configurationJsonObject.get(
-						PhraseSuggesterConfigurationKeys.MAX_ERRORS)));
+						PhraseSuggesterConfigurationKeys.MAX_ERRORS.
+							getJsonKey())));
 		}
 
 		if (Validator.isNotNull(
 				configurationJsonObject.get(
 					PhraseSuggesterConfigurationKeys.
-						REAL_WORLD_ERROR_LIKELIHOOD))) {
+						REAL_WORLD_ERROR_LIKELIHOOD.getJsonKey()))) {
 
 			phraseSuggester.setRealWordErrorLikelihood(
 				GetterUtil.getFloat(
 					configurationJsonObject.get(
 						PhraseSuggesterConfigurationKeys.
-							REAL_WORLD_ERROR_LIKELIHOOD)));
+							REAL_WORLD_ERROR_LIKELIHOOD.getJsonKey())));
 		}
 
 		if (Validator.isNull(
 				configurationJsonObject.get(
-					PhraseSuggesterConfigurationKeys.SEPARATOR))) {
+					PhraseSuggesterConfigurationKeys.SEPARATOR.getJsonKey()))) {
 
 			phraseSuggester.setSeparator(
 				configurationJsonObject.getString(
-					PhraseSuggesterConfigurationKeys.SEPARATOR));
+					PhraseSuggesterConfigurationKeys.SEPARATOR.getJsonKey()));
 		}
 
 		if (Validator.isNull(
 				configurationJsonObject.get(
-					PhraseSuggesterConfigurationKeys.SHARD_SIZE))) {
+					CommonSuggesterConfigurationKeys.SHARD_SIZE.
+						getJsonKey()))) {
 
 			phraseSuggester.setShardSize(
 				configurationJsonObject.getInt(
-					PhraseSuggesterConfigurationKeys.SHARD_SIZE));
+					CommonSuggesterConfigurationKeys.SHARD_SIZE.getJsonKey()));
 		}
 
 		if (Validator.isNull(
 				configurationJsonObject.get(
-					PhraseSuggesterConfigurationKeys.SIZE))) {
+					CommonSuggesterConfigurationKeys.SIZE.getJsonKey()))) {
 
 			phraseSuggester.setSize(
 				configurationJsonObject.getInt(
-					PhraseSuggesterConfigurationKeys.SIZE));
+					CommonSuggesterConfigurationKeys.SIZE.getJsonKey()));
 		}
 
 		if (Validator.isNotNull(
 				configurationJsonObject.get(
-					PhraseSuggesterConfigurationKeys.PRE_HIGHLIGHT_TAG))) {
+					PhraseSuggesterConfigurationKeys.PRE_HIGHLIGHT_TAG.
+						getJsonKey()))) {
 
 			phraseSuggester.setPreHighlightFilter(
 				configurationJsonObject.getString(
-					PhraseSuggesterConfigurationKeys.PRE_HIGHLIGHT_TAG));
+					PhraseSuggesterConfigurationKeys.PRE_HIGHLIGHT_TAG.
+						getJsonKey()));
 		}
 
 		if (Validator.isNotNull(
 				configurationJsonObject.get(
-					PhraseSuggesterConfigurationKeys.POST_HIGHLIGHT_TAG))) {
+					PhraseSuggesterConfigurationKeys.POST_HIGHLIGHT_TAG.
+						getJsonKey()))) {
 
 			phraseSuggester.setPreHighlightFilter(
 				configurationJsonObject.getString(
-					PhraseSuggesterConfigurationKeys.POST_HIGHLIGHT_TAG));
+					PhraseSuggesterConfigurationKeys.POST_HIGHLIGHT_TAG.
+						getJsonKey()));
 		}
 
 		return Optional.of(phraseSuggester);
@@ -187,7 +199,7 @@ public class PhraseSuggesterBuilder
 
 		JSONArray directGeneratorJsonArray =
 			configurationJsonObject.getJSONArray(
-				PhraseSuggesterConfigurationKeys.DIRECT_GENERATOR);
+				PhraseSuggesterConfigurationKeys.DIRECT_GENERATOR.getJsonKey());
 
 		if ((directGeneratorJsonArray == null) ||
 			(directGeneratorJsonArray.length() == 0)) {
@@ -196,7 +208,7 @@ public class PhraseSuggesterBuilder
 		}
 
 		String field = configurationJsonObject.getString(
-			SuggesterConfigurationKeys.FIELD);
+			CommonSuggesterConfigurationKeys.FIELD.getJsonKey());
 
 		PhraseSuggester.CandidateGenerator candidateGenerator =
 			new PhraseSuggester.CandidateGenerator(field);
@@ -211,7 +223,7 @@ public class PhraseSuggesterBuilder
 		PhraseSuggester phraseSuggester, JSONObject configurationJsonObject) {
 
 		JSONObject collateJsonObject = configurationJsonObject.getJSONObject(
-			PhraseSuggesterConfigurationKeys.COLLATE);
+			PhraseSuggesterConfigurationKeys.COLLATE.getJsonKey());
 
 		if ((collateJsonObject == null) || (collateJsonObject.length() == 0)) {
 			return;

@@ -48,17 +48,15 @@ public interface SearchRequestContext {
 
 	public Optional<JSONObject> getHighlightConfiguration();
 
-	public Optional<String> getInitialKeywords();
-
 	public String[] getIndexNames();
 
-	public String getKeywords();
+	public Optional<String> getInitialKeywords();
 
 	public Optional<JSONObject> getKeywordIndexingConfiguration();
 
-	public Optional<JSONObject> getKeywordSuggestionsConfiguration();
+	public String getKeywords();
 
-	public Optional<JSONArray> getKeywordSuggesterConfiguration();
+	public Optional<JSONObject> getKeywordSuggestionsConfiguration();
 
 	public Locale getLocale();
 
@@ -77,7 +75,7 @@ public interface SearchRequestContext {
 	public Optional<JSONArray> getSpellCheckerConfiguration();
 
 	public Long getUserId();
-	
+
 	public boolean hasErrors();
 
 	public boolean isExplain();

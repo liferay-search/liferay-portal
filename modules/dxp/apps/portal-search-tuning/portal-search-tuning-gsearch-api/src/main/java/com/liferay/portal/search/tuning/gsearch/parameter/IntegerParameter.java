@@ -15,7 +15,7 @@
 package com.liferay.portal.search.tuning.gsearch.parameter;
 
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.search.tuning.gsearch.constants.EvaluationType;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.values.EvaluationType;
 import com.liferay.portal.search.tuning.gsearch.exception.ParameterEvaluationException;
 
 import java.util.ArrayList;

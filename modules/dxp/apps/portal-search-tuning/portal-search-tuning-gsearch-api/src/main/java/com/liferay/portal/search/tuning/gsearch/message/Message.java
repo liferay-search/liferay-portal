@@ -26,15 +26,18 @@ public class Message implements Serializable {
 	}
 
 	public Message(
-		Severity severity, String sourceModule, String messageKey, Object rootObject, String rootProperty,
-		String rootValue) {
+		Severity severity, String sourceModule, String messageKey,
+		Object rootObject, String rootProperty, String rootValue) {
 
-		this(severity, sourceModule, messageKey, null, null, rootObject, rootProperty, rootValue);
+		this(
+			severity, sourceModule, messageKey, null, null, rootObject,
+			rootProperty, rootValue);
 	}
 
 	public Message(
-		Severity severity, String sourceModule, String messageKey, String exceptionMessage, Object exception,
-		Object rootObject, String rootProperty, String rootValue) {
+		Severity severity, String sourceModule, String messageKey,
+		String exceptionMessage, Object exception, Object rootObject,
+		String rootProperty, String rootValue) {
 
 		_severity = severity;
 		_sourceModule = sourceModule;
@@ -65,6 +68,7 @@ public class Message implements Serializable {
 	public String getRootProperty() {
 		return _rootProperty;
 	}
+
 	public String getRootValue() {
 		return _rootValue;
 	}
@@ -72,7 +76,7 @@ public class Message implements Serializable {
 	public Severity getSeverity() {
 		return _severity;
 	}
-	
+
 	public String getSourceModule() {
 		return _sourceModule;
 	}
@@ -87,4 +91,5 @@ public class Message implements Serializable {
 	private String _rootValue;
 	private Severity _severity;
 	private String _sourceModule;
+
 }

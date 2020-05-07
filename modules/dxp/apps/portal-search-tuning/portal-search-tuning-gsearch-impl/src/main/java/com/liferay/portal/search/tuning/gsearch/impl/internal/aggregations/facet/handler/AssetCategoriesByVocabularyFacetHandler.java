@@ -26,7 +26,7 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.search.aggregation.AggregationResult;
 import com.liferay.portal.search.aggregation.bucket.Bucket;
 import com.liferay.portal.search.aggregation.bucket.TermsAggregationResult;
-import com.liferay.portal.search.tuning.gsearch.configuration.constants.FacetConfigurationKeys;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.FacetConfigurationKeys;
 import com.liferay.portal.search.tuning.gsearch.constants.JSONResponseKeys;
 import com.liferay.portal.search.tuning.gsearch.context.SearchRequestContext;
 import com.liferay.portal.search.tuning.gsearch.message.Message;
@@ -61,7 +61,7 @@ public class AssetCategoriesByVocabularyFacetHandler
 
 		JSONObject handlerParametersJsonObject =
 			configurationJsonObject.getJSONObject(
-				FacetConfigurationKeys.HANDLER_PARAMETERS);
+				FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey());
 
 		if (handlerParametersJsonObject == null) {
 			searchRequestContext.addMessage(
@@ -69,7 +69,8 @@ public class AssetCategoriesByVocabularyFacetHandler
 					Severity.ERROR, "core",
 					"core.error.facet-handler-parameters-missing", null, null,
 					handlerParametersJsonObject,
-					FacetConfigurationKeys.HANDLER_PARAMETERS, null));
+					FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey(),
+					null));
 
 			return Optional.empty();
 		}

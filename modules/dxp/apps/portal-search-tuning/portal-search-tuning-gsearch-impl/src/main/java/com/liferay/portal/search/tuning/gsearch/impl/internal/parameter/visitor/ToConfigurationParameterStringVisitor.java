@@ -22,27 +22,25 @@ import com.liferay.portal.search.tuning.gsearch.parameter.IntegerArrayParameter;
 import com.liferay.portal.search.tuning.gsearch.parameter.IntegerParameter;
 import com.liferay.portal.search.tuning.gsearch.parameter.LongArrayParameter;
 import com.liferay.portal.search.tuning.gsearch.parameter.LongParameter;
-import com.liferay.portal.search.tuning.gsearch.parameter.Parameter;
 import com.liferay.portal.search.tuning.gsearch.parameter.StringArrayParameter;
 import com.liferay.portal.search.tuning.gsearch.parameter.StringParameter;
+import com.liferay.portal.search.tuning.gsearch.parameter.ToStringVisitor;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
 /**
  * @author Petteri Karttunen
  */
-public class ToConfigurationParameterStringVisitor
-	implements ToConfigurationStringVisitor {
+public class ToConfigurationParameterStringVisitor 
+	implements ToStringVisitor {
 
 	public String visit(BooleanParameter parameter) {
 		return String.valueOf(parameter.getValue());
 	}
 
-	@Override
 	public String visit(DateParameter parameter, String outputDateFormat)
 		throws Exception {
 
@@ -51,12 +49,10 @@ public class ToConfigurationParameterStringVisitor
 		return dateFormat.format(parameter.getValue());
 	}
 
-	@Override
 	public String visit(DoubleParameter parameter) throws Exception {
 		return String.valueOf(parameter.getValue());
 	}
 
-	@Override
 	public String visit(FloatParameter parameter) {
 		return String.valueOf(parameter.getValue());
 	}
@@ -78,8 +74,8 @@ public class ToConfigurationParameterStringVisitor
 	}
 
 	@Override
-	public String visit(Parameter parameter) {
-		throw new UnsupportedOperationException();
+	public String visit(StringParameter parameter) throws Exception {
+		return parameter.getValue();
 	}
 
 	public String visit(StringArrayParameter parameter) {
@@ -90,9 +86,4 @@ public class ToConfigurationParameterStringVisitor
 			Collectors.joining(",", "[", "]")
 		);
 	}
-
-	public String visit(StringParameter parameter) throws Exception {
-		return parameter.getValue();
-	}
-
 }

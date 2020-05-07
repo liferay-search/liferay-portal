@@ -24,8 +24,7 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.aggregation.AggregationResult;
 import com.liferay.portal.search.aggregation.bucket.Bucket;
 import com.liferay.portal.search.aggregation.bucket.TermsAggregationResult;
-import com.liferay.portal.search.tuning.gsearch.configuration.constants.FacetConfigurationKeys;
-import com.liferay.portal.search.tuning.gsearch.configuration.constants.SearchConfigurationKeys;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.FacetConfigurationKeys;
 import com.liferay.portal.search.tuning.gsearch.constants.JSONResponseKeys;
 import com.liferay.portal.search.tuning.gsearch.context.SearchRequestContext;
 import com.liferay.portal.search.tuning.gsearch.message.Message;
@@ -72,13 +71,13 @@ public class FileExtensionFacetHandler
 
 		JSONObject handlerParametersJsonObject =
 			configurationJsonObject.getJSONObject(
-				FacetConfigurationKeys.HANDLER_PARAMETERS);
+				FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey());
 
 		String parameterName = configurationJsonObject.getString(
-			SearchConfigurationKeys.PARAMETER_NAME);
+			FacetConfigurationKeys.PARAMETER_NAME.getJsonKey());
 
 		boolean multiValue = configurationJsonObject.getBoolean(
-			FacetConfigurationKeys.MULTI_VALUE, true);
+			FacetConfigurationKeys.MULTI_VALUE.getJsonKey(), true);
 
 		String[] requestValues;
 
@@ -94,7 +93,7 @@ public class FileExtensionFacetHandler
 
 		JSONArray valueAggregationsJsonArray =
 			handlerParametersJsonObject.getJSONArray(
-				FacetConfigurationKeys.VALUE_AGGREGATIONS);
+				FacetConfigurationKeys.VALUE_AGGREGATIONS.getJsonKey());
 
 		List<String> values = new ArrayList<>();
 
@@ -107,11 +106,13 @@ public class FileExtensionFacetHandler
 						valueAggregationsJsonArray.getJSONObject(i);
 
 					if (valueAggregationJson.getString(
-							FacetConfigurationKeys.VALUE_AGGREGATION_KEY).
-								equals(requestValue)) {
+							FacetConfigurationKeys.VALUE_AGGREGATION_KEY.
+								getJsonKey()).equals(
+									requestValue)) {
 
 						translatedValueArray = valueAggregationJson.getString(
-							FacetConfigurationKeys.VALUE_AGGREGATION_VALUES
+							FacetConfigurationKeys.VALUE_AGGREGATION_VALUES.
+								getJsonKey()
 						).split(
 							","
 						);
@@ -154,10 +155,10 @@ public class FileExtensionFacetHandler
 		try {
 			JSONObject handlerParametersJsonObject =
 				configurationJsonObject.getJSONObject(
-					FacetConfigurationKeys.HANDLER_PARAMETERS);
+					FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey());
 
 			JSONArray aggregations = handlerParametersJsonObject.getJSONArray(
-				FacetConfigurationKeys.VALUE_AGGREGATIONS);
+				FacetConfigurationKeys.VALUE_AGGREGATIONS.getJsonKey());
 
 			Map<String, Integer> termsMap = new HashMap<>();
 
@@ -172,9 +173,11 @@ public class FileExtensionFacetHandler
 					JSONObject aggregation = aggregations.getJSONObject(i);
 
 					String key = aggregation.getString(
-						FacetConfigurationKeys.VALUE_AGGREGATION_KEY);
+						FacetConfigurationKeys.VALUE_AGGREGATION_KEY.
+							getJsonKey());
 					String[] values = aggregation.getString(
-						FacetConfigurationKeys.VALUE_AGGREGATION_VALUES
+						FacetConfigurationKeys.VALUE_AGGREGATION_VALUES.
+							getJsonKey()
 					).split(
 						","
 					);
@@ -256,7 +259,7 @@ public class FileExtensionFacetHandler
 
 		JSONObject handlerParametersJsonObject =
 			configurationJsonObject.getJSONObject(
-				FacetConfigurationKeys.HANDLER_PARAMETERS);
+				FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey());
 
 		if (Validator.isNull(handlerParametersJsonObject)) {
 			searchParameterData.addMessage(
@@ -264,21 +267,23 @@ public class FileExtensionFacetHandler
 					Severity.ERROR, "core",
 					"core.error.undefined-facet-handler-parameters", null, null,
 					configurationJsonObject,
-					FacetConfigurationKeys.HANDLER_PARAMETERS, null));
+					FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey(),
+					null));
 			valid = false;
 		}
 
 		if ((handlerParametersJsonObject != null) &
 			Validator.isNull(
 				handlerParametersJsonObject.get(
-					FacetConfigurationKeys.VALUE_AGGREGATIONS))) {
+					FacetConfigurationKeys.VALUE_AGGREGATIONS.getJsonKey()))) {
 
 			searchParameterData.addMessage(
 				new Message(
 					Severity.ERROR, "core",
 					"core.error.undefined-facet-handler-aggregations", null,
 					null, configurationJsonObject,
-					FacetConfigurationKeys.VALUE_AGGREGATIONS, null));
+					FacetConfigurationKeys.VALUE_AGGREGATIONS.getJsonKey(),
+					null));
 
 			valid = false;
 		}

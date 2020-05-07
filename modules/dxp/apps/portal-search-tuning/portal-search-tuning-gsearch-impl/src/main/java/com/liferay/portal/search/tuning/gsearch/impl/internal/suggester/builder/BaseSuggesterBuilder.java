@@ -18,7 +18,7 @@ import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.search.suggest.Suggester;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.search.tuning.gsearch.configuration.constants.suggester.SuggesterConfigurationKeys;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.suggester.CommonSuggesterConfigurationKeys;
 import com.liferay.portal.search.tuning.gsearch.context.SearchRequestContext;
 import com.liferay.portal.search.tuning.gsearch.message.Message;
 import com.liferay.portal.search.tuning.gsearch.message.Severity;
@@ -54,26 +54,26 @@ public abstract class BaseSuggesterBuilder implements SuggesterBuilder {
 
 		if (Validator.isBlank(
 				configurationJsonObject.getString(
-					SuggesterConfigurationKeys.FIELD))) {
+					CommonSuggesterConfigurationKeys.FIELD.getJsonKey()))) {
 
 			searchRequestContext.addMessage(
 				new Message(
 					Severity.ERROR, "core", "core.error.suggester-field-empty",
 					null, null, configurationJsonObject,
-					SuggesterConfigurationKeys.FIELD, null));
+					CommonSuggesterConfigurationKeys.FIELD.getJsonKey(), null));
 			isValid = false;
 		}
 
 		if (Validator.isBlank(
 				configurationJsonObject.getString(
-					SuggesterConfigurationKeys.TEXT,
+					CommonSuggesterConfigurationKeys.TEXT.getJsonKey(),
 					searchRequestContext.getKeywords()))) {
 
 			searchRequestContext.addMessage(
 				new Message(
 					Severity.ERROR, "core", "core.error.suggester-text-empty",
 					null, null, configurationJsonObject,
-					SuggesterConfigurationKeys.TEXT, null));
+					CommonSuggesterConfigurationKeys.TEXT.getJsonKey(), null));
 			isValid = false;
 		}
 

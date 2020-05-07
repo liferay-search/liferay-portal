@@ -18,10 +18,10 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
-import com.liferay.portal.search.tuning.gsearch.configuration.constants.ParameterConfigurationKeys;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.RequestParameterConfigurationKeys;
+import com.liferay.portal.search.tuning.gsearch.impl.util.GSearchUtil;
 import com.liferay.portal.search.tuning.gsearch.parameter.FloatParameter;
 import com.liferay.portal.search.tuning.gsearch.parameter.SearchParameterData;
-import com.liferay.portal.search.tuning.gsearch.util.GSearchUtil;
 
 import java.util.Optional;
 
@@ -45,7 +45,7 @@ public class FloatParameterContributor implements RequestParameterContributor {
 		JSONObject configurationJsonObject) {
 
 		String parameterName = configurationJsonObject.getString(
-			ParameterConfigurationKeys.PARAMETER_NAME);
+			RequestParameterConfigurationKeys.PARAMETER_NAME.getJsonKey());
 
 		String valueString = ParamUtil.getString(
 			httpServletRequest, parameterName);
@@ -56,7 +56,7 @@ public class FloatParameterContributor implements RequestParameterContributor {
 		if (!valueOptional.isPresent()) {
 			valueOptional = GSearchUtil.stringToFloatOptional(
 				configurationJsonObject.getString(
-					ParameterConfigurationKeys.DEFAULT));
+					RequestParameterConfigurationKeys.DEFAULT.getJsonKey()));
 		}
 
 		if (!valueOptional.isPresent()) {
@@ -67,7 +67,7 @@ public class FloatParameterContributor implements RequestParameterContributor {
 
 		Optional<Float> minValue = GSearchUtil.stringToFloatOptional(
 			configurationJsonObject.getString(
-				ParameterConfigurationKeys.MIN_VALUE));
+				RequestParameterConfigurationKeys.MIN_VALUE.getJsonKey()));
 
 		if (minValue.isPresent() &&
 			(Float.compare(value, minValue.get()) < 0)) {
@@ -81,7 +81,7 @@ public class FloatParameterContributor implements RequestParameterContributor {
 
 		Optional<Integer> maxValue = GSearchUtil.stringToIntegerOptional(
 			configurationJsonObject.getString(
-				ParameterConfigurationKeys.MAX_VALUE));
+				RequestParameterConfigurationKeys.MAX_VALUE.getJsonKey()));
 
 		if (maxValue.isPresent() &&
 			(Float.compare(value, maxValue.get()) > 0)) {
@@ -94,7 +94,7 @@ public class FloatParameterContributor implements RequestParameterContributor {
 		}
 
 		String parameterRole = configurationJsonObject.getString(
-			ParameterConfigurationKeys.ROLE);
+			RequestParameterConfigurationKeys.ROLE.getJsonKey());
 
 		searchParameterData.addParameter(
 			new FloatParameter(

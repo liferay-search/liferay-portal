@@ -28,13 +28,13 @@ import com.liferay.portal.search.aggregation.bucket.TermsAggregation;
 import com.liferay.portal.search.script.ScriptBuilder;
 import com.liferay.portal.search.script.ScriptType;
 import com.liferay.portal.search.script.Scripts;
-import com.liferay.portal.search.tuning.gsearch.configuration.constants.AggregationConfigurationKeys;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.AggregationConfigurationKeys;
 import com.liferay.portal.search.tuning.gsearch.context.SearchRequestContext;
 import com.liferay.portal.search.tuning.gsearch.impl.internal.aggregations.AggregationBuilderFactory;
+import com.liferay.portal.search.tuning.gsearch.impl.util.GSearchJsonUtil;
 import com.liferay.portal.search.tuning.gsearch.message.Message;
 import com.liferay.portal.search.tuning.gsearch.message.Severity;
 import com.liferay.portal.search.tuning.gsearch.spi.aggregation.AggregationBuilder;
-import com.liferay.portal.search.tuning.gsearch.util.GSearchJsonUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,23 +72,23 @@ public class TermsAggregationBuilder implements AggregationBuilder {
 		}
 
 		String field = aggregationConfigurationJsonObject.getString(
-			AggregationConfigurationKeys.FIELD);
+			AggregationConfigurationKeys.FIELD.getJsonKey());
 
 		TermsAggregation aggregation = _aggregations.terms(name, field);
 
 		if (Validator.isNotNull(
 				aggregationConfigurationJsonObject.get(
-					AggregationConfigurationKeys.AGGREGATIONS))) {
+					AggregationConfigurationKeys.AGGREGATIONS.getJsonKey()))) {
 
 			_processChildAggregations(
 				searchRequestContext, aggregation,
 				aggregationConfigurationJsonObject.getJSONArray(
-					AggregationConfigurationKeys.AGGREGATIONS));
+					AggregationConfigurationKeys.AGGREGATIONS.getJsonKey()));
 		}
 
 		if (Validator.isNotNull(
 				aggregationConfigurationJsonObject.get(
-					AggregationConfigurationKeys.COLLECT_MODE))) {
+					AggregationConfigurationKeys.COLLECT_MODE.getJsonKey()))) {
 
 			_setCollectMode(
 				searchRequestContext, aggregation,
@@ -97,11 +97,12 @@ public class TermsAggregationBuilder implements AggregationBuilder {
 
 		if (Validator.isNotNull(
 				aggregationConfigurationJsonObject.get(
-					AggregationConfigurationKeys.EXECUTION_HINT))) {
+					AggregationConfigurationKeys.EXECUTION_HINT.
+						getJsonKey()))) {
 
 			aggregation.setExecutionHint(
 				aggregationConfigurationJsonObject.getString(
-					AggregationConfigurationKeys.EXECUTION_HINT));
+					AggregationConfigurationKeys.EXECUTION_HINT.getJsonKey()));
 		}
 
 		_setIncludeExcludeClause(
@@ -109,25 +110,25 @@ public class TermsAggregationBuilder implements AggregationBuilder {
 
 		if (Validator.isNotNull(
 				aggregationConfigurationJsonObject.get(
-					AggregationConfigurationKeys.MIN_DOC_COUNT))) {
+					AggregationConfigurationKeys.MIN_DOC_COUNT.getJsonKey()))) {
 
 			aggregation.setMinDocCount(
 				aggregationConfigurationJsonObject.getInt(
-					AggregationConfigurationKeys.MIN_DOC_COUNT));
+					AggregationConfigurationKeys.MIN_DOC_COUNT.getJsonKey()));
 		}
 
 		if (Validator.isNotNull(
 				aggregationConfigurationJsonObject.get(
-					AggregationConfigurationKeys.MISSING))) {
+					AggregationConfigurationKeys.MISSING.getJsonKey()))) {
 
 			aggregation.setMissing(
 				aggregationConfigurationJsonObject.getString(
-					AggregationConfigurationKeys.MISSING));
+					AggregationConfigurationKeys.MISSING.getJsonKey()));
 		}
 
 		if (Validator.isNotNull(
 				aggregationConfigurationJsonObject.get(
-					AggregationConfigurationKeys.ORDER))) {
+					AggregationConfigurationKeys.ORDER.getJsonKey()))) {
 
 			_setOrders(
 				searchRequestContext, aggregation,
@@ -136,7 +137,7 @@ public class TermsAggregationBuilder implements AggregationBuilder {
 
 		if (Validator.isNotNull(
 				aggregationConfigurationJsonObject.get(
-					AggregationConfigurationKeys.SCRIPT))) {
+					AggregationConfigurationKeys.SCRIPT.getJsonKey()))) {
 
 			_setScript(
 				searchRequestContext, aggregation,
@@ -145,38 +146,42 @@ public class TermsAggregationBuilder implements AggregationBuilder {
 
 		if (Validator.isNotNull(
 				aggregationConfigurationJsonObject.get(
-					AggregationConfigurationKeys.SHARD_MIN_DOC_COUNT))) {
+					AggregationConfigurationKeys.SHARD_MIN_DOC_COUNT.
+						getJsonKey()))) {
 
 			aggregation.setShardMinDocCount(
 				aggregationConfigurationJsonObject.getInt(
-					AggregationConfigurationKeys.SHARD_MIN_DOC_COUNT));
+					AggregationConfigurationKeys.SHARD_MIN_DOC_COUNT.
+						getJsonKey()));
 		}
 
 		if (Validator.isNotNull(
 				aggregationConfigurationJsonObject.get(
-					AggregationConfigurationKeys.SHARD_SIZE))) {
+					AggregationConfigurationKeys.SHARD_SIZE.getJsonKey()))) {
 
 			aggregation.setShardSize(
 				aggregationConfigurationJsonObject.getInt(
-					AggregationConfigurationKeys.SHARD_SIZE));
+					AggregationConfigurationKeys.SHARD_SIZE.getJsonKey()));
 		}
 
 		if (Validator.isNotNull(
 				aggregationConfigurationJsonObject.get(
-					AggregationConfigurationKeys.SHOW_TERM_DOC_COUNT_ERROR))) {
+					AggregationConfigurationKeys.SHOW_TERM_DOC_COUNT_ERROR.
+						getJsonKey()))) {
 
 			aggregation.setShowTermDocCountError(
 				aggregationConfigurationJsonObject.getBoolean(
-					AggregationConfigurationKeys.SHOW_TERM_DOC_COUNT_ERROR));
+					AggregationConfigurationKeys.SHOW_TERM_DOC_COUNT_ERROR.
+						getJsonKey()));
 		}
 
 		if (Validator.isNotNull(
 				aggregationConfigurationJsonObject.get(
-					AggregationConfigurationKeys.SIZE))) {
+					AggregationConfigurationKeys.SIZE.getJsonKey()))) {
 
 			aggregation.setSize(
 				aggregationConfigurationJsonObject.getInt(
-					AggregationConfigurationKeys.SIZE));
+					AggregationConfigurationKeys.SIZE.getJsonKey()));
 		}
 
 		return Optional.of(aggregation);
@@ -197,7 +202,8 @@ public class TermsAggregationBuilder implements AggregationBuilder {
 					Severity.ERROR, "core",
 					"core.error.invalid-aggregation-order-syntax",
 					noSuchElementException.getMessage(), noSuchElementException,
-					orderJsonObject, AggregationConfigurationKeys.ORDER, null));
+					orderJsonObject,
+					AggregationConfigurationKeys.ORDER.getJsonKey(), null));
 
 			if (_log.isWarnEnabled()) {
 				_log.warn(
@@ -227,7 +233,8 @@ public class TermsAggregationBuilder implements AggregationBuilder {
 						Severity.ERROR, "core",
 						"core.error.invalid-aggregation-order-syntax", null,
 						null, orderJsonObject,
-						AggregationConfigurationKeys.ORDER, orderMetric));
+						AggregationConfigurationKeys.ORDER.getJsonKey(),
+						orderMetric));
 
 				return null;
 			}
@@ -253,9 +260,9 @@ public class TermsAggregationBuilder implements AggregationBuilder {
 				childAggregationJsonArray.getJSONObject(i);
 
 			String type = childAggregationJsonObject.getString(
-				AggregationConfigurationKeys.TYPE);
+				AggregationConfigurationKeys.TYPE.getJsonKey());
 			String name = childAggregationJsonObject.getString(
-				AggregationConfigurationKeys.NAME);
+				AggregationConfigurationKeys.NAME.getJsonKey());
 
 			if (!_validate(
 					searchRequestContext, childAggregationJsonObject, name)) {
@@ -282,7 +289,8 @@ public class TermsAggregationBuilder implements AggregationBuilder {
 						"core.error.invalid-aggregation-builder-type",
 						illegalArgumentException.getMessage(),
 						illegalArgumentException, childAggregationJsonObject,
-						AggregationConfigurationKeys.AGGREGATIONS, type));
+						AggregationConfigurationKeys.AGGREGATIONS.getJsonKey(),
+						type));
 
 				if (_log.isWarnEnabled()) {
 					_log.warn(
@@ -298,7 +306,7 @@ public class TermsAggregationBuilder implements AggregationBuilder {
 		JSONObject aggregationConfigurationJsonObject) {
 
 		String collectModeString = aggregationConfigurationJsonObject.getString(
-			AggregationConfigurationKeys.COLLECT_MODE);
+			AggregationConfigurationKeys.COLLECT_MODE.getJsonKey());
 
 		try {
 			CollectionMode collectMode = CollectionMode.valueOf(
@@ -314,7 +322,7 @@ public class TermsAggregationBuilder implements AggregationBuilder {
 					illegalArgumentException.getMessage(),
 					illegalArgumentException,
 					aggregationConfigurationJsonObject,
-					AggregationConfigurationKeys.COLLECT_MODE,
+					AggregationConfigurationKeys.COLLECT_MODE.getJsonKey(),
 					collectModeString));
 
 			if (_log.isWarnEnabled()) {
@@ -330,9 +338,9 @@ public class TermsAggregationBuilder implements AggregationBuilder {
 		JSONObject aggregationConfigurationJsonObject) {
 
 		Object excludeObject = aggregationConfigurationJsonObject.get(
-			AggregationConfigurationKeys.EXCLUDE);
+			AggregationConfigurationKeys.EXCLUDE.getJsonKey());
 		Object includeObject = aggregationConfigurationJsonObject.get(
-			AggregationConfigurationKeys.INCLUDE);
+			AggregationConfigurationKeys.INCLUDE.getJsonKey());
 
 		if (Validator.isNotNull(excludeObject) ||
 			Validator.isNotNull(includeObject)) {
@@ -410,7 +418,7 @@ public class TermsAggregationBuilder implements AggregationBuilder {
 		JSONObject aggregationConfigurationJsonObject) {
 
 		Object orderObject = aggregationConfigurationJsonObject.get(
-			AggregationConfigurationKeys.ORDER);
+			AggregationConfigurationKeys.ORDER.getJsonKey());
 
 		List<Order> orders = new ArrayList<>();
 
@@ -446,15 +454,16 @@ public class TermsAggregationBuilder implements AggregationBuilder {
 
 		JSONObject scriptJsonObject =
 			aggregationConfigurationJsonObject.getJSONObject(
-				AggregationConfigurationKeys.SCRIPT);
+				AggregationConfigurationKeys.SCRIPT.getJsonKey());
 
 		ScriptBuilder scriptBuilder = _scripts.builder();
 
 		if (Validator.isNotNull(
-				scriptJsonObject.get(AggregationConfigurationKeys.ID))) {
+				scriptJsonObject.get(
+					AggregationConfigurationKeys.ID.getJsonKey()))) {
 
 			String id = scriptJsonObject.getString(
-				AggregationConfigurationKeys.ID);
+				AggregationConfigurationKeys.ID.getJsonKey());
 
 			scriptBuilder.idOrCode(
 				id
@@ -464,10 +473,10 @@ public class TermsAggregationBuilder implements AggregationBuilder {
 		}
 		else if (Validator.isNotNull(
 					scriptJsonObject.get(
-						AggregationConfigurationKeys.SOURCE))) {
+						AggregationConfigurationKeys.SOURCE.getJsonKey()))) {
 
 			String source = scriptJsonObject.getString(
-				AggregationConfigurationKeys.SOURCE);
+				AggregationConfigurationKeys.SOURCE.getJsonKey());
 
 			scriptBuilder.idOrCode(
 				source
@@ -480,24 +489,27 @@ public class TermsAggregationBuilder implements AggregationBuilder {
 				new Message(
 					Severity.ERROR, "core",
 					"core.error.aggregation-script-id-or-source-missing", null,
-					null, scriptJsonObject, AggregationConfigurationKeys.SCRIPT,
-					null));
+					null, scriptJsonObject,
+					AggregationConfigurationKeys.SCRIPT.getJsonKey(), null));
 
 			return;
 		}
 
 		if (Validator.isNotNull(
-				scriptJsonObject.get(AggregationConfigurationKeys.LANG))) {
+				scriptJsonObject.get(
+					AggregationConfigurationKeys.LANG.getJsonKey()))) {
 
 			scriptBuilder.language(
-				scriptJsonObject.getString(AggregationConfigurationKeys.LANG));
+				scriptJsonObject.getString(
+					AggregationConfigurationKeys.LANG.getJsonKey()));
 		}
 
 		if (Validator.isNotNull(
-				scriptJsonObject.get(AggregationConfigurationKeys.PARAMS))) {
+				scriptJsonObject.get(
+					AggregationConfigurationKeys.PARAMS.getJsonKey()))) {
 
 			JSONObject paramsJsonObject = scriptJsonObject.getJSONObject(
-				AggregationConfigurationKeys.PARAMS);
+				AggregationConfigurationKeys.PARAMS.getJsonKey());
 
 			paramsJsonObject.keySet(
 			).stream(
@@ -508,10 +520,11 @@ public class TermsAggregationBuilder implements AggregationBuilder {
 		}
 
 		if (Validator.isNotNull(
-				scriptJsonObject.get(AggregationConfigurationKeys.OPTIONS))) {
+				scriptJsonObject.get(
+					AggregationConfigurationKeys.OPTIONS.getJsonKey()))) {
 
 			JSONObject optionsJsonObject = scriptJsonObject.getJSONObject(
-				AggregationConfigurationKeys.OPTIONS);
+				AggregationConfigurationKeys.OPTIONS.getJsonKey());
 
 			optionsJsonObject.keySet(
 			).stream(
@@ -536,7 +549,7 @@ public class TermsAggregationBuilder implements AggregationBuilder {
 					Severity.ERROR, "core",
 					"core.error.aggregation-configuration-not-found", null,
 					null, aggregationConfigurationJsonObject,
-					AggregationConfigurationKeys.CONFIGURATION, null));
+					AggregationConfigurationKeys.BODY.getJsonKey(), null));
 			valid = false;
 		}
 
@@ -544,20 +557,21 @@ public class TermsAggregationBuilder implements AggregationBuilder {
 			searchRequestContext.addMessage(
 				new Message(
 					Severity.ERROR, "core", "core.error.aggregation-name-empty",
-					null, null, null, AggregationConfigurationKeys.NAME, null));
+					null, null, null,
+					AggregationConfigurationKeys.NAME.getJsonKey(), null));
 			valid = false;
 		}
 
 		if (Validator.isNull(
 				aggregationConfigurationJsonObject.getString(
-					AggregationConfigurationKeys.FIELD))) {
+					AggregationConfigurationKeys.FIELD.getJsonKey()))) {
 
 			searchRequestContext.addMessage(
 				new Message(
 					Severity.ERROR, "core",
 					"core.error.aggregation-field-not-defined", null, null,
 					aggregationConfigurationJsonObject,
-					AggregationConfigurationKeys.FIELD, null));
+					AggregationConfigurationKeys.FIELD.getJsonKey(), null));
 			valid = false;
 		}
 

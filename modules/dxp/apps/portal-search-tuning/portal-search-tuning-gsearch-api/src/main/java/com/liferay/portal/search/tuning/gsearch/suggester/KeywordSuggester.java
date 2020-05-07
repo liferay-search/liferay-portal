@@ -22,7 +22,6 @@ import com.liferay.portal.search.tuning.gsearch.context.SearchRequestContext;
  */
 public interface KeywordSuggester {
 
-	public JSONArray getSuggestions(
-		SearchRequestContext searchRequestContext);
+	public JSONArray getSuggestions(SearchRequestContext searchRequestContext);
 
 }

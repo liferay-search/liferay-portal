@@ -19,7 +19,7 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.search.tuning.gsearch.configuration.constants.ClauseConfigurationKeys;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.ClauseConfigurationKeys;
 import com.liferay.portal.search.tuning.gsearch.exception.ParameterEvaluationException;
 import com.liferay.portal.search.tuning.gsearch.message.Message;
 import com.liferay.portal.search.tuning.gsearch.message.Severity;
@@ -55,7 +55,7 @@ public class EqualsVisitor implements ClauseConditionEvaluationVisitor {
 		throws ParameterEvaluationException {
 
 		Boolean value = _conditionJsonObject.getBoolean(
-			ClauseConfigurationKeys.MATCH_VALUE);
+			ClauseConfigurationKeys.MATCH_VALUE.getJsonKey());
 
 		if (_not) {
 			if (value.booleanValue() != parameter.getValue().booleanValue()) {
@@ -77,17 +77,18 @@ public class EqualsVisitor implements ClauseConditionEvaluationVisitor {
 		throws ParameterEvaluationException {
 
 		String dateString = _conditionJsonObject.getString(
-			ClauseConfigurationKeys.MATCH_VALUE);
+			ClauseConfigurationKeys.MATCH_VALUE.getJsonKey());
 
 		String dateFormatString = _conditionJsonObject.getString(
-			ClauseConfigurationKeys.DATE_FORMAT);
+			ClauseConfigurationKeys.DATE_FORMAT.getJsonKey());
 
 		if (Validator.isNull(dateFormatString)) {
 			throw new ParameterEvaluationException(
 				new Message(
 					Severity.ERROR, "core",
 					"core.error.clause-condition-date-format-missing",
-					_conditionJsonObject, ClauseConfigurationKeys.DATE_FORMAT,
+					_conditionJsonObject,
+					ClauseConfigurationKeys.DATE_FORMAT.getJsonKey(),
 					dateFormatString));
 		}
 
@@ -107,7 +108,8 @@ public class EqualsVisitor implements ClauseConditionEvaluationVisitor {
 					Severity.ERROR, "core",
 					"core.error.clause-condition-date-parsing-error",
 					e.getMessage(), e, _conditionJsonObject,
-					ClauseConfigurationKeys.MATCH_VALUE, dateString));
+					ClauseConfigurationKeys.MATCH_VALUE.getJsonKey(),
+					dateString));
 		}
 	}
 
@@ -116,7 +118,7 @@ public class EqualsVisitor implements ClauseConditionEvaluationVisitor {
 		throws ParameterEvaluationException {
 
 		Double value = _conditionJsonObject.getDouble(
-			ClauseConfigurationKeys.MATCH_VALUE);
+			ClauseConfigurationKeys.MATCH_VALUE.getJsonKey());
 
 		if (_not) {
 			return !parameter.equalsTo(value);
@@ -130,7 +132,8 @@ public class EqualsVisitor implements ClauseConditionEvaluationVisitor {
 		throws ParameterEvaluationException {
 
 		Float value = GetterUtil.getFloat(
-			_conditionJsonObject.get(ClauseConfigurationKeys.MATCH_VALUE));
+			_conditionJsonObject.get(
+				ClauseConfigurationKeys.MATCH_VALUE.getJsonKey()));
 
 		if (_not) {
 			return !parameter.equalsTo(value);
@@ -151,7 +154,7 @@ public class EqualsVisitor implements ClauseConditionEvaluationVisitor {
 		throws ParameterEvaluationException {
 
 		Integer value = _conditionJsonObject.getInt(
-			ClauseConfigurationKeys.MATCH_VALUE);
+			ClauseConfigurationKeys.MATCH_VALUE.getJsonKey());
 
 		if (_not) {
 			return !parameter.equalsTo(value);
@@ -172,7 +175,7 @@ public class EqualsVisitor implements ClauseConditionEvaluationVisitor {
 		throws ParameterEvaluationException {
 
 		Long value = _conditionJsonObject.getLong(
-			ClauseConfigurationKeys.MATCH_VALUE);
+			ClauseConfigurationKeys.MATCH_VALUE.getJsonKey());
 
 		if (_not) {
 			return !parameter.equalsTo(value);
@@ -198,7 +201,7 @@ public class EqualsVisitor implements ClauseConditionEvaluationVisitor {
 		throws ParameterEvaluationException {
 
 		String value = _conditionJsonObject.getString(
-			ClauseConfigurationKeys.MATCH_VALUE);
+			ClauseConfigurationKeys.MATCH_VALUE.getJsonKey());
 
 		if (_not) {
 			return !parameter.getValue(

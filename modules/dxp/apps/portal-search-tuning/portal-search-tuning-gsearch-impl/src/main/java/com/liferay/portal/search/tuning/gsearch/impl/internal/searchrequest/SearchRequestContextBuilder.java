@@ -44,7 +44,6 @@ public class SearchRequestContextBuilder {
 			_from, _highlightConfigurationJsonObject, _includeResponseString,
 			_indexNames, _initialKeywords,
 			_keywordIndexingConfigurationJsonObject, _keywords,
-			_keywordSuggesterConfigurationJsonArray,
 			_keywordSuggestionsConfigurationJsonObject, _locale, _rawKeywords,
 			_searchConfigurationId, _searchParameterData, _size,
 			_sortConfigurationJsonArray, _spellCheckerConfigurationJsonArray,
@@ -162,15 +161,6 @@ public class SearchRequestContextBuilder {
 		return this;
 	}
 
-	public SearchRequestContextBuilder keywordSuggesterConfiguration(
-		JSONArray keywordSuggesterConfigurationJsonArray) {
-
-		_keywordSuggesterConfigurationJsonArray =
-			keywordSuggesterConfigurationJsonArray;
-
-		return this;
-	}
-
 	public SearchRequestContextBuilder keywordSuggestionsConfiguration(
 		JSONObject keywordSuggestionsConfigurationJsonObject) {
 
@@ -270,7 +260,6 @@ public class SearchRequestContextBuilder {
 	private String _initialKeywords;
 	private JSONObject _keywordIndexingConfigurationJsonObject;
 	private String _keywords;
-	private JSONArray _keywordSuggesterConfigurationJsonArray;
 	private JSONObject _keywordSuggestionsConfigurationJsonObject;
 	private Locale _locale;
 	private String _rawKeywords;

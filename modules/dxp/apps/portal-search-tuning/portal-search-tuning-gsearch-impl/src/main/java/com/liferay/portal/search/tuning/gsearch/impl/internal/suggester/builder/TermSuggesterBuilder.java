@@ -19,8 +19,8 @@ import com.liferay.portal.kernel.search.suggest.Suggester;
 import com.liferay.portal.kernel.search.suggest.TermSuggester;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.search.tuning.gsearch.configuration.constants.suggester.SuggesterConfigurationKeys;
-import com.liferay.portal.search.tuning.gsearch.configuration.constants.suggester.TermSuggesterConfigurationKeys;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.suggester.CommonSuggesterConfigurationKeys;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.suggester.TermSuggesterConfigurationKeys;
 import com.liferay.portal.search.tuning.gsearch.context.SearchRequestContext;
 import com.liferay.portal.search.tuning.gsearch.spi.suggester.SuggesterBuilder;
 
@@ -49,10 +49,10 @@ public class TermSuggesterBuilder
 		}
 
 		String field = configurationJsonObject.getString(
-			SuggesterConfigurationKeys.FIELD);
+			CommonSuggesterConfigurationKeys.FIELD.getJsonKey());
 
 		String text = configurationJsonObject.getString(
-			SuggesterConfigurationKeys.TEXT,
+			CommonSuggesterConfigurationKeys.TEXT.getJsonKey(),
 			searchRequestContext.getKeywords());
 
 		text = text.toLowerCase();
@@ -62,22 +62,23 @@ public class TermSuggesterBuilder
 
 		if (Validator.isNotNull(
 				configurationJsonObject.get(
-					TermSuggesterConfigurationKeys.ACCURACY))) {
+					TermSuggesterConfigurationKeys.ACCURACY.getJsonKey()))) {
 
 			termSuggester.setAccuracy(
 				GetterUtil.getFloat(
 					configurationJsonObject.get(
-						TermSuggesterConfigurationKeys.ACCURACY)));
+						TermSuggesterConfigurationKeys.ACCURACY.getJsonKey())));
 		}
 
 		if (Validator.isNotNull(
 				configurationJsonObject.get(
-					TermSuggesterConfigurationKeys.ANALYZER))) {
+					CommonSuggesterConfigurationKeys.ANALYZER.getJsonKey()))) {
 
 			termSuggester.setAccuracy(
 				GetterUtil.getFloat(
 					configurationJsonObject.get(
-						TermSuggesterConfigurationKeys.ANALYZER)));
+						CommonSuggesterConfigurationKeys.ANALYZER.
+							getJsonKey())));
 		}
 
 		// TODO: implement the rest.

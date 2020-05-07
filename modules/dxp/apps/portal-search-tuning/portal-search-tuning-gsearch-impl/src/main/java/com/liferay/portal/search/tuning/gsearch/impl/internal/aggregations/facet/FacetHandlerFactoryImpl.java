@@ -60,7 +60,11 @@ public class FacetHandlerFactoryImpl implements FacetHandlerFactory {
 		);
 	}
 
-	protected void addFacetHandler(
+	@Reference(
+		cardinality = ReferenceCardinality.MULTIPLE,
+		policy = ReferencePolicy.DYNAMIC
+	)
+	protected void registerFacetHandler(
 		FacetHandler facetHandler, Map<String, Object> properties) {
 
 		String name = (String)properties.get("name");
@@ -89,10 +93,12 @@ public class FacetHandlerFactoryImpl implements FacetHandlerFactory {
 			if (previousReference.compareTo(serviceComponentReference) < 0) {
 				_facetHandlers.put(name, serviceComponentReference);
 			}
+		} else {
+			_facetHandlers.put(name, serviceComponentReference);
 		}
 	}
 
-	protected void removeFacetHandler(
+	protected void unregisterFacetHandler(
 		FacetHandler facetHandler, Map<String, Object> properties) {
 
 		String name = (String)properties.get("name");
@@ -107,11 +113,6 @@ public class FacetHandlerFactoryImpl implements FacetHandlerFactory {
 	private static final Log _log = LogFactoryUtil.getLog(
 		FacetHandlerFactoryImpl.class);
 
-	@Reference(
-		bind = "addFacetHandler", cardinality = ReferenceCardinality.MULTIPLE,
-		policy = ReferencePolicy.DYNAMIC, service = FacetHandler.class,
-		unbind = "removeFacetHandler"
-	)
 	private volatile Map<String, ServiceComponentReference<FacetHandler>>
 		_facetHandlers = new ConcurrentHashMap<>();
 

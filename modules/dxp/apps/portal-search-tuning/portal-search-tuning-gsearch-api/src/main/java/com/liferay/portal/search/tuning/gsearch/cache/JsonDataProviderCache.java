@@ -19,7 +19,6 @@ import com.liferay.portal.kernel.json.JSONObject;
 /**
  * @author Petteri Karttunen
  */
-
 public interface JsonDataProviderCache {
 
 	public JSONObject get(String cacheKey);
@@ -27,4 +26,5 @@ public interface JsonDataProviderCache {
 	public void put(String cacheKey, JSONObject jsonObject);
 
 	public void put(String cacheKey, JSONObject jsonObject, int timeToLive);
+
 }

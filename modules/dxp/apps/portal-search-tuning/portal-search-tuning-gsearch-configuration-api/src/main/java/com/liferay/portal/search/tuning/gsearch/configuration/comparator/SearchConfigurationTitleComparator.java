@@ -14,24 +14,24 @@
 
 package com.liferay.portal.search.tuning.gsearch.configuration.comparator;
 
+import com.liferay.portal.kernel.util.CollatorUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.tuning.gsearch.configuration.model.SearchConfiguration;
+
+import java.text.Collator;
 
 import java.util.Locale;
 
 /**
  * @author Petteri Karttunen
  */
-public class SearchConfigurationTitleComparator 
+public class SearchConfigurationTitleComparator
 	extends OrderByComparator<SearchConfiguration> {
 
+	public static final String ORDER_BY_ASC = "SearchConfiguration.title ASC";
 
-	public static final String ORDER_BY_ASC =
-		"SearchConfiguration.title ASC";
-
-	public static final String ORDER_BY_DESC =
-		"SearchConfiguration.title DESC";
+	public static final String ORDER_BY_DESC = "SearchConfiguration.title DESC";
 
 	public static final String[] ORDER_BY_FIELDS = {"title"};
 
@@ -41,24 +41,28 @@ public class SearchConfigurationTitleComparator
 
 	public SearchConfigurationTitleComparator(boolean ascending) {
 		_ascending = ascending;
-		
 	}
 
-	public SearchConfigurationTitleComparator(boolean ascending, Locale locale) {
+	public SearchConfigurationTitleComparator(
+		boolean ascending, Locale locale) {
+
 		_ascending = ascending;
 		_locale = locale;
 	}
 
 	@Override
 	public int compare(
-			SearchConfiguration searchConfiguration1, 
-			SearchConfiguration searchConfiguration2) {
-		String title1 = StringUtil.toLowerCase(
-				searchConfiguration1.getTitle(_locale));
-		String title2 = StringUtil.toLowerCase(
-				searchConfiguration2.getTitle(_locale));
+		SearchConfiguration searchConfiguration1,
+		SearchConfiguration searchConfiguration2) {
 
-		int value = title1.compareTo(title2);
+		Collator collator = CollatorUtil.getInstance(_locale);
+
+		String title1 = StringUtil.toLowerCase(
+			searchConfiguration1.getTitle(_locale));
+		String title2 = StringUtil.toLowerCase(
+			searchConfiguration2.getTitle(_locale));
+
+		int value = collator.compare(title1, title2);
 
 		if (_ascending) {
 			return value;
@@ -87,7 +91,6 @@ public class SearchConfigurationTitleComparator
 	}
 
 	private final boolean _ascending;
+	private Locale _locale;
 
-	private Locale _locale = null;
 }
-	
