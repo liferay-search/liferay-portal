@@ -1,5 +1,0 @@
-Bundle-Name: Liferay Portal Search Tuning GSearch Web
-Bundle-SymbolicName: com.liferay.portal.search.tuning.gsearch.web
-Bundle-Version: 1.0.0
-Web-ContextPath: /portal-search-tuning-gsearch-web
--includeresource: package.json
