@@ -56,16 +56,6 @@ public class StringQueryImpl extends BaseQueryImpl implements StringQuery {
 	}	
 
 	@Override
-	public void addField(String field) {
-		_fieldsBoosts.put(field, null);
-	}
-
-	@Override
-	public void addField(String field, Float boost) {
-		_fieldsBoosts.put(field, boost);
-	}
-
-	@Override
 	public Boolean getAllowLeadingWildcard() {
 		return _allowLeadingWildcard;
 	}
@@ -113,16 +103,6 @@ public class StringQueryImpl extends BaseQueryImpl implements StringQuery {
 	}
 
 	@Override
-	public Boolean getEscape() {
-		return _escape;
-	}
-
-	@Override
-	public Map<String, Float> getFieldsBoosts() {
-		return _fieldsBoosts;
-	}
-
-	@Override
 	public Float getFuzziness() {
 		return _fuzziness;
 	}
@@ -142,11 +122,6 @@ public class StringQueryImpl extends BaseQueryImpl implements StringQuery {
 	}
 
 	@Override
-	public String getFuzzyRewrite() {
-		return _fuzzyRewrite;
-	}
-
-	@Override
 	public Boolean getFuzzyTranspositions() {
 		return _fuzzyTranspositions;
 	}
@@ -161,6 +136,7 @@ public class StringQueryImpl extends BaseQueryImpl implements StringQuery {
 		return _maxDeterminedStates;
 	}
 
+	@Override
 	public String getMinimumShouldMatch() {
 		return _minimumShouldMatch;
 	}
@@ -239,11 +215,6 @@ public class StringQueryImpl extends BaseQueryImpl implements StringQuery {
 	}
 
 	@Override
-	public void setEscape(boolean escape) {
-		_escape = escape;
-	}
-
-	@Override
 	public void setFuzziness(Float fuzziness) {
 		_fuzziness = fuzziness;
 	}
@@ -302,11 +273,6 @@ public class StringQueryImpl extends BaseQueryImpl implements StringQuery {
 	public void setTieBreaker(float tieBreaker) {
 		_tieBreaker = tieBreaker;
 	}	
-
-	@Override
-	public void setTieBreaker(float tieBreaker) {
-		_tieBreaker = tieBreaker;
-	}
 
 	@Override
 	public void setTimeZone(String timeZone) {
