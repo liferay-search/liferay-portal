@@ -76,8 +76,6 @@ public interface StringQuery extends Query {
 	
 	public String getMinimumShouldMatch();
 
-	public String getMinimumShouldMatch();
-
 	public Integer getPhraseSlop();
 
 	public String getQuery();
@@ -109,8 +107,6 @@ public interface StringQuery extends Query {
 	
 	public void setEscape(boolean escape);
 
-	public void setEscape(boolean escape);
-
 	public void setFuzziness(Float fuzziness);
 
 	public void setFuzzyMaxExpansions(Integer fuzzyMaxExpansions);
@@ -135,8 +131,6 @@ public interface StringQuery extends Query {
 
 	public void setRewrite(String rewrite);
 	
-	public void setTieBreaker(float tieBreaker);
-
 	public void setTieBreaker(float tieBreaker);
 
 	public void setTimeZone(String timeZone);
