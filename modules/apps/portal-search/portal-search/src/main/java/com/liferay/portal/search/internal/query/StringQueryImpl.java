@@ -21,6 +21,7 @@ import com.liferay.portal.search.query.StringQuery;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Provides support for parsing raw, human readable query syntax. No
@@ -40,11 +41,19 @@ public class StringQueryImpl extends BaseQueryImpl implements StringQuery {
 	public StringQueryImpl(String query) {
 		_query = query;
 	}
-
+	
 	@Override
 	public <T> T accept(QueryVisitor<T> queryVisitor) {
 		return queryVisitor.visit(this);
 	}
+	
+	public void addField(String field) {
+		_fieldsBoosts.put(field, null);
+	}
+
+	public void addField(String field, float boost) {
+		_fieldsBoosts.put(field, boost);
+	}	
 
 	@Override
 	public void addField(String field) {
@@ -90,6 +99,18 @@ public class StringQueryImpl extends BaseQueryImpl implements StringQuery {
 	public Boolean getEnablePositionIncrements() {
 		return _enablePositionIncrements;
 	}
+	
+	public Boolean getEscape() {
+		return _escape;
+	}
+
+	public Set<String> getFields() {
+		return _fieldsBoosts.keySet();
+	}
+
+	public Map<String, Float> getFieldsBoosts() {
+		return _fieldsBoosts;
+	}
 
 	@Override
 	public Boolean getEscape() {
@@ -115,6 +136,10 @@ public class StringQueryImpl extends BaseQueryImpl implements StringQuery {
 	public Integer getFuzzyPrefixLength() {
 		return _fuzzyPrefixLength;
 	}
+	
+	public String getFuzzyRewrite() {
+		return _fuzzyRewrite;
+	}
 
 	@Override
 	public String getFuzzyRewrite() {
@@ -136,12 +161,10 @@ public class StringQueryImpl extends BaseQueryImpl implements StringQuery {
 		return _maxDeterminedStates;
 	}
 
-	@Override
 	public String getMinimumShouldMatch() {
 		return _minimumShouldMatch;
 	}
 
-	@Override
 	public Integer getPhraseSlop() {
 		return _phraseSlop;
 	}
@@ -166,12 +189,10 @@ public class StringQueryImpl extends BaseQueryImpl implements StringQuery {
 		return _rewrite;
 	}
 
-	@Override
 	public Float getTieBreaker() {
 		return _tieBreaker;
 	}
 
-	@Override
 	public String getTimeZone() {
 		return _timeZone;
 	}
@@ -212,6 +233,10 @@ public class StringQueryImpl extends BaseQueryImpl implements StringQuery {
 	public void setEnablePositionIncrements(Boolean enablePositionIncrements) {
 		_enablePositionIncrements = enablePositionIncrements;
 	}
+	
+	public void setEscape(boolean escape) {
+		_escape = escape;
+	}
 
 	@Override
 	public void setEscape(boolean escape) {
@@ -233,12 +258,10 @@ public class StringQueryImpl extends BaseQueryImpl implements StringQuery {
 		_fuzzyPrefixLength = fuzzyPrefixLength;
 	}
 
-	@Override
 	public void setFuzzyRewrite(String fuzzyRewrite) {
 		_fuzzyRewrite = fuzzyRewrite;
 	}
 
-	@Override
 	public void setFuzzyTranspositions(Boolean fuzzyTranspositions) {
 		_fuzzyTranspositions = fuzzyTranspositions;
 	}
@@ -253,12 +276,10 @@ public class StringQueryImpl extends BaseQueryImpl implements StringQuery {
 		_maxDeterminedStates = maxDeterminedStates;
 	}
 
-	@Override
 	public void setMinimumShouldMatch(String minimumShouldMatch) {
 		_minimumShouldMatch = minimumShouldMatch;
 	}
-
-	@Override
+	
 	public void setPhraseSlop(Integer phraseSlop) {
 		_phraseSlop = phraseSlop;
 	}
@@ -277,6 +298,10 @@ public class StringQueryImpl extends BaseQueryImpl implements StringQuery {
 	public void setRewrite(String rewrite) {
 		_rewrite = rewrite;
 	}
+	
+	public void setTieBreaker(float tieBreaker) {
+		_tieBreaker = tieBreaker;
+	}	
 
 	@Override
 	public void setTieBreaker(float tieBreaker) {
@@ -315,7 +340,7 @@ public class StringQueryImpl extends BaseQueryImpl implements StringQuery {
 	private Operator _defaultOperator;
 	private Boolean _enablePositionIncrements;
 	private Boolean _escape;
-	private Map<String, Float> _fieldsBoosts = new HashMap<>();
+	private Map<String, Float> _fieldsBoosts = new HashMap<String, Float>();
 	private Float _fuzziness;
 	private Integer _fuzzyMaxExpansions;
 	private Integer _fuzzyPrefixLength;
@@ -331,5 +356,4 @@ public class StringQueryImpl extends BaseQueryImpl implements StringQuery {
 	private String _rewrite;
 	private Float _tieBreaker;
 	private String _timeZone;
-
 }

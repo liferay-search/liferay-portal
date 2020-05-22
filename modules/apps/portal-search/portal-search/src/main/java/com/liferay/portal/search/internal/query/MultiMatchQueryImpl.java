@@ -32,25 +32,22 @@ public class MultiMatchQueryImpl
 
 	public MultiMatchQueryImpl(Object value, Map<String, Float> fieldsBoosts) {
 		_value = value;
-		_fieldsBoosts = fieldsBoosts;
+
+		_fieldsBoosts = new HashMap<String, Float>(fieldsBoosts);
 	}
 
 	public MultiMatchQueryImpl(Object value, Set<String> fields) {
 		_value = value;
 
-		for (String field : fields) {
-			_fieldsBoosts.put(field, null);
-		}
+		_fieldsBoosts.keySet().addAll(fields);
 	}
 
 	public MultiMatchQueryImpl(Object value, String... fields) {
 		_value = value;
 
-		for (String field : fields) {
-			_fieldsBoosts.put(field, null);
-		}
+		Collections.addAll(_fieldsBoosts.keySet(), fields);
 	}
-
+	
 	@Override
 	public <T> T accept(QueryVisitor<T> queryVisitor) {
 		return queryVisitor.visit(this);
@@ -236,7 +233,7 @@ public class MultiMatchQueryImpl
 
 		sb.append(", cutOffFrequency=");
 		sb.append(_cutOffFrequency);
-		sb.append(", _fieldsBoosts=");
+		sb.append(", fieldsBoosts=");
 		sb.append(_fieldsBoosts);
 		sb.append(", fuzziness=");
 		sb.append(_fuzziness);
@@ -267,7 +264,7 @@ public class MultiMatchQueryImpl
 
 	private String _analyzer;
 	private Float _cutOffFrequency;
-	private Map<String, Float> _fieldsBoosts = new HashMap<>();
+	private Map<String, Float> _fieldsBoosts = new HashMap<String, Float>();
 	private String _fuzziness;
 	private MatchQuery.RewriteMethod _fuzzyRewriteMethod;
 	private Boolean _lenient;

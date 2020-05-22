@@ -258,6 +258,11 @@ public class QueriesImpl implements Queries {
 	}
 
 	@Override
+	public MultiMatchQuery multiMatch(Object value, Map<String, Float> fieldsBoosts) {
+		return new MultiMatchQueryImpl(value, fieldsBoosts);
+	}
+	
+	@Override
 	public NestedQuery nested(String path, Query query) {
 		return new NestedQueryImpl(path, query);
 	}
