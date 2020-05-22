@@ -1,6 +1,7 @@
 Bundle-Name: Liferay Portal GSearch API
 Bundle-SymbolicName: com.liferay.portal.search.tuning.gsearch.api
 Bundle-Version: 1.0.0
+Export-Package: \
 	com.liferay.portal.search.tuning.gsearch.api,\
 	com.liferay.portal.search.tuning.gsearch.api.aggregation,\
 	com.liferay.portal.search.tuning.gsearch.api.configuration,\
@@ -16,7 +17,6 @@ Bundle-Version: 1.0.0
 	com.liferay.portal.search.tuning.gsearch.api.query.filter,\
 	com.liferay.portal.search.tuning.gsearch.api.query.postprocessor,\
 	com.liferay.portal.search.tuning.gsearch.api.results,\
-	com.liferay.portal.search.tuning.gsearch.api.results.facet.processor,\
 	com.liferay.portal.search.tuning.gsearch.api.results.item,\
 	com.liferay.portal.search.tuning.gsearch.api.results.item.processor,\
 	com.liferay.portal.search.tuning.gsearch.api.suggest
