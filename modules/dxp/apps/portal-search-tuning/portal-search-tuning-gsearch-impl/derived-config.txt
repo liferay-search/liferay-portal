@@ -1,0 +1,34 @@
+com/liferay/portal/search/tuning/gsearch/impl/facet/FilterDDMStructuresByKeyFacetProcessor.getName()Ljava/lang/String;:SAFE
+com/liferay/portal/search/tuning/gsearch/impl/query/postprocessor/QueryIndexerProcessorImpl.filterKeywords(Ljava/lang/String;)Ljava/lang/String;:0,SAFE
+com/liferay/portal/search/tuning/gsearch/impl/query/context/contributor/UserQueryContextContributor.getName()Ljava/lang/String;:SAFE
+com/liferay/portal/search/tuning/gsearch/impl/query/context/contributor/UserQueryContextContributor._getGender(Lcom/liferay/portal/kernel/model/User;)Ljava/lang/String;:SAFE
+com/liferay/portal/search/tuning/gsearch/impl/facet/DefaultFacetProcessor.getName()Ljava/lang/String;:SAFE
+com/liferay/portal/search/tuning/gsearch/impl/facet/FileEntryTypeFacetProcessor.getName()Ljava/lang/String;:SAFE
+com/liferay/portal/search/tuning/gsearch/impl/suggest/GSearchKeywordSuggesterImpl.lambda$getSuggestionsAsStringArray$0(I)[Ljava/lang/String;:SAFE
+com/liferay/portal/search/tuning/gsearch/impl/suggest/GSearchKeywordSuggesterImpl.createSuggesterName()Ljava/lang/String;:SAFE
+com/liferay/portal/search/tuning/gsearch/impl/suggest/GSearchKeywordSuggesterImpl.createCompletionSuggester(Lcom/liferay/portal/kernel/json/JSONObject;Lcom/liferay/portal/search/tuning/gsearch/api/query/context/QueryContext;Ljava/lang/String;)Lcom/liferay/portal/kernel/search/suggest/Suggester;:UNKNOWN (com/liferay/portal/kernel/search/suggest/CompletionSuggester)
+com/liferay/portal/search/tuning/gsearch/impl/suggest/GSearchKeywordSuggesterImpl.createPhraseSuggester(Lcom/liferay/portal/kernel/json/JSONObject;Lcom/liferay/portal/search/tuning/gsearch/api/query/context/QueryContext;Ljava/lang/String;)Lcom/liferay/portal/kernel/search/suggest/Suggester;:UNKNOWN (com/liferay/portal/kernel/search/suggest/PhraseSuggester)
+com/liferay/portal/search/tuning/gsearch/impl/util/GSearchUtil.stripHTML(Ljava/lang/String;I)Ljava/lang/String;:1,SAFE
+com/liferay/portal/search/tuning/gsearch/impl/util/GSearchUtil.encodeKeywords(Ljava/lang/String;)Ljava/lang/String;:0,SAFE
+com/liferay/portal/search/tuning/gsearch/impl/util/GSearchUtil.getRedirect(Lcom/liferay/portal/search/tuning/gsearch/api/query/context/QueryContext;Ljava/lang/String;)Ljava/lang/String;:TAINTED
+com/liferay/portal/search/tuning/gsearch/impl/query/context/contributor/ContextQueryContextContributor._getTimeOfTheDay(Ljava/util/TimeZone;)Ljava/lang/String;:SAFE
+com/liferay/portal/search/tuning/gsearch/impl/query/context/contributor/ContextQueryContextContributor.getName()Ljava/lang/String;:SAFE
+com/liferay/portal/search/tuning/gsearch/impl/facet/FileExtensionFacetProcessor.getName()Ljava/lang/String;:SAFE
+com/liferay/portal/search/tuning/gsearch/impl/results/item/BaseResultItemBuilder.getThumbnail(Lcom/liferay/portal/search/tuning/gsearch/api/query/context/QueryContext;Lcom/liferay/portal/search/document/Document;)Ljava/lang/String;:NULL
+com/liferay/portal/search/tuning/gsearch/impl/results/item/BaseResultItemBuilder.buildLocalizedSnippetFieldName(Ljava/lang/String;Ljava/util/Locale;)Ljava/lang/String;:0,1,SAFE
+com/liferay/portal/search/tuning/gsearch/impl/results/item/BaseResultItemBuilder.buildLocalizedFieldName(Ljava/lang/String;Ljava/util/Locale;)Ljava/lang/String;:0,1,SAFE
+com/liferay/portal/search/tuning/gsearch/impl/results/item/BaseResultItemBuilder.buildNewLocalizedFieldName(Ljava/lang/String;Ljava/util/Locale;)Ljava/lang/String;:0,1,SAFE
+com/liferay/portal/search/tuning/gsearch/impl/results/item/BaseResultItemBuilder.getMetadata(Lcom/liferay/portal/search/tuning/gsearch/api/query/context/QueryContext;Lcom/liferay/portal/search/document/Document;)Ljava/util/Map;:NULL
+com/liferay/portal/search/tuning/gsearch/impl/results/item/DLFileEntryItemBuilder.getSize(Lcom/liferay/portal/search/document/Document;)Ljava/lang/String;:SAFE
+com/liferay/portal/search/tuning/gsearch/impl/results/item/DLFileEntryItemBuilder.translateMimetype(Ljava/lang/String;)Ljava/lang/String;:0,UNKNOWN
+com/liferay/portal/search/tuning/gsearch/impl/results/item/DLFileEntryItemBuilder.getThumbnail(Lcom/liferay/portal/search/tuning/gsearch/api/query/context/QueryContext;Lcom/liferay/portal/search/document/Document;)Ljava/lang/String;:UNKNOWN
+com/liferay/portal/search/tuning/gsearch/impl/results/item/DLFileEntryItemBuilder.getTikaRawMetadataField(Lcom/liferay/portal/search/tuning/gsearch/api/query/context/QueryContext;Ljava/lang/String;)Ljava/lang/String;:0,SAFE
+com/liferay/portal/search/tuning/gsearch/impl/results/item/DLFileEntryItemBuilder.getMetadata(Lcom/liferay/portal/search/tuning/gsearch/api/query/context/QueryContext;Lcom/liferay/portal/search/document/Document;)Ljava/util/Map;:UNKNOWN
+com/liferay/portal/search/tuning/gsearch/impl/facet/FilterCategoriesByVocabularyFacetProcessor.getName()Ljava/lang/String;:SAFE
+com/liferay/portal/search/tuning/gsearch/impl/results/item/BlogsEntryItemBuilder.getThumbnail(Lcom/liferay/portal/search/tuning/gsearch/api/query/context/QueryContext;Lcom/liferay/portal/search/document/Document;)Ljava/lang/String;:UNKNOWN
+com/liferay/portal/search/tuning/gsearch/impl/facet/DDMStructureFacetProcessor.getName()Ljava/lang/String;:SAFE
+com/liferay/portal/search/tuning/gsearch/impl/results/item/NonLiferaySampleItemBuilder.getThumbnail(Lcom/liferay/portal/search/tuning/gsearch/api/query/context/QueryContext;Lcom/liferay/portal/search/document/Document;)Ljava/lang/String;:SAFE
+com/liferay/portal/search/tuning/gsearch/impl/results/item/MBMessageItemBuilder.getDLFileEntryCommentLink()Ljava/lang/String;:NULL
+com/liferay/portal/search/tuning/gsearch/impl/configuration/CoreConfigurationHelperImpl.parseConfigurationVariables(Lcom/liferay/portal/search/tuning/gsearch/api/query/context/QueryContext;Lcom/liferay/portal/kernel/json/JSONObject;)Lcom/liferay/portal/kernel/json/JSONObject;:0,UNKNOWN
+com/liferay/portal/search/tuning/gsearch/impl/configuration/CoreConfigurationHelperImpl.getHightlightFields(Ljava/util/Locale;)[Ljava/lang/String;:0,SAFE
+com/liferay/portal/search/tuning/gsearch/impl/query/context/contributor/WOIQueryContextContributor.getName()Ljava/lang/String;:SAFE
