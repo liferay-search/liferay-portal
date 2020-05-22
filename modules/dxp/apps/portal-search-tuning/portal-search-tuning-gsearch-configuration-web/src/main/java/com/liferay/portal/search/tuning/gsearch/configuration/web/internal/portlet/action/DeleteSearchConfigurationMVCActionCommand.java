@@ -1,22 +1,6 @@
-/**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * The contents of this file are subject to the terms of the Liferay Enterprise
- * Subscription License ("License"). You may not use this file except in
- * compliance with the License. You can obtain a copy of the License by
- * contacting Liferay, Inc. See the License for the specific language governing
- * permissions and limitations under the License, including but not limited to
- * distribution rights of the Software.
- *
- *
- *
- */
-
 package com.liferay.portal.search.tuning.gsearch.configuration.web.internal.portlet.action;
 
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.servlet.SessionErrors;
@@ -32,9 +16,9 @@ import javax.portlet.ActionResponse;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-/**
- * @author Petteri Karttunen
- */
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Component(
 	immediate = true,
 	property = {
@@ -43,37 +27,40 @@ import org.osgi.service.component.annotations.Reference;
 	},
 	service = MVCActionCommand.class
 )
-public class DeleteSearchConfigurationMVCActionCommand
-	extends BaseMVCActionCommand {
+public class DeleteSearchConfigurationMVCActionCommand extends BaseMVCActionCommand {
+
+	protected void doDelete(
+		ActionRequest actionRequest, ActionResponse actionResponse) {
+
+		long[] deleteConfigurationIds = _getConfigurationIds(actionRequest);
+
+		try {
+			for (long searchConfigurationId : deleteConfigurationIds) {
+				_searchConfigurationService.deleteConfiguration(
+					searchConfigurationId);
+			}
+		}
+		catch (PortalException pe) {
+			SessionErrors.add(
+				actionRequest, SearchConfigurationWebKeys.ERROR_DETAILS, pe);
+			_log.error(pe.getMessage(), pe);
+		}
+	}
 
 	@Override
 	protected void doProcessAction(
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
 
-		_delete(actionRequest);
+		doDelete(actionRequest, actionResponse);
 
 		String redirect = ParamUtil.getString(actionRequest, "redirect");
 
 		sendRedirect(actionRequest, actionResponse, redirect);
 	}
 
-	private void _delete(ActionRequest actionRequest) {
-		long[] deleteConfigurationIds = _getConfigurationIds(actionRequest);
-
-		try {
-			for (long searchConfigurationId : deleteConfigurationIds) {
-				_searchConfigurationService.deleteSearchConfiguration(
-					searchConfigurationId);
-			}
-		}
-		catch (PortalException portalException) {
-			SessionErrors.add(
-				actionRequest, SearchConfigurationWebKeys.ERROR_DETAILS,
-				portalException);
-			_log.error(portalException.getMessage(), portalException);
-		}
-	}
+	@Reference
+	protected SearchConfigurationService _searchConfigurationService;
 
 	private long[] _getConfigurationIds(ActionRequest actionRequest) {
 		long[] configurationIds = null;
@@ -92,10 +79,7 @@ public class DeleteSearchConfigurationMVCActionCommand
 		return configurationIds;
 	}
 
-	private static final Log _log = LogFactoryUtil.getLog(
+	private static final Logger _log = LoggerFactory.getLogger(
 		DeleteSearchConfigurationMVCActionCommand.class);
-
-	@Reference
-	private SearchConfigurationService _searchConfigurationService;
 
 }

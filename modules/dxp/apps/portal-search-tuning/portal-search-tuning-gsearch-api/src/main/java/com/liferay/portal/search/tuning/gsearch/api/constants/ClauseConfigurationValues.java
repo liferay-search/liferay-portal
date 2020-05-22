@@ -14,10 +14,10 @@ public interface ClauseConfigurationValues extends ConfigurationValues {
 			"gsearch_field_value_factor";
 
 	public static final String QUERY_TYPE_GSEARCH_QUERY_STRING = 
-			"gsearch_query_string";
+			"query_string";
 
 	public static final String QUERY_TYPE_GSEARCH_MULTIMATCH = 
-			"gsearch_multi_match";
+			"multi_match";
 
 	public static final String QUERY_TYPE_MATCH = 
 			"match";
@@ -27,9 +27,6 @@ public interface ClauseConfigurationValues extends ConfigurationValues {
 
 	public static final String QUERY_TYPE_LTR = 
 			"ltr";
-
-	public static final String QUERY_TYPE_STRING_QUERY = 
-			"string_query";
 
 	public static final String QUERY_TYPE_TERM = 
 			"term";

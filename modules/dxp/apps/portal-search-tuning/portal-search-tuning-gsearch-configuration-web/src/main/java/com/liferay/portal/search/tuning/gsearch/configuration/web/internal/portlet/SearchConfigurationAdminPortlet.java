@@ -15,7 +15,7 @@
 package com.liferay.portal.search.tuning.gsearch.configuration.web.internal.portlet;
 
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
-import com.liferay.portal.search.tuning.gsearch.configuration.web.internal.constants.GSearchConfigurationPortletKeys;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.SearchConfigurationPortletKeys;
 
 import java.io.IOException;
 
@@ -32,25 +32,21 @@ import org.osgi.service.component.annotations.Component;
 @Component(
 	immediate = true,
 	property = {
-		"com.liferay.portlet.css-class-wrapper=portlet-gsearch-configuration",
+		"com.liferay.portlet.add-default-resource=true",			
+		"com.liferay.portlet.css-class-wrapper=portlet-search-configuration",
 		"com.liferay.portlet.display-category=category.hidden",
 		"com.liferay.portlet.header-portlet-css=/css/main.css",
-		"com.liferay.portlet.layout-cacheable=true",
-		"com.liferay.portlet.preferences-owned-by-group=true",
-		"com.liferay.portlet.private-request-attributes=false",
-		"com.liferay.portlet.private-session-attributes=false",
 		"com.liferay.portlet.use-default-template=true",
-		"javax.portlet.display-name=portlet-gsearch-configuration",
 		"javax.portlet.expiration-cache=0",
 		"javax.portlet.init-param.template-path=/META-INF/resources/",
 		"javax.portlet.init-param.view-template=/view.jsp",
-		"javax.portlet.name=" + GSearchConfigurationPortletKeys.CONFIGURATION,
+		"javax.portlet.name=" + SearchConfigurationPortletKeys.SEARCH_CONFIGURATION_ADMIN,
 		"javax.portlet.resource-bundle=content.Language",
 		"javax.portlet.security-role-ref=administrator"
 	},
 	service = Portlet.class
 )
-public class GSearchConfigurationPortlet extends MVCPortlet {
+public class SearchConfigurationAdminPortlet extends MVCPortlet {
 
 	@Override
 	public void render(
@@ -59,7 +55,5 @@ public class GSearchConfigurationPortlet extends MVCPortlet {
 
 		super.render(renderRequest, renderResponse);
 	}
-
-
 
 }

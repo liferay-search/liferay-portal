@@ -1,25 +1,10 @@
-/**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * The contents of this file are subject to the terms of the Liferay Enterprise
- * Subscription License ("License"). You may not use this file except in
- * compliance with the License. You can obtain a copy of the License by
- * contacting Liferay, Inc. See the License for the specific language governing
- * permissions and limitations under the License, including but not limited to
- * distribution rights of the Software.
- *
- *
- *
- */
-
 package com.liferay.portal.search.tuning.gsearch.configuration.web.internal.portlet.action;
 
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
+import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCRenderCommand;
-import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.search.tuning.gsearch.configuration.constants.SearchConfigurationPortletKeys;
@@ -27,8 +12,8 @@ import com.liferay.portal.search.tuning.gsearch.configuration.constants.SearchCo
 import com.liferay.portal.search.tuning.gsearch.configuration.model.SearchConfiguration;
 import com.liferay.portal.search.tuning.gsearch.configuration.web.internal.constants.SearchConfigurationMVCCommandNames;
 import com.liferay.portal.search.tuning.gsearch.configuration.web.internal.constants.SearchConfigurationWebKeys;
-import com.liferay.portal.search.tuning.gsearch.configuration.web.internal.display.context.SearchConfigurationEntriesDisplayContext;
-import com.liferay.portal.search.tuning.gsearch.configuration.web.internal.display.context.SearchConfigurationEntriesManagementToolbarDisplayContext;
+import com.liferay.portal.search.tuning.gsearch.configuration.web.internal.display.context.SearchConfigurationsDisplayContext;
+import com.liferay.portal.search.tuning.gsearch.configuration.web.internal.display.context.SearchConfigurationAdminManagementToolbarDisplayContext;
 
 import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
@@ -49,70 +34,65 @@ import org.osgi.service.component.annotations.Reference;
 	},
 	service = MVCRenderCommand.class
 )
-public class ViewSearchConfigurationsMVCRenderCommand
-	implements MVCRenderCommand {
+public class ViewSearchConfigurationsMVCRenderCommand implements MVCRenderCommand {
 
 	@Override
 	public String render(
 			RenderRequest renderRequest, RenderResponse renderResponse)
 		throws PortletException {
 
-		int searchConfigurationType = ParamUtil.getInteger(
-			renderRequest, SearchConfigurationWebKeys.SEARCH_CONFIGURATION_TYPE,
-			SearchConfigurationTypes.CONFIGURATION);
+		int searchConfigurationType = 
+				ParamUtil.getInteger(renderRequest, 
+						SearchConfigurationWebKeys.SEARCH_CONFIGURATION_TYPE, 
+						SearchConfigurationTypes.CONFIGURATION);
 
-		SearchConfigurationEntriesDisplayContext
-			searchConfigurationEntriesDisplayContext =
-				new SearchConfigurationEntriesDisplayContext(
+		SearchConfigurationsDisplayContext searchConfigurationsDisplayContext =
+				new SearchConfigurationsDisplayContext(
 					_portal.getLiferayPortletRequest(renderRequest),
 					_portal.getLiferayPortletResponse(renderResponse),
 					searchConfigurationType);
 
 		renderRequest.setAttribute(
-			SearchConfigurationWebKeys.
-				SEARCH_CONFIGURATION_ENTRIES_DISPLAY_CONTEXT,
-			searchConfigurationEntriesDisplayContext);
+			SearchConfigurationWebKeys.SEARCH_CONFIGURATIONS_DISPLAY_CONTEXT,
+			searchConfigurationsDisplayContext);
 
 		try {
-			SearchConfigurationEntriesManagementToolbarDisplayContext
+			SearchConfigurationAdminManagementToolbarDisplayContext
 				searchConfigurationsManagementToolbarDisplayContext =
-					_getSearchConfigurationsManagementToolbar(
+					getSearchConfigurationsManagementToolbar(
 						renderRequest, renderResponse,
-						searchConfigurationEntriesDisplayContext.
-							getSearchContainer(),
-						searchConfigurationEntriesDisplayContext.
-							getDisplayStyle(),
+						searchConfigurationsDisplayContext.getSearchContainer(),
+						searchConfigurationsDisplayContext.getDisplayStyle(),
 						searchConfigurationType);
 
 			renderRequest.setAttribute(
 				SearchConfigurationWebKeys.
-					SEARCH_CONFIGURATION_ENTRIES_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT,
+					SEARCH_CONFIGURATIONS_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT,
 				searchConfigurationsManagementToolbarDisplayContext);
 		}
-		catch (PortalException portalException) {
-			_log.error(portalException.getMessage(), portalException);
-
-			SessionErrors.add(renderRequest, "errorDetails", portalException);
+		catch (PortalException pe) {
+			throw new RuntimeException(pe);
 		}
 
 		return "/view.jsp";
 	}
 
-	private SearchConfigurationEntriesManagementToolbarDisplayContext
-		_getSearchConfigurationsManagementToolbar(
+	private SearchConfigurationAdminManagementToolbarDisplayContext
+		getSearchConfigurationsManagementToolbar(
 			RenderRequest renderRequest, RenderResponse renderResponse,
 			SearchContainer<SearchConfiguration> searchContainer,
 			String displayStyle, int searchConfigurationType) {
 
-		return new SearchConfigurationEntriesManagementToolbarDisplayContext(
-			_portal.getHttpServletRequest(renderRequest),
-			_portal.getLiferayPortletRequest(renderRequest),
-			_portal.getLiferayPortletResponse(renderResponse), searchContainer,
-			displayStyle, searchConfigurationType);
-	}
+		LiferayPortletRequest liferayPortletRequest =
+			_portal.getLiferayPortletRequest(renderRequest);
 
-	private static final Log _log = LogFactoryUtil.getLog(
-		ViewSearchConfigurationsMVCRenderCommand.class);
+		LiferayPortletResponse liferayPortletResponse =
+			_portal.getLiferayPortletResponse(renderResponse);
+
+		return new SearchConfigurationAdminManagementToolbarDisplayContext(
+			_portal.getHttpServletRequest(renderRequest), liferayPortletRequest,
+			liferayPortletResponse, searchContainer, displayStyle, searchConfigurationType);
+	}
 
 	@Reference
 	private Portal _portal;

@@ -14,26 +14,23 @@
  */
 --%>
 
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet" %>
-<%@ taglib uri="http://liferay.com/tld/clay" prefix="clay" %>
-<%@ taglib uri="http://liferay.com/tld/frontend" prefix="liferay-frontend" %>
-<%@ taglib uri="http://liferay.com/tld/theme" prefix="liferay-theme" %>
-<%@ taglib uri="http://liferay.com/tld/util" prefix="liferay-util" %>
-
-<%@ page import="com.liferay.frontend.taglib.clay.servlet.taglib.util.JSPNavigationItemList" %>
-<%@ page import="com.liferay.portal.kernel.language.LanguageUtil" %>
-<%@ page import="com.liferay.portal.kernel.util.ParamUtil" %>
-
-<liferay-frontend:defineObjects />
-
-<liferay-theme:defineObjects />
-
-<portlet:defineObjects />
-
+<%@ include file="./init.jsp" %>
 
 <%
-String tabs = ParamUtil.getString(request, "tabs", "configuration-sets");
+final String tabs = ParamUtil.getString(request, "tabs", "configurations");
+		 
+PortletURL configurationsURL = renderResponse.createRenderURL();
+configurationsURL.setParameter(SearchConfigurationWebKeys.SEARCH_CONFIGURATION_TYPE, 
+ 					String.valueOf(SearchConfigurationTypes.CONFIGURATION));
+
+PortletURL templatesURL = renderResponse.createRenderURL();
+templatesURL.setParameter(SearchConfigurationWebKeys.SEARCH_CONFIGURATION_TYPE, 
+					String.valueOf(SearchConfigurationTypes.TEMPLATE));
+
+PortletURL snippetsURL = renderResponse.createRenderURL();
+snippetsURL.setParameter(SearchConfigurationWebKeys.SEARCH_CONFIGURATION_TYPE, 
+					String.valueOf(SearchConfigurationTypes.SNIPPET));
+
 %>
 
 <clay:navigation-bar
@@ -43,17 +40,29 @@ String tabs = ParamUtil.getString(request, "tabs", "configuration-sets");
 			{
 				add(
 					navigationItem -> {
-						navigationItem.setActive(tabs.equals("configuration-sets"));
-						navigationItem.setHref(renderResponse.createRenderURL(), "tabs", "configuration-sets");
-						navigationItem.setLabel(LanguageUtil.get(request, "configuration-sets"));
+						navigationItem.setActive(tabs.equals("configurations"));
+						navigationItem.setHref(configurationsURL, "tabs", "configurations");
+						navigationItem.setLabel(LanguageUtil.get(request, "search-configurations"));
+						navigationItem.putData(SearchConfigurationWebKeys.SEARCH_CONFIGURATION_TYPE, 
+								String.valueOf(SearchConfigurationTypes.CONFIGURATION));
+					});
+				add(
+					navigationItem -> {
+						navigationItem.setActive(tabs.equals("templates"));
+						navigationItem.setHref(templatesURL, "tabs", "templates");
+						navigationItem.setLabel(LanguageUtil.get(request, "configuration-templates"));
+					});
+				add(
+					navigationItem -> {
+						navigationItem.setActive(tabs.equals("snippets"));
+						navigationItem.setHref(snippetsURL, "tabs", "snippets");
+						navigationItem.setLabel(LanguageUtil.get(request, "configuration-snippets"));
+						navigationItem.putData(SearchConfigurationWebKeys.SEARCH_CONFIGURATION_TYPE, 
+								String.valueOf(SearchConfigurationTypes.SNIPPET));
 					});
 			}
 		}
 	%>'
 />
 
-<c:choose>
-	<c:when test='<%= tabs.equals("configuration-sets") %>'>
-		<liferay-util:include page="/view_configuration_sets.jsp" servletContext="<%= application %>" />
-	</c:when>
-</c:choose>
+<liferay-util:include page="/search_configurations/view_entries.jsp" servletContext="<%= application %>" />

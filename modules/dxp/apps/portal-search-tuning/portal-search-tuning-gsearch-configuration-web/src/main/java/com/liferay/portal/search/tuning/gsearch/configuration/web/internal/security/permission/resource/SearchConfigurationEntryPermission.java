@@ -30,31 +30,33 @@ import org.osgi.service.component.annotations.Reference;
 public class SearchConfigurationEntryPermission {
 
 	public static boolean contains(
-			PermissionChecker permissionChecker, long entryId,
-			int searchConfigurationType, String actionId)
+			PermissionChecker permissionChecker, long entryId, String actionId)
 		throws PortalException {
 
-		String actionKey =
-			SearchConfigurationActionKeys.
-				getActionKeyForSearchConfigurationType(
-					searchConfigurationType, actionId);
-
 		return _searchConfigurationEntryModelResourcePermission.contains(
-			permissionChecker, entryId, actionKey);
+			permissionChecker, entryId, actionId);
 	}
 
+	public static boolean contains(
+			PermissionChecker permissionChecker, long entryId, int type, String actionId)
+		throws PortalException {
+
+		String typedActionKey = SearchConfigurationActionKeys.getTypedActionKey(type, actionId);
+		
+		return _searchConfigurationEntryModelResourcePermission.contains(
+			permissionChecker, entryId, typedActionKey);
+	}
+	
 	public static boolean contains(
 			PermissionChecker permissionChecker, SearchConfiguration entry,
 			String actionId)
 		throws PortalException {
 
-		String actionKey =
-			SearchConfigurationActionKeys.
-				getActionKeyForSearchConfigurationType(
-					entry.getType(), actionId);
+		String typedActionKey = SearchConfigurationActionKeys.getTypedActionKey(
+				entry.getType(), actionId);
 
 		return _searchConfigurationEntryModelResourcePermission.contains(
-			permissionChecker, entry, actionKey);
+			permissionChecker, entry, typedActionKey);
 	}
 
 	@Reference(

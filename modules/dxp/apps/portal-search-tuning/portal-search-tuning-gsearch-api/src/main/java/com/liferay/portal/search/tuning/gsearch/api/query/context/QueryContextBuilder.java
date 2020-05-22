@@ -2,6 +2,7 @@
 package com.liferay.portal.search.tuning.gsearch.api.query.context;
 
 import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.model.User;
 
 import java.util.Locale;
 import java.util.Map;

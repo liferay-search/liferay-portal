@@ -53,12 +53,14 @@ public class SearchConfigurationModelResourcePermissionRegistrar {
 				SearchConfiguration::getSearchConfigurationId,
 				_searchConfigurationLocalService::getSearchConfiguration,
 				_portletResourcePermission,
-				(modelResourcePermission, consumer) -> consumer.accept(
-					new StagedModelPermissionLogic<>(
-						_stagingPermission,
-						SearchConfigurationPortletKeys.
-							SEARCH_CONFIGURATION_ADMIN,
-						SearchConfiguration::getSearchConfigurationId))),
+				(modelResourcePermission, consumer) -> {
+					consumer.accept(
+						new StagedModelPermissionLogic<>(
+							_stagingPermission,
+							SearchConfigurationPortletKeys.
+								SEARCH_CONFIGURATION_ADMIN,
+							SearchConfiguration::getSearchConfigurationId));
+				}),
 			properties);
 	}
 

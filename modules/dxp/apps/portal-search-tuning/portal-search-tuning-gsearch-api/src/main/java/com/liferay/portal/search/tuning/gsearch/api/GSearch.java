@@ -2,6 +2,7 @@
 package com.liferay.portal.search.tuning.gsearch.api;
 
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.search.query.Query;
 import com.liferay.portal.search.tuning.gsearch.api.query.context.QueryContext;
 
 /**
@@ -21,4 +22,5 @@ public interface GSearch {
 	public JSONObject getSearchResults(QueryContext queryContext)
 		throws Exception;
 
+	public Query getQuery(QueryContext queryContext) throws Exception;
 }

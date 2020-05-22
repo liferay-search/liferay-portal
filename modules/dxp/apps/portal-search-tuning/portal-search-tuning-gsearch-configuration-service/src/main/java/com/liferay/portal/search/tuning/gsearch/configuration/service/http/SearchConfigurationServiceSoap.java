@@ -66,7 +66,7 @@ import java.util.Map;
 public class SearchConfigurationServiceSoap {
 
 	public static com.liferay.portal.search.tuning.gsearch.configuration.model.
-		SearchConfigurationSoap addCompanySearchConfiguration(
+		SearchConfigurationSoap addConfiguration(
 				String[] titleMapLanguageIds, String[] titleMapValues,
 				String[] descriptionMapLanguageIds,
 				String[] descriptionMapValues, String configuration, int type,
@@ -82,39 +82,7 @@ public class SearchConfigurationServiceSoap {
 
 			com.liferay.portal.search.tuning.gsearch.configuration.model.
 				SearchConfiguration returnValue =
-					SearchConfigurationServiceUtil.
-						addCompanySearchConfiguration(
-							titleMap, descriptionMap, configuration, type,
-							serviceContext);
-
-			return com.liferay.portal.search.tuning.gsearch.configuration.model.
-				SearchConfigurationSoap.toSoapModel(returnValue);
-		}
-		catch (Exception exception) {
-			_log.error(exception, exception);
-
-			throw new RemoteException(exception.getMessage());
-		}
-	}
-
-	public static com.liferay.portal.search.tuning.gsearch.configuration.model.
-		SearchConfigurationSoap addGroupSearchConfiguration(
-				String[] titleMapLanguageIds, String[] titleMapValues,
-				String[] descriptionMapLanguageIds,
-				String[] descriptionMapValues, String configuration, int type,
-				com.liferay.portal.kernel.service.ServiceContext serviceContext)
-			throws RemoteException {
-
-		try {
-			Map<Locale, String> titleMap = LocalizationUtil.getLocalizationMap(
-				titleMapLanguageIds, titleMapValues);
-			Map<Locale, String> descriptionMap =
-				LocalizationUtil.getLocalizationMap(
-					descriptionMapLanguageIds, descriptionMapValues);
-
-			com.liferay.portal.search.tuning.gsearch.configuration.model.
-				SearchConfiguration returnValue =
-					SearchConfigurationServiceUtil.addGroupSearchConfiguration(
+					SearchConfigurationServiceUtil.addConfiguration(
 						titleMap, descriptionMap, configuration, type,
 						serviceContext);
 
@@ -129,14 +97,13 @@ public class SearchConfigurationServiceSoap {
 	}
 
 	public static com.liferay.portal.search.tuning.gsearch.configuration.model.
-		SearchConfigurationSoap deleteSearchConfiguration(
-				long searchConfigurationId)
+		SearchConfigurationSoap deleteConfiguration(long searchConfigurationId)
 			throws RemoteException {
 
 		try {
 			com.liferay.portal.search.tuning.gsearch.configuration.model.
 				SearchConfiguration returnValue =
-					SearchConfigurationServiceUtil.deleteSearchConfiguration(
+					SearchConfigurationServiceUtil.deleteConfiguration(
 						searchConfigurationId);
 
 			return com.liferay.portal.search.tuning.gsearch.configuration.model.
@@ -150,149 +117,13 @@ public class SearchConfigurationServiceSoap {
 	}
 
 	public static com.liferay.portal.search.tuning.gsearch.configuration.model.
-		SearchConfigurationSoap[] getGroupSearchConfigurations(
-				long companyId, int type, int start, int end)
-			throws RemoteException {
-
-		try {
-			java.util.List
-				<com.liferay.portal.search.tuning.gsearch.configuration.model.
-					SearchConfiguration> returnValue =
-						SearchConfigurationServiceUtil.
-							getGroupSearchConfigurations(
-								companyId, type, start, end);
-
-			return com.liferay.portal.search.tuning.gsearch.configuration.model.
-				SearchConfigurationSoap.toSoapModels(returnValue);
-		}
-		catch (Exception exception) {
-			_log.error(exception, exception);
-
-			throw new RemoteException(exception.getMessage());
-		}
-	}
-
-	public static com.liferay.portal.search.tuning.gsearch.configuration.model.
-		SearchConfigurationSoap[] getGroupSearchConfigurations(
-				long companyId, int status, int type, int start, int end)
-			throws RemoteException {
-
-		try {
-			java.util.List
-				<com.liferay.portal.search.tuning.gsearch.configuration.model.
-					SearchConfiguration> returnValue =
-						SearchConfigurationServiceUtil.
-							getGroupSearchConfigurations(
-								companyId, status, type, start, end);
-
-			return com.liferay.portal.search.tuning.gsearch.configuration.model.
-				SearchConfigurationSoap.toSoapModels(returnValue);
-		}
-		catch (Exception exception) {
-			_log.error(exception, exception);
-
-			throw new RemoteException(exception.getMessage());
-		}
-	}
-
-	public static com.liferay.portal.search.tuning.gsearch.configuration.model.
-		SearchConfigurationSoap[] getGroupSearchConfigurations(
-				long companyId, int status, int type, int start, int end,
-				com.liferay.portal.kernel.util.OrderByComparator
-					<com.liferay.portal.search.tuning.gsearch.configuration.
-						model.SearchConfiguration> orderByComparator)
-			throws RemoteException {
-
-		try {
-			java.util.List
-				<com.liferay.portal.search.tuning.gsearch.configuration.model.
-					SearchConfiguration> returnValue =
-						SearchConfigurationServiceUtil.
-							getGroupSearchConfigurations(
-								companyId, status, type, start, end,
-								orderByComparator);
-
-			return com.liferay.portal.search.tuning.gsearch.configuration.model.
-				SearchConfigurationSoap.toSoapModels(returnValue);
-		}
-		catch (Exception exception) {
-			_log.error(exception, exception);
-
-			throw new RemoteException(exception.getMessage());
-		}
-	}
-
-	public static com.liferay.portal.search.tuning.gsearch.configuration.model.
-		SearchConfigurationSoap[] getGroupSearchConfigurations(
-				long companyId, int type, int start, int end,
-				com.liferay.portal.kernel.util.OrderByComparator
-					<com.liferay.portal.search.tuning.gsearch.configuration.
-						model.SearchConfiguration> orderByComparator)
-			throws RemoteException {
-
-		try {
-			java.util.List
-				<com.liferay.portal.search.tuning.gsearch.configuration.model.
-					SearchConfiguration> returnValue =
-						SearchConfigurationServiceUtil.
-							getGroupSearchConfigurations(
-								companyId, type, start, end, orderByComparator);
-
-			return com.liferay.portal.search.tuning.gsearch.configuration.model.
-				SearchConfigurationSoap.toSoapModels(returnValue);
-		}
-		catch (Exception exception) {
-			_log.error(exception, exception);
-
-			throw new RemoteException(exception.getMessage());
-		}
-	}
-
-	public static int getGroupSearchConfigurationsCount(
-			long companyId, int type)
-		throws RemoteException {
-
-		try {
-			int returnValue =
-				SearchConfigurationServiceUtil.
-					getGroupSearchConfigurationsCount(companyId, type);
-
-			return returnValue;
-		}
-		catch (Exception exception) {
-			_log.error(exception, exception);
-
-			throw new RemoteException(exception.getMessage());
-		}
-	}
-
-	public static int getGroupSearchConfigurationsCount(
-			long companyId, int status, int type)
-		throws RemoteException {
-
-		try {
-			int returnValue =
-				SearchConfigurationServiceUtil.
-					getGroupSearchConfigurationsCount(companyId, status, type);
-
-			return returnValue;
-		}
-		catch (Exception exception) {
-			_log.error(exception, exception);
-
-			throw new RemoteException(exception.getMessage());
-		}
-	}
-
-	public static com.liferay.portal.search.tuning.gsearch.configuration.model.
-		SearchConfigurationSoap getSearchConfiguration(
-				long searchConfigurationId)
+		SearchConfigurationSoap getConfiguration(long searchConfigurationId)
 			throws RemoteException {
 
 		try {
 			com.liferay.portal.search.tuning.gsearch.configuration.model.
 				SearchConfiguration returnValue =
-					SearchConfigurationServiceUtil.getSearchConfiguration(
+					SearchConfigurationServiceUtil.getConfiguration(
 						searchConfigurationId);
 
 			return com.liferay.portal.search.tuning.gsearch.configuration.model.
@@ -306,7 +137,137 @@ public class SearchConfigurationServiceSoap {
 	}
 
 	public static com.liferay.portal.search.tuning.gsearch.configuration.model.
-		SearchConfigurationSoap updateSearchConfiguration(
+		SearchConfigurationSoap[] getGroupConfigurations(
+				long groupId, int type, int start, int end)
+			throws RemoteException {
+
+		try {
+			java.util.List
+				<com.liferay.portal.search.tuning.gsearch.configuration.model.
+					SearchConfiguration> returnValue =
+						SearchConfigurationServiceUtil.getGroupConfigurations(
+							groupId, type, start, end);
+
+			return com.liferay.portal.search.tuning.gsearch.configuration.model.
+				SearchConfigurationSoap.toSoapModels(returnValue);
+		}
+		catch (Exception exception) {
+			_log.error(exception, exception);
+
+			throw new RemoteException(exception.getMessage());
+		}
+	}
+
+	public static com.liferay.portal.search.tuning.gsearch.configuration.model.
+		SearchConfigurationSoap[] getGroupConfigurations(
+				long groupId, int status, int type, int start, int end)
+			throws RemoteException {
+
+		try {
+			java.util.List
+				<com.liferay.portal.search.tuning.gsearch.configuration.model.
+					SearchConfiguration> returnValue =
+						SearchConfigurationServiceUtil.getGroupConfigurations(
+							groupId, status, type, start, end);
+
+			return com.liferay.portal.search.tuning.gsearch.configuration.model.
+				SearchConfigurationSoap.toSoapModels(returnValue);
+		}
+		catch (Exception exception) {
+			_log.error(exception, exception);
+
+			throw new RemoteException(exception.getMessage());
+		}
+	}
+
+	public static com.liferay.portal.search.tuning.gsearch.configuration.model.
+		SearchConfigurationSoap[] getGroupConfigurations(
+				long groupId, int status, int type, int start, int end,
+				com.liferay.portal.kernel.util.OrderByComparator
+					<com.liferay.portal.search.tuning.gsearch.configuration.
+						model.SearchConfiguration> orderByComparator)
+			throws RemoteException {
+
+		try {
+			java.util.List
+				<com.liferay.portal.search.tuning.gsearch.configuration.model.
+					SearchConfiguration> returnValue =
+						SearchConfigurationServiceUtil.getGroupConfigurations(
+							groupId, status, type, start, end,
+							orderByComparator);
+
+			return com.liferay.portal.search.tuning.gsearch.configuration.model.
+				SearchConfigurationSoap.toSoapModels(returnValue);
+		}
+		catch (Exception exception) {
+			_log.error(exception, exception);
+
+			throw new RemoteException(exception.getMessage());
+		}
+	}
+
+	public static com.liferay.portal.search.tuning.gsearch.configuration.model.
+		SearchConfigurationSoap[] getGroupConfigurations(
+				long groupId, int type, int start, int end,
+				com.liferay.portal.kernel.util.OrderByComparator
+					<com.liferay.portal.search.tuning.gsearch.configuration.
+						model.SearchConfiguration> orderByComparator)
+			throws RemoteException {
+
+		try {
+			java.util.List
+				<com.liferay.portal.search.tuning.gsearch.configuration.model.
+					SearchConfiguration> returnValue =
+						SearchConfigurationServiceUtil.getGroupConfigurations(
+							groupId, type, start, end, orderByComparator);
+
+			return com.liferay.portal.search.tuning.gsearch.configuration.model.
+				SearchConfigurationSoap.toSoapModels(returnValue);
+		}
+		catch (Exception exception) {
+			_log.error(exception, exception);
+
+			throw new RemoteException(exception.getMessage());
+		}
+	}
+
+	public static int getGroupConfigurationsCount(long groupId, int type)
+		throws RemoteException {
+
+		try {
+			int returnValue =
+				SearchConfigurationServiceUtil.getGroupConfigurationsCount(
+					groupId, type);
+
+			return returnValue;
+		}
+		catch (Exception exception) {
+			_log.error(exception, exception);
+
+			throw new RemoteException(exception.getMessage());
+		}
+	}
+
+	public static int getGroupConfigurationsCount(
+			long groupId, int status, int type)
+		throws RemoteException {
+
+		try {
+			int returnValue =
+				SearchConfigurationServiceUtil.getGroupConfigurationsCount(
+					groupId, status, type);
+
+			return returnValue;
+		}
+		catch (Exception exception) {
+			_log.error(exception, exception);
+
+			throw new RemoteException(exception.getMessage());
+		}
+	}
+
+	public static com.liferay.portal.search.tuning.gsearch.configuration.model.
+		SearchConfigurationSoap updateConfiguration(
 				long searchConfigurationId, String[] titleMapLanguageIds,
 				String[] titleMapValues, String[] descriptionMapLanguageIds,
 				String[] descriptionMapValues, String configuration,
@@ -322,7 +283,7 @@ public class SearchConfigurationServiceSoap {
 
 			com.liferay.portal.search.tuning.gsearch.configuration.model.
 				SearchConfiguration returnValue =
-					SearchConfigurationServiceUtil.updateSearchConfiguration(
+					SearchConfigurationServiceUtil.updateConfiguration(
 						searchConfigurationId, titleMap, descriptionMap,
 						configuration, serviceContext);
 

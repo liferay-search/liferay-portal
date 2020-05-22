@@ -137,13 +137,11 @@ public abstract class SearchConfigurationLocalServiceBaseImpl
 	 *
 	 * @param searchConfiguration the search configuration
 	 * @return the search configuration that was removed
-	 * @throws PortalException
 	 */
 	@Indexable(type = IndexableType.DELETE)
 	@Override
 	public SearchConfiguration deleteSearchConfiguration(
-			SearchConfiguration searchConfiguration)
-		throws PortalException {
+		SearchConfiguration searchConfiguration) {
 
 		return searchConfigurationPersistence.remove(searchConfiguration);
 	}
