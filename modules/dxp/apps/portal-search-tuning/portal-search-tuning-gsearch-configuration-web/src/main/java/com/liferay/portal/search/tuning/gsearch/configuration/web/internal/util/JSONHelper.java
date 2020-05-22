@@ -10,33 +10,36 @@ import com.liferay.portal.search.tuning.gsearch.configuration.model.SearchConfig
 
 public class JSONHelper {
 
-	public static String[] getConfigurationSection(SearchConfiguration searchConfiguration, String key) throws JSONException {
+	public static String[] getConfigurationSection(
+			SearchConfiguration searchConfiguration, String key)
+		throws JSONException {
 
 		if (searchConfiguration == null) {
-			return new String[]{StringPool.BLANK};
+			return new String[] {StringPool.BLANK};
 		}
 
 		String configuration = searchConfiguration.getConfiguration();
 
 		if (Validator.isBlank(configuration)) {
-			return new String[]{StringPool.BLANK};
+			return new String[] {StringPool.BLANK};
 		}
 
-		JSONObject configurationJSON = JSONFactoryUtil.createJSONObject(configuration);
+		JSONObject configurationJSON = JSONFactoryUtil.createJSONObject(
+			configuration);
 
 		if (configurationJSON == null) {
-			return new String[]{StringPool.BLANK};
+			return new String[] {StringPool.BLANK};
 		}
 
 		JSONArray section = configurationJSON.getJSONArray(key);
 
-		
 		String[] array = new String[section.length()];
-		
+
 		for (int i = 0; i < section.length(); i++) {
 			array[i] = section.getString(i);
 		}
-		
+
 		return array;
 	}
+
 }

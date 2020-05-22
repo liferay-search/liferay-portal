@@ -17,7 +17,7 @@
 <portlet:renderURL var="editSearchConfigurationURL">
 	<portlet:param name="mvcRenderCommandName" value="<%= SearchConfigurationMVCCommandNames.EDIT_SEARCH_CONFIGURATION %>" />
 	<portlet:param name="redirect" value="<%= currentURL %>" />
-	<portlet:param name="<%=SearchConfigurationWebKeys.SEARCH_CONFIGURATION_ID %>" value="<%= String.valueOf(entry.getSearchConfigurationId()) %>" />
+	<portlet:param name="<%= SearchConfigurationWebKeys.SEARCH_CONFIGURATION_ID %>" value="<%= String.valueOf(entry.getSearchConfigurationId()) %>" />
 </portlet:renderURL>
 
 <%-- List view --%>
@@ -38,7 +38,7 @@
 			%>
 
 			<h5 class="text-default">
-				ID: <%= String.valueOf(entry.getSearchConfigurationId()) %>, 
+				ID: <%= String.valueOf(entry.getSearchConfigurationId()) %>,
 				<liferay-ui:message arguments="<%= new String[] {entry.getUserName(), modifiedDateDescription} %>" key="modified-by-x-x-ago" />
 			</h5>
 
@@ -47,7 +47,7 @@
 					<%= entry.getTitle(locale) %>
 				</aui:a>
 			</h4>
-			
+
 			<p>
 				<aui:a href="<%= editSearchConfigurationURL %>">
 					<%= entry.getDescription(locale) %>
@@ -55,16 +55,9 @@
 			</p>
 
 			<h5 class="text-default">
-				<aui:workflow-status 
-					markupView="lexicon" 					
-					showIcon="<%= true %>"					
-					showLabel="<%= false %>" 					
-					status="<%= entry.getStatus() %>" 				
-				/>
+				<aui:workflow-status markupView="lexicon" showIcon="<%= true %>" showLabel="<%= false %>" status="<%= entry.getStatus() %>" />
 			</h5>
-			
 		</liferay-ui:search-container-column-text>
-
 
 		<liferay-ui:search-container-column-jsp
 			path="/search_configurations/entry_actions.jsp"
@@ -80,7 +73,6 @@
 		%>
 
 		<liferay-ui:search-container-column-text>
-
 			<liferay-frontend:icon-vertical-card
 				actionJsp="/search_configurations/entry_actions.jsp"
 				actionJspServletContext="<%= application %>"
@@ -97,16 +89,10 @@
 				</liferay-frontend:vertical-card-sticker-bottom>
 
 				<liferay-frontend:vertical-card-footer>
-				
 					<h5>Id: <%= String.valueOf(entry.getSearchConfigurationId()) %></h5>
-				
-					<aui:workflow-status 
-						markupView="lexicon" 					
-						showIcon="<%= true %>"					
-						showLabel="<%= false %>" 					
-						status="<%= entry.getStatus() %>" 				
-					/>
-				
+
+					<aui:workflow-status markupView="lexicon" showIcon="<%= true %>" showLabel="<%= false %>" status="<%= entry.getStatus() %>" />
+
 					<div class="truncate-text">
 						<%= HtmlUtil.stripHtml(entry.getDescription(locale)) %>
 					</div>
@@ -114,15 +100,16 @@
 			</liferay-frontend:icon-vertical-card>
 		</liferay-ui:search-container-column-text>
 	</c:when>
-	
+
 	<%-- Table view --%>
-	
+
 	<c:otherwise>
 		<liferay-ui:search-container-column-text
 			href="<%= editSearchConfigurationURL %>"
 			name="id"
 			value="<%= String.valueOf(entry.getSearchConfigurationId()) %>"
 		/>
+
 		<liferay-ui:search-container-column-text
 			href="<%= editSearchConfigurationURL %>"
 			name="title"
@@ -138,10 +125,10 @@
 			name="create-date"
 			property="createDate"
 		/>
-		
+
 		<liferay-ui:search-container-column-status
-			name="status" 		
-		/>		
+			name="status"
+		/>
 
 		<liferay-ui:search-container-column-jsp
 			name="actions"

@@ -27,7 +27,8 @@ import org.slf4j.LoggerFactory;
 	},
 	service = MVCActionCommand.class
 )
-public class DeleteSearchConfigurationMVCActionCommand extends BaseMVCActionCommand {
+public class DeleteSearchConfigurationMVCActionCommand
+	extends BaseMVCActionCommand {
 
 	protected void doDelete(
 		ActionRequest actionRequest, ActionResponse actionResponse) {

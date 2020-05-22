@@ -21,6 +21,7 @@ import javax.portlet.RenderResponse;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +36,8 @@ import org.slf4j.LoggerFactory;
 	},
 	service = MVCRenderCommand.class
 )
-public class EditSearchConfigurationMVCRenderCommand implements MVCRenderCommand {
+public class EditSearchConfigurationMVCRenderCommand
+	implements MVCRenderCommand {
 
 	@Override
 	public String render(
@@ -48,9 +50,10 @@ public class EditSearchConfigurationMVCRenderCommand implements MVCRenderCommand
 
 		SearchConfiguration searchConfiguration = null;
 
-		int searchConfigurationType = ParamUtil.getInteger(renderRequest, 
-				SearchConfigurationWebKeys.SEARCH_CONFIGURATION_TYPE, SearchConfigurationTypes.CONFIGURATION);
-		
+		int searchConfigurationType = ParamUtil.getInteger(
+			renderRequest, SearchConfigurationWebKeys.SEARCH_CONFIGURATION_TYPE,
+			SearchConfigurationTypes.CONFIGURATION);
+
 		if (searchConfigurationId > 0) {
 			try {
 				searchConfiguration =
@@ -66,38 +69,48 @@ public class EditSearchConfigurationMVCRenderCommand implements MVCRenderCommand
 			}
 		}
 
-		renderRequest.setAttribute(SearchConfigurationWebKeys.SEARCH_CONFIGURATION,  searchConfiguration);
+		renderRequest.setAttribute(
+			SearchConfigurationWebKeys.SEARCH_CONFIGURATION,
+			searchConfiguration);
 
 		ThemeDisplay themeDisplay = (ThemeDisplay)renderRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
 		PortletDisplay portletDisplay = themeDisplay.getPortletDisplay();
+
 		portletDisplay.setShowBackIcon(true);
 
 		String redirect = renderRequest.getParameter("redirect");
+
 		portletDisplay.setURLBack(redirect);
 
-		String pageTitleKey = _getPageTitleKey((searchConfiguration != null), searchConfigurationType);
-		renderRequest.setAttribute(SearchConfigurationWebKeys.PAGE_TITLE_KEY,  pageTitleKey);
-				
+		String pageTitleKey = _getPageTitleKey(
+			searchConfiguration != null, searchConfigurationType);
+
+		renderRequest.setAttribute(
+			SearchConfigurationWebKeys.PAGE_TITLE_KEY, pageTitleKey);
+
 		return "/search_configurations/edit_configuration.jsp";
 	}
 
 	private String _getPageTitleKey(boolean edit, int type) {
+		StringBundler sb = new StringBundler(2);
 
-		StringBundler sb = new StringBundler();
-		
 		sb.append(edit ? "edit-" : "add-");
+
 		if (type == SearchConfigurationTypes.CONFIGURATION) {
-			sb.append("search-configuration");	
-		} else if (type == SearchConfigurationTypes.SNIPPET) {
-			sb.append("configuration-snippet");	
-		} else if (type == SearchConfigurationTypes.TEMPLATE) {
-			sb.append("configuration-template");	
+			sb.append("search-configuration");
 		}
+		else if (type == SearchConfigurationTypes.SNIPPET) {
+			sb.append("configuration-snippet");
+		}
+		else if (type == SearchConfigurationTypes.TEMPLATE) {
+			sb.append("configuration-template");
+		}
+
 		return sb.toString();
 	}
-	
+
 	private static final Logger _log = LoggerFactory.getLogger(
 		EditSearchConfigurationMVCRenderCommand.class);
 

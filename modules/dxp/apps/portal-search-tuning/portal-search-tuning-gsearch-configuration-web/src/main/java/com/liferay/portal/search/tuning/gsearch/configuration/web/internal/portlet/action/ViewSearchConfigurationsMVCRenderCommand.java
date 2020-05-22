@@ -12,8 +12,8 @@ import com.liferay.portal.search.tuning.gsearch.configuration.constants.SearchCo
 import com.liferay.portal.search.tuning.gsearch.configuration.model.SearchConfiguration;
 import com.liferay.portal.search.tuning.gsearch.configuration.web.internal.constants.SearchConfigurationMVCCommandNames;
 import com.liferay.portal.search.tuning.gsearch.configuration.web.internal.constants.SearchConfigurationWebKeys;
-import com.liferay.portal.search.tuning.gsearch.configuration.web.internal.display.context.SearchConfigurationsDisplayContext;
 import com.liferay.portal.search.tuning.gsearch.configuration.web.internal.display.context.SearchConfigurationAdminManagementToolbarDisplayContext;
+import com.liferay.portal.search.tuning.gsearch.configuration.web.internal.display.context.SearchConfigurationsDisplayContext;
 
 import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
@@ -34,23 +34,23 @@ import org.osgi.service.component.annotations.Reference;
 	},
 	service = MVCRenderCommand.class
 )
-public class ViewSearchConfigurationsMVCRenderCommand implements MVCRenderCommand {
+public class ViewSearchConfigurationsMVCRenderCommand
+	implements MVCRenderCommand {
 
 	@Override
 	public String render(
 			RenderRequest renderRequest, RenderResponse renderResponse)
 		throws PortletException {
 
-		int searchConfigurationType = 
-				ParamUtil.getInteger(renderRequest, 
-						SearchConfigurationWebKeys.SEARCH_CONFIGURATION_TYPE, 
-						SearchConfigurationTypes.CONFIGURATION);
+		int searchConfigurationType = ParamUtil.getInteger(
+			renderRequest, SearchConfigurationWebKeys.SEARCH_CONFIGURATION_TYPE,
+			SearchConfigurationTypes.CONFIGURATION);
 
 		SearchConfigurationsDisplayContext searchConfigurationsDisplayContext =
-				new SearchConfigurationsDisplayContext(
-					_portal.getLiferayPortletRequest(renderRequest),
-					_portal.getLiferayPortletResponse(renderResponse),
-					searchConfigurationType);
+			new SearchConfigurationsDisplayContext(
+				_portal.getLiferayPortletRequest(renderRequest),
+				_portal.getLiferayPortletResponse(renderResponse),
+				searchConfigurationType);
 
 		renderRequest.setAttribute(
 			SearchConfigurationWebKeys.SEARCH_CONFIGURATIONS_DISPLAY_CONTEXT,
@@ -91,7 +91,8 @@ public class ViewSearchConfigurationsMVCRenderCommand implements MVCRenderComman
 
 		return new SearchConfigurationAdminManagementToolbarDisplayContext(
 			_portal.getHttpServletRequest(renderRequest), liferayPortletRequest,
-			liferayPortletResponse, searchContainer, displayStyle, searchConfigurationType);
+			liferayPortletResponse, searchContainer, displayStyle,
+			searchConfigurationType);
 	}
 
 	@Reference
