@@ -21,7 +21,7 @@ import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.search.engine.SearchEngineInformation;
-import com.liferay.portal.search.tuning.gsearch.configuration.web.internal.constants.GSearchConfigurationPortletKeys;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.SearchConfigurationPortletKeys;
 import com.liferay.portal.search.tuning.web.application.list.constants.SearchTuningPanelCategoryKeys;
 
 import java.util.Objects;
@@ -40,11 +40,11 @@ import org.osgi.service.component.annotations.Reference;
 	},
 	service = PanelApp.class
 )
-public class GSearchConfigurationPanelApp extends BasePanelApp {
+public class SearchConfigurationAdminPanelApp extends BasePanelApp {
 
 	@Override
 	public String getPortletId() {
-		return GSearchConfigurationPortletKeys.CONFIGURATION;
+		return SearchConfigurationPortletKeys.SEARCH_CONFIGURATION_ADMIN;
 	}
 
 	@Override
@@ -60,7 +60,7 @@ public class GSearchConfigurationPanelApp extends BasePanelApp {
 
 	@Override
 	@Reference(
-		target = "(javax.portlet.name=" + GSearchConfigurationPortletKeys.CONFIGURATION + ")",
+		target = "(javax.portlet.name=" + SearchConfigurationPortletKeys.SEARCH_CONFIGURATION_ADMIN + ")",
 		unbind = "-"
 	)
 	public void setPortlet(Portlet portlet) {
