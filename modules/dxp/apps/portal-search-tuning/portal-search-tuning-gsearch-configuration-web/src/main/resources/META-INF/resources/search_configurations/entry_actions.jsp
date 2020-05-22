@@ -32,45 +32,55 @@ int searchConfigurationType = searchConfiguration.getType();
 	message="<%= StringPool.BLANK %>"
 	showWhenSingleIcon="<%= true %>"
 >
-
 	<c:if test="<%= SearchConfigurationEntryPermission.contains(permissionChecker, searchConfigurationId, searchConfigurationType, ActionKeys.UPDATE) %>">
 		<portlet:renderURL var="editSearchConfigurationURL">
 			<portlet:param name="mvcRenderCommandName" value="<%= SearchConfigurationMVCCommandNames.EDIT_SEARCH_CONFIGURATION %>" />
 			<portlet:param name="redirect" value="<%= currentURL %>" />
-			<portlet:param name="<%=SearchConfigurationWebKeys.SEARCH_CONFIGURATION_ID %>" value="<%= String.valueOf(searchConfigurationId) %>" />
+			<portlet:param name="<%= SearchConfigurationWebKeys.SEARCH_CONFIGURATION_ID %>" value="<%= String.valueOf(searchConfigurationId) %>" />
 		</portlet:renderURL>
-	
-		<liferay-ui:icon message="edit"	url="<%= editSearchConfigurationURL %>" />
+
+		<liferay-ui:icon
+			message="edit"
+			url="<%= editSearchConfigurationURL %>"
+		/>
 	</c:if>
-	
+
 	<%-- TODO --%>
 
 	<c:if test="<%= SearchConfigurationPermission.contains(permissionChecker, themeDisplay.getScopeGroupId(), searchConfigurationType, ActionKeys.ADD_ENTRY) %>">
 		<portlet:actionURL name="<%= SearchConfigurationMVCCommandNames.COPY_SEARCH_CONFIGURATION %>" var="copySearchConfigurationUrl">
 			<portlet:param name="redirect" value="<%= currentURL %>" />
-			<portlet:param name="<%=SearchConfigurationWebKeys.SEARCH_CONFIGURATION_ID %>" value="<%= String.valueOf(searchConfigurationId) %>" />
+			<portlet:param name="<%= SearchConfigurationWebKeys.SEARCH_CONFIGURATION_ID %>" value="<%= String.valueOf(searchConfigurationId) %>" />
 		</portlet:actionURL>
 
-		<liferay-ui:icon message="copy" onClick="alert('Patience, my friend.'); return false;" url="<%= copySearchConfigurationUrl %>" />
+		<liferay-ui:icon
+			message="copy"
+			onClick="alert('Patience, my friend.'); return false;"
+			url="<%= copySearchConfigurationUrl %>"
+		/>
 	</c:if>
-	
 
 	<%-- TODO --%>
 
 	<portlet:actionURL name="<%= SearchConfigurationMVCCommandNames.EXPORT_SEARCH_CONFIGURATION %>" var="exportSearchConfigurationUrl">
 		<portlet:param name="redirect" value="<%= currentURL %>" />
-		<portlet:param name="<%=SearchConfigurationWebKeys.SEARCH_CONFIGURATION_ID %>" value="<%= String.valueOf(searchConfigurationId) %>" />
+		<portlet:param name="<%= SearchConfigurationWebKeys.SEARCH_CONFIGURATION_ID %>" value="<%= String.valueOf(searchConfigurationId) %>" />
 	</portlet:actionURL>
 
-	<liferay-ui:icon message="export" onClick="alert('Patience, my friend.'); return false;" url="<%= exportSearchConfigurationUrl %>" />
+	<liferay-ui:icon
+		message="export"
+		onClick="alert('Patience, my friend.'); return false;"
+		url="<%= exportSearchConfigurationUrl %>"
+	/>
 
 	<c:if test="<%= SearchConfigurationEntryPermission.contains(permissionChecker, searchConfigurationId, searchConfigurationType, ActionKeys.DELETE) %>">
-
 		<portlet:actionURL name="<%= SearchConfigurationMVCCommandNames.DELETE_SEARCH_CONFIGURATIONS %>" var="deleteSearchConfigurationURL">
 			<portlet:param name="redirect" value="<%= currentURL %>" />
-			<portlet:param name="<%=SearchConfigurationWebKeys.SEARCH_CONFIGURATION_ID %>" value="<%= String.valueOf(searchConfigurationId) %>" />
+			<portlet:param name="<%= SearchConfigurationWebKeys.SEARCH_CONFIGURATION_ID %>" value="<%= String.valueOf(searchConfigurationId) %>" />
 		</portlet:actionURL>
-	
-		<liferay-ui:icon-delete url="<%= deleteSearchConfigurationURL %>" />
+
+		<liferay-ui:icon-delete
+			url="<%= deleteSearchConfigurationURL %>"
+		/>
 	</c:if>
 </liferay-ui:icon-menu>

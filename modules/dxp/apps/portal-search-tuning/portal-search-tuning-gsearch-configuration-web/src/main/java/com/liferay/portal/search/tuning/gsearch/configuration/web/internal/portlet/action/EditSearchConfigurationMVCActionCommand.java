@@ -40,7 +40,8 @@ import org.osgi.service.component.annotations.Reference;
 	},
 	service = MVCActionCommand.class
 )
-public class EditSearchConfigurationMVCActionCommand extends BaseMVCActionCommand {
+public class EditSearchConfigurationMVCActionCommand
+	extends BaseMVCActionCommand {
 
 	@Override
 	protected void doProcessAction(
@@ -48,12 +49,13 @@ public class EditSearchConfigurationMVCActionCommand extends BaseMVCActionComman
 		throws Exception {
 
 		ServiceContext serviceContext = ServiceContextFactory.getInstance(
-				SearchConfiguration.class.getName(), actionRequest);
+			SearchConfiguration.class.getName(), actionRequest);
 
 		String cmd = ParamUtil.getString(actionRequest, Constants.CMD);
-		
-		int type = ParamUtil.getInteger(actionRequest, 
-				SearchConfigurationWebKeys.SEARCH_CONFIGURATION_TYPE);
+
+		int type = ParamUtil.getInteger(
+			actionRequest,
+			SearchConfigurationWebKeys.SEARCH_CONFIGURATION_TYPE);
 
 		long searchConfigurationId = ParamUtil.getLong(
 			actionRequest, SearchConfigurationWebKeys.SEARCH_CONFIGURATION_ID);
@@ -64,7 +66,7 @@ public class EditSearchConfigurationMVCActionCommand extends BaseMVCActionComman
 		Map<Locale, String> descriptionMap =
 			LocalizationUtil.getLocalizationMap(
 				actionRequest, SearchConfigurationWebKeys.DESCRIPTION);
-		
+
 		String configuration = _buildConfigurationFromRequest(actionRequest);
 
 		try {
@@ -96,52 +98,57 @@ public class EditSearchConfigurationMVCActionCommand extends BaseMVCActionComman
 				SearchConfigurationMVCCommandNames.EDIT_SEARCH_CONFIGURATION);
 		}
 	}
-	
-	private String _buildConfigurationFromRequest(ActionRequest actionRequest) throws JSONException {
-
-		JSONObject configuration = JSONFactoryUtil.createJSONObject();
-		
-		JSONArray clauseConfiguration = 
-			_getAutoFieldValues(actionRequest, 
-					SearchConfigurationWebKeys.CLAUSE_CONFIGURATION, 
-					SearchConfigurationWebKeys.CLAUSE_CONFIGURATION_INDEXES);
-		configuration.put(SearchConfigurationKeys.CLAUSE_CONFIGURATION, clauseConfiguration);
-		
-		JSONArray misspellings = 
-			_getAutoFieldValues(actionRequest, 
-					SearchConfigurationWebKeys.MISSPELLING, 
-					SearchConfigurationWebKeys.MISSPELLING_INDEXES );
-		configuration.put(SearchConfigurationKeys.MISSPELLINGS, misspellings);
-
-		JSONArray synonyms = 
-				_getAutoFieldValues(actionRequest, 
-						SearchConfigurationWebKeys.SYNONYM, 
-						SearchConfigurationWebKeys.SYNONYM_INDEXES );
-		configuration.put(SearchConfigurationKeys.SYNONYMS, synonyms);
-		
-		return configuration.toString();
-		
-	}
-	
-	private JSONArray _getAutoFieldValues(ActionRequest actionRequest, String valueParameterKey, String indexParameterKey) throws JSONException {
-
-		JSONArray values = JSONFactoryUtil.createJSONArray();
-		
-		int[] rowIndexes = ParamUtil.getIntegerValues(actionRequest, indexParameterKey, new int[0]);
-
-		for (int i : rowIndexes) {
-			
-			String value = ParamUtil.getString(actionRequest, valueParameterKey + i);
-
-			JSONObject item = JSONFactoryUtil.createJSONObject(value);
-			
-			values.put(item);
-		}
-		
-		return values;
-	}
 
 	@Reference
 	protected SearchConfigurationService _searchConfigurationService;
+
+	private String _buildConfigurationFromRequest(ActionRequest actionRequest)
+		throws JSONException {
+
+		JSONObject configuration = JSONFactoryUtil.createJSONObject();
+
+		JSONArray clauseConfiguration = _getAutoFieldValues(
+			actionRequest, SearchConfigurationWebKeys.CLAUSE_CONFIGURATION,
+			SearchConfigurationWebKeys.CLAUSE_CONFIGURATION_INDEXES);
+
+		configuration.put(
+			SearchConfigurationKeys.CLAUSE_CONFIGURATION, clauseConfiguration);
+
+		JSONArray misspellings = _getAutoFieldValues(
+			actionRequest, SearchConfigurationWebKeys.MISSPELLING,
+			SearchConfigurationWebKeys.MISSPELLING_INDEXES);
+
+		configuration.put(SearchConfigurationKeys.MISSPELLINGS, misspellings);
+
+		JSONArray synonyms = _getAutoFieldValues(
+			actionRequest, SearchConfigurationWebKeys.SYNONYM,
+			SearchConfigurationWebKeys.SYNONYM_INDEXES);
+
+		configuration.put(SearchConfigurationKeys.SYNONYMS, synonyms);
+
+		return configuration.toString();
+	}
+
+	private JSONArray _getAutoFieldValues(
+			ActionRequest actionRequest, String valueParameterKey,
+			String indexParameterKey)
+		throws JSONException {
+
+		JSONArray values = JSONFactoryUtil.createJSONArray();
+
+		int[] rowIndexes = ParamUtil.getIntegerValues(
+			actionRequest, indexParameterKey, new int[0]);
+
+		for (int i : rowIndexes) {
+			String value = ParamUtil.getString(
+				actionRequest, valueParameterKey + i);
+
+			JSONObject item = JSONFactoryUtil.createJSONObject(value);
+
+			values.put(item);
+		}
+
+		return values;
+	}
 
 }

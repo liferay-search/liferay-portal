@@ -42,7 +42,6 @@ import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.search.tuning.gsearch.configuration.constants.SearchConfigurationActionKeys;
 import com.liferay.portal.search.tuning.gsearch.configuration.constants.SearchConfigurationPortletKeys;
-import com.liferay.portal.search.tuning.gsearch.configuration.constants.SearchConfigurationTypes;
 import com.liferay.portal.search.tuning.gsearch.configuration.model.SearchConfiguration;
 import com.liferay.portal.search.tuning.gsearch.configuration.service.SearchConfigurationServiceUtil;
 import com.liferay.portal.search.tuning.gsearch.configuration.web.internal.constants.SearchConfigurationMVCCommandNames;
@@ -77,7 +76,7 @@ public class SearchConfigurationsDisplayContext {
 			liferayPortletRequest);
 
 		_httpServletRequest = _liferayPortletRequest.getHttpServletRequest();
-		
+
 		_searchConfigurationType = searchConfigurationType;
 	}
 
@@ -213,14 +212,12 @@ public class SearchConfigurationsDisplayContext {
 			searchContainer.setTotal(
 				SearchConfigurationServiceUtil.getGroupConfigurationsCount(
 					themeDisplay.getScopeGroupId(),
-					WorkflowConstants.STATUS_ANY,
-					_searchConfigurationType));
+					WorkflowConstants.STATUS_ANY, _searchConfigurationType));
 
 			entriesResults =
 				SearchConfigurationServiceUtil.getGroupConfigurations(
 					themeDisplay.getScopeGroupId(),
-					WorkflowConstants.STATUS_ANY,
-					_searchConfigurationType,
+					WorkflowConstants.STATUS_ANY, _searchConfigurationType,
 					searchContainer.getStart(), searchContainer.getEnd(),
 					searchContainer.getOrderByComparator());
 		}
@@ -312,4 +309,5 @@ public class SearchConfigurationsDisplayContext {
 	private final LiferayPortletResponse _liferayPortletResponse;
 	private final PortalPreferences _portalPreferences;
 	private final int _searchConfigurationType;
+
 }

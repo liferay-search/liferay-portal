@@ -21,33 +21,30 @@ SearchConfiguration searchConfiguration = (SearchConfiguration)request.getAttrib
 
 int searchConfigurationType = ParamUtil.getInteger(request, SearchConfigurationWebKeys.SEARCH_CONFIGURATION_TYPE, SearchConfigurationTypes.CONFIGURATION);
 
-JSONObject configuration = (JSONObject)request.getAttribute(SearchConfigurationWebKeys.SEARCH_CONFIGURATION_CONFIGURATION);
-
 if (searchConfiguration != null) {
 	searchConfigurationType = searchConfiguration.getType();
 }
-String pageTitleKey = (String)request.getAttribute(SearchConfigurationWebKeys.PAGE_TITLE_KEY);
-renderResponse.setTitle(LanguageUtil.get(request, pageTitleKey));	
-String cmd = (searchConfiguration != null) ? Constants.EDIT : Constants.ADD;
 
+String pageTitleKey = (String)request.getAttribute(SearchConfigurationWebKeys.PAGE_TITLE_KEY);
+
+renderResponse.setTitle(LanguageUtil.get(request, pageTitleKey));
+String cmd = (searchConfiguration != null) ? Constants.EDIT : Constants.ADD;
 %>
 
-<portlet:actionURL 
-	name="<%= SearchConfigurationMVCCommandNames.EDIT_SEARCH_CONFIGURATION %>" 
-	var="editConfigurationActionURL"
->
+<portlet:actionURL name="<%= SearchConfigurationMVCCommandNames.EDIT_SEARCH_CONFIGURATION %>" var="editConfigurationActionURL">
 	<portlet:param name="redirect" value="<%= currentURL %>" />
 	<portlet:param name="<%= Constants.CMD %>" value="<%= cmd %>" />
 </portlet:actionURL>
 
-<aui:model-context bean="<%= searchConfiguration %>" model="<%= SearchConfiguration.class  %>" />
+<aui:model-context bean="<%= searchConfiguration %>" model="<%= SearchConfiguration.class %>" />
 
-<liferay-frontend:edit-form action="<%= editConfigurationActionURL %>">
+<liferay-frontend:edit-form
+	action="<%= editConfigurationActionURL %>"
+>
+	<aui:input name="<%= SearchConfigurationWebKeys.SEARCH_CONFIGURATION_ID %>" type="hidden" value='<%= searchConfiguration != null ? searchConfiguration.getSearchConfigurationId() : "" %>' />
 
-	<aui:input name="<%= SearchConfigurationWebKeys.SEARCH_CONFIGURATION_ID %>" type="hidden" 
-		value='<%= searchConfiguration != null ? searchConfiguration.getSearchConfigurationId() : "" %>' />
-	<aui:input name="<%= SearchConfigurationWebKeys.SEARCH_CONFIGURATION_TYPE %>" type="hidden" 
-		value="<%= searchConfigurationType %>" />
+	<aui:input name="<%= SearchConfigurationWebKeys.SEARCH_CONFIGURATION_TYPE %>" type="hidden" value="<%= searchConfigurationType %>" />
+
 	<aui:input name="redirect" type="hidden" value="<%= currentURL %>" />
 
 	<liferay-frontend:edit-form-body>
@@ -56,16 +53,19 @@ String cmd = (searchConfiguration != null) ? Constants.EDIT : Constants.ADD;
 			collapsible="<%= true %>"
 			label="basic-information"
 		>
+
 			<%
 			if (searchConfiguration != null && searchConfigurationType == SearchConfigurationTypes.CONFIGURATION) {
 			%>
+
 				<div class="lfr-form-row lfr-form-row-inline">
-					<aui:input label="search-configuration-id" disabled="<%= true %>" name="<%= SearchConfigurationWebKeys.SEARCH_CONFIGURATION_ID %>"  value="<%= String.valueOf(searchConfiguration.getSearchConfigurationId()) %>" />
+					<aui:input disabled="<%= true %>" label="search-configuration-id" name="<%= SearchConfigurationWebKeys.SEARCH_CONFIGURATION_ID %>" value="<%= String.valueOf(searchConfiguration.getSearchConfigurationId()) %>" />
 				</div>
+
 			<%
 			}
 			%>
-		
+
 			<div class="lfr-form-row lfr-form-row-inline">
 				<aui:input label="title" localized="<%= true %>" name="<%= SearchConfigurationWebKeys.TITLE %>" placeholder="title" type="text">
 					<aui:validator name="maxLength"><%= ModelHintsUtil.getMaxLength(SearchConfiguration.class.getName(), "title") %></aui:validator>
@@ -81,6 +81,7 @@ String cmd = (searchConfiguration != null) ? Constants.EDIT : Constants.ADD;
 		<%
 		if (searchConfigurationType != SearchConfigurationTypes.SNIPPET) {
 		%>
+
 			<liferay-frontend:fieldset
 				collapsed="<%= true %>"
 				collapsible="<%= true %>"
@@ -90,82 +91,69 @@ String cmd = (searchConfiguration != null) ? Constants.EDIT : Constants.ADD;
 
 				<%
 				String[] synonyms = JSONHelper.getConfigurationSection(searchConfiguration, SearchConfigurationKeys.SYNONYMS);
+
 				for (int i = 0; i < synonyms.length; i++) {
-	
 					String value = synonyms[i];
-	
-					%>
+				%>
+
 					<div class="lfr-form-row">
-						<aui:input 
-							autoSize="<%= true %>" 
-							label="synonym-set" 
-							name="<%= SearchConfigurationWebKeys.SYNONYM + i %>" 
-							required="<%= false %>" 
-							type="textarea" 
-							value="<%= value %>" 
-						/>
+						<aui:input autoSize="<%= true %>" label="synonym-set" name="<%= SearchConfigurationWebKeys.SYNONYM + i %>" required="<%= false %>" type="textarea" value="<%= value %>" />
 					</div>
-					<%
+
+				<%
 				}
-				%>			
+				%>
+
 			</liferay-frontend:fieldset>
-		
+
 			<liferay-frontend:fieldset
 				collapsed="<%= true %>"
 				collapsible="<%= true %>"
 				id='<%= renderResponse.getNamespace() + "misspellingItems" %>'
 				label="misspellings"
 			>
+
 				<%
 				String[] misspellings = JSONHelper.getConfigurationSection(searchConfiguration, SearchConfigurationKeys.MISSPELLINGS);
+
 				for (int i = 0; i < misspellings.length; i++) {
-	
 					String value = misspellings[i];
-	
-					%>
+				%>
+
 					<div class="lfr-form-row">
-						<aui:input 
-							autoSize="<%= true %>" 
-							label="misspelling" 
-							name="<%= SearchConfigurationWebKeys.MISSPELLING + i %>" 
-							required="<%= false %>" 
-							type="textarea" 
-							value="<%= value %>" 
-						/>
+						<aui:input autoSize="<%= true %>" label="misspelling" name="<%= SearchConfigurationWebKeys.MISSPELLING + i %>" required="<%= false %>" type="textarea" value="<%= value %>" />
 					</div>
-					<%
+
+				<%
 				}
-				%>		
+				%>
+
 			</liferay-frontend:fieldset>
-		<% } %>
+
+		<%
+		}
+		%>
 
 		<liferay-frontend:fieldset
 			id='<%= renderResponse.getNamespace() + "clauseConfigurationItems" %>'
 			label="clause-configuration-items"
 		>
-		
+
 			<%
 			String[] clauseConfiguration = JSONHelper.getConfigurationSection(searchConfiguration, SearchConfigurationKeys.CLAUSE_CONFIGURATION);
-			
+
 			for (int i = 0; i < clauseConfiguration.length; i++) {
-
 				String value = clauseConfiguration[i];
+			%>
 
-				%>
 				<div class="lfr-form-row">
-					<aui:input 
-						autoSize="<%= true %>" 
-						label="configuration-item" 
-						name="<%= SearchConfigurationWebKeys.CLAUSE_CONFIGURATION + i %>" 
-						required="<%= true %>" 
-						showRequiredLabel="<%= true %>" 
-						type="textarea" 
-						value="<%= value %>" 
-					/>
+					<aui:input autoSize="<%= true %>" label="configuration-item" name="<%= SearchConfigurationWebKeys.CLAUSE_CONFIGURATION + i %>" required="<%= true %>" showRequiredLabel="<%= true %>" type="textarea" value="<%= value %>" />
 				</div>
-				<%
+
+			<%
 			}
 			%>
+
 		</liferay-frontend:fieldset>
 	</liferay-frontend:edit-form-body>
 
@@ -189,11 +177,11 @@ String cmd = (searchConfiguration != null) ? Constants.EDIT : Constants.ADD;
 			sortableHandle: '.lfr-form-row',
 		}).render();
 	}
-	
+
 	var misSpellingContainer = document.getElementById(
 		'<portlet:namespace/>misspellingItems'
 	);
-	
+
 	if (misSpellingContainer) {
 
 		new Liferay.AutoFields({
@@ -204,7 +192,7 @@ String cmd = (searchConfiguration != null) ? Constants.EDIT : Constants.ADD;
 			sortableHandle: '.lfr-form-row',
 		}).render();
 	}
-	
+
 	new Liferay.AutoFields({
 		contentBox: '#<portlet:namespace/>clauseConfigurationItems',
 		fieldIndexes: '<portlet:namespace /><%= SearchConfigurationWebKeys.CLAUSE_CONFIGURATION_INDEXES %>',

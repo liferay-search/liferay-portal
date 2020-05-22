@@ -18,15 +18,17 @@ import org.osgi.service.component.annotations.Component;
 	},
 	service = MVCActionCommand.class
 )
-public class CopySearchConfigurationMVCActionCommand  extends BaseMVCActionCommand {
+public class CopySearchConfigurationMVCActionCommand
+	extends BaseMVCActionCommand {
 
 	@Override
 	protected void doProcessAction(
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
-		
+
 		// TODO
-		
+
 		throw new UnsupportedOperationException("Not implemented...yet");
 	}
+
 }

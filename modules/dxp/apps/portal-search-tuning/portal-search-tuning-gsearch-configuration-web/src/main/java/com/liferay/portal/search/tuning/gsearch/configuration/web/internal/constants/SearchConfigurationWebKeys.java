@@ -7,7 +7,8 @@ public class SearchConfigurationWebKeys {
 
 	public static final String CLAUSE_CONFIGURATION = "clause_configuration";
 
-	public static final String CLAUSE_CONFIGURATION_INDEXES = "clauseConfigurationIndexes";
+	public static final String CLAUSE_CONFIGURATION_INDEXES =
+		"clauseConfigurationIndexes";
 
 	public static final String DESCRIPTION = "description";
 
@@ -23,9 +24,11 @@ public class SearchConfigurationWebKeys {
 
 	public static final String SEARCH_CONFIGURATION = "searchConfiguration";
 
-	public static final String SEARCH_CONFIGURATION_CONFIGURATION = "configuration";
+	public static final String SEARCH_CONFIGURATION_CONFIGURATION =
+		"configuration";
 
-	public static final String SEARCH_CONFIGURATION_ID = "searchConfigurationId";
+	public static final String SEARCH_CONFIGURATION_ID =
+		"searchConfigurationId";
 
 	public static final String SEARCH_CONFIGURATION_TYPE = "type";
 
