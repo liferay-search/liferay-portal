@@ -26,9 +26,11 @@ import org.osgi.service.component.annotations.Reference;
 public class SearchConfigurationPermission {
 
 	public static boolean contains(
-		PermissionChecker permissionChecker, long groupId, int type, String actionId) {
+		PermissionChecker permissionChecker, long groupId, int type,
+		String actionId) {
 
-		String typedActionKey = SearchConfigurationActionKeys.getTypedActionKey(type, actionId);
+		String typedActionKey = SearchConfigurationActionKeys.getTypedActionKey(
+			type, actionId);
 
 		return _portletResourcePermission.contains(
 			permissionChecker, groupId, typedActionKey);

@@ -42,6 +42,7 @@ import java.util.Objects;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.PortletURL;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -54,7 +55,7 @@ public class SearchConfigurationAdminManagementToolbarDisplayContext
 		HttpServletRequest httpServletRequest,
 		LiferayPortletRequest liferayPortletRequest,
 		LiferayPortletResponse liferayPortletResponse,
-		SearchContainer searchContainer, String displayStyle, 
+		SearchContainer searchContainer, String displayStyle,
 		int searchConfigurationType) {
 
 		super(
@@ -62,7 +63,6 @@ public class SearchConfigurationAdminManagementToolbarDisplayContext
 			searchContainer);
 
 		_displayStyle = displayStyle;
-		
 		_searchConfigurationType = searchConfigurationType;
 
 		_themeDisplay = (ThemeDisplay)httpServletRequest.getAttribute(
@@ -100,7 +100,8 @@ public class SearchConfigurationAdminManagementToolbarDisplayContext
 
 				deleteEntriesURL.setParameter(
 					ActionRequest.ACTION_NAME,
-					SearchConfigurationMVCCommandNames.DELETE_SEARCH_CONFIGURATIONS);
+					SearchConfigurationMVCCommandNames.
+						DELETE_SEARCH_CONFIGURATIONS);
 
 				return deleteEntriesURL.toString();
 			}
@@ -111,8 +112,7 @@ public class SearchConfigurationAdminManagementToolbarDisplayContext
 	public CreationMenu getCreationMenu() {
 		if (!SearchConfigurationPermission.contains(
 				_themeDisplay.getPermissionChecker(),
-				_themeDisplay.getScopeGroupId(), 
-				_searchConfigurationType,				
+				_themeDisplay.getScopeGroupId(), _searchConfigurationType,
 				ActionKeys.ADD_ENTRY)) {
 
 			return null;
@@ -123,7 +123,8 @@ public class SearchConfigurationAdminManagementToolbarDisplayContext
 				dropdownItem.setHref(
 					liferayPortletResponse.createRenderURL(),
 					"mvcRenderCommandName",
-					SearchConfigurationMVCCommandNames.EDIT_SEARCH_CONFIGURATION,
+					SearchConfigurationMVCCommandNames.
+						EDIT_SEARCH_CONFIGURATION,
 					"redirect", currentURLObj.toString());
 				dropdownItem.setLabel(
 					LanguageUtil.get(request, "add-search-configuration"));
