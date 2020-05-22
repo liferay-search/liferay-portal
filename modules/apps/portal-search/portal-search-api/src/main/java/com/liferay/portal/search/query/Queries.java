@@ -113,6 +113,8 @@ public interface Queries {
 
 	public MultiMatchQuery multiMatch(Object value, String... fields);
 
+	public MultiMatchQuery multiMatch(Object value, Map<String, Float>fieldsBoosts);
+
 	public NestedQuery nested(String path, Query query);
 
 	public PercolateQuery percolate(String field, List<String> documentJSONs);

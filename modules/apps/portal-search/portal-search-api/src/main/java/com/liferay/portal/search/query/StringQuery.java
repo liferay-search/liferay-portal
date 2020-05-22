@@ -15,6 +15,7 @@
 package com.liferay.portal.search.query;
 
 import java.util.Map;
+import java.util.Set;
 
 import org.osgi.annotation.versioning.ProviderType;
 
@@ -30,13 +31,14 @@ import org.osgi.annotation.versioning.ProviderType;
  *
  * @author Bruno Farache
  * @author Petteri Karttunen
+ * 
  */
 @ProviderType
 public interface StringQuery extends Query {
 
 	public void addField(String field);
 
-	public void addField(String field, Float boost);
+	public void addField(String field, float boost);
 
 	public Boolean getAllowLeadingWildcard();
 
@@ -54,14 +56,7 @@ public interface StringQuery extends Query {
 
 	public Boolean getEscape();
 
-	/**
-	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
-	 *             #getFieldsBoosts}
-	 */
-	@Deprecated
-	public default Map<String, Float> getFields() {
-		return getFieldsBoosts();
-	}
+	public Set<String> getFields();
 
 	public Map<String, Float> getFieldsBoosts();
 
@@ -78,6 +73,8 @@ public interface StringQuery extends Query {
 	public Boolean getLenient();
 
 	public Integer getMaxDeterminedStates();
+	
+	public String getMinimumShouldMatch();
 
 	public String getMinimumShouldMatch();
 
@@ -109,6 +106,8 @@ public interface StringQuery extends Query {
 	public void setDefaultOperator(Operator defaultOperator);
 
 	public void setEnablePositionIncrements(Boolean enablePositionIncrements);
+	
+	public void setEscape(boolean escape);
 
 	public void setEscape(boolean escape);
 
@@ -135,6 +134,8 @@ public interface StringQuery extends Query {
 	public void setQuoteFieldSuffix(String quoteFieldSuffix);
 
 	public void setRewrite(String rewrite);
+	
+	public void setTieBreaker(float tieBreaker);
 
 	public void setTieBreaker(float tieBreaker);
 
