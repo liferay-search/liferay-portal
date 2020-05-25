@@ -25,7 +25,7 @@ import com.liferay.portal.search.tuning.gsearch.configuration.model.SearchConfig
 /**
  * @author Petteri Karttunen
  */
-public class JSONHelper {
+public class JSONHelperUtil {
 
 	public static String[] getConfigurationSection(
 			SearchConfiguration searchConfiguration, String key)
@@ -41,14 +41,14 @@ public class JSONHelper {
 			return new String[] {StringPool.BLANK};
 		}
 
-		JSONObject configurationJSON = JSONFactoryUtil.createJSONObject(
+		JSONObject configurationObject = JSONFactoryUtil.createJSONObject(
 			configuration);
 
-		if (configurationJSON == null) {
+		if (configurationObject == null) {
 			return new String[] {StringPool.BLANK};
 		}
 
-		JSONArray section = configurationJSON.getJSONArray(key);
+		JSONArray section = configurationObject.getJSONArray(key);
 
 		String[] array = new String[section.length()];
 

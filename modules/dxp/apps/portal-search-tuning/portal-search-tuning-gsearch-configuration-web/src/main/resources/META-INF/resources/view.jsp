@@ -14,7 +14,7 @@
  */
 --%>
 
-<%@ include file="./init.jsp" %>
+<%@ include file="/init.jsp" %>
 
 <liferay-ui:error key="errorDetails">
 	<liferay-ui:message arguments='<%= SessionErrors.get(liferayPortletRequest, "errorDetails") %>' key="error.search-configuration-service-error" />
@@ -24,16 +24,13 @@
 final String tabs = ParamUtil.getString(request, "tabs", "configurations");
 
 PortletURL configurationsURL = renderResponse.createRenderURL();
-configurationsURL.setParameter(SearchConfigurationWebKeys.SEARCH_CONFIGURATION_TYPE,
-					String.valueOf(SearchConfigurationTypes.CONFIGURATION));
+configurationsURL.setParameter(SearchConfigurationWebKeys.SEARCH_CONFIGURATION_TYPE, String.valueOf(SearchConfigurationTypes.CONFIGURATION));
 
 PortletURL templatesURL = renderResponse.createRenderURL();
-templatesURL.setParameter(SearchConfigurationWebKeys.SEARCH_CONFIGURATION_TYPE,
-					String.valueOf(SearchConfigurationTypes.TEMPLATE));
+templatesURL.setParameter(SearchConfigurationWebKeys.SEARCH_CONFIGURATION_TYPE, String.valueOf(SearchConfigurationTypes.TEMPLATE));
 
 PortletURL snippetsURL = renderResponse.createRenderURL();
-snippetsURL.setParameter(SearchConfigurationWebKeys.SEARCH_CONFIGURATION_TYPE,
-					String.valueOf(SearchConfigurationTypes.SNIPPET));
+snippetsURL.setParameter(SearchConfigurationWebKeys.SEARCH_CONFIGURATION_TYPE, String.valueOf(SearchConfigurationTypes.SNIPPET));
 %>
 
 <clay:navigation-bar
@@ -46,7 +43,8 @@ snippetsURL.setParameter(SearchConfigurationWebKeys.SEARCH_CONFIGURATION_TYPE,
 						navigationItem.setActive(tabs.equals("configurations"));
 						navigationItem.setHref(configurationsURL, "tabs", "configurations");
 						navigationItem.setLabel(LanguageUtil.get(request, "search-configurations"));
-						navigationItem.putData(SearchConfigurationWebKeys.SEARCH_CONFIGURATION_TYPE,
+						navigationItem.putData(
+								SearchConfigurationWebKeys.SEARCH_CONFIGURATION_TYPE,
 								String.valueOf(SearchConfigurationTypes.CONFIGURATION));
 					});
 				add(
@@ -60,7 +58,8 @@ snippetsURL.setParameter(SearchConfigurationWebKeys.SEARCH_CONFIGURATION_TYPE,
 						navigationItem.setActive(tabs.equals("snippets"));
 						navigationItem.setHref(snippetsURL, "tabs", "snippets");
 						navigationItem.setLabel(LanguageUtil.get(request, "configuration-snippets"));
-						navigationItem.putData(SearchConfigurationWebKeys.SEARCH_CONFIGURATION_TYPE,
+						navigationItem.putData(
+								SearchConfigurationWebKeys.SEARCH_CONFIGURATION_TYPE,
 								String.valueOf(SearchConfigurationTypes.SNIPPET));
 					});
 			}

@@ -16,8 +16,8 @@ package com.liferay.portal.search.tuning.gsearch.configuration.web.internal.port
 
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
-import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCRenderCommand;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.util.ParamUtil;
@@ -36,8 +36,6 @@ import javax.portlet.RenderResponse;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Petteri Karttunen
@@ -78,7 +76,7 @@ public class ViewSearchConfigurationsMVCRenderCommand
 		try {
 			SearchConfigurationEntriesManagementToolbarDisplayContext
 				searchConfigurationsManagementToolbarDisplayContext =
-					getSearchConfigurationsManagementToolbar(
+					_getSearchConfigurationsManagementToolbar(
 						renderRequest, renderResponse,
 						searchConfigurationEntriesDisplayContext.
 							getSearchContainer(),
@@ -91,36 +89,30 @@ public class ViewSearchConfigurationsMVCRenderCommand
 					SEARCH_CONFIGURATION_ENTRIES_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT,
 				searchConfigurationsManagementToolbarDisplayContext);
 		}
-		catch (PortalException pe) {
-			
-			_log.error(pe.getMessage(), pe);
-			
-			SessionErrors.add(renderRequest, "errorDetails", pe);
+		catch (PortalException portalException) {
+			_log.error(portalException.getMessage(), portalException);
+
+			SessionErrors.add(renderRequest, "errorDetails", portalException);
 		}
 
 		return "/view.jsp";
 	}
 
 	private SearchConfigurationEntriesManagementToolbarDisplayContext
-		getSearchConfigurationsManagementToolbar(
+		_getSearchConfigurationsManagementToolbar(
 			RenderRequest renderRequest, RenderResponse renderResponse,
 			SearchContainer<SearchConfiguration> searchContainer,
 			String displayStyle, int searchConfigurationType) {
 
-		LiferayPortletRequest liferayPortletRequest =
-			_portal.getLiferayPortletRequest(renderRequest);
-
-		LiferayPortletResponse liferayPortletResponse =
-			_portal.getLiferayPortletResponse(renderResponse);
-
 		return new SearchConfigurationEntriesManagementToolbarDisplayContext(
-			_portal.getHttpServletRequest(renderRequest), liferayPortletRequest,
-			liferayPortletResponse, searchContainer, displayStyle,
-			searchConfigurationType);
+			_portal.getHttpServletRequest(renderRequest),
+			_portal.getLiferayPortletRequest(renderRequest),
+			_portal.getLiferayPortletResponse(renderResponse), searchContainer,
+			displayStyle, searchConfigurationType);
 	}
 
-	private static final Logger _log = LoggerFactory.getLogger(
-			ViewSearchConfigurationsMVCRenderCommand.class);
+	private static final Log _log = LogFactoryUtil.getLog(
+		ViewSearchConfigurationsMVCRenderCommand.class);
 
 	@Reference
 	private Portal _portal;

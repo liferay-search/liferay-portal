@@ -16,6 +16,8 @@ package com.liferay.portal.search.tuning.gsearch.configuration.web.internal.port
 
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCRenderCommand;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.theme.PortletDisplay;
@@ -37,9 +39,6 @@ import javax.portlet.RenderResponse;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * @author Petteri Karttunen
  */
@@ -60,8 +59,7 @@ public class EditSearchConfigurationMVCRenderCommand
 		throws PortletException {
 
 		long searchConfigurationId = ParamUtil.getLong(
-			renderRequest, SearchConfigurationWebKeys.SEARCH_CONFIGURATION_ID,
-			0);
+			renderRequest, SearchConfigurationWebKeys.SEARCH_CONFIGURATION_ID);
 
 		int searchConfigurationType = ParamUtil.getInteger(
 			renderRequest, SearchConfigurationWebKeys.SEARCH_CONFIGURATION_TYPE,
@@ -74,21 +72,25 @@ public class EditSearchConfigurationMVCRenderCommand
 				searchConfiguration =
 					_searchConfigurationService.getSearchConfiguration(
 						searchConfigurationId);
+
 				searchConfigurationType = searchConfiguration.getType();
 			}
-			catch (NoSuchConfigurationException nsce) {
+			catch (NoSuchConfigurationException noSuchConfigurationException) {
+				_log.error(
+					"Search configuration " + searchConfigurationId +
+						" not found.",
+					noSuchConfigurationException);
 
-				_log.error("Search configuration " + searchConfigurationId + " not found.", nsce);
-
-				SessionErrors.add(renderRequest, 
-						SearchConfigurationWebKeys.ERROR_DETAILS, nsce);
+				SessionErrors.add(
+					renderRequest, SearchConfigurationWebKeys.ERROR_DETAILS,
+					noSuchConfigurationException);
 			}
-			catch (PortalException pe) {
+			catch (PortalException portalException) {
+				_log.error(portalException.getMessage(), portalException);
 
-				_log.error(pe.getMessage(), pe);
-
-				SessionErrors.add(renderRequest, 
-						SearchConfigurationWebKeys.ERROR_DETAILS, pe);
+				SessionErrors.add(
+					renderRequest, SearchConfigurationWebKeys.ERROR_DETAILS,
+					portalException);
 			}
 		}
 
@@ -134,7 +136,7 @@ public class EditSearchConfigurationMVCRenderCommand
 		return sb.toString();
 	}
 
-	private static final Logger _log = LoggerFactory.getLogger(
+	private static final Log _log = LogFactoryUtil.getLog(
 		EditSearchConfigurationMVCRenderCommand.class);
 
 	@Reference

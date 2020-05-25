@@ -15,6 +15,8 @@
 package com.liferay.portal.search.tuning.gsearch.configuration.web.internal.portlet.action;
 
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.servlet.SessionErrors;
@@ -29,9 +31,6 @@ import javax.portlet.ActionResponse;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Petteri Karttunen
@@ -52,16 +51,14 @@ public class DeleteSearchConfigurationMVCActionCommand
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
 
-		_doDelete(actionRequest, actionResponse);
+		_delete(actionRequest);
 
 		String redirect = ParamUtil.getString(actionRequest, "redirect");
 
 		sendRedirect(actionRequest, actionResponse, redirect);
 	}
 
-	private void _doDelete(
-		ActionRequest actionRequest, ActionResponse actionResponse) {
-
+	private void _delete(ActionRequest actionRequest) {
 		long[] deleteConfigurationIds = _getConfigurationIds(actionRequest);
 
 		try {
@@ -70,13 +67,14 @@ public class DeleteSearchConfigurationMVCActionCommand
 					searchConfigurationId);
 			}
 		}
-		catch (PortalException pe) {
+		catch (PortalException portalException) {
 			SessionErrors.add(
-				actionRequest, SearchConfigurationWebKeys.ERROR_DETAILS, pe);
-			_log.error(pe.getMessage(), pe);
+				actionRequest, SearchConfigurationWebKeys.ERROR_DETAILS,
+				portalException);
+			_log.error(portalException.getMessage(), portalException);
 		}
 	}
-	
+
 	private long[] _getConfigurationIds(ActionRequest actionRequest) {
 		long[] configurationIds = null;
 
@@ -94,9 +92,10 @@ public class DeleteSearchConfigurationMVCActionCommand
 		return configurationIds;
 	}
 
-	private static final Logger _log = LoggerFactory.getLogger(
+	private static final Log _log = LogFactoryUtil.getLog(
 		DeleteSearchConfigurationMVCActionCommand.class);
 
 	@Reference
 	private SearchConfigurationService _searchConfigurationService;
+
 }
