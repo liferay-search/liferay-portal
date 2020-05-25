@@ -22,8 +22,8 @@
 			</guest-defaults>
 			<guest-unsupported>
 				<action-key>ADD_CONFIGURATION</action-key>
-				<action-key>ADD_TEMPLATE</action-key>
 				<action-key>ADD_SNIPPET</action-key>
+				<action-key>ADD_TEMPLATE</action-key>
 				<action-key>PERMISSIONS</action-key>
 			</guest-unsupported>
 		</permissions>
@@ -45,7 +45,7 @@
 				<action-key>UPDATE_TEMPLATE</action-key>
 				<action-key>VIEW_CONFIGURATION</action-key>
 				<action-key>VIEW_SNIPPET</action-key>
-				<action-key>VIEW_TEMPLATEs</action-key>
+				<action-key>VIEW_TEMPLATE</action-key>
 			</supports>
 			<site-member-defaults>
 			</site-member-defaults>
@@ -61,7 +61,7 @@
 				<action-key>UPDATE_TEMPLATE</action-key>
 				<action-key>VIEW_CONFIGURATION</action-key>
 				<action-key>VIEW_SNIPPET</action-key>
-				<action-key>VIEW_TEMPLATEs</action-key>
+				<action-key>VIEW_TEMPLATE</action-key>
 			</guest-unsupported>
 		</permissions>
 	</model-resource>

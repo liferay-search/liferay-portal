@@ -12,7 +12,7 @@
  *
  */
 
-package com.liferay.portal.search.tuning.gsearch.configuration.validator;
+package com.liferay.portal.search.tuning.gsearch.configuration.internal.validator;
 
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.MapUtil;
@@ -34,20 +34,6 @@ import org.osgi.service.component.annotations.Component;
 public class SearchConfigurationValidatorImpl
 	implements SearchConfigurationValidator {
 
-	public boolean isConfigurationValid(
-			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
-			String configuration, List<String> errors)
-		throws SearchConfigurationValidationException {
-
-		boolean result = true;
-
-		result &= isSearchConfigurationValid(configuration, errors);
-		result &= isDescriptionValid(descriptionMap, errors);
-		result &= isTitleValid(titleMap, errors);
-
-		return result;
-	}
-
 	@Override
 	public void validate(
 			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
@@ -56,14 +42,22 @@ public class SearchConfigurationValidatorImpl
 
 		List<String> errors = new ArrayList<>();
 
-		if (!isConfigurationValid(
+		if (!_isSearchConfigurationValid(
 				titleMap, descriptionMap, configuration, errors)) {
 
 			throw new SearchConfigurationValidationException(errors);
 		}
 	}
 
-	private boolean isDescriptionValid(
+	private boolean _isConfigurationValid(
+		String configuration, List<String> errors) {
+
+		// TODO Auto-generated method stub
+
+		return true;
+	}
+
+	private boolean _isDescriptionValid(
 		final Map<Locale, String> descriptionMap, final List<String> errors) {
 
 		boolean result = true;
@@ -73,7 +67,7 @@ public class SearchConfigurationValidatorImpl
 			result = false;
 		}
 		else {
-			Locale defaultLocale = LocaleUtil.getSiteDefault();
+			Locale defaultLocale = LocaleUtil.getDefault();
 
 			if (Validator.isBlank(descriptionMap.get(defaultLocale))) {
 				errors.add("defaultLocaleDescriptionEmpty");
@@ -84,15 +78,21 @@ public class SearchConfigurationValidatorImpl
 		return result;
 	}
 
-	private boolean isSearchConfigurationValid(
-		String configuration, List<String> errors) {
+	private boolean _isSearchConfigurationValid(
+			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
+			String configuration, List<String> errors)
+		throws SearchConfigurationValidationException {
 
-		// TODO Auto-generated method stub
+		boolean result = true;
 
-		return true;
+		result &= _isDescriptionValid(descriptionMap, errors);
+		result &= _isConfigurationValid(configuration, errors);
+		result &= _isTitleValid(titleMap, errors);
+
+		return result;
 	}
 
-	private boolean isTitleValid(
+	private boolean _isTitleValid(
 		final Map<Locale, String> titleMap, final List<String> errors) {
 
 		boolean result = true;
@@ -102,7 +102,7 @@ public class SearchConfigurationValidatorImpl
 			result = false;
 		}
 		else {
-			Locale defaultLocale = LocaleUtil.getSiteDefault();
+			Locale defaultLocale = LocaleUtil.getDefault();
 
 			if (Validator.isBlank(titleMap.get(defaultLocale))) {
 				errors.add("defaultLocaleTitleEmpty");
