@@ -60,6 +60,8 @@ public class SearchConfigurationActionKeys {
 			}
 			else if (ActionKeys.DELETE.equals(action)) {
 				return SearchConfigurationActionKeys.DELETE_CONFIGURATION;
+			} else {
+				return action;
 			}
 		}
 		else if (type == SearchConfigurationTypes.SNIPPET) {
@@ -74,6 +76,8 @@ public class SearchConfigurationActionKeys {
 			}
 			else if (ActionKeys.DELETE.equals(action)) {
 				return SearchConfigurationActionKeys.DELETE_SNIPPET;
+			} else {
+				return action;
 			}
 		}
 		else if (type == SearchConfigurationTypes.TEMPLATE) {
@@ -88,11 +92,13 @@ public class SearchConfigurationActionKeys {
 			}
 			else if (ActionKeys.DELETE.equals(action)) {
 				return SearchConfigurationActionKeys.DELETE_TEMPLATE;
+			} else {
+				return action;
 			}
 		}
 
 		throw new RuntimeException(
-			"Search Configuration type " + type + " not recognized.");
+			"Search Configuration type " + type + " for action " + action + " not recognized.");
 	}
 
 }
