@@ -2,25 +2,12 @@
 package com.liferay.portal.search.tuning.gsearch.impl.query;
 
 import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.query.BooleanQuery;
 import com.liferay.portal.search.query.Queries;
 import com.liferay.portal.search.query.Query;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
-import org.osgi.service.component.annotations.ReferencePolicyOption;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.liferay.portal.search.tuning.gsearch.api.configuration.CoreConfigurationHelper;
 import com.liferay.portal.search.tuning.gsearch.api.constants.ClauseConfigurationKeys;
 import com.liferay.portal.search.tuning.gsearch.api.constants.ClauseConfigurationValues;
@@ -35,6 +22,21 @@ import com.liferay.portal.search.tuning.gsearch.api.query.context.QueryContext;
 import com.liferay.portal.search.tuning.gsearch.api.query.contributor.QueryContributor;
 import com.liferay.portal.search.tuning.gsearch.api.query.filter.FilterBuilder;
 import com.liferay.portal.search.tuning.gsearch.api.query.filter.PermissionFilterQueryBuilder;
+import com.liferay.portal.search.tuning.gsearch.configuration.model.SearchConfiguration;
+import com.liferay.portal.search.tuning.gsearch.configuration.service.SearchConfigurationLocalService;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Query builder implementation.
@@ -72,12 +74,11 @@ public class QueryBuilderImpl implements QueryBuilder {
 	public BooleanQuery buildSearchQuery(QueryContext queryContext) throws Exception {
 
 		// Build query.
-		
+
 		JSONArray configuration = (JSONArray)queryContext.getConfiguration(
 				ConfigurationNames.CLAUSE);
 
 		BooleanQuery query = constructQuery(queryContext, configuration);
-
 		
 		// Process query contributors.
 
@@ -433,4 +434,6 @@ public class QueryBuilderImpl implements QueryBuilder {
 	)
 	private volatile List<QueryContributor> _queryContributors = null;
 
+	@Reference
+	private SearchConfigurationLocalService _searchConfigurationLocalService;
 }

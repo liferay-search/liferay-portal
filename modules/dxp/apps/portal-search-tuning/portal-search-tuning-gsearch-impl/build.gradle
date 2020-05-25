@@ -26,6 +26,9 @@ dependencies {
 	compileOnly project(":apps:wiki:wiki-api")
 	
 	compileOnly project(":core:petra:petra-string")
+
 	
 	compileOnly project(":dxp:apps:portal-search-tuning:portal-search-tuning-gsearch-api")
+	compileOnly project(":dxp:apps:portal-search-tuning:portal-search-tuning-gsearch-configuration-api")
+
 }
