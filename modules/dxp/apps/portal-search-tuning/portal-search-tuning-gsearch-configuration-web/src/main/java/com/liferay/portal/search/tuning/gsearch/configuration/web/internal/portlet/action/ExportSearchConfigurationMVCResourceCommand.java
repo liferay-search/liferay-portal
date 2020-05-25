@@ -15,6 +15,9 @@
 package com.liferay.portal.search.tuning.gsearch.configuration.web.internal.portlet.action;
 
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.json.JSONException;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCResourceCommand;
@@ -70,7 +73,7 @@ public class ExportSearchConfigurationMVCResourceCommand
 				_searchConfigurationService.getSearchConfiguration(
 					searchConfigurationId);
 
-			String configuration = searchConfiguration.getConfiguration();
+			String configuration = _getConfiguration(searchConfiguration);
 
 			String title = _getFileTitle(resourceRequest, searchConfiguration);
 
@@ -95,6 +98,21 @@ public class ExportSearchConfigurationMVCResourceCommand
 			SessionErrors.add(resourceRequest, "errorDetails", portalException);
 		}
 	}
+	
+	private String _getConfiguration(SearchConfiguration searchConfiguration) {
+		
+		String configuration = searchConfiguration.getConfiguration();
+		
+		try {
+			JSONObject jsonObject = JSONFactoryUtil.createJSONObject(configuration);
+			return jsonObject.toString(4);
+
+		} catch (JSONException e) {
+			_log.error(e.getMessage(), e);
+		}
+		
+		return configuration;
+	}
 
 	private String _getFileTitle(
 		ResourceRequest resourceRequest,
@@ -107,8 +125,8 @@ public class ExportSearchConfigurationMVCResourceCommand
 			themeDisplay.getLocale(), true);
 
 		return title + ".json";
-	}
-
+	}	
+	
 	private void _writeResponse(
 		ResourceRequest resourceRequest, ResourceResponse resourceResponse,
 		String title, String configuration) {
@@ -133,7 +151,7 @@ public class ExportSearchConfigurationMVCResourceCommand
 			SessionErrors.add(resourceRequest, "errorDetails", ioException);
 		}
 	}
-
+	
 	private static final Log _log = LogFactoryUtil.getLog(
 		ExportSearchConfigurationMVCResourceCommand.class);
 
