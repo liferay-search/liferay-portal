@@ -52,7 +52,7 @@ import com.liferay.portal.search.tuning.gsearch.configuration.service.SearchConf
 public class SearchConfigurationServiceHttp {
 
 	public static com.liferay.portal.search.tuning.gsearch.configuration.model.
-		SearchConfiguration addConfiguration(
+		SearchConfiguration addCompanySearchConfiguration(
 				HttpPrincipal httpPrincipal,
 				java.util.Map<java.util.Locale, String> titleMap,
 				java.util.Map<java.util.Locale, String> descriptionMap,
@@ -62,8 +62,9 @@ public class SearchConfigurationServiceHttp {
 
 		try {
 			MethodKey methodKey = new MethodKey(
-				SearchConfigurationServiceUtil.class, "addConfiguration",
-				_addConfigurationParameterTypes0);
+				SearchConfigurationServiceUtil.class,
+				"addCompanySearchConfiguration",
+				_addCompanySearchConfigurationParameterTypes0);
 
 			MethodHandler methodHandler = new MethodHandler(
 				methodKey, titleMap, descriptionMap, configuration, type,
@@ -99,17 +100,23 @@ public class SearchConfigurationServiceHttp {
 	}
 
 	public static com.liferay.portal.search.tuning.gsearch.configuration.model.
-		SearchConfiguration deleteConfiguration(
-				HttpPrincipal httpPrincipal, long searchConfigurationId)
+		SearchConfiguration addGroupSearchConfiguration(
+				HttpPrincipal httpPrincipal,
+				java.util.Map<java.util.Locale, String> titleMap,
+				java.util.Map<java.util.Locale, String> descriptionMap,
+				String configuration, int type,
+				com.liferay.portal.kernel.service.ServiceContext serviceContext)
 			throws com.liferay.portal.kernel.exception.PortalException {
 
 		try {
 			MethodKey methodKey = new MethodKey(
-				SearchConfigurationServiceUtil.class, "deleteConfiguration",
-				_deleteConfigurationParameterTypes1);
+				SearchConfigurationServiceUtil.class,
+				"addGroupSearchConfiguration",
+				_addGroupSearchConfigurationParameterTypes1);
 
 			MethodHandler methodHandler = new MethodHandler(
-				methodKey, searchConfigurationId);
+				methodKey, titleMap, descriptionMap, configuration, type,
+				serviceContext);
 
 			Object returnObj = null;
 
@@ -141,14 +148,15 @@ public class SearchConfigurationServiceHttp {
 	}
 
 	public static com.liferay.portal.search.tuning.gsearch.configuration.model.
-		SearchConfiguration getConfiguration(
+		SearchConfiguration deleteSearchConfiguration(
 				HttpPrincipal httpPrincipal, long searchConfigurationId)
 			throws com.liferay.portal.kernel.exception.PortalException {
 
 		try {
 			MethodKey methodKey = new MethodKey(
-				SearchConfigurationServiceUtil.class, "getConfiguration",
-				_getConfigurationParameterTypes2);
+				SearchConfigurationServiceUtil.class,
+				"deleteSearchConfiguration",
+				_deleteSearchConfigurationParameterTypes2);
 
 			MethodHandler methodHandler = new MethodHandler(
 				methodKey, searchConfigurationId);
@@ -184,54 +192,18 @@ public class SearchConfigurationServiceHttp {
 
 	public static java.util.List
 		<com.liferay.portal.search.tuning.gsearch.configuration.model.
-			SearchConfiguration> getGroupConfigurations(
-				HttpPrincipal httpPrincipal, long groupId, int type, int start,
-				int end) {
-
-		try {
-			MethodKey methodKey = new MethodKey(
-				SearchConfigurationServiceUtil.class, "getGroupConfigurations",
-				_getGroupConfigurationsParameterTypes3);
-
-			MethodHandler methodHandler = new MethodHandler(
-				methodKey, groupId, type, start, end);
-
-			Object returnObj = null;
-
-			try {
-				returnObj = TunnelUtil.invoke(httpPrincipal, methodHandler);
-			}
-			catch (Exception exception) {
-				throw new com.liferay.portal.kernel.exception.SystemException(
-					exception);
-			}
-
-			return (java.util.List
-				<com.liferay.portal.search.tuning.gsearch.configuration.model.
-					SearchConfiguration>)returnObj;
-		}
-		catch (com.liferay.portal.kernel.exception.SystemException
-					systemException) {
-
-			_log.error(systemException, systemException);
-
-			throw systemException;
-		}
-	}
-
-	public static java.util.List
-		<com.liferay.portal.search.tuning.gsearch.configuration.model.
-			SearchConfiguration> getGroupConfigurations(
-				HttpPrincipal httpPrincipal, long groupId, int status, int type,
+			SearchConfiguration> getGroupSearchConfigurations(
+				HttpPrincipal httpPrincipal, long companyId, int type,
 				int start, int end) {
 
 		try {
 			MethodKey methodKey = new MethodKey(
-				SearchConfigurationServiceUtil.class, "getGroupConfigurations",
-				_getGroupConfigurationsParameterTypes4);
+				SearchConfigurationServiceUtil.class,
+				"getGroupSearchConfigurations",
+				_getGroupSearchConfigurationsParameterTypes3);
 
 			MethodHandler methodHandler = new MethodHandler(
-				methodKey, groupId, status, type, start, end);
+				methodKey, companyId, type, start, end);
 
 			Object returnObj = null;
 
@@ -258,20 +230,59 @@ public class SearchConfigurationServiceHttp {
 
 	public static java.util.List
 		<com.liferay.portal.search.tuning.gsearch.configuration.model.
-			SearchConfiguration> getGroupConfigurations(
-				HttpPrincipal httpPrincipal, long groupId, int status, int type,
-				int start, int end,
+			SearchConfiguration> getGroupSearchConfigurations(
+				HttpPrincipal httpPrincipal, long companyId, int status,
+				int type, int start, int end) {
+
+		try {
+			MethodKey methodKey = new MethodKey(
+				SearchConfigurationServiceUtil.class,
+				"getGroupSearchConfigurations",
+				_getGroupSearchConfigurationsParameterTypes4);
+
+			MethodHandler methodHandler = new MethodHandler(
+				methodKey, companyId, status, type, start, end);
+
+			Object returnObj = null;
+
+			try {
+				returnObj = TunnelUtil.invoke(httpPrincipal, methodHandler);
+			}
+			catch (Exception exception) {
+				throw new com.liferay.portal.kernel.exception.SystemException(
+					exception);
+			}
+
+			return (java.util.List
+				<com.liferay.portal.search.tuning.gsearch.configuration.model.
+					SearchConfiguration>)returnObj;
+		}
+		catch (com.liferay.portal.kernel.exception.SystemException
+					systemException) {
+
+			_log.error(systemException, systemException);
+
+			throw systemException;
+		}
+	}
+
+	public static java.util.List
+		<com.liferay.portal.search.tuning.gsearch.configuration.model.
+			SearchConfiguration> getGroupSearchConfigurations(
+				HttpPrincipal httpPrincipal, long companyId, int status,
+				int type, int start, int end,
 				com.liferay.portal.kernel.util.OrderByComparator
 					<com.liferay.portal.search.tuning.gsearch.configuration.
 						model.SearchConfiguration> orderByComparator) {
 
 		try {
 			MethodKey methodKey = new MethodKey(
-				SearchConfigurationServiceUtil.class, "getGroupConfigurations",
-				_getGroupConfigurationsParameterTypes5);
+				SearchConfigurationServiceUtil.class,
+				"getGroupSearchConfigurations",
+				_getGroupSearchConfigurationsParameterTypes5);
 
 			MethodHandler methodHandler = new MethodHandler(
-				methodKey, groupId, status, type, start, end,
+				methodKey, companyId, status, type, start, end,
 				orderByComparator);
 
 			Object returnObj = null;
@@ -299,20 +310,21 @@ public class SearchConfigurationServiceHttp {
 
 	public static java.util.List
 		<com.liferay.portal.search.tuning.gsearch.configuration.model.
-			SearchConfiguration> getGroupConfigurations(
-				HttpPrincipal httpPrincipal, long groupId, int type, int start,
-				int end,
+			SearchConfiguration> getGroupSearchConfigurations(
+				HttpPrincipal httpPrincipal, long companyId, int type,
+				int start, int end,
 				com.liferay.portal.kernel.util.OrderByComparator
 					<com.liferay.portal.search.tuning.gsearch.configuration.
 						model.SearchConfiguration> orderByComparator) {
 
 		try {
 			MethodKey methodKey = new MethodKey(
-				SearchConfigurationServiceUtil.class, "getGroupConfigurations",
-				_getGroupConfigurationsParameterTypes6);
+				SearchConfigurationServiceUtil.class,
+				"getGroupSearchConfigurations",
+				_getGroupSearchConfigurationsParameterTypes6);
 
 			MethodHandler methodHandler = new MethodHandler(
-				methodKey, groupId, type, start, end, orderByComparator);
+				methodKey, companyId, type, start, end, orderByComparator);
 
 			Object returnObj = null;
 
@@ -337,17 +349,17 @@ public class SearchConfigurationServiceHttp {
 		}
 	}
 
-	public static int getGroupConfigurationsCount(
-		HttpPrincipal httpPrincipal, long groupId, int type) {
+	public static int getGroupSearchConfigurationsCount(
+		HttpPrincipal httpPrincipal, long companyId, int type) {
 
 		try {
 			MethodKey methodKey = new MethodKey(
 				SearchConfigurationServiceUtil.class,
-				"getGroupConfigurationsCount",
-				_getGroupConfigurationsCountParameterTypes7);
+				"getGroupSearchConfigurationsCount",
+				_getGroupSearchConfigurationsCountParameterTypes7);
 
 			MethodHandler methodHandler = new MethodHandler(
-				methodKey, groupId, type);
+				methodKey, companyId, type);
 
 			Object returnObj = null;
 
@@ -370,17 +382,17 @@ public class SearchConfigurationServiceHttp {
 		}
 	}
 
-	public static int getGroupConfigurationsCount(
-		HttpPrincipal httpPrincipal, long groupId, int status, int type) {
+	public static int getGroupSearchConfigurationsCount(
+		HttpPrincipal httpPrincipal, long companyId, int status, int type) {
 
 		try {
 			MethodKey methodKey = new MethodKey(
 				SearchConfigurationServiceUtil.class,
-				"getGroupConfigurationsCount",
-				_getGroupConfigurationsCountParameterTypes8);
+				"getGroupSearchConfigurationsCount",
+				_getGroupSearchConfigurationsCountParameterTypes8);
 
 			MethodHandler methodHandler = new MethodHandler(
-				methodKey, groupId, status, type);
+				methodKey, companyId, status, type);
 
 			Object returnObj = null;
 
@@ -404,7 +416,49 @@ public class SearchConfigurationServiceHttp {
 	}
 
 	public static com.liferay.portal.search.tuning.gsearch.configuration.model.
-		SearchConfiguration updateConfiguration(
+		SearchConfiguration getSearchConfiguration(
+				HttpPrincipal httpPrincipal, long searchConfigurationId)
+			throws com.liferay.portal.kernel.exception.PortalException {
+
+		try {
+			MethodKey methodKey = new MethodKey(
+				SearchConfigurationServiceUtil.class, "getSearchConfiguration",
+				_getSearchConfigurationParameterTypes9);
+
+			MethodHandler methodHandler = new MethodHandler(
+				methodKey, searchConfigurationId);
+
+			Object returnObj = null;
+
+			try {
+				returnObj = TunnelUtil.invoke(httpPrincipal, methodHandler);
+			}
+			catch (Exception exception) {
+				if (exception instanceof
+						com.liferay.portal.kernel.exception.PortalException) {
+
+					throw (com.liferay.portal.kernel.exception.PortalException)
+						exception;
+				}
+
+				throw new com.liferay.portal.kernel.exception.SystemException(
+					exception);
+			}
+
+			return (com.liferay.portal.search.tuning.gsearch.configuration.
+				model.SearchConfiguration)returnObj;
+		}
+		catch (com.liferay.portal.kernel.exception.SystemException
+					systemException) {
+
+			_log.error(systemException, systemException);
+
+			throw systemException;
+		}
+	}
+
+	public static com.liferay.portal.search.tuning.gsearch.configuration.model.
+		SearchConfiguration updateSearchConfiguration(
 				HttpPrincipal httpPrincipal, long searchConfigurationId,
 				java.util.Map<java.util.Locale, String> titleMap,
 				java.util.Map<java.util.Locale, String> descriptionMap,
@@ -414,8 +468,9 @@ public class SearchConfigurationServiceHttp {
 
 		try {
 			MethodKey methodKey = new MethodKey(
-				SearchConfigurationServiceUtil.class, "updateConfiguration",
-				_updateConfigurationParameterTypes9);
+				SearchConfigurationServiceUtil.class,
+				"updateSearchConfiguration",
+				_updateSearchConfigurationParameterTypes10);
 
 			MethodHandler methodHandler = new MethodHandler(
 				methodKey, searchConfigurationId, titleMap, descriptionMap,
@@ -453,38 +508,47 @@ public class SearchConfigurationServiceHttp {
 	private static Log _log = LogFactoryUtil.getLog(
 		SearchConfigurationServiceHttp.class);
 
-	private static final Class<?>[] _addConfigurationParameterTypes0 =
-		new Class[] {
+	private static final Class<?>[]
+		_addCompanySearchConfigurationParameterTypes0 = new Class[] {
 			java.util.Map.class, java.util.Map.class, String.class, int.class,
 			com.liferay.portal.kernel.service.ServiceContext.class
 		};
-	private static final Class<?>[] _deleteConfigurationParameterTypes1 =
+	private static final Class<?>[]
+		_addGroupSearchConfigurationParameterTypes1 = new Class[] {
+			java.util.Map.class, java.util.Map.class, String.class, int.class,
+			com.liferay.portal.kernel.service.ServiceContext.class
+		};
+	private static final Class<?>[] _deleteSearchConfigurationParameterTypes2 =
 		new Class[] {long.class};
-	private static final Class<?>[] _getConfigurationParameterTypes2 =
-		new Class[] {long.class};
-	private static final Class<?>[] _getGroupConfigurationsParameterTypes3 =
-		new Class[] {long.class, int.class, int.class, int.class};
-	private static final Class<?>[] _getGroupConfigurationsParameterTypes4 =
-		new Class[] {long.class, int.class, int.class, int.class, int.class};
-	private static final Class<?>[] _getGroupConfigurationsParameterTypes5 =
-		new Class[] {
+	private static final Class<?>[]
+		_getGroupSearchConfigurationsParameterTypes3 = new Class[] {
+			long.class, int.class, int.class, int.class
+		};
+	private static final Class<?>[]
+		_getGroupSearchConfigurationsParameterTypes4 = new Class[] {
+			long.class, int.class, int.class, int.class, int.class
+		};
+	private static final Class<?>[]
+		_getGroupSearchConfigurationsParameterTypes5 = new Class[] {
 			long.class, int.class, int.class, int.class, int.class,
 			com.liferay.portal.kernel.util.OrderByComparator.class
 		};
-	private static final Class<?>[] _getGroupConfigurationsParameterTypes6 =
-		new Class[] {
+	private static final Class<?>[]
+		_getGroupSearchConfigurationsParameterTypes6 = new Class[] {
 			long.class, int.class, int.class, int.class,
 			com.liferay.portal.kernel.util.OrderByComparator.class
 		};
 	private static final Class<?>[]
-		_getGroupConfigurationsCountParameterTypes7 = new Class[] {
+		_getGroupSearchConfigurationsCountParameterTypes7 = new Class[] {
 			long.class, int.class
 		};
 	private static final Class<?>[]
-		_getGroupConfigurationsCountParameterTypes8 = new Class[] {
+		_getGroupSearchConfigurationsCountParameterTypes8 = new Class[] {
 			long.class, int.class, int.class
 		};
-	private static final Class<?>[] _updateConfigurationParameterTypes9 =
+	private static final Class<?>[] _getSearchConfigurationParameterTypes9 =
+		new Class[] {long.class};
+	private static final Class<?>[] _updateSearchConfigurationParameterTypes10 =
 		new Class[] {
 			long.class, java.util.Map.class, java.util.Map.class, String.class,
 			com.liferay.portal.kernel.service.ServiceContext.class

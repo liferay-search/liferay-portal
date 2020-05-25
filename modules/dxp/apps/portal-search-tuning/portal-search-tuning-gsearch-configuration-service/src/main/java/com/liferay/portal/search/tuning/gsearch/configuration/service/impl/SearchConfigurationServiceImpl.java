@@ -16,16 +16,17 @@ package com.liferay.portal.search.tuning.gsearch.configuration.service.impl;
 
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 import com.liferay.portal.kernel.security.permission.resource.PortletResourcePermission;
+import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.search.tuning.gsearch.configuration.constants.SearchConfigurationActionKeys;
 import com.liferay.portal.search.tuning.gsearch.configuration.constants.SearchConfigurationConstants;
-import com.liferay.portal.search.tuning.gsearch.configuration.constants.SearchConfigurationTypes;
 import com.liferay.portal.search.tuning.gsearch.configuration.model.SearchConfiguration;
 import com.liferay.portal.search.tuning.gsearch.configuration.service.SearchConfigurationLocalService;
 import com.liferay.portal.search.tuning.gsearch.configuration.service.base.SearchConfigurationServiceBaseImpl;
@@ -62,139 +63,176 @@ import org.osgi.service.component.annotations.ReferencePolicyOption;
 public class SearchConfigurationServiceImpl
 	extends SearchConfigurationServiceBaseImpl {
 
-	public SearchConfiguration addConfiguration(
-			Map<Locale, String> titleMap,
-			Map<Locale, String> descriptionMap, String configuration, int type,
-			ServiceContext serviceContext)
+	public SearchConfiguration addCompanySearchConfiguration(
+			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
+			String configuration, int type, ServiceContext serviceContext)
 		throws PortalException {
 
-		String actionKey = SearchConfigurationActionKeys.
-				getTypedActionKey(type, ActionKeys.ADD_ENTRY);
-		
-		_portletResourcePermission.check(
-			getPermissionChecker(), serviceContext.getScopeGroupId(),
-			actionKey);
+		String actionKey =
+			SearchConfigurationActionKeys.
+				getActionKeyForSearchConfigurationType(
+					type, ActionKeys.ADD_ENTRY);
 
-		return searchConfigurationLocalService.addConfiguration(
-			getUserId(), titleMap, descriptionMap, configuration, type,
+		long groupId = _getCompanyGroupId(serviceContext);
+
+		_portletResourcePermission.check(
+			getPermissionChecker(), groupId, actionKey);
+
+		return searchConfigurationLocalService.addSearchConfiguration(
+			getUserId(), groupId, titleMap, descriptionMap, configuration, type,
 			serviceContext);
 	}
 
-	public SearchConfiguration deleteConfiguration(long searchConfigurationId)
+	public SearchConfiguration addGroupSearchConfiguration(
+			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
+			String configuration, int type, ServiceContext serviceContext)
 		throws PortalException {
 
-		SearchConfiguration searchConfiguration =
-				_searchConfigurationLocalService.getSearchConfiguration(
-					searchConfigurationId);
-		
-		int type = searchConfiguration.getType();
-		
-		String actionKey = SearchConfigurationActionKeys.
-				getTypedActionKey(type, ActionKeys.DELETE);
+		String actionKey =
+			SearchConfigurationActionKeys.
+				getActionKeyForSearchConfigurationType(
+					type, ActionKeys.ADD_ENTRY);
 
-		_searchConfigurationModelResourcePermission.check(
-			getPermissionChecker(), searchConfigurationId, actionKey);
+		long groupId = serviceContext.getScopeGroupId();
 
-		return searchConfigurationLocalService.deleteConfiguration(
-			searchConfigurationId);
+		_portletResourcePermission.check(
+			getPermissionChecker(), groupId, actionKey);
+
+		return searchConfigurationLocalService.addSearchConfiguration(
+			getUserId(), groupId, titleMap, descriptionMap, configuration, type,
+			serviceContext);
 	}
-
-	public SearchConfiguration getConfiguration(long searchConfigurationId)
+	
+	public SearchConfiguration deleteSearchConfiguration(
+			long searchConfigurationId)
 		throws PortalException {
 
 		SearchConfiguration searchConfiguration =
 			_searchConfigurationLocalService.getSearchConfiguration(
 				searchConfigurationId);
-		
-		int type = searchConfiguration.getType();
 
-		String actionKey = SearchConfigurationActionKeys.
-				getTypedActionKey(type, ActionKeys.VIEW);
+		String actionKey =
+			SearchConfigurationActionKeys.
+				getActionKeyForSearchConfigurationType(
+					searchConfiguration.getType(), ActionKeys.DELETE);
 
 		_searchConfigurationModelResourcePermission.check(
-				getPermissionChecker(), searchConfiguration, 
-				actionKey);
-		
-		return searchConfiguration;
+			getPermissionChecker(), searchConfigurationId, actionKey);
+
+		return searchConfigurationLocalService.deleteSearchConfiguration(
+			searchConfigurationId);
 	}
 
-	public List<SearchConfiguration> getGroupConfigurations(
-		long groupId, int type, int start, int end) {
+	public List<SearchConfiguration> getGroupSearchConfigurations(
+		long companyId, int type, int start, int end) {
 
-		return getGroupConfigurations(
-			groupId, WorkflowConstants.STATUS_APPROVED, type, start, end);
+		return getGroupSearchConfigurations(
+			companyId, WorkflowConstants.STATUS_APPROVED, type, start, end);
 	}
 
-	public List<SearchConfiguration> getGroupConfigurations(
-		long groupId, int status, int type, int start, int end) {
+	public List<SearchConfiguration> getGroupSearchConfigurations(
+		long companyId, int status, int type, int start, int end) {
 
 		if (status == WorkflowConstants.STATUS_ANY) {
 			return searchConfigurationPersistence.filterFindByG_T(
-				groupId, type, start, end);
+				companyId, type, start, end);
 		}
 
 		return searchConfigurationPersistence.filterFindByG_S_T(
-			groupId, status, type, start, end);
+			companyId, status, type, start, end);
 	}
 
-	public List<SearchConfiguration> getGroupConfigurations(
-		long groupId, int status, int type, int start, int end,
+	public List<SearchConfiguration> getGroupSearchConfigurations(
+		long companyId, int status, int type, int start, int end,
 		OrderByComparator<SearchConfiguration> orderByComparator) {
 
 		if (status == WorkflowConstants.STATUS_ANY) {
 			return searchConfigurationPersistence.findByG_T(
-				groupId, type, start, end, orderByComparator);
+				companyId, type, start, end, orderByComparator);
 		}
 
 		return searchConfigurationPersistence.filterFindByG_S_T(
-			groupId, status, type, start, end, orderByComparator);
+			companyId, status, type, start, end, orderByComparator);
 	}
 
-	public List<SearchConfiguration> getGroupConfigurations(
-		long groupId, int type, int start, int end,
+	public List<SearchConfiguration> getGroupSearchConfigurations(
+		long companyId, int type, int start, int end,
 		OrderByComparator<SearchConfiguration> orderByComparator) {
 
-		return getGroupConfigurations(
-			groupId, WorkflowConstants.STATUS_APPROVED, type, start, end,
+		return getGroupSearchConfigurations(
+			companyId, WorkflowConstants.STATUS_APPROVED, type, start, end,
 			orderByComparator);
 	}
 
-	public int getGroupConfigurationsCount(long groupId, int type) {
-		return getGroupConfigurationsCount(
-			groupId, WorkflowConstants.STATUS_APPROVED, type);
+	public int getGroupSearchConfigurationsCount(long companyId, int type) {
+		return getGroupSearchConfigurationsCount(
+			companyId, WorkflowConstants.STATUS_APPROVED, type);
 	}
 
-	public int getGroupConfigurationsCount(long groupId, int status, int type) {
+	public int getGroupSearchConfigurationsCount(
+		long companyId, int status, int type) {
+
 		if (status == WorkflowConstants.STATUS_ANY) {
-			return searchConfigurationPersistence.countByG_T(groupId, type);
+			return searchConfigurationPersistence.countByG_T(companyId, type);
 		}
 
 		return searchConfigurationPersistence.countByG_S_T(
-			groupId, status, type);
+			companyId, status, type);
 	}
 
-	public SearchConfiguration updateConfiguration(
+	public SearchConfiguration getSearchConfiguration(
+			long searchConfigurationId)
+		throws PortalException {
+
+		SearchConfiguration searchConfiguration =
+			_searchConfigurationLocalService.getSearchConfiguration(
+				searchConfigurationId);
+
+		String actionKey =
+			SearchConfigurationActionKeys.
+				getActionKeyForSearchConfigurationType(
+					searchConfiguration.getType(), ActionKeys.VIEW);
+
+		_searchConfigurationModelResourcePermission.check(
+			getPermissionChecker(), searchConfiguration, actionKey);
+
+		return searchConfiguration;
+	}
+
+	public SearchConfiguration updateSearchConfiguration(
 			long searchConfigurationId, Map<Locale, String> titleMap,
 			Map<Locale, String> descriptionMap, String configuration,
 			ServiceContext serviceContext)
 		throws PortalException {
 
 		SearchConfiguration searchConfiguration =
-				_searchConfigurationLocalService.getSearchConfiguration(
-					searchConfigurationId);
-			
-		int type = searchConfiguration.getType();
-	
-		String actionKey = SearchConfigurationActionKeys.
-				getTypedActionKey(type, ActionKeys.UPDATE);
-		
+			_searchConfigurationLocalService.getSearchConfiguration(
+				searchConfigurationId);
+
+		String actionKey =
+			SearchConfigurationActionKeys.
+				getActionKeyForSearchConfigurationType(
+					searchConfiguration.getType(), ActionKeys.UPDATE);
+
 		_searchConfigurationModelResourcePermission.check(
 			getPermissionChecker(), searchConfigurationId, actionKey);
 
-		return _searchConfigurationLocalService.updateConfiguration(
+		return _searchConfigurationLocalService.updateSearchConfiguration(
 			getUserId(), searchConfigurationId, titleMap, descriptionMap,
 			configuration, serviceContext);
 	}
+
+	private long _getCompanyGroupId(ServiceContext serviceContext)
+		throws PortalException {
+
+		Company company = _companyLocalService.getCompany(
+			serviceContext.getCompanyId());
+
+		return company.getGroupId();
+	}
+
+	@Reference
+	private CompanyLocalService _companyLocalService;
 
 	@Reference(
 		policy = ReferencePolicy.DYNAMIC,
