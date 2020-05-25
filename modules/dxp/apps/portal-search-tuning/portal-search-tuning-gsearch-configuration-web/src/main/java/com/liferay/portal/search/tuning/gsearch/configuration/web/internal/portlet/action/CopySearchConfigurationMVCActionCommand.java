@@ -16,6 +16,8 @@ package com.liferay.portal.search.tuning.gsearch.configuration.web.internal.port
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.Language;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.service.ServiceContext;
@@ -31,6 +33,7 @@ import com.liferay.portal.search.tuning.gsearch.configuration.web.internal.const
 import com.liferay.portal.search.tuning.gsearch.configuration.web.internal.constants.SearchConfigurationWebKeys;
 
 import java.io.IOException;
+
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -40,8 +43,6 @@ import javax.portlet.ActionResponse;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Petteri Karttunen
@@ -66,79 +67,84 @@ public class CopySearchConfigurationMVCActionCommand
 			actionRequest, SearchConfigurationWebKeys.SEARCH_CONFIGURATION_ID);
 
 		try {
-			SearchConfiguration  sourceSearchConfiguration =
+			SearchConfiguration sourceSearchConfiguration =
 				_searchConfigurationService.getSearchConfiguration(
 					searchConfigurationId);
-			
-			_createCopy(actionRequest, actionResponse, 
-					sourceSearchConfiguration);
+
+			_createCopy(
+				actionRequest, actionResponse, sourceSearchConfiguration);
 		}
-		catch (NoSuchConfigurationException nsce) {
+		catch (NoSuchConfigurationException noSuchConfigurationException) {
+			_log.error(
+				"Search configuration " + searchConfigurationId + " not found.",
+				noSuchConfigurationException);
 
-			_log.error("Search configuration " + searchConfigurationId + 
-					" not found.", nsce);
-
-			SessionErrors.add(actionRequest, 
-					SearchConfigurationWebKeys.ERROR_DETAILS, nsce);
-
+			SessionErrors.add(
+				actionRequest, SearchConfigurationWebKeys.ERROR_DETAILS,
+				noSuchConfigurationException);
 		}
-		catch (PortalException pe) {
+		catch (PortalException portalException) {
+			_log.error(portalException.getMessage(), portalException);
 
-			_log.error(pe.getMessage(), pe);
-
-			SessionErrors.add(actionRequest, 
-					SearchConfigurationWebKeys.ERROR_DETAILS, pe);
+			SessionErrors.add(
+				actionRequest, SearchConfigurationWebKeys.ERROR_DETAILS,
+				portalException);
 		}
 	}
 
-	private void _createCopy(ActionRequest actionRequest, ActionResponse actionResponse, 
-			SearchConfiguration sourceSearchConfiguration) {
+	private void _createCopy(
+		ActionRequest actionRequest, ActionResponse actionResponse,
+		SearchConfiguration sourceSearchConfiguration) {
+
 		try {
 			ServiceContext serviceContext = ServiceContextFactory.getInstance(
 				SearchConfiguration.class.getName(), actionRequest);
 
 			Map<Locale, String> titleMap = _getTargetTitleMap(
 				sourceSearchConfiguration);
-			Map<Locale, String> descriptionMap =
-				sourceSearchConfiguration.getDescriptionMap();
-			String configuration = sourceSearchConfiguration.getConfiguration();
-			int type = sourceSearchConfiguration.getType();
 
 			_searchConfigurationService.addCompanySearchConfiguration(
-				titleMap, descriptionMap, configuration, type, serviceContext);
+				titleMap, sourceSearchConfiguration.getDescriptionMap(),
+				sourceSearchConfiguration.getConfiguration(),
+				sourceSearchConfiguration.getType(), serviceContext);
 
 			sendRedirect(actionRequest, actionResponse);
 		}
-		catch (SearchConfigurationValidationException scve) {
+		catch (SearchConfigurationValidationException
+					searchConfigurationValidationException) {
 
-			_log.error(scve.getMessage(), scve);
+			_log.error(
+				searchConfigurationValidationException.getMessage(),
+				searchConfigurationValidationException);
 
-			scve.getErrors().forEach(key -> SessionErrors.add(actionRequest, key));
+			searchConfigurationValidationException.getErrors(
+			).forEach(
+				key -> SessionErrors.add(actionRequest, key)
+			);
 		}
-		catch (PortalException pe) {
+		catch (PortalException portalException) {
+			_log.error(portalException.getMessage(), portalException);
 
-			_log.error(pe.getMessage(), pe);
+			SessionErrors.add(
+				actionRequest, SearchConfigurationWebKeys.ERROR_DETAILS,
+				portalException);
+		}
+		catch (IOException ioException) {
+			SessionErrors.add(
+				actionRequest, SearchConfigurationWebKeys.ERROR_DETAILS,
+				ioException);
 
-			SessionErrors.add(actionRequest,  
-					SearchConfigurationWebKeys.ERROR_DETAILS, pe);
-
-		} catch (IOException ioe) {
-
-			SessionErrors.add(actionRequest, 
-					SearchConfigurationWebKeys.ERROR_DETAILS, ioe);
-
-			_log.error(ioe.getMessage(), ioe);
+			_log.error(ioException.getMessage(), ioException);
 		}
 	}
-	
-	private Map<Locale, String> _getTargetTitleMap(
-			SearchConfiguration searchConfiguration) {
 
+	private Map<Locale, String> _getTargetTitleMap(
+		SearchConfiguration searchConfiguration) {
+
+		Map<Locale, String> sourceTitleMap = searchConfiguration.getTitleMap();
 		Map<Locale, String> targetTitleMap = new HashMap<>();
 
-		for (Map.Entry<Locale, String> entry :
-				searchConfiguration.getTitleMap().entrySet()) {
-
+		for (Map.Entry<Locale, String> entry : sourceTitleMap.entrySet()) {
 			targetTitleMap.put(
 				entry.getKey(),
 				entry.getValue() + " (" +
@@ -148,7 +154,7 @@ public class CopySearchConfigurationMVCActionCommand
 		return targetTitleMap;
 	}
 
-	private static final Logger _log = LoggerFactory.getLogger(
+	private static final Log _log = LogFactoryUtil.getLog(
 		CopySearchConfigurationMVCActionCommand.class);
 
 	@Reference

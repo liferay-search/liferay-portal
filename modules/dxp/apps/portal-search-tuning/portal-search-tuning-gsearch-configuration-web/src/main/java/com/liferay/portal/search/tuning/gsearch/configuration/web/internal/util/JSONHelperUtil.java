@@ -53,7 +53,7 @@ public class JSONHelperUtil {
 		String[] array = new String[section.length()];
 
 		for (int i = 0; i < section.length(); i++) {
-			array[i] = section.getJSONObject(i).toString(4);
+			array[i] = section.getString(i);
 		}
 
 		return array;

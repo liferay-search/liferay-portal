@@ -51,7 +51,7 @@ page import="com.liferay.portal.search.tuning.gsearch.configuration.web.internal
 page import="com.liferay.portal.search.tuning.gsearch.configuration.web.internal.display.context.SearchConfigurationEntriesManagementToolbarDisplayContext" %><%@
 page import="com.liferay.portal.search.tuning.gsearch.configuration.web.internal.security.permission.resource.SearchConfigurationPermission"%><%@
 page import="com.liferay.portal.search.tuning.gsearch.configuration.web.internal.security.permission.resource.SearchConfigurationEntryPermission"%><%@
-page import="com.liferay.portal.search.tuning.gsearch.configuration.web.internal.util.JSONHelper"%>
+page import="com.liferay.portal.search.tuning.gsearch.configuration.web.internal.util.JSONHelperUtil"%>
 
 <%@ page import="javax.portlet.PortletURL" %>
 

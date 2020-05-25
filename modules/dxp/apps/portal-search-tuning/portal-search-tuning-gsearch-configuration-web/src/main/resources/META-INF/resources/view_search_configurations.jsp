@@ -14,7 +14,7 @@
  */
 --%>
 
-<%@ include file="./init.jsp" %>
+<%@ include file="/init.jsp" %>
 
 <%
 SearchConfigurationEntriesManagementToolbarDisplayContext searchConfigurationEntriesManagementToolbarDisplayContext = (SearchConfigurationEntriesManagementToolbarDisplayContext)request.getAttribute(SearchConfigurationWebKeys.SEARCH_CONFIGURATION_ENTRIES_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT);

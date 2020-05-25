@@ -15,6 +15,8 @@
 package com.liferay.portal.search.tuning.gsearch.configuration.web.internal.portlet.action;
 
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCResourceCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCResourceCommand;
 import com.liferay.portal.kernel.servlet.SessionErrors;
@@ -40,9 +42,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * @author Petteri Karttunen
  */
@@ -67,54 +66,55 @@ public class ExportSearchConfigurationMVCResourceCommand
 			SearchConfigurationWebKeys.SEARCH_CONFIGURATION_ID);
 
 		try {
-
 			SearchConfiguration searchConfiguration =
 				_searchConfigurationService.getSearchConfiguration(
 					searchConfigurationId);
-			
+
 			String configuration = searchConfiguration.getConfiguration();
 
 			String title = _getFileTitle(resourceRequest, searchConfiguration);
-			
-			_writeResponse(resourceRequest, resourceResponse, title, configuration);
-			
+
+			_writeResponse(
+				resourceRequest, resourceResponse, title, configuration);
 		}
-		catch (NoSuchConfigurationException nsce) {
+		catch (NoSuchConfigurationException noSuchConfigurationException) {
+			_log.error(
+				"Search configuration " + searchConfigurationId + " not found.",
+				noSuchConfigurationException);
 
-			_log.error("Search configuration " + searchConfigurationId + 
-					" not found.", nsce);
+			SessionErrors.add(
+				resourceRequest, "errorDetails", noSuchConfigurationException);
 
-			SessionErrors.add(resourceRequest, "errorDetails", nsce);
-
-			_log.error(nsce.getMessage(), nsce);
+			_log.error(
+				noSuchConfigurationException.getMessage(),
+				noSuchConfigurationException);
 		}
-		catch (PortalException pe) {
+		catch (PortalException portalException) {
+			_log.error(portalException.getMessage(), portalException);
 
-			_log.error(pe.getMessage(), pe);
-			
-			SessionErrors.add(resourceRequest, "errorDetails", pe);
+			SessionErrors.add(resourceRequest, "errorDetails", portalException);
 		}
 	}
-	
+
 	private String _getFileTitle(
-			ResourceRequest resourceRequest, 
-			SearchConfiguration searchConfiguration) {
-		
+		ResourceRequest resourceRequest,
+		SearchConfiguration searchConfiguration) {
+
 		ThemeDisplay themeDisplay = (ThemeDisplay)resourceRequest.getAttribute(
-				WebKeys.THEME_DISPLAY);
+			WebKeys.THEME_DISPLAY);
 
 		String title = searchConfiguration.getTitle(
-				themeDisplay.getLocale(), true);
-		
-		return title + ".json";
+			themeDisplay.getLocale(), true);
 
+		return title + ".json";
 	}
 
-	private void _writeResponse(ResourceRequest resourceRequest, 
-			ResourceResponse resourceResponse, String title, String configuration) {
-		
+	private void _writeResponse(
+		ResourceRequest resourceRequest, ResourceResponse resourceResponse,
+		String title, String configuration) {
+
 		HttpServletResponse httpServletResponse =
-				_portal.getHttpServletResponse(resourceResponse);
+			_portal.getHttpServletResponse(resourceResponse);
 
 		try {
 			PrintWriter out = httpServletResponse.getWriter();
@@ -126,16 +126,15 @@ public class ExportSearchConfigurationMVCResourceCommand
 
 			out.print(configuration);
 			out.flush();
+		}
+		catch (IOException ioException) {
+			_log.error(ioException.getMessage(), ioException);
 
-		} catch (IOException ioe) {
-
-			_log.error(ioe.getMessage(), ioe);
-			
-			SessionErrors.add(resourceRequest, "errorDetails", ioe);
+			SessionErrors.add(resourceRequest, "errorDetails", ioException);
 		}
 	}
-	
-	private static final Logger _log = LoggerFactory.getLogger(
+
+	private static final Log _log = LogFactoryUtil.getLog(
 		ExportSearchConfigurationMVCResourceCommand.class);
 
 	@Reference
