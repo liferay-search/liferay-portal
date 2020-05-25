@@ -14,6 +14,11 @@
 
 package com.liferay.portal.search.tuning.gsearch.searchrequest.contributor.internal.searcher;
 
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONException;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.search.SearchContext;
@@ -32,6 +37,8 @@ import com.liferay.portal.search.tuning.gsearch.api.constants.ConfigurationNames
 import com.liferay.portal.search.tuning.gsearch.api.constants.ParameterNames;
 import com.liferay.portal.search.tuning.gsearch.api.query.context.QueryContext;
 import com.liferay.portal.search.tuning.gsearch.api.query.context.QueryContextBuilder;
+import com.liferay.portal.search.tuning.gsearch.configuration.model.SearchConfiguration;
+import com.liferay.portal.search.tuning.gsearch.configuration.service.SearchConfigurationLocalService;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -132,7 +139,8 @@ public class GSearchSearchRequestContributor
 			ConfigurationNames.FILTER, _coreConfigurationHelper.getFilters());
 
 		queryContext.setConfiguration(
-			ConfigurationNames.CLAUSE, _coreConfigurationHelper.getClauses());
+			ConfigurationNames.CLAUSE,
+			_getClauseConfiguration(searchConfigurationId));
 
 		queryContext.setConfiguration(
 			ConfigurationNames.FACET, _coreConfigurationHelper.getFacets());
@@ -165,6 +173,19 @@ public class GSearchSearchRequestContributor
 		return queryContext;
 	}
 
+	private JSONArray _getClauseConfiguration(long searchConfigurationId)
+		throws JSONException, PortalException {
+
+		SearchConfiguration searchConfiguration =
+			_searchConfigurationLocalService.getSearchConfiguration(
+				searchConfigurationId);
+
+		JSONObject configurationObject = JSONFactoryUtil.createJSONObject(
+			searchConfiguration.getConfiguration());
+
+		return configurationObject.getJSONArray("clause_configuration");
+	}
+
 	private static final Log _log = LogFactoryUtil.getLog(
 		GSearchSearchRequestContributor.class);
 
@@ -176,6 +197,9 @@ public class GSearchSearchRequestContributor
 
 	@Reference
 	private QueryContextBuilder _queryContextBuilder;
+
+	@Reference
+	private SearchConfigurationLocalService _searchConfigurationLocalService;
 
 	@Reference
 	private SearchRequestBuilderFactory _searchRequestBuilderFactory;
