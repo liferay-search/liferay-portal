@@ -19,6 +19,9 @@ import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.json.JSONUtil;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.service.ServiceContext;
@@ -43,8 +46,6 @@ import javax.portlet.ActionResponse;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Petteri Karttunen
@@ -69,8 +70,8 @@ public class EditSearchConfigurationMVCActionCommand
 			actionRequest, SearchConfigurationWebKeys.SEARCH_CONFIGURATION_ID);
 
 		int type = ParamUtil.getInteger(
-				actionRequest,
-				SearchConfigurationWebKeys.SEARCH_CONFIGURATION_TYPE);
+			actionRequest,
+			SearchConfigurationWebKeys.SEARCH_CONFIGURATION_TYPE);
 
 		Map<Locale, String> titleMap = LocalizationUtil.getLocalizationMap(
 			actionRequest, SearchConfigurationWebKeys.TITLE);
@@ -84,10 +85,9 @@ public class EditSearchConfigurationMVCActionCommand
 		String cmd = ParamUtil.getString(actionRequest, Constants.CMD);
 
 		try {
-			
 			ServiceContext serviceContext = ServiceContextFactory.getInstance(
-					SearchConfiguration.class.getName(), actionRequest);
-			
+				SearchConfiguration.class.getName(), actionRequest);
+
 			if (Constants.ADD.equals(cmd)) {
 				_searchConfigurationService.addCompanySearchConfiguration(
 					titleMap, descriptionMap, configuration, type,
@@ -101,39 +101,47 @@ public class EditSearchConfigurationMVCActionCommand
 
 			sendRedirect(actionRequest, actionResponse);
 		}
-		catch (SearchConfigurationValidationException scve) {
+		catch (SearchConfigurationValidationException
+					searchConfigurationValidationException) {
 
-			_log.error(scve.getMessage(), scve);
+			_log.error(
+				searchConfigurationValidationException.getMessage(),
+				searchConfigurationValidationException);
 
-			scve.getErrors().forEach(key -> SessionErrors.add(actionRequest, key));
-			
-			actionResponse.getRenderParameters().setValue(
-					"mvcRenderCommandName",
-					SearchConfigurationMVCCommandNames.EDIT_SEARCH_CONFIGURATION);
+			searchConfigurationValidationException.getErrors(
+			).forEach(
+				key -> SessionErrors.add(actionRequest, key)
+			);
+
+			actionResponse.getRenderParameters(
+			).setValue(
+				"mvcRenderCommandName",
+				SearchConfigurationMVCCommandNames.EDIT_SEARCH_CONFIGURATION
+			);
 		}
-		catch (PortalException pe) {
+		catch (PortalException portalException) {
+			_log.error(portalException.getMessage(), portalException);
 
-			_log.error(pe.getMessage(), pe);
+			SessionErrors.add(
+				actionRequest, SearchConfigurationWebKeys.ERROR_DETAILS,
+				portalException);
 
-			SessionErrors.add(actionRequest, 
-					SearchConfigurationWebKeys.ERROR_DETAILS, pe);
-
-			actionResponse.getRenderParameters().setValue(
-					"mvcRenderCommandName",
-					SearchConfigurationMVCCommandNames.EDIT_SEARCH_CONFIGURATION);
+			actionResponse.getRenderParameters(
+			).setValue(
+				"mvcRenderCommandName",
+				SearchConfigurationMVCCommandNames.EDIT_SEARCH_CONFIGURATION
+			);
 		}
 	}
 
 	private String _buildConfigurationFromRequest(ActionRequest actionRequest)
 		throws JSONException {
 
-		JSONObject configuration = JSONFactoryUtil.createJSONObject();
-
 		JSONArray clauseConfiguration = _getAutoFieldValues(
 			actionRequest, SearchConfigurationWebKeys.CLAUSE_CONFIGURATION,
 			SearchConfigurationWebKeys.CLAUSE_CONFIGURATION_INDEXES);
 
-		configuration.put(
+		JSONObject configuration = JSONUtil.put(
 			SearchConfigurationKeys.CLAUSE_CONFIGURATION, clauseConfiguration);
 
 		JSONArray misspellings = _getAutoFieldValues(
@@ -172,10 +180,11 @@ public class EditSearchConfigurationMVCActionCommand
 
 		return values;
 	}
-	
-	private static final Logger _log = LoggerFactory.getLogger(
-			EditSearchConfigurationMVCActionCommand.class);
-	
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		EditSearchConfigurationMVCActionCommand.class);
+
 	@Reference
 	private SearchConfigurationService _searchConfigurationService;
+
 }

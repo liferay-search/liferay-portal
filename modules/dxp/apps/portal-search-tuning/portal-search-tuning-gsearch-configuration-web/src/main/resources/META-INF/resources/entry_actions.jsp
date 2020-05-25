@@ -14,12 +14,13 @@
  */
 --%>
 
-<%@ include file="./init.jsp" %>
+<%@ include file="/init.jsp" %>
 
 <%
 ResultRow row = (ResultRow)request.getAttribute(WebKeys.SEARCH_CONTAINER_RESULT_ROW);
 
 SearchConfiguration searchConfiguration = (SearchConfiguration)row.getObject();
+
 long searchConfigurationId = searchConfiguration.getSearchConfigurationId();
 int searchConfigurationType = searchConfiguration.getType();
 %>
