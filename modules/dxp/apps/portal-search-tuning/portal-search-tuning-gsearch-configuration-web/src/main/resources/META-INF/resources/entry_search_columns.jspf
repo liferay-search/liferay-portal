@@ -23,7 +23,7 @@
 <%-- List view --%>
 
 <c:choose>
-	<c:when test='<%= searchConfigurationsDisplayContext.getDisplayStyle().equals("descriptive") %>'>
+	<c:when test='<%= searchConfigurationEntriesDisplayContext.getDisplayStyle().equals("descriptive") %>'>
 		<liferay-ui:search-container-column-user
 			showDetails="<%= false %>"
 			userId="<%= entry.getUserId() %>"
@@ -60,13 +60,13 @@
 		</liferay-ui:search-container-column-text>
 
 		<liferay-ui:search-container-column-jsp
-			path="/search_configurations/entry_actions.jsp"
+			path="/entry_actions.jsp"
 		/>
 	</c:when>
 
 	<%-- Card view --%>
 
-	<c:when test='<%= searchConfigurationsDisplayContext.getDisplayStyle().equals("icon") %>'>
+	<c:when test='<%= searchConfigurationEntriesDisplayContext.getDisplayStyle().equals("icon") %>'>
 
 		<%
 		row.setCssClass("lfr-asset-item");
@@ -74,7 +74,7 @@
 
 		<liferay-ui:search-container-column-text>
 			<liferay-frontend:icon-vertical-card
-				actionJsp="/search_configurations/entry_actions.jsp"
+				actionJsp="/entry_actions.jsp"
 				actionJspServletContext="<%= application %>"
 				icon="cards2"
 				resultRow="<%= row %>"
@@ -122,8 +122,8 @@
 		/>
 
 		<liferay-ui:search-container-column-date
-			name="create-date"
-			property="createDate"
+			name="modified-date"
+			property="modifiedDate"
 		/>
 
 		<liferay-ui:search-container-column-status
@@ -132,7 +132,7 @@
 
 		<liferay-ui:search-container-column-jsp
 			name="actions"
-			path="/search_configurations/entry_actions.jsp"
+			path="/entry_actions.jsp"
 		/>
 	</c:otherwise>
 </c:choose>

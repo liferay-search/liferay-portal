@@ -14,20 +14,20 @@
  */
 --%>
 
-<%@ include file="../init.jsp" %>
+<%@ include file="./init.jsp" %>
 
 <%
-SearchConfigurationsDisplayContext searchConfigurationsDisplayContext = (SearchConfigurationsDisplayContext)request.getAttribute(SearchConfigurationWebKeys.SEARCH_CONFIGURATIONS_DISPLAY_CONTEXT);
+SearchConfigurationEntriesManagementToolbarDisplayContext searchConfigurationEntriesManagementToolbarDisplayContext = (SearchConfigurationEntriesManagementToolbarDisplayContext)request.getAttribute(SearchConfigurationWebKeys.SEARCH_CONFIGURATION_ENTRIES_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT);
 
-SearchConfigurationAdminManagementToolbarDisplayContext searchConfigurationsManagementToolbarDisplayContext = (SearchConfigurationAdminManagementToolbarDisplayContext)request.getAttribute(SearchConfigurationWebKeys.SEARCH_CONFIGURATIONS_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT);
+SearchConfigurationEntriesDisplayContext searchConfigurationEntriesDisplayContext = (SearchConfigurationEntriesDisplayContext)request.getAttribute(SearchConfigurationWebKeys.SEARCH_CONFIGURATION_ENTRIES_DISPLAY_CONTEXT);
 
-SearchContainer configurationsSearchContainer = searchConfigurationsDisplayContext.getSearchContainer();
+SearchContainer configurationsSearchContainer = searchConfigurationEntriesDisplayContext.getSearchContainer();
 
-String displayStyle = searchConfigurationsDisplayContext.getDisplayStyle();
+String displayStyle = searchConfigurationEntriesDisplayContext.getDisplayStyle();
 %>
 
 <clay:management-toolbar
-	displayContext="<%= searchConfigurationsManagementToolbarDisplayContext %>"
+	displayContext="<%= searchConfigurationEntriesManagementToolbarDisplayContext %>"
 	searchContainerId="configurationEntries"
 	supportsBulkActions="<%= true %>"
 />
@@ -44,7 +44,7 @@ String displayStyle = searchConfigurationsDisplayContext.getDisplayStyle();
 			keyProperty="searchConfigurationId"
 			modelVar="entry"
 		>
-			<%@ include file="/search_configurations/entry_search_columns.jspf" %>
+			<%@ include file="/entry_search_columns.jspf" %>
 		</liferay-ui:search-container-row>
 
 		<liferay-ui:search-iterator
@@ -73,7 +73,7 @@ String displayStyle = searchConfigurationsDisplayContext.getDisplayStyle();
 		}
 	};
 
-	var deleteConfigurationEntries = function () {
+	var deleteSearchConfigurationEntries = function () {
 		if (
 			confirm(
 				'<liferay-ui:message key="are-you-sure-you-want-to-delete-configurations" />'
@@ -88,7 +88,7 @@ String displayStyle = searchConfigurationsDisplayContext.getDisplayStyle();
 	};
 
 	var ACTIONS = {
-		deleteConfigurationEntries: deleteConfigurationEntries,
+		deleteSearchConfigurationEntries: deleteSearchConfigurationEntries,
 	};
 
 	Liferay.componentReady('configurationEntriesManagementToolbar').then(function (
