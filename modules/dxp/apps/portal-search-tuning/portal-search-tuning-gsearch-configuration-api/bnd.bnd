@@ -2,6 +2,7 @@ Bundle-Name: Liferay Portal Search Tuning GSearch Configuration API
 Bundle-SymbolicName: com.liferay.portal.search.tuning.gsearch.configuration.api
 Bundle-Version: 1.0.0
 Export-Package:\
+	com.liferay.portal.search.tuning.gsearch.configuration.comparator,\
 	com.liferay.portal.search.tuning.gsearch.configuration.constants,\
 	com.liferay.portal.search.tuning.gsearch.configuration.exception,\
 	com.liferay.portal.search.tuning.gsearch.configuration.model,\
