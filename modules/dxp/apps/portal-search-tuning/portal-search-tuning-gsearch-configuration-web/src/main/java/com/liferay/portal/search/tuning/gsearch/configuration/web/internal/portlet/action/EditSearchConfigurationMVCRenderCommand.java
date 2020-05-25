@@ -1,8 +1,23 @@
+/**
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of the Liferay Enterprise
+ * Subscription License ("License"). You may not use this file except in
+ * compliance with the License. You can obtain a copy of the License by
+ * contacting Liferay, Inc. See the License for the specific language governing
+ * permissions and limitations under the License, including but not limited to
+ * distribution rights of the Software.
+ *
+ *
+ *
+ */
+
 package com.liferay.portal.search.tuning.gsearch.configuration.web.internal.portlet.action;
 
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCRenderCommand;
+import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.theme.PortletDisplay;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ParamUtil;
@@ -48,24 +63,32 @@ public class EditSearchConfigurationMVCRenderCommand
 			renderRequest, SearchConfigurationWebKeys.SEARCH_CONFIGURATION_ID,
 			0);
 
-		SearchConfiguration searchConfiguration = null;
-
 		int searchConfigurationType = ParamUtil.getInteger(
 			renderRequest, SearchConfigurationWebKeys.SEARCH_CONFIGURATION_TYPE,
 			SearchConfigurationTypes.CONFIGURATION);
 
+		SearchConfiguration searchConfiguration = null;
+
 		if (searchConfigurationId > 0) {
 			try {
 				searchConfiguration =
-					_searchConfigurationService.getConfiguration(
+					_searchConfigurationService.getSearchConfiguration(
 						searchConfigurationId);
 				searchConfigurationType = searchConfiguration.getType();
 			}
 			catch (NoSuchConfigurationException nsce) {
-				_log.error(nsce.getMessage(), nsce);
+
+				_log.error("Search configuration " + searchConfigurationId + " not found.", nsce);
+
+				SessionErrors.add(renderRequest, 
+						SearchConfigurationWebKeys.ERROR_DETAILS, nsce);
 			}
 			catch (PortalException pe) {
-				pe.printStackTrace();
+
+				_log.error(pe.getMessage(), pe);
+
+				SessionErrors.add(renderRequest, 
+						SearchConfigurationWebKeys.ERROR_DETAILS, pe);
 			}
 		}
 
@@ -80,7 +103,7 @@ public class EditSearchConfigurationMVCRenderCommand
 
 		portletDisplay.setShowBackIcon(true);
 
-		String redirect = renderRequest.getParameter("redirect");
+		String redirect = ParamUtil.getString(renderRequest, "redirect");
 
 		portletDisplay.setURLBack(redirect);
 
@@ -90,7 +113,7 @@ public class EditSearchConfigurationMVCRenderCommand
 		renderRequest.setAttribute(
 			SearchConfigurationWebKeys.PAGE_TITLE_KEY, pageTitleKey);
 
-		return "/search_configurations/edit_configuration.jsp";
+		return "/edit_search_configuration.jsp";
 	}
 
 	private String _getPageTitleKey(boolean edit, int type) {

@@ -14,13 +14,12 @@
  */
 --%>
 
-<%@ include file="../init.jsp" %>
+<%@ include file="./init.jsp" %>
 
 <%
 ResultRow row = (ResultRow)request.getAttribute(WebKeys.SEARCH_CONTAINER_RESULT_ROW);
 
 SearchConfiguration searchConfiguration = (SearchConfiguration)row.getObject();
-
 long searchConfigurationId = searchConfiguration.getSearchConfigurationId();
 int searchConfigurationType = searchConfiguration.getType();
 %>
@@ -45,8 +44,6 @@ int searchConfigurationType = searchConfiguration.getType();
 		/>
 	</c:if>
 
-	<%-- TODO --%>
-
 	<c:if test="<%= SearchConfigurationPermission.contains(permissionChecker, themeDisplay.getScopeGroupId(), searchConfigurationType, ActionKeys.ADD_ENTRY) %>">
 		<portlet:actionURL name="<%= SearchConfigurationMVCCommandNames.COPY_SEARCH_CONFIGURATION %>" var="copySearchConfigurationUrl">
 			<portlet:param name="redirect" value="<%= currentURL %>" />
@@ -55,21 +52,17 @@ int searchConfigurationType = searchConfiguration.getType();
 
 		<liferay-ui:icon
 			message="copy"
-			onClick="alert('Patience, my friend.'); return false;"
 			url="<%= copySearchConfigurationUrl %>"
 		/>
 	</c:if>
 
-	<%-- TODO --%>
-
-	<portlet:actionURL name="<%= SearchConfigurationMVCCommandNames.EXPORT_SEARCH_CONFIGURATION %>" var="exportSearchConfigurationUrl">
+	<portlet:resourceURL id="<%= SearchConfigurationMVCCommandNames.EXPORT_SEARCH_CONFIGURATION %>" var="exportSearchConfigurationUrl">
 		<portlet:param name="redirect" value="<%= currentURL %>" />
 		<portlet:param name="<%= SearchConfigurationWebKeys.SEARCH_CONFIGURATION_ID %>" value="<%= String.valueOf(searchConfigurationId) %>" />
-	</portlet:actionURL>
+	</portlet:resourceURL>
 
 	<liferay-ui:icon
 		message="export"
-		onClick="alert('Patience, my friend.'); return false;"
 		url="<%= exportSearchConfigurationUrl %>"
 	/>
 

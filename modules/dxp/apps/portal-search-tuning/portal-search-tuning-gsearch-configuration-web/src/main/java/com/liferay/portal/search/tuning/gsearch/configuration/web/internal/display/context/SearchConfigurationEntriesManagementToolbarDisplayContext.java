@@ -33,7 +33,9 @@ import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.search.tuning.gsearch.configuration.model.SearchConfiguration;
 import com.liferay.portal.search.tuning.gsearch.configuration.web.internal.constants.SearchConfigurationMVCCommandNames;
+import com.liferay.portal.search.tuning.gsearch.configuration.web.internal.constants.SearchConfigurationWebKeys;
 import com.liferay.portal.search.tuning.gsearch.configuration.web.internal.security.permission.resource.SearchConfigurationPermission;
 
 import java.util.List;
@@ -46,17 +48,17 @@ import javax.portlet.PortletURL;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * @author Sergio González
+ * @author Petteri Karttunen
  */
-public class SearchConfigurationAdminManagementToolbarDisplayContext
+public class SearchConfigurationEntriesManagementToolbarDisplayContext
 	extends SearchContainerManagementToolbarDisplayContext {
 
-	public SearchConfigurationAdminManagementToolbarDisplayContext(
+	public SearchConfigurationEntriesManagementToolbarDisplayContext(
 		HttpServletRequest httpServletRequest,
 		LiferayPortletRequest liferayPortletRequest,
 		LiferayPortletResponse liferayPortletResponse,
-		SearchContainer searchContainer, String displayStyle,
-		int searchConfigurationType) {
+		SearchContainer<SearchConfiguration> searchContainer,
+		String displayStyle, int searchConfigurationType) {
 
 		super(
 			httpServletRequest, liferayPortletRequest, liferayPortletResponse,
@@ -64,7 +66,6 @@ public class SearchConfigurationAdminManagementToolbarDisplayContext
 
 		_displayStyle = displayStyle;
 		_searchConfigurationType = searchConfigurationType;
-
 		_themeDisplay = (ThemeDisplay)httpServletRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 	}
@@ -73,7 +74,8 @@ public class SearchConfigurationAdminManagementToolbarDisplayContext
 	public List<DropdownItem> getActionDropdownItems() {
 		return DropdownItemListBuilder.add(
 			dropdownItem -> {
-				dropdownItem.putData("action", "deleteConfigurationEntries");
+				dropdownItem.putData(
+					"action", "deleteSearchConfigurationEntries");
 
 				dropdownItem.setLabel(LanguageUtil.get(request, "delete"));
 
@@ -98,7 +100,7 @@ public class SearchConfigurationAdminManagementToolbarDisplayContext
 				PortletURL deleteEntriesURL =
 					liferayPortletResponse.createActionURL();
 
-				deleteEntriesURL.setParameter(
+				deleteEntriesURL.setProperty(
 					ActionRequest.ACTION_NAME,
 					SearchConfigurationMVCCommandNames.
 						DELETE_SEARCH_CONFIGURATIONS);
@@ -118,11 +120,16 @@ public class SearchConfigurationAdminManagementToolbarDisplayContext
 			return null;
 		}
 
+		PortletURL renderURL = liferayPortletResponse.createRenderURL();
+
+		renderURL.setProperty(
+			SearchConfigurationWebKeys.SEARCH_CONFIGURATION_TYPE,
+			String.valueOf(_searchConfigurationType));
+
 		return CreationMenuBuilder.addDropdownItem(
 			dropdownItem -> {
 				dropdownItem.setHref(
-					liferayPortletResponse.createRenderURL(),
-					"mvcRenderCommandName",
+					renderURL, "mvcRenderCommandName",
 					SearchConfigurationMVCCommandNames.
 						EDIT_SEARCH_CONFIGURATION,
 					"redirect", currentURLObj.toString());
@@ -136,16 +143,16 @@ public class SearchConfigurationAdminManagementToolbarDisplayContext
 	public String getSearchActionURL() {
 		PortletURL searchURL = liferayPortletResponse.createRenderURL();
 
-		searchURL.setParameter(
+		searchURL.setProperty(
 			"mvcRenderCommandName",
 			SearchConfigurationMVCCommandNames.VIEW_SEARCH_CONFIGURATIONS);
 
 		String tabs = ParamUtil.getString(request, "tabs", "configurations");
 
-		searchURL.setParameter("tabs", tabs);
+		searchURL.setProperty("tabs", tabs);
 
-		searchURL.setParameter("orderByCol", getOrderByCol());
-		searchURL.setParameter("orderByType", getOrderByType());
+		searchURL.setProperty("orderByCol", getOrderByCol());
+		searchURL.setProperty("orderByType", getOrderByType());
 
 		return searchURL.toString();
 	}
@@ -154,21 +161,21 @@ public class SearchConfigurationAdminManagementToolbarDisplayContext
 	public List<ViewTypeItem> getViewTypeItems() {
 		PortletURL portletURL = liferayPortletResponse.createRenderURL();
 
-		portletURL.setParameter(
+		portletURL.setProperty(
 			"mvcRenderCommandName",
 			SearchConfigurationMVCCommandNames.VIEW_SEARCH_CONFIGURATIONS);
 
 		if (searchContainer.getDelta() > 0) {
-			portletURL.setParameter(
+			portletURL.setProperty(
 				"delta", String.valueOf(searchContainer.getDelta()));
 		}
 
-		portletURL.setParameter("orderBycol", searchContainer.getOrderByCol());
-		portletURL.setParameter(
+		portletURL.setProperty("orderBycol", searchContainer.getOrderByCol());
+		portletURL.setProperty(
 			"orderByType", searchContainer.getOrderByType());
 
 		if (searchContainer.getCur() > 0) {
-			portletURL.setParameter(
+			portletURL.setProperty(
 				"cur", String.valueOf(searchContainer.getCur()));
 		}
 
@@ -196,11 +203,11 @@ public class SearchConfigurationAdminManagementToolbarDisplayContext
 		).add(
 			dropdownItem -> {
 				dropdownItem.setActive(
-					Objects.equals(getOrderByCol(), "display-date"));
+					Objects.equals(getOrderByCol(), "modified-date"));
 				dropdownItem.setHref(
-					_getCurrentSortingURL(), "orderByCol", "display-date");
+					_getCurrentSortingURL(), "orderByCol", "modified-date");
 				dropdownItem.setLabel(
-					LanguageUtil.get(request, "display-date"));
+					LanguageUtil.get(request, "modified-date"));
 			}
 		).build();
 	}
@@ -208,16 +215,16 @@ public class SearchConfigurationAdminManagementToolbarDisplayContext
 	private PortletURL _getCurrentSortingURL() {
 		PortletURL sortingURL = getPortletURL();
 
-		sortingURL.setParameter(
+		sortingURL.setProperty(
 			"mvcRenderCommandName",
 			SearchConfigurationMVCCommandNames.VIEW_SEARCH_CONFIGURATIONS);
 
-		sortingURL.setParameter(SearchContainer.DEFAULT_CUR_PARAM, "0");
+		sortingURL.setProperty(SearchContainer.DEFAULT_CUR_PARAM, "0");
 
 		String keywords = ParamUtil.getString(request, "keywords");
 
 		if (Validator.isNotNull(keywords)) {
-			sortingURL.setParameter("keywords", keywords);
+			sortingURL.setProperty("keywords", keywords);
 		}
 
 		return sortingURL;

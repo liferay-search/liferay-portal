@@ -16,6 +16,10 @@
 
 <%@ include file="./init.jsp" %>
 
+<liferay-ui:error key="errorDetails">
+	<liferay-ui:message arguments='<%= SessionErrors.get(liferayPortletRequest, "errorDetails") %>' key="error.search-configuration-service-error" />
+</liferay-ui:error>
+
 <%
 final String tabs = ParamUtil.getString(request, "tabs", "configurations");
 
@@ -64,4 +68,4 @@ snippetsURL.setParameter(SearchConfigurationWebKeys.SEARCH_CONFIGURATION_TYPE,
 	%>'
 />
 
-<liferay-util:include page="/search_configurations/view_entries.jsp" servletContext="<%= application %>" />
+<liferay-util:include page="/view_search_configurations.jsp" servletContext="<%= application %>" />

@@ -33,6 +33,7 @@ import com.liferay.portal.kernel.search.SearchContextFactory;
 import com.liferay.portal.kernel.search.SearchResult;
 import com.liferay.portal.kernel.search.SearchResultUtil;
 import com.liferay.portal.kernel.search.Sort;
+import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
@@ -40,7 +41,8 @@ import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
-import com.liferay.portal.search.tuning.gsearch.configuration.constants.SearchConfigurationActionKeys;
+import com.liferay.portal.search.tuning.gsearch.configuration.comparator.SearchConfigurationModifiedDateComparator;
+import com.liferay.portal.search.tuning.gsearch.configuration.comparator.SearchConfigurationTitleComparator;
 import com.liferay.portal.search.tuning.gsearch.configuration.constants.SearchConfigurationPortletKeys;
 import com.liferay.portal.search.tuning.gsearch.configuration.model.SearchConfiguration;
 import com.liferay.portal.search.tuning.gsearch.configuration.service.SearchConfigurationServiceUtil;
@@ -49,6 +51,7 @@ import com.liferay.portal.search.tuning.gsearch.configuration.web.internal.secur
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -56,15 +59,14 @@ import java.util.stream.Stream;
 
 import javax.portlet.PortletException;
 import javax.portlet.PortletURL;
-
 import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author Petteri Karttunen
  */
-public class SearchConfigurationsDisplayContext {
+public class SearchConfigurationEntriesDisplayContext {
 
-	public SearchConfigurationsDisplayContext(
+	public SearchConfigurationEntriesDisplayContext(
 		LiferayPortletRequest liferayPortletRequest,
 		LiferayPortletResponse liferayPortletResponse,
 		int searchConfigurationType) {
@@ -87,12 +89,12 @@ public class SearchConfigurationsDisplayContext {
 		ThemeDisplay themeDisplay =
 			(ThemeDisplay)_httpServletRequest.getAttribute(
 				WebKeys.THEME_DISPLAY);
-
+		
 		if (SearchConfigurationEntryPermission.contains(
 				themeDisplay.getPermissionChecker(), searchConfiguration,
-				SearchConfigurationActionKeys.DELETE_CONFIGURATION)) {
+				ActionKeys.DELETE)) {
 
-			return Collections.singletonList("deleteEntries");
+			return Collections.singletonList("deleteSearchConfigurationEntries");
 		}
 
 		return Collections.emptyList();
@@ -105,7 +107,7 @@ public class SearchConfigurationsDisplayContext {
 		if (Validator.isNull(displayStyle)) {
 			return _portalPreferences.getValue(
 				SearchConfigurationPortletKeys.SEARCH_CONFIGURATION_ADMIN,
-				"entries-display-style", "icon");
+				"entries-display-style", "descriptive");
 		}
 
 		_portalPreferences.setValue(
@@ -118,12 +120,14 @@ public class SearchConfigurationsDisplayContext {
 		return displayStyle;
 	}
 
-	public SearchContainer getSearchContainer()
+	public SearchContainer<SearchConfiguration> getSearchContainer()
 		throws PortalException, PortletException {
 
+		ThemeDisplay themeDisplay = (ThemeDisplay)_httpServletRequest.getAttribute(WebKeys.THEME_DISPLAY);
+		
 		PortletURL portletURL = _liferayPortletResponse.createRenderURL();
 
-		portletURL.setParameter(
+		portletURL.setProperty(
 			"mvcRenderCommandName",
 			SearchConfigurationMVCCommandNames.VIEW_SEARCH_CONFIGURATIONS);
 
@@ -143,12 +147,10 @@ public class SearchConfigurationsDisplayContext {
 
 		entriesSearchContainer.setOrderByType(orderByType);
 
-		/*
 		entriesSearchContainer.setOrderByComparator(
-			BlogsUtil.getOrderByComparator(
-				entriesSearchContainer.getOrderByCol(),
+				_getOrderByComparator(themeDisplay.getLocale(), entriesSearchContainer.getOrderByCol(),
 				entriesSearchContainer.getOrderByType()));
-*/
+
 		entriesSearchContainer.setRowChecker(
 			new EmptyOnClickRowChecker(_liferayPortletResponse));
 
@@ -157,8 +159,8 @@ public class SearchConfigurationsDisplayContext {
 		return entriesSearchContainer;
 	}
 
-	private static OrderByComparator<SearchConfiguration> getOrderByComparator(
-		String orderByCol, String orderByType) {
+	private static OrderByComparator<SearchConfiguration> _getOrderByComparator(
+		Locale locale, String orderByCol, String orderByType) {
 
 		boolean orderByAsc = true;
 
@@ -167,62 +169,46 @@ public class SearchConfigurationsDisplayContext {
 		}
 
 		OrderByComparator<SearchConfiguration> orderByComparator = null;
-		/*
-
-					if (orderByCol.equals("display-date")) {
-						orderByComparator = new EntryDisplayDateComparator(orderByAsc);
-					}
-					else {
-						orderByComparator = new EntryTitleComparator(orderByAsc);
-					}
-		*/
+		if (orderByCol.equals("modified-date")) {
+			orderByComparator = new SearchConfigurationModifiedDateComparator(orderByAsc);
+		}
+		else {
+			orderByComparator = new SearchConfigurationTitleComparator(orderByAsc, locale);
+		}
 
 		return orderByComparator;
 	}
 
-	private void _populateResults(SearchContainer searchContainer)
+	private void _populateResults(SearchContainer<SearchConfiguration> searchContainer)
 		throws PortalException {
 
 		ThemeDisplay themeDisplay =
 			(ThemeDisplay)_httpServletRequest.getAttribute(
 				WebKeys.THEME_DISPLAY);
 
-		List entriesResults = null;
+		List<SearchConfiguration> entriesResults = null;
 
+		long groupId = themeDisplay.getCompanyGroupId();
+		
 		String keywords = ParamUtil.getString(_httpServletRequest, "keywords");
-		/*
 
-				if ((assetCategoryId != 0) || Validator.isNotNull(assetTagName)) {
-					SearchContainerResults<AssetEntry> searchContainerResults =
-						BlogsUtil.getSearchContainerResults(searchContainer);
-
-					searchContainer.setTotal(searchContainerResults.getTotal());
-					List<AssetEntry> assetEntries = searchContainerResults.getResults();
-
-					entriesResults = new ArrayList<>(assetEntries.size());
-
-					for (AssetEntry assetEntry : assetEntries) {
-						entriesResults.add(
-								SearchConfigurationServiceUtil.getEntry(
-								assetEntry.getClassPK()));
-					}
-				}
-				*/
 		if (Validator.isNull(keywords)) {
 			searchContainer.setTotal(
-				SearchConfigurationServiceUtil.getGroupConfigurationsCount(
-					themeDisplay.getScopeGroupId(),
-					WorkflowConstants.STATUS_ANY, _searchConfigurationType));
+				SearchConfigurationServiceUtil.
+					getGroupSearchConfigurationsCount(
+							groupId,
+						WorkflowConstants.STATUS_ANY,
+						_searchConfigurationType));
 
 			entriesResults =
-				SearchConfigurationServiceUtil.getGroupConfigurations(
-					themeDisplay.getScopeGroupId(),
+				SearchConfigurationServiceUtil.getGroupSearchConfigurations(
+						groupId,
 					WorkflowConstants.STATUS_ANY, _searchConfigurationType,
 					searchContainer.getStart(), searchContainer.getEnd(),
 					searchContainer.getOrderByComparator());
 		}
 		else {
-			Indexer indexer = IndexerRegistryUtil.getIndexer(
+			Indexer<SearchConfiguration> indexer = IndexerRegistryUtil.getIndexer(
 				SearchConfiguration.class);
 
 			SearchContext searchContext = SearchContextFactory.getInstance(
@@ -230,8 +216,9 @@ public class SearchConfigurationsDisplayContext {
 
 			searchContext.setAttribute(
 				Field.STATUS, WorkflowConstants.STATUS_ANY);
+			searchContext.setAttribute(Field.TYPE, _searchConfigurationType);
 			searchContext.setEnd(searchContainer.getEnd());
-			searchContext.setIncludeDiscussions(true);
+			searchContext.setGroupIds(new long[] {groupId});
 			searchContext.setKeywords(keywords);
 			searchContext.setStart(searchContainer.getStart());
 
@@ -250,7 +237,7 @@ public class SearchConfigurationsDisplayContext {
 
 			if (Objects.equals(orderByCol, "modified-date")) {
 				sort = new Sort(
-					Field.DISPLAY_DATE, Sort.LONG_TYPE, !orderByAsc);
+					Field.MODIFIED_DATE, Sort.LONG_TYPE, !orderByAsc);
 			}
 			else {
 				sort = new Sort(orderByCol, !orderByAsc);
@@ -269,7 +256,7 @@ public class SearchConfigurationsDisplayContext {
 			Stream<SearchResult> stream = searchResults.stream();
 
 			entriesResults = stream.map(
-				this::_toBlogsEntryOptional
+				this::_toSearchConfigurationOptional
 			).filter(
 				Optional::isPresent
 			).map(
@@ -282,18 +269,18 @@ public class SearchConfigurationsDisplayContext {
 		searchContainer.setResults(entriesResults);
 	}
 
-	private Optional<SearchConfiguration> _toBlogsEntryOptional(
+	private Optional<SearchConfiguration> _toSearchConfigurationOptional(
 		SearchResult searchResult) {
 
 		try {
 			return Optional.of(
-				SearchConfigurationServiceUtil.getConfiguration(
+				SearchConfigurationServiceUtil.getSearchConfiguration(
 					searchResult.getClassPK()));
 		}
 		catch (Exception exception) {
 			if (_log.isWarnEnabled()) {
 				_log.warn(
-					"Blogs search index is stale and contains entry " +
+					"Search index is stale and contains a Search Configuration entry " +
 						searchResult.getClassPK());
 			}
 
@@ -302,7 +289,7 @@ public class SearchConfigurationsDisplayContext {
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
-		SearchConfigurationsDisplayContext.class);
+		SearchConfigurationEntriesDisplayContext.class);
 
 	private final HttpServletRequest _httpServletRequest;
 	private final LiferayPortletRequest _liferayPortletRequest;

@@ -22,6 +22,9 @@ import com.liferay.portal.search.tuning.gsearch.configuration.constants.SearchCo
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
+/**
+ * @author Petteri Karttunen
+ */
 @Component(immediate = true, service = {})
 public class SearchConfigurationPermission {
 
@@ -29,8 +32,9 @@ public class SearchConfigurationPermission {
 		PermissionChecker permissionChecker, long groupId, int type,
 		String actionId) {
 
-		String typedActionKey = SearchConfigurationActionKeys.getTypedActionKey(
-			type, actionId);
+		String typedActionKey =
+			SearchConfigurationActionKeys.
+				getActionKeyForSearchConfigurationType(type, actionId);
 
 		return _portletResourcePermission.contains(
 			permissionChecker, groupId, typedActionKey);
