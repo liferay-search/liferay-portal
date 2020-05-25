@@ -18,10 +18,14 @@ import com.liferay.petra.string.StringPool;
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.ResourceConstants;
+import com.liferay.portal.kernel.model.SystemEventConstants;
 import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.search.Indexable;
+import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.service.ResourceLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserLocalService;
+import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
@@ -60,15 +64,15 @@ import org.osgi.service.component.annotations.Reference;
 public class SearchConfigurationLocalServiceImpl
 	extends SearchConfigurationLocalServiceBaseImpl {
 
-	public SearchConfiguration addConfiguration(
-			long userId, Map<Locale, String> titleMap,
+	@Indexable(type = IndexableType.REINDEX)
+	@Override
+	public SearchConfiguration addSearchConfiguration(
+			long userId, long groupId, Map<Locale, String> titleMap,
 			Map<Locale, String> descriptionMap, String configuration, int type,
 			ServiceContext serviceContext)
 		throws PortalException {
 
 		User user = _userLocalService.getUser(userId);
-
-		long groupId = serviceContext.getScopeGroupId();
 
 		_searchConfigurationValidator.validate(
 			titleMap, descriptionMap, configuration);
@@ -93,7 +97,9 @@ public class SearchConfigurationLocalServiceImpl
 		searchConfiguration.setDescriptionMap(descriptionMap);
 
 		int status = WorkflowConstants.STATUS_DRAFT;
+
 		searchConfiguration.setStatus(status);
+
 		searchConfiguration.setStatusByUserId(userId);
 		searchConfiguration.setStatusDate(serviceContext.getModifiedDate(null));
 
@@ -105,22 +111,26 @@ public class SearchConfigurationLocalServiceImpl
 		_resourceLocalService.addModelResources(
 			searchConfiguration, serviceContext);
 
-		return _startWorkflowInstance(
+		return startWorkflowInstance(
 			userId, searchConfiguration, serviceContext);
 	}
 
-	public SearchConfiguration deleteConfiguration(long searchConfigurationId)
+	@Override
+	public SearchConfiguration deleteSearchConfiguration(
+			long searchConfigurationId)
 		throws PortalException {
 
 		SearchConfiguration searchConfiguration =
 			searchConfigurationPersistence.findByPrimaryKey(
 				searchConfigurationId);
 
-		return deleteConfiguration(searchConfiguration);
+		return deleteSearchConfiguration(searchConfiguration);
 	}
 
+	@Indexable(type = IndexableType.DELETE)
 	@Override
-	public SearchConfiguration deleteConfiguration(
+	@SystemEvent(type = SystemEventConstants.TYPE_DELETE)
+	public SearchConfiguration deleteSearchConfiguration(
 			SearchConfiguration searchConfiguration)
 		throws PortalException {
 
@@ -133,17 +143,17 @@ public class SearchConfigurationLocalServiceImpl
 			SearchConfiguration.class.getName(),
 			searchConfiguration.getSearchConfigurationId());
 
-		return deleteSearchConfiguration(searchConfiguration);
+		return super.deleteSearchConfiguration(searchConfiguration);
 	}
 
-	public List<SearchConfiguration> getGroupConfigurations(
+	public List<SearchConfiguration> getGroupSearchConfigurations(
 		long groupId, int type, int start, int end) {
 
-		return getGroupConfigurations(
+		return getGroupSearchConfigurations(
 			groupId, WorkflowConstants.STATUS_APPROVED, type, start, end);
 	}
 
-	public List<SearchConfiguration> getGroupConfigurations(
+	public List<SearchConfiguration> getGroupSearchConfigurations(
 		long groupId, int status, int type, int start, int end) {
 
 		if (status == WorkflowConstants.STATUS_ANY) {
@@ -155,7 +165,7 @@ public class SearchConfigurationLocalServiceImpl
 			groupId, status, type, start, end);
 	}
 
-	public List<SearchConfiguration> getGroupConfigurations(
+	public List<SearchConfiguration> getGroupSearchConfigurations(
 		long groupId, int status, int type, int start, int end,
 		OrderByComparator<SearchConfiguration> orderByComparator) {
 
@@ -168,26 +178,29 @@ public class SearchConfigurationLocalServiceImpl
 			groupId, status, type, start, end, orderByComparator);
 	}
 
-	public List<SearchConfiguration> getGroupConfigurations(
+	public List<SearchConfiguration> getGroupSearchConfigurations(
 		long groupId, int type, int start, int end,
 		OrderByComparator<SearchConfiguration> orderByComparator) {
 
-		return getGroupConfigurations(
+		return getGroupSearchConfigurations(
 			groupId, WorkflowConstants.STATUS_APPROVED, type, start, end,
 			orderByComparator);
 	}
 
-	public int getGroupConfigurationsCount(long groupId, int type) {
-		return getGroupConfigurationsCount(
+	public int getGroupSearchConfigurationsCount(long groupId, int type) {
+		return getGroupSearchConfigurationsCount(
 			groupId, WorkflowConstants.STATUS_APPROVED, type);
 	}
 
-	public int getGroupConfigurationsCount(long groupId, int status, int type) {
+	public int getGroupSearchConfigurationsCount(
+		long groupId, int status, int type) {
+
 		return searchConfigurationPersistence.countByG_S_T(
 			groupId, status, type);
 	}
 
-	public SearchConfiguration updateConfiguration(
+	@Indexable(type = IndexableType.REINDEX)
+	public SearchConfiguration updateSearchConfiguration(
 			long userId, long searchConfigurationId,
 			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
 			String configuration, ServiceContext serviceContext)
@@ -209,6 +222,7 @@ public class SearchConfigurationLocalServiceImpl
 		return updateSearchConfiguration(searchConfiguration);
 	}
 
+	@Indexable(type = IndexableType.REINDEX)
 	@Override
 	public SearchConfiguration updateStatus(
 			long userId, long searchConfigurationId, int status)
@@ -223,12 +237,10 @@ public class SearchConfigurationLocalServiceImpl
 		searchConfiguration.setStatusByUserName(user.getScreenName());
 		searchConfiguration.setStatusDate(new Date());
 
-		searchConfiguration = updateSearchConfiguration(searchConfiguration);
-
-		return searchConfiguration;
+		return updateSearchConfiguration(searchConfiguration);
 	}
 
-	protected SearchConfiguration _startWorkflowInstance(
+	protected SearchConfiguration startWorkflowInstance(
 			long userId, SearchConfiguration searchConfiguration,
 			ServiceContext serviceContext)
 		throws PortalException {
