@@ -35,15 +35,16 @@ public class SearchConfigurationLocalServiceWrapper
 
 	@Override
 	public com.liferay.portal.search.tuning.gsearch.configuration.model.
-		SearchConfiguration addConfiguration(
-				long userId, java.util.Map<java.util.Locale, String> titleMap,
+		SearchConfiguration addSearchConfiguration(
+				long userId, long groupId,
+				java.util.Map<java.util.Locale, String> titleMap,
 				java.util.Map<java.util.Locale, String> descriptionMap,
 				String configuration, int type,
 				com.liferay.portal.kernel.service.ServiceContext serviceContext)
 			throws com.liferay.portal.kernel.exception.PortalException {
 
-		return _searchConfigurationLocalService.addConfiguration(
-			userId, titleMap, descriptionMap, configuration, type,
+		return _searchConfigurationLocalService.addSearchConfiguration(
+			userId, groupId, titleMap, descriptionMap, configuration, type,
 			serviceContext);
 	}
 
@@ -90,26 +91,6 @@ public class SearchConfigurationLocalServiceWrapper
 			searchConfigurationId);
 	}
 
-	@Override
-	public com.liferay.portal.search.tuning.gsearch.configuration.model.
-		SearchConfiguration deleteConfiguration(long searchConfigurationId)
-			throws com.liferay.portal.kernel.exception.PortalException {
-
-		return _searchConfigurationLocalService.deleteConfiguration(
-			searchConfigurationId);
-	}
-
-	@Override
-	public com.liferay.portal.search.tuning.gsearch.configuration.model.
-		SearchConfiguration deleteConfiguration(
-				com.liferay.portal.search.tuning.gsearch.configuration.model.
-					SearchConfiguration searchConfiguration)
-			throws com.liferay.portal.kernel.exception.PortalException {
-
-		return _searchConfigurationLocalService.deleteConfiguration(
-			searchConfiguration);
-	}
-
 	/**
 	 * @throws PortalException
 	 */
@@ -144,12 +125,14 @@ public class SearchConfigurationLocalServiceWrapper
 	 *
 	 * @param searchConfiguration the search configuration
 	 * @return the search configuration that was removed
+	 * @throws PortalException
 	 */
 	@Override
 	public com.liferay.portal.search.tuning.gsearch.configuration.model.
 		SearchConfiguration deleteSearchConfiguration(
-			com.liferay.portal.search.tuning.gsearch.configuration.model.
-				SearchConfiguration searchConfiguration) {
+				com.liferay.portal.search.tuning.gsearch.configuration.model.
+					SearchConfiguration searchConfiguration)
+			throws com.liferay.portal.kernel.exception.PortalException {
 
 		return _searchConfigurationLocalService.deleteSearchConfiguration(
 			searchConfiguration);
@@ -296,59 +279,61 @@ public class SearchConfigurationLocalServiceWrapper
 	@Override
 	public java.util.List
 		<com.liferay.portal.search.tuning.gsearch.configuration.model.
-			SearchConfiguration> getGroupConfigurations(
+			SearchConfiguration> getGroupSearchConfigurations(
 				long groupId, int type, int start, int end) {
 
-		return _searchConfigurationLocalService.getGroupConfigurations(
+		return _searchConfigurationLocalService.getGroupSearchConfigurations(
 			groupId, type, start, end);
 	}
 
 	@Override
 	public java.util.List
 		<com.liferay.portal.search.tuning.gsearch.configuration.model.
-			SearchConfiguration> getGroupConfigurations(
+			SearchConfiguration> getGroupSearchConfigurations(
 				long groupId, int status, int type, int start, int end) {
 
-		return _searchConfigurationLocalService.getGroupConfigurations(
+		return _searchConfigurationLocalService.getGroupSearchConfigurations(
 			groupId, status, type, start, end);
 	}
 
 	@Override
 	public java.util.List
 		<com.liferay.portal.search.tuning.gsearch.configuration.model.
-			SearchConfiguration> getGroupConfigurations(
+			SearchConfiguration> getGroupSearchConfigurations(
 				long groupId, int status, int type, int start, int end,
 				com.liferay.portal.kernel.util.OrderByComparator
 					<com.liferay.portal.search.tuning.gsearch.configuration.
 						model.SearchConfiguration> orderByComparator) {
 
-		return _searchConfigurationLocalService.getGroupConfigurations(
+		return _searchConfigurationLocalService.getGroupSearchConfigurations(
 			groupId, status, type, start, end, orderByComparator);
 	}
 
 	@Override
 	public java.util.List
 		<com.liferay.portal.search.tuning.gsearch.configuration.model.
-			SearchConfiguration> getGroupConfigurations(
+			SearchConfiguration> getGroupSearchConfigurations(
 				long groupId, int type, int start, int end,
 				com.liferay.portal.kernel.util.OrderByComparator
 					<com.liferay.portal.search.tuning.gsearch.configuration.
 						model.SearchConfiguration> orderByComparator) {
 
-		return _searchConfigurationLocalService.getGroupConfigurations(
+		return _searchConfigurationLocalService.getGroupSearchConfigurations(
 			groupId, type, start, end, orderByComparator);
 	}
 
 	@Override
-	public int getGroupConfigurationsCount(long groupId, int type) {
-		return _searchConfigurationLocalService.getGroupConfigurationsCount(
-			groupId, type);
+	public int getGroupSearchConfigurationsCount(long groupId, int type) {
+		return _searchConfigurationLocalService.
+			getGroupSearchConfigurationsCount(groupId, type);
 	}
 
 	@Override
-	public int getGroupConfigurationsCount(long groupId, int status, int type) {
-		return _searchConfigurationLocalService.getGroupConfigurationsCount(
-			groupId, status, type);
+	public int getGroupSearchConfigurationsCount(
+		long groupId, int status, int type) {
+
+		return _searchConfigurationLocalService.
+			getGroupSearchConfigurationsCount(groupId, status, type);
 	}
 
 	@Override
@@ -488,7 +473,7 @@ public class SearchConfigurationLocalServiceWrapper
 
 	@Override
 	public com.liferay.portal.search.tuning.gsearch.configuration.model.
-		SearchConfiguration updateConfiguration(
+		SearchConfiguration updateSearchConfiguration(
 				long userId, long searchConfigurationId,
 				java.util.Map<java.util.Locale, String> titleMap,
 				java.util.Map<java.util.Locale, String> descriptionMap,
@@ -496,7 +481,7 @@ public class SearchConfigurationLocalServiceWrapper
 				com.liferay.portal.kernel.service.ServiceContext serviceContext)
 			throws com.liferay.portal.kernel.exception.PortalException {
 
-		return _searchConfigurationLocalService.updateConfiguration(
+		return _searchConfigurationLocalService.updateSearchConfiguration(
 			userId, searchConfigurationId, titleMap, descriptionMap,
 			configuration, serviceContext);
 	}

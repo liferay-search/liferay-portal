@@ -24,11 +24,13 @@ import com.liferay.portal.kernel.dao.orm.Projection;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.model.PersistedModel;
+import com.liferay.portal.kernel.model.SystemEventConstants;
 import com.liferay.portal.kernel.search.Indexable;
 import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.service.BaseLocalService;
 import com.liferay.portal.kernel.service.PersistedModelLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.transaction.Isolation;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.transaction.Transactional;
@@ -66,8 +68,9 @@ public interface SearchConfigurationLocalService
 	 *
 	 * Never modify or reference this interface directly. Always use {@link SearchConfigurationLocalServiceUtil} to access the search configuration local service. Add custom service methods to <code>com.liferay.portal.search.tuning.gsearch.configuration.service.impl.SearchConfigurationLocalServiceImpl</code> and rerun ServiceBuilder to automatically copy the method declarations to this interface.
 	 */
-	public SearchConfiguration addConfiguration(
-			long userId, Map<Locale, String> titleMap,
+	@Indexable(type = IndexableType.REINDEX)
+	public SearchConfiguration addSearchConfiguration(
+			long userId, long groupId, Map<Locale, String> titleMap,
 			Map<Locale, String> descriptionMap, String configuration, int type,
 			ServiceContext serviceContext)
 		throws PortalException;
@@ -98,13 +101,6 @@ public interface SearchConfigurationLocalService
 	public SearchConfiguration createSearchConfiguration(
 		long searchConfigurationId);
 
-	public SearchConfiguration deleteConfiguration(long searchConfigurationId)
-		throws PortalException;
-
-	public SearchConfiguration deleteConfiguration(
-			SearchConfiguration searchConfiguration)
-		throws PortalException;
-
 	/**
 	 * @throws PortalException
 	 */
@@ -129,10 +125,13 @@ public interface SearchConfigurationLocalService
 	 *
 	 * @param searchConfiguration the search configuration
 	 * @return the search configuration that was removed
+	 * @throws PortalException
 	 */
 	@Indexable(type = IndexableType.DELETE)
+	@SystemEvent(type = SystemEventConstants.TYPE_DELETE)
 	public SearchConfiguration deleteSearchConfiguration(
-		SearchConfiguration searchConfiguration);
+			SearchConfiguration searchConfiguration)
+		throws PortalException;
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public <T> T dslQuery(DSLQuery dslQuery);
@@ -226,28 +225,29 @@ public interface SearchConfigurationLocalService
 		PortletDataContext portletDataContext);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public List<SearchConfiguration> getGroupConfigurations(
+	public List<SearchConfiguration> getGroupSearchConfigurations(
 		long groupId, int type, int start, int end);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public List<SearchConfiguration> getGroupConfigurations(
+	public List<SearchConfiguration> getGroupSearchConfigurations(
 		long groupId, int status, int type, int start, int end);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public List<SearchConfiguration> getGroupConfigurations(
+	public List<SearchConfiguration> getGroupSearchConfigurations(
 		long groupId, int status, int type, int start, int end,
 		OrderByComparator<SearchConfiguration> orderByComparator);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public List<SearchConfiguration> getGroupConfigurations(
+	public List<SearchConfiguration> getGroupSearchConfigurations(
 		long groupId, int type, int start, int end,
 		OrderByComparator<SearchConfiguration> orderByComparator);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public int getGroupConfigurationsCount(long groupId, int type);
+	public int getGroupSearchConfigurationsCount(long groupId, int type);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public int getGroupConfigurationsCount(long groupId, int status, int type);
+	public int getGroupSearchConfigurationsCount(
+		long groupId, int status, int type);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public IndexableActionableDynamicQuery getIndexableActionableDynamicQuery();
@@ -341,7 +341,8 @@ public interface SearchConfigurationLocalService
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public int getSearchConfigurationsCount();
 
-	public SearchConfiguration updateConfiguration(
+	@Indexable(type = IndexableType.REINDEX)
+	public SearchConfiguration updateSearchConfiguration(
 			long userId, long searchConfigurationId,
 			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
 			String configuration, ServiceContext serviceContext)
@@ -357,6 +358,7 @@ public interface SearchConfigurationLocalService
 	public SearchConfiguration updateSearchConfiguration(
 		SearchConfiguration searchConfiguration);
 
+	@Indexable(type = IndexableType.REINDEX)
 	public SearchConfiguration updateStatus(
 			long userId, long searchConfigurationId, int status)
 		throws PortalException;
