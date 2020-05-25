@@ -55,41 +55,44 @@ public interface SearchConfigurationService extends BaseService {
 	 *
 	 * Never modify or reference this interface directly. Always use {@link SearchConfigurationServiceUtil} to access the search configuration remote service. Add custom service methods to <code>com.liferay.portal.search.tuning.gsearch.configuration.service.impl.SearchConfigurationServiceImpl</code> and rerun ServiceBuilder to automatically copy the method declarations to this interface.
 	 */
-	public SearchConfiguration addConfiguration(
+	public SearchConfiguration addCompanySearchConfiguration(
 			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
 			String configuration, int type, ServiceContext serviceContext)
 		throws PortalException;
 
-	public SearchConfiguration deleteConfiguration(long searchConfigurationId)
+	public SearchConfiguration addGroupSearchConfiguration(
+			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
+			String configuration, int type, ServiceContext serviceContext)
+		throws PortalException;
+
+	public SearchConfiguration deleteSearchConfiguration(
+			long searchConfigurationId)
 		throws PortalException;
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public SearchConfiguration getConfiguration(long searchConfigurationId)
-		throws PortalException;
+	public List<SearchConfiguration> getGroupSearchConfigurations(
+		long companyId, int type, int start, int end);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public List<SearchConfiguration> getGroupConfigurations(
-		long groupId, int type, int start, int end);
+	public List<SearchConfiguration> getGroupSearchConfigurations(
+		long companyId, int status, int type, int start, int end);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public List<SearchConfiguration> getGroupConfigurations(
-		long groupId, int status, int type, int start, int end);
-
-	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public List<SearchConfiguration> getGroupConfigurations(
-		long groupId, int status, int type, int start, int end,
+	public List<SearchConfiguration> getGroupSearchConfigurations(
+		long companyId, int status, int type, int start, int end,
 		OrderByComparator<SearchConfiguration> orderByComparator);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public List<SearchConfiguration> getGroupConfigurations(
-		long groupId, int type, int start, int end,
+	public List<SearchConfiguration> getGroupSearchConfigurations(
+		long companyId, int type, int start, int end,
 		OrderByComparator<SearchConfiguration> orderByComparator);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public int getGroupConfigurationsCount(long groupId, int type);
+	public int getGroupSearchConfigurationsCount(long companyId, int type);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public int getGroupConfigurationsCount(long groupId, int status, int type);
+	public int getGroupSearchConfigurationsCount(
+		long companyId, int status, int type);
 
 	/**
 	 * Returns the OSGi service identifier.
@@ -98,7 +101,12 @@ public interface SearchConfigurationService extends BaseService {
 	 */
 	public String getOSGiServiceIdentifier();
 
-	public SearchConfiguration updateConfiguration(
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public SearchConfiguration getSearchConfiguration(
+			long searchConfigurationId)
+		throws PortalException;
+
+	public SearchConfiguration updateSearchConfiguration(
 			long searchConfigurationId, Map<Locale, String> titleMap,
 			Map<Locale, String> descriptionMap, String configuration,
 			ServiceContext serviceContext)

@@ -14,12 +14,14 @@
 
 package com.liferay.portal.search.tuning.gsearch.configuration.exception;
 
+import com.liferay.petra.string.StringUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 
 import java.util.List;
 
 /**
  * @author Brian Wing Shun Chan
+ * @author Petteri Karttunen
  */
 public class SearchConfigurationValidationException extends PortalException {
 
@@ -27,7 +29,7 @@ public class SearchConfigurationValidationException extends PortalException {
 	}
 
 	public SearchConfigurationValidationException(List<String> errors) {
-		super(String.join(",", errors));
+		super(StringUtil.merge(errors, ","));
 
 		_errors = errors;
 	}
