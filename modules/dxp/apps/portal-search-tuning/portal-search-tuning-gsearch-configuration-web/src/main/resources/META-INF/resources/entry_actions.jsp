@@ -14,16 +14,14 @@
  */
 --%>
 
-<%@ include file="/init.jsp" %>
+<%@ include file="./init.jsp" %>
 
 <%
 ResultRow row = (ResultRow)request.getAttribute(WebKeys.SEARCH_CONTAINER_RESULT_ROW);
 
 SearchConfiguration searchConfiguration = (SearchConfiguration)row.getObject();
-
 long searchConfigurationId = searchConfiguration.getSearchConfigurationId();
 int searchConfigurationType = searchConfiguration.getType();
-long companyGroupId = themeDisplay.getCompanyGroupId();
 %>
 
 <liferay-ui:icon-menu
@@ -46,7 +44,7 @@ long companyGroupId = themeDisplay.getCompanyGroupId();
 		/>
 	</c:if>
 
-	<c:if test="<%= SearchConfigurationPermission.contains(permissionChecker, companyGroupId, searchConfigurationType, ActionKeys.ADD_ENTRY) %>">
+	<c:if test="<%= SearchConfigurationPermission.contains(permissionChecker, themeDisplay.getScopeGroupId(), searchConfigurationType, ActionKeys.ADD_ENTRY) %>">
 		<portlet:actionURL name="<%= SearchConfigurationMVCCommandNames.COPY_SEARCH_CONFIGURATION %>" var="copySearchConfigurationUrl">
 			<portlet:param name="redirect" value="<%= currentURL %>" />
 			<portlet:param name="<%= SearchConfigurationWebKeys.SEARCH_CONFIGURATION_ID %>" value="<%= String.valueOf(searchConfigurationId) %>" />
@@ -57,25 +55,6 @@ long companyGroupId = themeDisplay.getCompanyGroupId();
 			url="<%= copySearchConfigurationUrl %>"
 		/>
 	</c:if>
-	
-	<c:if test="<%= SearchConfigurationPermission.contains(permissionChecker, companyGroupId, searchConfigurationType, ActionKeys.PERMISSIONS) %>">
-		<liferay-security:permissionsURL
-			modelResource="<%= SearchConfiguration.class.getName() %>"
-			modelResourceDescription="<%= searchConfiguration.getTitle(locale) %>"
-			resourceGroupId="<%= String.valueOf(searchConfiguration.getGroupId()) %>"
-			resourcePrimKey="<%= String.valueOf(searchConfigurationId) %>"
-			var="permissionsURL"
-			windowState="<%= LiferayWindowState.POP_UP.toString() %>"
-		/>
-
-		<liferay-ui:icon
-			label="<%= true %>"
-			message="permissions"
-			method="get"
-			url="<%= permissionsURL %>"
-			useDialog="<%= true %>"
-		/>
-	</c:if>	
 
 	<portlet:resourceURL id="<%= SearchConfigurationMVCCommandNames.EXPORT_SEARCH_CONFIGURATION %>" var="exportSearchConfigurationUrl">
 		<portlet:param name="redirect" value="<%= currentURL %>" />

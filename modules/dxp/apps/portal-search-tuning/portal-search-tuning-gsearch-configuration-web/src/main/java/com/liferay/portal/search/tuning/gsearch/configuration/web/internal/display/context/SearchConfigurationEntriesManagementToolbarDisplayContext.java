@@ -22,11 +22,14 @@ import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItemListBuil
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.ViewTypeItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.ViewTypeItemList;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.Constants;
+import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -36,8 +39,10 @@ import com.liferay.portal.search.tuning.gsearch.configuration.web.internal.const
 import com.liferay.portal.search.tuning.gsearch.configuration.web.internal.security.permission.resource.SearchConfigurationPermission;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
+import javax.portlet.ActionRequest;
 import javax.portlet.PortletURL;
 
 import javax.servlet.http.HttpServletRequest;
@@ -82,6 +87,27 @@ public class SearchConfigurationEntriesManagementToolbarDisplayContext
 	@Override
 	public String getClearResultsURL() {
 		return getSearchActionURL();
+	}
+
+	public Map<String, Object> getComponentContext() throws PortalException {
+		String cmd = Constants.DELETE;
+
+		return HashMapBuilder.<String, Object>put(
+			"deleteEntriesCmd", cmd
+		).put(
+			"deleteEntriesURL",
+			() -> {
+				PortletURL deleteEntriesURL =
+					liferayPortletResponse.createActionURL();
+
+				deleteEntriesURL.setProperty(
+					ActionRequest.ACTION_NAME,
+					SearchConfigurationMVCCommandNames.
+						DELETE_SEARCH_CONFIGURATIONS);
+
+				return deleteEntriesURL.toString();
+			}
+		).build();
 	}
 
 	@Override
@@ -145,7 +171,8 @@ public class SearchConfigurationEntriesManagementToolbarDisplayContext
 		}
 
 		portletURL.setProperty("orderBycol", searchContainer.getOrderByCol());
-		portletURL.setProperty("orderByType", searchContainer.getOrderByType());
+		portletURL.setProperty(
+			"orderByType", searchContainer.getOrderByType());
 
 		if (searchContainer.getCur() > 0) {
 			portletURL.setProperty(

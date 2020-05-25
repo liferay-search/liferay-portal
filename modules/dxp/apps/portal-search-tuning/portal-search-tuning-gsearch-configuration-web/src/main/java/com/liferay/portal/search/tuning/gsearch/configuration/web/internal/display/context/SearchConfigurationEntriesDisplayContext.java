@@ -59,7 +59,6 @@ import java.util.stream.Stream;
 
 import javax.portlet.PortletException;
 import javax.portlet.PortletURL;
-
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -90,13 +89,12 @@ public class SearchConfigurationEntriesDisplayContext {
 		ThemeDisplay themeDisplay =
 			(ThemeDisplay)_httpServletRequest.getAttribute(
 				WebKeys.THEME_DISPLAY);
-
+		
 		if (SearchConfigurationEntryPermission.contains(
 				themeDisplay.getPermissionChecker(), searchConfiguration,
 				ActionKeys.DELETE)) {
 
-			return Collections.singletonList(
-				"deleteSearchConfigurationEntries");
+			return Collections.singletonList("deleteSearchConfigurationEntries");
 		}
 
 		return Collections.emptyList();
@@ -125,10 +123,8 @@ public class SearchConfigurationEntriesDisplayContext {
 	public SearchContainer<SearchConfiguration> getSearchContainer()
 		throws PortalException, PortletException {
 
-		ThemeDisplay themeDisplay =
-			(ThemeDisplay)_httpServletRequest.getAttribute(
-				WebKeys.THEME_DISPLAY);
-
+		ThemeDisplay themeDisplay = (ThemeDisplay)_httpServletRequest.getAttribute(WebKeys.THEME_DISPLAY);
+		
 		PortletURL portletURL = _liferayPortletResponse.createRenderURL();
 
 		portletURL.setProperty(
@@ -152,9 +148,7 @@ public class SearchConfigurationEntriesDisplayContext {
 		entriesSearchContainer.setOrderByType(orderByType);
 
 		entriesSearchContainer.setOrderByComparator(
-			_getOrderByComparator(
-				themeDisplay.getLocale(),
-				entriesSearchContainer.getOrderByCol(),
+				_getOrderByComparator(themeDisplay.getLocale(), entriesSearchContainer.getOrderByCol(),
 				entriesSearchContainer.getOrderByType()));
 
 		entriesSearchContainer.setRowChecker(
@@ -175,21 +169,17 @@ public class SearchConfigurationEntriesDisplayContext {
 		}
 
 		OrderByComparator<SearchConfiguration> orderByComparator = null;
-
 		if (orderByCol.equals("modified-date")) {
-			orderByComparator = new SearchConfigurationModifiedDateComparator(
-				orderByAsc);
+			orderByComparator = new SearchConfigurationModifiedDateComparator(orderByAsc);
 		}
 		else {
-			orderByComparator = new SearchConfigurationTitleComparator(
-				orderByAsc, locale);
+			orderByComparator = new SearchConfigurationTitleComparator(orderByAsc, locale);
 		}
 
 		return orderByComparator;
 	}
 
-	private void _populateResults(
-			SearchContainer<SearchConfiguration> searchContainer)
+	private void _populateResults(SearchContainer<SearchConfiguration> searchContainer)
 		throws PortalException {
 
 		ThemeDisplay themeDisplay =
@@ -199,26 +189,27 @@ public class SearchConfigurationEntriesDisplayContext {
 		List<SearchConfiguration> entriesResults = null;
 
 		long groupId = themeDisplay.getCompanyGroupId();
-
+		
 		String keywords = ParamUtil.getString(_httpServletRequest, "keywords");
 
 		if (Validator.isNull(keywords)) {
 			searchContainer.setTotal(
 				SearchConfigurationServiceUtil.
 					getGroupSearchConfigurationsCount(
-						groupId, WorkflowConstants.STATUS_ANY,
+							groupId,
+						WorkflowConstants.STATUS_ANY,
 						_searchConfigurationType));
 
 			entriesResults =
 				SearchConfigurationServiceUtil.getGroupSearchConfigurations(
-					groupId, WorkflowConstants.STATUS_ANY,
-					_searchConfigurationType, searchContainer.getStart(),
-					searchContainer.getEnd(),
+						groupId,
+					WorkflowConstants.STATUS_ANY, _searchConfigurationType,
+					searchContainer.getStart(), searchContainer.getEnd(),
 					searchContainer.getOrderByComparator());
 		}
 		else {
-			Indexer<SearchConfiguration> indexer =
-				IndexerRegistryUtil.getIndexer(SearchConfiguration.class);
+			Indexer<SearchConfiguration> indexer = IndexerRegistryUtil.getIndexer(
+				SearchConfiguration.class);
 
 			SearchContext searchContext = SearchContextFactory.getInstance(
 				_httpServletRequest);

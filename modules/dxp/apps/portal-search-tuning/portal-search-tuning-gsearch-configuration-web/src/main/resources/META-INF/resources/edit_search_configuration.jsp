@@ -53,7 +53,7 @@ String redirect = ParamUtil.getString(request, "redirect", currentURL);
 <liferay-frontend:edit-form
 	action="<%= editConfigurationActionURL %>"
 >
-	<aui:input name="<%= SearchConfigurationWebKeys.SEARCH_CONFIGURATION_ID %>" type="hidden" value='<%= (searchConfiguration != null) ? searchConfiguration.getSearchConfigurationId() : "" %>' />
+	<aui:input name="<%= SearchConfigurationWebKeys.SEARCH_CONFIGURATION_ID %>" type="hidden" value='<%= searchConfiguration != null ? searchConfiguration.getSearchConfigurationId() : "" %>' />
 
 	<aui:input name="<%= SearchConfigurationWebKeys.SEARCH_CONFIGURATION_TYPE %>" type="hidden" value="<%= searchConfigurationType %>" />
 
@@ -67,7 +67,7 @@ String redirect = ParamUtil.getString(request, "redirect", currentURL);
 		>
 
 			<%
-			if ((searchConfiguration != null) && (searchConfigurationType == SearchConfigurationTypes.CONFIGURATION)) {
+			if (searchConfiguration != null && searchConfigurationType == SearchConfigurationTypes.CONFIGURATION) {
 			%>
 
 				<div class="lfr-form-row lfr-form-row-inline">
@@ -102,14 +102,14 @@ String redirect = ParamUtil.getString(request, "redirect", currentURL);
 			>
 
 				<%
-				String[] synonyms = JSONHelperUtil.getConfigurationSection(searchConfiguration, SearchConfigurationKeys.SYNONYMS);
+				String[] synonyms = JSONHelper.getConfigurationSection(searchConfiguration, SearchConfigurationKeys.SYNONYMS);
 
-					for (int i = 0; i < synonyms.length; i++) {
-						String value = synonyms[i];
+				for (int i = 0; i < synonyms.length; i++) {
+					String value = synonyms[i];
 				%>
 
 					<div class="lfr-form-row">
-						<aui:input  autoSize="<%= true %>" label="synonym-set" name="<%= SearchConfigurationWebKeys.SYNONYM + i %>" required="<%= false %>" type="textarea" value="<%= value %>" />
+						<aui:input autoSize="<%= true %>" label="synonym-set" name="<%= SearchConfigurationWebKeys.SYNONYM + i %>" required="<%= false %>" type="textarea" value="<%= value %>" />
 					</div>
 
 				<%
@@ -126,10 +126,10 @@ String redirect = ParamUtil.getString(request, "redirect", currentURL);
 			>
 
 				<%
-				String[] misspellings = JSONHelperUtil.getConfigurationSection(searchConfiguration, SearchConfigurationKeys.MISSPELLINGS);
+				String[] misspellings = JSONHelper.getConfigurationSection(searchConfiguration, SearchConfigurationKeys.MISSPELLINGS);
 
-					for (int i = 0; i < misspellings.length; i++) {
-						String value = misspellings[i];
+				for (int i = 0; i < misspellings.length; i++) {
+					String value = misspellings[i];
 				%>
 
 					<div class="lfr-form-row">
@@ -152,7 +152,7 @@ String redirect = ParamUtil.getString(request, "redirect", currentURL);
 		>
 
 			<%
-			String[] clauseConfiguration = JSONHelperUtil.getConfigurationSection(searchConfiguration, SearchConfigurationKeys.CLAUSE_CONFIGURATION);
+			String[] clauseConfiguration = JSONHelper.getConfigurationSection(searchConfiguration, SearchConfigurationKeys.CLAUSE_CONFIGURATION);
 
 			for (int i = 0; i < clauseConfiguration.length; i++) {
 				String value = clauseConfiguration[i];
