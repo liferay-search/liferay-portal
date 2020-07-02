@@ -79,8 +79,7 @@ public class IPStackDataProvider implements GeoLocationDataProvider {
 			return null;
 		}
 
-		JSONObject ipStackDataJsonObject = _jsonDataProviderCache.get(
-			ipAddress);
+		JSONObject ipStackDataJsonObject = _searchDataCache.get(ipAddress);
 
 		if (ipStackDataJsonObject != null) {
 			return ipStackDataJsonObject;
@@ -93,7 +92,7 @@ public class IPStackDataProvider implements GeoLocationDataProvider {
 			return null;
 		}
 
-		_jsonDataProviderCache.put(
+		_searchDataCache.put(
 			ipAddress, ipStackDataJsonObject,
 			_ipStackConfiguration.cacheTimeout());
 
@@ -297,6 +296,6 @@ public class IPStackDataProvider implements GeoLocationDataProvider {
 	private volatile IPStackConfiguration _ipStackConfiguration;
 
 	@Reference
-	private JsonDataProviderCache _jsonDataProviderCache;
+	private JsonDataProviderCache<JSONObject> _searchDataCache;
 
 }

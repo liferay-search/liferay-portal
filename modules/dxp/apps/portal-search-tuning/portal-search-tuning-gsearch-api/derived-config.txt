@@ -1,4 +1,0 @@
-com/liferay/portal/search/tuning/gsearch/api/configuration/category/GSearchConfigurationCategory.getCategoryIcon()Ljava/lang/String;:SAFE
-com/liferay/portal/search/tuning/gsearch/api/configuration/category/GSearchConfigurationCategory.getCategoryKey()Ljava/lang/String;:SAFE
-com/liferay/portal/search/tuning/gsearch/api/configuration/category/GSearchConfigurationCategory.getCategorySection()Ljava/lang/String;:SAFE
-com/liferay/portal/search/tuning/gsearch/api/query/context/QueryContext.toString()Ljava/lang/String;:UNKNOWN
