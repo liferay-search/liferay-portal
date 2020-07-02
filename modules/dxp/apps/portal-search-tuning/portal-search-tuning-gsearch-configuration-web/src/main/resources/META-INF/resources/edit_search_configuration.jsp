@@ -14,7 +14,7 @@
  */
 --%>
 
-<%@ include file="/init.jsp" %>
+<%@ include file="./init.jsp" %>
 
 <liferay-ui:error key="errorDetails">
 	<liferay-ui:message arguments='<%= SessionErrors.get(liferayPortletRequest, "errorDetails") %>' key="error.search-configuration-service-error" />
@@ -109,7 +109,7 @@ String redirect = ParamUtil.getString(request, "redirect", currentURL);
 				%>
 
 					<div class="lfr-form-row">
-						<aui:input autoSize="<%= true %>" label="synonym-set" name="<%= SearchConfigurationWebKeys.SYNONYM + i %>" required="<%= false %>" type="textarea" value="<%= value %>" />
+						<aui:input  autoSize="<%= true %>" label="synonym-set" name="<%= SearchConfigurationWebKeys.SYNONYM + i %>" required="<%= false %>" type="textarea" value="<%= value %>" />
 					</div>
 
 				<%
