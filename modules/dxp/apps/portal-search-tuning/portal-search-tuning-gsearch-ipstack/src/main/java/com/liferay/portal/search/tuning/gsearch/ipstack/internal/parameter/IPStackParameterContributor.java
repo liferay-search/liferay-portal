@@ -67,51 +67,44 @@ public class IPStackParameterContributor implements ParameterContributor {
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				"${ipstack.city}",
-				StringParameter.class.getName(), "parameter.ipstack.city"));
+				"${ipstack.city}", StringParameter.class.getName(),
+				"parameter.ipstack.city"));
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				"${ipstack.continent_code}",
-				StringParameter.class.getName(),
+				"${ipstack.continent_code}", StringParameter.class.getName(),
 				"parameter.ipstack.continent-code"));
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				"${ipstack.continent_name}",
-				StringParameter.class.getName(),
+				"${ipstack.continent_name}", StringParameter.class.getName(),
 				"parameter.ipstack.continent-name"));
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				"${ipstack.country_code}",
-				StringParameter.class.getName(),
+				"${ipstack.country_code}", StringParameter.class.getName(),
 				"parameter.ipstack.country-code"));
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				"${ipstack.country_name}",
-				StringParameter.class.getName(),
+				"${ipstack.country_name}", StringParameter.class.getName(),
 				"parameter.ipstack.country-name"));
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				"${ipstack.latitude}",
-				DoubleParameter.class.getName(), "parameter.ipstack.latitude"));
+				"${ipstack.latitude}", DoubleParameter.class.getName(),
+				"parameter.ipstack.latitude"));
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				"${ipstack.longitude}",
-				DoubleParameter.class.getName(),
+				"${ipstack.longitude}", DoubleParameter.class.getName(),
 				"parameter.ipstack.longitude"));
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				"${ipstack.region_code}",
-				StringParameter.class.getName(),
+				"${ipstack.region_code}", StringParameter.class.getName(),
 				"parameter.ipstack.region-code"));
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				"${ipstack.region_name}",
-				StringParameter.class.getName(),
+				"${ipstack.region_name}", StringParameter.class.getName(),
 				"parameter.ipstack.region-name"));
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				"${ipstack.zip}",
-				StringParameter.class.getName(), "parameter.ipstack.zip"));
+				"${ipstack.zip}", StringParameter.class.getName(),
+				"parameter.ipstack.zip"));
 
 		return parameterDefinitions;
 	}

@@ -66,7 +66,7 @@ public class OpenWeatherMapDataProvider {
 
 		String cacheKey = _getCacheKey(geoLocationPoint);
 
-		JSONObject weatherDataJsonObject = _searchDataCache.get(cacheKey);
+		JSONObject weatherDataJsonObject = _jsonDataProviderCache.get(cacheKey);
 
 		if (weatherDataJsonObject != null) {
 			return weatherDataJsonObject;
@@ -79,7 +79,7 @@ public class OpenWeatherMapDataProvider {
 			return null;
 		}
 
-		_searchDataCache.put(
+		_jsonDataProviderCache.put(
 			cacheKey, weatherDataJsonObject,
 			_openWeatherMapConfiguration.cacheTimeout());
 
@@ -104,16 +104,14 @@ public class OpenWeatherMapDataProvider {
 	private String _buildURL(
 		String apiKey, String apiURL, GeoLocationPoint geoLocationPoint) {
 
-		StringBundler sb = new StringBundler(9);
+		StringBundler sb = new StringBundler(7);
 
 		sb.append(apiURL);
 		sb.append("?lat=");
 		sb.append(String.valueOf(geoLocationPoint.getLatitude()));
 		sb.append("&lon=");
 		sb.append(String.valueOf(geoLocationPoint.getLongitude()));
-		sb.append("&units=metric");
-		sb.append("&format=json");
-		sb.append("&APPID=");
+		sb.append("&units=metric&format=json&APPID=");
 		sb.append(apiKey);
 
 		return sb.toString();
@@ -220,9 +218,9 @@ public class OpenWeatherMapDataProvider {
 	@Reference
 	private Http _http;
 
-	private volatile OpenWeatherMapConfiguration _openWeatherMapConfiguration;
-
 	@Reference
-	private JsonDataProviderCache<JSONObject> _searchDataCache;
+	private JsonDataProviderCache _jsonDataProviderCache;
+
+	private volatile OpenWeatherMapConfiguration _openWeatherMapConfiguration;
 
 }

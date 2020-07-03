@@ -25,20 +25,31 @@ import java.util.Map;
  */
 public interface ResultItemBuilder {
 
-	public String getDate(SearchRequestContext searchRequestContext, ResultAttributes resultAttributes,
-			Document document) throws Exception;
+	public String getDate(
+			SearchRequestContext searchRequestContext,
+			ResultAttributes resultAttributes, Document document)
+		throws Exception;
 
-	public String getDescription(SearchRequestContext searchRequestContext, ResultAttributes resultAttributes,
-			Document document) throws Exception;
+	public String getDescription(
+			SearchRequestContext searchRequestContext,
+			ResultAttributes resultAttributes, Document document)
+		throws Exception;
 
-	public Map<String, String> getMetadata(SearchRequestContext queryContext, ResultAttributes resultAttributes,
-			Document document) throws Exception;
+	public Map<String, String> getMetadata(
+			SearchRequestContext queryContext,
+			ResultAttributes resultAttributes, Document document)
+		throws Exception;
 
-	public String getThumbnail(SearchRequestContext searchRequestContext, ResultAttributes resultAttributes,
-			Document document) throws Exception;
+	public String getThumbnail(
+			SearchRequestContext searchRequestContext,
+			ResultAttributes resultAttributes, Document document)
+		throws Exception;
 
-	public String getTitle(SearchRequestContext searchRequestContext, ResultAttributes resultAttributes,
-			Document document) throws Exception;
+	public String getTitle(
+			SearchRequestContext searchRequestContext,
+			ResultAttributes resultAttributes, Document document)
+		throws Exception;
 
 	public String getType(Document document) throws Exception;
+
 }

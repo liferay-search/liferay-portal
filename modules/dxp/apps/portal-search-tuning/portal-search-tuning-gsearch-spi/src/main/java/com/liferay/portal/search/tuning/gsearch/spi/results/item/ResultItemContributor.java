@@ -25,8 +25,8 @@ import com.liferay.portal.search.tuning.gsearch.results.ResultAttributes;
 public interface ResultItemContributor {
 
 	public void contribute(
-		SearchRequestContext searchRequestContext, 
-		ResultAttributes resultAttributes, ResultItemBuilder resultItemBuilder, Document document,
-		 JSONObject resultItemJsonObject);
+		SearchRequestContext searchRequestContext,
+		ResultAttributes resultAttributes, ResultItemBuilder resultItemBuilder,
+		Document document, JSONObject resultItemJsonObject);
 
 }
