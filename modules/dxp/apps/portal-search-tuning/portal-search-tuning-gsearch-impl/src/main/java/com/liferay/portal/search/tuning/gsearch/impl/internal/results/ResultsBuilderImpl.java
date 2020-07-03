@@ -418,9 +418,7 @@ public class ResultsBuilderImpl implements ResultsBuilder {
 
 		for (ResultItemContributor r : _resultItemProcessors) {
 			try {
-				r.contribute(
-					searchRequestContext, resultAttributes, resultItemBuilder,
-					document, resultItem);
+				r.contribute(searchRequestContext, resultAttributes, resultItemBuilder, document, resultItem);
 			}
 			catch (Exception e) {
 				_log.error(e.getMessage(), e);
