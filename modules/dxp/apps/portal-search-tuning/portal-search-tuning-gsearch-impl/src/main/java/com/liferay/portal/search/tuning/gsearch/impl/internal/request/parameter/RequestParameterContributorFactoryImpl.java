@@ -6,6 +6,7 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.tuning.gsearch.impl.internal.component.ServiceComponentReference;
 import com.liferay.portal.search.tuning.gsearch.impl.internal.request.parameter.contributor.RequestParameterContributor;
+import com.liferay.portal.search.tuning.gsearch.spi.parameter.ParameterContributor;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
