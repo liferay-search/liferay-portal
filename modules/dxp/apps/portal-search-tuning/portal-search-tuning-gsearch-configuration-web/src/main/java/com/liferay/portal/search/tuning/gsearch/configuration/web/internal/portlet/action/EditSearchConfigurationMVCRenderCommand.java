@@ -14,25 +14,22 @@
 
 package com.liferay.portal.search.tuning.gsearch.configuration.web.internal.portlet.action;
 
-import com.liferay.petra.string.StringBundler;
-import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.json.JSONFactory;
+import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCRenderCommand;
-import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.theme.PortletDisplay;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
-import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.search.tuning.gsearch.configuration.constants.SearchConfigurationPortletKeys;
-import com.liferay.portal.search.tuning.gsearch.configuration.constants.SearchConfigurationTypes;
-import com.liferay.portal.search.tuning.gsearch.configuration.exception.NoSuchConfigurationException;
-import com.liferay.portal.search.tuning.gsearch.configuration.model.SearchConfiguration;
 import com.liferay.portal.search.tuning.gsearch.configuration.service.SearchConfigurationService;
 import com.liferay.portal.search.tuning.gsearch.configuration.web.internal.constants.SearchConfigurationMVCCommandNames;
 import com.liferay.portal.search.tuning.gsearch.configuration.web.internal.constants.SearchConfigurationWebKeys;
+import com.liferay.portal.search.tuning.gsearch.configuration.web.internal.display.context.EditSearchConfigurationDisplayBuilder;
+import com.liferay.portal.search.tuning.gsearch.configuration.web.internal.display.context.EditSearchConfigurationDisplayContext;
 
-import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -55,48 +52,20 @@ public class EditSearchConfigurationMVCRenderCommand
 
 	@Override
 	public String render(
-			RenderRequest renderRequest, RenderResponse renderResponse)
-		throws PortletException {
+		RenderRequest renderRequest, RenderResponse renderResponse) {
 
-		long searchConfigurationId = ParamUtil.getLong(
-			renderRequest, SearchConfigurationWebKeys.SEARCH_CONFIGURATION_ID);
-
-		int searchConfigurationType = ParamUtil.getInteger(
-			renderRequest, SearchConfigurationWebKeys.SEARCH_CONFIGURATION_TYPE,
-			SearchConfigurationTypes.CONFIGURATION);
-
-		SearchConfiguration searchConfiguration = null;
-
-		if (searchConfigurationId > 0) {
-			try {
-				searchConfiguration =
-					_searchConfigurationService.getSearchConfiguration(
-						searchConfigurationId);
-
-				searchConfigurationType = searchConfiguration.getType();
-			}
-			catch (NoSuchConfigurationException noSuchConfigurationException) {
-				_log.error(
-					"Search configuration " + searchConfigurationId +
-						" not found.",
-					noSuchConfigurationException);
-
-				SessionErrors.add(
-					renderRequest, SearchConfigurationWebKeys.ERROR_DETAILS,
-					noSuchConfigurationException);
-			}
-			catch (PortalException portalException) {
-				_log.error(portalException.getMessage(), portalException);
-
-				SessionErrors.add(
-					renderRequest, SearchConfigurationWebKeys.ERROR_DETAILS,
-					portalException);
-			}
-		}
+		EditSearchConfigurationDisplayContext
+			editSearchConfigurationDisplayContext =
+				new EditSearchConfigurationDisplayBuilder(
+					portal.getHttpServletRequest(renderRequest), language, _log,
+					jsonFactory, renderRequest, renderResponse,
+					_searchConfigurationService
+				).build();
 
 		renderRequest.setAttribute(
-			SearchConfigurationWebKeys.SEARCH_CONFIGURATION,
-			searchConfiguration);
+			SearchConfigurationWebKeys.
+				EDIT_SEARCH_CONFIGURATION_DISPLAY_CONTEXT,
+			editSearchConfigurationDisplayContext);
 
 		ThemeDisplay themeDisplay = (ThemeDisplay)renderRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
@@ -104,37 +73,20 @@ public class EditSearchConfigurationMVCRenderCommand
 		PortletDisplay portletDisplay = themeDisplay.getPortletDisplay();
 
 		portletDisplay.setShowBackIcon(true);
-
-		String redirect = ParamUtil.getString(renderRequest, "redirect");
-
-		portletDisplay.setURLBack(redirect);
-
-		String pageTitleKey = _getPageTitleKey(
-			searchConfiguration != null, searchConfigurationType);
-
-		renderRequest.setAttribute(
-			SearchConfigurationWebKeys.PAGE_TITLE_KEY, pageTitleKey);
+		portletDisplay.setURLBack(
+			editSearchConfigurationDisplayContext.getRedirect());
 
 		return "/edit_search_configuration.jsp";
 	}
 
-	private String _getPageTitleKey(boolean edit, int type) {
-		StringBundler sb = new StringBundler(2);
+	@Reference
+	protected JSONFactory jsonFactory;
 
-		sb.append(edit ? "edit-" : "add-");
+	@Reference
+	protected Language language;
 
-		if (type == SearchConfigurationTypes.CONFIGURATION) {
-			sb.append("search-configuration");
-		}
-		else if (type == SearchConfigurationTypes.SNIPPET) {
-			sb.append("configuration-snippet");
-		}
-		else if (type == SearchConfigurationTypes.TEMPLATE) {
-			sb.append("configuration-template");
-		}
-
-		return sb.toString();
-	}
+	@Reference
+	protected Portal portal;
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		EditSearchConfigurationMVCRenderCommand.class);

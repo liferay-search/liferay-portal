@@ -22,6 +22,7 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.portlet.JSONPortletResponseUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.service.ServiceContextFactory;
@@ -36,6 +37,7 @@ import com.liferay.portal.search.tuning.gsearch.configuration.model.SearchConfig
 import com.liferay.portal.search.tuning.gsearch.configuration.service.SearchConfigurationService;
 import com.liferay.portal.search.tuning.gsearch.configuration.web.internal.constants.SearchConfigurationMVCCommandNames;
 import com.liferay.portal.search.tuning.gsearch.configuration.web.internal.constants.SearchConfigurationWebKeys;
+import com.liferay.portal.search.tuning.gsearch.configuration.web.internal.handler.SearchConfigurationExceptionRequestHandler;
 
 import java.util.Locale;
 import java.util.Map;
@@ -84,8 +86,9 @@ public class EditSearchConfigurationMVCActionCommand
 		String cmd = ParamUtil.getString(actionRequest, Constants.CMD);
 
 		try {
-			com.liferay.portal.kernel.service.ServiceContext serviceContext = ServiceContextFactory.getInstance(
-				SearchConfiguration.class.getName(), actionRequest);
+			com.liferay.portal.kernel.service.ServiceContext serviceContext =
+				ServiceContextFactory.getInstance(
+					SearchConfiguration.class.getName(), actionRequest);
 
 			if (Constants.ADD.equals(cmd)) {
 				_searchConfigurationService.addCompanySearchConfiguration(
@@ -98,78 +101,38 @@ public class EditSearchConfigurationMVCActionCommand
 					configuration, serviceContext);
 			}
 
-			sendRedirect(actionRequest, actionResponse);
-		}
-		catch (SearchConfigurationValidationException
-					searchConfigurationValidationException) {
+			JSONObject jsonObject = JSONUtil.put("success", titleMap);
 
-			_log.error(
-				searchConfigurationValidationException.getMessage(),
-				searchConfigurationValidationException);
-
-			searchConfigurationValidationException.getErrors(
-			).forEach(
-				key -> SessionErrors.add(actionRequest, key)
-			);
-
-			actionResponse.getRenderParameters(
-			).setValue(
-				"mvcRenderCommandName",
-				SearchConfigurationMVCCommandNames.EDIT_SEARCH_CONFIGURATION
-			);
+			JSONPortletResponseUtil.writeJSON(
+				actionRequest, actionResponse, jsonObject);
 		}
 		catch (PortalException portalException) {
-			_log.error(portalException.getMessage(), portalException);
+			hideDefaultErrorMessage(actionRequest);
 
-			SessionErrors.add(
-				actionRequest, SearchConfigurationWebKeys.ERROR_DETAILS,
-				portalException);
-
-			actionResponse.getRenderParameters(
-			).setValue(
-				"mvcRenderCommandName",
-				SearchConfigurationMVCCommandNames.EDIT_SEARCH_CONFIGURATION
-			);
+			_searchConfigurationExceptionRequestHandler.handlePortalException(
+				actionRequest, actionResponse, portalException);
 		}
 	}
 
 	private String _buildConfigurationFromRequest(ActionRequest actionRequest)
 		throws JSONException {
 
-		JSONArray clauseConfiguration = _getAutoFieldValues(
-			actionRequest, SearchConfigurationWebKeys.CLAUSE_CONFIGURATION,
-			SearchConfigurationWebKeys.CLAUSE_CONFIGURATION_INDEXES);
+		String clauseConfigurationString = ParamUtil.getString(
+			actionRequest, "clauseConfiguration");
+
+		JSONArray clauseConfigurationStringJSONArray =
+			JSONFactoryUtil.createJSONArray(clauseConfigurationString);
 
 		JSONObject configuration = JSONUtil.put(
-			SearchConfigurationKeys.CLAUSE_CONFIGURATION.getJsonKey(), clauseConfiguration);
+			SearchConfigurationKeys.CLAUSE_CONFIGURATION.getJsonKey(),
+			clauseConfigurationStringJSONArray);
 
 		return configuration.toString();
 	}
 
-	private JSONArray _getAutoFieldValues(
-			ActionRequest actionRequest, String valueParameterKey,
-			String indexParameterKey)
-		throws JSONException {
-
-		JSONArray values = JSONFactoryUtil.createJSONArray();
-
-		int[] rowIndexes = ParamUtil.getIntegerValues(
-			actionRequest, indexParameterKey, new int[0]);
-
-		for (int i : rowIndexes) {
-			String value = ParamUtil.getString(
-				actionRequest, valueParameterKey + i);
-
-			JSONObject item = JSONFactoryUtil.createJSONObject(value);
-
-			values.put(item);
-		}
-
-		return values;
-	}
-
-	private static final Log _log = LogFactoryUtil.getLog(
-		EditSearchConfigurationMVCActionCommand.class);
+	@Reference
+	private SearchConfigurationExceptionRequestHandler
+		_searchConfigurationExceptionRequestHandler;
 
 	@Reference
 	private SearchConfigurationService _searchConfigurationService;

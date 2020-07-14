@@ -31,7 +31,7 @@ snippetsURL.setParameter(SearchConfigurationWebKeys.SEARCH_CONFIGURATION_TYPE, S
 %>
 
 <clay:navigation-bar
-	inverted="<%= true %>"
+	inverted="<%= false %>"
 	navigationItems='<%=
 		new JSPNavigationItemList(pageContext) {
 			{
@@ -64,4 +64,4 @@ snippetsURL.setParameter(SearchConfigurationWebKeys.SEARCH_CONFIGURATION_TYPE, S
 	%>'
 />
 
-<liferay-util:include page="/view_search_configurations.jsp" servletContext="<%= application %>" />a
+<liferay-util:include page="/view_search_configurations.jsp" servletContext="<%= application %>" />

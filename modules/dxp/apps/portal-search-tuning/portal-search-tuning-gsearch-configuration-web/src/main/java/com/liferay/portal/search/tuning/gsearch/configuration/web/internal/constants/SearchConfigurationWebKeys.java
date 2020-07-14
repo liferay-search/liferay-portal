@@ -26,6 +26,9 @@ public class SearchConfigurationWebKeys {
 
 	public static final String DESCRIPTION = "description";
 
+	public static final String EDIT_SEARCH_CONFIGURATION_DISPLAY_CONTEXT =
+		"EDIT_SEARCH_CONFIGURATION_DISPLAY_CONTEXT";
+
 	public static final String ERROR_DETAILS = "errorDetails";
 
 	public static final String MISSPELLING = "misspellings";

@@ -57,7 +57,7 @@ long companyGroupId = themeDisplay.getCompanyGroupId();
 			url="<%= copySearchConfigurationUrl %>"
 		/>
 	</c:if>
-	
+
 	<c:if test="<%= SearchConfigurationPermission.contains(permissionChecker, companyGroupId, searchConfigurationType, ActionKeys.PERMISSIONS) %>">
 		<liferay-security:permissionsURL
 			modelResource="<%= SearchConfiguration.class.getName() %>"
@@ -75,7 +75,7 @@ long companyGroupId = themeDisplay.getCompanyGroupId();
 			url="<%= permissionsURL %>"
 			useDialog="<%= true %>"
 		/>
-	</c:if>	
+	</c:if>
 
 	<portlet:resourceURL id="<%= SearchConfigurationMVCCommandNames.EXPORT_SEARCH_CONFIGURATION %>" var="exportSearchConfigurationUrl">
 		<portlet:param name="redirect" value="<%= currentURL %>" />

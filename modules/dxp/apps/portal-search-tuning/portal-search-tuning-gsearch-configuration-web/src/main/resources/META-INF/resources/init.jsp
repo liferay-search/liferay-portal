@@ -27,33 +27,24 @@ taglib uri="http://liferay.com/tld/ui" prefix="liferay-ui" %><%@
 taglib uri="http://liferay.com/tld/util" prefix="liferay-util" %>
 
 <%@ page import="com.liferay.frontend.taglib.clay.servlet.taglib.util.JSPNavigationItemList" %><%@
+page import="com.liferay.petra.string.StringPool" %><%@
+page import="com.liferay.portal.kernel.dao.search.ResultRow" %><%@
 page import="com.liferay.portal.kernel.dao.search.SearchContainer" %><%@
-page import="com.liferay.portal.kernel.json.JSONObject"%><%@
-page import="com.liferay.portal.kernel.json.JSONFactoryUtil"%><%@
-page import="com.liferay.portal.kernel.json.JSONArray"%><%@
 page import="com.liferay.portal.kernel.language.LanguageUtil" %><%@
-page import="com.liferay.portal.kernel.model.ModelHintsUtil" %><%@
-page import="com.liferay.portal.kernel.portlet.LiferayWindowState"%><%@
-page import="com.liferay.portal.kernel.security.permission.ActionKeys"%><%@
-page import="com.liferay.portal.kernel.servlet.SessionErrors"%><%@
-page import="com.liferay.portal.kernel.util.Constants"%><%@
+page import="com.liferay.portal.kernel.portlet.LiferayWindowState" %><%@
+page import="com.liferay.portal.kernel.security.permission.ActionKeys" %><%@
+page import="com.liferay.portal.kernel.servlet.SessionErrors" %><%@
 page import="com.liferay.portal.kernel.util.HtmlUtil" %><%@
 page import="com.liferay.portal.kernel.util.ParamUtil" %><%@
-page import="com.liferay.portal.kernel.dao.search.ResultRow" %><%@
 page import="com.liferay.portal.kernel.util.WebKeys" %><%@
-page import="com.liferay.petra.string.StringPool" %><%@
-
-page import="com.liferay.portal.search.tuning.gsearch.configuration.constants.SearchConfigurationActionKeys"%><%@
-page import="com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.SearchConfigurationKeys"%><%@
-page import="com.liferay.portal.search.tuning.gsearch.configuration.constants.SearchConfigurationTypes"%><%@
+page import="com.liferay.portal.search.tuning.gsearch.configuration.constants.SearchConfigurationTypes" %><%@
 page import="com.liferay.portal.search.tuning.gsearch.configuration.model.SearchConfiguration" %><%@
 page import="com.liferay.portal.search.tuning.gsearch.configuration.web.internal.constants.SearchConfigurationMVCCommandNames" %><%@
 page import="com.liferay.portal.search.tuning.gsearch.configuration.web.internal.constants.SearchConfigurationWebKeys" %><%@
 page import="com.liferay.portal.search.tuning.gsearch.configuration.web.internal.display.context.SearchConfigurationEntriesDisplayContext" %><%@
 page import="com.liferay.portal.search.tuning.gsearch.configuration.web.internal.display.context.SearchConfigurationEntriesManagementToolbarDisplayContext" %><%@
-page import="com.liferay.portal.search.tuning.gsearch.configuration.web.internal.security.permission.resource.SearchConfigurationPermission"%><%@
-page import="com.liferay.portal.search.tuning.gsearch.configuration.web.internal.security.permission.resource.SearchConfigurationEntryPermission"%><%@
-page import="com.liferay.portal.search.tuning.gsearch.configuration.web.internal.util.JSONHelperUtil"%>
+page import="com.liferay.portal.search.tuning.gsearch.configuration.web.internal.security.permission.resource.SearchConfigurationEntryPermission" %><%@
+page import="com.liferay.portal.search.tuning.gsearch.configuration.web.internal.security.permission.resource.SearchConfigurationPermission" %>
 
 <%@ page import="javax.portlet.PortletURL" %>
 

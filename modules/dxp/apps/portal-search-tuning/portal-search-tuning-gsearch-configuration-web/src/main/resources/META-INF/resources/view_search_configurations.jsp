@@ -32,27 +32,29 @@ String displayStyle = searchConfigurationEntriesDisplayContext.getDisplayStyle()
 	supportsBulkActions="<%= true %>"
 />
 
-<aui:form method="post" name="fm">
-	<aui:input name="redirect" type="hidden" value="<%= currentURL %>" />
+<clay:container-fluid>
+	<aui:form method="post" name="fm">
+		<aui:input name="redirect" type="hidden" value="<%= currentURL %>" />
 
-	<liferay-ui:search-container
-		id="configurationEntries"
-		searchContainer="<%= configurationsSearchContainer %>"
-	>
-		<liferay-ui:search-container-row
-			className="com.liferay.portal.search.tuning.gsearch.configuration.model.SearchConfiguration"
-			keyProperty="searchConfigurationId"
-			modelVar="entry"
+		<liferay-ui:search-container
+			id="configurationEntries"
+			searchContainer="<%= configurationsSearchContainer %>"
 		>
-			<%@ include file="/entry_search_columns.jspf" %>
-		</liferay-ui:search-container-row>
+			<liferay-ui:search-container-row
+				className="com.liferay.portal.search.tuning.gsearch.configuration.model.SearchConfiguration"
+				keyProperty="searchConfigurationId"
+				modelVar="entry"
+			>
+				<%@ include file="/entry_search_columns.jspf" %>
+			</liferay-ui:search-container-row>
 
-		<liferay-ui:search-iterator
-			displayStyle="<%= displayStyle %>"
-			markupView="lexicon"
-		/>
-	</liferay-ui:search-container>
-</aui:form>
+			<liferay-ui:search-iterator
+				displayStyle="<%= displayStyle %>"
+				markupView="lexicon"
+			/>
+		</liferay-ui:search-container>
+	</aui:form>
+</clay:container-fluid>
 
 <aui:script sandbox="<%= true %>">
 	var submitForm = function (url) {
