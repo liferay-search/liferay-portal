@@ -15,6 +15,7 @@
 package com.liferay.portal.search.web.internal.search.bar.portlet;
 
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
+import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.Http;
@@ -118,6 +119,12 @@ public class SearchBarPortlet extends MVCPortlet {
 			portletSharedSearchResponse.getSearchSettings(),
 			searchBarPortletPreferences, themeDisplay);
 
+		SearchResponse searchResponse = getSearchResponse(
+			portletSharedSearchResponse, searchBarPortletPreferences);
+
+		String keywords = searchResponse.withSearchContextGet(
+			SearchContext::getKeywords);
+
 		return searchBarPortletDisplayBuilder.setDestination(
 			searchBarPortletPreferences.getDestinationString()
 		).setEmptySearchEnabled(
@@ -125,7 +132,7 @@ public class SearchBarPortlet extends MVCPortlet {
 		).setInvisible(
 			searchBarPortletPreferences.isInvisible()
 		).setKeywords(
-			portletSharedSearchResponse.getKeywordsOptional()
+			Optional.ofNullable(keywords)
 		).setKeywordsParameterName(
 			keywordsParameterName
 		).setPaginationStartParameterName(
@@ -185,6 +192,14 @@ public class SearchBarPortlet extends MVCPortlet {
 
 		return optional.orElse(
 			searchBarPortletPreferences.getScopeParameterName());
+	}
+
+	protected SearchResponse getSearchResponse(
+		PortletSharedSearchResponse portletSharedSearchResponse,
+		SearchBarPortletPreferences searchBarPortletPreferences) {
+
+		return portletSharedSearchResponse.getFederatedSearchResponse(
+			searchBarPortletPreferences.getFederatedSearchKeyOptional());
 	}
 
 	protected boolean isEmptySearchEnabled(

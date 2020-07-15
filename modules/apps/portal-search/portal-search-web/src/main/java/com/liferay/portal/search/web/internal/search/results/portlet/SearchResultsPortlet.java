@@ -16,7 +16,6 @@ package com.liferay.portal.search.web.internal.search.results.portlet;
 
 import com.liferay.asset.kernel.service.AssetEntryLocalService;
 import com.liferay.asset.util.AssetRendererFactoryLookup;
-import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.search.DisplayTerms;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.language.Language;
@@ -25,6 +24,7 @@ import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 import com.liferay.portal.kernel.search.Document;
 import com.liferay.portal.kernel.search.IndexerRegistry;
+import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.security.permission.ResourceActions;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
@@ -55,7 +55,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import javax.portlet.Portlet;
@@ -152,12 +151,6 @@ public class SearchResultsPortlet extends MVCPortlet {
 
 		searchResultsPortletDisplayContext.setDocuments(documents);
 
-		Optional<String> keywordsOptional =
-			portletSharedSearchResponse.getKeywordsOptional();
-
-		searchResultsPortletDisplayContext.setKeywords(
-			keywordsOptional.orElse(StringPool.BLANK));
-
 		SearchResultsPortletPreferences searchResultsPortletPreferences =
 			new SearchResultsPortletPreferencesImpl(
 				portletSharedSearchResponse.getPortletPreferences(
@@ -166,8 +159,11 @@ public class SearchResultsPortlet extends MVCPortlet {
 		SearchResponse searchResponse = getSearchResponse(
 			portletSharedSearchResponse, searchResultsPortletPreferences);
 
+		searchResultsPortletDisplayContext.setKeywords(
+			searchResponse.withSearchContextGet(SearchContext::getKeywords));
+
 		searchResultsPortletDisplayContext.setRenderNothing(
-			isRenderNothing(portletSharedSearchResponse, searchResponse));
+			isRenderNothing(searchResponse));
 
 		searchResultsPortletDisplayContext.setSearchContainer(
 			buildSearchContainer(
@@ -410,14 +406,11 @@ public class SearchResultsPortlet extends MVCPortlet {
 		return http.removeParameter(urlString, paginationStartParameterName);
 	}
 
-	protected boolean isRenderNothing(
-		PortletSharedSearchResponse portletSharedSearchResponse,
-		SearchResponse searchResponse) {
+	protected boolean isRenderNothing(SearchResponse searchResponse) {
+		String keywords = searchResponse.withSearchContextGet(
+			SearchContext::getKeywords);
 
-		Optional<String> keywordsOptional =
-			portletSharedSearchResponse.getKeywordsOptional();
-
-		if (keywordsOptional.isPresent()) {
+		if (keywords != null) {
 			return false;
 		}
 
