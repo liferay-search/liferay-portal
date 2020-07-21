@@ -69,7 +69,7 @@
 									<#if entry.isContentVisible()>
 										<p class="list-group-subtext">
 											<span class="subtext-item">
-												${entry.getContent()}
+												${htmlUtil.unescape(entry.getContent())}
 											</span>
 										</p>
 									</#if>
