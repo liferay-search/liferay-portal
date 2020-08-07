@@ -60,16 +60,9 @@ public interface MultiMatchQuery extends Query {
 
 	public MatchQuery.ZeroTermsQuery getZeroTermsQuery();
 
-	/**
-	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
-	 */
-	@Deprecated
 	public boolean isFieldBoostsEmpty();
 
-	/**
-	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
-	 */
-	@Deprecated	public boolean isFieldsEmpty();
+	public boolean isFieldsEmpty();
 	
 	public Boolean isLenient();
 
