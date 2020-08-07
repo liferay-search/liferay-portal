@@ -33,20 +33,20 @@ public class MultiMatchQueryImpl
 	public MultiMatchQueryImpl(Object value, Map<String, Float> fieldsBoosts) {
 		_value = value;
 
-		_fieldsBoosts = new HashMap<String, Float>(fieldsBoosts);
+		_fieldsBoosts.putAll(fieldsBoosts);
 	}
 
 	public MultiMatchQueryImpl(Object value, Set<String> fields) {
 		_value = value;
 
-		_fieldsBoosts.keySet().addAll(fields);
+		_fields.addAll(fields);
 	}
 
 	public MultiMatchQueryImpl(Object value, String... fields) {
 		_value = value;
 
-		Collections.addAll(_fieldsBoosts.keySet(), fields);
-	}
+		Collections.addAll(_fields, fields);
+	}	
 	
 	@Override
 	public <T> T accept(QueryVisitor<T> queryVisitor) {
@@ -264,7 +264,8 @@ public class MultiMatchQueryImpl
 
 	private String _analyzer;
 	private Float _cutOffFrequency;
-	private Map<String, Float> _fieldsBoosts = new HashMap<String, Float>();
+	private final Set<String> _fields = new HashSet<>();
+	private final Map<String, Float> _fieldsBoosts = new HashMap<>();
 	private String _fuzziness;
 	private MatchQuery.RewriteMethod _fuzzyRewriteMethod;
 	private Boolean _lenient;
