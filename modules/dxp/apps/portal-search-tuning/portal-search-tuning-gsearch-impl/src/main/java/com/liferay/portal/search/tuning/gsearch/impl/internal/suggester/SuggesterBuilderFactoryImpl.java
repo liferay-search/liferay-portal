@@ -14,6 +14,7 @@
 
 package com.liferay.portal.search.tuning.gsearch.impl.internal.suggester;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.Validator;
@@ -65,12 +66,15 @@ public class SuggesterBuilderFactoryImpl implements SuggesterBuilderFactory {
 		String type = (String)properties.get("type");
 
 		if (Validator.isBlank(type)) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(
-					"Unable to add suggester builder " +
-						suggesterBuilder.getClass(
-						).getName() + ". Type property empty.");
-			}
+			
+			StringBundler sb = new StringBundler(3);
+			sb.append("Unable to add suggester builder ");
+			sb.append(suggesterBuilder.getClass().getName());
+			sb.append(". Type property empty.");
+
+			_log.error(sb.toString());
+			
+			return;
 		}
 
 		_suggesterBuilders.put(type, suggesterBuilder);
@@ -81,6 +85,9 @@ public class SuggesterBuilderFactoryImpl implements SuggesterBuilderFactory {
 
 		String type = (String)properties.get("type");
 
+		if (Validator.isBlank(type)) {
+			return;
+		}
 		_suggesterBuilders.remove(type);
 	}
 

@@ -48,7 +48,7 @@ public class SearchRequestContextImpl implements SearchRequestContext {
 		String rawKeywords, long searchConfigurationId,
 		SearchParameterData searchParameterData, Integer size,
 		JSONArray sortConfigurationJsonArray,
-		JSONArray spellCheckerConfigurationJsonArray, Long userId) {
+		JSONObject spellCheckerConfigurationJsonObject, Long userId) {
 
 		_aggregationConfigurationJsonArray = aggregationConfigurationJsonArray;
 		_clauseConfigurationJsonArray = clauseConfigurationJsonArray;
@@ -67,7 +67,7 @@ public class SearchRequestContextImpl implements SearchRequestContext {
 		_keywordIndexingConfigurationJsonObject =
 			keywordIndexingConfigurationJsonObject;
 		_keywords = keywords;
-		_keywordSuggestionsConfigurationJsonObject =
+		_keywordSuggesterConfigurationJsonObject =
 			keywordSuggestionsConfigurationJsonObject;
 		_locale = locale;
 		_rawKeywords = rawKeywords;
@@ -75,8 +75,8 @@ public class SearchRequestContextImpl implements SearchRequestContext {
 		_searchParameterData = searchParameterData;
 		_size = size;
 		_sortConfigurationJsonArray = sortConfigurationJsonArray;
-		_spellCheckerConfigurationJsonArray =
-			spellCheckerConfigurationJsonArray;
+		_spellCheckerConfigurationJsonObject =
+				spellCheckerConfigurationJsonObject;
 		_userId = userId;
 	}
 
@@ -196,13 +196,13 @@ public class SearchRequestContextImpl implements SearchRequestContext {
 	}
 
 	@Override
-	public Optional<JSONObject> getKeywordSuggestionsConfiguration() {
-		if ((_keywordSuggestionsConfigurationJsonObject == null) ||
-			(_keywordSuggestionsConfigurationJsonObject.length() == 0)) {
+	public Optional<JSONObject> getKeywordSuggesterConfiguration() {
+		if ((_keywordSuggesterConfigurationJsonObject == null) ||
+			(_keywordSuggesterConfigurationJsonObject.length() == 0)) {
 
 			return Optional.empty();
 		}
-		return Optional.of(_keywordSuggestionsConfigurationJsonObject);
+		return Optional.of(_keywordSuggesterConfigurationJsonObject);
 
 	}
 
@@ -248,13 +248,13 @@ public class SearchRequestContextImpl implements SearchRequestContext {
 	}
 
 	@Override
-	public Optional<JSONArray> getSpellCheckerConfiguration() {
-		if ((_spellCheckerConfigurationJsonArray == null) ||
-			(_spellCheckerConfigurationJsonArray.length() == 0)) {
+	public Optional<JSONObject> getSpellCheckerConfiguration() {
+		if ((_spellCheckerConfigurationJsonObject == null) ||
+			(_spellCheckerConfigurationJsonObject.length() == 0)) {
 
 			return Optional.empty();
 		}
-		return Optional.of(_spellCheckerConfigurationJsonArray);
+		return Optional.of(_spellCheckerConfigurationJsonObject);
 	}
 
 	@Override
@@ -324,7 +324,7 @@ public class SearchRequestContextImpl implements SearchRequestContext {
 																																	", _keywordIndexingConfigurationJsonObject=" +
 																																		_keywordIndexingConfigurationJsonObject +
 																																			", _keywordSuggestionsConfigurationJsonObject=" +
-																																				_keywordSuggestionsConfigurationJsonObject +
+																																				_keywordSuggesterConfigurationJsonObject +
 																																					", _keywords=" +
 																																						_keywords +
 																																							", _locale=" +
@@ -340,7 +340,7 @@ public class SearchRequestContextImpl implements SearchRequestContext {
 																																																	", _sortConfigurationJsonArray=" +
 																																																		_sortConfigurationJsonArray +
 																																																			", _spellCheckerConfigurationJsonArray=" +
-																																																				_spellCheckerConfigurationJsonArray +
+																																																				_spellCheckerConfigurationJsonObject +
 																																																					", _userId=" +
 																																																						_userId +
 																																																							"]";
@@ -362,7 +362,7 @@ public class SearchRequestContextImpl implements SearchRequestContext {
 	private final String _initialKeywords;
 	private final JSONObject _keywordIndexingConfigurationJsonObject;
 	private final String _keywords;
-	private final JSONObject _keywordSuggestionsConfigurationJsonObject;
+	private final JSONObject _keywordSuggesterConfigurationJsonObject;
 	private final Locale _locale;
 	private final List<Message> _messages = new ArrayList<>();
 	private final String _rawKeywords;
@@ -370,7 +370,7 @@ public class SearchRequestContextImpl implements SearchRequestContext {
 	private final SearchParameterData _searchParameterData;
 	private final Integer _size;
 	private final JSONArray _sortConfigurationJsonArray;
-	private final JSONArray _spellCheckerConfigurationJsonArray;
+	private final JSONObject _spellCheckerConfigurationJsonObject;
 	private final Long _userId;
 
 }

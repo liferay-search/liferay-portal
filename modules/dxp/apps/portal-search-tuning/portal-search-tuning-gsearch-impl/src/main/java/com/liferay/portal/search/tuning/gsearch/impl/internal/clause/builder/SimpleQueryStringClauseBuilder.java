@@ -42,9 +42,9 @@ public class SimpleQueryStringClauseBuilder implements ClauseBuilder {
 
 	@Override
 	public Optional<Query> buildClause(
-		SearchRequestContext queryContext, JSONObject clauseJsonObject) {
+		SearchRequestContext queryContext, JSONObject configurationJsonObject) {
 
-		String keywords = clauseJsonObject.getString(
+		String keywords = configurationJsonObject.getString(
 			SimpleQueryStringConfigurationKeys.QUERY.getJsonKey());
 
 		if (Validator.isBlank(keywords)) {
@@ -53,111 +53,114 @@ public class SimpleQueryStringClauseBuilder implements ClauseBuilder {
 
 		StringQuery simpleQueryString = _queries.string(keywords);
 
-		if (clauseJsonObject.has(
+		if (configurationJsonObject.has(
 				SimpleQueryStringConfigurationKeys.ANALYZE_WILDCARD.
 					getJsonKey())) {
 
 			simpleQueryString.setAnalyzeWildcard(
-				clauseJsonObject.getBoolean(
+				configurationJsonObject.getBoolean(
 					SimpleQueryStringConfigurationKeys.ANALYZE_WILDCARD.
 						getJsonKey()));
 		}
 
-		if (clauseJsonObject.has(
+		if (configurationJsonObject.has(
 				SimpleQueryStringConfigurationKeys.ANALYZER.getJsonKey())) {
 
 			simpleQueryString.setAnalyzer(
 				SimpleQueryStringConfigurationKeys.ANALYZER.getJsonKey());
 		}
 
-		if (clauseJsonObject.has(
+		if (configurationJsonObject.has(
 				SimpleQueryStringConfigurationKeys.
 					AUTO_GENERATE_SYNONYMS_PHRASE_QUERY.getJsonKey())) {
 
 			simpleQueryString.setAutoGenerateSynonymsPhraseQuery(
-				clauseJsonObject.getBoolean(
+				configurationJsonObject.getBoolean(
 					SimpleQueryStringConfigurationKeys.
 						AUTO_GENERATE_SYNONYMS_PHRASE_QUERY.getJsonKey()));
 		}
 
-		if (clauseJsonObject.has(
+		if (configurationJsonObject.has(
 				SimpleQueryStringConfigurationKeys.DEFAULT_OPERATOR.
 					getJsonKey())) {
 
-			String operator = clauseJsonObject.getString(
+			String operator = configurationJsonObject.getString(
 				SimpleQueryStringConfigurationKeys.DEFAULT_OPERATOR.
 					getJsonKey(),
 				Operator.AND.name());
 
-			if (operator.equalsIgnoreCase(Operator.OR.name())) {
-				simpleQueryString.setDefaultOperator(Operator.OR);
-			}
-			else {
+			if (operator.equalsIgnoreCase(Operator.AND.name())) {
 				simpleQueryString.setDefaultOperator(Operator.AND);
 			}
+			else {
+				simpleQueryString.setDefaultOperator(Operator.OR);
+			}
 		}
 
-		JSONArray fields = clauseJsonObject.getJSONArray(
-			SimpleQueryStringConfigurationKeys.FIELDS.getJsonKey());
-
-		for (int i = 0; i < fields.length(); i++) {
-			JSONObject field = fields.getJSONObject(i);
-
-			String fieldName = field.getString(
-				SimpleQueryStringConfigurationKeys.FIELD.getJsonKey());
-
-			float boost = GetterUtil.getFloat(
-				field.getString(
-					SimpleQueryStringConfigurationKeys.BOOST.getJsonKey()),
-				1.0F);
-
-			simpleQueryString.addField(fieldName, boost);
+		if (configurationJsonObject.has(SimpleQueryStringConfigurationKeys.FIELDS.getJsonKey())) {
+		
+			JSONArray fields = configurationJsonObject.getJSONArray(
+				SimpleQueryStringConfigurationKeys.FIELDS.getJsonKey());
+			
+			for (int i = 0; i < fields.length(); i++) {
+				JSONObject field = fields.getJSONObject(i);
+	
+				String fieldName = field.getString(
+					SimpleQueryStringConfigurationKeys.FIELD.getJsonKey());
+	
+				float boost = GetterUtil.getFloat(
+					field.getString(
+						SimpleQueryStringConfigurationKeys.BOOST.getJsonKey()),
+					1.0F);
+	
+				simpleQueryString.addField(fieldName, boost);
+			}
 		}
 
-		if (clauseJsonObject.has(
+		if (configurationJsonObject.has(
 				SimpleQueryStringConfigurationKeys.FUZZY_MAX_EXPANSIONS.
 					getJsonKey())) {
 
 			simpleQueryString.setFuzzyMaxExpansions(
-				clauseJsonObject.getInt(
+				configurationJsonObject.getInt(
 					SimpleQueryStringConfigurationKeys.FUZZY_MAX_EXPANSIONS.
 						getJsonKey()));
 		}
 
-		if (clauseJsonObject.has(
+		if (configurationJsonObject.has(
 				SimpleQueryStringConfigurationKeys.FUZZY_PREFIX_LENGTH.
 					getJsonKey())) {
 
 			simpleQueryString.setFuzzyPrefixLength(
-				clauseJsonObject.getInt(
+				configurationJsonObject.getInt(
 					SimpleQueryStringConfigurationKeys.FUZZY_PREFIX_LENGTH.
 						getJsonKey()));
 		}
 
-		if (clauseJsonObject.has(
+		if (configurationJsonObject.has(
 				SimpleQueryStringConfigurationKeys.FUZZY_TRANSPOSITIONS.
 					getJsonKey())) {
 
 			simpleQueryString.setLenient(
-				clauseJsonObject.getBoolean(
+				configurationJsonObject.getBoolean(
 					SimpleQueryStringConfigurationKeys.FUZZY_TRANSPOSITIONS.
 						getJsonKey()));
 		}
 
-		if (clauseJsonObject.has(
+		if (configurationJsonObject.has(
 				SimpleQueryStringConfigurationKeys.LENIENT.getJsonKey())) {
 
 			simpleQueryString.setLenient(
-				clauseJsonObject.getBoolean(
+				configurationJsonObject.getBoolean(
 					SimpleQueryStringConfigurationKeys.LENIENT.getJsonKey()));
 		}
 
-		if (clauseJsonObject.has(
+		if (configurationJsonObject.has(
 				SimpleQueryStringConfigurationKeys.QUOTE_FIELD_SUFFIX.
 					getJsonKey())) {
 
 			simpleQueryString.setQuoteFieldSuffix(
-				clauseJsonObject.getString(
+				configurationJsonObject.getString(
 					SimpleQueryStringConfigurationKeys.QUOTE_FIELD_SUFFIX.
 						getJsonKey()));
 		}

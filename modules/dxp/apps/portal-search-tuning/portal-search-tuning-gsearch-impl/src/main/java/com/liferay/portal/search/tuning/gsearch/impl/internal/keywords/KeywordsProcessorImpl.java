@@ -44,8 +44,6 @@ public class KeywordsProcessorImpl implements KeywordsProcessor {
 			return keywords;
 		}
 
-		StringBundler sb = new StringBundler();
-
 		// Remove quotes id there's an uneven count of them.
 
 		int quoteCount = StringUtils.countMatches(keywords, "\"");
@@ -59,7 +57,7 @@ public class KeywordsProcessorImpl implements KeywordsProcessor {
 		keywords = keywords.replaceAll("/", "&#8725;");
 		keywords = keywords.replaceAll("\\\\", "&#92;");
 
-		return sb.toString();
+		return keywords;
 	}
 
 	@Reference

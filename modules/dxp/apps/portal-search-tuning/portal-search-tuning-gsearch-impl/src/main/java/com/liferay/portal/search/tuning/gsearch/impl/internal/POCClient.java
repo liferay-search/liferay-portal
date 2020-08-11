@@ -14,14 +14,16 @@ import com.liferay.portal.search.tuning.gsearch.util.SearchClientHelper;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * Here are just a few examples of how to consume the framework.
+ * Here are POC utilities and a few examples of how to consume the framework.
  *
- * @author liferay
- *
+ * @author Petteri Karttunen
  */
+
+@Component
 public class POCClient {
 
 	public JSONObject test(
@@ -78,6 +80,8 @@ public class POCClient {
 
 		return JSONFactoryUtil.createJSONObject();
 	}
+	
+	
 
 	@Reference
 	private SearchClientHelper _searchClientHelper;

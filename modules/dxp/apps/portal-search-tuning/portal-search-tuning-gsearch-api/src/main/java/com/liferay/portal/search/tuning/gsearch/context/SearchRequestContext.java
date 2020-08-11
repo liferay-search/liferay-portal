@@ -56,7 +56,7 @@ public interface SearchRequestContext {
 
 	public String getKeywords();
 
-	public Optional<JSONObject> getKeywordSuggestionsConfiguration();
+	public Optional<JSONObject> getKeywordSuggesterConfiguration();
 
 	public Locale getLocale();
 
@@ -72,7 +72,7 @@ public interface SearchRequestContext {
 
 	public Optional<JSONArray> getSortConfiguration();
 
-	public Optional<JSONArray> getSpellCheckerConfiguration();
+	public Optional<JSONObject> getSpellCheckerConfiguration();
 
 	public Long getUserId();
 

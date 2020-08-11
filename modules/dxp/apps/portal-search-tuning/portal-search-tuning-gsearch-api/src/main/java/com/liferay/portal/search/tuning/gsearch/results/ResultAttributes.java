@@ -15,7 +15,6 @@
 package com.liferay.portal.search.tuning.gsearch.results;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -23,10 +22,14 @@ import java.util.Map;
  */
 public class ResultAttributes {
 
+	public void addAdditionalDocumentField(String field, boolean multiValue) {
+		_additionalDocumentFields.put(field, multiValue);
+	}
+
 	public void addAttribute(String key, Object value) {
 		_attributes.put(key, value);
 	}
-
+	
 	public Map<String, Object> getAttributes() {
 		return _attributes;
 	}
@@ -35,8 +38,12 @@ public class ResultAttributes {
 		return _descriptionMaxLength;
 	}
 
-	public List<String> getResultFields() {
-		return _resultFields;
+	public Map<String, Boolean> getAdditionalDocumentFields() {
+		return _additionalDocumentFields;
+	}
+
+	public boolean isIncludeExplanation() {
+		return _includeExplanation;
 	}
 
 	public boolean isIncludeRawDocument() {
@@ -55,6 +62,10 @@ public class ResultAttributes {
 		_descriptionMaxLength = descriptionMaxLength;
 	}
 
+	public void setIncludeExplanation(boolean includeExplanation) {
+		_includeExplanation = includeExplanation;
+	}
+
 	public void setIncludeRawDocument(boolean includeRawDocument) {
 		_includeRawDocument = includeRawDocument;
 	}
@@ -67,15 +78,17 @@ public class ResultAttributes {
 		_includeUserPortrait = includeUserPortrait;
 	}
 
-	public void setResultFields(List<String> resultFields) {
-		_resultFields = resultFields;
+	public void setAdditionalDocumentFields(Map<String, Boolean> additionalDocumentFields) {
+		_additionalDocumentFields.clear();
+		_additionalDocumentFields.putAll(additionalDocumentFields);
 	}
 
 	private final Map<String, Object> _attributes = new HashMap<>();
 	private int _descriptionMaxLength = 700;
-	private boolean _includeRawDocument;
-	private boolean _includeThumbnail;
-	private boolean _includeUserPortrait;
-	private List<String> _resultFields;
+	private boolean _includeExplanation = false;
+	private boolean _includeRawDocument = false;
+	private boolean _includeThumbnail = false;
+	private boolean _includeUserPortrait = false;
+	private Map<String, Boolean> _additionalDocumentFields = new HashMap<String, Boolean>();
 
 }

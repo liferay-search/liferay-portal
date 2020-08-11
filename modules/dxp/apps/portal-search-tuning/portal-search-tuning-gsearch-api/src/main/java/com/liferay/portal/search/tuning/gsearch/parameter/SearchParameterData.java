@@ -15,31 +15,73 @@
 package com.liferay.portal.search.tuning.gsearch.parameter;
 
 import com.liferay.portal.search.tuning.gsearch.message.Message;
+import com.liferay.portal.search.tuning.gsearch.message.Severity;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 /**
  * @author Petteri Karttunen
  */
-public interface SearchParameterData {
+public class SearchParameterData {
+	
+	public void addMessage(Message message) {
+		_messages.add(message);
+	}
+	
+	public void addParameter(Parameter parameter) {
+		_parameters.add(parameter);
+	}
+	
+	public Optional<Parameter> getByConfigurationVariableName(String name) {
+		return _parameters.stream(
+		).filter(
+			p -> name.equals(p.getConfigurationVariable())
+		).findFirst();
+	}
+	
+	public Optional<Parameter> getByName(String name) {
+		return _parameters.stream(
+		).filter(
+			p -> name.equals(p.getName())
+		).findFirst();
+	}
+	
+	public Optional<Parameter> getByRole(String role) {
+		return _parameters.stream(
+		).filter(
+			p -> role.equals(
+				p.getRoleOptional(
+				).orElse(
+					""
+				))
+		).findFirst();
+	}
 
-	public void addMessage(Message message);
+	public List<Message> getMessages() {
+		return _messages;
+	}
 
-	public void addParameter(Parameter parameter);
+	public List<Parameter> getParameters() {
+		return _parameters;
+	}
 
-	public Optional<Parameter> getByConfigurationVariableName(String name);
+	public boolean hasErrors() {
+		return _messages.stream(
+		).anyMatch(
+			m -> m.getSeverity(
+			).equals(
+				Severity.ERROR
+			)
+		);
+	}
+	
+	public boolean hasParameters() {
+		return !_parameters.isEmpty();
+	}
 
-	public Optional<Parameter> getByName(String name);
-
-	public Optional<Parameter> getByRole(String role);
-
-	public List<Message> getMessages();
-
-	public List<Parameter> getParameters();
-
-	public boolean hasErrors();
-
-	public boolean hasParameters();
+	private final List<Message> _messages = new ArrayList<>();
+	private final List<Parameter> _parameters = new ArrayList<>();
 
 }

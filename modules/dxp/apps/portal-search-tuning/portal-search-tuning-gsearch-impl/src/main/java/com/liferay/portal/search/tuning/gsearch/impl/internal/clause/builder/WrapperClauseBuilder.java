@@ -18,6 +18,7 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.query.Queries;
 import com.liferay.portal.search.query.Query;
 import com.liferay.portal.search.query.WrapperQuery;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.query.SimpleQueryStringConfigurationKeys;
 import com.liferay.portal.search.tuning.gsearch.context.SearchRequestContext;
 import com.liferay.portal.search.tuning.gsearch.spi.clause.ClauseBuilder;
 
@@ -36,10 +37,13 @@ public class WrapperClauseBuilder implements ClauseBuilder {
 
 	@Override
 	public Optional<Query> buildClause(
-		SearchRequestContext queryContext, JSONObject queryJsonObject) {
+		SearchRequestContext queryContext, JSONObject configurationJsonObject) {
 
+		String query = configurationJsonObject.getString(
+				SimpleQueryStringConfigurationKeys.QUERY.getJsonKey());
+		
 		WrapperQuery wrapperQuery = _queries.wrapper(
-			queryJsonObject.toString());
+			query);
 
 		return Optional.of(wrapperQuery);
 	}

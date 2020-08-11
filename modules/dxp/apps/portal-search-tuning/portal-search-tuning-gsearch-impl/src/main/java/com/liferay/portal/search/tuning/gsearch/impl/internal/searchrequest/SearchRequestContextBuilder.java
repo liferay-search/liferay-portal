@@ -44,9 +44,9 @@ public class SearchRequestContextBuilder {
 			_from, _highlightConfigurationJsonObject, _includeResponseString,
 			_indexNames, _initialKeywords,
 			_keywordIndexingConfigurationJsonObject, _keywords,
-			_keywordSuggestionsConfigurationJsonObject, _locale, _rawKeywords,
+			_keywordSuggesterConfigurationJsonObject, _locale, _rawKeywords,
 			_searchConfigurationId, _searchParameterData, _size,
-			_sortConfigurationJsonArray, _spellCheckerConfigurationJsonArray,
+			_sortConfigurationJsonArray, _spellCheckerConfigurationJsonObject,
 			_userId);
 
 		_validateQueryContext(queryContext);
@@ -161,10 +161,10 @@ public class SearchRequestContextBuilder {
 		return this;
 	}
 
-	public SearchRequestContextBuilder keywordSuggestionsConfiguration(
+	public SearchRequestContextBuilder keywordSuggesterConfiguration(
 		JSONObject keywordSuggestionsConfigurationJsonObject) {
 
-		_keywordSuggestionsConfigurationJsonObject =
+		_keywordSuggesterConfigurationJsonObject =
 			keywordSuggestionsConfigurationJsonObject;
 
 		return this;
@@ -213,10 +213,10 @@ public class SearchRequestContextBuilder {
 	}
 
 	public SearchRequestContextBuilder spellCheckerConfiguration(
-		JSONArray spellCheckerConfigurationJsonArray) {
+		JSONObject spellCheckerConfigurationJsonObject) {
 
-		_spellCheckerConfigurationJsonArray =
-			spellCheckerConfigurationJsonArray;
+		_spellCheckerConfigurationJsonObject =
+			spellCheckerConfigurationJsonObject;
 
 		return this;
 	}
@@ -260,14 +260,14 @@ public class SearchRequestContextBuilder {
 	private String _initialKeywords;
 	private JSONObject _keywordIndexingConfigurationJsonObject;
 	private String _keywords;
-	private JSONObject _keywordSuggestionsConfigurationJsonObject;
+	private JSONObject _keywordSuggesterConfigurationJsonObject;
 	private Locale _locale;
 	private String _rawKeywords;
 	private Long _searchConfigurationId;
 	private SearchParameterData _searchParameterData;
 	private Integer _size;
 	private JSONArray _sortConfigurationJsonArray;
-	private JSONArray _spellCheckerConfigurationJsonArray;
+	private JSONObject _spellCheckerConfigurationJsonObject;
 	private Long _userId;
 
 }

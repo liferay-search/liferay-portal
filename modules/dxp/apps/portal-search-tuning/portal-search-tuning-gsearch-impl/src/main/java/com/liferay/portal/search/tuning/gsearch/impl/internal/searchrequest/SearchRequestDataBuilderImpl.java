@@ -79,7 +79,7 @@ public class SearchRequestDataBuilderImpl implements SearchRequestDataBuilder {
 		processQueryContributors(searchRequestContext, searchRequestData);
 
 		if (searchRequestContext.hasErrors()) {
-			throw new SearchRequestDataException(
+			throw new SearchRequestDataException("Couldn't build searchrequest data.",
 				searchRequestContext.getMessages());
 		}
 
@@ -522,7 +522,7 @@ public class SearchRequestDataBuilderImpl implements SearchRequestDataBuilder {
 		}
 		else if (ClauseContext.PRE_FILTER.equals(clauseContext)) {
 			searchRequestData.getQuery(
-			).addFilterQueryClauses();
+			).addFilterQueryClauses(clause);
 		}
 		else if (ClauseContext.QUERY.equals(clauseContext)) {
 			if (Occur.MUST.equals(occur)) {

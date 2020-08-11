@@ -22,13 +22,10 @@
 
 <%
 final String tabs = ParamUtil.getString(request, "tabs", "configurations");
-
 PortletURL configurationsURL = renderResponse.createRenderURL();
 configurationsURL.setParameter(SearchConfigurationWebKeys.SEARCH_CONFIGURATION_TYPE, String.valueOf(SearchConfigurationTypes.CONFIGURATION));
-
 PortletURL templatesURL = renderResponse.createRenderURL();
 templatesURL.setParameter(SearchConfigurationWebKeys.SEARCH_CONFIGURATION_TYPE, String.valueOf(SearchConfigurationTypes.TEMPLATE));
-
 PortletURL snippetsURL = renderResponse.createRenderURL();
 snippetsURL.setParameter(SearchConfigurationWebKeys.SEARCH_CONFIGURATION_TYPE, String.valueOf(SearchConfigurationTypes.SNIPPET));
 %>
@@ -67,4 +64,4 @@ snippetsURL.setParameter(SearchConfigurationWebKeys.SEARCH_CONFIGURATION_TYPE, S
 	%>'
 />
 
-<liferay-util:include page="/view_search_configurations.jsp" servletContext="<%= application %>" />
+<liferay-util:include page="/view_search_configurations.jsp" servletContext="<%= application %>" />a

@@ -33,6 +33,7 @@ public class SearchRequestData {
 		_postFilterQuery = queries.booleanQuery();
 		_query = queries.booleanQuery();
 		_rescores = new ArrayList<>();
+		_sorts = new ArrayList<>();
 	}
 
 	public List<Aggregation> getAggregations() {

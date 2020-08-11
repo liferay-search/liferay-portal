@@ -18,7 +18,6 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.search.suggest.Suggester;
 import com.liferay.portal.kernel.search.suggest.TermSuggester;
 import com.liferay.portal.kernel.util.GetterUtil;
-import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.suggester.CommonSuggesterConfigurationKeys;
 import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.suggester.TermSuggesterConfigurationKeys;
 import com.liferay.portal.search.tuning.gsearch.context.SearchRequestContext;
@@ -60,9 +59,8 @@ public class TermSuggesterBuilder
 		TermSuggester termSuggester = new TermSuggester(
 			createSuggesterName("term"), field, text);
 
-		if (Validator.isNotNull(
-				configurationJsonObject.get(
-					TermSuggesterConfigurationKeys.ACCURACY.getJsonKey()))) {
+		if (!configurationJsonObject.isNull(
+					TermSuggesterConfigurationKeys.ACCURACY.getJsonKey())) {
 
 			termSuggester.setAccuracy(
 				GetterUtil.getFloat(
@@ -70,9 +68,8 @@ public class TermSuggesterBuilder
 						TermSuggesterConfigurationKeys.ACCURACY.getJsonKey())));
 		}
 
-		if (Validator.isNotNull(
-				configurationJsonObject.get(
-					CommonSuggesterConfigurationKeys.ANALYZER.getJsonKey()))) {
+		if (!configurationJsonObject.isNull(
+					CommonSuggesterConfigurationKeys.ANALYZER.getJsonKey())) {
 
 			termSuggester.setAccuracy(
 				GetterUtil.getFloat(

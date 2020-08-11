@@ -29,6 +29,7 @@ import com.liferay.portal.search.engine.adapter.search.SearchSearchResponse;
 import com.liferay.portal.search.index.IndexNameBuilder;
 import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.AdvancedConfigurationKeys;
 import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.CommonConfigurationKeys;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.RequestParameterConfigurationKeys;
 import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.SearchConfigurationKeys;
 import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.values.RequestParameterRoles;
 import com.liferay.portal.search.tuning.gsearch.configuration.model.SearchConfiguration;
@@ -37,7 +38,6 @@ import com.liferay.portal.search.tuning.gsearch.context.SearchRequestContext;
 import com.liferay.portal.search.tuning.gsearch.exception.SearchRequestDataException;
 import com.liferay.portal.search.tuning.gsearch.impl.internal.executor.SearchExecutor;
 import com.liferay.portal.search.tuning.gsearch.impl.internal.keywords.KeywordsProcessor;
-import com.liferay.portal.search.tuning.gsearch.impl.internal.parameter.SearchParameterDataImpl;
 import com.liferay.portal.search.tuning.gsearch.impl.internal.parameter.contributor.ParameterContributors;
 import com.liferay.portal.search.tuning.gsearch.impl.internal.request.parameter.RequestParameterBuilder;
 import com.liferay.portal.search.tuning.gsearch.impl.internal.results.ResultsBuilder;
@@ -66,6 +66,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(immediate = true, service = SearchClientHelper.class)
 public class SearchClientHelperImpl implements SearchClientHelper {
 
+	
 	public SearchRequestContext getSearchRequestContext(
 			HttpServletRequest httpServletRequest, long searchConfigurationId)
 		throws JSONException, PortalException {
@@ -98,14 +99,8 @@ public class SearchClientHelperImpl implements SearchClientHelper {
 		JSONObject searchConfigurationJsonObject = _getSearchConfiguration(
 			searchConfigurationId);
 
-		SearchParameterData searchParameterData = new SearchParameterDataImpl();
+		SearchParameterData searchParameterData = new SearchParameterData();
 
-		// TODO: TESTING
-		
-		StringParameter q = new StringParameter("q", "keywords", "${keywords.keywords}", 
-				searchContext.getKeywords());
-		searchParameterData.addParameter(q);
-		
 		_parameterContributors.contribute(searchContext, searchParameterData);
 
 		return _getSearchRequestContext(
@@ -180,7 +175,30 @@ public class SearchClientHelperImpl implements SearchClientHelper {
 
 		String configurationString = searchConfiguration.getConfiguration();
 
-		return JSONFactoryUtil.createJSONObject(configurationString);
+		// return JSONFactoryUtil.createJSONObject(configurationString);
+
+		// TODO: TESTING ONLY
+		
+		JSONObject searchConfigurationJsonObject = JSONFactoryUtil.createJSONObject(configurationString);
+		
+		// Request parameter configuration. See https://drive.google.com/drive/u/0/folders/1vyJHgMX0QnTBPF_SmXkAA6k6PnZUrdYG
+				
+		JSONArray parameterConfigurationJsonArray = JSONFactoryUtil.createJSONArray();
+		JSONObject keywordParameterJsonObject = JSONFactoryUtil.createJSONObject();
+		keywordParameterJsonObject.put(
+				RequestParameterConfigurationKeys.PARAMETER_NAME.getJsonKey(), "q");
+		keywordParameterJsonObject.put(
+				RequestParameterConfigurationKeys.TYPE.getJsonKey(), "string");
+		keywordParameterJsonObject.put(
+				RequestParameterConfigurationKeys.ROLE.getJsonKey(), "keywords");
+
+		parameterConfigurationJsonArray.put(
+				keywordParameterJsonObject);
+
+		searchConfigurationJsonObject.put(
+				SearchConfigurationKeys.REQUEST_PARAMETER_CONFIGURATION.getJsonKey(), parameterConfigurationJsonArray);
+	
+		return searchConfigurationJsonObject;
 	}
 
 	private SearchRequestContext _getSearchRequestContext(
@@ -321,13 +339,13 @@ public class SearchClientHelperImpl implements SearchClientHelper {
 			searchRequestContextBuilder.rawKeywords(keywords);
 		}
 
-		JSONObject keywordSuggestionsConfigurationJsonObject =
+		JSONObject keywordSuggesterConfigurationJsonObject =
 			searchConfigurationJsonObject.getJSONObject(
-				SearchConfigurationKeys.KEYWORD_SUGGESTIONS_CONFIGURATION.
+				SearchConfigurationKeys.KEYWORD_SUGGESTER_CONFIGURATION.
 					getJsonKey());
 
-		searchRequestContextBuilder.keywordSuggestionsConfiguration(
-			keywordSuggestionsConfigurationJsonObject);
+		searchRequestContextBuilder.keywordSuggesterConfiguration(
+				keywordSuggesterConfigurationJsonObject);
 
 		searchRequestContextBuilder.locale(locale);
 
@@ -360,13 +378,13 @@ public class SearchClientHelperImpl implements SearchClientHelper {
 		searchRequestContextBuilder.sortConfiguration(
 			sortConfigurationJsonArray);
 
-		JSONArray spellCheckerConfigurationJsonArray =
-			searchConfigurationJsonObject.getJSONArray(
+		JSONObject spellCheckerConfigurationJsonObject =
+			searchConfigurationJsonObject.getJSONObject(
 				SearchConfigurationKeys.SPELLCHECKER_CONFIGURATION.
 					getJsonKey());
 
 		searchRequestContextBuilder.spellCheckerConfiguration(
-			spellCheckerConfigurationJsonArray);
+				spellCheckerConfigurationJsonObject);
 
 		searchRequestContextBuilder.userId(userId);
 

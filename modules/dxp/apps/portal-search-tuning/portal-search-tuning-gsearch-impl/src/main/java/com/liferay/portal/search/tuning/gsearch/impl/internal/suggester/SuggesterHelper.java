@@ -40,7 +40,7 @@ import org.osgi.service.component.annotations.Reference;
 
 @Component(immediate = true, service = SuggesterHelper.class)
 public class SuggesterHelper {
-
+	
 	public List<Suggester> getSuggesters(
 		SearchRequestContext searchRequestContext,
 		JSONArray suggesterConfigurationJSONArray) {
@@ -67,7 +67,7 @@ public class SuggesterHelper {
 
 				type = suggesterJsonObject.getString(
 					CommonConfigurationKeys.TYPE.getJsonKey());
-
+				
 				SuggesterBuilder suggesterBuilder =
 					_suggesterBuilderFactory.getBuilder(type);
 
@@ -82,7 +82,7 @@ public class SuggesterHelper {
 				searchRequestContext.addMessage(
 					new Message(
 						Severity.ERROR, "core",
-						"core.error-unknown-suggester-type",
+						"core.error.unknown-suggester-type",
 						illegalArgumentException.getMessage(),
 						illegalArgumentException, suggesterJsonObject,
 						CommonConfigurationKeys.TYPE.getJsonKey(), type));
@@ -131,7 +131,7 @@ public class SuggesterHelper {
 							if (!suggestions.contains(option.getText())) {
 								if (_log.isDebugEnabled()) {
 									_log.debug(
-										"Adding suggestion:" +
+										"Adding suggestion text " +
 											option.getText());
 								}
 
@@ -158,7 +158,7 @@ public class SuggesterHelper {
 
 		long companyId = searchRequestContext.getCompanyId();
 
-		// TODO
+		// TODO: LPS-118888
 
 		String indexName = "TODO";
 

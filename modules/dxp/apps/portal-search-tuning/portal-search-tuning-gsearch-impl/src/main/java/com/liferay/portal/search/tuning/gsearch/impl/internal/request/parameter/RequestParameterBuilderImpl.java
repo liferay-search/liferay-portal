@@ -25,7 +25,6 @@ import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.key
 import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.RequestParameterConfigurationKeys;
 import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.SearchConfigurationKeys;
 import com.liferay.portal.search.tuning.gsearch.impl.internal.aggregations.facet.FacetHandlerFactory;
-import com.liferay.portal.search.tuning.gsearch.impl.internal.parameter.SearchParameterDataImpl;
 import com.liferay.portal.search.tuning.gsearch.impl.internal.request.parameter.contributor.RequestParameterContributor;
 import com.liferay.portal.search.tuning.gsearch.message.Message;
 import com.liferay.portal.search.tuning.gsearch.message.Severity;
@@ -47,7 +46,7 @@ public class RequestParameterBuilderImpl implements RequestParameterBuilder {
 		HttpServletRequest httpServletRequest,
 		JSONObject searchConfigurationJsonObject) {
 
-		SearchParameterData searchParameterData = new SearchParameterDataImpl();
+		SearchParameterData searchParameterData = new SearchParameterData();
 
 		_parseParameterConfiguration(
 			httpServletRequest, searchParameterData,

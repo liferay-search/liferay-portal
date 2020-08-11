@@ -16,7 +16,11 @@ package com.liferay.portal.search.tuning.gsearch.impl.internal.spellcheck;
 
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.search.suggest.Suggester;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.SpellCheckerConfigurationKeys;
 import com.liferay.portal.search.tuning.gsearch.context.SearchRequestContext;
 import com.liferay.portal.search.tuning.gsearch.impl.internal.suggester.SuggesterHelper;
 import com.liferay.portal.search.tuning.gsearch.spellcheck.SpellChecker;
@@ -35,16 +39,36 @@ public class SpellCheckerImpl implements SpellChecker {
 
 	@Override
 	public JSONArray getSuggestions(SearchRequestContext searchRequestContext) {
-		Optional<JSONArray> spellCheckerConfigurationJsonArrayOptional =
-			searchRequestContext.getSpellCheckerConfiguration();
+		
+		Optional<JSONObject> spellCheckerConfigurationJsonObjectOptional =
+				searchRequestContext.getKeywordSuggesterConfiguration();
+			
+			if (!spellCheckerConfigurationJsonObjectOptional.isPresent()) {
+				
+				if (_log.isDebugEnabled()) {
+					_log.debug("Spell checker configuration not available in search configuration " +
+							searchRequestContext.getSearchConfigurationId());
+				}
+				
+				return JSONFactoryUtil.createJSONArray();
+			}
 
-		if (!spellCheckerConfigurationJsonArrayOptional.isPresent()) {
-			return JSONFactoryUtil.createJSONArray();
-		}
+			JSONObject spellCheckerConfigurationJsonObject = 
+					spellCheckerConfigurationJsonObjectOptional.get();
 
+			if (!spellCheckerConfigurationJsonObject.getBoolean(
+					SpellCheckerConfigurationKeys.ENABLED.getJsonKey()) ||
+					spellCheckerConfigurationJsonObject.isNull(
+							SpellCheckerConfigurationKeys.SUGGESTERS.getJsonKey())) {
+				return JSONFactoryUtil.createJSONArray();
+			}
+			
+			JSONArray suggesterConfigurationJsonArray = 
+					spellCheckerConfigurationJsonObject.getJSONArray(
+							SpellCheckerConfigurationKeys.SUGGESTERS.getJsonKey());
+		
 		List<Suggester> suggesters = _suggesterHelper.getSuggesters(
-			searchRequestContext,
-			spellCheckerConfigurationJsonArrayOptional.get());
+			searchRequestContext, suggesterConfigurationJsonArray);
 
 		if (!suggesters.isEmpty()) {
 			return _suggesterHelper.getSuggestions(
@@ -53,6 +77,9 @@ public class SpellCheckerImpl implements SpellChecker {
 
 		return JSONFactoryUtil.createJSONArray();
 	}
+	
+	private static final Log _log = LogFactoryUtil.getLog(
+			SpellCheckerImpl.class);
 
 	@Reference
 	private SuggesterHelper _suggesterHelper;

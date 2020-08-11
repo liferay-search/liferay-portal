@@ -48,6 +48,8 @@ public class GSearchSearchRequestContributor
 	public SearchRequest contribute(SearchRequest searchRequest) {
 		String keywords = searchRequest.getQueryString();
 
+		_log.debug("Executing Search Blueprints search request contributor.");
+		
 		if (!Validator.isBlank(keywords)) {
 			return _build(searchRequest);
 		}
@@ -60,12 +62,19 @@ public class GSearchSearchRequestContributor
 
 		int searchConfigurationId = GetterUtil.getInteger(
 			searchContext.getAttribute(
-				SearchContextAttributeKeys.SEARCH_CONFIGURATION_ID));
+				SearchContextAttributeKeys.SEARCH_CONFIGURATION_ID), 0);
 
+		_log.debug("Search configuration ID " + searchConfigurationId);
+		
 		long userId = GetterUtil.getLong(
-			searchContext.getAttribute(SearchContextAttributeKeys.USER_ID));
+			searchContext.getAttribute(SearchContextAttributeKeys.USER_ID), 0L);
+
+		_log.debug("User ID " + userId);
 
 		if ((searchConfigurationId == 0) || (userId == 0)) {
+
+			_log.debug("Search configuration and user ID have to be set in search context.");
+
 			return searchRequest;
 		}
 

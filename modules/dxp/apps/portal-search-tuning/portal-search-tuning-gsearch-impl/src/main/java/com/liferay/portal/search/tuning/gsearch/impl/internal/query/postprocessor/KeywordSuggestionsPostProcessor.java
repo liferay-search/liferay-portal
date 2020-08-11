@@ -30,7 +30,7 @@ public class KeywordSuggestionsPostProcessor implements QueryPostProcessor {
 		SearchSearchResponse searchResponse) {
 
 		Optional<JSONObject> configurationJsonObjectOptional =
-			searchRequestContext.getKeywordSuggestionsConfiguration();
+			searchRequestContext.getKeywordSuggesterConfiguration();
 
 		if (!configurationJsonObjectOptional.isPresent()) {
 			return true;

@@ -16,6 +16,8 @@ package com.liferay.portal.search.tuning.gsearch.impl.internal.suggester.builder
 
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.search.suggest.Suggester;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.suggester.CommonSuggesterConfigurationKeys;
@@ -34,7 +36,7 @@ public abstract class BaseSuggesterBuilder implements SuggesterBuilder {
 
 	@Override
 	public abstract Optional<Suggester> build(
-		SearchRequestContext queryContext, JSONObject configurationJsonObject);
+		SearchRequestContext searchRequestContext, JSONObject configurationJsonObject);
 
 	protected String createSuggesterName(String type) {
 		StringBundler sb = new StringBundler(3);
@@ -58,10 +60,21 @@ public abstract class BaseSuggesterBuilder implements SuggesterBuilder {
 
 			searchRequestContext.addMessage(
 				new Message(
-					Severity.ERROR, "core", "core.error.suggester-field-empty",
+					Severity.ERROR, "core", "core.error.undefined-suggester-field",
 					null, null, configurationJsonObject,
 					CommonSuggesterConfigurationKeys.FIELD.getJsonKey(), null));
+
 			isValid = false;
+			
+			if (_log.isDebugEnabled()) {
+				
+				StringBundler sb = new StringBundler(3);
+				sb.append("Suggester field undefined in [ ");
+				sb.append(configurationJsonObject);
+				sb.append(" ]");
+				
+				_log.debug(sb.toString());
+			}
 		}
 
 		if (Validator.isBlank(
@@ -71,13 +84,27 @@ public abstract class BaseSuggesterBuilder implements SuggesterBuilder {
 
 			searchRequestContext.addMessage(
 				new Message(
-					Severity.ERROR, "core", "core.error.suggester-text-empty",
+					Severity.ERROR, "core", "core.error.undefined-suggester-text",
 					null, null, configurationJsonObject,
 					CommonSuggesterConfigurationKeys.TEXT.getJsonKey(), null));
+
 			isValid = false;
+			
+			if (_log.isDebugEnabled()) {
+				
+				StringBundler sb = new StringBundler(3);
+				sb.append("Suggester text undefined in [ ");
+				sb.append(configurationJsonObject);
+				sb.append(" ]");
+				
+				_log.debug(sb.toString());
+			}
 		}
 
 		return isValid;
 	}
 
+	private static final Log _log =
+			LogFactoryUtil.getLog(BaseSuggesterBuilder.class);
+	
 }

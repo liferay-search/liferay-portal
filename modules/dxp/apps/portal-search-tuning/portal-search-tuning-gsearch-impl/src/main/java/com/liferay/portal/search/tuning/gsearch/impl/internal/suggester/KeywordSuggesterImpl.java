@@ -16,7 +16,11 @@ package com.liferay.portal.search.tuning.gsearch.impl.internal.suggester;
 
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.search.suggest.Suggester;
+import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.KeywordSuggesterConfigurationKeys;
 import com.liferay.portal.search.tuning.gsearch.context.SearchRequestContext;
 import com.liferay.portal.search.tuning.gsearch.suggester.KeywordSuggester;
 
@@ -31,24 +35,48 @@ public class KeywordSuggesterImpl implements KeywordSuggester {
 
 	@Override
 	public JSONArray getSuggestions(SearchRequestContext searchRequestContext) {
-		Optional<JSONArray> keywordSuggesterConfigurationJsonArrayOptional =
-			searchRequestContext.getSpellCheckerConfiguration();
-
-		if (!keywordSuggesterConfigurationJsonArrayOptional.isPresent()) {
+		
+		Optional<JSONObject> keywordSuggesterConfigurationJsonObjectOptional =
+			searchRequestContext.getKeywordSuggesterConfiguration();
+		
+		if (!keywordSuggesterConfigurationJsonObjectOptional.isPresent()) {
+			
+			if (_log.isDebugEnabled()) {
+				_log.debug("Keyword suggester configuration not available in search configuration " +
+						searchRequestContext.getSearchConfigurationId());
+			}
+			
 			return JSONFactoryUtil.createJSONArray();
 		}
 
-		List<Suggester> suggesters = _suggesterHelper.getSuggesters(
-			searchRequestContext,
-			keywordSuggesterConfigurationJsonArrayOptional.get());
+		JSONObject keywordSuggesterConfigurationJsonObject = 
+				keywordSuggesterConfigurationJsonObjectOptional.get();
 
-		if (!suggesters.isEmpty()) {
-			return _suggesterHelper.getSuggestions(
-				searchRequestContext, suggesters);
+		if (!keywordSuggesterConfigurationJsonObject.getBoolean(
+				KeywordSuggesterConfigurationKeys.ENABLED.getJsonKey()) ||
+				keywordSuggesterConfigurationJsonObject.isNull(
+						KeywordSuggesterConfigurationKeys.SUGGESTERS.getJsonKey())) {
+			return JSONFactoryUtil.createJSONArray();
+		}
+		
+		JSONArray suggesterConfigurationJsonArray = 
+				keywordSuggesterConfigurationJsonObject.getJSONArray(
+						KeywordSuggesterConfigurationKeys.SUGGESTERS.getJsonKey());
+		
+		
+		List<Suggester> suggesters = _suggesterHelper.getSuggesters(
+		searchRequestContext, suggesterConfigurationJsonArray);
+
+		if (suggesters.isEmpty()) {
+			return JSONFactoryUtil.createJSONArray();
 		}
 
-		return JSONFactoryUtil.createJSONArray();
+		return _suggesterHelper.getSuggestions(
+				searchRequestContext, suggesters);
 	}
+	
+	private static final Log _log = LogFactoryUtil.getLog(
+			KeywordSuggesterImpl.class);
 
 	@Reference
 	private SuggesterHelper _suggesterHelper;

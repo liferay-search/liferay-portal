@@ -27,7 +27,8 @@ public class SearchRequestDataException extends PortalException {
 	public SearchRequestDataException() {
 	}
 
-	public SearchRequestDataException(List<Message> messages) {
+	public SearchRequestDataException(String msg, List<Message> messages) {
+		super(msg);
 		_messages = messages;
 	}
 

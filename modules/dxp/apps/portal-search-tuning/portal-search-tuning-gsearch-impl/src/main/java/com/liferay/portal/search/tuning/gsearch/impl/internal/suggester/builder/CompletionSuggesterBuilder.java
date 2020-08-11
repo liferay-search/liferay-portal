@@ -17,7 +17,6 @@ package com.liferay.portal.search.tuning.gsearch.impl.internal.suggester.builder
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.search.suggest.CompletionSuggester;
 import com.liferay.portal.kernel.search.suggest.Suggester;
-import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.tuning.gsearch.configuration.constants.json.keys.suggester.CommonSuggesterConfigurationKeys;
 import com.liferay.portal.search.tuning.gsearch.context.SearchRequestContext;
 import com.liferay.portal.search.tuning.gsearch.spi.suggester.SuggesterBuilder;
@@ -59,28 +58,25 @@ public class CompletionSuggesterBuilder
 		CompletionSuggester completionSuggester = new CompletionSuggester(
 			createSuggesterName("completion"), field, text);
 
-		if (Validator.isNull(
-				configurationJsonObject.get(
-					CommonSuggesterConfigurationKeys.ANALYZER.getJsonKey()))) {
+		if (!configurationJsonObject.isNull(
+					CommonSuggesterConfigurationKeys.ANALYZER.getJsonKey())) {
 
 			completionSuggester.setAnalyzer(
 				configurationJsonObject.getString(
 					CommonSuggesterConfigurationKeys.ANALYZER.getJsonKey()));
 		}
 
-		if (Validator.isNull(
-				configurationJsonObject.get(
+		if (!configurationJsonObject.isNull(
 					CommonSuggesterConfigurationKeys.SHARD_SIZE.
-						getJsonKey()))) {
+						getJsonKey())) {
 
 			completionSuggester.setShardSize(
 				configurationJsonObject.getInt(
 					CommonSuggesterConfigurationKeys.SHARD_SIZE.getJsonKey()));
 		}
 
-		if (Validator.isNull(
-				configurationJsonObject.get(
-					CommonSuggesterConfigurationKeys.SIZE.getJsonKey()))) {
+		if (!configurationJsonObject.isNull(
+					CommonSuggesterConfigurationKeys.SIZE.getJsonKey())) {
 
 			completionSuggester.setSize(
 				configurationJsonObject.getInt(
