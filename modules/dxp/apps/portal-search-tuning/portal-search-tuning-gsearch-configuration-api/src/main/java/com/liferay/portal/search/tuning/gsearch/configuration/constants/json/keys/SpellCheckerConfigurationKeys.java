@@ -22,7 +22,7 @@ import java.util.stream.Stream;
  */
 public enum SpellCheckerConfigurationKeys {
 
-	DUMMY("dummy");
+	ENABLED("enabled"), SUGGESTERS("suggesters");
 
 	public static final SpellCheckerConfigurationKeys findByJsonKey(
 		String jsonKey) {

@@ -20,16 +20,16 @@ import java.util.stream.Stream;
 /**
  * @author Petteri Karttunen
  */
-public enum KeywordSuggestionsConfigurationKeys {
+public enum KeywordSuggesterConfigurationKeys {
 
-	DUMMY("dummy");
+	ENABLED("enabled"), SUGGESTERS("suggesters");
 
-	public static final KeywordSuggestionsConfigurationKeys findByJsonKey(
+	public static final KeywordSuggesterConfigurationKeys findByJsonKey(
 		String jsonKey) {
 
-		Stream<KeywordSuggestionsConfigurationKeys>
+		Stream<KeywordSuggesterConfigurationKeys>
 			keywordSuggestionsConfigurationKeysStream = Arrays.stream(
-				KeywordSuggestionsConfigurationKeys.values());
+				KeywordSuggesterConfigurationKeys.values());
 
 		return keywordSuggestionsConfigurationKeysStream.filter(
 			value -> value._jsonKey.equals(jsonKey)
@@ -43,7 +43,7 @@ public enum KeywordSuggestionsConfigurationKeys {
 		return _jsonKey;
 	}
 
-	private KeywordSuggestionsConfigurationKeys(String jsonKey) {
+	private KeywordSuggesterConfigurationKeys(String jsonKey) {
 		_jsonKey = jsonKey;
 	}
 

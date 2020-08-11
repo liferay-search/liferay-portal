@@ -22,7 +22,7 @@ import java.util.stream.Stream;
  */
 public enum SortConfigurationKeys {
 
-	DUMMY("dummy");
+	DEFAULT("default"), PARAMETER_NAME("parameter_name");
 
 	public static final SortConfigurationKeys findByJsonKey(String jsonKey) {
 		Stream<SortConfigurationKeys> sortConfigurationKeysStream =

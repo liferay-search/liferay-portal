@@ -27,7 +27,7 @@ public enum SearchConfigurationKeys {
 	CLAUSE_CONFIGURATION("clause_configuration"),
 	HIGHLIGHT_CONFIGURATION("clause_configuration"),
 	KEYWORD_INDEXING_CONFIGURATION("keyword_indexing_configuration"),
-	KEYWORD_SUGGESTIONS_CONFIGURATION("keyword_suggestions_configuration"),
+	KEYWORD_SUGGESTER_CONFIGURATION("keyword_suggestions_configuration"),
 	REQUEST_PARAMETER_CONFIGURATION("request_parameter_configuration"),
 	SORT_CONFIGURATION("sort_configuration"),
 	SPELLCHECKER_CONFIGURATION("spellchecker_configuration");
