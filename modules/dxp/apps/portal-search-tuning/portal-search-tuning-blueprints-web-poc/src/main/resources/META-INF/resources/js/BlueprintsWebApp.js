@@ -1,4 +1,3 @@
-<%--
 /**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
@@ -8,18 +7,19 @@
  * contacting Liferay, Inc. See the License for the specific language governing
  * permissions and limitations under the License, including but not limited to
  * distribution rights of the Software.
- *
- *
- *
  */
---%>
 
-<%@ include file="/init.jsp" %>
+import React from 'react';
 
-<liferay-ui:error key="error.blueprint-not-defined" message="Please set Blueprint ID." />
+import ThemeContext from './ThemeContext';
+import BlueprintsSearch from './components/BlueprintsSearch';
 
-<%
-BlueprintDisplayContext blueprintDisplayContext = (BlueprintDisplayContext)request.getAttribute(BlueprintsWebPortletKeys.BLUEPRINTS_DISPLAY_CONTEXT);
-%>
-
-<react:component module="js/BlueprintsWebApp" data="<%= blueprintDisplayContext.getData() %>"/>
+export default function BlueprintsWebApp({context, props}) {
+	return (
+		<ThemeContext.Provider value={context}>
+			<div className="portlet-search-tuning-blueprints-web">
+				<BlueprintsSearch {...props} />
+			</div>
+		</ThemeContext.Provider>
+	);
+}
