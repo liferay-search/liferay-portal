@@ -63,7 +63,7 @@ public interface MultiMatchQuery extends Query {
 	public boolean isFieldBoostsEmpty();
 
 	public boolean isFieldsEmpty();
-	
+
 	public Boolean isLenient();
 
 	public void setAnalyzer(String analyzer);
