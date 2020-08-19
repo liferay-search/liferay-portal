@@ -28,8 +28,8 @@ function renderBlueprintForm(props) {
 	return render(
 		<BlueprintForm
 			availableLocales={AVAILABLE_LOCALES}
-			configurationId="0"
-			configurationType={0}
+			blueprintId="0"
+			blueprintType={0}
 			initialTitle={{
 				'en-US': 'Test Title',
 			}}
