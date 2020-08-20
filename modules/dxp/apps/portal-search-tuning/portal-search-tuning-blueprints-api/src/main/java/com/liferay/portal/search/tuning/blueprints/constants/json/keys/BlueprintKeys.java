@@ -29,6 +29,7 @@ public enum BlueprintKeys {
 	KEYWORD_INDEXING_CONFIGURATION("keyword_indexing_configuration"),
 	KEYWORD_SUGGESTER_CONFIGURATION("keyword_suggestions_configuration"),
 	REQUEST_PARAMETER_CONFIGURATION("request_parameter_configuration"),
+	SIZE("size"),
 	SORT_CONFIGURATION("sort_configuration"),
 	SPELLCHECKER_CONFIGURATION("spellchecker_configuration");
 

@@ -24,7 +24,6 @@ import com.liferay.portal.search.tuning.blueprints.constants.json.keys.FacetConf
 import com.liferay.portal.search.tuning.blueprints.engine.constants.JSONResponseKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
 import com.liferay.portal.search.tuning.blueprints.engine.impl.internal.aggregations.facet.FacetHandlerFactory;
-import com.liferay.portal.search.tuning.blueprints.engine.response.ResponseAttributes;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.facet.FacetHandler;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.response.ResponseContributor;
 
@@ -44,7 +43,7 @@ public class FacetsResponseContributor implements ResponseContributor {
 	public void contribute(
 		SearchRequestContext searchRequestContext,
 		SearchSearchResponse searchResponse,
-		ResponseAttributes responseAttributes, JSONObject responseJsonObject) {
+		Map<String, Object> responseAttributes, JSONObject responseJsonObject) {
 
 		responseJsonObject.put(
 			JSONResponseKeys.FACETS,
@@ -83,8 +82,8 @@ public class FacetsResponseContributor implements ResponseContributor {
 				continue;
 			}
 
-			String facetFieldName = facetConfigurationJsonObject.getString(
-				FacetConfigurationKeys.INDEX_FIELD.getJsonKey());
+			String aggregationName = aggregationJsonObject.getString(
+				AggregationConfigurationKeys.NAME.getJsonKey());
 
 			String facetHandlerName = facetConfigurationJsonObject.getString(
 				FacetConfigurationKeys.HANDLER.getJsonKey());
@@ -92,9 +91,9 @@ public class FacetsResponseContributor implements ResponseContributor {
 			for (Map.Entry<String, AggregationResult> entry :
 					aggregations.entrySet()) {
 
-				String fieldName = entry.getKey();
+				String aggregationResultName = entry.getKey();
 
-				if (!fieldName.equalsIgnoreCase(facetFieldName)) {
+				if (!aggregationResultName.equalsIgnoreCase(aggregationName)) {
 					continue;
 				}
 

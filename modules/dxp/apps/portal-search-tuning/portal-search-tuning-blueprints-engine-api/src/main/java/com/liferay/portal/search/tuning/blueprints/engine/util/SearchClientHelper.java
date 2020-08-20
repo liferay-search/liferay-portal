@@ -21,9 +21,12 @@ import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.search.engine.adapter.search.SearchSearchResponse;
 import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
 import com.liferay.portal.search.tuning.blueprints.engine.exception.SearchRequestDataException;
-import com.liferay.portal.search.tuning.blueprints.engine.response.ResponseAttributes;
 import com.liferay.portal.search.tuning.blueprints.engine.searchrequest.SearchRequestData;
 
+import java.util.Map;
+
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -49,11 +52,15 @@ public interface SearchClientHelper {
 
 	public JSONObject getSearchResults(
 		SearchRequestContext searchRequestContext,
-		SearchSearchResponse searchResponse, ResponseAttributes resultAttributes);
+		SearchSearchResponse searchResponse, Map<String, Object> responseAttributes);
 
 	public JSONObject search(
 			HttpServletRequest httpServletRequest,
-			ResponseAttributes resultAttributes, long blueprintId)
+			Map<String, Object> responseAttributes, long blueprintId)
 		throws JSONException, PortalException, SearchRequestDataException;
 
+	public JSONObject search(
+			PortletRequest portletRequest, PortletResponse portletResponse,
+			Map<String, Object> responseAttributes, long blueprintId)
+		throws JSONException, PortalException, SearchRequestDataException;
 }

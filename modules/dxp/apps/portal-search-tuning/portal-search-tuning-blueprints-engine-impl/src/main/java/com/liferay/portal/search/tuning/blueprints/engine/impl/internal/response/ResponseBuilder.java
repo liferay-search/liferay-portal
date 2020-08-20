@@ -17,7 +17,8 @@ package com.liferay.portal.search.tuning.blueprints.engine.impl.internal.respons
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.engine.adapter.search.SearchSearchResponse;
 import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
-import com.liferay.portal.search.tuning.blueprints.engine.response.ResponseAttributes;
+
+import java.util.Map;
 
 /**
  * @author Petteri Karttunen
@@ -27,6 +28,5 @@ public interface ResponseBuilder {
 	public JSONObject build(
 		SearchRequestContext searchRequestContext,
 		SearchSearchResponse searchResponse,
-		ResponseAttributes resultAttributes);
-
+		Map<String, Object> responseAttributes);
 }

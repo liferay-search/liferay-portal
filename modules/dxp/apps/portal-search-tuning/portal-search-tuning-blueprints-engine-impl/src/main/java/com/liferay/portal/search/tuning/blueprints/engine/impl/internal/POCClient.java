@@ -8,9 +8,11 @@ import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.search.engine.adapter.search.SearchSearchResponse;
 import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
 import com.liferay.portal.search.tuning.blueprints.engine.exception.SearchRequestDataException;
-import com.liferay.portal.search.tuning.blueprints.engine.response.ResponseAttributes;
 import com.liferay.portal.search.tuning.blueprints.engine.searchrequest.SearchRequestData;
 import com.liferay.portal.search.tuning.blueprints.engine.util.SearchClientHelper;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -28,11 +30,11 @@ public class POCClient {
 	public JSONObject test(
 		HttpServletRequest httpServletRequest, long blueprintId) {
 
-		ResponseAttributes resultAttributes = new ResponseAttributes();
+		Map<String, Object> responseAttributes = new HashMap<String, Object>();
 
 		try {
 			return _searchClientHelper.search(
-				httpServletRequest, resultAttributes, blueprintId);
+				httpServletRequest, responseAttributes, blueprintId);
 		}
 		catch (JSONException e) {
 			e.printStackTrace();
@@ -50,7 +52,7 @@ public class POCClient {
 	public JSONObject testWithSearchContext(
 		SearchContext searchContext, long blueprintId) {
 
-		ResponseAttributes resultAttributes = new ResponseAttributes();
+		Map<String, Object> responseAttributes = new HashMap<String, Object>();
 
 		try {
 			SearchRequestContext searchRequestContext =
@@ -65,7 +67,7 @@ public class POCClient {
 					searchRequestContext, searchRequestData);
 
 			return _searchClientHelper.getSearchResults(
-				searchRequestContext, searchResponse, resultAttributes);
+				searchRequestContext, searchResponse, responseAttributes);
 		}
 		catch (JSONException e) {
 			e.printStackTrace();

@@ -24,7 +24,6 @@ import com.liferay.portal.search.query.BooleanQuery;
 import com.liferay.portal.search.query.Queries;
 import com.liferay.portal.search.query.TermQuery;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.AggregationConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.CommonConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.FacetConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.values.FilterMode;
 import com.liferay.portal.search.tuning.blueprints.constants.json.values.Operator;
@@ -75,7 +74,7 @@ public class AggregationsSearchRequestDataContributor
 			}
 
 			String type = aggregationJsonObject.getString(
-				CommonConfigurationKeys.TYPE.getJsonKey());
+				AggregationConfigurationKeys.TYPE.getJsonKey());
 
 			try {
 				JSONObject aggregationConfigurationJsonObject =
@@ -117,7 +116,7 @@ public class AggregationsSearchRequestDataContributor
 						"core.error.unknown-aggregation-type",
 						illegalArgumentException.getMessage(),
 						illegalArgumentException, aggregationJsonObject,
-						CommonConfigurationKeys.TYPE.getJsonKey(), type));
+						AggregationConfigurationKeys.TYPE.getJsonKey(), type));
 
 				_log.error(
 					illegalArgumentException.getMessage(),
@@ -147,7 +146,7 @@ public class AggregationsSearchRequestDataContributor
 
 		if (Validator.isBlank(indexField)) {
 			indexField = facetConfigurationJsonObject.getString(
-				CommonConfigurationKeys.PARAMETER_NAME.getJsonKey());
+				FacetConfigurationKeys.PARAMETER_NAME.getJsonKey());
 		}
 
 		String filterModeString = facetConfigurationJsonObject.getString(
@@ -254,7 +253,7 @@ public class AggregationsSearchRequestDataContributor
 				).getParameters()) {
 
 			String parameterName = facetConfigurationJsonObject.getString(
-				CommonConfigurationKeys.PARAMETER_NAME.getJsonKey());
+				FacetConfigurationKeys.PARAMETER_NAME.getJsonKey());
 
 			if (!parameter.getName(
 				).equals(

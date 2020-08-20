@@ -23,8 +23,9 @@ import com.liferay.portal.search.hits.SearchHits;
 import com.liferay.portal.search.tuning.blueprints.engine.constants.JSONResponseKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
 import com.liferay.portal.search.tuning.blueprints.engine.impl.internal.util.ResponseUtil;
-import com.liferay.portal.search.tuning.blueprints.engine.response.ResponseAttributes;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.response.ResponseContributor;
+
+import java.util.Map;
 
 import org.osgi.service.component.annotations.Component;
 
@@ -38,7 +39,7 @@ public class PagingResponseContributor implements ResponseContributor {
 	public void contribute(
 		SearchRequestContext searchRequestContext,
 		SearchSearchResponse searchResponse,
-		ResponseAttributes resultAttributes, JSONObject responseJsonObject) {
+		Map<String, Object> responseAttributes, JSONObject responseJsonObject) {
 
 		responseJsonObject.put(
 			JSONResponseKeys.PAGINATION,
@@ -66,8 +67,8 @@ public class PagingResponseContributor implements ResponseContributor {
 				totalHits * 1.0 / searchRequestContext.getSize());
 
 			int currentPage = (int)Math.floor((start + 1) / pageSize) + 1;
-			pagingJsonObject.put(JSONResponseKeys.CURRENT_PAGE, currentPage);
-			pagingJsonObject.put(JSONResponseKeys.PAGE_COUNT, pageCount);
+			pagingJsonObject.put(JSONResponseKeys.ACTIVE_PAGE, currentPage);
+			pagingJsonObject.put(JSONResponseKeys.TOTAL_PAGES, pageCount);
 		}
 		catch (ArithmeticException arithmeticException) {
 			_log.error(arithmeticException.getMessage(), arithmeticException);

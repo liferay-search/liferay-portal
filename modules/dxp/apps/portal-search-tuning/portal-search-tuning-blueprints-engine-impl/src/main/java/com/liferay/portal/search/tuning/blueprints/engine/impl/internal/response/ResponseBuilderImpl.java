@@ -18,17 +18,16 @@ import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.engine.adapter.search.SearchSearchResponse;
 import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
-import com.liferay.portal.search.tuning.blueprints.engine.response.ResponseAttributes;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.response.ResponseContributor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,9 +39,9 @@ public class ResponseBuilderImpl implements ResponseBuilder {
 
 	@Override
 	public JSONObject build(
-		SearchRequestContext searchRequestContext,
-		SearchSearchResponse searchResponse,
-		ResponseAttributes responseAttributes) {
+			SearchRequestContext searchRequestContext,
+			SearchSearchResponse searchResponse,
+			Map<String, Object> responseAttributes) {
 
 		long startTime = System.currentTimeMillis();
 

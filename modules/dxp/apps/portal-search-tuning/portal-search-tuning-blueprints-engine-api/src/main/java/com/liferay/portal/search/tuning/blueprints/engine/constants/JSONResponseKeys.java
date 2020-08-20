@@ -21,17 +21,17 @@ public class JSONResponseKeys {
 
 	public static final String AGGREGATIONS = "aggregations";
 
-	public static final String CURRENT_PAGE = "current_page";
+	public static final String ACTIVE_PAGE = "activePage";
 
 	public static final String FACETS = "facets";
 
-	public static final String EXECUTION_TIME = "execution_time"; 
+	public static final String EXECUTION_TIME = "executionTime"; 
 	
 	public static final String FREQUENCY = "frequency";
 
-	public static final String GROUP_NAME = "group_name";
+	public static final String GROUP_NAME = "groupName";
 
-	public static final String INITIAL_KEYWORDS = "initial_keywords";
+	public static final String INITIAL_KEYWORDS = "initialKeywords";
 
 	public static final String ITEMS = "items";
 
@@ -41,17 +41,17 @@ public class JSONResponseKeys {
 
 	public static final String NAME = "name";
 
-	public static final String PAGE_COUNT = "page_count";
+	public static final String TOTAL_PAGES = "totalPages";
 
 	public static final String PAGINATION = "pagination";
 
-	public static final String PARAMETER_NAME = "parameter_name";
+	public static final String PARAMETER_NAME = "parameterName";
 
 	public static final String QUERY_SUGGESTIONS = "query_suggestions";
 
 	public static final String START = "start"; 
 
-	public static final String TOTAL_HITS = "total_hits";
+	public static final String TOTAL_HITS = "totalHits";
 
 	public static final String VALUE = "value";
 

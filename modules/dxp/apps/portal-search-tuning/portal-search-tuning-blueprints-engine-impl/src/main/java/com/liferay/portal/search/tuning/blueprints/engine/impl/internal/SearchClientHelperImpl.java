@@ -22,15 +22,16 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.search.engine.adapter.search.SearchSearchResponse;
 import com.liferay.portal.search.index.IndexNameBuilder;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.AdvancedConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.BlueprintKeys;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.CommonConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.RequestParameterConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.values.RequestParameterRoles;
+import com.liferay.portal.search.tuning.blueprints.engine.constants.JSONResponseAttributes;
 import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
 import com.liferay.portal.search.tuning.blueprints.engine.exception.SearchRequestDataException;
 import com.liferay.portal.search.tuning.blueprints.engine.impl.internal.executor.SearchExecutor;
@@ -43,16 +44,19 @@ import com.liferay.portal.search.tuning.blueprints.engine.impl.internal.searchre
 import com.liferay.portal.search.tuning.blueprints.engine.impl.internal.util.JsonUtil;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.Parameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.SearchParameterData;
-import com.liferay.portal.search.tuning.blueprints.engine.response.ResponseAttributes;
 import com.liferay.portal.search.tuning.blueprints.engine.searchrequest.SearchRequestData;
 import com.liferay.portal.search.tuning.blueprints.engine.util.SearchClientHelper;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
 import javax.servlet.http.HttpServletRequest;
 
 import org.osgi.service.component.annotations.Component;
@@ -123,16 +127,16 @@ public class SearchClientHelperImpl implements SearchClientHelper {
 	public JSONObject getSearchResults(
 		SearchRequestContext searchRequestContext,
 		SearchSearchResponse searchResponse,
-		ResponseAttributes resultAttributes) {
+		Map<String, Object> responseAttributes) {
 
-		return _resultsBuilder.build(
-			searchRequestContext, searchResponse, resultAttributes);
+		return _responseBuilder.build(
+			searchRequestContext, searchResponse, responseAttributes);
 	}
 
 	@Override
 	public JSONObject search(
 			HttpServletRequest httpServletRequest,
-			ResponseAttributes resultAttributes, long blueprintId)
+			Map<String, Object> responseAttributes, long blueprintId)
 		throws PortalException, SearchRequestDataException {
 
 		SearchRequestContext searchRequestContext = getSearchRequestContext(
@@ -144,8 +148,38 @@ public class SearchClientHelperImpl implements SearchClientHelper {
 		SearchSearchResponse searchResponse = _searchExecutor.execute(
 			searchRequestContext, searchRequestData);
 
-		return _resultsBuilder.build(
-			searchRequestContext, searchResponse, resultAttributes);
+		return _responseBuilder.build(
+			searchRequestContext, searchResponse, responseAttributes);
+	}
+
+	@Override
+	public JSONObject search(
+			PortletRequest portletRequest, PortletResponse portletResponse,
+			Map<String, Object> responseAttributes, long blueprintId)
+		throws PortalException, SearchRequestDataException {
+
+		if (responseAttributes == null) {
+			responseAttributes = new HashMap<String, Object>();
+		}
+		responseAttributes.put(
+				JSONResponseAttributes.PORTLET_REQUEST, portletRequest);
+		responseAttributes.put(
+				JSONResponseAttributes.PORTLET_RESPONSE, portletResponse);
+		
+		HttpServletRequest httpServletRequest = 
+				_portal.getHttpServletRequest(portletRequest);
+		
+		SearchRequestContext searchRequestContext = getSearchRequestContext(
+			httpServletRequest, blueprintId);
+
+		SearchRequestData searchRequestData = _searchRequestDataBuilder.build(
+			searchRequestContext);
+
+		SearchSearchResponse searchResponse = _searchExecutor.execute(
+			searchRequestContext, searchRequestData);
+
+		return _responseBuilder.build(
+			searchRequestContext, searchResponse, responseAttributes);
 	}
 
 	private JSONObject _getBlueprint(long blueprintId)
@@ -157,7 +191,7 @@ public class SearchClientHelperImpl implements SearchClientHelper {
 
 		// return JSONFactoryUtil.createJSONObject(configurationString);
 
-		// TODO: TESTING ONLY
+		// TODO: Mocking & testing parameter config. Remove.
 
 		JSONObject blueprintJsonObject = JSONFactoryUtil.createJSONObject(
 			configurationString);
@@ -342,7 +376,7 @@ public class SearchClientHelperImpl implements SearchClientHelper {
 		searchRequestContextBuilder.searchParameterData(searchParameterData);
 
 		int size = blueprintJsonObject.getInt(
-			CommonConfigurationKeys.SIZE.getJsonKey(), 10);
+			BlueprintKeys.SIZE.getJsonKey(), 10);
 		searchRequestContextBuilder.size(size);
 
 		Optional<Parameter> fromOptional = searchParameterData.getByRole(
@@ -389,10 +423,13 @@ public class SearchClientHelperImpl implements SearchClientHelper {
 	private ParameterContributors _parameterContributors;
 
 	@Reference
+	private Portal _portal;
+
+	@Reference
 	private RequestParameterBuilder _requestParameterBuilder;
 
 	@Reference
-	private ResponseBuilder _resultsBuilder;
+	private ResponseBuilder _responseBuilder;
 
 	@Reference
 	private SearchExecutor _searchExecutor;

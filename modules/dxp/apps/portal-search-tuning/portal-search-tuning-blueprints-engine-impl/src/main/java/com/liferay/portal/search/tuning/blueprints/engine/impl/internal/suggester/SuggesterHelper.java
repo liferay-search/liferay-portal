@@ -24,7 +24,7 @@ import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
 import com.liferay.portal.search.engine.adapter.search.SuggestSearchRequest;
 import com.liferay.portal.search.engine.adapter.search.SuggestSearchResponse;
 import com.liferay.portal.search.engine.adapter.search.SuggestSearchResult;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.CommonConfigurationKeys;
+import com.liferay.portal.search.tuning.blueprints.constants.json.keys.suggester.CommonSuggesterConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
 import com.liferay.portal.search.tuning.blueprints.engine.message.Message;
 import com.liferay.portal.search.tuning.blueprints.engine.message.Severity;
@@ -55,7 +55,7 @@ public class SuggesterHelper {
 
 			try {
 				boolean enabled = suggesterJsonObject.getBoolean(
-					CommonConfigurationKeys.ENABLED.getJsonKey(), false);
+					CommonSuggesterConfigurationKeys.ENABLED.getJsonKey(), false);
 
 				if (!enabled) {
 					continue;
@@ -63,10 +63,10 @@ public class SuggesterHelper {
 
 				JSONObject suggesterConfigurationJsonObject =
 					suggesterJsonObject.getJSONObject(
-						CommonConfigurationKeys.CONFIGURATION.getJsonKey());
+							CommonSuggesterConfigurationKeys.CONFIGURATION.getJsonKey());
 
 				type = suggesterJsonObject.getString(
-					CommonConfigurationKeys.TYPE.getJsonKey());
+						CommonSuggesterConfigurationKeys.TYPE.getJsonKey());
 
 				SuggesterBuilder suggesterBuilder =
 					_suggesterBuilderFactory.getBuilder(type);
@@ -85,7 +85,7 @@ public class SuggesterHelper {
 						"core.error.unknown-suggester-type",
 						illegalArgumentException.getMessage(),
 						illegalArgumentException, suggesterJsonObject,
-						CommonConfigurationKeys.TYPE.getJsonKey(), type));
+						CommonSuggesterConfigurationKeys.TYPE.getJsonKey(), type));
 
 				if (_log.isWarnEnabled()) {
 					_log.warn(

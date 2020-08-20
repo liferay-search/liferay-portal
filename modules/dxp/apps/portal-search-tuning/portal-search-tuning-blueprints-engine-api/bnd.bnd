@@ -8,7 +8,6 @@ Export-Package:\
 	com.liferay.portal.search.tuning.blueprints.engine.exception,\
 	com.liferay.portal.search.tuning.blueprints.engine.message,\
 	com.liferay.portal.search.tuning.blueprints.engine.parameter,\
-	com.liferay.portal.search.tuning.blueprints.engine.response,\
 	com.liferay.portal.search.tuning.blueprints.engine.searchrequest,\
 	com.liferay.portal.search.tuning.blueprints.engine.spellcheck,\
 	com.liferay.portal.search.tuning.blueprints.engine.suggester,\

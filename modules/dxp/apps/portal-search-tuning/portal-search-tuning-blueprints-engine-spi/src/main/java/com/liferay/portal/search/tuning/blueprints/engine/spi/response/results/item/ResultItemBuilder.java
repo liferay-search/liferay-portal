@@ -16,7 +16,6 @@ package com.liferay.portal.search.tuning.blueprints.engine.spi.response.results.
 
 import com.liferay.portal.search.document.Document;
 import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
-import com.liferay.portal.search.tuning.blueprints.engine.response.ResponseAttributes;
 
 import java.util.Map;
 
@@ -27,29 +26,34 @@ public interface ResultItemBuilder {
 
 	public String getDate(
 			SearchRequestContext searchRequestContext,
-			ResponseAttributes resultAttributes, Document document)
+			Map<String, Object> responseAttributes, Document document)
 		throws Exception;
 
 	public String getDescription(
 			SearchRequestContext searchRequestContext,
-			ResponseAttributes resultAttributes, Document document)
+			Map<String, Object> responseAttributes, Document document)
 		throws Exception;
 
 	public Map<String, String> getMetadata(
 			SearchRequestContext queryContext,
-			ResponseAttributes resultAttributes, Document document)
+			Map<String, Object> responseAttributes, Document document)
 		throws Exception;
 
 	public String getThumbnail(
 			SearchRequestContext searchRequestContext,
-			ResponseAttributes resultAttributes, Document document)
+			Map<String, Object> responseAttributes, Document document)
 		throws Exception;
 
 	public String getTitle(
 			SearchRequestContext searchRequestContext,
-			ResponseAttributes resultAttributes, Document document)
+			Map<String, Object> responseAttributes, Document document)
 		throws Exception;
 
 	public String getType(Document document) throws Exception;
+
+	public String getViewURL(
+			SearchRequestContext searchRequestContext,
+			Map<String, Object> responseAttributes, Document document)
+		throws Exception;
 
 }

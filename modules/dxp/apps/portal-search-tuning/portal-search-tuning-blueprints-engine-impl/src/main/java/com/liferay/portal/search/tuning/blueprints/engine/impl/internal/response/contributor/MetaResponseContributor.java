@@ -24,10 +24,10 @@ import com.liferay.portal.search.engine.adapter.search.SearchSearchResponse;
 import com.liferay.portal.search.tuning.blueprints.engine.constants.JSONResponseKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
 import com.liferay.portal.search.tuning.blueprints.engine.impl.internal.util.ResponseUtil;
-import com.liferay.portal.search.tuning.blueprints.engine.response.ResponseAttributes;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.response.ResponseContributor;
 
 import java.util.IllegalFormatException;
+import java.util.Map;
 
 import org.osgi.service.component.annotations.Component;
 
@@ -39,62 +39,52 @@ public class MetaResponseContributor implements ResponseContributor {
 
 	@Override
 	public void contribute(
-		SearchRequestContext searchRequestContext,
-		SearchSearchResponse searchResponse,
-		ResponseAttributes responseAttributes, JSONObject responseJsonObject) {
+			SearchRequestContext searchRequestContext, 
+			SearchSearchResponse searchResponse,
+			Map<String, Object> responseAttributes, 
+			JSONObject responseJsonObject) {
 
-		responseJsonObject.put(
-			JSONResponseKeys.META,
-			_getMeta(searchRequestContext, searchResponse));
+		responseJsonObject.put(JSONResponseKeys.META, 
+				_getMeta(searchRequestContext, searchResponse));
 	}
 
 	private JSONObject _getMeta(
-		SearchRequestContext searchRequestContext,
-		SearchSearchResponse searchResponse) {
+			SearchRequestContext searchRequestContext, 
+			SearchSearchResponse searchResponse) {
 
 		JSONObject metaJsonObject = JSONFactoryUtil.createJSONObject();
 
-		String initialKeywords = searchRequestContext.getInitialKeywords(
-		).orElse(
-			null
-		);
+		String initialKeywords = searchRequestContext.getInitialKeywords().orElse(null);
 
 		if (Validator.isBlank(initialKeywords)) {
-			metaJsonObject.put(
-				JSONResponseKeys.INITIAL_KEYWORDS, initialKeywords);
+			metaJsonObject.put(JSONResponseKeys.INITIAL_KEYWORDS, initialKeywords);
 		}
 
 		metaJsonObject.put(
-			JSONResponseKeys.KEYWORDS, searchRequestContext.getRawKeywords());
+				JSONResponseKeys.KEYWORDS, searchRequestContext.getRawKeywords());
 
 		Hits hits = searchResponse.getHits();
 
 		try {
 			metaJsonObject.put(
-				JSONResponseKeys.EXECUTION_TIME,
-				String.format("%.3f", hits.getSearchTime()));
+					JSONResponseKeys.EXECUTION_TIME, 
+					String.format("%.3f", hits.getSearchTime()));
+		} catch (IllegalFormatException illegalFormatException) {
+			_log.error(illegalFormatException.getMessage(), illegalFormatException);
 		}
-		catch (IllegalFormatException illegalFormatException) {
-			_log.error(
-				illegalFormatException.getMessage(), illegalFormatException);
-		}
-
+		
 		try {
-			metaJsonObject.put(
-				JSONResponseKeys.START,
-				ResponseUtil.getStart(
+			metaJsonObject.put(JSONResponseKeys.START, ResponseUtil.getStart(
 					searchRequestContext, searchResponse.getSearchHits()));
-		}
-		catch (ArithmeticException arithmeticException) {
+		} catch (ArithmeticException arithmeticException) {
 			_log.error(arithmeticException.getMessage(), arithmeticException);
 		}
 
 		metaJsonObject.put(JSONResponseKeys.TOTAL_HITS, hits.getLength());
 
-		return metaJsonObject;
+		return metaJsonObject; 
 	}
-
+	
 	private static final Log _log = LogFactoryUtil.getLog(
-		MetaResponseContributor.class);
-
+			MetaResponseContributor.class);
 }

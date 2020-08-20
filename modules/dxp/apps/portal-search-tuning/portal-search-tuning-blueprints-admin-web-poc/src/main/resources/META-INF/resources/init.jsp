@@ -45,13 +45,13 @@ page import="com.liferay.petra.string.StringPool" %><%@
 page import="com.liferay.portal.search.tuning.blueprints.constants.json.keys.BlueprintKeys"%><%@
 page import="com.liferay.portal.search.tuning.blueprints.model.Blueprint"%><%@
 page import="com.liferay.portal.search.tuning.blueprints.constants.BlueprintTypes"%><%@
-page import="com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminMVCCommandNames" %><%@
-page import="com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminWebKeys" %><%@
-page import="com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context.BlueprintEntriesDisplayContext" %><%@
-page import="com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context.BlueprintEntriesManagementToolbarDisplayContext" %><%@
-page import="com.liferay.portal.search.tuning.blueprints.admin.web.internal.security.permission.resource.BlueprintPermission"%><%@
-page import="com.liferay.portal.search.tuning.blueprints.admin.web.internal.security.permission.resource.BlueprintEntryPermission"%><%@
-page import="com.liferay.portal.search.tuning.blueprints.admin.web.internal.util.JSONHelperUtil"%>
+page import="com.liferay.portal.search.tuning.blueprints.admin.web.poc.internal.constants.BlueprintsAdminMVCCommandNames" %><%@
+page import="com.liferay.portal.search.tuning.blueprints.admin.web.poc.internal.constants.BlueprintsAdminWebKeys" %><%@
+page import="com.liferay.portal.search.tuning.blueprints.admin.web.poc.internal.display.context.BlueprintEntriesDisplayContext" %><%@
+page import="com.liferay.portal.search.tuning.blueprints.admin.web.poc.internal.display.context.BlueprintEntriesManagementToolbarDisplayContext" %><%@
+page import="com.liferay.portal.search.tuning.blueprints.admin.web.poc.internal.security.permission.resource.BlueprintPermission"%><%@
+page import="com.liferay.portal.search.tuning.blueprints.admin.web.poc.internal.security.permission.resource.BlueprintEntryPermission"%><%@
+page import="com.liferay.portal.search.tuning.blueprints.admin.web.poc.internal.util.JSONHelperUtil"%>
 
 <%@ page import="javax.portlet.PortletURL" %>
 

@@ -21,8 +21,9 @@ import com.liferay.portal.kernel.search.Hits;
 import com.liferay.portal.search.engine.adapter.search.SearchSearchResponse;
 import com.liferay.portal.search.tuning.blueprints.engine.constants.JSONResponseKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
-import com.liferay.portal.search.tuning.blueprints.engine.response.ResponseAttributes;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.response.ResponseContributor;
+
+import java.util.Map;
 
 import org.osgi.service.component.annotations.Component;
 
@@ -37,7 +38,7 @@ public class QuerySuggestionsResponseContributor
 	public void contribute(
 		SearchRequestContext searchRequestContext,
 		SearchSearchResponse searchResponse,
-		ResponseAttributes responseAttributes, JSONObject responseJsonObject) {
+		Map<String, Object> responseAttributes, JSONObject responseJsonObject) {
 
 		JSONArray querySuggestionsJsonArray = _getQuerySuggestions(
 			searchResponse);

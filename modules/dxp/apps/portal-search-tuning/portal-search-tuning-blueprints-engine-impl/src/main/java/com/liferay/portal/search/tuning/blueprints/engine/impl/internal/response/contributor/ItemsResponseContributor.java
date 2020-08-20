@@ -23,6 +23,7 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.model.UserConstants;
 import com.liferay.portal.kernel.service.UserLocalService;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.document.Document;
@@ -31,17 +32,16 @@ import com.liferay.portal.search.engine.adapter.search.SearchSearchResponse;
 import com.liferay.portal.search.highlight.HighlightField;
 import com.liferay.portal.search.hits.SearchHit;
 import com.liferay.portal.search.hits.SearchHits;
+import com.liferay.portal.search.tuning.blueprints.engine.constants.JSONResponseAttributes;
 import com.liferay.portal.search.tuning.blueprints.engine.constants.JSONResponseKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
 import com.liferay.portal.search.tuning.blueprints.engine.impl.internal.response.ResultItemBuilderFactory;
 import com.liferay.portal.search.tuning.blueprints.engine.impl.internal.util.ResponseUtil;
-import com.liferay.portal.search.tuning.blueprints.engine.response.ResponseAttributes;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.response.ResponseContributor;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.response.results.item.ResultItemBuilder;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.response.results.item.ResultItemContributor;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -60,7 +60,7 @@ public class ItemsResponseContributor implements ResponseContributor {
 	public void contribute(
 		SearchRequestContext searchRequestContext,
 		SearchSearchResponse searchResponse,
-		ResponseAttributes responseAttributes, JSONObject responseJsonObject) {
+		Map<String, Object> responseAttributes, JSONObject responseJsonObject) {
 
 		responseJsonObject.put(
 			JSONResponseKeys.ITEMS,
@@ -80,7 +80,7 @@ public class ItemsResponseContributor implements ResponseContributor {
 
 	protected void executeResultItemContributors(
 		SearchRequestContext searchRequestContext,
-		ResponseAttributes responseAttributes, Document document,
+		Map<String, Object> responseAttributes, Document document,
 		ResultItemBuilder resultItemBuilder, JSONObject resultItem) {
 
 		if (_log.isDebugEnabled()) {
@@ -109,7 +109,7 @@ public class ItemsResponseContributor implements ResponseContributor {
 	private JSONArray _getItems(
 		SearchRequestContext searchRequestContext,
 		SearchSearchResponse searchResponse,
-		ResponseAttributes responseAttributes) {
+		Map<String, Object> responseAttributes) {
 
 		JSONArray resultItemsJsonArray = JSONFactoryUtil.createJSONArray();
 
@@ -150,6 +150,11 @@ public class ItemsResponseContributor implements ResponseContributor {
 						document.getString("entryClassName"));
 
 				resultItemJsonObject.put(
+					"viewURL",
+					resultItemBuilder.getViewURL(
+						searchRequestContext, responseAttributes, document));
+
+				resultItemJsonObject.put(
 					"title",
 					resultItemBuilder.getTitle(
 						searchRequestContext, responseAttributes, document));
@@ -169,13 +174,13 @@ public class ItemsResponseContributor implements ResponseContributor {
 					resultItemBuilder.getType(
 						document
 					).toLowerCase());
-
+				
 				resultItemJsonObject.put(
 					"metadata",
 					resultItemBuilder.getMetadata(
 						searchRequestContext, responseAttributes, document));
 
-				if (responseAttributes.isIncludeThumbnail()) {
+				if (GetterUtil.getBoolean(JSONResponseAttributes.INCLUDE_THUMBNAIL)) {
 					resultItemJsonObject.put(
 						"imageSrc",
 						resultItemBuilder.getThumbnail(
@@ -183,12 +188,12 @@ public class ItemsResponseContributor implements ResponseContributor {
 							document));
 				}
 
-				if (responseAttributes.isIncludeUserPortrait()) {
+				if (GetterUtil.getBoolean(JSONResponseAttributes.INCLUDE_USER_PORTRAIT)) {
 					_setUserPortrait(
 						searchRequestContext, document, resultItemJsonObject);
 				}
 
-				if (responseAttributes.isIncludeRawDocument()) {
+				if (GetterUtil.getBoolean(JSONResponseAttributes.INCLUDE_RAW_DOCUMENT)) {
 					JSONObject doc = JSONFactoryUtil.createJSONObject();
 
 					for (Map.Entry<String, Field> e :
@@ -204,19 +209,24 @@ public class ItemsResponseContributor implements ResponseContributor {
 					resultItemJsonObject.put("document", doc);
 				}
 
-				if (!responseAttributes.getAdditionalDocumentFields(
-					).isEmpty()) {
-
-					_setAdditionalResultFields(document, resultItemJsonObject);
+				Map<String, Class<?>> additionalResultItemFields = 
+						(Map<String, Class<?>>)responseAttributes.get(
+								JSONResponseAttributes.ADDITIONAL_RESULT_ITEM_FIELDS);
+				
+				if (additionalResultItemFields != null) {
+					_setAdditionalResultFields(additionalResultItemFields, document, resultItemJsonObject);
 				}
 
 				if (searchRequestContext.isExplain()) {
 					resultItemJsonObject.put("explain", item.getExplanation());
 				}
 
+				int descriptionMaxLength = GetterUtil.getInteger(
+						responseAttributes.get(JSONResponseAttributes.DESCRIPTION_MAX_LENGTH), 700);
+
 				_setHightlightFields(
 					item, resultItemJsonObject,
-					responseAttributes.getDescriptionMaxLength());
+					descriptionMaxLength);
 
 				executeResultItemContributors(
 					searchRequestContext, responseAttributes, document,
@@ -235,34 +245,28 @@ public class ItemsResponseContributor implements ResponseContributor {
 	// TODO
 
 	private void _setAdditionalResultFields(
+		Map<String, Class<?>> additionalResultItemFields,
 		Document document, JSONObject resultItemJsonObject) {
 
-		Map<String, Class<?>> additionalResultFields = new HashMap<>();
+		for (Map.Entry<String, Class<?>> entry :
+			additionalResultItemFields.entrySet()) {
+			
+			if (entry.getValue(
+				).isAssignableFrom(
+					String[].class
+				)) {
 
-		if (additionalResultFields != null) {
+				List<Object> values = document.getValues(entry.getKey());
 
-			// Loop for additional result fields. These have to be 1-1 index fields.
-
-			for (Map.Entry<String, Class<?>> entry :
-					additionalResultFields.entrySet()) {
-
-				if (entry.getValue(
-					).isAssignableFrom(
-						String[].class
-					)) {
-
-					List<Object> values = document.getValues(entry.getKey());
-
-					if ((values != null) && (values.size() > 0)) {
-						resultItemJsonObject.put(entry.getKey(), values);
-					}
+				if ((values != null) && (values.size() > 0)) {
+					resultItemJsonObject.put(entry.getKey(), values);
 				}
-				else {
-					String value = document.getString(entry.getKey());
+			}
+			else {
+				String value = document.getString(entry.getKey());
 
-					if (Validator.isNotNull(value)) {
-						resultItemJsonObject.put(entry.getKey(), value);
-					}
+				if (!Validator.isBlank(value)) {
+					resultItemJsonObject.put(entry.getKey(), value);
 				}
 			}
 		}

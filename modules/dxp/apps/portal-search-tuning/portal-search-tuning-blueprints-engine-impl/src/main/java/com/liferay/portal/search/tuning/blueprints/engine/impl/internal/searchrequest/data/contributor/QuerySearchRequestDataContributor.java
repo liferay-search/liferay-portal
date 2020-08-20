@@ -24,7 +24,6 @@ import com.liferay.portal.search.query.Query;
 import com.liferay.portal.search.rescore.Rescore;
 import com.liferay.portal.search.rescore.RescoreBuilder;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.ClauseConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.CommonConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.values.ClauseContext;
 import com.liferay.portal.search.tuning.blueprints.constants.json.values.Occur;
 import com.liferay.portal.search.tuning.blueprints.constants.json.values.Operator;
@@ -121,7 +120,7 @@ public class QuerySearchRequestDataContributor
 								Severity.ERROR, "core",
 								"core.error.unknown-query-type",
 								iae.getMessage(), iae, clauseJsonObject,
-								CommonConfigurationKeys.TYPE.getJsonKey(),
+								ClauseConfigurationKeys.TYPE.getJsonKey(),
 								type));
 
 						if (_log.isWarnEnabled()) {

@@ -19,7 +19,7 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.tuning.blueprints.engine.impl.internal.component.ServiceComponentReference;
-import com.liferay.portal.search.tuning.blueprints.engine.impl.internal.response.item.builder.DefaultItemBuilder;
+import com.liferay.portal.search.tuning.blueprints.engine.impl.internal.result.item.builder.DefaultResultItemBuilder;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.response.results.item.ResultItemBuilder;
 
 import java.util.Map;
@@ -48,7 +48,7 @@ public class ResultItemBuilderFactoryImpl implements ResultItemBuilderFactory {
 						". Falling back to default.");
 			}
 
-			return new DefaultItemBuilder();
+			return new DefaultResultItemBuilder();
 		}
 
 		return serviceComponentReference.getServiceComponent();

@@ -22,8 +22,9 @@ import java.util.stream.Stream;
  */
 public enum CommonSuggesterConfigurationKeys {
 
-	ANALYZER("analyzer"), FIELD("field"), SHARD_SIZE("shard_size"),
-	SIZE("size"), TEXT("text");
+	ANALYZER("analyzer"), CONFIGURATION("configuration"), 
+	ENABLED("enabled"), FIELD("field"), SHARD_SIZE("shard_size"),
+	SIZE("size"), TEXT("text"), TYPE("type");
 
 	public static final CommonSuggesterConfigurationKeys findByJsonKey(
 		String jsonKey) {
