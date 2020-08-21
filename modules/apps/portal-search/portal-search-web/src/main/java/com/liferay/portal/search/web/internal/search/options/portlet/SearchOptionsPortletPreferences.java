@@ -27,8 +27,15 @@ public interface SearchOptionsPortletPreferences {
 	public static final String PREFERENCE_KEY_BASIC_FACET_SELECTION =
 		"basicFacetSelection";
 
+	public static final String PREFERENCE_KEY_BLUEPRINT_ID =
+		"blueprintId";
+
 	public static final String PREFERENCE_KEY_FEDERATED_SEARCH_KEY =
 		"federatedSearchKey";
+
+	public Optional<String> getBlueprintIdOptional();
+
+	public String getBlueprintIdString();
 
 	public Optional<String> getFederatedSearchKeyOptional();
 

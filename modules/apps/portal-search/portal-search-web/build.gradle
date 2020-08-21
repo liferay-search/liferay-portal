@@ -31,6 +31,7 @@ dependencies {
 	compileOnly project(":core:petra:petra-lang")
 	compileOnly project(":core:petra:petra-sql-dsl-api")
 	compileOnly project(":core:petra:petra-string")
+	compileOnly project(":dxp:apps:portal-search-tuning:portal-search-tuning-blueprints-api")
 
 	testCompile group: "commons-configuration", name: "commons-configuration", version: "1.10"
 	testCompile group: "commons-httpclient", name: "commons-httpclient", version: "3.1"

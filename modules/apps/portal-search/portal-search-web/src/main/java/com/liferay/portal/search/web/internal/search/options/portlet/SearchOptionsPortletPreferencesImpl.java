@@ -15,6 +15,7 @@
 package com.liferay.portal.search.web.internal.search.options.portlet;
 
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.search.web.internal.util.PortletPreferencesHelper;
 
 import java.util.Optional;
@@ -32,6 +33,17 @@ public class SearchOptionsPortletPreferencesImpl
 
 		_portletPreferencesHelper = new PortletPreferencesHelper(
 			portletPreferencesOptional);
+	}
+
+	@Override
+	public Optional<String> getBlueprintIdOptional() {
+		return _portletPreferencesHelper.getString(
+			SearchOptionsPortletPreferences.PREFERENCE_KEY_BLUEPRINT_ID);
+	}
+
+	@Override
+	public String getBlueprintIdString() {
+		return getBlueprintIdOptional().orElse(StringPool.BLANK);
 	}
 
 	@Override
