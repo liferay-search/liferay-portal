@@ -89,6 +89,7 @@ public class UserParameterContributor implements ParameterContributor {
 			searchContext.getUserId());
 	}
 
+	@Override
 	public List<ParameterDefinition> getParameterDefinitions() {
 		List<ParameterDefinition> parameterDefinitions = new ArrayList<>();
 
@@ -161,6 +162,10 @@ public class UserParameterContributor implements ParameterContributor {
 
 	private void _contribute(
 		SearchParameterData searchParameterData, long companyId, long userId) {
+
+		if (userId == 0) {
+			return;
+		}
 
 		User user;
 

@@ -1,0 +1,23 @@
+{
+    "clause_configuration": [{
+	      "enabled": true,
+	      "title": {
+	        "en_US": "",
+	        "fi_FI": ""
+	      },
+	      "description": {
+	        "en_US": "",
+	        "fi_FI": ""
+	      },
+	      "clauses": [
+	        {
+	          "context": "query",
+	          "occur": "must",
+	          "type": "wrapper",
+	          "query": {
+	          	"query": "{\"term\": { \"screenName\" : \"user3\" }}"
+	          }
+	        }
+	      ]
+	}]
+}

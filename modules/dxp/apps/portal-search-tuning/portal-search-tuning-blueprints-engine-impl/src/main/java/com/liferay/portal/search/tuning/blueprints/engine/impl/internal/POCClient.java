@@ -4,8 +4,8 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.search.engine.adapter.search.SearchSearchResponse;
+import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
 import com.liferay.portal.search.tuning.blueprints.engine.exception.SearchRequestDataException;
 import com.liferay.portal.search.tuning.blueprints.engine.searchrequest.SearchRequestData;
@@ -50,36 +50,24 @@ public class POCClient {
 	}
 
 	public JSONObject testWithSearchContext(
-		SearchContext searchContext, long blueprintId) {
+		SearchRequestBuilder searchRequestBuilder, long blueprintId) {
 
 		Map<String, Object> responseAttributes = new HashMap<String, Object>();
 
-		try {
-			SearchRequestContext searchRequestContext =
-				_searchClientHelper.getSearchRequestContext(
-					searchContext, blueprintId);
+		SearchRequestContext searchRequestContext =
+			_searchClientHelper.getSearchRequestContext(
+				searchRequestBuilder, blueprintId);
 
-			SearchRequestData searchRequestData =
-				_searchClientHelper.getSearchRequestData(searchRequestContext);
+		SearchRequestData searchRequestData =
+			_searchClientHelper.getSearchRequestData(
+				searchRequestContext);
 
-			SearchSearchResponse searchResponse =
-				_searchClientHelper.getSearchResponse(
-					searchRequestContext, searchRequestData);
+		SearchSearchResponse searchResponse =
+			_searchClientHelper.getSearchResponse(
+				searchRequestContext, searchRequestData);
 
-			return _searchClientHelper.getSearchResults(
-				searchRequestContext, searchResponse, responseAttributes);
-		}
-		catch (JSONException e) {
-			e.printStackTrace();
-		}
-		catch (SearchRequestDataException e) {
-			e.printStackTrace();
-		}
-		catch (PortalException e) {
-			e.printStackTrace();
-		}
-
-		return JSONFactoryUtil.createJSONObject();
+		return _searchClientHelper.getSearchResults(
+			searchRequestContext, searchResponse, responseAttributes);
 	}
 
 	@Reference

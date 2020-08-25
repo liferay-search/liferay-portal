@@ -15,6 +15,7 @@
 package com.liferay.portal.search.tuning.blueprints.engine.impl.internal.searchrequest;
 
 import com.liferay.portal.search.query.Queries;
+import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
 import com.liferay.portal.search.tuning.blueprints.engine.exception.SearchRequestDataException;
 import com.liferay.portal.search.tuning.blueprints.engine.impl.internal.searchrequest.data.contributor.SearchRequestDataContributor;
@@ -35,10 +36,12 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 public class SearchRequestDataBuilderImpl implements SearchRequestDataBuilder {
 
 	@Override
-	public SearchRequestData build(SearchRequestContext searchRequestContext)
-		throws SearchRequestDataException {
+	public SearchRequestData build(
+		SearchRequestBuilder searchRequestBuilder,
+		SearchRequestContext searchRequestContext) {
 
-		SearchRequestData searchRequestData = new SearchRequestData(_queries);
+		SearchRequestData searchRequestData = new SearchRequestData(
+			searchRequestBuilder, _queries);
 
 		for (SearchRequestDataContributor searchRequestDataContributor :
 				_searchRequestDataContributors) {

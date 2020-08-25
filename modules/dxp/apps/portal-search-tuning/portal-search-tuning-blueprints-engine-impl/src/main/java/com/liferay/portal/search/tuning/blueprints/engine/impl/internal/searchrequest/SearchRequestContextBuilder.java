@@ -16,6 +16,8 @@ package com.liferay.portal.search.tuning.blueprints.engine.impl.internal.searchr
 
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.search.SearchContext;
+import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.SearchParameterData;
 
@@ -27,6 +29,10 @@ import java.util.Locale;
  * @author Petteri Karttunen
  */
 public class SearchRequestContextBuilder {
+
+	public SearchRequestContextBuilder(SearchRequestBuilder searchRequestBuilder) {
+		_searchRequestBuilder = searchRequestBuilder;
+	}
 
 	public SearchRequestContextBuilder aggregationConfiguration(
 		JSONArray aggregationConfigurationJsonArray) {
@@ -43,19 +49,28 @@ public class SearchRequestContextBuilder {
 	}
 
 	public SearchRequestContext build() {
+		long companyId = _searchRequestBuilder.withSearchContextGet(
+			SearchContext::getCompanyId);
+
+		Locale locale = _searchRequestBuilder.withSearchContextGet(
+			SearchContext::getLocale);
+
 		SearchRequestContext queryContext = new SearchRequestContextImpl(
-			_aggregationConfigurationJsonArray, _clauseConfigurationJsonArray,
-			_companyId, _excludeQueryContributors, _excludeQueryPostProcessors,
+			_searchRequestBuilder, _aggregationConfigurationJsonArray,
+			_clauseConfigurationJsonArray,
+			companyId, _excludeQueryContributors, _excludeQueryPostProcessors,
 			_explain, _fetchSource, _fetchSourceExcludes, _fetchSourceIncludes,
 			_from, _highlightConfigurationJsonObject, _includeResponseString,
 			_indexNames, _initialKeywords,
 			_keywordIndexingConfigurationJsonObject, _keywords,
-			_keywordSuggesterConfigurationJsonObject, _locale, _rawKeywords,
+			_keywordSuggesterConfigurationJsonObject, locale, _rawKeywords,
 			_blueprintId, _searchParameterData, _size,
 			_sortConfigurationJsonArray, _spellCheckerConfigurationJsonObject,
 			_userId);
 
-		_validateQueryContext(queryContext);
+		if (false) {
+			_validateQueryContext(queryContext);
+		}
 
 		return queryContext;
 	}
@@ -64,12 +79,6 @@ public class SearchRequestContextBuilder {
 		JSONArray clauseConfigurationJsonArray) {
 
 		_clauseConfigurationJsonArray = clauseConfigurationJsonArray;
-
-		return this;
-	}
-
-	public SearchRequestContextBuilder companyId(long companyId) {
-		_companyId = companyId;
 
 		return this;
 	}
@@ -176,12 +185,6 @@ public class SearchRequestContextBuilder {
 		return this;
 	}
 
-	public SearchRequestContextBuilder locale(Locale locale) {
-		_locale = locale;
-
-		return this;
-	}
-
 	public SearchRequestContextBuilder rawKeywords(String rawKeywords) {
 		_rawKeywords = rawKeywords;
 
@@ -245,7 +248,6 @@ public class SearchRequestContextBuilder {
 	private JSONArray _aggregationConfigurationJsonArray;
 	private Long _blueprintId;
 	private JSONArray _clauseConfigurationJsonArray;
-	private Long _companyId;
 	private List<String> _excludeQueryContributors = new ArrayList<>();
 	private List<String> _excludeQueryPostProcessors = new ArrayList<>();
 	private boolean _explain;
@@ -260,7 +262,6 @@ public class SearchRequestContextBuilder {
 	private JSONObject _keywordIndexingConfigurationJsonObject;
 	private String _keywords;
 	private JSONObject _keywordSuggesterConfigurationJsonObject;
-	private Locale _locale;
 	private String _rawKeywords;
 	private SearchParameterData _searchParameterData;
 	private Integer _size;
@@ -268,4 +269,5 @@ public class SearchRequestContextBuilder {
 	private JSONObject _spellCheckerConfigurationJsonObject;
 	private Long _userId;
 
+	private final SearchRequestBuilder _searchRequestBuilder;
 }

@@ -26,13 +26,13 @@ import com.liferay.portal.search.tuning.blueprints.engine.parameter.SearchParame
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.parameter.ParameterContributor;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
+
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -67,6 +67,7 @@ public class TimeParameterContributor implements ParameterContributor {
 		_provide(searchParameterData, searchContext.getTimeZone());
 	}
 
+	@Override
 	public List<ParameterDefinition> getParameterDefinitions() {
 		List<ParameterDefinition> parameterDefinitions = new ArrayList<>();
 
@@ -134,6 +135,10 @@ public class TimeParameterContributor implements ParameterContributor {
 
 	private void _provide(
 		SearchParameterData searchParameterData, TimeZone timeZone) {
+
+		if (timeZone == null) {
+			return;
+		}
 
 		LocalDateTime localDateTime = LocalDateTime.now(timeZone.toZoneId());
 

@@ -19,16 +19,16 @@ import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.search.query.BooleanQuery;
+import com.liferay.portal.search.filter.ComplexQueryPartBuilderFactory;
 import com.liferay.portal.search.query.Query;
 import com.liferay.portal.search.rescore.Rescore;
 import com.liferay.portal.search.rescore.RescoreBuilder;
+import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.ClauseConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.values.ClauseContext;
 import com.liferay.portal.search.tuning.blueprints.constants.json.values.Occur;
 import com.liferay.portal.search.tuning.blueprints.constants.json.values.Operator;
 import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
-import com.liferay.portal.search.tuning.blueprints.engine.exception.SearchRequestDataException;
 import com.liferay.portal.search.tuning.blueprints.engine.impl.internal.clause.ClauseBuilderFactory;
 import com.liferay.portal.search.tuning.blueprints.engine.impl.internal.clause.condition.ClauseConditionHandlerFactory;
 import com.liferay.portal.search.tuning.blueprints.engine.impl.internal.util.ConfigurationUtil;
@@ -205,6 +205,9 @@ public class QuerySearchRequestDataContributor
 			return;
 		}
 
+		SearchRequestBuilder searchRequestBuilder =
+			searchRequestData.getSearchRequestBuilder();
+
 		if (ClauseContext.POST_FILTER.equals(clauseContext)) {
 			if (Occur.MUST.equals(occur)) {
 				searchRequestData.getPostFilterQuery(
@@ -226,34 +229,38 @@ public class QuerySearchRequestDataContributor
 			}
 		}
 		else if (ClauseContext.PRE_FILTER.equals(clauseContext)) {
-			searchRequestData.getQuery(
-			).addFilterQueryClauses(
-				clause
-			);
+			searchRequestBuilder.addComplexQueryPart(
+				_complexQueryPartBuilderFactory.builder()
+				.query(clause)
+				.occur("filter")
+				.build());
 		}
 		else if (ClauseContext.QUERY.equals(clauseContext)) {
 			if (Occur.MUST.equals(occur)) {
-				searchRequestData.getQuery(
-				).addMustQueryClauses(
-					clause
-				);
+				searchRequestBuilder.addComplexQueryPart(
+					_complexQueryPartBuilderFactory.builder()
+					.query(clause)
+					.occur("must")
+					.build());
 			}
 			else if (Occur.MUST_NOT.equals(occur)) {
-				searchRequestData.getQuery(
-				).addMustNotQueryClauses(
-					clause
-				);
+				searchRequestBuilder.addComplexQueryPart(
+					_complexQueryPartBuilderFactory.builder()
+					.query(clause)
+					.occur("must_not")
+					.build());
 			}
 			else {
-				searchRequestData.getQuery(
-				).addShouldQueryClauses(
-					clause
-				);
+				searchRequestBuilder.addComplexQueryPart(
+					_complexQueryPartBuilderFactory.builder()
+					.query(clause)
+					.occur("should")
+					.build());
 			}
 		}
-		else if (ClauseContext.RESCORE.equals(clauseContext) 
+		else if (ClauseContext.RESCORE.equals(clauseContext)
 				&& _rescoreBuilder != null) {
-			
+
 			Integer windowSize = null;
 
 			if (queryJsonObject.has(
@@ -387,7 +394,8 @@ public class QuerySearchRequestDataContributor
 			return;
 		}
 
-		BooleanQuery booleanQuery = searchRequestData.getQuery();
+		SearchRequestBuilder searchRequestBuilder =
+			searchRequestData.getSearchRequestBuilder();
 
 		for (QueryContributor queryContributor : _queryContributors) {
 			if (_isQueryContributorExcluded(
@@ -398,30 +406,40 @@ public class QuerySearchRequestDataContributor
 				continue;
 			}
 
-			try {
-				Optional<Query> contributorQueryOptional =
-					queryContributor.build(searchRequestContext);
+			Optional<Query> contributorQueryOptional =
+				queryContributor.build(searchRequestContext);
 
-				if (contributorQueryOptional.isPresent()) {
-					Query contributorQuery = contributorQueryOptional.get();
+			if (contributorQueryOptional.isPresent()) {
+				Query contributorQuery = contributorQueryOptional.get();
 
-					Occur occur = queryContributor.getOccur();
+				String occurString = getOccurString(
+					queryContributor.getOccur());
 
-					if (Occur.MUST.equals(occur)) {
-						booleanQuery.addMustQueryClauses(contributorQuery);
-					}
-					else if (Occur.MUST_NOT.equals(occur)) {
-						booleanQuery.addMustNotQueryClauses(contributorQuery);
-					}
-					else if (Occur.SHOULD.equals(occur)) {
-						booleanQuery.addShouldQueryClauses(contributorQuery);
-					}
+				if (occurString != null) {
+					searchRequestBuilder.addComplexQueryPart(
+						_complexQueryPartBuilderFactory.builder()
+						.query(contributorQuery)
+						.occur("must")
+						.build());
 				}
 			}
-			catch (SearchRequestDataException e) {
-				_log.error(e.getMessage(), e);
-			}
 		}
+	}
+
+	protected String getOccurString(Occur occur) {
+		if (Occur.MUST.equals(occur)) {
+			return "must";
+		}
+		
+		if (Occur.MUST_NOT.equals(occur)) {
+			return "must_not";
+		}
+		
+		if (Occur.SHOULD.equals(occur)) {
+			return "should";
+		}
+		
+		return null;
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
@@ -432,6 +450,9 @@ public class QuerySearchRequestDataContributor
 
 	@Reference
 	private ClauseConditionHandlerFactory _clauseConditionHandlerFactory;
+
+	@Reference
+	private ComplexQueryPartBuilderFactory _complexQueryPartBuilderFactory;
 
 	@Reference(
 		cardinality = ReferenceCardinality.MULTIPLE,

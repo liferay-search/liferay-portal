@@ -17,6 +17,7 @@ package com.liferay.portal.search.tuning.blueprints.engine.impl.internal.searchr
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
 import com.liferay.portal.search.tuning.blueprints.engine.message.Message;
 import com.liferay.portal.search.tuning.blueprints.engine.message.Severity;
@@ -34,6 +35,7 @@ import java.util.Optional;
 public class SearchRequestContextImpl implements SearchRequestContext {
 
 	public SearchRequestContextImpl(
+		SearchRequestBuilder searchRequestBuilder,
 		JSONArray aggregationConfigurationJsonArray,
 		JSONArray clauseConfigurationJsonArray, Long companyId,
 		List<String> excludeQueryContributors,
@@ -50,6 +52,7 @@ public class SearchRequestContextImpl implements SearchRequestContext {
 		JSONArray sortConfigurationJsonArray,
 		JSONObject spellCheckerConfigurationJsonObject, Long userId) {
 
+		_searchRequestBuilder = searchRequestBuilder;
 		_aggregationConfigurationJsonArray = aggregationConfigurationJsonArray;
 		_clauseConfigurationJsonArray = clauseConfigurationJsonArray;
 		_companyId = companyId;
@@ -370,9 +373,15 @@ public class SearchRequestContextImpl implements SearchRequestContext {
 	private final List<Message> _messages = new ArrayList<>();
 	private final String _rawKeywords;
 	private final SearchParameterData _searchParameterData;
+	private final SearchRequestBuilder _searchRequestBuilder;
 	private final Integer _size;
 	private final JSONArray _sortConfigurationJsonArray;
 	private final JSONObject _spellCheckerConfigurationJsonObject;
 	private final Long _userId;
+
+	@Override
+	public SearchRequestBuilder getSearchRequestBuilder() {
+		return _searchRequestBuilder;
+	}
 
 }

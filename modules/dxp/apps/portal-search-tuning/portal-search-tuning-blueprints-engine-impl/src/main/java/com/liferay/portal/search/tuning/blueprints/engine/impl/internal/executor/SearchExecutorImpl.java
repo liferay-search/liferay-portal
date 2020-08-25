@@ -23,6 +23,11 @@ import com.liferay.portal.search.aggregation.Aggregation;
 import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
 import com.liferay.portal.search.engine.adapter.search.SearchSearchRequest;
 import com.liferay.portal.search.engine.adapter.search.SearchSearchResponse;
+import com.liferay.portal.search.filter.ComplexQueryBuilderFactory;
+import com.liferay.portal.search.query.BooleanQuery;
+import com.liferay.portal.search.query.Queries;
+import com.liferay.portal.search.query.Query;
+import com.liferay.portal.search.searcher.SearchRequest;
 import com.liferay.portal.search.sort.Sort;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.HighlightConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
@@ -46,9 +51,12 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 @Component(immediate = true, service = SearchExecutor.class)
 public class SearchExecutorImpl implements SearchExecutor {
 
+	@Override
 	public SearchSearchResponse execute(
 		SearchRequestContext searchRequestContext,
 		SearchRequestData searchRequestData) {
+
+		SearchRequest searchRequest2 = searchRequestData.getSearchRequestBuilder().build();
 
 		SearchSearchRequest searchRequest = new SearchSearchRequest();
 
@@ -86,10 +94,15 @@ public class SearchExecutorImpl implements SearchExecutor {
 				searchRequestData.getPostFilterQuery());
 		}
 
-		if (searchRequestData.getQuery(
-			).hasClauses()) {
+		BooleanQuery booleanQuery = _queries.booleanQuery();
 
-			searchRequest.setQuery(searchRequestData.getQuery());
+		Query query = _complexQueryBuilderFactory.builder()
+			.addParts(searchRequest2.getComplexQueryParts())
+			.root(booleanQuery)
+			.build();
+
+		if (booleanQuery.hasClauses()) {
+			searchRequest.setQuery(query);
 		}
 
 		searchRequest.setSize(searchRequestContext.getSize());
@@ -277,6 +290,12 @@ public class SearchExecutorImpl implements SearchExecutor {
 
 	private volatile Map<String, QueryPostProcessor> _queryPostProcessors =
 		new HashMap<>();
+
+	@Reference
+	private ComplexQueryBuilderFactory _complexQueryBuilderFactory;
+
+	@Reference
+	private Queries _queries;
 
 	@Reference
 	private SearchEngineAdapter _searchEngineAdapter;

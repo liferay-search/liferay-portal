@@ -17,8 +17,8 @@ package com.liferay.portal.search.tuning.blueprints.engine.util;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.search.engine.adapter.search.SearchSearchResponse;
+import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
 import com.liferay.portal.search.tuning.blueprints.engine.exception.SearchRequestDataException;
 import com.liferay.portal.search.tuning.blueprints.engine.searchrequest.SearchRequestData;
@@ -27,6 +27,7 @@ import java.util.Map;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -39,12 +40,13 @@ public interface SearchClientHelper {
 		throws JSONException, PortalException;
 
 	public SearchRequestContext getSearchRequestContext(
-			SearchContext searchContext, long blueprintId)
-		throws JSONException, PortalException;
+		SearchRequestBuilder searchRequestBuilder, long blueprintId);
 
 	public SearchRequestData getSearchRequestData(
-			SearchRequestContext searchRequestContext)
-		throws SearchRequestDataException;
+		SearchRequestBuilder searchRequestBuilder, long blueprintId);
+
+	public SearchRequestData getSearchRequestData(
+		SearchRequestContext searchRequestContext);
 
 	public SearchSearchResponse getSearchResponse(
 		SearchRequestContext searchRequestContext,
@@ -52,7 +54,8 @@ public interface SearchClientHelper {
 
 	public JSONObject getSearchResults(
 		SearchRequestContext searchRequestContext,
-		SearchSearchResponse searchResponse, Map<String, Object> responseAttributes);
+		SearchSearchResponse searchResponse,
+		Map<String, Object> responseAttributes);
 
 	public JSONObject search(
 			HttpServletRequest httpServletRequest,
@@ -63,4 +66,5 @@ public interface SearchClientHelper {
 			PortletRequest portletRequest, PortletResponse portletResponse,
 			Map<String, Object> responseAttributes, long blueprintId)
 		throws JSONException, PortalException, SearchRequestDataException;
+
 }

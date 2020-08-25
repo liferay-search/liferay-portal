@@ -1,0 +1,15 @@
+{
+    "aggregation_configuration": [],
+    "clause_configuration": [],
+    "highlight_configuration": [],
+    "keyword_indexing_configuration": {},
+    "keyword_suggester_configuration": [],
+    "keyword_suggestions_configuration": {},
+    "misc_configuration": {},
+    "request_parameter_configuration": [],
+    "sort_configuration": [{
+        "parameter_value": "userName",
+        "field_name": "userName"
+    }],
+    "spellchecker_configuration": []
+}

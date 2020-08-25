@@ -20,9 +20,11 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.aggregation.Aggregation;
+import com.liferay.portal.search.filter.ComplexQueryPartBuilderFactory;
 import com.liferay.portal.search.query.BooleanQuery;
 import com.liferay.portal.search.query.Queries;
 import com.liferay.portal.search.query.TermQuery;
+import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.AggregationConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.FacetConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.values.FilterMode;
@@ -48,6 +50,7 @@ import org.osgi.service.component.annotations.Reference;
 public class AggregationsSearchRequestDataContributor
 	implements SearchRequestDataContributor {
 
+	@Override
 	public void contribute(
 		SearchRequestContext searchRequestContext,
 		SearchRequestData searchRequestData) {
@@ -280,11 +283,15 @@ public class AggregationsSearchRequestDataContributor
 				_log.error(e.getMessage(), e);
 			}
 
+			SearchRequestBuilder searchRequestBuilder =
+				searchRequestData.getSearchRequestBuilder();
+
 			if (facetPreFilterQuery.hasClauses()) {
-				searchRequestData.getQuery(
-				).addFilterQueryClauses(
-					facetPreFilterQuery
-				);
+				searchRequestBuilder.addComplexQueryPart(
+					_complexQueryPartBuilderFactory.builder()
+					.query(facetPreFilterQuery)
+					.occur("must")
+					.build());
 			}
 
 			if (facetPostFilterQuery.hasClauses()) {
@@ -301,6 +308,9 @@ public class AggregationsSearchRequestDataContributor
 
 	@Reference
 	private AggregationBuilderFactory _aggregationBuilderFactory;
+
+	@Reference
+	private ComplexQueryPartBuilderFactory _complexQueryPartBuilderFactory;
 
 	@Reference
 	private Queries _queries;

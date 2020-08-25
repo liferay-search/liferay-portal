@@ -16,6 +16,7 @@ package com.liferay.portal.search.tuning.blueprints.engine.context;
 
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.tuning.blueprints.engine.message.Message;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.SearchParameterData;
 
@@ -31,7 +32,7 @@ public interface SearchRequestContext {
 	public void addMessage(Message message);
 
 	public Optional<JSONArray> getAggregationConfiguration();
-	
+
 	public Long getBlueprintId();
 
 	public JSONArray getClauseConfiguration();
@@ -67,6 +68,8 @@ public interface SearchRequestContext {
 	public String getRawKeywords();
 
 	public SearchParameterData getSearchParameterData();
+
+	public SearchRequestBuilder getSearchRequestBuilder();
 
 	public Integer getSize();
 

@@ -260,7 +260,7 @@ public class DefaultClauseConditionHandler implements ClauseConditionHandler {
 				new Message(
 					Severity.ERROR, "core",
 					"core.error.clause-condition-parameter-not-defined", null,
-					null, conditionJsonObject,
+					new Throwable(), conditionJsonObject,
 					ClauseConfigurationKeys.PARAMETER_NAME.getJsonKey(), null));
 			valid = false;
 		}

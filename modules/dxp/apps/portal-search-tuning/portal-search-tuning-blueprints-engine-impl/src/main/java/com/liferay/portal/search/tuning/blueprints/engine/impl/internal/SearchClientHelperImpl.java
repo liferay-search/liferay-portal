@@ -14,6 +14,7 @@
 
 package com.liferay.portal.search.tuning.blueprints.engine.impl.internal;
 
+
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONException;
@@ -27,6 +28,8 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.search.engine.adapter.search.SearchSearchResponse;
 import com.liferay.portal.search.index.IndexNameBuilder;
+import com.liferay.portal.search.searcher.SearchRequestBuilder;
+import com.liferay.portal.search.searcher.SearchRequestBuilderFactory;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.AdvancedConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.BlueprintKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.RequestParameterConfigurationKeys;
@@ -51,12 +54,13 @@ import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.osgi.service.component.annotations.Component;
@@ -68,6 +72,15 @@ import org.osgi.service.component.annotations.Reference;
 @Component(immediate = true, service = SearchClientHelper.class)
 public class SearchClientHelperImpl implements SearchClientHelper {
 
+	@Override
+	public SearchRequestData getSearchRequestData(
+		SearchRequestBuilder searchRequestBuilder, long blueprintId) {
+
+		return getSearchRequestData(
+			getSearchRequestContext(searchRequestBuilder, blueprintId));
+	}
+
+	@Override
 	public SearchRequestContext getSearchRequestContext(
 			HttpServletRequest httpServletRequest, long blueprintId)
 		throws JSONException, PortalException {
@@ -85,15 +98,24 @@ public class SearchClientHelperImpl implements SearchClientHelper {
 		_parameterContributors.contribute(
 			httpServletRequest, searchParameterData);
 
+		SearchRequestBuilder searchRequestBuilder =
+			_searchRequestBuilderFactory.builder()
+			.companyId(themeDisplay.getCompanyId())
+			.locale(themeDisplay.getLocale())
+			;
+
 		return _getSearchRequestContext(
-			blueprintJsonObject, searchParameterData, themeDisplay.getLocale(),
-			themeDisplay.getCompanyId(), themeDisplay.getUserId(), blueprintId);
+			searchRequestBuilder,
+			blueprintJsonObject, searchParameterData,
+			themeDisplay.getUserId(), blueprintId);
 	}
 
 	@Override
 	public SearchRequestContext getSearchRequestContext(
-			SearchContext searchContext, long blueprintId)
-		throws JSONException, PortalException {
+		SearchRequestBuilder searchRequestBuilder, long blueprintId) {
+
+		SearchContext searchContext = searchRequestBuilder.withSearchContextGet(
+			Function.identity());
 
 		JSONObject blueprintJsonObject = _getBlueprint(blueprintId);
 
@@ -102,17 +124,19 @@ public class SearchClientHelperImpl implements SearchClientHelper {
 		_parameterContributors.contribute(searchContext, searchParameterData);
 
 		return _getSearchRequestContext(
-			blueprintJsonObject, searchParameterData, searchContext.getLocale(),
-			searchContext.getCompanyId(), searchContext.getUserId(),
+			searchRequestBuilder,
+			blueprintJsonObject, searchParameterData,
+			searchContext.getUserId(),
 			blueprintId);
 	}
 
 	@Override
 	public SearchRequestData getSearchRequestData(
-			SearchRequestContext searchRequestContext)
-		throws SearchRequestDataException {
+		SearchRequestContext searchRequestContext) {
 
-		return _searchRequestDataBuilder.build(searchRequestContext);
+		return _searchRequestDataBuilder.build(
+			searchRequestContext.getSearchRequestBuilder(),
+			searchRequestContext);
 	}
 
 	@Override
@@ -143,6 +167,7 @@ public class SearchClientHelperImpl implements SearchClientHelper {
 			httpServletRequest, blueprintId);
 
 		SearchRequestData searchRequestData = _searchRequestDataBuilder.build(
+			searchRequestContext.getSearchRequestBuilder(),
 			searchRequestContext);
 
 		SearchSearchResponse searchResponse = _searchExecutor.execute(
@@ -165,14 +190,15 @@ public class SearchClientHelperImpl implements SearchClientHelper {
 				JSONResponseAttributes.PORTLET_REQUEST, portletRequest);
 		responseAttributes.put(
 				JSONResponseAttributes.PORTLET_RESPONSE, portletResponse);
-		
-		HttpServletRequest httpServletRequest = 
+
+		HttpServletRequest httpServletRequest =
 				_portal.getHttpServletRequest(portletRequest);
-		
+
 		SearchRequestContext searchRequestContext = getSearchRequestContext(
 			httpServletRequest, blueprintId);
 
 		SearchRequestData searchRequestData = _searchRequestDataBuilder.build(
+			searchRequestContext.getSearchRequestBuilder(),
 			searchRequestContext);
 
 		SearchSearchResponse searchResponse = _searchExecutor.execute(
@@ -182,10 +208,8 @@ public class SearchClientHelperImpl implements SearchClientHelper {
 			searchRequestContext, searchResponse, responseAttributes);
 	}
 
-	private JSONObject _getBlueprint(long blueprintId)
-		throws JSONException, PortalException {
-
-		Blueprint blueprint = _blueprintService.getBlueprint(blueprintId);
+	private JSONObject _getBlueprint(long blueprintId) {
+		Blueprint blueprint = getBlueprint(blueprintId);
 
 		String configurationString = blueprint.getConfiguration();
 
@@ -193,8 +217,7 @@ public class SearchClientHelperImpl implements SearchClientHelper {
 
 		// TODO: Mocking & testing parameter config. Remove.
 
-		JSONObject blueprintJsonObject = JSONFactoryUtil.createJSONObject(
-			configurationString);
+		JSONObject blueprintJsonObject = createJSONObject(configurationString);
 
 		// Request parameter configuration. See https://drive.google.com/drive/u/0/folders/1vyJHgMX0QnTBPF_SmXkAA6k6PnZUrdYG
 
@@ -219,6 +242,26 @@ public class SearchClientHelperImpl implements SearchClientHelper {
 		return blueprintJsonObject;
 	}
 
+	protected JSONObject createJSONObject(String configurationString)
+		{
+		try {
+			return JSONFactoryUtil.createJSONObject(
+				configurationString);
+		}
+		catch (JSONException jsonException) {
+			throw new RuntimeException(jsonException);
+		}
+	}
+
+	protected Blueprint getBlueprint(long blueprintId) {
+		try {
+			return _blueprintService.getBlueprint(blueprintId);
+		}
+		catch (PortalException portalException) {
+			throw new RuntimeException(portalException);
+		}
+	}
+
 	private int _getFrom(int size, int page) {
 		if (page == 1) {
 			return 0;
@@ -232,13 +275,13 @@ public class SearchClientHelperImpl implements SearchClientHelper {
 	}
 
 	private SearchRequestContext _getSearchRequestContext(
-			JSONObject blueprintJsonObject,
-			SearchParameterData searchParameterData, Locale locale,
-			long companyId, long userId, long blueprintId)
-		throws PortalException {
+		SearchRequestBuilder searchRequestBuilder,
+		JSONObject blueprintJsonObject,
+			SearchParameterData searchParameterData,
+			long userId, long blueprintId) {
 
 		SearchRequestContextBuilder searchRequestContextBuilder =
-			new SearchRequestContextBuilder();
+			new SearchRequestContextBuilder(searchRequestBuilder);
 
 		JSONArray aggregationConfigurationJsonArray =
 			blueprintJsonObject.getJSONArray(
@@ -253,8 +296,6 @@ public class SearchClientHelperImpl implements SearchClientHelper {
 
 		searchRequestContextBuilder.clauseConfiguration(
 			clauseConfigurationJsonArray);
-
-		searchRequestContextBuilder.companyId(companyId);
 
 		JSONArray excludeQueryContributorsJsonArray =
 			blueprintJsonObject.getJSONArray(
@@ -339,6 +380,9 @@ public class SearchClientHelperImpl implements SearchClientHelper {
 					).getValue()));
 		}
 
+		long companyId = searchRequestBuilder.withSearchContextGet(
+			SearchContext::getCompanyId);
+
 		searchRequestContextBuilder.indexNames(_getIndexNames(companyId));
 
 		JSONObject keywordIndexingConfigurationJsonObject =
@@ -368,8 +412,6 @@ public class SearchClientHelperImpl implements SearchClientHelper {
 
 		searchRequestContextBuilder.keywordSuggesterConfiguration(
 			keywordSuggesterConfigurationJsonObject);
-
-		searchRequestContextBuilder.locale(locale);
 
 		searchRequestContextBuilder.blueprintId(blueprintId);
 
@@ -436,5 +478,8 @@ public class SearchClientHelperImpl implements SearchClientHelper {
 
 	@Reference
 	private SearchRequestDataBuilder _searchRequestDataBuilder;
+
+	@Reference
+	private SearchRequestBuilderFactory _searchRequestBuilderFactory;
 
 }

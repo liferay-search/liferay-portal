@@ -15,9 +15,9 @@
 package com.liferay.portal.search.tuning.blueprints.searchrequest.contributor.searcher.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.petra.string.CharPool;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.User;
-import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.security.permission.PermissionCheckerFactory;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.service.ServiceContext;
@@ -25,15 +25,14 @@ import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
-import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.LocaleUtil;
-import com.liferay.portal.search.document.Document;
-import com.liferay.portal.search.query.MatchAllQuery;
-import com.liferay.portal.search.query.Queries;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.searcher.SearchRequestBuilderFactory;
 import com.liferay.portal.search.searcher.SearchResponse;
 import com.liferay.portal.search.searcher.Searcher;
+import com.liferay.portal.search.test.util.DocumentsAssert;
 import com.liferay.portal.search.test.util.SearchTestRule;
+import com.liferay.portal.search.tuning.blueprints.engine.constants.SearchContextAttributeKeys;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
 import com.liferay.portal.test.rule.Inject;
@@ -43,19 +42,14 @@ import com.liferay.users.admin.test.util.search.GroupBlueprint;
 import com.liferay.users.admin.test.util.search.GroupSearchFixture;
 import com.liferay.users.admin.test.util.search.UserSearchFixture;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 
 /**
@@ -80,49 +74,52 @@ public class BlueprintsSearchRequestContributorTest {
 		_users = _userSearchFixture.getUsers();
 
 		_addGroupAndUser();
-
-		Blueprint blueprint =
-			_addCompanyBlueprint();
-
-		_blueprintId = blueprint.getBlueprintId();
-	}
-
-	@After
-	public void tearDown() throws Exception {
-		_blueprintService.deleteBlueprint(
-			_blueprintId);
 	}
 
 	@Test
-	public void testUserKeywordSearch() throws Exception {
+	public void testQuery() throws Exception {
+		_addCompanyBlueprint(readConfiguration());
+
 		_addUsers("user1", "user2", "user3");
 
-		List<String> expectedEntryClassNames = Arrays.asList(
-			User.class.getCanonicalName(), User.class.getCanonicalName(),
-			User.class.getCanonicalName());
+		_assertSearch("screenName", "[user3]", "user");
+	}
 
-		_assertSearch(expectedEntryClassNames, "user");
+	@Test
+	public void testSort() throws Exception {
+		_addCompanyBlueprint(readConfiguration());
+
+		_addUsers("user1", "user2", "user3");
+
+		_assertSearch("screenName", "[user3, user2, user1]", "user");
 	}
 
 	@Rule
 	public SearchTestRule searchTestRule = new SearchTestRule();
 
-	private Blueprint _addCompanyBlueprint()
+	@Rule
+	public TestName testName = new TestName();
+
+	protected String readConfiguration() {
+		Class<?> clazz = this.getClass();
+
+		return StringUtil.read(
+			clazz,
+			clazz.getSimpleName() + CharPool.PERIOD + testName.getMethodName() +
+				CharPool.PERIOD + "json");
+	}
+
+	private Blueprint _addCompanyBlueprint(String configurationString)
 		throws Exception {
 
-		Map<Locale, String> titleMap = HashMapBuilder.put(
-			LocaleUtil.US, "testTitle"
-		).build();
+		Blueprint blueprint = _blueprintService.addCompanyBlueprint(
+			Collections.singletonMap(LocaleUtil.US, "testTitle"),
+			Collections.singletonMap(LocaleUtil.US, "testDescription"),
+			configurationString, 1, _getServiceContext());
 
-		Map<Locale, String> descriptionMap = HashMapBuilder.put(
-			LocaleUtil.US, "testDescription"
-		).build();
+		_blueprint = blueprint;
 
-		MatchAllQuery matchAll = _queries.matchAll();
-
-		return _blueprintService.addCompanyBlueprint(
-			titleMap, descriptionMap, matchAll.toString(), 1,
-			_getServiceContext());
+		return blueprint;
 	}
 
 	private void _addGroupAndUser() throws Exception {
@@ -147,8 +144,7 @@ public class BlueprintsSearchRequestContributorTest {
 	}
 
 	private void _assertSearch(
-			List<?> expectedEntryClassNames, String searchTerm)
-		throws Exception {
+		String fieldName, String expected, String queryString) {
 
 		SearchResponse searchResponse = _searcher.search(
 			_searchRequestBuilderFactory.builder(
@@ -157,26 +153,25 @@ public class BlueprintsSearchRequestContributorTest {
 			).groupIds(
 				_group.getGroupId()
 			).queryString(
-				searchTerm
+				queryString
+			).withSearchContext(
+				searchContext -> searchContext.setAttribute(
+					SearchContextAttributeKeys.BLUEPRINT_ID,
+					_blueprint.getBlueprintId())
 			).build());
 
-		Stream<Document> documentsStream = searchResponse.getDocumentsStream();
-
-		List<String> acturalEntryClassNames = documentsStream.map(
-			document -> document.getString(Field.ENTRY_CLASS_NAME)
-		).collect(
-			Collectors.toList()
-		);
-
-		Assert.assertEquals(
-			searchResponse.getRequestString(), expectedEntryClassNames,
-			acturalEntryClassNames);
+		DocumentsAssert.assertValues(
+			searchResponse.getRequestString(),
+			searchResponse.getDocumentsStream(), fieldName, expected);
 	}
 
 	private ServiceContext _getServiceContext() throws Exception {
 		return ServiceContextTestUtil.getServiceContext(
 			_group.getGroupId(), _user.getUserId());
 	}
+
+	@DeleteAfterTestRun
+	private Blueprint _blueprint;
 
 	private Group _group;
 
@@ -185,11 +180,6 @@ public class BlueprintsSearchRequestContributorTest {
 
 	@Inject
 	private PermissionCheckerFactory _permissionCheckerFactory;
-
-	@Inject
-	private Queries _queries;
-
-	private long _blueprintId;
 
 	@Inject
 	private BlueprintService _blueprintService;

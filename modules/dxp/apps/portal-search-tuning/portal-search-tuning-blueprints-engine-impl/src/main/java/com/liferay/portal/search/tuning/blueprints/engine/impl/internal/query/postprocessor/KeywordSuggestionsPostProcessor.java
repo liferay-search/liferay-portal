@@ -5,17 +5,21 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.search.aggregation.AggregationResult;
 import com.liferay.portal.search.engine.adapter.search.SearchSearchResponse;
 import com.liferay.portal.search.hits.SearchHits;
+import com.liferay.portal.search.searcher.SearchRequestBuilder;
+import com.liferay.portal.search.searcher.SearchRequestBuilderFactory;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.KeywordIndexingConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
-import com.liferay.portal.search.tuning.blueprints.engine.exception.SearchRequestDataException;
+import com.liferay.portal.search.tuning.blueprints.engine.impl.internal.searchrequest.SearchRequestContextBuilder;
 import com.liferay.portal.search.tuning.blueprints.engine.impl.internal.util.JsonUtil;
 import com.liferay.portal.search.tuning.blueprints.engine.searchrequest.SearchRequestData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.query.postprocessor.QueryPostProcessor;
 import com.liferay.portal.search.tuning.blueprints.engine.suggester.KeywordSuggester;
 import com.liferay.portal.search.tuning.blueprints.engine.util.SearchClientHelper;
 
+import java.util.Map.Entry;
 import java.util.Optional;
 
 import org.osgi.service.component.annotations.Component;
@@ -77,12 +81,23 @@ public class KeywordSuggestionsPostProcessor implements QueryPostProcessor {
 
 			/*
 			 * TODO
-			 searchRequestContext.setOriginalKeywords(
-			 (String)searchRequestContext.getParameter(ParameterNames.RAW_KEYWORDS));
+			 */
+			if (false) {
+				SearchRequestBuilder builder = _searchRequestBuilderFactory.builder();
+
+				SearchRequestContextBuilder searchRequestContextBuilder =
+					new SearchRequestContextBuilder(
+						builder);
+
+				searchRequestContextBuilder.rawKeywords(
+				 searchRequestContext.getRawKeywords());
+
 			 if (_log.isDebugEnabled()) {
 			 _log.debug("Using querySuggestions[0] for alternative search.");
 			 }
-			 searchRequestContext.setKeywords(querySuggestions[0]);
+
+			 builder.queryString(querySuggestions[0]);
+
 			 // Remove the new keywords from query suggestions.
 			 if (querySuggestions.length > 0) {
 			 querySuggestions = ArrayUtil.remove(
@@ -101,7 +116,7 @@ public class KeywordSuggestionsPostProcessor implements QueryPostProcessor {
 			 }
 			 searchResponse.setSearchHits(newResponse.getSearchHits());
 			 searchResponse.getHits().copy(newResponse.getHits());
-			 */
+		}
 		}
 
 		searchResponse.getHits(
@@ -113,8 +128,7 @@ public class KeywordSuggestionsPostProcessor implements QueryPostProcessor {
 	}
 
 	private SearchSearchResponse _executeNewSearch(
-			SearchRequestContext searchRequestContext)
-		throws SearchRequestDataException {
+			SearchRequestContext searchRequestContext) {
 
 		SearchRequestData searchRequestData =
 			_searchClientHelper.getSearchRequestData(searchRequestContext);
@@ -131,5 +145,8 @@ public class KeywordSuggestionsPostProcessor implements QueryPostProcessor {
 
 	@Reference
 	private SearchClientHelper _searchClientHelper;;
+
+	@Reference
+	private SearchRequestBuilderFactory _searchRequestBuilderFactory;
 
 }
