@@ -27,6 +27,8 @@ public class BlueprintsAdminMVCCommandNames {
 
 	public static final String EXPORT_BLUEPRINT = "/blueprint/export";
 
+	public static final String SELECT_BLUEPRINT = "/blueprint/select";
+
 	public static final String VIEW_BLUEPRINT = "/blueprint/view";
 
 }
