@@ -7,7 +7,7 @@
 	          "occur": "must",
 	          "type": "wrapper",
 	          "query": {
-	          	"query": "{\"term\": { \"screenName\" : \"user3\" }}"
+	          	"query": "{\"match\": { \"firstName\" : \"${ipstack.city}\" }}"
 	          }
 	        }
 	      ]
