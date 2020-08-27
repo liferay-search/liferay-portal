@@ -126,6 +126,10 @@ public class SearchRequestImpl implements SearchRequest, Serializable {
 		queryConfig.addSelectedFieldNames(selectedFieldNames);
 	}
 
+	public void addSort(Sort sort) {
+		_sorts.add(sort);
+	}
+
 	@Override
 	public Map<String, Aggregation> getAggregationsMap() {
 		return Collections.unmodifiableMap(_aggregationsMap);

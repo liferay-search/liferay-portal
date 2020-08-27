@@ -136,6 +136,14 @@ public class SearchRequestBuilderImpl implements SearchRequestBuilder {
 	}
 
 	@Override
+	public SearchRequestBuilder addSort(Sort sort) {
+		withSearchRequestImpl(
+			searchRequestImpl -> searchRequestImpl.addSort(sort));
+
+		return this;
+	}
+
+	@Override
 	public SearchRequestBuilder basicFacetSelection(
 		boolean basicFacetSelection) {
 
