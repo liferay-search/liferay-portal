@@ -35,14 +35,14 @@ import javax.servlet.http.HttpServletRequest;
  */
 public interface SearchClientHelper {
 
+	public void combine(
+		SearchRequestBuilder searchRequestBuilder, long blueprintId);
+
 	public SearchRequestContext getSearchRequestContext(
 			HttpServletRequest httpServletRequest, long blueprintId)
 		throws JSONException, PortalException;
 
 	public SearchRequestContext getSearchRequestContext(
-		SearchRequestBuilder searchRequestBuilder, long blueprintId);
-
-	public SearchRequestData getSearchRequestData(
 		SearchRequestBuilder searchRequestBuilder, long blueprintId);
 
 	public SearchRequestData getSearchRequestData(

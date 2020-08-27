@@ -73,10 +73,10 @@ import org.osgi.service.component.annotations.Reference;
 public class SearchClientHelperImpl implements SearchClientHelper {
 
 	@Override
-	public SearchRequestData getSearchRequestData(
+	public void combine(
 		SearchRequestBuilder searchRequestBuilder, long blueprintId) {
 
-		return getSearchRequestData(
+		getSearchRequestData(
 			getSearchRequestContext(searchRequestBuilder, blueprintId));
 	}
 
