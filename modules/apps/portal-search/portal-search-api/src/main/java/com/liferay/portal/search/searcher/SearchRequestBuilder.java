@@ -61,6 +61,8 @@ public interface SearchRequestBuilder {
 	public SearchRequestBuilder addSelectedFieldNames(
 		String... selectedFieldNames);
 
+	public SearchRequestBuilder addSort(Sort sort);
+
 	public SearchRequestBuilder basicFacetSelection(
 		boolean basicFacetSelection);
 
