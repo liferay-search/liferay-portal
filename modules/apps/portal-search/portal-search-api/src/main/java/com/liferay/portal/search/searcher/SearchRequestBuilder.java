@@ -26,6 +26,7 @@ import com.liferay.portal.search.stats.StatsRequest;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -67,6 +68,8 @@ public interface SearchRequestBuilder {
 
 	public SearchRequestBuilder basicFacetSelection(
 		boolean basicFacetSelection);
+
+	public SearchRequestBuilder blueprintId(Optional<String> blueprintIdOptional);
 
 	/**
 	 * Builds the search request.
