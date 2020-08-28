@@ -163,6 +163,22 @@ public class SearchRequestBuilderImpl implements SearchRequestBuilder {
 	}
 
 	@Override
+	public SearchRequestBuilder blueprintId(
+		Optional<String> blueprintIdOptional) {
+
+		long blueprintId = 0;
+
+		if (blueprintIdOptional.isPresent()) {
+			blueprintId = Long.parseLong(blueprintIdOptional.get());
+		}
+
+		withSearchRequestImpl(
+			searchRequestImpl -> searchRequestImpl.setBlueprintId(blueprintId));
+
+		return this;
+	}
+
+	@Override
 	public SearchRequest build() {
 		basicFacetSelection(
 			SearchRequestImpl.isBasicFacetSelection(_searchContext));
@@ -175,7 +191,7 @@ public class SearchRequestBuilderImpl implements SearchRequestBuilder {
 	@Override
 	public SearchRequestBuilder companyId(Long companyId) {
 		withSearchRequestImpl(
-			searchRequestImpl -> searchRequestImpl.setCompanyId(companyId));
+			searchRequestImpl -> searchRequestImpl.setCompanyId(companyId));userId
 
 		return this;
 	}

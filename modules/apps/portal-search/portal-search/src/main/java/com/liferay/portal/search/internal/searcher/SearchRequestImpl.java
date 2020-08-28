@@ -28,6 +28,7 @@ import com.liferay.portal.search.rescore.Rescore;
 import com.liferay.portal.search.searcher.SearchRequest;
 import com.liferay.portal.search.sort.Sort;
 import com.liferay.portal.search.stats.StatsRequest;
+import com.liferay.portal.search.tuning.blueprints.engine.constants.SearchContextAttributeKeys;
 
 import java.io.Serializable;
 
@@ -298,6 +299,13 @@ public class SearchRequestImpl implements SearchRequest, Serializable {
 		_searchContext.setAttribute(
 			SearchContextAttributes.ATTRIBUTE_KEY_BASIC_FACET_SELECTION,
 			Boolean.valueOf(basicFacetSelection));
+	}
+
+	public void setBlueprintId(Long blueprintId) {
+		_searchContext.setAttribute(
+			SearchContextAttributeKeys.BLUEPRINT_ID,
+			blueprintId
+		);
 	}
 
 	public void setCompanyId(Long companyId) {

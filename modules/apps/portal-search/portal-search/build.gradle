@@ -22,6 +22,7 @@ dependencies {
 	compileOnly project(":core:petra:petra-executor")
 	compileOnly project(":core:petra:petra-lang")
 	compileOnly project(":core:petra:petra-string")
+	compileOnly project(":dxp:apps:portal-search-tuning:portal-search-tuning-blueprints-engine-api")
 
 	testCompile project(":core:petra:petra-function")
 	testCompile project(":core:petra:petra-memory")
