@@ -49,6 +49,8 @@ public class SearchOptionsPortletSharedSearchContributor
 
 		searchRequestBuilder.basicFacetSelection(
 			searchOptionsPortletPreferences.isBasicFacetSelection()
+		).blueprintId(
+			searchOptionsPortletPreferences.getBlueprintIdOptional()
 		).emptySearchEnabled(
 			searchOptionsPortletPreferences.isAllowEmptySearches()
 		);
