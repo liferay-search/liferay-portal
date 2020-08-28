@@ -40,6 +40,7 @@ import com.liferay.portal.search.tuning.blueprints.web.poc.internal.constants.Bl
 import com.liferay.portal.search.tuning.blueprints.web.poc.internal.constants.BlueprintsWebPortletKeys;
 import com.liferay.portal.search.tuning.blueprints.web.poc.internal.constants.JSONConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.web.poc.internal.constants.ResourceRequestKeys;
+import com.liferay.portal.search.tuning.blueprints.web.poc.internal.display.context.BlueprintDisplayBuilder;
 import com.liferay.portal.search.tuning.blueprints.web.poc.internal.portlet.preferences.BlueprintsWebPortletPreferences;
 import com.liferay.portal.search.tuning.blueprints.web.poc.internal.portlet.preferences.BlueprintsWebPortletPreferencesImpl;
 import com.liferay.portal.search.tuning.blueprints.web.poc.internal.util.BlueprintsLocalizationHelper;
@@ -97,6 +98,15 @@ public class ViewMVCRenderCommand implements MVCRenderCommand {
 					BlueprintsWebKeys.CONFIGURATION, _getConfiguration(
 							renderRequest, renderResponse, 
 							blueprintJsonObject, blueprintsWebPortletPreferences));
+
+			BlueprintDisplayBuilder blueprintDisplayBuilder =
+			new BlueprintDisplayBuilder(
+				_portal.getHttpServletRequest(renderRequest), renderRequest,
+				renderResponse);
+
+			renderRequest.setAttribute(
+				BlueprintsWebPortletKeys.BLUEPRINTS_DISPLAY_CONTEXT,
+				blueprintDisplayBuilder.build());
 
 		} catch (PortalException portalException) {
 			SessionErrors.add(

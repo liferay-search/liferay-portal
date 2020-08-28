@@ -1,4 +1,3 @@
-<%--
 /**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
@@ -12,14 +11,24 @@
  *
  *
  */
---%>
 
-<%@ include file="/init.jsp" %>
+package com.liferay.portal.search.tuning.blueprints.web.poc.internal.display.context;
 
-<liferay-ui:error key="error.blueprint-not-defined" message="Please set Blueprint ID." />
+import java.util.Map;
 
-<%
-BlueprintDisplayContext blueprintDisplayContext = (BlueprintDisplayContext)request.getAttribute(BlueprintsWebPortletKeys.BLUEPRINTS_DISPLAY_CONTEXT);
-%>
+/**
+ * @author Kevin Tan
+ */
+public class BlueprintDisplayContext {
 
-<react:component module="js/BlueprintsWebApp" data="<%= blueprintDisplayContext.getData() %>"/>
+	public Map<String, Object> getData() {
+		return _data;
+	}
+
+	public void setData(Map<String, Object> data) {
+		_data = data;
+	}
+
+	private Map<String, Object> _data;
+
+}
