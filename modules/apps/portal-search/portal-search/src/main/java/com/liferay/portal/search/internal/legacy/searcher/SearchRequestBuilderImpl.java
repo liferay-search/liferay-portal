@@ -125,6 +125,14 @@ public class SearchRequestBuilderImpl implements SearchRequestBuilder {
 	}
 
 	@Override
+	public SearchRequestBuilder addRescore(Rescore rescore) {
+		withSearchRequestImpl(
+			searchRequestImpl -> searchRequestImpl.addRescore(rescore));
+
+		return this;
+	}
+
+	@Override
 	public SearchRequestBuilder addSelectedFieldNames(
 		String... selectedFieldNames) {
 

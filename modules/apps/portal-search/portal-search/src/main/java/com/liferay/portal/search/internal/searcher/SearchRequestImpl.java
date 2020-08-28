@@ -75,6 +75,7 @@ public class SearchRequestImpl implements SearchRequest, Serializable {
 		_postFilterQuery = searchRequestImpl._postFilterQuery;
 		_query = searchRequestImpl._query;
 		_rescoreQuery = searchRequestImpl._rescoreQuery;
+		_rescores.addAll(searchRequestImpl._rescores);
 		_searchContext = searchRequestImpl._searchContext;
 		_size = searchRequestImpl._size;
 		_sorts.addAll(searchRequestImpl._sorts);
@@ -118,6 +119,10 @@ public class SearchRequestImpl implements SearchRequest, Serializable {
 
 		_pipelineAggregationsMap.put(
 			pipelineAggregation.getName(), pipelineAggregation);
+	}
+
+	public void addRescore(Rescore rescore) {
+		_rescores.add(rescore);
 	}
 
 	public void addSelectedFieldNames(String... selectedFieldNames) {
@@ -450,7 +455,7 @@ public class SearchRequestImpl implements SearchRequest, Serializable {
 	private Query _postFilterQuery;
 	private Query _query;
 	private Query _rescoreQuery;
-	private List<Rescore> _rescores;
+	private List<Rescore> _rescores = new ArrayList<>();
 	private final SearchContext _searchContext;
 	private Integer _size;
 	private final List<Sort> _sorts = new ArrayList<>();
