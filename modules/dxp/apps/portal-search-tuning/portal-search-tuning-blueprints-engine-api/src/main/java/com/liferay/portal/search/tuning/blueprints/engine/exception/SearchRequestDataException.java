@@ -27,21 +27,22 @@ public class SearchRequestDataException extends PortalException {
 	public SearchRequestDataException() {
 	}
 
-	public SearchRequestDataException(String msg, List<Message> messages) {
-		super(msg);
-		_messages = messages;
-	}
-
 	public SearchRequestDataException(String msg) {
 		super(msg);
 	}
 
-	public SearchRequestDataException(String msg, Throwable cause) {
-		super(msg, cause);
+	public SearchRequestDataException(String msg, List<Message> messages) {
+		super(msg);
+
+		_messages = messages;
 	}
 
-	public SearchRequestDataException(Throwable cause) {
-		super(cause);
+	public SearchRequestDataException(String msg, Throwable throwable) {
+		super(msg, throwable);
+	}
+
+	public SearchRequestDataException(Throwable throwable) {
+		super(throwable);
 	}
 
 	public List<Message> getMessages() {

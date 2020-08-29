@@ -55,8 +55,7 @@ import org.osgi.service.component.annotations.Reference;
 	},
 	service = MVCActionCommand.class
 )
-public class EditBlueprintMVCActionCommand
-	extends BaseMVCActionCommand {
+public class EditBlueprintMVCActionCommand extends BaseMVCActionCommand {
 
 	@Override
 	protected void doProcessAction(
@@ -67,8 +66,7 @@ public class EditBlueprintMVCActionCommand
 			actionRequest, BlueprintsAdminWebKeys.BLUEPRINT_ID);
 
 		int type = ParamUtil.getInteger(
-			actionRequest,
-			BlueprintsAdminWebKeys.BLUEPRINT_TYPE);
+			actionRequest, BlueprintsAdminWebKeys.BLUEPRINT_TYPE);
 
 		Map<Locale, String> titleMap = LocalizationUtil.getLocalizationMap(
 			actionRequest, BlueprintsAdminWebKeys.TITLE);
@@ -93,8 +91,8 @@ public class EditBlueprintMVCActionCommand
 			}
 			else if (blueprintId > 0) {
 				_blueprintService.updateBlueprint(
-					blueprintId, titleMap, descriptionMap,
-					configuration, serviceContext);
+					blueprintId, titleMap, descriptionMap, configuration,
+					serviceContext);
 			}
 
 			JSONObject jsonObject = JSONUtil.put("success", titleMap);
@@ -127,8 +125,7 @@ public class EditBlueprintMVCActionCommand
 	}
 
 	@Reference
-	private BlueprintExceptionRequestHandler
-		_blueprintExceptionRequestHandler;
+	private BlueprintExceptionRequestHandler _blueprintExceptionRequestHandler;
 
 	@Reference
 	private BlueprintService _blueprintService;

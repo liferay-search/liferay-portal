@@ -50,6 +50,7 @@ import javax.portlet.ActionURL;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -60,8 +61,7 @@ public class EditBlueprintDisplayBuilder {
 	public EditBlueprintDisplayBuilder(
 		HttpServletRequest httpServletRequest, Language language, Log log,
 		JSONFactory jsonFactory, RenderRequest renderRequest,
-		RenderResponse renderResponse,
-		BlueprintService blueprintService) {
+		RenderResponse renderResponse, BlueprintService blueprintService) {
 
 		_httpServletRequest = httpServletRequest;
 		_language = language;
@@ -84,9 +84,8 @@ public class EditBlueprintDisplayBuilder {
 	}
 
 	public EditBlueprintDisplayContext build() {
-		EditBlueprintDisplayContext
-			editBlueprintDisplayContext =
-				new EditBlueprintDisplayContext();
+		EditBlueprintDisplayContext editBlueprintDisplayContext =
+			new EditBlueprintDisplayContext();
 
 		_setConfigurationId(editBlueprintDisplayContext);
 		_setConfigurationType(editBlueprintDisplayContext);
@@ -111,6 +110,36 @@ public class EditBlueprintDisplayBuilder {
 		);
 
 		return jsonArray;
+	}
+
+	private Blueprint _getBlueprint() {
+		Blueprint blueprint = null;
+
+		if (_blueprintId > 0) {
+			try {
+				blueprint = _blueprintService.getBlueprint(_blueprintId);
+
+				_blueprintType = blueprint.getType();
+			}
+			catch (NoSuchConfigurationException noSuchConfigurationException) {
+				_log.error(
+					"Blueprint " + _blueprintId + " not found.",
+					noSuchConfigurationException);
+
+				SessionErrors.add(
+					_renderRequest, BlueprintsAdminWebKeys.ERROR_DETAILS,
+					noSuchConfigurationException);
+			}
+			catch (PortalException portalException) {
+				_log.error(portalException.getMessage(), portalException);
+
+				SessionErrors.add(
+					_renderRequest, BlueprintsAdminWebKeys.ERROR_DETAILS,
+					portalException);
+			}
+		}
+
+		return blueprint;
 	}
 
 	private Map<String, Object> _getContext() {
@@ -157,12 +186,10 @@ public class EditBlueprintDisplayBuilder {
 					"initialClauseConfiguration",
 					JSONHelperUtil.getConfigurationSection(
 						_blueprint,
-						BlueprintKeys.CLAUSE_CONFIGURATION.
-							getJsonKey()));
+						BlueprintKeys.CLAUSE_CONFIGURATION.getJsonKey()));
 			}
 			catch (JSONException jsonException) {
-				_log.error(
-					"Unable to parse Blueprint JSON", jsonException);
+				_log.error("Unable to parse Blueprint JSON", jsonException);
 			}
 
 			props.put("initialTitle", _getTitle());
@@ -181,39 +208,6 @@ public class EditBlueprintDisplayBuilder {
 		}
 
 		return redirect;
-	}
-
-	private Blueprint _getBlueprint() {
-		Blueprint blueprint = null;
-
-		if (_blueprintId > 0) {
-			try {
-				blueprint =
-					_blueprintService.getBlueprint(
-						_blueprintId);
-
-				_blueprintType = blueprint.getType();
-			}
-			catch (NoSuchConfigurationException noSuchConfigurationException) {
-				_log.error(
-					"Blueprint " + _blueprintId +
-						" not found.",
-					noSuchConfigurationException);
-
-				SessionErrors.add(
-					_renderRequest, BlueprintsAdminWebKeys.ERROR_DETAILS,
-					noSuchConfigurationException);
-			}
-			catch (PortalException portalException) {
-				_log.error(portalException.getMessage(), portalException);
-
-				SessionErrors.add(
-					_renderRequest, BlueprintsAdminWebKeys.ERROR_DETAILS,
-					portalException);
-			}
-		}
-
-		return blueprint;
 	}
 
 	private String _getSubmitFormURL() {
@@ -243,24 +237,19 @@ public class EditBlueprintDisplayBuilder {
 	}
 
 	private void _setConfigurationId(
-		EditBlueprintDisplayContext
-			editBlueprintDisplayContext) {
+		EditBlueprintDisplayContext editBlueprintDisplayContext) {
 
-		editBlueprintDisplayContext.setBlueprintId(
-			_blueprintId);
+		editBlueprintDisplayContext.setBlueprintId(_blueprintId);
 	}
 
 	private void _setConfigurationType(
-		EditBlueprintDisplayContext
-			editBlueprintDisplayContext) {
+		EditBlueprintDisplayContext editBlueprintDisplayContext) {
 
-		editBlueprintDisplayContext.setBlueprintType(
-			_blueprintType);
+		editBlueprintDisplayContext.setBlueprintType(_blueprintType);
 	}
 
 	private void _setData(
-		EditBlueprintDisplayContext
-			editBlueprintDisplayContext) {
+		EditBlueprintDisplayContext editBlueprintDisplayContext) {
 
 		editBlueprintDisplayContext.setData(
 			HashMapBuilder.<String, Object>put(
@@ -271,8 +260,7 @@ public class EditBlueprintDisplayBuilder {
 	}
 
 	private void _setPageTitle(
-		EditBlueprintDisplayContext
-			editBlueprintDisplayContext) {
+		EditBlueprintDisplayContext editBlueprintDisplayContext) {
 
 		StringBundler sb = new StringBundler(2);
 
@@ -290,28 +278,27 @@ public class EditBlueprintDisplayBuilder {
 		else if (_blueprintType == BlueprintTypes.TEMPLATE) {
 			sb.append("template");
 		}
-		
+
 		editBlueprintDisplayContext.setPageTitle(
 			_language.get(_httpServletRequest, sb.toString()));
 	}
 
 	private void _setRedirect(
-		EditBlueprintDisplayContext
-			editBlueprintDisplayContext) {
+		EditBlueprintDisplayContext editBlueprintDisplayContext) {
 
 		editBlueprintDisplayContext.setRedirect(_getRedirect());
 	}
 
+	private final Blueprint _blueprint;
+	private final long _blueprintId;
+	private final BlueprintService _blueprintService;
+	private int _blueprintType;
 	private final HttpServletRequest _httpServletRequest;
 	private final JSONFactory _jsonFactory;
 	private final Language _language;
 	private final Log _log;
 	private final RenderRequest _renderRequest;
 	private final RenderResponse _renderResponse;
-	private final Blueprint _blueprint;
-	private final long _blueprintId;
-	private final BlueprintService _blueprintService;
-	private int _blueprintType;
 	private final ThemeDisplay _themeDisplay;
 
 }

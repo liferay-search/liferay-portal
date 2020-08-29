@@ -22,6 +22,7 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.query.BooleanQuery;
 import com.liferay.portal.search.searcher.SearchRequest;
+import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.searcher.SearchRequestBuilderFactory;
 import com.liferay.portal.search.spi.searcher.SearchRequestContributor;
 import com.liferay.portal.search.tuning.blueprints.engine.constants.SearchContextAttributeKeys;
@@ -29,6 +30,9 @@ import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestC
 import com.liferay.portal.search.tuning.blueprints.engine.searchrequest.SearchRequestData;
 import com.liferay.portal.search.tuning.blueprints.engine.util.SearchClientHelper;
 import com.liferay.portal.search.tuning.blueprints.service.BlueprintLocalService;
+import com.liferay.portal.search.tuning.blueprints.util.BlueprintHelper;
+
+import java.util.Optional;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -81,7 +85,7 @@ public class BlueprintsSearchRequestContributor
 		try {
 			SearchRequestContext searchRequestContext =
 				_searchClientHelper.getSearchRequestContext(
-					searchContext, blueprintId);
+					searchContext, null, blueprintId);
 
 			SearchRequestData searchRequestData =
 				_searchClientHelper.getSearchRequestData(searchRequestContext);
@@ -92,13 +96,18 @@ public class BlueprintsSearchRequestContributor
 				return searchRequest;
 			}
 
-			return _searchRequestBuilderFactory.builder(
+			SearchRequestBuilder searchRequestBuilder = _searchRequestBuilderFactory.builder(
 				searchRequest
 			).query(
 				query
-			).indexes(
-				searchRequestContext.getIndexNames()
-			).build();
+			);
+			
+			String[] indexNames = _getIndexNames(searchRequestContext);
+			if (indexNames.length > 0) {
+				searchRequestBuilder.indexes(indexNames);
+			}
+
+			return searchRequestBuilder.build();
 		}
 		catch (Exception exception) {
 			_log.error(exception.getMessage(), exception);
@@ -107,6 +116,16 @@ public class BlueprintsSearchRequestContributor
 		}
 	}
 
+	private String[] _getIndexNames(
+			SearchRequestContext searchRequestContext) {
+		
+		Optional<String[]> indexNamesOptional = 
+				_blueprintHelper.getIndexNamesOptional(
+				searchRequestContext.getBlueprint());
+		
+		return indexNamesOptional.orElse(new String[0]);
+	}
+	
 	private SearchContext _getSearchContext(SearchRequest searchRequest) {
 		return _searchRequestBuilderFactory.builder(
 			searchRequest
@@ -119,10 +138,13 @@ public class BlueprintsSearchRequestContributor
 		BlueprintsSearchRequestContributor.class);
 
 	@Reference
-	private SearchClientHelper _searchClientHelper;
-
+	private BlueprintHelper _blueprintHelper;
+	
 	@Reference
 	private BlueprintLocalService _blueprintLocalService;
+
+	@Reference
+	private SearchClientHelper _searchClientHelper;
 
 	@Reference
 	private SearchRequestBuilderFactory _searchRequestBuilderFactory;

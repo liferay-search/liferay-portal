@@ -38,7 +38,6 @@ page import="com.liferay.portal.kernel.servlet.SessionErrors" %><%@
 page import="com.liferay.portal.kernel.util.HtmlUtil" %><%@
 page import="com.liferay.portal.kernel.util.ParamUtil" %><%@
 page import="com.liferay.portal.kernel.util.WebKeys" %>
-
 <%@page import="com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminWebKeys"%>
 <%@page import="com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminMVCCommandNames"%>
 <%@page import="com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context.BlueprintEntriesDisplayContext"%>
@@ -48,7 +47,6 @@ page import="com.liferay.portal.kernel.util.WebKeys" %>
 <%@page import="com.liferay.portal.search.tuning.blueprints.admin.web.internal.security.permission.resource.BlueprintEntryPermission"%>
 <%@page import="com.liferay.portal.search.tuning.blueprints.model.Blueprint"%>
 <%@page import="com.liferay.portal.search.tuning.blueprints.constants.BlueprintTypes"%>
-
 <%@ page import="javax.portlet.PortletURL" %>
 
 <liferay-frontend:defineObjects />

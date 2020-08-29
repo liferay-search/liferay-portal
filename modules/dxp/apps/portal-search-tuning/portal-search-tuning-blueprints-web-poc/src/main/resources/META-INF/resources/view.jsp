@@ -1,21 +1,25 @@
+<%--
+/**
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of the Liferay Enterprise
+ * Subscription License ("License"). You may not use this file except in
+ * compliance with the License. You can obtain a copy of the License by
+ * contacting Liferay, Inc. See the License for the specific language governing
+ * permissions and limitations under the License, including but not limited to
+ * distribution rights of the Software.
+ *
+ *
+ *
+ */
+--%>
+
 <%@ include file="/init.jsp" %>
 
 <liferay-ui:error key="error.blueprint-not-defined" message="Please set Blueprint ID." />
 
 <%
-if (suggestionsURL == null) {
-	return;
-}
+BlueprintDisplayContext blueprintDisplayContext = (BlueprintDisplayContext)request.getAttribute(BlueprintsWebPortletKeys.BLUEPRINTS_DISPLAY_CONTEXT);
 %>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.devbridge-autocomplete/1.4.11/jquery.autocomplete.min.js"></script>
-
-<c:choose>
-	<c:when test='<%= suggestMode.equals("contents") %>'>
-		<%@ include file="/suggest_mode/contents.jspf" %>
-	</c:when>
-	<c:otherwise>
-		<%@ include file="/suggest_mode/keywords.jspf" %>
-	</c:otherwise>
-</c:choose>
+<react:component module="js/BlueprintsWebApp" data="<%= blueprintDisplayContext.getData() %>"/>

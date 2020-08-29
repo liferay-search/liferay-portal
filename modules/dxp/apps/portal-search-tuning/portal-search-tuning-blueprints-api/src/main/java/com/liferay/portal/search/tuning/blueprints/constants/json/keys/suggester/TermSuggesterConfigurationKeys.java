@@ -22,13 +22,13 @@ import java.util.stream.Stream;
  */
 public enum TermSuggesterConfigurationKeys {
 
-	ACCURACY("accuracy"), COLLATE("collate"),
-	DIRECT_GENERATOR("direct_generator"), FORCE_UNIGRAMS("force_unigrams"),
-	GRAM_SIZE("gram_size"), MAX_ERRORS("max_errors"),
-	POST_HIGHLIGHT_TAG("post_highlight_tag"),
+	ACCURACY("accuracy"), ANALYZER("analyzer"), COLLATE("collate"),
+	DIRECT_GENERATOR("direct_generator"), FIELD("field"),
+	FORCE_UNIGRAMS("force_unigrams"), GRAM_SIZE("gram_size"),
+	MAX_ERRORS("max_errors"), POST_HIGHLIGHT_TAG("post_highlight_tag"),
 	PRE_HIGHLIGHT_TAG("pre_highlight_tag"), PRUNE("prune"),
 	REAL_WORLD_ERROR_LIKELIHOOD("real_word_error_likelihood"),
-	SEPARATOR("separator");
+	SEPARATOR("separator"), TEXT("text");
 
 	public static final TermSuggesterConfigurationKeys findByJsonKey(
 		String jsonKey) {

@@ -26,8 +26,8 @@ import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminWebKeys;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context.BlueprintEntriesDisplayContext;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context.BlueprintEntriesManagementToolbarDisplayContext;
-import com.liferay.portal.search.tuning.blueprints.constants.BlueprintsPortletKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintTypes;
+import com.liferay.portal.search.tuning.blueprints.constants.BlueprintsPortletKeys;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 
 import javax.portlet.PortletException;
@@ -49,8 +49,7 @@ import org.osgi.service.component.annotations.Reference;
 	},
 	service = MVCRenderCommand.class
 )
-public class ViewBlueprintsMVCRenderCommand
-	implements MVCRenderCommand {
+public class ViewBlueprintsMVCRenderCommand implements MVCRenderCommand {
 
 	@Override
 	public String render(
@@ -61,12 +60,11 @@ public class ViewBlueprintsMVCRenderCommand
 			renderRequest, BlueprintsAdminWebKeys.BLUEPRINT_TYPE,
 			BlueprintTypes.BLUEPRINT);
 
-		BlueprintEntriesDisplayContext
-			blueprintEntriesDisplayContext =
-				new BlueprintEntriesDisplayContext(
-					_portal.getLiferayPortletRequest(renderRequest),
-					_portal.getLiferayPortletResponse(renderResponse),
-					blueprintType);
+		BlueprintEntriesDisplayContext blueprintEntriesDisplayContext =
+			new BlueprintEntriesDisplayContext(
+				_portal.getLiferayPortletRequest(renderRequest),
+				_portal.getLiferayPortletResponse(renderResponse),
+				blueprintType);
 
 		renderRequest.setAttribute(
 			BlueprintsAdminWebKeys.BLUEPRINT_ENTRIES_DISPLAY_CONTEXT,
@@ -77,14 +75,13 @@ public class ViewBlueprintsMVCRenderCommand
 				blueprintsManagementToolbarDisplayContext =
 					_getBlueprintsManagementToolbar(
 						renderRequest, renderResponse,
-						blueprintEntriesDisplayContext.
-							getSearchContainer(),
-						blueprintEntriesDisplayContext.
-							getDisplayStyle(),
+						blueprintEntriesDisplayContext.getSearchContainer(),
+						blueprintEntriesDisplayContext.getDisplayStyle(),
 						blueprintType);
 
 			renderRequest.setAttribute(
-				BlueprintsAdminWebKeys.BLUEPRINT_ENTRIES_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT,
+				BlueprintsAdminWebKeys.
+					BLUEPRINT_ENTRIES_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT,
 				blueprintsManagementToolbarDisplayContext);
 		}
 		catch (PortalException portalException) {
@@ -99,8 +96,8 @@ public class ViewBlueprintsMVCRenderCommand
 	private BlueprintEntriesManagementToolbarDisplayContext
 		_getBlueprintsManagementToolbar(
 			RenderRequest renderRequest, RenderResponse renderResponse,
-			SearchContainer<Blueprint> searchContainer,
-			String displayStyle, int blueprintType) {
+			SearchContainer<Blueprint> searchContainer, String displayStyle,
+			int blueprintType) {
 
 		return new BlueprintEntriesManagementToolbarDisplayContext(
 			_portal.getHttpServletRequest(renderRequest),

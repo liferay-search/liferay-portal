@@ -67,10 +67,8 @@ public class BlueprintServiceImpl extends BlueprintServiceBaseImpl {
 			String configuration, int type, ServiceContext serviceContext)
 		throws PortalException {
 
-		String actionKey =
-			BlueprintsActionKeys.
-				getActionKeyForBlueprintType(
-					type, ActionKeys.ADD_ENTRY);
+		String actionKey = BlueprintsActionKeys.getActionKeyForBlueprintType(
+			type, ActionKeys.ADD_ENTRY);
 
 		long groupId = _getCompanyGroupId(serviceContext);
 
@@ -87,10 +85,8 @@ public class BlueprintServiceImpl extends BlueprintServiceBaseImpl {
 			String configuration, int type, ServiceContext serviceContext)
 		throws PortalException {
 
-		String actionKey =
-			BlueprintsActionKeys.
-				getActionKeyForBlueprintType(
-					type, ActionKeys.ADD_ENTRY);
+		String actionKey = BlueprintsActionKeys.getActionKeyForBlueprintType(
+			type, ActionKeys.ADD_ENTRY);
 
 		long groupId = serviceContext.getScopeGroupId();
 
@@ -101,25 +97,29 @@ public class BlueprintServiceImpl extends BlueprintServiceBaseImpl {
 			getUserId(), groupId, titleMap, descriptionMap, configuration, type,
 			serviceContext);
 	}
-	
-	public Blueprint deleteBlueprint(
-			long blueprintId)
-		throws PortalException {
 
-		Blueprint blueprint =
-			_blueprintLocalService.getBlueprint(
-				blueprintId);
+	public Blueprint deleteBlueprint(long blueprintId) throws PortalException {
+		Blueprint blueprint = _blueprintLocalService.getBlueprint(blueprintId);
 
-		String actionKey =
-			BlueprintsActionKeys.
-				getActionKeyForBlueprintType(
-					blueprint.getType(), ActionKeys.DELETE);
+		String actionKey = BlueprintsActionKeys.getActionKeyForBlueprintType(
+			blueprint.getType(), ActionKeys.DELETE);
 
 		_blueprintModelResourcePermission.check(
 			getPermissionChecker(), blueprintId, actionKey);
 
-		return blueprintLocalService.deleteBlueprint(
-			blueprintId);
+		return blueprintLocalService.deleteBlueprint(blueprintId);
+	}
+
+	public Blueprint getBlueprint(long blueprintId) throws PortalException {
+		Blueprint blueprint = _blueprintLocalService.getBlueprint(blueprintId);
+
+		String actionKey = BlueprintsActionKeys.getActionKeyForBlueprintType(
+			blueprint.getType(), BlueprintsActionKeys.APPLY_BLUEPRINT);
+
+		_blueprintModelResourcePermission.check(
+			getPermissionChecker(), blueprint, actionKey);
+
+		return blueprint;
 	}
 
 	public List<Blueprint> getGroupBlueprints(
@@ -168,34 +168,12 @@ public class BlueprintServiceImpl extends BlueprintServiceBaseImpl {
 			companyId, WorkflowConstants.STATUS_APPROVED, type);
 	}
 
-	public int getGroupBlueprintsCount(
-		long companyId, int status, int type) {
-
+	public int getGroupBlueprintsCount(long companyId, int status, int type) {
 		if (status == WorkflowConstants.STATUS_ANY) {
 			return blueprintPersistence.countByG_T(companyId, type);
 		}
 
-		return blueprintPersistence.countByG_S_T(
-			companyId, status, type);
-	}
-
-	public Blueprint getBlueprint(
-			long blueprintId)
-		throws PortalException {
-
-		Blueprint blueprint =
-			_blueprintLocalService.getBlueprint(
-				blueprintId);
-
-		String actionKey =
-			BlueprintsActionKeys.
-				getActionKeyForBlueprintType(
-					blueprint.getType(), ActionKeys.VIEW);
-
-		_blueprintModelResourcePermission.check(
-			getPermissionChecker(), blueprint, actionKey);
-
-		return blueprint;
+		return blueprintPersistence.countByG_S_T(companyId, status, type);
 	}
 
 	public Blueprint updateBlueprint(
@@ -204,21 +182,17 @@ public class BlueprintServiceImpl extends BlueprintServiceBaseImpl {
 			ServiceContext serviceContext)
 		throws PortalException {
 
-		Blueprint blueprint =
-			_blueprintLocalService.getBlueprint(
-				blueprintId);
+		Blueprint blueprint = _blueprintLocalService.getBlueprint(blueprintId);
 
-		String actionKey =
-			BlueprintsActionKeys.
-				getActionKeyForBlueprintType(
-					blueprint.getType(), ActionKeys.UPDATE);
+		String actionKey = BlueprintsActionKeys.getActionKeyForBlueprintType(
+			blueprint.getType(), ActionKeys.UPDATE);
 
 		_blueprintModelResourcePermission.check(
 			getPermissionChecker(), blueprintId, actionKey);
 
 		return _blueprintLocalService.updateBlueprint(
-			getUserId(), blueprintId, titleMap, descriptionMap,
-			configuration, serviceContext);
+			getUserId(), blueprintId, titleMap, descriptionMap, configuration,
+			serviceContext);
 	}
 
 	private long _getCompanyGroupId(ServiceContext serviceContext)
@@ -231,16 +205,6 @@ public class BlueprintServiceImpl extends BlueprintServiceBaseImpl {
 	}
 
 	@Reference
-	private CompanyLocalService _companyLocalService;
-
-	@Reference(
-		policy = ReferencePolicy.DYNAMIC,
-		policyOption = ReferencePolicyOption.GREEDY,
-		target = "(resource.name=" + BlueprintsConstants.RESOURCE_NAME + ")"
-	)
-	private volatile PortletResourcePermission _portletResourcePermission;
-
-	@Reference
 	private BlueprintLocalService _blueprintLocalService;
 
 	@Reference(
@@ -250,6 +214,16 @@ public class BlueprintServiceImpl extends BlueprintServiceBaseImpl {
 	)
 	private volatile ModelResourcePermission<Blueprint>
 		_blueprintModelResourcePermission;
+
+	@Reference
+	private CompanyLocalService _companyLocalService;
+
+	@Reference(
+		policy = ReferencePolicy.DYNAMIC,
+		policyOption = ReferencePolicyOption.GREEDY,
+		target = "(resource.name=" + BlueprintsConstants.RESOURCE_NAME + ")"
+	)
+	private volatile PortletResourcePermission _portletResourcePermission;
 
 	@Reference
 	private UserLocalService _userLocalService;

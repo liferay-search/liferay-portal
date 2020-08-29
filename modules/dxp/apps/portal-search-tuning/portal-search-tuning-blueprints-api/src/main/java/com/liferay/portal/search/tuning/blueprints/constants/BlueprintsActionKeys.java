@@ -14,6 +14,7 @@
 
 package com.liferay.portal.search.tuning.blueprints.constants;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 
 /**
@@ -23,11 +24,11 @@ public class BlueprintsActionKeys {
 
 	public static final String ADD_BLUEPRINT = "ADD_BLUEPRINT";
 
-	public static final String APPLY_BLUEPRINT = "APPLY_BLUEPRINT";
-
 	public static final String ADD_FRAGMENT = "ADD_FRAGMENT";
 
 	public static final String ADD_TEMPLATE = "ADD_TEMPLATE";
+
+	public static final String APPLY_BLUEPRINT = "APPLY_BLUEPRINT";
 
 	public static final String DELETE_BLUEPRINT = "DELETE_BLUEPRINT";
 
@@ -47,9 +48,7 @@ public class BlueprintsActionKeys {
 
 	public static final String VIEW_TEMPLATE = "VIEW_TEMPLATE";
 
-	public static String getActionKeyForBlueprintType(
-		int type, String action) {
-
+	public static String getActionKeyForBlueprintType(int type, String action) {
 		if (type == BlueprintTypes.BLUEPRINT) {
 			if (ActionKeys.VIEW.equals(action)) {
 				return BlueprintsActionKeys.VIEW_BLUEPRINT;
@@ -67,11 +66,10 @@ public class BlueprintsActionKeys {
 				return action;
 			}
 		}
-		else if (type == BlueprintTypes.AGGREGATION_FRAGMENT  ||
-				type == BlueprintTypes.PARAMETER_FRAGMENT ||
-				type == BlueprintTypes.QUERY_FRAGMENT ||
-				type == BlueprintTypes.SORT_FRAGMENT ||
-				type == BlueprintTypes.SUGGESTER_FRAGMENT) {
+		else if ((type == BlueprintTypes.AGGREGATION_FRAGMENT) ||
+				 (type == BlueprintTypes.QUERY_FRAGMENT) ||
+				 (type == BlueprintTypes.SUGGESTER_FRAGMENT)) {
+
 			if (ActionKeys.VIEW.equals(action)) {
 				return BlueprintsActionKeys.VIEW_FRAGMENT;
 			}
@@ -106,8 +104,15 @@ public class BlueprintsActionKeys {
 			}
 		}
 
-		throw new RuntimeException(
-			"Unknown type " + type + " for action " + action + ".");
+		StringBundler sb = new StringBundler(5);
+
+		sb.append("Unknown type ");
+		sb.append(type);
+		sb.append(" for ");
+		sb.append(action);
+		sb.append(".");
+
+		throw new RuntimeException(sb.toString());
 	}
 
 }

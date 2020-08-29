@@ -39,6 +39,7 @@ import java.io.PrintWriter;
 
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
+
 import javax.servlet.http.HttpServletResponse;
 
 import org.osgi.service.component.annotations.Component;
@@ -55,8 +56,7 @@ import org.osgi.service.component.annotations.Reference;
 	},
 	service = MVCResourceCommand.class
 )
-public class ExportBlueprintMVCResourceCommand
-	extends BaseMVCResourceCommand {
+public class ExportBlueprintMVCResourceCommand extends BaseMVCResourceCommand {
 
 	@Override
 	protected void doServeResource(
@@ -64,12 +64,10 @@ public class ExportBlueprintMVCResourceCommand
 		throws Exception {
 
 		long blueprintId = ParamUtil.getLong(
-			resourceRequest,
-			BlueprintsAdminWebKeys.BLUEPRINT_ID);
+			resourceRequest, BlueprintsAdminWebKeys.BLUEPRINT_ID);
+
 		try {
-			Blueprint blueprint =
-				_blueprintService.getBlueprint(
-					blueprintId);
+			Blueprint blueprint = _blueprintService.getBlueprint(blueprintId);
 
 			String configuration = _getConfiguration(blueprint);
 
@@ -96,35 +94,34 @@ public class ExportBlueprintMVCResourceCommand
 			SessionErrors.add(resourceRequest, "errorDetails", portalException);
 		}
 	}
-	
-	private String _getConfiguration(Blueprint blueprint) {
-		
-		String configuration = blueprint.getConfiguration();
-		
-		try {
-			JSONObject jsonObject = JSONFactoryUtil.createJSONObject(configuration);
-			return jsonObject.toString(4);
 
-		} catch (JSONException e) {
+	private String _getConfiguration(Blueprint blueprint) {
+		String configuration = blueprint.getConfiguration();
+
+		try {
+			JSONObject jsonObject = JSONFactoryUtil.createJSONObject(
+				configuration);
+
+			return jsonObject.toString(4);
+		}
+		catch (JSONException e) {
 			_log.error(e.getMessage(), e);
 		}
-		
+
 		return configuration;
 	}
 
 	private String _getFileTitle(
-		ResourceRequest resourceRequest,
-		Blueprint blueprint) {
+		ResourceRequest resourceRequest, Blueprint blueprint) {
 
 		ThemeDisplay themeDisplay = (ThemeDisplay)resourceRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
-		String title = blueprint.getTitle(
-			themeDisplay.getLocale(), true);
+		String title = blueprint.getTitle(themeDisplay.getLocale(), true);
 
 		return title + ".json";
-	}	
-	
+	}
+
 	private void _writeResponse(
 		ResourceRequest resourceRequest, ResourceResponse resourceResponse,
 		String title, String configuration) {
@@ -149,14 +146,14 @@ public class ExportBlueprintMVCResourceCommand
 			SessionErrors.add(resourceRequest, "errorDetails", ioException);
 		}
 	}
-	
+
 	private static final Log _log = LogFactoryUtil.getLog(
 		ExportBlueprintMVCResourceCommand.class);
 
 	@Reference
-	private Portal _portal;
+	private BlueprintService _blueprintService;
 
 	@Reference
-	private BlueprintService _blueprintService;
+	private Portal _portal;
 
 }

@@ -27,6 +27,6 @@ public interface SuggesterBuilder {
 
 	public Optional<Suggester> build(
 		SearchRequestContext searchRequestContext,
-		JSONObject configurationJsonObject);
+		JSONObject suggesterJsonObject);
 
 }

@@ -43,8 +43,7 @@ import org.osgi.service.component.annotations.Reference;
 	},
 	service = MVCActionCommand.class
 )
-public class DeleteBlueprintMVCActionCommand
-	extends BaseMVCActionCommand {
+public class DeleteBlueprintMVCActionCommand extends BaseMVCActionCommand {
 
 	@Override
 	protected void doProcessAction(
@@ -63,8 +62,7 @@ public class DeleteBlueprintMVCActionCommand
 
 		try {
 			for (long blueprintId : deleteConfigurationIds) {
-				_blueprintService.deleteBlueprint(
-					blueprintId);
+				_blueprintService.deleteBlueprint(blueprintId);
 			}
 		}
 		catch (PortalException portalException) {

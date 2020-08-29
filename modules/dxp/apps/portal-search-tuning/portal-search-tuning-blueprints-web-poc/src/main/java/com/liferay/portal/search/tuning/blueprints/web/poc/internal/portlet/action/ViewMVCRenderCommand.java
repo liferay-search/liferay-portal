@@ -14,7 +14,6 @@
 
 package com.liferay.portal.search.tuning.blueprints.web.poc.internal.portlet.action;
 
-import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONException;
@@ -30,7 +29,8 @@ import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.BlueprintKeys;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.SortConfigurationKeys;
+import com.liferay.portal.search.tuning.blueprints.constants.json.keys.requestparameter.RequestParameterConfigurationKeys;
+import com.liferay.portal.search.tuning.blueprints.constants.json.keys.requestparameter.SortConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.message.Message;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.SearchParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.dataprovider.GeoLocationDataProvider;
@@ -40,6 +40,7 @@ import com.liferay.portal.search.tuning.blueprints.web.poc.internal.constants.Bl
 import com.liferay.portal.search.tuning.blueprints.web.poc.internal.constants.BlueprintsWebPortletKeys;
 import com.liferay.portal.search.tuning.blueprints.web.poc.internal.constants.JSONConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.web.poc.internal.constants.ResourceRequestKeys;
+import com.liferay.portal.search.tuning.blueprints.web.poc.internal.display.context.BlueprintDisplayBuilder;
 import com.liferay.portal.search.tuning.blueprints.web.poc.internal.portlet.preferences.BlueprintsWebPortletPreferences;
 import com.liferay.portal.search.tuning.blueprints.web.poc.internal.portlet.preferences.BlueprintsWebPortletPreferencesImpl;
 import com.liferay.portal.search.tuning.blueprints.web.poc.internal.util.BlueprintsLocalizationHelper;
@@ -97,6 +98,15 @@ public class ViewMVCRenderCommand implements MVCRenderCommand {
 					BlueprintsWebKeys.CONFIGURATION, _getConfiguration(
 							renderRequest, renderResponse, 
 							blueprintJsonObject, blueprintsWebPortletPreferences));
+
+			BlueprintDisplayBuilder blueprintDisplayBuilder =
+			new BlueprintDisplayBuilder(
+				_portal.getHttpServletRequest(renderRequest), renderRequest,
+				renderResponse);
+
+			renderRequest.setAttribute(
+				BlueprintsWebPortletKeys.BLUEPRINTS_DISPLAY_CONTEXT,
+				blueprintDisplayBuilder.build());
 
 		} catch (PortalException portalException) {
 			SessionErrors.add(
@@ -306,60 +316,46 @@ public class ViewMVCRenderCommand implements MVCRenderCommand {
 		
 		JSONObject configurationJsonObject = JSONFactoryUtil.createJSONObject();
 
-		if (!blueprintJsonObject.has(
-				BlueprintKeys.SORT_CONFIGURATION.getJsonKey())) {
-			
-			configurationJsonObject.put(JSONConfigurationKeys.OPTIONS, 
-					JSONFactoryUtil.createJSONArray());
-			configurationJsonObject.put(JSONConfigurationKeys.DEFAULT_VALUE, 
-					StringPool.BLANK);
-			
+		JSONObject requestParameterConfigurationJsonObject = 
+				blueprintJsonObject.getJSONObject(
+				BlueprintKeys.REQUEST_PARAMETER_CONFIGURATION.getJsonKey());
+		
+		if (requestParameterConfigurationJsonObject == null) {
 			return configurationJsonObject;
 		}
 		
 		JSONArray sortConfigurationJsonArray = 
-				blueprintJsonObject.getJSONArray(
-				BlueprintKeys.SORT_CONFIGURATION.getJsonKey());
+				requestParameterConfigurationJsonObject.getJSONArray(
+				RequestParameterConfigurationKeys.SORTS.getJsonKey());
 		
-		
-		int currentPriority = -1;
-		String defaultValue = "";
+		if (sortConfigurationJsonArray == null) {
+			return configurationJsonObject;
+		}
 		
 		JSONArray optionsJsonArray = JSONFactoryUtil.createJSONArray();
 
 		for (int i = 0; i < sortConfigurationJsonArray.length(); i++) {
 
-			JSONObject itemJsonObject = sortConfigurationJsonArray.getJSONObject(i);
+			JSONObject sortConfigurationJsonObject = 
+					sortConfigurationJsonArray.getJSONObject(i);
 			
-			int priority = -1;
-			
-			if (i == 0) {
-				priority = itemJsonObject.getInt(SortConfigurationKeys.DEFAULT_PRIORITY.getJsonKey());
-				defaultValue = itemJsonObject.getString(SortConfigurationKeys.PARAMETER_NAME.getJsonKey());
-			} else if (priority < currentPriority) {
-				currentPriority = priority;
-				defaultValue = itemJsonObject.getString(SortConfigurationKeys.PARAMETER_NAME.getJsonKey());
-			}
-
 			JSONObject optionJsonObject = JSONFactoryUtil.createJSONObject();
 
 			optionJsonObject.put(JSONConfigurationKeys.VALUE, 
-					itemJsonObject.getString(SortConfigurationKeys.PARAMETER_NAME.getJsonKey()));
+					sortConfigurationJsonObject.getString(
+							SortConfigurationKeys.PARAMETER_NAME.getJsonKey()));
 
 			optionJsonObject.put(JSONConfigurationKeys.TEXT, 
 					_blueprintsLocalizationHelper.get(
 							locale, "sort-by-" + 
-							itemJsonObject.getString(
-									SortConfigurationKeys.PARAMETER_NAME.getJsonKey()).toLowerCase()));
-
+									sortConfigurationJsonObject.getString(
+									SortConfigurationKeys.FIELD.getJsonKey()).toLowerCase()));
 			
 			optionsJsonArray.put(optionJsonObject);
 		}
 
 		configurationJsonObject.put(
 				JSONConfigurationKeys.OPTIONS, optionsJsonArray);
-		configurationJsonObject.put(
-				JSONConfigurationKeys.DEFAULT_VALUE, defaultValue);
 		
 		return configurationJsonObject;
 	}

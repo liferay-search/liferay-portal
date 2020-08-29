@@ -35,12 +35,12 @@ public class SearchParameterDataException extends PortalException {
 		super(msg);
 	}
 
-	public SearchParameterDataException(String msg, Throwable cause) {
-		super(msg, cause);
+	public SearchParameterDataException(String msg, Throwable throwable) {
+		super(msg, throwable);
 	}
 
-	public SearchParameterDataException(Throwable cause) {
-		super(cause);
+	public SearchParameterDataException(Throwable throwable) {
+		super(throwable);
 	}
 
 	public List<Message> getMessages() {

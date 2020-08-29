@@ -25,19 +25,14 @@ public enum BlueprintKeys {
 	ADVANCED_CONFIGURATION("advanced_configuration"),
 	AGGREGATION_CONFIGURATION("aggregation_configuration"),
 	CLAUSE_CONFIGURATION("clause_configuration"),
-	HIGHLIGHT_CONFIGURATION("clause_configuration"),
-	KEYWORD_INDEXING_CONFIGURATION("keyword_indexing_configuration"),
-	KEYWORD_SUGGESTER_CONFIGURATION("keyword_suggestions_configuration"),
 	REQUEST_PARAMETER_CONFIGURATION("request_parameter_configuration"),
-	SIZE("size"),
-	SORT_CONFIGURATION("sort_configuration"),
-	SPELLCHECKER_CONFIGURATION("spellchecker_configuration");
+	SUGGESTER_CONFIGURATION("suggester_configuration");
 
 	public static final BlueprintKeys findByJsonKey(String jsonKey) {
-		Stream<BlueprintKeys> searchConfigurationKeysStream =
-			Arrays.stream(BlueprintKeys.values());
+		Stream<BlueprintKeys> blueprintKeysStream = Arrays.stream(
+			BlueprintKeys.values());
 
-		return searchConfigurationKeysStream.filter(
+		return blueprintKeysStream.filter(
 			value -> value._jsonKey.equals(jsonKey)
 		).findFirst(
 		).orElse(

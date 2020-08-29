@@ -19,6 +19,21 @@ package com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants
  */
 public class BlueprintsAdminWebKeys {
 
+	public static final String BLUEPRINT = "blueprint";
+
+	public static final String BLUEPRINT_CONFIGURATION = "configuration";
+
+	public static final String BLUEPRINT_ENTRIES_DISPLAY_CONTEXT =
+		"BLUEPRINT_ENTRIES_DISPLAY_CONTEXT";
+
+	public static final String
+		BLUEPRINT_ENTRIES_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT =
+			"BLUEPRINT_ENTRIES_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT";
+
+	public static final String BLUEPRINT_ID = "blueprintId";
+
+	public static final String BLUEPRINT_TYPE = "type";
+
 	public static final String CLAUSE_CONFIGURATION = "clause_configuration";
 
 	public static final String CLAUSE_CONFIGURATION_INDEXES =
@@ -38,23 +53,6 @@ public class BlueprintsAdminWebKeys {
 	public static final String PAGE_TITLE_KEY = "pageTitleKey";
 
 	public static final String ROW_IDS = "rowIds";
-
-	public static final String BLUEPRINT = "blueprint";
-
-	public static final String BLUEPRINT_CONFIGURATION =
-		"configuration";
-
-	public static final String BLUEPRINT_ENTRIES_DISPLAY_CONTEXT =
-		"BLUEPRINT_ENTRIES_DISPLAY_CONTEXT";
-
-	public static final String
-		BLUEPRINT_ENTRIES_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT =
-			"BLUEPRINT_ENTRIES_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT";
-
-	public static final String BLUEPRINT_ID =
-		"blueprintId";
-
-	public static final String BLUEPRINT_TYPE = "type";
 
 	public static final String SYNONYM = "synonym";
 

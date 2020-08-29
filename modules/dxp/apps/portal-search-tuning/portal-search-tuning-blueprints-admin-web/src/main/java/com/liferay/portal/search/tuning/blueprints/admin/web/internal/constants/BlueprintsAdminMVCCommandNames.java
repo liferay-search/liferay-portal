@@ -19,19 +19,14 @@ package com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants
  */
 public class BlueprintsAdminMVCCommandNames {
 
-	public static final String COPY_BLUEPRINT =
-		"/blueprint/copy";
+	public static final String COPY_BLUEPRINT = "/blueprint/copy";
 
-	public static final String DELETE_BLUEPRINT =
-		"/blueprint/delete";
+	public static final String DELETE_BLUEPRINT = "/blueprint/delete";
 
-	public static final String EDIT_BLUEPRINT =
-		"/blueprint/edit";
+	public static final String EDIT_BLUEPRINT = "/blueprint/edit";
 
-	public static final String EXPORT_BLUEPRINT =
-		"/blueprint/export";
+	public static final String EXPORT_BLUEPRINT = "/blueprint/export";
 
-	public static final String VIEW_BLUEPRINT =
-		"/blueprint/view";
+	public static final String VIEW_BLUEPRINT = "/blueprint/view";
 
 }

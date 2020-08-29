@@ -26,7 +26,6 @@ import java.util.Optional;
 public interface ClauseBuilder {
 
 	public Optional<Query> buildClause(
-		SearchRequestContext searchRequestContext,
-		JSONObject configurationJsonObject);
+		SearchRequestContext searchRequestContext, JSONObject clauseJsonObject);
 
 }

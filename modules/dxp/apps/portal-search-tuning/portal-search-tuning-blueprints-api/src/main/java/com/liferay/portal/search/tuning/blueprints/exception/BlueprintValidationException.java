@@ -38,8 +38,8 @@ public class BlueprintValidationException extends PortalException {
 		super(msg);
 	}
 
-	public BlueprintValidationException(String msg, Throwable cause) {
-		super(msg, cause);
+	public BlueprintValidationException(String msg, Throwable throwable) {
+		super(msg, throwable);
 	}
 
 	public List<String> getErrors() {

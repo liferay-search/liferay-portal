@@ -59,6 +59,7 @@ import java.util.stream.Stream;
 
 import javax.portlet.PortletException;
 import javax.portlet.PortletURL;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -68,8 +69,7 @@ public class BlueprintEntriesDisplayContext {
 
 	public BlueprintEntriesDisplayContext(
 		LiferayPortletRequest liferayPortletRequest,
-		LiferayPortletResponse liferayPortletResponse,
-		int blueprintType) {
+		LiferayPortletResponse liferayPortletResponse, int blueprintType) {
 
 		_liferayPortletRequest = liferayPortletRequest;
 		_liferayPortletResponse = liferayPortletResponse;
@@ -82,8 +82,7 @@ public class BlueprintEntriesDisplayContext {
 		_blueprintType = blueprintType;
 	}
 
-	public List<String> getAvailableActions(
-			Blueprint blueprint)
+	public List<String> getAvailableActions(Blueprint blueprint)
 		throws PortalException {
 
 		ThemeDisplay themeDisplay =
@@ -94,8 +93,7 @@ public class BlueprintEntriesDisplayContext {
 				themeDisplay.getPermissionChecker(), blueprint,
 				ActionKeys.DELETE)) {
 
-			return Collections.singletonList(
-				"deleteBlueprintEntries");
+			return Collections.singletonList("deleteBlueprintEntries");
 		}
 
 		return Collections.emptyList();
@@ -107,13 +105,13 @@ public class BlueprintEntriesDisplayContext {
 
 		if (Validator.isNull(displayStyle)) {
 			return _portalPreferences.getValue(
-				BlueprintsPortletKeys.BLUEPRINTS_ADMIN,
-				"entries-display-style", "descriptive");
+				BlueprintsPortletKeys.BLUEPRINTS_ADMIN, "entries-display-style",
+				"descriptive");
 		}
 
 		_portalPreferences.setValue(
-			BlueprintsPortletKeys.BLUEPRINTS_ADMIN,
-			"entries-display-style", displayStyle);
+			BlueprintsPortletKeys.BLUEPRINTS_ADMIN, "entries-display-style",
+			displayStyle);
 
 		_httpServletRequest.setAttribute(
 			WebKeys.SINGLE_PAGE_APPLICATION_CLEAR_CACHE, Boolean.TRUE);
@@ -176,8 +174,7 @@ public class BlueprintEntriesDisplayContext {
 		OrderByComparator<Blueprint> orderByComparator = null;
 
 		if (orderByCol.equals("modified-date")) {
-			orderByComparator = new BlueprintModifiedDateComparator(
-				orderByAsc);
+			orderByComparator = new BlueprintModifiedDateComparator(orderByAsc);
 		}
 		else {
 			orderByComparator = new BlueprintTitleComparator(
@@ -187,8 +184,7 @@ public class BlueprintEntriesDisplayContext {
 		return orderByComparator;
 	}
 
-	private void _populateResults(
-			SearchContainer<Blueprint> searchContainer)
+	private void _populateResults(SearchContainer<Blueprint> searchContainer)
 		throws PortalException {
 
 		ThemeDisplay themeDisplay =
@@ -203,21 +199,17 @@ public class BlueprintEntriesDisplayContext {
 
 		if (Validator.isNull(keywords)) {
 			searchContainer.setTotal(
-				BlueprintServiceUtil.
-					getGroupBlueprintsCount(
-						groupId, WorkflowConstants.STATUS_ANY,
-						_blueprintType));
+				BlueprintServiceUtil.getGroupBlueprintsCount(
+					groupId, WorkflowConstants.STATUS_ANY, _blueprintType));
 
-			entriesResults =
-				BlueprintServiceUtil.getGroupBlueprints(
-					groupId, WorkflowConstants.STATUS_ANY,
-					_blueprintType, searchContainer.getStart(),
-					searchContainer.getEnd(),
-					searchContainer.getOrderByComparator());
+			entriesResults = BlueprintServiceUtil.getGroupBlueprints(
+				groupId, WorkflowConstants.STATUS_ANY, _blueprintType,
+				searchContainer.getStart(), searchContainer.getEnd(),
+				searchContainer.getOrderByComparator());
 		}
 		else {
-			Indexer<Blueprint> indexer =
-				IndexerRegistryUtil.getIndexer(Blueprint.class);
+			Indexer<Blueprint> indexer = IndexerRegistryUtil.getIndexer(
+				Blueprint.class);
 
 			SearchContext searchContext = SearchContextFactory.getInstance(
 				_httpServletRequest);
@@ -282,8 +274,7 @@ public class BlueprintEntriesDisplayContext {
 
 		try {
 			return Optional.of(
-				BlueprintServiceUtil.getBlueprint(
-					searchResult.getClassPK()));
+				BlueprintServiceUtil.getBlueprint(searchResult.getClassPK()));
 		}
 		catch (Exception exception) {
 			if (_log.isWarnEnabled()) {
@@ -299,10 +290,10 @@ public class BlueprintEntriesDisplayContext {
 	private static final Log _log = LogFactoryUtil.getLog(
 		BlueprintEntriesDisplayContext.class);
 
+	private final int _blueprintType;
 	private final HttpServletRequest _httpServletRequest;
 	private final LiferayPortletRequest _liferayPortletRequest;
 	private final LiferayPortletResponse _liferayPortletResponse;
 	private final PortalPreferences _portalPreferences;
-	private final int _blueprintType;
 
 }

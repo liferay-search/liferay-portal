@@ -33,6 +33,7 @@ import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
 
 import java.io.IOException;
+
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -54,8 +55,7 @@ import org.osgi.service.component.annotations.Reference;
 	},
 	service = MVCActionCommand.class
 )
-public class CopyBlueprintMVCActionCommand
-	extends BaseMVCActionCommand {
+public class CopyBlueprintMVCActionCommand extends BaseMVCActionCommand {
 
 	@Override
 	protected void doProcessAction(
@@ -66,12 +66,10 @@ public class CopyBlueprintMVCActionCommand
 			actionRequest, BlueprintsAdminWebKeys.BLUEPRINT_ID);
 
 		try {
-			Blueprint sourceBlueprint =
-				_blueprintService.getBlueprint(
-					blueprintId);
+			Blueprint sourceBlueprint = _blueprintService.getBlueprint(
+				blueprintId);
 
-			_createCopy(
-				actionRequest, actionResponse, sourceBlueprint);
+			_createCopy(actionRequest, actionResponse, sourceBlueprint);
 		}
 		catch (NoSuchConfigurationException noSuchConfigurationException) {
 			_log.error(
@@ -99,19 +97,16 @@ public class CopyBlueprintMVCActionCommand
 			ServiceContext serviceContext = ServiceContextFactory.getInstance(
 				Blueprint.class.getName(), actionRequest);
 
-			Map<Locale, String> titleMap = _getTargetTitleMap(
-				sourceBlueprint);
+			Map<Locale, String> titleMap = _getTargetTitleMap(sourceBlueprint);
 
 			_blueprintService.addCompanyBlueprint(
 				titleMap, sourceBlueprint.getDescriptionMap(),
-				sourceBlueprint.getConfiguration(),
-				sourceBlueprint.getType(), serviceContext);
+				sourceBlueprint.getConfiguration(), sourceBlueprint.getType(),
+				serviceContext);
 
 			sendRedirect(actionRequest, actionResponse);
 		}
-		catch (BlueprintValidationException
-					blueprintValidationException) {
-
+		catch (BlueprintValidationException blueprintValidationException) {
 			_log.error(
 				blueprintValidationException.getMessage(),
 				blueprintValidationException);
@@ -137,9 +132,7 @@ public class CopyBlueprintMVCActionCommand
 		}
 	}
 
-	private Map<Locale, String> _getTargetTitleMap(
-		Blueprint blueprint) {
-
+	private Map<Locale, String> _getTargetTitleMap(Blueprint blueprint) {
 		Map<Locale, String> sourceTitleMap = blueprint.getTitleMap();
 		Map<Locale, String> targetTitleMap = new HashMap<>();
 
@@ -157,9 +150,9 @@ public class CopyBlueprintMVCActionCommand
 		CopyBlueprintMVCActionCommand.class);
 
 	@Reference
-	private Language _language;
+	private BlueprintService _blueprintService;
 
 	@Reference
-	private BlueprintService _blueprintService;
+	private Language _language;
 
 }

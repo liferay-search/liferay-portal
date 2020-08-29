@@ -19,6 +19,9 @@ package com.liferay.portal.search.tuning.blueprints.web.poc.internal.constants;
  */
 public class BlueprintsWebPortletKeys {
 
-	public static final String BLUEPRINTS_WEB = 
+	public static final String BLUEPRINTS_DISPLAY_CONTEXT =
+		"BLUEPRINTS_DISPLAY_CONTEXT";
+
+	public static final String BLUEPRINTS_WEB =
 			"com_liferay_portal_search_tuning_blueprints_web_poc_internal_BlueprintsWebPortlet";
 }

@@ -35,6 +35,7 @@ import com.liferay.portal.search.tuning.blueprints.service.base.BlueprintLocalSe
 import com.liferay.portal.search.tuning.blueprints.validation.BlueprintValidator;
 
 import java.io.Serializable;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -72,21 +73,17 @@ public class BlueprintLocalServiceImpl extends BlueprintLocalServiceBaseImpl {
 
 		User user = _userLocalService.getUser(userId);
 
-		_blueprintValidator.validate(
-			titleMap, descriptionMap, configuration);
+		_blueprintValidator.validate(titleMap, descriptionMap, configuration);
 
 		long blueprintId = counterLocalService.increment(
 			Blueprint.class.getName());
 
-		Blueprint blueprint = createBlueprint(
-			blueprintId);
+		Blueprint blueprint = createBlueprint(blueprintId);
 
 		blueprint.setCompanyId(user.getCompanyId());
-		blueprint.setCreateDate(
-			serviceContext.getCreateDate(new Date()));
+		blueprint.setCreateDate(serviceContext.getCreateDate(new Date()));
 		blueprint.setGroupId(groupId);
-		blueprint.setModifiedDate(
-			serviceContext.getModifiedDate(new Date()));
+		blueprint.setModifiedDate(serviceContext.getModifiedDate(new Date()));
 		blueprint.setUserId(user.getUserId());
 		blueprint.setUserName(user.getFullName());
 		blueprint.setUuid(serviceContext.getUuid());
@@ -106,42 +103,33 @@ public class BlueprintLocalServiceImpl extends BlueprintLocalServiceBaseImpl {
 
 		blueprint = super.addBlueprint(blueprint);
 
-		_resourceLocalService.addModelResources(
-			blueprint, serviceContext);
+		_resourceLocalService.addModelResources(blueprint, serviceContext);
 
-		return startWorkflowInstance(
-			userId, blueprint, serviceContext);
-	}
-
-	@Override
-	public Blueprint deleteBlueprint(
-			long blueprintId)
-		throws PortalException {
-
-		Blueprint blueprint =
-			blueprintPersistence.findByPrimaryKey(
-				blueprintId);
-
-		return deleteBlueprint(blueprint);
+		return startWorkflowInstance(userId, blueprint, serviceContext);
 	}
 
 	@Indexable(type = IndexableType.DELETE)
 	@Override
 	@SystemEvent(type = SystemEventConstants.TYPE_DELETE)
-	public Blueprint deleteBlueprint(
-			Blueprint blueprint)
+	public Blueprint deleteBlueprint(Blueprint blueprint)
 		throws PortalException {
 
 		_resourceLocalService.deleteResource(
 			blueprint, ResourceConstants.SCOPE_INDIVIDUAL);
 
 		workflowInstanceLinkLocalService.deleteWorkflowInstanceLinks(
-			blueprint.getCompanyId(),
-			blueprint.getGroupId(),
-			Blueprint.class.getName(),
-			blueprint.getBlueprintId());
+			blueprint.getCompanyId(), blueprint.getGroupId(),
+			Blueprint.class.getName(), blueprint.getBlueprintId());
 
 		return super.deleteBlueprint(blueprint);
+	}
+
+	@Override
+	public Blueprint deleteBlueprint(long blueprintId) throws PortalException {
+		Blueprint blueprint = blueprintPersistence.findByPrimaryKey(
+			blueprintId);
+
+		return deleteBlueprint(blueprint);
 	}
 
 	public List<Blueprint> getGroupBlueprints(
@@ -155,8 +143,7 @@ public class BlueprintLocalServiceImpl extends BlueprintLocalServiceBaseImpl {
 		long groupId, int status, int type, int start, int end) {
 
 		if (status == WorkflowConstants.STATUS_ANY) {
-			return blueprintPersistence.findByG_T(
-				groupId, type, start, end);
+			return blueprintPersistence.findByG_T(groupId, type, start, end);
 		}
 
 		return blueprintPersistence.findByG_S_T(
@@ -190,29 +177,23 @@ public class BlueprintLocalServiceImpl extends BlueprintLocalServiceBaseImpl {
 			groupId, WorkflowConstants.STATUS_APPROVED, type);
 	}
 
-	public int getGroupBlueprintsCount(
-		long groupId, int status, int type) {
-
-		return blueprintPersistence.countByG_S_T(
-			groupId, status, type);
+	public int getGroupBlueprintsCount(long groupId, int status, int type) {
+		return blueprintPersistence.countByG_S_T(groupId, status, type);
 	}
 
 	@Indexable(type = IndexableType.REINDEX)
 	public Blueprint updateBlueprint(
-			long userId, long blueprintId,
-			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
-			String configuration, ServiceContext serviceContext)
+			long userId, long blueprintId, Map<Locale, String> titleMap,
+			Map<Locale, String> descriptionMap, String configuration,
+			ServiceContext serviceContext)
 		throws PortalException {
 
-		Blueprint blueprint = getBlueprint(
-			blueprintId);
+		Blueprint blueprint = getBlueprint(blueprintId);
 
-		_blueprintValidator.validate(
-			titleMap, descriptionMap, configuration);
+		_blueprintValidator.validate(titleMap, descriptionMap, configuration);
 
 		blueprint.setDescriptionMap(descriptionMap);
-		blueprint.setModifiedDate(
-			serviceContext.getModifiedDate(new Date()));
+		blueprint.setModifiedDate(serviceContext.getModifiedDate(new Date()));
 		blueprint.setTitleMap(titleMap);
 
 		blueprint.setConfiguration(configuration);
@@ -222,13 +203,11 @@ public class BlueprintLocalServiceImpl extends BlueprintLocalServiceBaseImpl {
 
 	@Indexable(type = IndexableType.REINDEX)
 	@Override
-	public Blueprint updateStatus(
-			long userId, long blueprintId, int status)
+	public Blueprint updateStatus(long userId, long blueprintId, int status)
 		throws PortalException {
 
 		User user = _userLocalService.getUser(userId);
-		Blueprint blueprint = getBlueprint(
-			blueprintId);
+		Blueprint blueprint = getBlueprint(blueprintId);
 
 		blueprint.setStatus(status);
 		blueprint.setStatusByUserId(userId);
@@ -239,8 +218,7 @@ public class BlueprintLocalServiceImpl extends BlueprintLocalServiceBaseImpl {
 	}
 
 	protected Blueprint startWorkflowInstance(
-			long userId, Blueprint blueprint,
-			ServiceContext serviceContext)
+			long userId, Blueprint blueprint, ServiceContext serviceContext)
 		throws PortalException {
 
 		String userPortraitURL = StringPool.BLANK;
@@ -262,18 +240,16 @@ public class BlueprintLocalServiceImpl extends BlueprintLocalServiceBaseImpl {
 			).build();
 
 		return WorkflowHandlerRegistryUtil.startWorkflowInstance(
-			blueprint.getCompanyId(),
-			blueprint.getGroupId(), userId,
-			Blueprint.class.getName(),
-			blueprint.getBlueprintId(), blueprint,
+			blueprint.getCompanyId(), blueprint.getGroupId(), userId,
+			Blueprint.class.getName(), blueprint.getBlueprintId(), blueprint,
 			serviceContext, workflowContext);
 	}
 
 	@Reference
-	private ResourceLocalService _resourceLocalService;
+	private BlueprintValidator _blueprintValidator;
 
 	@Reference
-	private BlueprintValidator _blueprintValidator;
+	private ResourceLocalService _resourceLocalService;
 
 	@Reference
 	private UserLocalService _userLocalService;

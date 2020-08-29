@@ -33,12 +33,12 @@ public class ParameterEvaluationException extends PortalException {
 		super(msg);
 	}
 
-	public ParameterEvaluationException(String msg, Throwable cause) {
-		super(msg, cause);
+	public ParameterEvaluationException(String msg, Throwable throwable) {
+		super(msg, throwable);
 	}
 
-	public ParameterEvaluationException(Throwable cause) {
-		super(cause);
+	public ParameterEvaluationException(Throwable throwable) {
+		super(throwable);
 	}
 
 	public Message getDetailsMessage() {

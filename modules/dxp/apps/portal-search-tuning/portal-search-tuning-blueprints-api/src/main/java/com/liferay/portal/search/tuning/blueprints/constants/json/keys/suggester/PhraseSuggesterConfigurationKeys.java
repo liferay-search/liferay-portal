@@ -22,13 +22,14 @@ import java.util.stream.Stream;
  */
 public enum PhraseSuggesterConfigurationKeys {
 
-	COLLATE("collate"), CONFIDENCE("confidence"),
-	DIRECT_GENERATOR("direct_generator"), FORCE_UNIGRAMS("force_unigrams"),
-	GRAM_SIZE("gram_size"), MAX_ERRORS("max_errors"),
-	POST_HIGHLIGHT_TAG("post_highlight_tag"),
+	ANALYZER("analyzer"), COLLATE("collate"), CONFIDENCE("confidence"),
+	DESCRIPTION("description"), DIRECT_GENERATOR("direct_generator"),
+	FIELD("field"), FORCE_UNIGRAMS("force_unigrams"), GRAM_SIZE("gram_size"),
+	MAX_ERRORS("max_errors"), POST_HIGHLIGHT_TAG("post_highlight_tag"),
 	PRE_HIGHLIGHT_TAG("pre_highlight_tag"), PRUNE("prune"),
 	REAL_WORLD_ERROR_LIKELIHOOD("real_word_error_likelihood"),
-	SEPARATOR("separator");
+	SEPARATOR("separator"), SHARD_SIZE("shard_size"), SIZE("size"),
+	TEXT("text");
 
 	public static final PhraseSuggesterConfigurationKeys findByJsonKey(
 		String jsonKey) {

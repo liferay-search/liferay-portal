@@ -38,15 +38,12 @@ public class BlueprintModelDocumentContributor
 	implements ModelDocumentContributor<Blueprint> {
 
 	@Override
-	public void contribute(
-		Document document, Blueprint blueprint) {
-
-		document.addDate(
-			Field.MODIFIED_DATE, blueprint.getModifiedDate());
+	public void contribute(Document document, Blueprint blueprint) {
+		document.addDate(Field.MODIFIED_DATE, blueprint.getModifiedDate());
 
 		for (Locale locale :
 				LanguageUtil.getCompanyAvailableLocales(
-						blueprint.getCompanyId())) {
+					blueprint.getCompanyId())) {
 
 			String languageId = LocaleUtil.toLanguageId(locale);
 

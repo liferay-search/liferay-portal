@@ -33,8 +33,7 @@ public class BlueprintPermission {
 		String actionId) {
 
 		String typedActionKey =
-			BlueprintsActionKeys.
-				getActionKeyForBlueprintType(type, actionId);
+			BlueprintsActionKeys.getActionKeyForBlueprintType(type, actionId);
 
 		return _portletResourcePermission.contains(
 			permissionChecker, groupId, typedActionKey);

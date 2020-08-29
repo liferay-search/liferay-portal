@@ -47,24 +47,20 @@ import org.osgi.service.component.annotations.Reference;
 	},
 	service = MVCRenderCommand.class
 )
-public class EditBlueprintMVCRenderCommand
-	implements MVCRenderCommand {
+public class EditBlueprintMVCRenderCommand implements MVCRenderCommand {
 
 	@Override
 	public String render(
 		RenderRequest renderRequest, RenderResponse renderResponse) {
 
-		EditBlueprintDisplayContext
-			editBlueprintDisplayContext =
-				new EditBlueprintDisplayBuilder(
-					portal.getHttpServletRequest(renderRequest), language, _log,
-					jsonFactory, renderRequest, renderResponse,
-					_blueprintService
-				).build();
+		EditBlueprintDisplayContext editBlueprintDisplayContext =
+			new EditBlueprintDisplayBuilder(
+				portal.getHttpServletRequest(renderRequest), language, _log,
+				jsonFactory, renderRequest, renderResponse, _blueprintService
+			).build();
 
 		renderRequest.setAttribute(
-			BlueprintsAdminWebKeys.
-				EDIT_BLUEPRINT_DISPLAY_CONTEXT,
+			BlueprintsAdminWebKeys.EDIT_BLUEPRINT_DISPLAY_CONTEXT,
 			editBlueprintDisplayContext);
 
 		ThemeDisplay themeDisplay = (ThemeDisplay)renderRequest.getAttribute(
@@ -73,8 +69,7 @@ public class EditBlueprintMVCRenderCommand
 		PortletDisplay portletDisplay = themeDisplay.getPortletDisplay();
 
 		portletDisplay.setShowBackIcon(true);
-		portletDisplay.setURLBack(
-			editBlueprintDisplayContext.getRedirect());
+		portletDisplay.setURLBack(editBlueprintDisplayContext.getRedirect());
 
 		return "/edit_blueprint.jsp";
 	}

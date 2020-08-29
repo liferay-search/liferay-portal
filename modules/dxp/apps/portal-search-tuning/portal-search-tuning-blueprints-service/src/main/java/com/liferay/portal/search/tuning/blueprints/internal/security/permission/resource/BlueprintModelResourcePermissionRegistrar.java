@@ -49,8 +49,7 @@ public class BlueprintModelResourcePermissionRegistrar {
 		_serviceRegistration = bundleContext.registerService(
 			ModelResourcePermission.class,
 			ModelResourcePermissionFactory.create(
-				Blueprint.class,
-				Blueprint::getBlueprintId,
+				Blueprint.class, Blueprint::getBlueprintId,
 				_blueprintLocalService::getBlueprint,
 				_portletResourcePermission,
 				(modelResourcePermission, consumer) -> consumer.accept(
@@ -66,13 +65,13 @@ public class BlueprintModelResourcePermissionRegistrar {
 		_serviceRegistration.unregister();
 	}
 
+	@Reference
+	private BlueprintLocalService _blueprintLocalService;
+
 	@Reference(
 		target = "(resource.name=" + BlueprintsConstants.RESOURCE_NAME + ")"
 	)
 	private PortletResourcePermission _portletResourcePermission;
-
-	@Reference
-	private BlueprintLocalService _blueprintLocalService;
 
 	private ServiceRegistration<ModelResourcePermission> _serviceRegistration;
 

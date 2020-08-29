@@ -18,6 +18,7 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.JSONPortletResponseUtil;
@@ -25,7 +26,7 @@ import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCResourceCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCResourceCommand;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
-import com.liferay.portal.search.tuning.blueprints.engine.suggester.KeywordSuggester;
+import com.liferay.portal.search.tuning.blueprints.engine.suggester.Suggester;
 import com.liferay.portal.search.tuning.blueprints.engine.util.SearchClientHelper;
 import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
 import com.liferay.portal.search.tuning.blueprints.web.poc.internal.constants.BlueprintsWebPortletKeys;
@@ -34,6 +35,8 @@ import com.liferay.portal.search.tuning.blueprints.web.poc.internal.constants.Re
 import com.liferay.portal.search.tuning.blueprints.web.poc.internal.portlet.preferences.BlueprintsWebPortletPreferences;
 import com.liferay.portal.search.tuning.blueprints.web.poc.internal.portlet.preferences.BlueprintsWebPortletPreferencesImpl;
 import com.liferay.portal.search.tuning.blueprints.web.poc.internal.util.BlueprintsLocalizationHelper;
+
+import java.util.List;
 
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
@@ -69,13 +72,16 @@ public class GetKeywordSuggestionsMVCResourceCommand extends BaseMVCResourceComm
 
 		try {
 			HttpServletRequest httpServletRequest =
-				_portal.getHttpServletRequest(resourceRequest);
+					_portal.getHttpServletRequest(resourceRequest);
 
 			SearchRequestContext searchRequestContext = 
-					_searchClientHelper.getSearchRequestContext(httpServletRequest, blueprintId);
+					_searchClientHelper.getSearchRequestContext(httpServletRequest, null, blueprintId);
 			
-			JSONArray suggestionsJsonArray = 
+			List<String> suggestions = 
 					_keywordSuggester.getSuggestions(searchRequestContext);
+			
+			JSONArray suggestionsJsonArray =
+					JSONUtil.toJSONArray(suggestions, s -> s);
 			
 			responseJsonObject.put(JSONResponseKeys.KEYWORD_SUGGESTIONS, suggestionsJsonArray);
 						
@@ -94,8 +100,8 @@ public class GetKeywordSuggestionsMVCResourceCommand extends BaseMVCResourceComm
 	private static final Log _log =
 		LogFactoryUtil.getLog(GetKeywordSuggestionsMVCResourceCommand.class);
 
-	@Reference
-	private KeywordSuggester _keywordSuggester;
+	@Reference(target = "(type=keyword)")
+	private Suggester _keywordSuggester;
 
 	@Reference
 	private BlueprintsLocalizationHelper _blueprintsLocalizationHelper;

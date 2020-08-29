@@ -25,7 +25,7 @@ package com.liferay.portal.search.tuning.blueprints.model.impl;
  */
 public class BlueprintImpl extends BlueprintBaseImpl {
 
-	/*
+	/**
 	 * NOTE FOR DEVELOPERS:
 	 *
 	 * Never reference this class directly. All methods that expect a blueprint model instance should use the {@link com.liferay.portal.search.tuning.blueprints.model.Blueprint} interface instead.

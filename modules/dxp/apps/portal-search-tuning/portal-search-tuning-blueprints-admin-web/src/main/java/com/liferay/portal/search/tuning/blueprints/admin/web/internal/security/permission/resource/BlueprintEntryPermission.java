@@ -30,31 +30,27 @@ import org.osgi.service.component.annotations.Reference;
 public class BlueprintEntryPermission {
 
 	public static boolean contains(
-			PermissionChecker permissionChecker, long entryId,
-			int blueprintType, String actionId)
-		throws PortalException {
-
-		String actionKey =
-			BlueprintsActionKeys.
-				getActionKeyForBlueprintType(
-					blueprintType, actionId);
-
-		return _blueprintEntryModelResourcePermission.contains(
-			permissionChecker, entryId, actionKey);
-	}
-
-	public static boolean contains(
 			PermissionChecker permissionChecker, Blueprint entry,
 			String actionId)
 		throws PortalException {
 
-		String actionKey =
-			BlueprintsActionKeys.
-				getActionKeyForBlueprintType(
-					entry.getType(), actionId);
+		String actionKey = BlueprintsActionKeys.getActionKeyForBlueprintType(
+			entry.getType(), actionId);
 
 		return _blueprintEntryModelResourcePermission.contains(
 			permissionChecker, entry, actionKey);
+	}
+
+	public static boolean contains(
+			PermissionChecker permissionChecker, long entryId,
+			int blueprintType, String actionId)
+		throws PortalException {
+
+		String actionKey = BlueprintsActionKeys.getActionKeyForBlueprintType(
+			blueprintType, actionId);
+
+		return _blueprintEntryModelResourcePermission.contains(
+			permissionChecker, entryId, actionKey);
 	}
 
 	@Reference(
@@ -64,8 +60,7 @@ public class BlueprintEntryPermission {
 	protected void setEntryModelPermission(
 		ModelResourcePermission<Blueprint> modelResourcePermission) {
 
-		_blueprintEntryModelResourcePermission =
-			modelResourcePermission;
+		_blueprintEntryModelResourcePermission = modelResourcePermission;
 	}
 
 	private static ModelResourcePermission<Blueprint>

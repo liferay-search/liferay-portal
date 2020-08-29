@@ -122,52 +122,52 @@ public class IPStackParameterContributor implements ParameterContributor {
 
 		searchParameterData.addParameter(
 			new StringParameter(
-				"ipstack.city", null, "${ipstack.city}",
+				"ipstack.city", "${ipstack.city}",
 				geoLocationJSONObject.getString("city")));
 
 		searchParameterData.addParameter(
 			new StringParameter(
-				"ipstack.continent_code", null, "${ipstack.continent_code}",
+				"ipstack.continent_code", "${ipstack.continent_code}",
 				geoLocationJSONObject.getString("continent_code")));
 
 		searchParameterData.addParameter(
 			new StringParameter(
-				"ipstack.continent_name", null, "${ipstack.continent_name}",
+				"ipstack.continent_name", "${ipstack.continent_name}",
 				geoLocationJSONObject.getString("continent_name")));
 
 		searchParameterData.addParameter(
 			new StringParameter(
-				"ipstack.country_code", null, "${ipstack.country_code}",
+				"ipstack.country_code", "${ipstack.country_code}",
 				geoLocationJSONObject.getString("country_code")));
 
 		searchParameterData.addParameter(
 			new StringParameter(
-				"ipstack.country_name", null, "${ipstack.country_name}",
+				"ipstack.country_name", "${ipstack.country_name}",
 				geoLocationJSONObject.getString("country_name")));
 
 		searchParameterData.addParameter(
 			new DoubleParameter(
-				"ipstack.latitude", null, "${ipstack.latitude}",
+				"ipstack.latitude", "${ipstack.latitude}",
 				geoLocationJSONObject.getDouble("latitude")));
 
 		searchParameterData.addParameter(
 			new DoubleParameter(
-				"ipstack.longitude", null, "${ipstack.latitude}",
+				"ipstack.longitude", "${ipstack.latitude}",
 				geoLocationJSONObject.getDouble("longitude")));
 
 		searchParameterData.addParameter(
 			new StringParameter(
-				"ipstack.region_code", null, "${ipstack.region_code}",
+				"ipstack.region_code", "${ipstack.region_code}",
 				geoLocationJSONObject.getString("region_code")));
 
 		searchParameterData.addParameter(
 			new StringParameter(
-				"ipstack.region_name", null, "${ipstack.region_name}",
+				"ipstack.region_name", "${ipstack.region_name}",
 				geoLocationJSONObject.getString("region_name")));
 
 		searchParameterData.addParameter(
 			new StringParameter(
-				"ipstack.zip", null, "${ipstack.zip}",
+				"ipstack.zip", "${ipstack.zip}",
 				geoLocationJSONObject.getString("zip")));
 	}
 

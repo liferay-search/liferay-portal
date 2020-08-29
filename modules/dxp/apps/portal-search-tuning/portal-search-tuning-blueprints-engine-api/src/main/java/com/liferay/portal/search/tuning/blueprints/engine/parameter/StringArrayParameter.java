@@ -14,13 +14,11 @@
 
 package com.liferay.portal.search.tuning.blueprints.engine.parameter;
 
-import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.tuning.blueprints.constants.json.values.EvaluationType;
 import com.liferay.portal.search.tuning.blueprints.engine.exception.ParameterEvaluationException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author Petteri Karttunen
@@ -28,11 +26,9 @@ import java.util.Optional;
 public class StringArrayParameter implements Parameter {
 
 	public StringArrayParameter(
-		String name, String role, String configurationVariable,
-		String[] value) {
+		String name, String configurationVariable, String[] value) {
 
 		_name = name;
-		_role = role;
 		_configurationVariable = configurationVariable;
 		_value = value;
 	}
@@ -50,22 +46,8 @@ public class StringArrayParameter implements Parameter {
 	}
 
 	@Override
-	public String getConfigurationVariable() {
-		return _configurationVariable;
-	}
-
-	@Override
 	public String getName() {
 		return _name;
-	}
-
-	@Override
-	public Optional<String> getRoleOptional() {
-		if (!Validator.isBlank(_role)) {
-			return Optional.of(_role);
-		}
-
-		return Optional.empty();
 	}
 
 	@Override
@@ -79,13 +61,17 @@ public class StringArrayParameter implements Parameter {
 	}
 
 	@Override
+	public String getTemplateVariable() {
+		return _configurationVariable;
+	}
+
+	@Override
 	public String[] getValue() {
 		return _value;
 	}
 
 	private final String _configurationVariable;
 	private final String _name;
-	private final String _role;
 	private final String[] _value;
 
 }

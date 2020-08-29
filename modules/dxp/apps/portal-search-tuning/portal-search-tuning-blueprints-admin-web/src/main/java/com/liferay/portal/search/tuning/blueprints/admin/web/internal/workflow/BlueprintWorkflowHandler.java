@@ -24,6 +24,7 @@ import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.service.BlueprintLocalService;
 
 import java.io.Serializable;
+
 import java.util.Locale;
 import java.util.Map;
 
@@ -37,8 +38,7 @@ import org.osgi.service.component.annotations.Reference;
 	property = "model.class.name=com.liferay.portal.search.tuning.blueprints.model.Blueprint",
 	service = WorkflowHandler.class
 )
-public class BlueprintWorkflowHandler
-	extends BaseWorkflowHandler<Blueprint> {
+public class BlueprintWorkflowHandler extends BaseWorkflowHandler<Blueprint> {
 
 	@Override
 	public String getClassName() {

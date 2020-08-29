@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Objects;
 
 import javax.portlet.PortletURL;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -51,8 +52,8 @@ public class BlueprintEntriesManagementToolbarDisplayContext
 		HttpServletRequest httpServletRequest,
 		LiferayPortletRequest liferayPortletRequest,
 		LiferayPortletResponse liferayPortletResponse,
-		SearchContainer<Blueprint> searchContainer,
-		String displayStyle, int blueprintType) {
+		SearchContainer<Blueprint> searchContainer, String displayStyle,
+		int blueprintType) {
 
 		super(
 			httpServletRequest, liferayPortletRequest, liferayPortletResponse,
@@ -68,8 +69,7 @@ public class BlueprintEntriesManagementToolbarDisplayContext
 	public List<DropdownItem> getActionDropdownItems() {
 		return DropdownItemListBuilder.add(
 			dropdownItem -> {
-				dropdownItem.putData(
-					"action", "deleteBlueprintEntries");
+				dropdownItem.putData("action", "deleteBlueprintEntries");
 
 				dropdownItem.setLabel(LanguageUtil.get(request, "delete"));
 
@@ -103,8 +103,8 @@ public class BlueprintEntriesManagementToolbarDisplayContext
 			dropdownItem -> {
 				dropdownItem.setHref(
 					renderURL, "mvcRenderCommandName",
-					BlueprintsAdminMVCCommandNames.EDIT_BLUEPRINT,
-					"redirect", currentURLObj.toString());
+					BlueprintsAdminMVCCommandNames.EDIT_BLUEPRINT, "redirect",
+					currentURLObj.toString());
 				dropdownItem.setLabel(
 					LanguageUtil.get(request, "add-blueprint"));
 			}
@@ -201,8 +201,8 @@ public class BlueprintEntriesManagementToolbarDisplayContext
 		return sortingURL;
 	}
 
-	private final String _displayStyle;
 	private final int _blueprintType;
+	private final String _displayStyle;
 	private final ThemeDisplay _themeDisplay;
 
 }

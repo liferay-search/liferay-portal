@@ -48,10 +48,6 @@ public class SearchRequestData {
 		_sorts.add(sort);
 	}
 
-	public List<Sort> getSorts() {
-		return _sorts;
-	}
-
 	public List<Aggregation> getAggregations() {
 		return _aggregations;
 	}
@@ -64,9 +60,12 @@ public class SearchRequestData {
 		return _query;
 	}
 
-
 	public List<Rescore> getRescores() {
 		return _rescores;
+	}
+
+	public List<Sort> getSorts() {
+		return _sorts;
 	}
 
 	public void setSorts(List<Sort> sorts) {
@@ -78,6 +77,6 @@ public class SearchRequestData {
 	private final BooleanQuery _postFilterQuery;
 	private final BooleanQuery _query;
 	private final List<Rescore> _rescores;
-	private List<Sort> _sorts;
+	private final List<Sort> _sorts;
 
 }

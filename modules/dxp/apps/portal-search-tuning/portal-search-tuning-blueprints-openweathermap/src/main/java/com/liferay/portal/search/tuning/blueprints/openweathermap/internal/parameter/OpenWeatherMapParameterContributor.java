@@ -121,19 +121,19 @@ public class OpenWeatherMapParameterContributor
 
 		searchParameterData.addParameter(
 			new IntegerParameter(
-				"openweathermap.weather_id", null,
+				"openweathermap.weather_id",
 				"${openweathermap.weather_id}",
 				weatherJsonObject.getInt("id")));
 
 		searchParameterData.addParameter(
 			new StringParameter(
-				"openweathermap.weather_name", null,
+				"openweathermap.weather_name",
 				"${openweathermap.weather_name}",
 				weatherJsonObject.getString("main")));
 
 		searchParameterData.addParameter(
 			new DoubleParameter(
-				"openweathermap.temperature", null,
+				"openweathermap.temperature",
 				"${openweathermap.temperature}",
 				weatherJsonObject.getDouble("temp")));
 	}

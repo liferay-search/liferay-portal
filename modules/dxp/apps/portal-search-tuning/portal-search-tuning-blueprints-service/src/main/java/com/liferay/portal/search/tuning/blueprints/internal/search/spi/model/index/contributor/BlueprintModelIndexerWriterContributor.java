@@ -41,18 +41,15 @@ public class BlueprintModelIndexerWriterContributor
 		ModelIndexerWriterDocumentHelper modelIndexerWriterDocumentHelper) {
 
 		batchIndexingActionable.setPerformActionMethod(
-			(Blueprint blueprint) ->
-				batchIndexingActionable.addDocuments(
-					modelIndexerWriterDocumentHelper.getDocument(
-						blueprint)));
+			(Blueprint blueprint) -> batchIndexingActionable.addDocuments(
+				modelIndexerWriterDocumentHelper.getDocument(blueprint)));
 	}
 
 	@Override
 	public BatchIndexingActionable getBatchIndexingActionable() {
 		return dynamicQueryBatchIndexingActionableFactory.
 			getBatchIndexingActionable(
-				blueprintLocalService.
-					getIndexableActionableDynamicQuery());
+				blueprintLocalService.getIndexableActionableDynamicQuery());
 	}
 
 	@Override
@@ -61,10 +58,10 @@ public class BlueprintModelIndexerWriterContributor
 	}
 
 	@Reference
-	protected DynamicQueryBatchIndexingActionableFactory
-		dynamicQueryBatchIndexingActionableFactory;
+	protected BlueprintLocalService blueprintLocalService;
 
 	@Reference
-	protected BlueprintLocalService blueprintLocalService;
+	protected DynamicQueryBatchIndexingActionableFactory
+		dynamicQueryBatchIndexingActionableFactory;
 
 }

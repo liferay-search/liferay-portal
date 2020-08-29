@@ -20,42 +20,34 @@ import com.liferay.portal.search.tuning.blueprints.engine.message.Severity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * @author Petteri Karttunen
  */
 public class SearchParameterData {
-	
+
 	public void addMessage(Message message) {
 		_messages.add(message);
 	}
-	
+
 	public void addParameter(Parameter parameter) {
 		_parameters.add(parameter);
 	}
-	
+
 	public Optional<Parameter> getByConfigurationVariableName(String name) {
-		return _parameters.stream(
-		).filter(
-			p -> name.equals(p.getConfigurationVariable())
+		Stream<Parameter> stream = _parameters.stream();
+
+		return stream.filter(
+			p -> name.equals(p.getTemplateVariable())
 		).findFirst();
 	}
-	
+
 	public Optional<Parameter> getByName(String name) {
-		return _parameters.stream(
-		).filter(
+		Stream<Parameter> stream = _parameters.stream();
+
+		return stream.filter(
 			p -> name.equals(p.getName())
-		).findFirst();
-	}
-	
-	public Optional<Parameter> getByRole(String role) {
-		return _parameters.stream(
-		).filter(
-			p -> role.equals(
-				p.getRoleOptional(
-				).orElse(
-					""
-				))
 		).findFirst();
 	}
 
@@ -68,15 +60,15 @@ public class SearchParameterData {
 	}
 
 	public boolean hasErrors() {
-		return _messages.stream(
-		).anyMatch(
+		Stream<Message> stream = _messages.stream();
+
+		return stream.anyMatch(
 			m -> m.getSeverity(
 			).equals(
 				Severity.ERROR
-			)
-		);
+			));
 	}
-	
+
 	public boolean hasParameters() {
 		return !_parameters.isEmpty();
 	}

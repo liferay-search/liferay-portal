@@ -1,5 +1,20 @@
+<%--
+/**
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of the Liferay Enterprise
+ * Subscription License ("License"). You may not use this file except in
+ * compliance with the License. You can obtain a copy of the License by
+ * contacting Liferay, Inc. See the License for the specific language governing
+ * permissions and limitations under the License, including but not limited to
+ * distribution rights of the Software.
+ *
+ *
+ *
+ */
+--%>
+
 <%@page import="javax.portlet.PortletPreferences"%>
-<%@page import="com.liferay.portal.kernel.json.JSONObject"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet" %>
@@ -7,38 +22,30 @@
 <%@ taglib uri="http://liferay.com/tld/aui" prefix="aui" %><%@
 taglib uri="http://liferay.com/tld/frontend" prefix="liferay-frontend" %><%@
 taglib uri="http://liferay.com/tld/portlet" prefix="liferay-portlet" %><%@
+taglib uri="http://liferay.com/tld/react" prefix="react" %><%@
 taglib uri="http://liferay.com/tld/theme" prefix="liferay-theme" %><%@
 taglib uri="http://liferay.com/tld/ui" prefix="liferay-ui" %>
 
 <%@ page import="com.liferay.portal.kernel.language.LanguageUtil" %>
+<%@ page import="com.liferay.portal.kernel.util.ParamUtil" %>
+<%@ page import="com.liferay.portal.kernel.util.HashMapBuilder" %>
+<%@ page import="java.util.Map" %>
+
+<%@ page import="com.liferay.portal.search.tuning.blueprints.web.poc.internal.display.context.BlueprintDisplayContext" %>
+<%@ page import="com.liferay.portal.search.tuning.blueprints.web.poc.internal.constants.BlueprintsWebPortletKeys" %>
 
 <liferay-theme:defineObjects />
 
 <portlet:defineObjects />
 
 <%
-
 	PortletPreferences preferences = renderRequest.getPreferences();
 	String suggestMode = preferences.getValue("suggestMode", "contents");
 
-	String suggestionsURL = null;
-
-	JSONObject uiConfiguration = (JSONObject)renderRequest.getAttribute("configuration");
-	
-	if (uiConfiguration != null && uiConfiguration.has("urlConfiguration")) {
-		JSONObject urlConfig = uiConfiguration.getJSONObject("urlConfiguration");
-
-		if (suggestMode.equals("contents")) {
-			suggestionsURL = urlConfig.getString("searchResultsURL");
-		} else {
-			suggestionsURL = urlConfig.getString("suggestionsURL");
-		}
-	}
-
-	Boolean appendRedirect = true; 
+	Boolean appendRedirect = true;
 	Integer queryMinLength = 3;
-	Integer requestDelay =  500; 
-	Integer requestTimeout = 10000; 
+	Integer requestDelay =  500;
+	Integer requestTimeout = 10000;
 	String searchPageURL = "/search";
 %>
 

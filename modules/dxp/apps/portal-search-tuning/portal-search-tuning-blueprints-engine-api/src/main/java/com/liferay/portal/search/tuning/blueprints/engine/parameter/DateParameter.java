@@ -14,14 +14,12 @@
 
 package com.liferay.portal.search.tuning.blueprints.engine.parameter;
 
-import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.tuning.blueprints.constants.json.values.EvaluationType;
 import com.liferay.portal.search.tuning.blueprints.engine.exception.ParameterEvaluationException;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author Petteri Karttunen
@@ -29,10 +27,9 @@ import java.util.Optional;
 public class DateParameter implements Parameter {
 
 	public DateParameter(
-		String name, String role, String configurationVariable, Date value) {
+		String name, String configurationVariable, Date value) {
 
 		_name = name;
-		_role = role;
 		_configurationVariable = configurationVariable;
 		_value = value;
 	}
@@ -43,33 +40,24 @@ public class DateParameter implements Parameter {
 
 		return evaluationVisitor.visit(this);
 	}
-	
-	@Override
-	public String accept(ToStringVisitor parameterToStringVisitor) throws Exception {
-		throw new UnsupportedOperationException();
-	}
-	
-	public String accept(ToStringVisitor toStringVisitor, String dateOutputFormat) throws Exception {
-		return toStringVisitor.visit(this, dateOutputFormat);		
-	}
 
 	@Override
-	public String getConfigurationVariable() {
-		return _configurationVariable;
+	public String accept(ToStringVisitor parameterToStringVisitor)
+		throws Exception {
+
+		throw new UnsupportedOperationException();
+	}
+
+	public String accept(
+			ToStringVisitor toStringVisitor, String dateOutputFormat)
+		throws Exception {
+
+		return toStringVisitor.visit(this, dateOutputFormat);
 	}
 
 	@Override
 	public String getName() {
 		return _name;
-	}
-
-	@Override
-	public Optional<String> getRoleOptional() {
-		if (!Validator.isBlank(_role)) {
-			return Optional.of(_role);
-		}
-
-		return Optional.empty();
 	}
 
 	@Override
@@ -88,12 +76,17 @@ public class DateParameter implements Parameter {
 	}
 
 	@Override
+	public String getTemplateVariable() {
+		return _configurationVariable;
+	}
+
+	@Override
 	public Date getValue() {
 		return _value;
 	}
 
 	private final String _configurationVariable;
 	private final String _name;
-	private final String _role;
 	private final Date _value;
+
 }

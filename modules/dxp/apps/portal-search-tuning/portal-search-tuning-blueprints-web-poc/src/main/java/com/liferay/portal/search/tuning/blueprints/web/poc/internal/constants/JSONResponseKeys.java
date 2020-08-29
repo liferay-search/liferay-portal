@@ -17,7 +17,7 @@ package com.liferay.portal.search.tuning.blueprints.web.poc.internal.constants;
 /**
  * @author Petteri Karttunen
  */
-public class JSONResponseKeys extends com.liferay.portal.search.tuning.blueprints.engine.constants.JSONResponseKeys{
+public class JSONResponseKeys extends com.liferay.portal.search.tuning.blueprints.response.constants.JSONResponseKeys{
 
 	public static final String ERROR = "error";
 

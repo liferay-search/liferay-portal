@@ -33,9 +33,7 @@ import javax.portlet.ActionResponse;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-@Component(
-	immediate = true, service = BlueprintExceptionRequestHandler.class
-)
+@Component(immediate = true, service = BlueprintExceptionRequestHandler.class)
 public class BlueprintExceptionRequestHandler {
 
 	public void handlePortalException(
@@ -49,9 +47,8 @@ public class BlueprintExceptionRequestHandler {
 		JSONArray jsonArray = _jsonFactory.createJSONArray();
 
 		if (portalException instanceof BlueprintValidationException) {
-			BlueprintValidationException
-				blueprintValidationException =
-					(BlueprintValidationException)portalException;
+			BlueprintValidationException blueprintValidationException =
+				(BlueprintValidationException)portalException;
 
 			_log.error(
 				blueprintValidationException.getMessage(),

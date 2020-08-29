@@ -20,7 +20,7 @@ package com.liferay.portal.search.tuning.blueprints.engine.parameter;
 public interface ToStringVisitor {
 
 	public String visit(BooleanParameter parameter) throws Exception;
-	
+
 	public String visit(DateParameter parameter, String outputDateFormat)
 		throws Exception;
 
@@ -39,4 +39,5 @@ public interface ToStringVisitor {
 	public String visit(StringArrayParameter parameter) throws Exception;
 
 	public String visit(StringParameter parameter) throws Exception;
+
 }

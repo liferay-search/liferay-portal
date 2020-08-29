@@ -28,11 +28,12 @@ import java.util.Map;
 import org.osgi.service.component.annotations.Component;
 
 /**
+ * TODO: https://issues.liferay.com/browse/LPS-119044
+ *
  * @author Petteri Karttunen
  */
 @Component(immediate = true, service = BlueprintValidator.class)
-public class BlueprintValidatorImpl
-	implements BlueprintValidator {
+public class BlueprintValidatorImpl implements BlueprintValidator {
 
 	@Override
 	public void validate(
@@ -47,6 +48,23 @@ public class BlueprintValidatorImpl
 
 			throw new BlueprintValidationException(errors);
 		}
+	}
+
+	private boolean _isBlueprintValid(
+			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
+			String configuration, List<String> errors)
+		throws BlueprintValidationException {
+
+		boolean result = true;
+
+		// TODO: https://issues.liferay.com/browse/LPS-118942
+
+		// result &= _isDescriptionValid(descriptionMap, errors);
+
+		result &= _isConfigurationValid(configuration, errors);
+		result &= _isTitleValid(titleMap, errors);
+
+		return result;
 	}
 
 	private boolean _isConfigurationValid(
@@ -74,22 +92,6 @@ public class BlueprintValidatorImpl
 				result = false;
 			}
 		}
-
-		return result;
-	}
-
-	private boolean _isBlueprintValid(
-			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
-			String configuration, List<String> errors)
-		throws BlueprintValidationException {
-
-		boolean result = true;
-
-		// TODO: https://issues.liferay.com/browse/LPS-118942
-		
-		// result &= _isDescriptionValid(descriptionMap, errors);
-		result &= _isConfigurationValid(configuration, errors);
-		result &= _isTitleValid(titleMap, errors);
 
 		return result;
 	}

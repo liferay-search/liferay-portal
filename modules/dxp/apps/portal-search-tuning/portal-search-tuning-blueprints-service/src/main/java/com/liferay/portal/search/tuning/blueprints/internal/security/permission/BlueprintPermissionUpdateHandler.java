@@ -36,9 +36,8 @@ public class BlueprintPermissionUpdateHandler
 
 	@Override
 	public void updatedPermission(String primKey) {
-		Blueprint blueprint =
-			_blueprintLocalService.fetchBlueprint(
-				GetterUtil.getLong(primKey));
+		Blueprint blueprint = _blueprintLocalService.fetchBlueprint(
+			GetterUtil.getLong(primKey));
 
 		if (blueprint == null) {
 			return;
@@ -46,8 +45,7 @@ public class BlueprintPermissionUpdateHandler
 
 		blueprint.setModifiedDate(new Date());
 
-		_blueprintLocalService.updateBlueprint(
-			blueprint);
+		_blueprintLocalService.updateBlueprint(blueprint);
 	}
 
 	@Reference

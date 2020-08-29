@@ -14,13 +14,13 @@
 
 package com.liferay.portal.search.tuning.blueprints.engine.context;
 
-import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.tuning.blueprints.engine.message.Message;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.SearchParameterData;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -30,35 +30,19 @@ public interface SearchRequestContext {
 
 	public void addMessage(Message message);
 
-	public Optional<JSONArray> getAggregationConfiguration();
-	
-	public Long getBlueprintId();
+	public Map<String, Object> getAttributes();
 
-	public JSONArray getClauseConfiguration();
+	public JSONObject getBlueprint();
+
+	public Long getBlueprintId();
 
 	public Long getCompanyId();
 
-	public Optional<List<String>> getExcludeQueryContributors();
-
-	public Optional<List<String>> getExcludeQueryPostProcessors();
-
-	public Optional<String[]> getFetchSourceExcludes();
-
-	public Optional<String[]> getFetchSourceIncludes();
-
 	public int getFrom();
-
-	public Optional<JSONObject> getHighlightConfiguration();
-
-	public String[] getIndexNames();
 
 	public Optional<String> getInitialKeywords();
 
-	public Optional<JSONObject> getKeywordIndexingConfiguration();
-
 	public String getKeywords();
-
-	public Optional<JSONObject> getKeywordSuggesterConfiguration();
 
 	public Locale getLocale();
 
@@ -68,20 +52,8 @@ public interface SearchRequestContext {
 
 	public SearchParameterData getSearchParameterData();
 
-	public Integer getSize();
-
-	public Optional<JSONArray> getSortConfiguration();
-
-	public Optional<JSONObject> getSpellCheckerConfiguration();
-
 	public Long getUserId();
 
 	public boolean hasErrors();
-
-	public boolean isExplain();
-
-	public boolean isFetchSource();
-
-	public boolean isIncludeResponseString();
 
 }

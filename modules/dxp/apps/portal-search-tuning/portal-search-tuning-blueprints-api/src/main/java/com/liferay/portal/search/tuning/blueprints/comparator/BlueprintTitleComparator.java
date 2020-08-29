@@ -20,13 +20,13 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 
 import java.text.Collator;
+
 import java.util.Locale;
 
 /**
  * @author Petteri Karttunen
  */
-public class BlueprintTitleComparator
-	extends OrderByComparator<Blueprint> {
+public class BlueprintTitleComparator extends OrderByComparator<Blueprint> {
 
 	public static final String ORDER_BY_ASC = "Blueprint.title ASC";
 
@@ -42,24 +42,17 @@ public class BlueprintTitleComparator
 		_ascending = ascending;
 	}
 
-	public BlueprintTitleComparator(
-		boolean ascending, Locale locale) {
-
+	public BlueprintTitleComparator(boolean ascending, Locale locale) {
 		_ascending = ascending;
 		_locale = locale;
 	}
 
 	@Override
-	public int compare(
-		Blueprint blueprint1,
-		Blueprint blueprint2) {
-
+	public int compare(Blueprint blueprint1, Blueprint blueprint2) {
 		Collator collator = CollatorUtil.getInstance(_locale);
 
-		String title1 = StringUtil.toLowerCase(
-			blueprint1.getTitle(_locale));
-		String title2 = StringUtil.toLowerCase(
-			blueprint2.getTitle(_locale));
+		String title1 = StringUtil.toLowerCase(blueprint1.getTitle(_locale));
+		String title2 = StringUtil.toLowerCase(blueprint2.getTitle(_locale));
 
 		int value = collator.compare(title1, title2);
 

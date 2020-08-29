@@ -49,7 +49,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Petteri Karttunen
  */
 @Component(
-	configurationPid = "com.liferay.portal.search.tuning.blueprints.ipstack.internal.configuration.IPStackConfigurationConfiguration",
+	configurationPid = "com.liferay.portal.search.tuning.blueprints.ipstack.internal.configuration.IPStackConfiguration",
 	immediate = true, property = "name=ipstack",
 	service = GeoLocationDataProvider.class
 )
@@ -58,7 +58,7 @@ public class IPStackDataProvider implements GeoLocationDataProvider {
 	public JSONObject getGeoLocationData(
 		SearchParameterData searchParameterData, String ipAddress) {
 
-		if (_ipStackConfiguration.isEnabled()) {
+		if (!_ipStackConfiguration.isEnabled()) {
 			return null;
 		}
 
@@ -215,8 +215,8 @@ public class IPStackDataProvider implements GeoLocationDataProvider {
 	private boolean _validateData(
 		SearchParameterData searchParameterData, JSONObject jsonObject) {
 
-		if ((jsonObject == null) || (jsonObject.get("latitude") != null) ||
-			(jsonObject.get("longitude") != null)) {
+		if ((jsonObject == null) || (jsonObject.get("latitude") == null) ||
+			(jsonObject.get("longitude") == null)) {
 
 			searchParameterData.addMessage(
 				new Message(

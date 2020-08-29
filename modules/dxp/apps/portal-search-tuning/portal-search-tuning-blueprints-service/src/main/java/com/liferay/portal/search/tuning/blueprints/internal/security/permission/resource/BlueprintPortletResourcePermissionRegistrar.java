@@ -41,8 +41,7 @@ public class BlueprintPortletResourcePermissionRegistrar {
 	protected void activate(BundleContext bundleContext) {
 		Dictionary<String, Object> properties = new HashMapDictionary<>();
 
-		properties.put(
-			"resource.name", BlueprintsConstants.RESOURCE_NAME);
+		properties.put("resource.name", BlueprintsConstants.RESOURCE_NAME);
 
 		_serviceRegistration = bundleContext.registerService(
 			PortletResourcePermission.class,

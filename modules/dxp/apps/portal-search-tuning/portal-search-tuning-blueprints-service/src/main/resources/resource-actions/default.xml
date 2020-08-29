@@ -51,6 +51,7 @@
 			<site-member-defaults>
 			</site-member-defaults>
 			<guest-defaults>
+				<action-key>APPLY_BLUEPRINT</action-key>
 			</guest-defaults>
 			<guest-unsupported>
 				<action-key>DELETE_BLUEPRINT</action-key>

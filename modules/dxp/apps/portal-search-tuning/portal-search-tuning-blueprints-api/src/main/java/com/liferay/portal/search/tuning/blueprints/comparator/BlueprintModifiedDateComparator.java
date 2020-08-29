@@ -25,14 +25,12 @@ public class BlueprintModifiedDateComparator
 	extends OrderByComparator<Blueprint> {
 
 	public static final String ORDER_BY_ASC =
-		"Blueprint.modifiedDate ASC, " +
-			"Blueprint.blueprintId ASC";
+		"Blueprint.modifiedDate ASC, Blueprint.blueprintId ASC";
 
 	public static final String[] ORDER_BY_CONDITION_FIELDS = {"modifiedDate"};
 
 	public static final String ORDER_BY_DESC =
-		"Blueprint.modifiedDate DESC, " +
-			"Blueprint.blueprintId DESC";
+		"Blueprint.modifiedDate DESC, Blueprint.blueprintId DESC";
 
 	public static final String[] ORDER_BY_FIELDS = {
 		"modifiedDate", "blueprintId"
@@ -47,18 +45,12 @@ public class BlueprintModifiedDateComparator
 	}
 
 	@Override
-	public int compare(
-		Blueprint blueprint1,
-		Blueprint blueprint2) {
-
+	public int compare(Blueprint blueprint1, Blueprint blueprint2) {
 		int value = DateUtil.compareTo(
-			blueprint1.getModifiedDate(),
-			blueprint2.getModifiedDate());
+			blueprint1.getModifiedDate(), blueprint2.getModifiedDate());
 
 		if (value == 0) {
-			if (blueprint1.getBlueprintId() <
-					blueprint2.getBlueprintId()) {
-
+			if (blueprint1.getBlueprintId() < blueprint2.getBlueprintId()) {
 				value = -1;
 			}
 			else if (blueprint1.getBlueprintId() >
