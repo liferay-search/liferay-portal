@@ -18,7 +18,6 @@ import com.liferay.portal.kernel.service.ServiceContextFactory;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PwdGenerator;
-import com.liferay.portal.kernel.util.URLCodec;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.tuning.blueprints.bulkloader.poc.internal.constants.BulkloaderPortletKeys;
 import com.liferay.portal.search.tuning.blueprints.bulkloader.poc.internal.constants.MVCActionCommandNames;
@@ -26,14 +25,12 @@ import com.liferay.portal.search.tuning.blueprints.bulkloader.poc.internal.const
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import java.net.URL;
-import java.net.URLConnection;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -59,14 +56,9 @@ public class ImportMVCActionCommand extends BaseMVCActionCommand {
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
 
-		// Wikipedia article titles, like 'Train'
-
-		String wikiArticles = ParamUtil.getString(
-			actionRequest, "wikiArticles");
-
-		List<String> articles = _createArticleList(wikiArticles);
-
 		// List of userIds to be used as article creators.
+
+		String importType = ParamUtil.getString(actionRequest, "type");
 
 		String users = ParamUtil.getString(actionRequest, "userIds");
 
@@ -83,16 +75,12 @@ public class ImportMVCActionCommand extends BaseMVCActionCommand {
 		String languageId = ParamUtil.getString(
 			actionRequest, "languageId", "en_US");
 
-		// Number of articles to be created.
-
-		int limit = ParamUtil.getInteger(actionRequest, "limit", 100);
-
 		// Disable link validation.
 
 		ExportImportThreadLocal.setPortletImportInProcess(true);
 
 		_importArticles(
-			actionRequest, articles, userIds, groupIds, languageId, 0, limit);
+			actionRequest, userIds, groupIds, languageId, importType);
 
 		ExportImportThreadLocal.setPortletImportInProcess(false);
 	}
@@ -120,7 +108,7 @@ public class ImportMVCActionCommand extends BaseMVCActionCommand {
 
 		Map<Locale, String> descriptionMap = new HashMap<>();
 
-		descriptionMap.put(locale, content.substring(0, _DESCRIPTION_LENGTH));
+		descriptionMap.put(locale, content);
 
 		String instanceId = _generateInstanceId();
 
@@ -166,17 +154,6 @@ public class ImportMVCActionCommand extends BaseMVCActionCommand {
 		return true;
 	}
 
-	private List<String> _createArticleList(String ids) {
-		String[] arr = ids.split(",");
-		List<String> values = new ArrayList<>();
-
-		for (String s : arr) {
-			values.add(s);
-		}
-
-		return values;
-	}
-
 	private List<Long> _createIdList(String ids) {
 		String[] arr = ids.split(",");
 		List<Long> values = new ArrayList<>();
@@ -203,149 +180,127 @@ public class ImportMVCActionCommand extends BaseMVCActionCommand {
 	}
 
 	private void _importArticles(
-			ActionRequest actionRequest, List<String> articles,
-			List<Long> userIds, List<Long> groupIds, String languageId,
-			int counter, int limit)
+			ActionRequest actionRequest, List<Long> userIds,
+			List<Long> groupIds, String languageId, String importType)
 		throws Exception {
-
-		List<String> articleLinks = new ArrayList<>();
 
 		int groupIdx = 0;
 		int userIdx = 0;
 
-		for (String article : articles) {
-			if (counter >= limit) {
-				return;
+		JsonParser parser = new JsonParser();
+
+		Set<String> fileNames = fileNameCityMap.keySet();
+
+		for (String fileName : fileNames) {
+			if (importType.equals("restraunts") &&
+				!fileName.endsWith("-restraunt.json")) {
+
+				continue;
 			}
 
-			String apiURL =
-				_API_URL + URLCodec.encodeURL(article) + "&format=json";
+			if (importType.equals("tourist attractions") &&
+				!fileName.endsWith("-tourist.json")) {
 
-			_log.info("Calling:" + apiURL);
+				continue;
+			}
 
-			URL url = new URL(apiURL);
+			System.out.println("Importing " + fileName);
 
-			URLConnection request = url.openConnection();
-
-			request.connect();
-
-			JsonParser parser = new JsonParser();
+			InputStream in = this.getClass().getResourceAsStream(fileName);
 
 			try {
 				JsonElement root = parser.parse(
-					new InputStreamReader((InputStream)request.getContent()));
+					new InputStreamReader(in));
 
 				JsonObject rootobj = root.getAsJsonObject();
 
-				JsonObject parse = rootobj.getAsJsonObject("parse");
+				JsonArray results = rootobj.getAsJsonArray("results");
 
-				// Text
-
-				JsonObject text = parse.getAsJsonObject("text");
-
-				String content = text.get(
-					"*"
-				).getAsString();
-
-				// Title
-
-				String title = parse.get(
-					"title"
-				).getAsString();
-
-				// Categories => tags
-
-				List<String> tags = new ArrayList<>();
-
-				JsonArray categories = parse.getAsJsonArray("categories");
-
-				for (int i = 0; i < categories.size(); i++) {
-					JsonObject category = categories.get(
+				for (int i = 0; i < results.size(); i++) {
+					JsonObject result = results.get(
 						i
 					).getAsJsonObject();
 
-					JsonElement hidden = category.get("hidden");
+					// Content / City & geo
 
-					if (hidden != null) {
-						continue;
-					}
+					JsonObject geometry = result.get(
+						"geometry"
+					).getAsJsonObject();
 
-					String value = category.get(
-						"*"
+					JsonObject location = geometry.get(
+						"location"
+					).getAsJsonObject();
+
+					String lat =  location.get(
+						"lat"
 					).getAsString();
 
-					if (_checkTagValue(value)) {
+					String lng =  location.get(
+						"lng"
+					).getAsString();
 
-						// Replace underscores
+					String city = fileNameCityMap.get(fileName);
 
-						value = value.replace("_", " ");
+					String content = city + ":" + lat + "," + lng;
 
-						tags.add(value);
+					// Title / Name
+
+					String title = result.get(
+						"name"
+					).getAsString();
+
+					// Categories => tags
+
+					List<String> tags = new ArrayList<>();
+
+					JsonArray types = result.getAsJsonArray("types");
+
+					for (int j = 0; j < types.size(); j++) {
+						String type = types.get(
+							j
+						).getAsString();
+
+						if (_checkTagValue(type)) {
+
+							// Replace underscores
+
+							type = type.replace("_", " ");
+
+							tags.add(type);
+						}
 					}
-				}
 
-				String[] assetTagNames = tags.stream(
-				).toArray(
-					String[]::new
-				);
+					String[] assetTagNames = tags.stream(
+					).toArray(
+						String[]::new
+					);
 
-				// Links
-
-				JsonArray links = parse.getAsJsonArray("links");
-
-				for (int i = 0; i < links.size(); i++) {
-					JsonObject link = links.get(
-						i
-					).getAsJsonObject();
-
-					int ns = link.get(
-						"ns"
-					).getAsInt();
-
-					if (ns != 0) {
-						continue;
+					if (userIdx == userIds.size()) {
+						userIdx = 0;
 					}
 
-					articleLinks.add(
-						link.get(
-							"*"
-						).getAsString());
+					long userId = userIds.get(userIdx++);
+
+					if (groupIdx == groupIds.size()) {
+						groupIdx = 0;
+					}
+
+					long groupId = groupIds.get(groupIdx++);
+
+					_log.info("Adding journal article " + title);
+
+					_addJournalArticle(
+						actionRequest, userId, groupId, languageId, title,
+						content, assetTagNames);
 				}
-
-				if (userIdx == userIds.size()) {
-					userIdx = 0;
-				}
-
-				long userId = userIds.get(userIdx++);
-
-				if (groupIdx == groupIds.size()) {
-					groupIdx = 0;
-				}
-
-				long groupId = groupIds.get(groupIdx++);
-
-				_log.info("Adding Wikipedia article " + title);
-
-				_addJournalArticle(
-					actionRequest, userId, groupId, languageId, title, content,
-					assetTagNames);
 			}
 			catch (Exception e) {
 				_log.error(e.getMessage(), e);
 			}
-
-			counter++;
 		}
 
-		_importArticles(
-			actionRequest, articleLinks, userIds, groupIds, languageId, counter,
-			limit);
+		System.out.println("Fininshed importing all data");
 	}
-
-	private static final String _API_URL =
-		"https://en.wikipedia.org/w/api.php?action=parse&page=";
-
-	private static final int _DESCRIPTION_LENGTH = 300;
 
 	private static final char[] _INVALID_CHARACTERS = {
 		CharPool.AMPERSAND, CharPool.APOSTROPHE, CharPool.AT,
@@ -360,6 +315,39 @@ public class ImportMVCActionCommand extends BaseMVCActionCommand {
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		ImportMVCActionCommand.class);
+
+	/*
+	Location data was found using the Google "Places API". Additional data sets
+	can be added by copying the json results of a request into a file and
+	putting an entry in fileNameCityMap.
+
+	An API Key is needed to perform requests
+	https://developers.google.com/places/web-service/get-api-key
+
+	Example requests:
+	Restraunts within ~10 miles of Los Angeles
+	https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=$API_KEY&location=34.061645,-118.261353&radius=15000&type=restaurant
+
+	Tourist Attractions within ~1 mile of New York
+	https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=$API_KEY&location=40.761619,-73.972851&radius=1500&type=tourist_attraction
+
+	List of supported "types"
+	https://developers.google.com/places/web-service/supported_types
+
+	json results formatted with https://jsonformatter.curiousconcept.com/
+	 */
+
+	private static final Map<String, String> fileNameCityMap =
+		new HashMap<String, String>() {
+			{
+				put("la-restraunt.json","Los Angeles");
+				put("la-tourist.json","Los Angeles");
+				put("nashville-restraunt.json", "Nashville");
+				put("nashville-tourist.json", "Nashville");
+				put("ny-restraunt.json", "New York");
+				put("ny-tourist.json", "New York");
+			}
+		};
 
 	@Reference
 	private JournalArticleLocalService _journalArticleLocalService;
