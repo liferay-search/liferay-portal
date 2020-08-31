@@ -56,9 +56,9 @@ public class ImportMVCActionCommand extends BaseMVCActionCommand {
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
 
-		// List of userIds to be used as article creators.
-
 		String importType = ParamUtil.getString(actionRequest, "type");
+
+		// List of userIds to be used as article creators.
 
 		String users = ParamUtil.getString(actionRequest, "userIds");
 
@@ -192,8 +192,8 @@ public class ImportMVCActionCommand extends BaseMVCActionCommand {
 		Set<String> fileNames = fileNameCityMap.keySet();
 
 		for (String fileName : fileNames) {
-			if (importType.equals("restraunts") &&
-				!fileName.endsWith("-restraunt.json")) {
+			if (importType.equals("restaurants") &&
+				!fileName.endsWith("-restaurant.json")) {
 
 				continue;
 			}
@@ -325,7 +325,7 @@ public class ImportMVCActionCommand extends BaseMVCActionCommand {
 	https://developers.google.com/places/web-service/get-api-key
 
 	Example requests:
-	Restraunts within ~10 miles of Los Angeles
+	Restaurants within ~10 miles of Los Angeles
 	https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=$API_KEY&location=34.061645,-118.261353&radius=15000&type=restaurant
 
 	Tourist Attractions within ~1 mile of New York
@@ -340,11 +340,11 @@ public class ImportMVCActionCommand extends BaseMVCActionCommand {
 	private static final Map<String, String> fileNameCityMap =
 		new HashMap<String, String>() {
 			{
-				put("la-restraunt.json","Los Angeles");
+				put("la-restaurant.json","Los Angeles");
 				put("la-tourist.json","Los Angeles");
-				put("nashville-restraunt.json", "Nashville");
+				put("nashville-restaurant.json", "Nashville");
 				put("nashville-tourist.json", "Nashville");
-				put("ny-restraunt.json", "New York");
+				put("ny-restaurant.json", "New York");
 				put("ny-tourist.json", "New York");
 			}
 		};

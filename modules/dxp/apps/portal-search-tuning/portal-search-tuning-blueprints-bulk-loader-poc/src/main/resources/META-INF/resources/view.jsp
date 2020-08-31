@@ -10,7 +10,7 @@
 	<aui:select label="Select the type of data to be imported" name="type">
 
 		<%
-		String[] types = {"all data", "restraunts", "tourist attractions"};
+		String[] types = {"all data", "restaurants", "tourist attractions"};
 		for (String type : types) {
 		%>
 			<aui:option label="<%= type %>" value="<%= type %>" />
