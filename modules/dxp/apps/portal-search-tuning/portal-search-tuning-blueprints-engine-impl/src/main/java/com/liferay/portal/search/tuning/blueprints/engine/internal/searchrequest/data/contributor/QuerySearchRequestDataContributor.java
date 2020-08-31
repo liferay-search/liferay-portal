@@ -190,11 +190,9 @@ public class QuerySearchRequestDataContributor
 								ClausesConfigurationKeys.TYPE.getJsonKey(),
 								type));
 
-						if (_log.isWarnEnabled()) {
-							_log.warn(
-								illegalArgumentException.getMessage(),
+						_log.error(
+							illegalArgumentException.getMessage(),
 								illegalArgumentException);
-						}
 					}
 					catch (JSONException jsonException) {
 						searchRequestContext.addMessage(

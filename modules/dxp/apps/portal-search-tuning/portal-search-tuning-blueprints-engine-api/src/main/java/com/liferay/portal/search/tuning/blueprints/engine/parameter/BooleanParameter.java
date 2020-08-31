@@ -19,6 +19,7 @@ import com.liferay.portal.search.tuning.blueprints.engine.exception.ParameterEva
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Petteri Karttunen
@@ -41,8 +42,8 @@ public class BooleanParameter implements Parameter {
 	}
 
 	@Override
-	public String accept(ToStringVisitor toStringVisitor) throws Exception {
-		return toStringVisitor.visit(this);
+	public String accept(ToStringVisitor toStringVisitor, Map<String, String> options) throws Exception {
+		return toStringVisitor.visit(this, options);
 	}
 
 	@Override

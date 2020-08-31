@@ -18,6 +18,7 @@ import com.liferay.portal.search.tuning.blueprints.constants.json.values.Evaluat
 import com.liferay.portal.search.tuning.blueprints.engine.exception.ParameterEvaluationException;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Petteri Karttunen
@@ -27,7 +28,8 @@ public interface Parameter {
 	public boolean accept(EvaluationVisitor parameterEvaluationVisitor)
 		throws ParameterEvaluationException;
 
-	public String accept(ToStringVisitor parameterToStringVisitor)
+	public String accept(ToStringVisitor parameterToStringVisitor,
+			Map<String, String> options)
 		throws Exception;
 
 	public String getName();

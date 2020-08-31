@@ -14,92 +14,131 @@
  */
 
 export const QUERY_FRAGMENTS = [
-	{
-		clauses: [
-			{
-				configuration: {
-					boost: 20,
-					field_name: 'gsearch_locations_${context.language_id}',
-					query: '${geolocation.city}',
-				},
-				occur: 'should',
-				query_type: 'match',
-			},
-			{
-				configuration: {
-					boost: 10,
-					field_name: 'gsearch_locations_${context.language_id}',
-					query: '${geolocation.country_name}',
-				},
-				occur: 'should',
-				query_type: 'match',
-			},
-		],
-		conditions: [],
-		description: {
-			en_US:
-				'Broadest query catching documents matching any keyword. Title is given more boost among the fields. Query has the neutral boost of 1.0.',
-		},
-		enabled: true,
-		icon: 'vocabulary',
-		title: {en_US: 'Matches any keyword'},
-	},
-	{
-		clauses: [
-			{
-				configuration: {
-					boost: 20,
-					field_name: 'gsearch_locations_${context.language_id}',
-					query: '${geolocation.city}',
-				},
-				occur: 'should',
-				query_type: 'match',
-			},
-			{
-				configuration: {
-					boost: 10,
-					field_name: 'gsearch_locations_${context.language_id}',
-					query: '${geolocation.country_name}',
-				},
-				occur: 'should',
-				query_type: 'match',
-			},
-		],
-		conditions: [],
-		description: {
-			en_US: 'Boost content last modified within a time frame.',
-		},
-		enabled: true,
-		icon: 'time',
-		title: {en_US: 'Freshness'},
-	},
-	{
-		clauses: [
-			{
-				configuration: {
-					boost: 20,
-					field_name: 'gsearch_locations_${context.language_id}',
-					query: '${geolocation.city}',
-				},
-				occur: 'should',
-				query_type: 'match',
-			},
-			{
-				configuration: {
-					boost: 10,
-					field_name: 'gsearch_locations_${context.language_id}',
-					query: '${geolocation.country_name}',
-				},
-				occur: 'should',
-				query_type: 'match',
-			},
-		],
-		conditions: [],
-		description: {
-			en_US: "Boost content created closer to user's location.",
-		},
-		enabled: true,
-		icon: 'geolocation',
-		title: {en_US: "User's Geolocation"},
-	},
+  {
+    "clauses": [
+      {
+        "occur": "must",
+        "query": {
+          "default_operator": "or",
+          "boost": 2,
+          "fields": [
+            {
+              "field": "title_${context.language_id}",
+              "boost": "3"
+            },
+            {
+              "field": "content_${context.language_id}",
+              "boost": "3"
+            }
+          ]
+        },
+        "context": "query",
+        "type": "simple_query_string"
+      }
+    ],
+    "title": {
+      "en_US": "Search title and content"
+    },
+    "description": {
+      "en_US": "Match any keyword"
+    },
+    "conditions": [],
+    "icon": "vocabulary",
+    "enabled": true
+  },
+  {
+    "clauses": [
+      {
+        "occur": "should",
+        "query": {
+          "query": {
+            "function_score": {
+              "gauss": {
+                "modified": {
+                  "offset": "5d",
+                  "origin": "${time.current_date|dateFormat=yyyyMMddHHmmss}",
+                  "scale": "30d",
+                  "decay": 0.4
+                }
+              },
+              "boost": 100
+            }
+          }
+        },
+        "context": "query",
+        "type": "wrapper"
+      }
+    ],
+    "description": {
+      "en_US": "Boost contents modified within a time frame"
+    },
+    "title": {
+      "en_US": "Freshness"
+    },
+    "conditions": [],
+    "icon": "time",
+    "enabled": true
+  },
+  {
+    "clauses": [
+      {
+        "occur": "must",
+        "query": {
+          "query": {
+            "bool": {
+              "must": [
+                {
+                  "term": {
+                    "entryClassName": "com.liferay.journal.model.JournalArticle"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "context": "pre_filter",
+        "type": "wrapper"
+      }
+    ],
+    "description": {
+      "en_US": "Limit search to Web Content"
+    },
+    "title": {
+      "en_US": "Filter Web Content"
+    },
+    "conditions": [],
+    "icon": "filter",
+    "enabled": true
+  },
+  {
+    "clauses": [
+      {
+        "occur": "must",
+        "query": {
+          "query": {
+            "bool": {
+              "must": [
+                {
+                  "term": {
+                    "status": 0
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "context": "pre_filter",
+        "type": "wrapper"
+      }
+    ],
+    "description": {
+      "en_US": "Limit search to published content"
+    },
+    "title": {
+      "en_US": "Filter Published Content"
+    },
+    "conditions": [],
+    "icon": "filter",
+    "enabled": true
+  }
 ];

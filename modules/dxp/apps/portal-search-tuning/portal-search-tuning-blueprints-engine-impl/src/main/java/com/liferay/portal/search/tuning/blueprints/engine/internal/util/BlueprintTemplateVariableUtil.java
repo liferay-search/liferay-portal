@@ -14,15 +14,21 @@
 
 package com.liferay.portal.search.tuning.blueprints.engine.internal.util;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
-import com.liferay.portal.search.tuning.blueprints.engine.internal.clause.condition.visitor.ToTemplateVariableStringVisitor;
+import com.liferay.portal.search.tuning.blueprints.engine.internal.parameter.visitor.ToTemplateVariableStringVisitor;
+import com.liferay.portal.search.tuning.blueprints.engine.parameter.DateParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.Parameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.SearchParameterData;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Petteri Karttunen
@@ -44,23 +50,36 @@ public class BlueprintTemplateVariableUtil {
 
 			return queryJsonObject;
 		}
-
+		
 		String queryString = queryJsonObject.toString();
+		
+		if (!_hasTemplateVariables(queryString)) {
+			return queryJsonObject;
+		}	
 
 		boolean changed = false;
 
-		ToTemplateVariableStringVisitor toConfigurationParameterStringVisitor =
+		ToTemplateVariableStringVisitor toStringVisitor =
 			new ToTemplateVariableStringVisitor();
 
 		for (Parameter parameter : searchParameterData.getParameters()) {
-			String variable = parameter.getTemplateVariable();
 
-			if (queryString.contains(variable)) {
-				queryString = StringUtil.replace(
-					queryString, variable,
-					parameter.accept(toConfigurationParameterStringVisitor));
+			String str1 = parameter.getTemplateVariable();
+			String str2 = _getParametrizedVariableStem(str1);
+			
+			if (queryString.contains(str2)) {
+				queryString = _processParametrizedTemplateVariables(queryString, parameter, toStringVisitor, str2);
 				changed = true;
 			}
+			
+			if (queryString.contains(str1)) {
+				queryString = _processTemplateVariables(queryString, parameter, toStringVisitor);
+				changed = true;
+			}
+			
+			if (!_hasTemplateVariables(queryString)) {
+				break;
+			}	
 		}
 
 		if (changed) {
@@ -69,7 +88,98 @@ public class BlueprintTemplateVariableUtil {
 
 		return queryJsonObject;
 	}
+	
+	private static Map<String, String> _getParameterOptions(String optionsString) 
+			throws Exception {
+		
+		Map<String, String> map = new HashMap<String, String>();
 
+		if (Validator.isBlank(optionsString)) {
+			return map;
+		}
+
+		String[] arr = optionsString.split(",");
+		
+		for (String str : arr) {
+			
+			String[] optionArr = str.split("=");
+			
+			if (optionArr.length == 1) {
+				map.put(optionArr[0], null);
+			} else {
+				map.put(optionArr[0], optionArr[1]);
+			}
+		}
+		
+		return map;
+	}
+	
+	private static String _getParametrizedVariableStem(String s) {
+		
+		StringBundler sb = new StringBundler();
+		
+		sb.append(s.substring(0, s.length() - 1 ));
+		sb.append("|");
+		
+		return sb.toString();
+	}
+	
+	private static boolean _hasTemplateVariables(String queryString) {
+		if (queryString.indexOf("${") > 0) {
+			return true;
+		}
+		return false;
+	}
+	
+	private static String _processParametrizedTemplateVariable(String queryString, Parameter parameter,
+			ToTemplateVariableStringVisitor toStringVisitor, 
+			String templateVariable, int from) throws Exception {
+		
+		int end = queryString.indexOf("}", from);
+
+		String optionsString = queryString.substring(from + templateVariable.length(), end);
+
+		StringBuilder sb = new StringBuilder();
+		sb.append(templateVariable);
+		sb.append(optionsString);
+		sb.append("}");
+		
+		String substitute = 
+				parameter.accept(toStringVisitor, _getParameterOptions(optionsString));
+
+		return queryString.replace(sb.toString(), substitute);
+	}
+	
+	
+	private static String _processParametrizedTemplateVariables(String queryString, Parameter parameter,
+			ToTemplateVariableStringVisitor toStringVisitor, 
+			String templateVariable) throws Exception {
+		
+		if (!DateParameter.class.isAssignableFrom(parameter.getClass())) {
+			return queryString;
+		}
+
+		int from = queryString.indexOf(templateVariable);
+		
+		while(from >= 0) {
+			queryString = _processParametrizedTemplateVariable(
+					queryString, parameter, toStringVisitor, 
+					templateVariable, from);
+
+			from = queryString.indexOf(templateVariable, from);
+		}
+		
+		return queryString;
+	}
+	
+	private static String _processTemplateVariables(String queryString, Parameter parameter,
+			ToTemplateVariableStringVisitor toStringVisitor) throws Exception {
+
+		return 	StringUtil.replace(
+				queryString, parameter.getTemplateVariable(),
+				parameter.accept(toStringVisitor, null));
+	}
+	
 	private static final Log _log = LogFactoryUtil.getLog(
 		BlueprintTemplateVariableUtil.class);
 

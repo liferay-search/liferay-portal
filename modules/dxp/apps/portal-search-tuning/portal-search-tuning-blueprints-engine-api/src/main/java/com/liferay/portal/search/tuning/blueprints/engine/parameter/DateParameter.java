@@ -20,6 +20,7 @@ import com.liferay.portal.search.tuning.blueprints.engine.exception.ParameterEva
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Petteri Karttunen
@@ -42,17 +43,11 @@ public class DateParameter implements Parameter {
 	}
 
 	@Override
-	public String accept(ToStringVisitor parameterToStringVisitor)
+	public String accept(ToStringVisitor toStringVisitor, 
+			Map<String, String> options)
 		throws Exception {
 
-		throw new UnsupportedOperationException();
-	}
-
-	public String accept(
-			ToStringVisitor toStringVisitor, String dateOutputFormat)
-		throws Exception {
-
-		return toStringVisitor.visit(this, dateOutputFormat);
+		return toStringVisitor.visit(this, options);
 	}
 
 	@Override

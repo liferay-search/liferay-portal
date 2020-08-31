@@ -14,30 +14,31 @@
 
 package com.liferay.portal.search.tuning.blueprints.engine.parameter;
 
+import java.util.Map;
+
 /**
  * @author Petteri Karttunen
  */
 public interface ToStringVisitor {
 
-	public String visit(BooleanParameter parameter) throws Exception;
+	public String visit(BooleanParameter parameter, Map<String, String> options) throws Exception;
 
-	public String visit(DateParameter parameter, String outputDateFormat)
-		throws Exception;
+	public String visit(DateParameter parameter, Map<String, String> options) throws Exception;
 
-	public String visit(DoubleParameter parameter) throws Exception;
+	public String visit(DoubleParameter parameter, Map<String, String> options) throws Exception;
 
-	public String visit(FloatParameter parameter) throws Exception;
+	public String visit(FloatParameter parameter, Map<String, String> options) throws Exception;
 
-	public String visit(IntegerArrayParameter parameter) throws Exception;
+	public String visit(IntegerArrayParameter parameter, Map<String, String> options) throws Exception;
 
-	public String visit(IntegerParameter parameter) throws Exception;
+	public String visit(IntegerParameter parameter, Map<String, String> options) throws Exception;
 
-	public String visit(LongArrayParameter parameter) throws Exception;
+	public String visit(LongArrayParameter parameter, Map<String, String> options) throws Exception;
 
-	public String visit(LongParameter parameter) throws Exception;
+	public String visit(LongParameter parameter, Map<String, String> options) throws Exception;
 
-	public String visit(StringArrayParameter parameter) throws Exception;
+	public String visit(StringArrayParameter parameter, Map<String, String> options) throws Exception;
 
-	public String visit(StringParameter parameter) throws Exception;
+	public String visit(StringParameter parameter, Map<String, String> options) throws Exception;
 
 }

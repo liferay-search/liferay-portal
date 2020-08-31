@@ -14,14 +14,19 @@
 
 package com.liferay.portal.search.tuning.blueprints.engine.internal.searchrequest.data;
 
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.search.query.Queries;
 import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
 import com.liferay.portal.search.tuning.blueprints.engine.exception.SearchRequestDataException;
+import com.liferay.portal.search.tuning.blueprints.engine.message.Message;
 import com.liferay.portal.search.tuning.blueprints.engine.searchrequest.SearchRequestData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.searchrequest.SearchRequestDataContributor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -48,6 +53,12 @@ public class SearchRequestDataBuilderImpl implements SearchRequestDataBuilder {
 		}
 
 		if (searchRequestContext.hasErrors()) {
+			
+			Stream<Message> stream = searchRequestContext.getMessages().stream();
+			
+			_log.error(stream.map(m->m.getMessageKey())
+                    .collect(Collectors.joining(",")));
+			
 			throw new SearchRequestDataException(
 				"Unable to build searchrequest data",
 				searchRequestContext.getMessages());
@@ -67,6 +78,9 @@ public class SearchRequestDataBuilderImpl implements SearchRequestDataBuilder {
 
 		_searchRequestDataContributors.remove(searchRequestDataContributor);
 	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+			SearchRequestDataBuilderImpl.class);
 
 	@Reference
 	private Queries _queries;

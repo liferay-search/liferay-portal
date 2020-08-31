@@ -63,7 +63,7 @@ public class AggregationsSearchRequestDataContributor
 				aggregationConfigurationJsonArray.getJSONObject(i);
 
 			if (!_validate(searchRequestContext, aggregationJsonObject) ||
-				aggregationJsonObject.getBoolean(
+				!aggregationJsonObject.getBoolean(
 					AggregationConfigurationKeys.ENABLED.getJsonKey(), false)) {
 
 				continue;
