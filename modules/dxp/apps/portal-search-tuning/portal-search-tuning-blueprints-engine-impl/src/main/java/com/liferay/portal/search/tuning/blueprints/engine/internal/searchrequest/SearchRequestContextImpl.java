@@ -16,6 +16,7 @@ package com.liferay.portal.search.tuning.blueprints.engine.internal.searchreques
 
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
 import com.liferay.portal.search.tuning.blueprints.engine.message.Message;
 import com.liferay.portal.search.tuning.blueprints.engine.message.Severity;
@@ -34,11 +35,13 @@ import java.util.stream.Stream;
 public class SearchRequestContextImpl implements SearchRequestContext {
 
 	public SearchRequestContextImpl(
+		SearchRequestBuilder searchRequestBuilder,
 		Map<String, Object> attributes, JSONObject blueprintJsonObject,
 		long blueprintId, Long companyId, int from, String initialKeywords,
 		String keywords, Locale locale, String rawKeywords,
 		SearchParameterData searchParameterData, Long userId) {
 
+		_searchRequestBuilder = searchRequestBuilder;
 		_attributes = attributes;
 		_blueprintJsonObject = blueprintJsonObject;
 		_blueprintId = blueprintId;
@@ -117,6 +120,11 @@ public class SearchRequestContextImpl implements SearchRequestContext {
 	}
 
 	@Override
+	public SearchRequestBuilder getSearchRequestBuilder() {
+		return _searchRequestBuilder;
+	}
+
+	@Override
 	public Long getUserId() {
 		return _userId;
 	}
@@ -143,6 +151,7 @@ public class SearchRequestContextImpl implements SearchRequestContext {
 	private final List<Message> _messages = new ArrayList<>();
 	private final String _rawKeywords;
 	private final SearchParameterData _searchParameterData;
+	private final SearchRequestBuilder _searchRequestBuilder;
 	private final Long _userId;
 
 }

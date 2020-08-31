@@ -28,14 +28,17 @@ import org.osgi.service.component.annotations.Reference;
 @Component(immediate = true, service = JsonDataProviderCache.class)
 public class JsonDataProviderCacheImpl implements JsonDataProviderCache {
 
+	@Override
 	public JSONObject get(String cacheKey) {
 		return _portalCache.get(cacheKey);
 	}
 
+	@Override
 	public void put(String cacheKey, JSONObject jsonObject) {
 		_portalCache.put(cacheKey, jsonObject);
 	}
 
+	@Override
 	public void put(String cacheKey, JSONObject jsonObject, int timeToLive) {
 		_portalCache.put(cacheKey, jsonObject, timeToLive);
 	}

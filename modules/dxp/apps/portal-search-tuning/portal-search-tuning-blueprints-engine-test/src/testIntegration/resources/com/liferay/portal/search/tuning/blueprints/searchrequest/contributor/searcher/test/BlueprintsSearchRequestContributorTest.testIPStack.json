@@ -1,0 +1,15 @@
+{
+    "clause_configuration": [{
+	      "enabled": true,
+	      "clauses": [
+	        {
+	          "context": "query",
+	          "occur": "must",
+	          "type": "wrapper",
+	          "query": {
+	          	"query": "{\"match\": { \"firstName\" : \"${ipstack.city}\" }}"
+	          }
+	        }
+	      ]
+	}]
+}

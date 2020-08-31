@@ -15,6 +15,8 @@
 package com.liferay.portal.search.tuning.blueprints.engine.internal.searchrequest;
 
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.search.SearchContext;
+import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.SearchParameterData;
 
@@ -26,6 +28,12 @@ import java.util.Map;
  * @author Petteri Karttunen
  */
 public class SearchRequestContextBuilder {
+
+	public SearchRequestContextBuilder(
+		SearchRequestBuilder searchRequestBuilder) {
+
+		_searchRequestBuilder = searchRequestBuilder;
+	}
 
 	public SearchRequestContextBuilder attributes(
 		Map<String, Object> attributes) {
@@ -52,21 +60,23 @@ public class SearchRequestContextBuilder {
 	}
 
 	public SearchRequestContext build() {
+		long companyId = _searchRequestBuilder.withSearchContextGet(
+			SearchContext::getCompanyId);
+
+		Locale locale = _searchRequestBuilder.withSearchContextGet(
+			SearchContext::getLocale);
+
 		SearchRequestContext searchRequestContext =
 			new SearchRequestContextImpl(
-				_attributes, _blueprintJsonObject, _blueprintId, _companyId,
-				_from, _initialKeywords, _keywords, _locale, _rawKeywords,
-				_searchParameterData, _userId);
+				_searchRequestBuilder, _attributes, _blueprintJsonObject,
+				_blueprintId, companyId, _from, _initialKeywords, _keywords,
+				locale, _rawKeywords, _searchParameterData, _userId);
 
-		_validateSearchRequestContext(searchRequestContext);
+		if (false) {
+			_validateSearchRequestContext(searchRequestContext);
+		}
 
 		return searchRequestContext;
-	}
-
-	public SearchRequestContextBuilder companyId(long companyId) {
-		_companyId = companyId;
-
-		return this;
 	}
 
 	public SearchRequestContextBuilder from(int from) {
@@ -83,12 +93,6 @@ public class SearchRequestContextBuilder {
 
 	public SearchRequestContextBuilder keywords(String keywords) {
 		_keywords = keywords;
-
-		return this;
-	}
-
-	public SearchRequestContextBuilder locale(Locale locale) {
-		_locale = locale;
 
 		return this;
 	}
@@ -131,13 +135,12 @@ public class SearchRequestContextBuilder {
 	private final Map<String, Object> _attributes = new HashMap<>();
 	private Long _blueprintId;
 	private JSONObject _blueprintJsonObject;
-	private Long _companyId;
 	private int _from;
 	private String _initialKeywords;
 	private String _keywords;
-	private Locale _locale;
 	private String _rawKeywords;
 	private SearchParameterData _searchParameterData;
+	private final SearchRequestBuilder _searchRequestBuilder;
 	private Long _userId;
 
 }

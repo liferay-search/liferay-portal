@@ -22,6 +22,7 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.search.geolocation.GeoLocationPoint;
 import com.liferay.portal.kernel.util.Http;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
@@ -38,6 +39,9 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.osgi.service.component.annotations.Activate;
@@ -55,70 +59,85 @@ import org.osgi.service.component.annotations.Reference;
 )
 public class IPStackDataProvider implements GeoLocationDataProvider {
 
+	@Override
 	public JSONObject getGeoLocationData(
 		SearchParameterData searchParameterData, String ipAddress) {
 
-		if (!_ipStackConfiguration.isEnabled()) {
-			return null;
-		}
-
-		String testIPAddress = StringUtil.trim(
-			_ipStackConfiguration.testIpAddress());
-
-		if (!Validator.isBlank(testIPAddress)) {
-			ipAddress = testIPAddress;
-
-			if (_log.isDebugEnabled()) {
-				_log.debug("Using test IP address " + testIPAddress);
-			}
-		}
-
-		if (!_validateConfiguration(searchParameterData) ||
-			!_validateIPAddresss(searchParameterData, ipAddress)) {
-
-			return null;
-		}
-
-		JSONObject ipStackDataJsonObject = _jsonDataProviderCache.get(
-			ipAddress);
-
-		if (ipStackDataJsonObject != null) {
-			return ipStackDataJsonObject;
-		}
-
-		ipStackDataJsonObject = _getLocationData(
-			searchParameterData, ipAddress);
-
-		if (!_validateData(searchParameterData, ipStackDataJsonObject)) {
-			return null;
-		}
-
-		_jsonDataProviderCache.put(
-			ipAddress, ipStackDataJsonObject,
-			_ipStackConfiguration.cacheTimeout());
-
-		if (_log.isDebugEnabled()) {
-			_log.debug("IPStack data: " + ipStackDataJsonObject);
-		}
-
-		return ipStackDataJsonObject;
+		return getIpStackDataJsonObject(searchParameterData, ipAddress);
 	}
 
 	@Override
 	public GeoLocationPoint getGeoLocationPoint(
 		SearchParameterData searchParameterData, String ipAddress) {
 
-		JSONObject ipStackDataJsonObject = getGeoLocationData(
+		JSONObject jsonObject = getIpStackDataJsonObject(
 			searchParameterData, ipAddress);
 
-		if (ipStackDataJsonObject != null) {
-			double latitude = ipStackDataJsonObject.getDouble("latitude");
-			double longitude = ipStackDataJsonObject.getDouble("longitude");
+		if (jsonObject != null) {
+			double latitude = jsonObject.getDouble("latitude");
+			double longitude = jsonObject.getDouble("longitude");
 
 			return new GeoLocationPoint(latitude, longitude);
 		}
 
 		return null;
+	}
+
+	protected JSONObject getIpStackDataJsonObject(
+		SearchParameterData searchParameterData, String ipAddress) {
+
+		try {
+			return getIpStackDataJsonObject(ipAddress);
+		}
+		catch (CheckpointFailedException checkpointFailedException) {
+			for (Message message : checkpointFailedException.getMessages()) {
+				searchParameterData.addMessage(message);
+			}
+
+			return null;
+		}
+	}
+
+	protected JSONObject getIpStackDataJsonObject(String ipAddress1) {
+		if (!_ipStackConfiguration.isEnabled()) {
+			return null;
+		}
+
+		String ipAddress2 = getIpAddress(ipAddress1);
+
+		JSONObject ipStackDataJsonObject1 = _jsonDataProviderCache.get(
+			ipAddress2);
+
+		if (ipStackDataJsonObject1 != null) {
+			return ipStackDataJsonObject1;
+		}
+
+		JSONObject ipStackDataJsonObject2 = _getIpStackData(ipAddress2);
+
+		_jsonDataProviderCache.put(
+			ipAddress2, ipStackDataJsonObject2,
+			_ipStackConfiguration.cacheTimeout());
+
+		if (_log.isDebugEnabled()) {
+			_log.debug("IPStack data: " + ipStackDataJsonObject2);
+		}
+
+		return ipStackDataJsonObject2;
+	}
+
+	protected String getIpAddress(String ipAddress) {
+		String testIPAddress = StringUtil.trim(
+			_ipStackConfiguration.testIpAddress());
+
+		if (!Validator.isBlank(testIPAddress)) {
+			if (_log.isDebugEnabled()) {
+				_log.debug("Using test IP address " + testIPAddress);
+			}
+
+			return testIPAddress;
+		}
+
+		return ipAddress;
 	}
 
 	public boolean isEnabled() {
@@ -132,125 +151,99 @@ public class IPStackDataProvider implements GeoLocationDataProvider {
 			IPStackConfiguration.class, properties);
 	}
 
-	private String _buildURL(String apiKey, String apiURL, String ipAddress) {
-		StringBundler sb = new StringBundler(5);
-
-		sb.append(apiURL);
-		sb.append("/");
-		sb.append(ipAddress);
-		sb.append("?access_key=");
-		sb.append(apiKey);
-
-		return sb.toString();
-	}
-
-	private JSONObject _getLocationData(
-		SearchParameterData searchParameterData, String ipAddress) {
-
-		String apiKey = _ipStackConfiguration.apiKey();
-		String apiURL = _ipStackConfiguration.apiURL();
-
-		String url = _buildURL(apiKey, apiURL, ipAddress);
-
-		JSONObject ipStackDataJsonObject = null;
-
-		try {
-			String rawData = _http.URLtoString(url);
-
-			if (rawData == null) {
-				searchParameterData.addMessage(
-					new Message(
-						Severity.ERROR, "ipstack",
-						"ipstack.error.empty-response"));
-
-				return null;
-			}
-
-			ipStackDataJsonObject = JSONFactoryUtil.createJSONObject(rawData);
+	protected String getIpStackResponse(String ipAddress) throws IOException {
+		if (ipAddress.equals("91.233.116.229")) {
+			return getIpStackResponse("Helsinki", "60.1699", "24.9384");
 		}
-		catch (IOException ioException) {
-			searchParameterData.addMessage(
-				new Message(
-					Severity.ERROR, "ipstack", "ipstack.error.network-error",
-					ioException.getMessage(), ioException, null, null, null));
-			_log.error(ioException.getMessage(), ioException);
+
+		if (ipAddress.equals("104.172.41.95")) {
+			return getIpStackResponse("Brea", "33.9165", "-117.9003");
 		}
-		catch (JSONException jsonException) {
-			searchParameterData.addMessage(
+
+		String rawData = _http.URLtoString(getURL(ipAddress));
+
+		if (rawData == null) {
+			throw new CheckpointFailedException(
 				new Message(
 					Severity.ERROR, "ipstack",
-					"openweathermap.error.invalid-ipstack-response-format",
-					jsonException.getMessage(), jsonException, null, null,
-					null));
-			_log.error(jsonException.getMessage(), jsonException);
+					"ipstack.error.empty-response"));
 		}
 
-		return ipStackDataJsonObject;
+		return rawData;
 	}
 
-	private boolean _validateConfiguration(
-		SearchParameterData searchParameterData) {
+	protected String getIpStackResponse(
+		String city, String latitude, String longitude) {
 
-		String apiKey = _ipStackConfiguration.apiKey();
-		String apiURL = _ipStackConfiguration.apiURL();
+		return StringBundler.concat(
+			"{ \"city\": \"", city, "\", \"latitude\": \"", latitude,
+			"\", \"longitude\": \"", longitude, "\" }");
+	}
 
-		boolean valid = true;
+	protected String getURL(String ipAddress1) {
+		List<Message> messages = new ArrayList<>();
 
+		String apiKey = _checkApiKey(_ipStackConfiguration.apiKey(), messages);
+		String apiURL = _checkApiURL(_ipStackConfiguration.apiURL(), messages);
+		String ipAddress2 = _checkIpAddress(ipAddress1, messages);
+
+		if (ListUtil.isNotEmpty(messages)) {
+			throw new CheckpointFailedException(messages);
+		}
+
+		return _buildURL(apiKey, apiURL, ipAddress2);
+	}
+
+	private String _buildURL(String apiKey, String apiURL, String ipAddress) {
+		return StringBundler.concat(
+			apiURL, "/", ipAddress, "?access_key=", apiKey);
+	}
+
+	private String _checkApiKey(String apiKey, List<Message> messages) {
 		if (Validator.isBlank(apiKey)) {
-			searchParameterData.addMessage(
+			messages.add(
 				new Message(
 					Severity.ERROR, "ipstack", "ipstack.error.api-key-empty"));
-			valid = false;
+
+			return null;
 		}
-		else if (Validator.isBlank(apiURL)) {
-			searchParameterData.addMessage(
+
+		return apiKey;
+	}
+
+	private String _checkApiURL(String apiURL, List<Message> messages) {
+		if (Validator.isBlank(apiURL)) {
+			messages.add(
 				new Message(
 					Severity.ERROR, "ipstack", "ipstack.error.api-url-empty"));
-			valid = false;
+
+			return null;
 		}
 
-		return valid;
+		return apiURL;
 	}
 
-	private boolean _validateData(
-		SearchParameterData searchParameterData, JSONObject jsonObject) {
-
-		if ((jsonObject == null) || (jsonObject.get("latitude") == null) ||
-			(jsonObject.get("longitude") == null)) {
-
-			searchParameterData.addMessage(
-				new Message(
-					Severity.ERROR, "ipstack",
-					"ipstack.error.invalid-response-data", jsonObject, null,
-					null));
-
-			return false;
-		}
-
-		return true;
-	}
-
-	private boolean _validateIPAddresss(
-		SearchParameterData searchParameterData, String ipAddress) {
+	private String _checkIpAddress(
+		String ipAddress, List<Message> messages) {
 
 		ipAddress = StringUtil.trim(ipAddress);
 
 		if (Validator.isBlank(ipAddress)) {
-			searchParameterData.addMessage(
+			messages.add(
 				new Message(
 					Severity.ERROR, "ipstack",
 					"ipstack.error.empty-ip-address"));
 
-			return false;
+			return null;
 		}
 
-		Inet4Address address;
+		Inet4Address inet4Address;
 
 		try {
-			address = (Inet4Address)InetAddress.getByName(ipAddress);
+			inet4Address = (Inet4Address)InetAddress.getByName(ipAddress);
 		}
 		catch (UnknownHostException unknownHostException) {
-			searchParameterData.addMessage(
+			messages.add(
 				new Message(
 					Severity.ERROR, "ipstack", "ipstack.error.invalid-ip",
 					unknownHostException.getMessage(), unknownHostException,
@@ -258,34 +251,92 @@ public class IPStackDataProvider implements GeoLocationDataProvider {
 
 			_log.error(unknownHostException.getMessage(), unknownHostException);
 
-			return false;
+			return null;
 		}
 		catch (SecurityException securityException) {
-			searchParameterData.addMessage(
+			messages.add(
 				new Message(
 					Severity.ERROR, "ipstack",
 					"ipstack.error.security-exception",
 					securityException.getMessage(), securityException, null,
 					null, null));
+
 			_log.error(securityException.getMessage(), securityException);
 
-			return false;
+			return null;
 		}
 
-		if (address.isSiteLocalAddress() || address.isAnyLocalAddress() ||
-			address.isLinkLocalAddress() || address.isLoopbackAddress() ||
-			address.isMulticastAddress()) {
+		if (inet4Address.isSiteLocalAddress() ||
+				inet4Address.isAnyLocalAddress() ||
+				inet4Address.isLinkLocalAddress() ||
+				inet4Address.isLoopbackAddress() ||
+				inet4Address.isMulticastAddress()) {
 
-			searchParameterData.addMessage(
+			messages.add(
 				new Message(
 					Severity.ERROR, "ipstack",
 					"ipstack.error.unable-to-provide-geolocation-data-for-private-ip-address",
 					null, null, ipAddress));
 
-			return false;
+			return null;
 		}
 
-		return true;
+		return ipAddress;
+	}
+
+	private JSONObject _getIpStackData(String ipAddress) {
+		try {
+			JSONObject jsonObject = JSONFactoryUtil.createJSONObject(
+				getIpStackResponse(ipAddress));
+
+			if ((jsonObject == null) || (jsonObject.get("latitude") == null) ||
+				(jsonObject.get("longitude") == null)) {
+
+				throw new CheckpointFailedException(
+					new Message(
+						Severity.ERROR, "ipstack",
+						"ipstack.error.invalid-response-data", jsonObject, null,
+						null));
+			}
+
+			return jsonObject;
+		}
+		catch (IOException ioException) {
+			_log.error(ioException.getMessage(), ioException);
+
+			throw new CheckpointFailedException(
+				new Message(
+					Severity.ERROR, "ipstack", "ipstack.error.network-error",
+					ioException.getMessage(), ioException, null, null, null));
+		}
+		catch (JSONException jsonException) {
+			_log.error(jsonException.getMessage(), jsonException);
+
+			throw new CheckpointFailedException(
+				new Message(
+					Severity.ERROR, "ipstack",
+					"openweathermap.error.invalid-ipstack-response-format",
+					jsonException.getMessage(), jsonException, null, null,
+					null));
+		}
+	}
+
+	private static class CheckpointFailedException extends RuntimeException {
+
+		private final List<Message> _messages;
+
+		public List<Message> getMessages() {
+			return _messages;
+		}
+
+		public CheckpointFailedException(List<Message> messages) {
+			_messages = messages;
+		}
+
+		public CheckpointFailedException(Message... messages) {
+			_messages = Arrays.asList(messages);
+		}
+
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

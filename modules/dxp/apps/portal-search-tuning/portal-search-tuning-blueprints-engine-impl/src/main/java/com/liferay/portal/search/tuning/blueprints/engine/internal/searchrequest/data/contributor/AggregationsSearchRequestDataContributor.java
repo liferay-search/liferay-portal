@@ -43,6 +43,7 @@ import org.osgi.service.component.annotations.Reference;
 public class AggregationsSearchRequestDataContributor
 	implements SearchRequestDataContributor {
 
+	@Override
 	public void contribute(
 		SearchRequestContext searchRequestContext,
 		SearchRequestData searchRequestData) {

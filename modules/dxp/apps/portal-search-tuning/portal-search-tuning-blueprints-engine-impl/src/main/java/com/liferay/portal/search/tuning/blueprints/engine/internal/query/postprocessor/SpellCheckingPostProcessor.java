@@ -17,18 +17,22 @@ package com.liferay.portal.search.tuning.blueprints.engine.internal.query.postpr
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.search.aggregation.AggregationResult;
 import com.liferay.portal.search.engine.adapter.search.SearchSearchResponse;
 import com.liferay.portal.search.hits.SearchHits;
+import com.liferay.portal.search.searcher.SearchRequestBuilder;
+import com.liferay.portal.search.searcher.SearchRequestBuilderFactory;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.suggester.KeywordIndexingConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.suggester.SpellCheckingConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
-import com.liferay.portal.search.tuning.blueprints.engine.exception.SearchRequestDataException;
+import com.liferay.portal.search.tuning.blueprints.engine.internal.searchrequest.SearchRequestContextBuilder;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.query.QueryPostProcessor;
 import com.liferay.portal.search.tuning.blueprints.engine.suggester.Suggester;
 import com.liferay.portal.search.tuning.blueprints.engine.util.SearchClientHelper;
 import com.liferay.portal.search.tuning.blueprints.util.BlueprintHelper;
 
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 import org.osgi.service.component.annotations.Component;
@@ -92,31 +96,41 @@ public class SpellCheckingPostProcessor implements QueryPostProcessor {
 
 			/*
 			 * TODO
-			 searchRequestContext.setOriginalKeywords(
-			 (String)searchRequestContext.getParameter(ParameterNames.RAW_KEYWORDS));
-			 if (_log.isDebugEnabled()) {
-			 _log.debug("Using querySuggestions[0] for alternative search.");
-			 }
-			 searchRequestContext.setKeywords(querySuggestions[0]);
-			 // Remove the new keywords from query suggestions.
-			 if (querySuggestions.length > 0) {
-			 querySuggestions = ArrayUtil.remove(
-			 querySuggestions, querySuggestions[0]);
-			 } else {
-			 querySuggestions = new String[0];
-			 }
-			 SearchSearchResponse newResponse = _executeNewSearch(searchRequestContext);
-			 // Copy new values to the response.
-			 if (newResponse.getAggregationResultsMap() != null) {
-			 for (Entry<String, AggregationResult> entry :
-			 newResponse.getAggregationResultsMap().entrySet()) {
-
-			 searchResponse.addAggregationResult(entry.getValue());
-			 }
-			 }
-			 searchResponse.setSearchHits(newResponse.getSearchHits());
-			 searchResponse.getHits().copy(newResponse.getHits());
 			 */
+			if (false) {
+				SearchRequestBuilder builder =
+					_searchRequestBuilderFactory.builder();
+
+				SearchRequestContextBuilder searchRequestContextBuilder =
+					new SearchRequestContextBuilder(builder);
+
+				searchRequestContextBuilder.rawKeywords(
+					searchRequestContext.getRawKeywords());
+
+				 if (_log.isDebugEnabled()) {
+				 _log.debug("Using querySuggestions[0] for alternative search.");
+				 }
+
+				 builder.queryString(suggestions.get(0));
+
+				 // Remove the new keywords from query suggestions.
+				 suggestions.remove(0);
+
+				 SearchSearchResponse newResponse = _executeNewSearch(
+					 searchRequestContext);
+
+				 // Copy new values to the response.
+				 if (newResponse.getAggregationResultsMap() != null) {
+					 for (Entry<String, AggregationResult> entry :
+						 newResponse.getAggregationResultsMap().entrySet()) {
+
+						 searchResponse.addAggregationResult(entry.getValue());
+					 }
+				 }
+
+				 searchResponse.setSearchHits(newResponse.getSearchHits());
+				 searchResponse.getHits().copy(newResponse.getHits());
+			}
 		}
 
 		searchResponse.getHits(
@@ -128,8 +142,7 @@ public class SpellCheckingPostProcessor implements QueryPostProcessor {
 	}
 
 	private SearchSearchResponse _executeNewSearch(
-			SearchRequestContext searchRequestContext)
-		throws SearchRequestDataException {
+			SearchRequestContext searchRequestContext) {
 
 		return _searchClientHelper.getSearchResponse(
 			searchRequestContext,
@@ -147,5 +160,8 @@ public class SpellCheckingPostProcessor implements QueryPostProcessor {
 
 	@Reference
 	private SearchClientHelper _searchClientHelper;;
+
+	@Reference
+	private SearchRequestBuilderFactory _searchRequestBuilderFactory;
 
 }

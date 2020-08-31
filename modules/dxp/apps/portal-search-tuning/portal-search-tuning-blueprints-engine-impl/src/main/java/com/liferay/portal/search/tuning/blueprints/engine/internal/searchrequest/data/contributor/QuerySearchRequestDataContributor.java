@@ -20,11 +20,13 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.search.filter.ComplexQueryPartBuilderFactory;
 import com.liferay.portal.search.query.BooleanQuery;
 import com.liferay.portal.search.query.Queries;
 import com.liferay.portal.search.query.Query;
 import com.liferay.portal.search.rescore.Rescore;
 import com.liferay.portal.search.rescore.RescoreBuilder;
+import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.clause.ClauseConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.clause.ClausesConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.clause.ConditionsConfigurationKeys;
@@ -85,14 +87,17 @@ public class QuerySearchRequestDataContributor
 		SearchRequestData searchRequestData, ClauseContext clauseContext,
 		Occur occur, Query subquery, JSONObject queryJsonObject) {
 
+		SearchRequestBuilder searchRequestBuilder =
+			searchRequestData.getSearchRequestBuilder();
+
 		if (clauseContext.equals(ClauseContext.POST_FILTER)) {
 			_addPostFilterClause(searchRequestData, subquery, occur);
 		}
 		else if (clauseContext.equals(ClauseContext.PRE_FILTER)) {
-			_addPreFilterClause(searchRequestData, subquery, occur);
+			_addPreFilterClause(searchRequestBuilder, subquery);
 		}
 		else if (clauseContext.equals(ClauseContext.QUERY)) {
-			_addQueryClause(searchRequestData, clauseContext, occur, subquery);
+			_addQueryClause(searchRequestBuilder, occur, subquery);
 		}
 		else if (clauseContext.equals(ClauseContext.RESCORE)) {
 			_addRescoreClause(
@@ -234,28 +239,30 @@ public class QuerySearchRequestDataContributor
 	}
 
 	private void _addPreFilterClause(
-		SearchRequestData searchRequestData, Query subquery, Occur occur) {
+		SearchRequestBuilder searchRequestBuilder, Query subquery) {
 
-		BooleanQuery query = searchRequestData.getQuery();
-
-		query.addFilterQueryClauses(subquery);
+		searchRequestBuilder.addComplexQueryPart(
+			_complexQueryPartBuilderFactory.builder()
+			.query(subquery)
+			.occur("filter")
+			.build());
 	}
 
 	private void _addQueryClause(
-		SearchRequestData searchRequestData, ClauseContext clauseContext,
-		Occur occur, Query subquery) {
+		SearchRequestBuilder searchRequestBuilder, Occur occur,
+		Query subquery) {
 
-		BooleanQuery query = searchRequestData.getQuery();
+		String occurString = _getOccurString(occur);
 
-		if (Occur.MUST.equals(occur)) {
-			query.addMustQueryClauses(subquery);
+		if (occurString == null) {
+			return;
 		}
-		else if (Occur.MUST_NOT.equals(occur)) {
-			query.addMustNotQueryClauses(subquery);
-		}
-		else {
-			query.addShouldQueryClauses(subquery);
-		}
+
+		searchRequestBuilder.addComplexQueryPart(
+			_complexQueryPartBuilderFactory.builder()
+			.query(subquery)
+			.occur(occurString)
+			.build());
 	}
 
 	private void _addRescoreClause(
@@ -325,6 +332,22 @@ public class QuerySearchRequestDataContributor
 					illegalArgumentException.getMessage(),
 					illegalArgumentException, queryJsonObject,
 					ClausesConfigurationKeys.OCCUR.getJsonKey(), occurString));
+		}
+
+		return null;
+	}
+
+	private String _getOccurString(Occur occur) {
+		if (Occur.MUST.equals(occur)) {
+			return "must";
+		}
+
+		if (Occur.MUST_NOT.equals(occur)) {
+			return "must_not";
+		}
+
+		if (Occur.SHOULD.equals(occur)) {
+			return "should";
 		}
 
 		return null;
@@ -473,7 +496,7 @@ public class QuerySearchRequestDataContributor
 				if (!contributorQueryOptional.isPresent()) {
 					continue;
 				}
-				
+
 				Query clause = contributorQueryOptional.get();
 
 				ClauseContext clauseContext =
@@ -503,6 +526,9 @@ public class QuerySearchRequestDataContributor
 
 	@Reference
 	private ConditionHandlerFactory _clauseConditionHandlerFactory;
+
+	@Reference
+	private ComplexQueryPartBuilderFactory _complexQueryPartBuilderFactory;
 
 	@Reference
 	private Queries _queries;

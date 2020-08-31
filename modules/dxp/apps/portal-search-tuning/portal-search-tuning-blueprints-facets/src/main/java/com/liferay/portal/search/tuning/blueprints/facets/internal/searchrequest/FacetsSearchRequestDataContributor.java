@@ -20,9 +20,11 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.search.filter.ComplexQueryPartBuilderFactory;
 import com.liferay.portal.search.query.BooleanQuery;
 import com.liferay.portal.search.query.Queries;
 import com.liferay.portal.search.query.TermQuery;
+import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.tuning.blueprints.constants.json.values.FilterMode;
 import com.liferay.portal.search.tuning.blueprints.constants.json.values.Operator;
 import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
@@ -100,11 +102,15 @@ public class FacetsSearchRequestDataContributor
 				_log.error(exception.getMessage(), exception);
 			}
 
+			SearchRequestBuilder searchRequestBuilder =
+				searchRequestData.getSearchRequestBuilder();
+
 			if (facetPreFilterQuery.hasClauses()) {
-				searchRequestData.getQuery(
-				).addFilterQueryClauses(
-					facetPreFilterQuery
-				);
+				searchRequestBuilder.addComplexQueryPart(
+					_complexQueryPartBuilderFactory.builder()
+					.query(facetPreFilterQuery)
+					.occur("filter")
+					.build());
 			}
 
 			if (facetPostFilterQuery.hasClauses()) {
@@ -219,6 +225,9 @@ public class FacetsSearchRequestDataContributor
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		FacetsSearchRequestDataContributor.class);
+
+	@Reference
+	private ComplexQueryPartBuilderFactory _complexQueryPartBuilderFactory;
 
 	@Reference
 	private Queries _queries;

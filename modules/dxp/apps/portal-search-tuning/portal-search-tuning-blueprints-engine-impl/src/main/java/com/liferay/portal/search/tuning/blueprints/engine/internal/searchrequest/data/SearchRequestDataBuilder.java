@@ -14,8 +14,8 @@
 
 package com.liferay.portal.search.tuning.blueprints.engine.internal.searchrequest.data;
 
+import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
-import com.liferay.portal.search.tuning.blueprints.engine.exception.SearchRequestDataException;
 import com.liferay.portal.search.tuning.blueprints.engine.searchrequest.SearchRequestData;
 
 /**
@@ -23,7 +23,8 @@ import com.liferay.portal.search.tuning.blueprints.engine.searchrequest.SearchRe
  */
 public interface SearchRequestDataBuilder {
 
-	public SearchRequestData build(SearchRequestContext searchRequestContext)
-		throws SearchRequestDataException;
+	public SearchRequestData build(
+		SearchRequestBuilder searchRequestBuilder,
+		SearchRequestContext searchRequestContext);
 
 }

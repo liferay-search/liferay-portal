@@ -14,7 +14,6 @@
 
 package com.liferay.portal.search.tuning.blueprints.engine.exception;
 
-import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.search.tuning.blueprints.engine.message.Message;
 
 import java.util.List;
@@ -22,7 +21,7 @@ import java.util.List;
 /**
  * @author Petteri Karttunen
  */
-public class SearchRequestDataException extends PortalException {
+public class SearchRequestDataException extends RuntimeException {
 
 	public SearchRequestDataException() {
 	}

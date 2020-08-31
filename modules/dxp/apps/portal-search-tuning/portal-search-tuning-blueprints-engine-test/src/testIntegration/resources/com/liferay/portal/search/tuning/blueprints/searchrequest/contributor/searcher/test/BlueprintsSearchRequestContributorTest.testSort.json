@@ -1,0 +1,10 @@
+{
+    "advanced_configuration": {
+    	"search_results": {
+    		"default_sorts": [{
+    			"field": "userName",
+    			"order": "desc"
+    		}]
+    	}
+    }
+}

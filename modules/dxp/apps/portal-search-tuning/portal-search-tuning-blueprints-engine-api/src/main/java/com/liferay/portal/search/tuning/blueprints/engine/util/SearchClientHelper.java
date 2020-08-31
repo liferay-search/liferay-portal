@@ -16,8 +16,8 @@ package com.liferay.portal.search.tuning.blueprints.engine.util;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONException;
-import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.search.engine.adapter.search.SearchSearchResponse;
+import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
 import com.liferay.portal.search.tuning.blueprints.engine.exception.SearchRequestDataException;
 import com.liferay.portal.search.tuning.blueprints.engine.searchrequest.SearchRequestData;
@@ -31,19 +31,20 @@ import javax.servlet.http.HttpServletRequest;
  */
 public interface SearchClientHelper {
 
+	public void combine(
+		SearchRequestBuilder searchRequestBuilder, long blueprintId);
+
 	public SearchRequestContext getSearchRequestContext(
 			HttpServletRequest httpServletRequest,
 			Map<String, Object> searchRequestAttributes, long blueprintId)
 		throws JSONException, PortalException;
 
 	public SearchRequestContext getSearchRequestContext(
-			SearchContext searchContext,
-			Map<String, Object> searchRequestAttributes, long blueprintId)
-		throws JSONException, PortalException;
+		SearchRequestBuilder searchRequestBuilder,
+		Map<String, Object> searchRequestAttributes, long blueprintId);
 
 	public SearchRequestData getSearchRequestData(
-			SearchRequestContext searchRequestContext)
-		throws SearchRequestDataException;
+		SearchRequestContext searchRequestContext);
 
 	public SearchSearchResponse getSearchResponse(
 		SearchRequestContext searchRequestContext,

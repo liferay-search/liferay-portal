@@ -18,6 +18,7 @@ import com.liferay.portal.search.aggregation.Aggregation;
 import com.liferay.portal.search.query.BooleanQuery;
 import com.liferay.portal.search.query.Queries;
 import com.liferay.portal.search.rescore.Rescore;
+import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.sort.Sort;
 
 import java.util.ArrayList;
@@ -28,11 +29,13 @@ import java.util.List;
  */
 public class SearchRequestData {
 
-	public SearchRequestData(Queries queries) {
+	public SearchRequestData(
+		SearchRequestBuilder searchRequestBuilder, Queries queries) {
+
 		_aggregations = new ArrayList<>();
 		_postFilterQuery = queries.booleanQuery();
-		_query = queries.booleanQuery();
 		_rescores = new ArrayList<>();
+		_searchRequestBuilder = searchRequestBuilder;
 		_sorts = new ArrayList<>();
 	}
 
@@ -56,12 +59,12 @@ public class SearchRequestData {
 		return _postFilterQuery;
 	}
 
-	public BooleanQuery getQuery() {
-		return _query;
-	}
-
 	public List<Rescore> getRescores() {
 		return _rescores;
+	}
+
+	public SearchRequestBuilder getSearchRequestBuilder() {
+		return _searchRequestBuilder;
 	}
 
 	public List<Sort> getSorts() {
@@ -75,7 +78,7 @@ public class SearchRequestData {
 
 	private final List<Aggregation> _aggregations;
 	private final BooleanQuery _postFilterQuery;
-	private final BooleanQuery _query;
+	private final SearchRequestBuilder _searchRequestBuilder;
 	private final List<Rescore> _rescores;
 	private final List<Sort> _sorts;
 

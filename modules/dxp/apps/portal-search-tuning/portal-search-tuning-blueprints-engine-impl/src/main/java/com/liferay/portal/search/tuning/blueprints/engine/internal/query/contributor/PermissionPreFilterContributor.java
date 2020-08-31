@@ -55,6 +55,10 @@ public class PermissionPreFilterContributor implements QueryContributor {
 		long companyId = searchRequestContext.getCompanyId();
 		long userId = searchRequestContext.getUserId();
 
+		if (userId == 0) {
+			return Optional.empty();
+		}
+
 		try {
 			User user = _userLocalService.getUser(userId);
 

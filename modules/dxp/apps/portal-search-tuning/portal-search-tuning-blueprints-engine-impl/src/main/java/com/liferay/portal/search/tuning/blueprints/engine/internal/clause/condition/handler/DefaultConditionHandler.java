@@ -245,7 +245,7 @@ public class DefaultConditionHandler implements ConditionHandler {
 				new Message(
 					Severity.ERROR, "core",
 					"core.error.undefined-clause-condition-parameter", null,
-					null, configurationJsonObject,
+					new Throwable(), configurationJsonObject,
 					ConditionsConfigurationKeys.PARAMETER_NAME.getJsonKey(),
 					null));
 

@@ -18,7 +18,6 @@ import com.liferay.portal.search.query.Query;
 import com.liferay.portal.search.tuning.blueprints.constants.json.values.ClauseContext;
 import com.liferay.portal.search.tuning.blueprints.constants.json.values.Occur;
 import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
-import com.liferay.portal.search.tuning.blueprints.engine.exception.SearchRequestDataException;
 
 import java.util.Optional;
 
@@ -27,11 +26,9 @@ import java.util.Optional;
  */
 public interface QueryContributor {
 
-	public Optional<Query> build(
-			SearchRequestContext searchRequestContext)
-		throws SearchRequestDataException;
+	public Optional<Query> build(SearchRequestContext searchRequestContext);
 
 	public ClauseContext getClauseContext();
 
-	public Occur getOccur();	
+	public Occur getOccur();
 }
