@@ -13,7 +13,7 @@ import {fireEvent, render, within} from '@testing-library/react';
 import React from 'react';
 
 import BlueprintForm from '../../../src/main/resources/META-INF/resources/js/components/BlueprintForm';
-import {AVAILABLE_LOCALES} from './../mocks/data';
+import {AVAILABLE_LOCALES, INITIAL_QUERY_FRAGMENTS} from './../mocks/data';
 
 import '@testing-library/jest-dom/extend-expect';
 
@@ -28,8 +28,8 @@ function renderBlueprintForm(props) {
 	return render(
 		<BlueprintForm
 			availableLocales={AVAILABLE_LOCALES}
-			configurationId="0"
-			configurationType={0}
+			blueprintId="0"
+			blueprintType={0}
 			initialTitle={{
 				'en-US': 'Test Title',
 			}}
@@ -52,7 +52,7 @@ describe('BlueprintForm', () => {
 
 		const {getByText} = within(container.querySelector('.builder'));
 
-		getByText('Matches any keyword');
+		getByText(INITIAL_QUERY_FRAGMENTS[0].title['en_US']);
 	});
 
 	it('disables removal of default query fragment from sidebar', () => {
@@ -72,7 +72,7 @@ describe('BlueprintForm', () => {
 
 		const {getByText} = within(container.querySelector('.builder'));
 
-		getByText('Freshness');
+		getByText(INITIAL_QUERY_FRAGMENTS[1].title['en_US']);
 	});
 
 	it('enables removal of additional query fragments', () => {
@@ -93,6 +93,8 @@ describe('BlueprintForm', () => {
 
 		const {queryByText} = within(container.querySelector('.builder'));
 
-		expect(queryByText('Freshness')).toBeNull();
+		expect(
+			queryByText(INITIAL_QUERY_FRAGMENTS[1].title['en_US'])
+		).toBeNull();
 	});
 });
