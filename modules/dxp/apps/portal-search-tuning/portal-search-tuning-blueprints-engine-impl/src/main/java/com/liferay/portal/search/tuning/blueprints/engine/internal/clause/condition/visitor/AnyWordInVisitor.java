@@ -19,6 +19,7 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.tuning.blueprints.engine.exception.ParameterEvaluationException;
 import com.liferay.portal.search.tuning.blueprints.engine.internal.util.BlueprintValueUtil;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.BooleanParameter;
+import com.liferay.portal.search.tuning.blueprints.engine.parameter.ConditionEvaluationVisitor;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.DateParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.DoubleParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.FloatParameter;
@@ -26,7 +27,6 @@ import com.liferay.portal.search.tuning.blueprints.engine.parameter.IntegerArray
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.IntegerParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.LongArrayParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.LongParameter;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.Parameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringArrayParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringParameter;
 
@@ -100,11 +100,6 @@ public class AnyWordInVisitor implements ConditionEvaluationVisitor {
 	}
 
 	@Override
-	public boolean visit(Parameter parameter) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
 	public boolean visit(StringArrayParameter parameter)
 		throws ParameterEvaluationException {
 
@@ -120,7 +115,7 @@ public class AnyWordInVisitor implements ConditionEvaluationVisitor {
 
 		String parameterValue = parameter.getValue();
 
-		String[] arr = parameterValue.split("\"[ ,-]+");
+		String[] arr = parameterValue.split("\\s*,|\\s+|-|\\.\\s*");
 
 		boolean match = false;
 

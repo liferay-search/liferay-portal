@@ -82,6 +82,14 @@ public class BlueprintTemplateVariableUtil {
 			}	
 		}
 
+		// Fail if there were untranslated (not present variables)
+		
+		if (queryString.contains("${")) {
+			throw new IllegalArgumentException(
+					"There were untranslated template variables [ " + 
+					queryString + " ]");
+		}
+		
 		if (changed) {
 			return JSONFactoryUtil.createJSONObject(queryString);
 		}

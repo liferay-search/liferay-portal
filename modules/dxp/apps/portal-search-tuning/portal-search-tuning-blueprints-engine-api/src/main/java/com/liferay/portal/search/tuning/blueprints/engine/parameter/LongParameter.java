@@ -35,15 +35,15 @@ public class LongParameter implements Parameter {
 	}
 
 	@Override
-	public boolean accept(EvaluationVisitor evaluationVisitor)
+	public boolean accept(ConditionEvaluationVisitor visitor)
 		throws ParameterEvaluationException {
 
-		return evaluationVisitor.visit(this);
+		return visitor.visit(this);
 	}
 
 	@Override
-	public String accept(ToStringVisitor toStringVisitor, Map<String, String> options) throws Exception {
-		return toStringVisitor.visit(this, options);
+	public String accept(ToStringVisitor visitor, Map<String, String> options) throws Exception {
+		return visitor.visit(this, options);
 	}
 
 	public boolean equalsTo(Long value) {
@@ -64,6 +64,7 @@ public class LongParameter implements Parameter {
 		List<EvaluationType> evaluationTypes = new ArrayList<>();
 
 		evaluationTypes.add(EvaluationType.EQ);
+		evaluationTypes.add(EvaluationType.EXISTS);
 		evaluationTypes.add(EvaluationType.NE);
 		evaluationTypes.add(EvaluationType.GT);
 		evaluationTypes.add(EvaluationType.GTE);

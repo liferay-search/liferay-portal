@@ -22,9 +22,10 @@ import java.util.stream.Stream;
  */
 public enum EvaluationType {
 
-	ANY_WORD_IN("any_word_in"), CONTAINS("contains"), EQ("eq"), GT("gt"),
+	ANY_WORD_IN("any_word_in"), CONTAINS("contains"), EQ("eq"), EXISTS("exists"), GT("gt"),
 	GTE("gte"), IN("in"), IN_RANGE("in_range"), LT("lt"), LTE("lte"), NE("ne"),
-	NO_WORD_IN("no_word_in"), NOT_CONTAINS("not_contains"), NOT_IN("not_in"),
+	NO_WORD_IN("no_word_in"), NOT_CONTAINS("not_contains"), 
+	NOT_EXISTS("not_exists"), NOT_IN("not_in"),
 	NOT_IN_RANGE("not_in_range");
 
 	public static final EvaluationType findByjsonValue(String jsonValue) {

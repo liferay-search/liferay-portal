@@ -25,10 +25,10 @@ import java.util.Map;
  */
 public interface Parameter {
 
-	public boolean accept(EvaluationVisitor parameterEvaluationVisitor)
+	public boolean accept(ConditionEvaluationVisitor visitor)
 		throws ParameterEvaluationException;
 
-	public String accept(ToStringVisitor parameterToStringVisitor,
+	public String accept(ToStringVisitor visitor,
 			Map<String, String> options)
 		throws Exception;
 

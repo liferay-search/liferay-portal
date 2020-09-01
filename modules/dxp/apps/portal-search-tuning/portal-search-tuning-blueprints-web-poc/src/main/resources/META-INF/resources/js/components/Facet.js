@@ -29,7 +29,7 @@ function FacetInput({items, onItemsChange, label, param, values = []}) {
 				inputValue={value}
 				items={items}
 				locator={{
-					label: 'name',
+					label: 'text',
 					value: 'value',
 				}}
 				onChange={setValue}
@@ -53,10 +53,10 @@ export default function Facet({facets, selectedFacets, updateSelectedFacets}) {
 		<div className="search-facets">
 			{facets.map((facet, index) => (
 				<FacetInput
-					items={selectedFacets[facet.param]}
+					items={selectedFacets[facet.parameterName]}
 					key={index}
 					onItemsChange={(items) =>
-						updateSelectedFacets(facet.param, items)
+						updateSelectedFacets(facet.parameterName, items)
 					}
 					{...facet}
 				/>

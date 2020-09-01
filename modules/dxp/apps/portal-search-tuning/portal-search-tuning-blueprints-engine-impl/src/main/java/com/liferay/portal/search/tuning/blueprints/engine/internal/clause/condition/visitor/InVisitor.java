@@ -20,6 +20,7 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.search.tuning.blueprints.engine.exception.ParameterEvaluationException;
 import com.liferay.portal.search.tuning.blueprints.engine.internal.util.BlueprintValueUtil;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.BooleanParameter;
+import com.liferay.portal.search.tuning.blueprints.engine.parameter.ConditionEvaluationVisitor;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.DateParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.DoubleParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.FloatParameter;
@@ -27,7 +28,6 @@ import com.liferay.portal.search.tuning.blueprints.engine.parameter.IntegerArray
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.IntegerParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.LongArrayParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.LongParameter;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.Parameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringArrayParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringParameter;
 
@@ -171,11 +171,6 @@ public class InVisitor implements ConditionEvaluationVisitor {
 		}
 
 		return match;
-	}
-
-	@Override
-	public boolean visit(Parameter parameter) {
-		throw new UnsupportedOperationException();
 	}
 
 	@Override

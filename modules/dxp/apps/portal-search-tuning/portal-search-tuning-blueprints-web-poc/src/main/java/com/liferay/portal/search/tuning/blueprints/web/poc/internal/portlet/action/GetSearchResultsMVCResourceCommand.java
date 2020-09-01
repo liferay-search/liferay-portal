@@ -268,11 +268,8 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 
 				valueJsonObject.put(
 				"text", _blueprintsLocalizationHelper.get(
-					locale, valueJsonObject.getString(FacetJSONResponseKeys.NAME).toLowerCase()) + 
+					locale, valueJsonObject.getString(FacetJSONResponseKeys.VALUE).toLowerCase()) + 
 					" (" + valueJsonObject.getString(FacetJSONResponseKeys.FREQUENCY) + ")");
-
-				valueJsonObject.put("text_",_blueprintsLocalizationHelper.get(
-						locale, valueJsonObject.getString(FacetJSONResponseKeys.NAME).toLowerCase()));
 			}
 		}
 	}

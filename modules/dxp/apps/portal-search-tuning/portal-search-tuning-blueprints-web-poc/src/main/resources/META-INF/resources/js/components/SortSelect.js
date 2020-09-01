@@ -27,36 +27,46 @@ export default function SortSelect({setFilters}) {
 	const sortOptions = [
 		{
 			label: Liferay.Language.get('relevancy'),
-			value: 'relevancy',
+			value: 'sort1',
 		},
 		{
 			label: Liferay.Language.get('title'),
-			value: 'title',
+			value: 'sort2',
 		},
 		{
 			label: Liferay.Language.get('modified'),
-			value: 'modified',
+			value: 'sort3',
 		},
 	];
 
 	function updateSortField(event) {
-		const value = event.target.value;
+		
+		const field = event.target.value;
 
-		setSortField(value);
+		const order = sortDirection === 'asc' ? 'desc' : 'asc';
+
+		setSortField(field);
 
 		setFilters((filters) => {
-			return {...filters, [`${namespace}sortField`]: value};
+			return {...filters, [`${namespace}` + field]: order};
 		});
 	}
 
 	function updateSortDirection() {
-		const value = sortDirection === 'asc' ? 'desc' : 'asc';
+		
+		const field = sortField === '' ? 'sort1' : sortField;
 
-		setSortDirection(value);
+		const order = sortDirection === 'asc' ? 'desc' : 'asc';
+
+		setSortDirection(order);
 
 		setFilters((filters) => {
-			return {...filters, [`${namespace}sortDirection`]: value};
+			return {...filters, [`${namespace}` + field]: order};
 		});
+
+//		setFilters((filters) => {
+//			return {...filters, [`${namespace}sortDirection`]: value};
+//		});
 	}
 
 	return (

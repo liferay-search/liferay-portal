@@ -35,15 +35,15 @@ public class StringArrayParameter implements Parameter {
 	}
 
 	@Override
-	public boolean accept(EvaluationVisitor evaluationVisitor)
+	public boolean accept(ConditionEvaluationVisitor visitor)
 		throws ParameterEvaluationException {
 
-		return evaluationVisitor.visit(this);
+		return visitor.visit(this);
 	}
 
 	@Override
-	public String accept(ToStringVisitor toStringVisitor, Map<String, String> options) throws Exception {
-		return toStringVisitor.visit(this, options);
+	public String accept(ToStringVisitor visitor, Map<String, String> options) throws Exception {
+		return visitor.visit(this, options);
 	}
 
 	@Override
@@ -56,6 +56,7 @@ public class StringArrayParameter implements Parameter {
 		List<EvaluationType> evaluationTypes = new ArrayList<>();
 
 		evaluationTypes.add(EvaluationType.CONTAINS);
+		evaluationTypes.add(EvaluationType.EXISTS);
 		evaluationTypes.add(EvaluationType.NOT_CONTAINS);
 
 		return evaluationTypes;

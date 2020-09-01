@@ -115,6 +115,10 @@ public class SortsSearchRequestDataContributor
 		SearchRequestContext searchRequestContext, String field,
 		String orderString) {
 
+		if (Validator.isBlank(field)) {
+			return _sorts.score();
+		}
+		
 		try {
 			return _sorts.field(
 				field, BlueprintValueUtil.getSortOrder(orderString));
@@ -149,7 +153,7 @@ public class SortsSearchRequestDataContributor
 			String field = sortConfigurationJsonObject.getString(
 				SortConfigurationKeys.FIELD.getJsonKey());
 
-			if (Validator.isBlank(parameterName) || Validator.isBlank(field)) {
+			if (Validator.isBlank(parameterName)) {
 				continue;
 			}
 

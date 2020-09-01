@@ -36,18 +36,18 @@ public class DateParameter implements Parameter {
 	}
 
 	@Override
-	public boolean accept(EvaluationVisitor evaluationVisitor)
+	public boolean accept(ConditionEvaluationVisitor visitor)
 		throws ParameterEvaluationException {
 
-		return evaluationVisitor.visit(this);
+		return visitor.visit(this);
 	}
 
 	@Override
-	public String accept(ToStringVisitor toStringVisitor, 
+	public String accept(ToStringVisitor visitor, 
 			Map<String, String> options)
 		throws Exception {
 
-		return toStringVisitor.visit(this, options);
+		return visitor.visit(this, options);
 	}
 
 	@Override
@@ -57,17 +57,18 @@ public class DateParameter implements Parameter {
 
 	@Override
 	public List<EvaluationType> getSupportedEvaluationTypes() {
-		List<EvaluationType> matchTypes = new ArrayList<>();
+		List<EvaluationType> evaluationTypes = new ArrayList<>();
 
-		matchTypes.add(EvaluationType.EQ);
-		matchTypes.add(EvaluationType.NE);
-		matchTypes.add(EvaluationType.GT);
-		matchTypes.add(EvaluationType.GTE);
-		matchTypes.add(EvaluationType.LTE);
-		matchTypes.add(EvaluationType.IN_RANGE);
-		matchTypes.add(EvaluationType.NOT_IN_RANGE);
+		evaluationTypes.add(EvaluationType.EQ);
+		evaluationTypes.add(EvaluationType.EXISTS);
+		evaluationTypes.add(EvaluationType.NE);
+		evaluationTypes.add(EvaluationType.GT);
+		evaluationTypes.add(EvaluationType.GTE);
+		evaluationTypes.add(EvaluationType.LTE);
+		evaluationTypes.add(EvaluationType.IN_RANGE);
+		evaluationTypes.add(EvaluationType.NOT_IN_RANGE);
 
-		return matchTypes;
+		return evaluationTypes;
 	}
 
 	@Override

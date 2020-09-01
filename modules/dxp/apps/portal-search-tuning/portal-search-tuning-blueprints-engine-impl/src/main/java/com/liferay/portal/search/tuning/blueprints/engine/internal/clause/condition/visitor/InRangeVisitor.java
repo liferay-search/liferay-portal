@@ -26,6 +26,7 @@ import com.liferay.portal.search.tuning.blueprints.engine.internal.util.Blueprin
 import com.liferay.portal.search.tuning.blueprints.engine.message.Message;
 import com.liferay.portal.search.tuning.blueprints.engine.message.Severity;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.BooleanParameter;
+import com.liferay.portal.search.tuning.blueprints.engine.parameter.ConditionEvaluationVisitor;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.DateParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.DoubleParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.FloatParameter;
@@ -33,14 +34,12 @@ import com.liferay.portal.search.tuning.blueprints.engine.parameter.IntegerArray
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.IntegerParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.LongArrayParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.LongParameter;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.Parameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringArrayParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringParameter;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-
 import java.util.Date;
 
 /**
@@ -261,11 +260,6 @@ public class InRangeVisitor implements ConditionEvaluationVisitor {
 		}
 
 		return inRange;
-	}
-
-	@Override
-	public boolean visit(Parameter parameter) {
-		throw new UnsupportedOperationException();
 	}
 
 	@Override

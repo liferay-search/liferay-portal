@@ -27,7 +27,7 @@ import SortSelect from './SortSelect';
 import TimeSelect from './TimeSelect';
 
 const LOCATOR = {
-	label: 'name',
+	label: 'text',
 	value: 'value',
 };
 
@@ -62,7 +62,7 @@ export default function BlueprintsSearch({fetchResultsURL}) {
 			const facetParam = formatFacets(
 				selectedFacets,
 				namespace,
-				LOCATOR.label
+				LOCATOR.value
 			);
 
 			fetchResponse(fetchResultsURL, {

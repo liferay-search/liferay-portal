@@ -24,7 +24,7 @@ public enum RequestParameterType {
 
 	DATE("date"), DOUBLE("double"), FLOAT("float"), INTEGER("integer"),
 	INTEGER_ARRAY("integer_array"), LONG("long"), LONG_ARRAY("long_array"),
-	STRING("string"), STRING_ARRAY("string_array"), TIME_RANGE("tine_range");
+	STRING("string"), STRING_ARRAY("string_array"), TIME_RANGE("time_range");
 
 	public static final RequestParameterType findBy_jsonValue(
 		String jsonValue) {

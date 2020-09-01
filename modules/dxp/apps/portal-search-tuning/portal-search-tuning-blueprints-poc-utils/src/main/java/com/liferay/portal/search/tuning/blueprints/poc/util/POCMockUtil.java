@@ -243,19 +243,31 @@ public class POCMockUtil {
 		JSONArray sortsConfigurationJsonArray =
 			JSONFactoryUtil.createJSONArray();
 
-		JSONObject sortConfigurationJsonObject =
+		JSONObject sortConfigurationJsonObject1 =
 			JSONFactoryUtil.createJSONObject();
-
-		sortConfigurationJsonObject.put(
+		sortConfigurationJsonObject1.put(
 			SortConfigurationKeys.PARAMETER_NAME.getJsonKey(), "sort1");
-		sortConfigurationJsonObject.put(
-			SortConfigurationKeys.FIELD.getJsonKey(), "_score");
-		sortConfigurationJsonObject.put(
-			SortConfigurationKeys.PARAMETER_NAME.getJsonKey(), "sort2");
-		sortConfigurationJsonObject.put(
-			SortConfigurationKeys.PARAMETER_NAME.getJsonKey(), "title_en_US");
+		sortConfigurationJsonObject1.put(
+			SortConfigurationKeys.FIELD.getJsonKey(), "");
+		sortsConfigurationJsonArray.put(sortConfigurationJsonObject1);
 
-		sortsConfigurationJsonArray.put(sortConfigurationJsonObject);
+		JSONObject sortConfigurationJsonObject2 =
+				JSONFactoryUtil.createJSONObject();
+		sortConfigurationJsonObject2.put(
+			SortConfigurationKeys.PARAMETER_NAME.getJsonKey(), "sort2");
+		sortConfigurationJsonObject2.put(
+			SortConfigurationKeys.FIELD.getJsonKey(), "title_en_US.keyword");
+		sortsConfigurationJsonArray.put(sortConfigurationJsonObject2);
+
+
+		JSONObject sortConfigurationJsonObject3 =
+				JSONFactoryUtil.createJSONObject();
+		sortConfigurationJsonObject3.put(
+			SortConfigurationKeys.PARAMETER_NAME.getJsonKey(), "sort3");
+		sortConfigurationJsonObject3.put(
+			SortConfigurationKeys.FIELD.getJsonKey(), "modified");
+		
+		sortsConfigurationJsonArray.put(sortConfigurationJsonObject3);
 
 		requestParameterConfigurationJsonObject.put(
 			RequestParameterConfigurationKeys.SORTS.getJsonKey(),
@@ -266,9 +278,10 @@ public class POCMockUtil {
 		JSONArray customParameterConfigurationJsonArray =
 			JSONFactoryUtil.createJSONArray();
 
+		// "dateFrom"
+		
 		JSONObject customParameterConfigurationJsonObject =
 			JSONFactoryUtil.createJSONObject();
-
 		customParameterConfigurationJsonObject.put(
 			CustomRequestParameterConfigurationKeys.PARAMETER_NAME.getJsonKey(),
 			"dateFrom");
@@ -280,7 +293,35 @@ public class POCMockUtil {
 			"yyyy-MM-dd");
 
 		customParameterConfigurationJsonArray.put(
-			customParameterConfigurationJsonObject);
+				customParameterConfigurationJsonObject);
+
+		// "groupId"
+		
+		JSONObject customParameterConfigurationJsonObject1 =
+				JSONFactoryUtil.createJSONObject();
+		customParameterConfigurationJsonObject1.put(
+			CustomRequestParameterConfigurationKeys.PARAMETER_NAME.getJsonKey(),
+			"groupId");
+		customParameterConfigurationJsonObject1.put(
+			CustomRequestParameterConfigurationKeys.TYPE.getJsonKey(),
+			RequestParameterType.LONG.getJsonValue());
+				
+			customParameterConfigurationJsonArray.put(
+					customParameterConfigurationJsonObject1);
+
+		// "time-range"
+
+		JSONObject customParameterConfigurationJsonObject2 =
+				JSONFactoryUtil.createJSONObject();
+		customParameterConfigurationJsonObject2.put(
+			CustomRequestParameterConfigurationKeys.PARAMETER_NAME.getJsonKey(),
+			"time");
+		customParameterConfigurationJsonObject2.put(
+			CustomRequestParameterConfigurationKeys.TYPE.getJsonKey(),
+			RequestParameterType.TIME_RANGE.getJsonValue());
+				
+		customParameterConfigurationJsonArray.put(
+				customParameterConfigurationJsonObject2);
 
 		requestParameterConfigurationJsonObject.put(
 			RequestParameterConfigurationKeys.CUSTOM.getJsonKey(),

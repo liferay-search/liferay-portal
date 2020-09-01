@@ -12,25 +12,14 @@
  *
  */
 
-package com.liferay.portal.search.tuning.blueprints.engine.internal.clause.condition.visitor;
+package com.liferay.portal.search.tuning.blueprints.engine.parameter;
 
 import com.liferay.portal.search.tuning.blueprints.engine.exception.ParameterEvaluationException;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.BooleanParameter;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.DateParameter;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.DoubleParameter;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.EvaluationVisitor;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.FloatParameter;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.IntegerArrayParameter;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.IntegerParameter;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.LongArrayParameter;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.LongParameter;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringArrayParameter;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringParameter;
 
 /**
  * @author Petteri Karttunen
  */
-public interface ConditionEvaluationVisitor extends EvaluationVisitor {
+public interface ConditionEvaluationVisitor {
 
 	public boolean visit(BooleanParameter parameter)
 		throws ParameterEvaluationException;

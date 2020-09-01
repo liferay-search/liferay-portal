@@ -23,7 +23,6 @@ import com.liferay.portal.search.tuning.blueprints.constants.json.values.Evaluat
 import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
 import com.liferay.portal.search.tuning.blueprints.engine.exception.ParameterEvaluationException;
 import com.liferay.portal.search.tuning.blueprints.engine.internal.clause.condition.visitor.AnyWordInVisitor;
-import com.liferay.portal.search.tuning.blueprints.engine.internal.clause.condition.visitor.ConditionEvaluationVisitor;
 import com.liferay.portal.search.tuning.blueprints.engine.internal.clause.condition.visitor.ContainsVisitor;
 import com.liferay.portal.search.tuning.blueprints.engine.internal.clause.condition.visitor.EqualsVisitor;
 import com.liferay.portal.search.tuning.blueprints.engine.internal.clause.condition.visitor.GreaterThanVisitor;
@@ -31,6 +30,7 @@ import com.liferay.portal.search.tuning.blueprints.engine.internal.clause.condit
 import com.liferay.portal.search.tuning.blueprints.engine.internal.clause.condition.visitor.InVisitor;
 import com.liferay.portal.search.tuning.blueprints.engine.message.Message;
 import com.liferay.portal.search.tuning.blueprints.engine.message.Severity;
+import com.liferay.portal.search.tuning.blueprints.engine.parameter.ConditionEvaluationVisitor;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.Parameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.SearchParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.clause.ConditionHandler;
@@ -54,7 +54,7 @@ public class DefaultConditionHandler implements ConditionHandler {
 		SearchRequestContext searchRequestContext,
 		JSONObject configurationJsonObject) {
 
-		if (_validateCondition(searchRequestContext, configurationJsonObject)) {
+		if (!_validateCondition(searchRequestContext, configurationJsonObject)) {
 			return false;
 		}
 
@@ -67,26 +67,8 @@ public class DefaultConditionHandler implements ConditionHandler {
 		Optional<Parameter> parameterOptional =
 			searchParameterData.getByConfigurationVariableName(parameterName);
 
-		if (!parameterOptional.isPresent()) {
-			searchRequestContext.addMessage(
-				new Message(
-					Severity.ERROR, "core",
-					"core.error.clause-condition-parameter-not-resolved", null,
-					null, configurationJsonObject,
-					ConditionsConfigurationKeys.PARAMETER_NAME.getJsonKey(),
-					parameterName));
-
-			if (_log.isWarnEnabled()) {
-				_log.warn(
-					"Clause condition parameter could not be resolved [ " +
-						configurationJsonObject + " ].");
-			}
-
-			return false;
-		}
-
 		String evaluationTypeString = configurationJsonObject.getString(
-			ConditionsConfigurationKeys.EVALUATION_TYPE.getJsonKey());
+				ConditionsConfigurationKeys.EVALUATION_TYPE.getJsonKey());
 
 		EvaluationType evaluationType;
 
@@ -112,9 +94,68 @@ public class DefaultConditionHandler implements ConditionHandler {
 
 			return false;
 		}
+			
+		if (EvaluationType.EXISTS.equals(evaluationType)) {
+			return parameterOptional.isPresent() ? true : false;
+		} else if (EvaluationType.NOT_EXISTS.equals(evaluationType)) {
+			return !parameterOptional.isPresent() ? true : false;
+		}
+
+		if (!parameterOptional.isPresent()) {
+		
+			if (_log.isDebugEnabled()) {
+				_log.debug(
+					"Clause condition parameter not present [ " +
+						configurationJsonObject + " ].");
+			}
+
+			return false;
+		}
 
 		Parameter parameter = parameterOptional.get();
 
+		ConditionEvaluationVisitor visitor = _getEvaluationVisitor(
+				parameter, configurationJsonObject, evaluationType);
+
+		if (visitor == null) {
+			searchRequestContext.addMessage(
+				new Message(
+					Severity.ERROR, "core",
+					"core.error.unable-to-resolve-clause-condition-handler",
+					null, null, configurationJsonObject,
+					ConditionsConfigurationKeys.EVALUATION_TYPE.getJsonKey(),
+					evaluationType.name()));
+
+			if (_log.isWarnEnabled()) {
+				_log.warn(
+					"Unable to resolve clause condition handler " +
+						evaluationType.name() + ".");
+			}
+
+			return false;
+		}
+
+		try {
+			return parameter.accept(visitor);
+		}
+		catch (ParameterEvaluationException parameterEvaluationException) {
+			searchRequestContext.addMessage(
+				parameterEvaluationException.getDetailsMessage());
+
+			return false;
+		}
+	}
+
+	private EvaluationType _getEvaluationType(String s)
+		throws IllegalArgumentException {
+
+		s = StringUtil.toUpperCase(s);
+
+		return EvaluationType.valueOf(s);
+	}
+
+	private ConditionEvaluationVisitor _getEvaluationVisitor(Parameter parameter, JSONObject configurationJsonObject, EvaluationType evaluationType) {
+		
 		ConditionEvaluationVisitor visitor = null;
 
 		List<EvaluationType> supportedEvaluationTypes =
@@ -193,45 +234,11 @@ public class DefaultConditionHandler implements ConditionHandler {
 				 supportedEvaluationTypes.contains(evaluationType)) {
 
 			visitor = new InRangeVisitor(configurationJsonObject, true);
-		}
-
-		if (visitor == null) {
-			searchRequestContext.addMessage(
-				new Message(
-					Severity.ERROR, "core",
-					"core.error.unable-to-resolve-clause-condition-handler",
-					null, null, configurationJsonObject,
-					ConditionsConfigurationKeys.EVALUATION_TYPE.getJsonKey(),
-					evaluationType.name()));
-
-			if (_log.isWarnEnabled()) {
-				_log.warn(
-					"Unable to resolve clause condition handler " +
-						evaluationType.name() + ".");
-			}
-
-			return false;
-		}
-
-		try {
-			return parameter.accept(visitor);
-		}
-		catch (ParameterEvaluationException parameterEvaluationException) {
-			searchRequestContext.addMessage(
-				parameterEvaluationException.getDetailsMessage());
-
-			return false;
-		}
+		}		
+		
+		return visitor;
 	}
-
-	private EvaluationType _getEvaluationType(String s)
-		throws IllegalArgumentException {
-
-		s = StringUtil.toUpperCase(s);
-
-		return EvaluationType.valueOf(s);
-	}
-
+	
 	private boolean _validateCondition(
 		SearchRequestContext searchRequestContext,
 		JSONObject configurationJsonObject) {
@@ -278,6 +285,7 @@ public class DefaultConditionHandler implements ConditionHandler {
 			valid = false;
 		}
 
+		/*
 		if (!configurationJsonObject.has(
 				ConditionsConfigurationKeys.MATCH_VALUE.getJsonKey())) {
 
@@ -297,7 +305,8 @@ public class DefaultConditionHandler implements ConditionHandler {
 
 			valid = false;
 		}
-
+		*/
+		
 		return valid;
 	}
 
