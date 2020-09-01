@@ -86,7 +86,7 @@ describe('Builder', () => {
 		fireEvent.click(getByText('expand-all'));
 
 		expect(container.querySelectorAll('.configuration-editor').length).toBe(
-			3
+			QUERY_FRAGMENTS.length
 		);
 	});
 });
