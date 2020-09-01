@@ -88,13 +88,13 @@ public class QuerySearchRequestDataContributor
 		Occur occur, Query subquery, JSONObject queryJsonObject) {
 
 		SearchRequestBuilder searchRequestBuilder =
-			searchRequestData.getSearchRequestBuilder();
-
+	 			searchRequestData.getSearchRequestBuilder();
+		
 		if (clauseContext.equals(ClauseContext.POST_FILTER)) {
 			_addPostFilterClause(searchRequestData, subquery, occur);
 		}
 		else if (clauseContext.equals(ClauseContext.PRE_FILTER)) {
-			_addPreFilterClause(searchRequestData, subquery);
+			_addPreFilterClause(searchRequestBuilder, subquery);
 		}
 		else if (clauseContext.equals(ClauseContext.QUERY)) {
 			_addQueryClause(searchRequestBuilder, occur, subquery);
@@ -239,26 +239,24 @@ public class QuerySearchRequestDataContributor
 	}
 
 	private void _addPreFilterClause(
-		SearchRequestData searchRequestData, Query subquery) {
-
-		BooleanQuery query = searchRequestData.getQuery();
-
-		searchRequestBuilder.addComplexQueryPart(
-			_complexQueryPartBuilderFactory.builder()
-			.query(subquery)
-			.occur("filter")
-			.build());
+			SearchRequestBuilder searchRequestBuilder, Query subquery) {
+		
+			searchRequestBuilder.addComplexQueryPart(
+		 			_complexQueryPartBuilderFactory.builder()
+		 			.query(subquery)
+		 			.occur("filter")
+		 			.build());
 	}
 
 	private void _addQueryClause(
-		SearchRequestBuilder searchRequestBuilder, Occur occur,
-		Query subquery) {
+			SearchRequestBuilder searchRequestBuilder, Occur occur,
+	 		Query subquery) {
 
 		String occurString = _getOccurString(occur);
 
 		if (occurString == null) {
-			return;
-		}
+ 			return;
+ 		}
 
 		searchRequestBuilder.addComplexQueryPart(
 			_complexQueryPartBuilderFactory.builder()
@@ -353,7 +351,7 @@ public class QuerySearchRequestDataContributor
 		}
 
 		return null;
-	}
+ 	}
 
 	private Integer _getWindoSize(JSONObject queryJsonObject) {
 		if (queryJsonObject.has(
@@ -543,6 +541,9 @@ public class QuerySearchRequestDataContributor
 	private volatile List<QueryContributor> _queryContributors =
 		new ArrayList<>();
 
+	@Reference
+ 	private ComplexQueryPartBuilderFactory _complexQueryPartBuilderFactory;
+	
 	@Reference(cardinality = ReferenceCardinality.OPTIONAL)
 	private RescoreBuilder _rescoreBuilder;
 

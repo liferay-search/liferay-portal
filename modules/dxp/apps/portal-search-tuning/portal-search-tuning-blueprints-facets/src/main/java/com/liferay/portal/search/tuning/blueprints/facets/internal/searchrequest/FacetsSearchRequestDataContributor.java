@@ -103,14 +103,14 @@ public class FacetsSearchRequestDataContributor
 			}
 
 			SearchRequestBuilder searchRequestBuilder =
-				searchRequestData.getSearchRequestBuilder();
-
+	 				searchRequestData.getSearchRequestBuilder();
+			
 			if (facetPreFilterQuery.hasClauses()) {
 				searchRequestBuilder.addComplexQueryPart(
-					_complexQueryPartBuilderFactory.builder()
-					.query(facetPreFilterQuery)
-					.occur("filter")
-					.build());
+	 					_complexQueryPartBuilderFactory.builder()
+	 					.query(facetPreFilterQuery)
+	 					.occur("filter")
+	 					.build());
 			}
 
 			if (facetPostFilterQuery.hasClauses()) {
