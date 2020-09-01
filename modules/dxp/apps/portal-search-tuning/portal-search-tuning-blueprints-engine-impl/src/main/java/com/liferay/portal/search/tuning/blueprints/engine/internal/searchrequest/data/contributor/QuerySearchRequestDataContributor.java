@@ -541,9 +541,6 @@ public class QuerySearchRequestDataContributor
 	private volatile List<QueryContributor> _queryContributors =
 		new ArrayList<>();
 
-	@Reference
- 	private ComplexQueryPartBuilderFactory _complexQueryPartBuilderFactory;
-	
 	@Reference(cardinality = ReferenceCardinality.OPTIONAL)
 	private RescoreBuilder _rescoreBuilder;
 
