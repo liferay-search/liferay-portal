@@ -152,7 +152,7 @@ public class IPStackParameterContributor implements ParameterContributor {
 
 		searchParameterData.addParameter(
 			new DoubleParameter(
-				"ipstack.longitude", "${ipstack.latitude}",
+				"ipstack.longitude", "${ipstack.longitude}",
 				geoLocationJSONObject.getDouble("longitude")));
 
 		searchParameterData.addParameter(
