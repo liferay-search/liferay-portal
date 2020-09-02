@@ -15,6 +15,7 @@
 package com.liferay.portal.search.tuning.blueprints.engine.internal.util;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
@@ -85,8 +86,8 @@ public class BlueprintTemplateVariableUtil {
 		// Fail if there were untranslated (not present variables)
 		
 		if (queryString.contains("${")) {
-			throw new IllegalArgumentException(
-					"There were untranslated template variables [ " + 
+			throw new JSONException(
+					"Some template variables couldn't be parsed [ " + 
 					queryString + " ]");
 		}
 		
