@@ -369,7 +369,7 @@ public class POCMockUtil {
 			SuggestersConfigurationKeys.ENABLED.getJsonKey(), true);
 		suggester1JsonObject.put(
 			SuggestersConfigurationKeys.TYPE.getJsonKey(),
-			SuggesterType.PHRASE);
+			SuggesterType.PHRASE.getJsonValue());
 
 		JSONObject suggester1ConfigurationJsonObject1 =
 			JSONFactoryUtil.createJSONObject();
@@ -378,7 +378,7 @@ public class POCMockUtil {
 			PhraseSuggesterConfigurationKeys.FIELD.getJsonKey(),
 			"keywordSearch_en_US");
 		suggester1ConfigurationJsonObject1.put(
-			PhraseSuggesterConfigurationKeys.TEXT.getJsonKey(), "${q}");
+			PhraseSuggesterConfigurationKeys.TEXT.getJsonKey(), "${keywords}");
 
 		suggester1JsonObject.put(
 			SuggestersConfigurationKeys.CONFIGURATION.getJsonKey(),
