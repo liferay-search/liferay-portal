@@ -23,6 +23,7 @@ import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.search.filter.ComplexQueryPartBuilderFactory;
 import com.liferay.portal.search.query.Queries;
 import com.liferay.portal.search.query.Query;
 import com.liferay.portal.search.rescore.Rescore;
@@ -86,20 +87,119 @@ public class SearchRequestBuilderTest {
 	}
 
 	@Test
+	public void testAddPostFilterQueryPart() throws Exception {
+		_addUser("alpha", "alpha", "omega");
+		_addUser("omega", "alpha", "omega");
+		_addUser("phi", "alpha", "omega");
+		_addUser("sigma", "zeta", "omega");
+
+		String queryString = "omega";
+
+		SearchRequestBuilder searchRequestBuilder =
+			_searchRequestBuilderFactory.builder(
+			).companyId(
+				_group.getCompanyId()
+			).groupIds(
+				_group.getGroupId()
+			).queryString(
+				queryString
+			);
+
+		_assertSearch(
+			"[alpha omega, alpha omega, alpha omega, zeta omega]", "userName",
+			searchRequestBuilder);
+
+		searchRequestBuilder.postFilterQuery(
+			_queries.term("firstName", "alpha"));
+
+		_assertSearch(
+			"[alpha omega, alpha omega, alpha omega]", "userName",
+			searchRequestBuilder);
+
+		searchRequestBuilder.postFilterQuery(
+			null
+		).addPostFilterQueryPart(
+			_complexQueryPartBuilderFactory.builder(
+			).occur(
+				"filter"
+			).query(
+				_queries.term("firstName", "alpha")
+			).build()
+		);
+
+		_assertSearch(
+			"[alpha omega, alpha omega, alpha omega]", "userName",
+			searchRequestBuilder);
+
+		searchRequestBuilder.postFilterQuery(
+			null
+		).addPostFilterQueryPart(
+			_complexQueryPartBuilderFactory.builder(
+			).occur(
+				"filter"
+			).query(
+				_queries.term("screenName", "alpha")
+			).build()
+		);
+
+		_assertSearch("[alpha omega]", "userName", searchRequestBuilder);
+	}
+
+	@Test
+	public void testAddPostFilterQueryPartAdditive() throws Exception {
+		_addUser("alpha", "alpha", "delta");
+		_addUser("omega", "alpha", "delta");
+		_addUser("gamma", "alpha", "delta");
+		_addUser("sigma", "omega", "delta");
+
+		String queryString = "delta";
+
+		SearchRequestBuilder searchRequestBuilder =
+			_searchRequestBuilderFactory.builder(
+			).companyId(
+				_group.getCompanyId()
+			).groupIds(
+				_group.getGroupId()
+			).queryString(
+				queryString
+			).addPostFilterQueryPart(
+				_complexQueryPartBuilderFactory.builder(
+				).occur(
+					"should"
+				).query(
+					_queries.term("screenName", "alpha")
+				).build()
+			);
+
+		_assertSearch("[alpha delta]", "userName", searchRequestBuilder);
+
+		searchRequestBuilder.addPostFilterQueryPart(
+			_complexQueryPartBuilderFactory.builder(
+			).occur(
+				"should"
+			).query(
+				_queries.term("screenName", "sigma")
+			).build());
+
+		_assertSearch(
+			"[alpha delta, omega delta]", "userName", searchRequestBuilder);
+	}
+
+	@Test
 	public void testAddRescore() throws Exception {
 		_addUser("AlphaDelta", "alpha", "delta");
 		_addUser("BetaDelta", "beta", "delta");
 		_addUser("GammaDelta", "gamma", "delta");
 
 		_assertSearch(
-			"userName", "[alpha delta, beta delta, gamma delta]", "delta",
+			"[alpha delta, beta delta, gamma delta]", "userName", "delta",
 			(List<Rescore>)null);
 
 		List<Rescore> rescores = Arrays.asList(
 			_buildRescore("userName", "beta delta"));
 
 		_assertSearch(
-			"userName", "[beta delta, alpha delta, gamma delta]", "delta",
+			"[beta delta, alpha delta, gamma delta]", "userName", "delta",
 			rescores);
 
 		rescores = Arrays.asList(
@@ -107,7 +207,7 @@ public class SearchRequestBuilderTest {
 			_buildRescore("userName", "gamma delta"));
 
 		_assertSearch(
-			"userName", "[beta delta, gamma delta, alpha delta]", "delta",
+			"[beta delta, gamma delta, alpha delta]", "userName", "delta",
 			rescores);
 	}
 
@@ -119,15 +219,14 @@ public class SearchRequestBuilderTest {
 
 		FieldSort fieldSort = _sorts.field("screenName", SortOrder.DESC);
 
-		_assertSearch("screenName", "[name3, name2, name1]", "name", fieldSort);
+		_assertSearch("[name3, name2, name1]", "screenName", "name", fieldSort);
 
 		fieldSort = _sorts.field("userName", SortOrder.ASC);
 
 		_assertSearch(
-			"userName",
 			"[firstname1 lastname2, firstname2 lastname3, firstname3 " +
 				"lastname1]",
-			"name", fieldSort);
+			"userName", "name", fieldSort);
 	}
 
 	@Rule
@@ -160,7 +259,19 @@ public class SearchRequestBuilderTest {
 	}
 
 	private void _assertSearch(
-		String fieldName, String expected, String queryString,
+		String expected, String fieldName,
+		SearchRequestBuilder searchRequestBuilder) {
+
+		SearchResponse searchResponse = _searcher.search(
+			searchRequestBuilder.build());
+
+		DocumentsAssert.assertValues(
+			searchResponse.getRequestString(),
+			searchResponse.getDocumentsStream(), fieldName, expected);
+	}
+
+	private void _assertSearch(
+		String expected, String fieldName, String queryString,
 		List<Rescore> rescores) {
 
 		SearchRequestBuilder searchRequestBuilder =
@@ -188,7 +299,7 @@ public class SearchRequestBuilderTest {
 	}
 
 	private void _assertSearch(
-		String fieldName, String expected, String queryString, Sort sort) {
+		String expected, String fieldName, String queryString, Sort sort) {
 
 		SearchResponse searchResponse = _searcher.search(
 			_searchRequestBuilderFactory.builder(
@@ -219,6 +330,9 @@ public class SearchRequestBuilderTest {
 			100
 		).build();
 	}
+
+	@Inject
+	private ComplexQueryPartBuilderFactory _complexQueryPartBuilderFactory;
 
 	private Group _group;
 
