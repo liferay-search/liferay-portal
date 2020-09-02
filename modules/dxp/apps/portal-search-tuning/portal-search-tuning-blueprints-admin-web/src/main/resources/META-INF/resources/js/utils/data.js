@@ -216,17 +216,16 @@ export const QUERY_FRAGMENTS = [
           "query": {
             "function_score": {
               "gauss": {
-                "location": {
-                  "offset": "0km",
+                "expando__keyword__custom_fields__location_geolocation": {
                   "origin": {
                     "lon": "${ipstack.longitude}",
                     "lat": "${ipstack.latitude}"
                   },
                   "scale": "1000km",
-                  "decay": 0.4
+                  "decay": 0.3
                 }
               },
-              "boost": 50
+              "boost": 100
             }
           }
         },
