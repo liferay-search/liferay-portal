@@ -202,20 +202,20 @@ public class QuerySearchRequestDataContributor
 					catch (JSONException jsonException) {
 						searchRequestContext.addMessage(
 							new Message(
-								Severity.ERROR, "core",
+								Severity.WARN, "core",
 								"core.error.error-in-parsing-configuration-parameters",
 								jsonException.getMessage(), jsonException,
 								queryJsonObject, null, null));
-						_log.error(jsonException.getMessage(), jsonException);
+						_log.warn(jsonException.getMessage(), jsonException);
 					}
 					catch (Exception exception) {
 						searchRequestContext.addMessage(
 							new Message(
-								Severity.ERROR, "core",
+								Severity.WARN, "core",
 								"core.error.unknown-clause-building-error",
 								exception.getMessage(), exception,
 								clauseJsonObject, null, null));
-						_log.error(exception.getMessage(), exception);
+						_log.warn(exception.getMessage(), exception);
 					}
 				}
 			}
