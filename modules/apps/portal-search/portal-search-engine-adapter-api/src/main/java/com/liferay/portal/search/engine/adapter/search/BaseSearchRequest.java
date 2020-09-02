@@ -60,6 +60,12 @@ public abstract class BaseSearchRequest extends CrossClusterRequest {
 			pipelineAggregation.getName(), pipelineAggregation);
 	}
 
+	public void addPostFilterQueryParts(
+		Collection<ComplexQueryPart> complexQueryParts) {
+
+		_postFilterQueryParts.addAll(complexQueryParts);
+	}
+
 	public Map<String, Aggregation> getAggregationsMap() {
 		return Collections.unmodifiableMap(_aggregationsMap);
 	}
@@ -98,6 +104,10 @@ public abstract class BaseSearchRequest extends CrossClusterRequest {
 
 	public Query getPostFilterQuery() {
 		return _postFilterQuery;
+	}
+
+	public List<ComplexQueryPart> getPostFilterQueryParts() {
+		return Collections.unmodifiableList(_postFilterQueryParts);
 	}
 
 	public Query getQuery() {
@@ -264,6 +274,8 @@ public abstract class BaseSearchRequest extends CrossClusterRequest {
 		new LinkedHashMap<>();
 	private Filter _postFilter;
 	private Query _postFilterQuery;
+	private final List<ComplexQueryPart> _postFilterQueryParts =
+		new ArrayList<>();
 	private Query _query;
 	private Boolean _requestCache;
 	private Query _rescoreQuery;
