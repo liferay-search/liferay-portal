@@ -43,7 +43,7 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Petteri Karttunen
  */
-@Component(immediate = true, service = QueryPostProcessor.class)
+@Component(immediate = true, property = "name=spellcheck", service = QueryPostProcessor.class)
 public class SpellCheckingPostProcessor implements QueryPostProcessor {
 
 	@Override

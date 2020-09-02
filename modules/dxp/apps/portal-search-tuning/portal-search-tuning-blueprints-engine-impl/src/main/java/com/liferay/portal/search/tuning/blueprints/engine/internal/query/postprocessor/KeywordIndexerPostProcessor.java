@@ -20,6 +20,8 @@ import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.search.IndexWriterHelper;
+import com.liferay.portal.kernel.search.SearchException;
+import com.liferay.portal.kernel.search.suggest.SuggestionConstants;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.engine.adapter.search.SearchSearchResponse;
@@ -39,7 +41,7 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Petteri Karttunen
  */
-@Component(immediate = true, service = QueryPostProcessor.class)
+@Component(immediate = true, property = "name=keyword_indexer", service = QueryPostProcessor.class)
 public class KeywordIndexerPostProcessor implements QueryPostProcessor {
 
 	@Override
@@ -92,7 +94,15 @@ public class KeywordIndexerPostProcessor implements QueryPostProcessor {
 		SearchRequestContext searchRequestContext, String keywords) {
 
 		// TODO: https://issues.liferay.com/browse/LPS-118888
-
+		
+		try {
+			_indexWriterHelper.indexKeyword(
+				searchRequestContext.getCompanyId(), keywords, 0, 
+				SuggestionConstants.TYPE_QUERY_SUGGESTION,
+				searchRequestContext.getLocale());
+		} catch (SearchException e) {
+			_log.error(e.getMessage(), e);
+		}
 	}
 
 	private String _filterKeywords(

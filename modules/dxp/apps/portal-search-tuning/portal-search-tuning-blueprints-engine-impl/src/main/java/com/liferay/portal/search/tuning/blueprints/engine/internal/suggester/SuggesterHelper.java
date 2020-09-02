@@ -23,8 +23,10 @@ import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
 import com.liferay.portal.search.engine.adapter.search.SuggestSearchRequest;
 import com.liferay.portal.search.engine.adapter.search.SuggestSearchResponse;
 import com.liferay.portal.search.engine.adapter.search.SuggestSearchResult;
+import com.liferay.portal.search.index.IndexNameBuilder;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.suggester.SuggestersConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
+import com.liferay.portal.search.tuning.blueprints.engine.internal.util.BlueprintTemplateVariableUtil;
 import com.liferay.portal.search.tuning.blueprints.engine.message.Message;
 import com.liferay.portal.search.tuning.blueprints.engine.message.Severity;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.suggester.SuggesterBuilder;
@@ -72,9 +74,14 @@ public class SuggesterHelper {
 				JSONObject suggesterConfigurationJsonObject =
 					suggesterJsonObject.getJSONObject(
 						SuggestersConfigurationKeys.CONFIGURATION.getJsonKey());
+				
+				JSONObject parsedSuggesterConfigurationJsonObject = 
+						BlueprintTemplateVariableUtil.
+						parseTemplateVariables(searchRequestContext, 
+								suggesterConfigurationJsonObject);
 
 				Optional<Suggester> suggesterOptional = suggesterBuilder.build(
-					searchRequestContext, suggesterConfigurationJsonObject);
+					searchRequestContext, parsedSuggesterConfigurationJsonObject);
 
 				if (suggesterOptional.isPresent()) {
 					suggesters.add(suggesterOptional.get());
@@ -158,11 +165,10 @@ public class SuggesterHelper {
 	private SuggestSearchResponse _executeSuggestSearchRequest(
 		SearchRequestContext searchRequestContext, List<Suggester> suggesters) {
 
-		//		long companyId = searchRequestContext.getCompanyId();
-
 		// TODO: LPS-118888
 
-		String indexName = "TODO";
+		String indexName = 
+				_indexNameBuilder.getIndexName(searchRequestContext.getCompanyId());
 
 		SuggestSearchRequest suggestSearchRequest = new SuggestSearchRequest(
 			indexName);
@@ -177,6 +183,9 @@ public class SuggesterHelper {
 	private static final Log _log = LogFactoryUtil.getLog(
 		SuggesterHelper.class);
 
+	@Reference
+	private IndexNameBuilder _indexNameBuilder;
+	
 	@Reference
 	private SearchEngineAdapter _searchEngineAdapter;
 
