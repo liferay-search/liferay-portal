@@ -4,16 +4,17 @@
 
 <h1>A "Google Places" Journal Article Bulk Loader</h1>
 
-<p>This portlet is meant for creating test data for Liferay GSearch application. For testing purposes only.</p>
-
 <aui:form action="<%= importActionURL %>" name="fm">
 	<aui:select label="Select the type of data to be imported" name="type">
 
 		<%
 		String[] types = {"all data", "restaurants", "tourist attractions"};
+
 		for (String type : types) {
 		%>
+
 			<aui:option label="<%= type %>" value="<%= type %>" />
+
 		<%
 		}
 		%>
