@@ -153,6 +153,25 @@ public class BlueprintServiceSoap {
 	}
 
 	public static
+		com.liferay.portal.search.tuning.blueprints.model.BlueprintSoap
+				getBlueprint(long blueprintId)
+			throws RemoteException {
+
+		try {
+			com.liferay.portal.search.tuning.blueprints.model.Blueprint
+				returnValue = BlueprintServiceUtil.getBlueprint(blueprintId);
+
+			return com.liferay.portal.search.tuning.blueprints.model.
+				BlueprintSoap.toSoapModel(returnValue);
+		}
+		catch (Exception exception) {
+			_log.error(exception, exception);
+
+			throw new RemoteException(exception.getMessage());
+		}
+	}
+
+	public static
 		com.liferay.portal.search.tuning.blueprints.model.BlueprintSoap[]
 				getGroupBlueprints(long companyId, int type, int start, int end)
 			throws RemoteException {
@@ -270,25 +289,6 @@ public class BlueprintServiceSoap {
 				companyId, status, type);
 
 			return returnValue;
-		}
-		catch (Exception exception) {
-			_log.error(exception, exception);
-
-			throw new RemoteException(exception.getMessage());
-		}
-	}
-
-	public static
-		com.liferay.portal.search.tuning.blueprints.model.BlueprintSoap
-				getBlueprint(long blueprintId)
-			throws RemoteException {
-
-		try {
-			com.liferay.portal.search.tuning.blueprints.model.Blueprint
-				returnValue = BlueprintServiceUtil.getBlueprint(blueprintId);
-
-			return com.liferay.portal.search.tuning.blueprints.model.
-				BlueprintSoap.toSoapModel(returnValue);
 		}
 		catch (Exception exception) {
 			_log.error(exception, exception);
