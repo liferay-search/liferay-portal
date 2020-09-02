@@ -4,27 +4,34 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
+import com.liferay.expando.kernel.model.ExpandoBridge;
+import com.liferay.expando.kernel.model.ExpandoColumnConstants;
+import com.liferay.expando.kernel.util.ExpandoBridgeFactoryUtil;
 import com.liferay.exportimport.kernel.lar.ExportImportThreadLocal;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.service.JournalArticleLocalService;
 import com.liferay.petra.string.CharPool;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextFactory;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PwdGenerator;
+import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.search.tuning.blueprints.bulkloader.poc.internal.constants.BulkloaderPortletKeys;
 import com.liferay.portal.search.tuning.blueprints.bulkloader.poc.internal.constants.MVCActionCommandNames;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -75,6 +82,17 @@ public class ImportMVCActionCommand extends BaseMVCActionCommand {
 		String languageId = ParamUtil.getString(
 			actionRequest, "languageId", "en_US");
 
+		// Create an expando for location.
+
+		try {
+			_createLocationExpandoField(actionRequest);
+		}
+		catch (PortalException portalException) {
+			portalException.printStackTrace();
+
+			return;
+		}
+
 		// Disable link validation.
 
 		ExportImportThreadLocal.setPortletImportInProcess(true);
@@ -85,13 +103,11 @@ public class ImportMVCActionCommand extends BaseMVCActionCommand {
 		ExportImportThreadLocal.setPortletImportInProcess(false);
 	}
 
-	private void _addJournalArticle(
+	private JournalArticle _addJournalArticle(
 			ActionRequest actionRequest, long userId, long groupId,
 			String languageId, String title, String content,
 			String[] assetTagNames)
 		throws Exception {
-
-		long timer = System.currentTimeMillis();
 
 		ServiceContext serviceContext = ServiceContextFactory.getInstance(
 			JournalArticle.class.getName(), actionRequest);
@@ -121,7 +137,7 @@ public class ImportMVCActionCommand extends BaseMVCActionCommand {
 								"]]></dynamic-content>" + "</dynamic-element>" +
 									"</root>";
 
-		 _journalArticleLocalService.addArticle(
+		return _journalArticleLocalService.addArticle(
 				 userId,
 				 groupId,
 				 0, // folderId,
@@ -131,9 +147,22 @@ public class ImportMVCActionCommand extends BaseMVCActionCommand {
 				"BASIC-WEB-CONTENT", // ddmStructureKey,
 				"BASIC-WEB-CONTENT", // ddmTemplateKey,
 				serviceContext);
+	}
 
-		_log.info(
-			"Success. Took " + (System.currentTimeMillis() - timer) + " ms");
+	private void _addLocationAttribute(
+		JournalArticle journalArticle, String lat, String lng) {
+
+		JSONObject jsonObject = JSONFactoryUtil.createJSONObject();
+
+		jsonObject.put("latitude", lat);
+		jsonObject.put("longitude", lng);
+
+		journalArticle.getExpandoBridge(
+		).setAttribute(
+			"location", jsonObject, false
+		);
+
+		_journalArticleLocalService.updateJournalArticle(journalArticle);
 	}
 
 	private boolean _checkTagValue(String value) {
@@ -163,6 +192,36 @@ public class ImportMVCActionCommand extends BaseMVCActionCommand {
 		}
 
 		return values;
+	}
+
+	private void _createLocationExpandoField(ActionRequest actionRequest)
+		throws PortalException {
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		long companyId = themeDisplay.getCompanyId();
+
+		boolean secure = false;
+
+		ExpandoBridge expandoBridge = ExpandoBridgeFactoryUtil.getExpandoBridge(
+			companyId, JournalArticle.class.getName());
+		
+		String fieldName = "location";
+
+		if (!expandoBridge.hasAttribute(fieldName)) {
+
+		    expandoBridge.addAttribute(
+				"location", ExpandoColumnConstants.GEOLOCATION, secure);
+
+		    UnicodeProperties properties = expandoBridge.getAttributeProperties(fieldName);
+		    
+		    properties.setProperty(
+		    		ExpandoColumnConstants.INDEX_TYPE, 
+		    			String.valueOf(ExpandoColumnConstants.INDEX_TYPE_KEYWORD));
+
+		    expandoBridge.setAttributeProperties(fieldName, properties);
+		}
 	}
 
 	private String _generateInstanceId() {
@@ -206,11 +265,13 @@ public class ImportMVCActionCommand extends BaseMVCActionCommand {
 
 			System.out.println("Importing " + fileName);
 
-			InputStream in = this.getClass().getResourceAsStream(fileName);
+			InputStream in = this.getClass(
+			).getResourceAsStream(
+				fileName
+			);
 
 			try {
-				JsonElement root = parser.parse(
-					new InputStreamReader(in));
+				JsonElement root = parser.parse(new InputStreamReader(in));
 
 				JsonObject rootobj = root.getAsJsonObject();
 
@@ -231,11 +292,11 @@ public class ImportMVCActionCommand extends BaseMVCActionCommand {
 						"location"
 					).getAsJsonObject();
 
-					String lat =  location.get(
+					String lat = location.get(
 						"lat"
 					).getAsString();
 
-					String lng =  location.get(
+					String lng = location.get(
 						"lng"
 					).getAsString();
 
@@ -289,9 +350,11 @@ public class ImportMVCActionCommand extends BaseMVCActionCommand {
 
 					_log.info("Adding journal article " + title);
 
-					_addJournalArticle(
+					JournalArticle journalArticle = _addJournalArticle(
 						actionRequest, userId, groupId, languageId, title,
 						content, assetTagNames);
+
+					_addLocationAttribute(journalArticle, lat, lng);
 				}
 			}
 			catch (Exception e) {
@@ -338,12 +401,11 @@ public class ImportMVCActionCommand extends BaseMVCActionCommand {
 
 	json results were formatted with https://jsonformatter.curiousconcept.com/
 	 */
-
 	private static final Map<String, String> fileNameCityMap =
 		new HashMap<String, String>() {
 			{
-				put("la-restaurant.json","Los Angeles");
-				put("la-tourist.json","Los Angeles");
+				put("la-restaurant.json", "Los Angeles");
+				put("la-tourist.json", "Los Angeles");
 				put("nashville-restaurant.json", "Nashville");
 				put("nashville-tourist.json", "Nashville");
 				put("ny-restaurant.json", "New York");
