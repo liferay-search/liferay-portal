@@ -52,6 +52,9 @@ public interface SearchRequestBuilder {
 	public SearchRequestBuilder addPipelineAggregation(
 		PipelineAggregation pipelineAggregation);
 
+	public SearchRequestBuilder addPostFilterQueryPart(
+		ComplexQueryPart complexQueryPart);
+
 	public SearchRequestBuilder addRescore(Rescore rescore);
 
 	/**
