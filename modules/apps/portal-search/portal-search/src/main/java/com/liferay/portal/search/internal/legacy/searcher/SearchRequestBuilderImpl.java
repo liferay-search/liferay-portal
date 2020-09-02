@@ -125,6 +125,19 @@ public class SearchRequestBuilderImpl implements SearchRequestBuilder {
 	}
 
 	@Override
+	public SearchRequestBuilder addPostFilterQueryPart(
+		ComplexQueryPart complexQueryPart) {
+
+		if (complexQueryPart != null) {
+			withSearchRequestImpl(
+				searchRequestImpl -> searchRequestImpl.addPostFilterQueryPart(
+					complexQueryPart));
+		}
+
+		return this;
+	}
+
+	@Override
 	public SearchRequestBuilder addRescore(Rescore rescore) {
 		withSearchRequestImpl(
 			searchRequestImpl -> searchRequestImpl.addRescore(rescore));
