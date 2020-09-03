@@ -373,12 +373,21 @@ public class POCMockUtil {
 
 		JSONObject suggester1ConfigurationJsonObject1 =
 			JSONFactoryUtil.createJSONObject();
-
+		suggester1ConfigurationJsonObject1.put(
+				PhraseSuggesterConfigurationKeys.CONFIDENCE.getJsonKey(), 0.1);
 		suggester1ConfigurationJsonObject1.put(
 			PhraseSuggesterConfigurationKeys.FIELD.getJsonKey(),
 			"keywordSearch_en_US");
 		suggester1ConfigurationJsonObject1.put(
+				PhraseSuggesterConfigurationKeys.GRAM_SIZE.getJsonKey(), 1);
+		suggester1ConfigurationJsonObject1.put(
+				PhraseSuggesterConfigurationKeys.MAX_ERRORS.getJsonKey(), 2.0);
+		suggester1ConfigurationJsonObject1.put(
+				PhraseSuggesterConfigurationKeys.REAL_WORLD_ERROR_LIKELIHOOD.getJsonKey(), 0.90);
+		suggester1ConfigurationJsonObject1.put(
 			PhraseSuggesterConfigurationKeys.TEXT.getJsonKey(), "${keywords}");
+		suggester1ConfigurationJsonObject1.put(
+				PhraseSuggesterConfigurationKeys.SIZE.getJsonKey(), 10);
 
 		suggester1JsonObject.put(
 			SuggestersConfigurationKeys.CONFIGURATION.getJsonKey(),
