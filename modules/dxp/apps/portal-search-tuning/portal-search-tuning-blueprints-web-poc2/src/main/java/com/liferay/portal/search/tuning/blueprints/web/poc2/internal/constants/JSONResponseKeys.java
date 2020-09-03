@@ -25,5 +25,5 @@ public class JSONResponseKeys extends com.liferay.portal.search.tuning.blueprint
 
 	public static final String RESULT_LAYOUT = "resultLayout";
 	
-	public static final String KEYWORD_SUGGESTIONS = "keywordSuggestions";
+	public static final String SUGGESTIONS = "suggestions";
 }

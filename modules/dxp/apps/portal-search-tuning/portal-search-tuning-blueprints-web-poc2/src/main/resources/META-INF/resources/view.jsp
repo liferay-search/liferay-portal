@@ -1,6 +1,6 @@
 <%@ include file="/init.jsp" %>
 
-<liferay-ui:error key="error.blueprint-not-defined" message="Please set Blueprint ID." />
+<liferay-ui:error key="error.blueprint-not-defined" message="Please set a Blueprint ID." />
 
 <%
 if (suggestionsURL == null) {
