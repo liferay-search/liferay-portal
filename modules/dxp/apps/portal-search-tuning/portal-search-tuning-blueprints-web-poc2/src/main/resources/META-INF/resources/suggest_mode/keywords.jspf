@@ -97,10 +97,10 @@
 				paramName: 'q',
 				serviceUrl: '<%= suggestionsURL %>',
 				transformResult: function(response) {
-
 					if (response) {
 						return {
-							suggestions: $.map(response, function(item) {
+							suggestions: $.map(response.suggestions, function(item) {
+								console.log(item);
 								return {
 									value: item,
 									data: item

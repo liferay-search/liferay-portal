@@ -83,7 +83,7 @@ public class GetKeywordSuggestionsMVCResourceCommand extends BaseMVCResourceComm
 			JSONArray suggestionsJsonArray =
 					JSONUtil.toJSONArray(suggestions, s -> s);
 			
-			responseJsonObject.put(JSONResponseKeys.KEYWORD_SUGGESTIONS, suggestionsJsonArray);
+			responseJsonObject.put(JSONResponseKeys.SUGGESTIONS, suggestionsJsonArray);
 						
 		} catch (PortalException portalException) {
 			
