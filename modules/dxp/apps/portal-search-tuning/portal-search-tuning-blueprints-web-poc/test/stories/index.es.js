@@ -41,14 +41,24 @@ addDecorator((storyFn) => {
 });
 
 const FETCH_URL =
-	'https://run.mocky.io/v3/04a41596-e50e-497e-8dfd-c9d66759fc1a';
+	'https://run.mocky.io/v3/98cd9b49-8fe6-47b9-8e07-62caa7e9c3bd';
 
-//https://designer.mocky.io/manage/delete/04a41596-e50e-497e-8dfd-c9d66759fc1a/P8uyDP3bhrhYotbSmxAiEcW0eXDec59oAFW4
+//https://designer.mocky.io/manage/delete/98cd9b49-8fe6-47b9-8e07-62caa7e9c3bd/zkkGktbUnpxZeTGAkqGHktZd1jQhkam8REy5
+
+const SUGGEST_URL =
+	'https://run.mocky.io/v3/8a9f5981-378f-4e4d-96a1-369d286f8954';
+
+//https://designer.mocky.io/manage/delete/8a9f5981-378f-4e4d-96a1-369d286f8954/FZty6MiQkyL8FB6owdovyjVJbDbfjuLWfCHe
 
 const EMPTY_URL =
 	'https://run.mocky.io/v3/f1a9653a-fcac-4722-8fee-64df94df5bf9';
 
 //https://designer.mocky.io/manage/delete/f1a9653a-fcac-4722-8fee-64df94df5bf9/wkN7nAjQk7lkODBz20PYT2kP4AzzygA3j3IE
+
+const EMPTY_SUGGEST_URL =
+	'https://run.mocky.io/v3/dce05a29-ff94-43fa-9c66-aaca57d4a6b8';
+
+//https://designer.mocky.io/manage/delete/dce05a29-ff94-43fa-9c66-aaca57d4a6b8/G1A8oEVgo90gTTm3xsPQaoaoRnDLgdVhylNg
 
 const BAD_REQUEST_URL =
 	'https://run.mocky.io/v3/8c8ab5a2-c99f-4694-b7dc-12b445163a19';
@@ -71,9 +81,27 @@ const withSheet = (storyFn) => (
 
 storiesOf('Pages|BlueprintsWebApp', module)
 	.addDecorator(withSheet)
-	.add('default', () => <BlueprintsSearch fetchResultsURL={FETCH_URL} />)
-	.add('empty', () => <BlueprintsSearch fetchResultsURL={EMPTY_URL} />)
-	.add('bad request', () => (
-		<BlueprintsSearch fetchResultsURL={BAD_REQUEST_URL} />
+	.add('default', () => (
+		<BlueprintsSearch
+			fetchResultsURL={FETCH_URL}
+			suggestionsURL={SUGGEST_URL}
+		/>
 	))
-	.add('error', () => <BlueprintsSearch fetchResultsURL={ERROR_URL} />);
+	.add('empty', () => (
+		<BlueprintsSearch
+			fetchResultsURL={EMPTY_URL}
+			suggestionsURL={EMPTY_SUGGEST_URL}
+		/>
+	))
+	.add('bad request', () => (
+		<BlueprintsSearch
+			fetchResultsURL={BAD_REQUEST_URL}
+			suggestionsURL={BAD_REQUEST_URL}
+		/>
+	))
+	.add('error', () => (
+		<BlueprintsSearch
+			fetchResultsURL={ERROR_URL}
+			suggestionsURL={ERROR_URL}
+		/>
+	));
