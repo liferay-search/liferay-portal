@@ -10,6 +10,26 @@
  */
 
 /**
+ * Sets parameters on a url.
+ * @param {String} baseUrl The base url to modify
+ * @param {Object} params Key-value pairs for parameters to set.
+ * @return {String} The complete url string.
+ */
+export function buildUrl(baseUrl, params) {
+	const url = new URL(baseUrl);
+
+	const searchParams = url.searchParams;
+
+	if (params) {
+		Object.keys(params).forEach((key) =>
+			searchParams.set(key, params[key])
+		);
+	}
+
+	return url.href;
+}
+
+/**
  * Utility function for filtering out a key in an object.
  *
  * Examples:

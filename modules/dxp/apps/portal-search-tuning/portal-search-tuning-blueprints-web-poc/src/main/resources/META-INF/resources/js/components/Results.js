@@ -18,7 +18,11 @@ import React from 'react';
 
 import {sub} from '../utils/language';
 
-const DEFAULT_ICON = 'web-content';
+const ICON_MAP = {
+	Blog: 'blogs',
+	'Web Content': 'web-content',
+	default: 'web-content',
+};
 
 export default function Results({
 	activePage,
@@ -45,17 +49,32 @@ export default function Results({
 							<ClaySticker displayType="secondary" size="md">
 								<ClayIcon
 									symbol={
-										item.icon ? item.icon : DEFAULT_ICON
+										item.type && ICON_MAP[item.type]
+											? ICON_MAP[item.type]
+											: ICON_MAP.default
 									}
 								/>
 							</ClaySticker>
 						</ClayList.ItemField>
 						<ClayList.ItemField expand>
 							<ClayList.ItemTitle>
-								{item.link ? (
-									<a href={item.link}>{item.title}</a>
+								{item.viewURL ? (
+									<a
+										dangerouslySetInnerHTML={{
+											__html: item.title_highlight
+												? item.title_highlight
+												: item.title,
+										}}
+										href={item.viewURL}
+									/>
 								) : (
-									item.title
+									<span
+										dangerouslySetInnerHTML={{
+											__html: item.title_highlight
+												? item.title_highlight
+												: item.title,
+										}}
+									/>
 								)}
 							</ClayList.ItemTitle>
 

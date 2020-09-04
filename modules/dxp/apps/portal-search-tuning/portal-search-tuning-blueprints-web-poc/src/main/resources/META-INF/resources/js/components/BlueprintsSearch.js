@@ -9,17 +9,16 @@
  * distribution rights of the Software.
  */
 
+import {useResource} from '@clayui/data-provider';
 import ClayEmptyState from '@clayui/empty-state';
 import ClayLayout from '@clayui/layout';
 import ClayLoadingIndicator from '@clayui/loading-indicator';
-import {usePrevious} from 'frontend-js-react-web';
 import {PropTypes} from 'prop-types';
 import React, {useContext, useEffect, useState} from 'react';
 
 import ThemeContext from '../ThemeContext';
-import {fetchResponse} from '../utils/api';
 import {sub} from '../utils/language';
-import {formatFacets} from '../utils/utils';
+import {buildUrl, formatFacets} from '../utils/util';
 import Facet from './Facet';
 import Results from './Results';
 import SearchBar from './SearchBar';
@@ -31,10 +30,9 @@ const LOCATOR = {
 	value: 'value',
 };
 
-export default function BlueprintsSearch({fetchResultsURL}) {
+export default function BlueprintsSearch({fetchResultsURL, suggestionsURL}) {
 	const [activePage, setActivePage] = useState(1);
 	const [query, setQuery] = useState('');
-	const [resource, setResource] = useState({});
 	const [selectedFacets, setSelectedFacets] = useState({});
 	const [state, setState] = useState(() => ({
 		error: false,
@@ -43,61 +41,28 @@ export default function BlueprintsSearch({fetchResultsURL}) {
 	const [timeRange, setTimeRange] = useState({});
 	const [sortBy, setSortBy] = useState({});
 
-	const prevQuery = usePrevious(query);
-
 	const {namespace} = useContext(ThemeContext);
+
+	const {refetch, resource} = useResource({
+		link: buildUrl(fetchResultsURL, {
+			[`${namespace}q`]: query,
+			[`${namespace}page`]: activePage,
+			...formatFacets(selectedFacets, namespace, LOCATOR.value),
+			...timeRange,
+			...sortBy,
+		}),
+		onNetworkStatusChange: (status) =>
+			setState({
+				error: status === 5,
+				loading: status < 4,
+			}),
+	});
 
 	useEffect(() => {
 		if (query) {
-			if (query !== prevQuery) {
-				setSelectedFacets({});
-				setActivePage(1);
-			}
-
-			setState({
-				error: false,
-				loading: true,
-			});
-
-			const facetParam = formatFacets(
-				selectedFacets,
-				namespace,
-				LOCATOR.value
-			);
-
-			fetchResponse(fetchResultsURL, {
-				[`${namespace}q`]: query,
-				[`${namespace}page`]: activePage,
-				...facetParam,
-				...timeRange,
-				...sortBy,
-			})
-				.then((response) => {
-					setResource(response);
-					setState({
-						error: false,
-						loading: false,
-					});
-				})
-				.catch(() => {
-					setTimeout(() => {
-						setState({
-							error: true,
-							loading: false,
-						});
-					}, 1000);
-				});
+			refetch();
 		}
-	}, [
-		activePage,
-		query,
-		selectedFacets,
-		prevQuery,
-		fetchResultsURL,
-		namespace,
-		timeRange,
-		sortBy,
-	]);
+	}, [query, activePage, selectedFacets, timeRange, sortBy]); // eslint-disable-line
 
 	const _hasResults = () =>
 		!state.error && !!(resource && resource.items && resource.items.length);
@@ -149,11 +114,24 @@ export default function BlueprintsSearch({fetchResultsURL}) {
 			...selectedFacets,
 			[`${param}`]: facets,
 		}));
+
+		setActivePage(1);
 	}
 
 	return (
 		<>
-			<SearchBar handleSubmit={(val) => setQuery(val)} />
+			<SearchBar
+				handleSubmit={(val) => {
+					if (val !== query) {
+						setQuery(val);
+						setActivePage(1);
+						setSelectedFacets({});
+					} else {
+						refetch();
+					}
+				}}
+				suggestionsURL={suggestionsURL}
+			/>
 
 			{query && (
 				<div className="search-results">
@@ -175,22 +153,28 @@ export default function BlueprintsSearch({fetchResultsURL}) {
 
 							<ClayLayout.Row justify="between">
 								<TimeSelect
-									setFilters={(val) => setTimeRange(val)}
+									setFilters={(val) => {
+										setActivePage(1);
+										setTimeRange(val);
+									}}
 								/>
 
 								<SortSelect
-									setFilters={(val) => setSortBy(val)}
+									setFilters={(val) => {
+										setActivePage(1);
+										setSortBy(val);
+									}}
 								/>
 							</ClayLayout.Row>
 
 							<Results
 								activePage={activePage}
 								items={resource.items}
-								onPageChange={(page) => setActivePage(page)}
-								query={query}
-								totalHits={
-									resource.meta ? resource.meta.totalHits : 0
-								}
+								onPageChange={(page) => {
+									setActivePage(page);
+								}}
+								query={resource.meta.keywords}
+								totalHits={resource.meta.totalHits}
 								totalPages={resource.pagination.totalPages}
 							/>
 						</>
@@ -205,4 +189,5 @@ export default function BlueprintsSearch({fetchResultsURL}) {
 
 BlueprintsSearch.propTypes = {
 	fetchResultsURL: PropTypes.string,
+	suggestionsURL: PropTypes.string,
 };

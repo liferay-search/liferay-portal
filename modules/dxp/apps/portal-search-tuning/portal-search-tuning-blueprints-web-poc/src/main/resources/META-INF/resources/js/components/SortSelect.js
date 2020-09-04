@@ -19,8 +19,8 @@ import React, {useContext, useState} from 'react';
 import ThemeContext from '../ThemeContext';
 
 export default function SortSelect({setFilters}) {
-	const [sortDirection, setSortDirection] = useState();
-	const [sortField, setSortField] = useState();
+	const [sortDirection, setSortDirection] = useState('desc');
+	const [sortField, setSortField] = useState('sort1');
 
 	const {namespace} = useContext(ThemeContext);
 
@@ -40,33 +40,19 @@ export default function SortSelect({setFilters}) {
 	];
 
 	function updateSortField(event) {
-		
 		const field = event.target.value;
-
-		const order = sortDirection === 'asc' ? 'desc' : 'asc';
 
 		setSortField(field);
 
-		setFilters((filters) => {
-			return {...filters, [`${namespace}` + field]: order};
-		});
+		setFilters({[`${namespace}` + field]: sortDirection});
 	}
 
 	function updateSortDirection() {
-		
-		const field = sortField === '' ? 'sort1' : sortField;
-
 		const order = sortDirection === 'asc' ? 'desc' : 'asc';
 
 		setSortDirection(order);
 
-		setFilters((filters) => {
-			return {...filters, [`${namespace}` + field]: order};
-		});
-
-//		setFilters((filters) => {
-//			return {...filters, [`${namespace}sortDirection`]: value};
-//		});
+		setFilters({[`${namespace}` + sortField]: order});
 	}
 
 	return (

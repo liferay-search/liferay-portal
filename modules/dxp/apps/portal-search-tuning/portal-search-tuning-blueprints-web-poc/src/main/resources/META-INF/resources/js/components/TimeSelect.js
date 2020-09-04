@@ -16,7 +16,7 @@ import {PropTypes} from 'prop-types';
 import React, {useContext, useState} from 'react';
 
 import ThemeContext from '../ThemeContext';
-import {formatDate, validDateRange} from '../utils/utils';
+import {formatDate, validDateRange} from '../utils/util';
 
 const YEAR_RANGE = {
 	end: 2024,
