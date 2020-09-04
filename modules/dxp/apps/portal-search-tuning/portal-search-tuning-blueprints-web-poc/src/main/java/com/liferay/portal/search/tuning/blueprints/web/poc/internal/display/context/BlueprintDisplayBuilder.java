@@ -14,23 +14,14 @@
 
 package com.liferay.portal.search.tuning.blueprints.web.poc.internal.display.context;
 
-import com.liferay.petra.string.StringPool;
-import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
-import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.HashMapBuilder;
-import com.liferay.portal.kernel.util.HtmlUtil;
-import com.liferay.portal.kernel.util.ParamUtil;
-import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.search.tuning.blueprints.web.poc.internal.constants.ResourceRequestKeys;
-import com.liferay.portal.search.tuning.blueprints.web.poc.internal.display.context.BlueprintDisplayContext;
 
 import java.util.Map;
 
 import javax.portlet.PortletPreferences;
-import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.ResourceURL;
@@ -63,7 +54,6 @@ public class BlueprintDisplayBuilder {
 		return blueprintDisplayContext;
 	}
 
-
 	private Map<String, Object> _getContext() {
 		return HashMapBuilder.<String, Object>put(
 			"namespace", _renderResponse.getNamespace()
@@ -86,7 +76,23 @@ public class BlueprintDisplayBuilder {
 			"fetchResultsURL", _getFetchResultsURL()
 		).put(
 			"suggestionsURL", _getSuggestionsURL()
+		).put(
+			"suggestMode", _getSuggestMode()
 		).build();
+	}
+
+	private String _getSuggestionsURL() {
+		ResourceURL resourceURL = _renderResponse.createResourceURL();
+
+		resourceURL.setResourceID(ResourceRequestKeys.GET_SUGGESTIONS);
+
+		return resourceURL.toString();
+	}
+
+	private String _getSuggestMode() {
+		PortletPreferences preferences = _renderRequest.getPreferences();
+
+		return preferences.getValue("suggestMode", "contents");
 	}
 
 	private void _setData(BlueprintDisplayContext blueprintDisplayContext) {
@@ -96,28 +102,6 @@ public class BlueprintDisplayBuilder {
 			).put(
 				"props", _getProps()
 			).build());
-	}
-
-	private String _getSuggestionsURL(){
-		PortletPreferences preferences = _renderRequest.getPreferences();
-
-		String suggestMode = preferences.getValue("suggestMode", "contents");
-
-		String suggestionsURL = null;
-
-		JSONObject uiConfiguration = (JSONObject)_renderRequest.getAttribute("configuration");
-
-		if (uiConfiguration != null && uiConfiguration.has("urlConfiguration")) {
-			JSONObject urlConfig = uiConfiguration.getJSONObject("urlConfiguration");
-
-			if (suggestMode.equals("contents")) {
-				suggestionsURL = urlConfig.getString("searchResultsURL");
-			} else {
-				suggestionsURL = urlConfig.getString("suggestionsURL");
-			}
-		}
-
-		return suggestionsURL;
 	}
 
 	private final HttpServletRequest _httpServletRequest;

@@ -15,23 +15,31 @@ import React, {useState} from 'react';
 
 import MultiSelect from './MultiSelect';
 
-function FacetInput({items, onItemsChange, label, param, values = []}) {
+const LOCATOR = {
+	label: 'text',
+	value: 'value',
+};
+
+function FacetInput({
+	anyOption,
+	items,
+	onItemsChange,
+	parameterName,
+	values = [],
+}) {
 	const [value, setValue] = useState('');
 
 	return (
 		<ClayForm.Group>
-			<label>{label ? label : param}</label>
+			<label>{anyOption}</label>
 
 			<MultiSelect
-				aria-label={label ? label : param}
+				aria-label={anyOption}
 				disabledClearAll
-				inputName={param}
+				inputName={parameterName}
 				inputValue={value}
 				items={items}
-				locator={{
-					label: 'text',
-					value: 'value',
-				}}
+				locator={LOCATOR}
 				onChange={setValue}
 				onItemsChange={onItemsChange}
 				sourceItems={values}
@@ -41,10 +49,11 @@ function FacetInput({items, onItemsChange, label, param, values = []}) {
 }
 
 FacetInput.propTypes = {
+	anyOption: PropTypes.string,
 	items: PropTypes.arrayOf(PropTypes.object),
 	label: PropTypes.string,
 	onItemsChange: PropTypes.func,
-	param: PropTypes.string,
+	parameterName: PropTypes.string,
 	values: PropTypes.arrayOf(PropTypes.object),
 };
 
