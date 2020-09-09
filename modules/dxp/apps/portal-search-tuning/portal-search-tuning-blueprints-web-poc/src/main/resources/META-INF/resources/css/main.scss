@@ -22,11 +22,15 @@
 			flex-wrap: wrap;
 
 			.form-group {
-				padding: 0 10px;
+				padding: 0 8px;
 				width: 33%;
 
-				.component-action {
-					margin: auto;
+				.form-control {
+					padding-right: 8px;
+
+					.component-action {
+						margin: auto;
+					}
 				}
 			}
 		}
