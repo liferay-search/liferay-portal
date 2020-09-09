@@ -24,7 +24,13 @@ const defaultFilter = (items, item, inputValue, locator) =>
 	!items
 		.map((element) => element[locator.label])
 		.includes(item[locator.label]) &&
-	(inputValue ? item[locator.label].match(inputValue) : item[locator.label]);
+	(inputValue
+		? item[locator.label].match(escapeRegExp(inputValue))
+		: item[locator.label]);
+
+const escapeRegExp = (str) => {
+	return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
+};
 
 const MultiSelectMenuRenderer = ({
 	filter = defaultFilter,
@@ -72,7 +78,6 @@ export default function MultiSelect({
 	onFocus = noop,
 	onItemsChange = noop,
 	onKeyDown = noop,
-	onPaste = noop,
 	sourceItems = [],
 	spritemap,
 	...otherProps
@@ -92,7 +97,7 @@ export default function MultiSelect({
 
 			setActive(matchedItems.length !== 0 && isOpenMenu);
 		}
-	}, [sourceItems, inputValue, filter, locator, items, isOpenMenu]);
+	}, [filter, inputValue, isOpenMenu, items, locator, sourceItems]);
 
 	const setNewValue = (newVal) => {
 		if (!items.includes(newVal) && sourceItems.includes(newVal)) {
@@ -100,19 +105,16 @@ export default function MultiSelect({
 		}
 
 		onChange('');
+
+		setIsOpenMenu(false);
 	};
 
-	const getSourceItemByLabel = (label) => {
-		return sourceItems.find((item) => item[locator.label] === label);
-	};
-
-	const getNewItem = (value) => {
-		return (
-			getSourceItemByLabel(value) || {
-				[locator.label]: value,
-				[locator.value]: value,
-			}
+	const getFirstOfMatches = () => {
+		const matchedItems = sourceItems.filter((item) =>
+			filter(items, item, inputValue, locator)
 		);
+
+		return matchedItems[0];
 	};
 
 	const handleKeyDown = (event) => {
@@ -135,7 +137,7 @@ export default function MultiSelect({
 		if (inputValue && DELIMITER_KEYS.includes(key)) {
 			event.preventDefault();
 
-			setNewValue(getNewItem(inputValue));
+			setNewValue(getFirstOfMatches());
 		} else if (
 			!inputValue &&
 			key === Keys.Backspace &&
@@ -144,23 +146,6 @@ export default function MultiSelect({
 		) {
 			inputRef.current.blur();
 			lastItemRef.current.focus();
-		}
-	};
-
-	const handlePaste = (event) => {
-		onPaste(event);
-
-		const pastedText = event.clipboardData.getData('Text');
-
-		const pastedItems = pastedText
-			.split(',')
-			.map((itemLabel) => getNewItem(itemLabel.trim()))
-			.filter(Boolean);
-
-		if (pastedItems.length > 0) {
-			event.preventDefault();
-
-			onItemsChange([...items, ...pastedItems]);
 		}
 	};
 
@@ -178,11 +163,13 @@ export default function MultiSelect({
 			>
 				<ClayInput.GroupItem>
 					{items.map((item, i) => {
-						const removeItem = () =>
+						const removeItem = () => {
+							setIsOpenMenu(false);
 							onItemsChange([
 								...items.slice(0, i),
 								...items.slice(i + 1),
 							]);
+						};
 
 						return (
 							<React.Fragment key={i}>
@@ -193,7 +180,9 @@ export default function MultiSelect({
 											[item[locator.label]]
 										),
 										disabled,
-										onClick: () => {
+										onClick: (event) => {
+											event.stopPropagation();
+
 											if (inputRef.current) {
 												inputRef.current.focus();
 											}
@@ -238,15 +227,16 @@ export default function MultiSelect({
 							onBlur(e);
 							setIsFocused(false);
 						}}
-						onChange={(event) =>
-							onChange(event.target.value.replace(',', ''))
-						}
+						onChange={(event) => {
+							setIsOpenMenu(true);
+
+							onChange(event.target.value.replace(',', ''));
+						}}
 						onFocus={(e) => {
 							onFocus(e);
 							setIsFocused(true);
 						}}
 						onKeyDown={handleKeyDown}
-						onPaste={handlePaste}
 						ref={inputRef}
 						type="text"
 						value={inputValue}
@@ -289,7 +279,7 @@ export default function MultiSelect({
 						<ClayAutocomplete.DropDown
 							active={active}
 							alignElementRef={containerRef}
-							onSetActive={setActive}
+							onSetActive={setIsOpenMenu}
 						>
 							<MenuRenderer
 								filter={filter}

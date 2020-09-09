@@ -44,6 +44,14 @@ export default function SearchBar({handleSubmit, suggestionsURL}) {
 			return;
 		}
 
+		if (event.key === 'ArrowDown') {
+			setView(true);
+		}
+
+		if (event.key === 'ArrowUp') {
+			setView(false);
+		}
+
 		if (event.key === 'Enter') {
 			setView(false);
 			handleSubmit(value);
