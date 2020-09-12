@@ -16,6 +16,7 @@ package com.liferay.portal.search.test.util;
 
 import com.liferay.portal.kernel.util.GetterUtil;
 
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
@@ -37,12 +38,29 @@ public class SearchRetryFixture {
 			});
 	}
 
-	public <T> T assertSearch(Supplier<T> function) {
+	public <T> T assertSearch(Supplier<T> supplier) {
 		if (_getAttempts() == 1) {
-			return function.get();
+			return supplier.get();
 		}
 
-		return retrySearch(function);
+		TimeUnit timeoutTimeUnit = _getTimeoutTimeUnit();
+
+		long deadline =
+			System.currentTimeMillis() +
+				timeoutTimeUnit.toMillis(_getTimeout());
+
+		while (true) {
+			try {
+				return _call(supplier::get);
+			}
+			catch (AssertionError ae) {
+				if (System.currentTimeMillis() > deadline) {
+					throw ae;
+				}
+			}
+
+			_sleep(_getPause(), _getPauseTimeUnit());
+		}
 	}
 
 	public static class Builder {
@@ -57,6 +75,13 @@ public class SearchRetryFixture {
 			return new SearchRetryFixture(_searchRetryFixture);
 		}
 
+		public Builder pause(Integer pause, TimeUnit pauseTimeUnit) {
+			_searchRetryFixture._pause = pause;
+			_searchRetryFixture._pauseTimeUnit = pauseTimeUnit;
+
+			return this;
+		}
+
 		public Builder timeout(Integer timeout, TimeUnit timeoutTimeUnit) {
 			_searchRetryFixture._timeout = timeout;
 			_searchRetryFixture._timeoutTimeUnit = timeoutTimeUnit;
@@ -69,10 +94,9 @@ public class SearchRetryFixture {
 
 	}
 
-	protected <T> T retrySearch(Supplier<T> supplier) {
+	private static <T> T _call(Callable<T> callable) {
 		try {
-			return IdempotentRetryAssert.retryAssert(
-				_getTimeout(), _getTimeoutTimeUnit(), supplier::get);
+			return callable.call();
 		}
 		catch (RuntimeException runtimeException) {
 			throw runtimeException;
@@ -82,17 +106,36 @@ public class SearchRetryFixture {
 		}
 	}
 
+	private static void _sleep(long pause, TimeUnit pauseTimeUnit) {
+		try {
+			Thread.sleep(pauseTimeUnit.toMillis(pause));
+		}
+		catch (InterruptedException interruptedException) {
+			throw new RuntimeException(interruptedException);
+		}
+	}
+
 	private SearchRetryFixture() {
 	}
 
 	private SearchRetryFixture(SearchRetryFixture searchRetryFixture) {
 		_attempts = searchRetryFixture._attempts;
+		_pause = searchRetryFixture._pause;
+		_pauseTimeUnit = searchRetryFixture._pauseTimeUnit;
 		_timeout = searchRetryFixture._timeout;
 		_timeoutTimeUnit = searchRetryFixture._timeoutTimeUnit;
 	}
 
 	private int _getAttempts() {
 		return GetterUtil.getInteger(_attempts);
+	}
+
+	private int _getPause() {
+		return GetterUtil.getInteger(_pause);
+	}
+
+	private TimeUnit _getPauseTimeUnit() {
+		return (TimeUnit)GetterUtil.getObject(_pauseTimeUnit, TimeUnit.SECONDS);
 	}
 
 	private int _getTimeout() {
@@ -105,6 +148,8 @@ public class SearchRetryFixture {
 	}
 
 	private Integer _attempts;
+	private Integer _pause;
+	private TimeUnit _pauseTimeUnit;
 	private Integer _timeout;
 	private TimeUnit _timeoutTimeUnit;
 

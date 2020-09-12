@@ -26,8 +26,13 @@ public class IdempotentRetryAssert {
 			long timeout, TimeUnit timeoutTimeUnit, Callable<T> callable)
 		throws Exception {
 
-		return retryAssert(
-			timeout, timeoutTimeUnit, 0, TimeUnit.SECONDS, callable);
+		return SearchRetryFixture.builder(
+		).timeout(
+			(int)timeout, timeoutTimeUnit
+		).build(
+		).assertSearch(
+			() -> _call(callable)
+		);
 	}
 
 	public static <T> T retryAssert(
@@ -35,34 +40,42 @@ public class IdempotentRetryAssert {
 			TimeUnit pauseTimeUnit, Callable<T> callable)
 		throws Exception {
 
-		long deadline =
-			System.currentTimeMillis() + timeoutTimeUnit.toMillis(timeout);
-
-		while (true) {
-			try {
-				return callable.call();
-			}
-			catch (AssertionError ae) {
-				if (System.currentTimeMillis() > deadline) {
-					throw ae;
-				}
-			}
-
-			Thread.sleep(pauseTimeUnit.toMillis(pause));
-		}
+		return SearchRetryFixture.builder(
+		).pause(
+			(int)pause, pauseTimeUnit
+		).timeout(
+			(int)timeout, timeoutTimeUnit
+		).build(
+		).assertSearch(
+			() -> _call(callable)
+		);
 	}
 
 	public static <T> T retryAssert(
 			long timeout, TimeUnit timeoutTimeUnit, Runnable runnable)
 		throws Exception {
 
-		return retryAssert(
-			timeout, timeoutTimeUnit, 0, TimeUnit.SECONDS,
-			() -> {
-				runnable.run();
+		SearchRetryFixture.builder(
+		).timeout(
+			(int)timeout, timeoutTimeUnit
+		).build(
+		).assertSearch(
+			runnable
+		);
 
-				return null;
-			});
+		return null;
+	}
+
+	private static <T> T _call(Callable<T> callable) {
+		try {
+			return callable.call();
+		}
+		catch (RuntimeException runtimeException) {
+			throw runtimeException;
+		}
+		catch (Exception exception) {
+			throw new RuntimeException(exception);
+		}
 	}
 
 }

@@ -149,6 +149,14 @@ public class ElasticsearchIndexWriter extends BaseIndexWriter {
 		String indexName = _indexNameBuilder.getIndexName(
 			searchContext.getCompanyId());
 
+		if (uid.startsWith("com.liferay.commerce.product.model.CPDefinition")
+						||
+			uid.startsWith("com.liferay.commerce.product.model.CPInstance")
+						) {
+
+			System.out.println("PLACE A BREAKPOINT HERE AND LOOK AT THE STACKTRACE'S THREAD");
+		}
+
 		DeleteDocumentRequest deleteDocumentRequest = new DeleteDocumentRequest(
 			indexName, uid);
 

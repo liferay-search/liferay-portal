@@ -22,7 +22,10 @@ import com.liferay.portal.kernel.search.SearchEngine;
 import com.liferay.portal.kernel.search.SearchEngineConfigurator;
 import com.liferay.portal.kernel.search.SearchEngineHelper;
 import com.liferay.portal.kernel.util.MapUtil;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.search.elasticsearch7.internal.proxy.SearchIndexWriterProxyBean;
+import com.liferay.portal.search.elasticsearch7.internal.proxy.SearchMultiDestinationMessagingProxyInvocationHandler;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -108,7 +111,29 @@ public class ElasticsearchEngineConfigurator
 
 	@Reference(target = "(!(search.engine.impl=*))", unbind = "-")
 	protected void setIndexWriter(IndexWriter indexWriter) {
-		_indexWriter = indexWriter;
+	}
+
+	@Reference(unbind = "-")
+	protected void setSearchIndexWriterProxyBean(
+		SearchIndexWriterProxyBean searchIndexWriterProxyBean) {
+
+		_indexWriter = _newProxyInstance(searchIndexWriterProxyBean);
+	}
+
+	private IndexWriter _newProxyInstance(
+		SearchIndexWriterProxyBean searchIndexWriterProxyBean) {
+
+		if (searchIndexWriterProxyBean == null) {
+			return null;
+		}
+
+		Thread currentThread = Thread.currentThread();
+
+		return (IndexWriter) ProxyUtil.newProxyInstance(
+			currentThread.getContextClassLoader(),
+			new Class[] {IndexWriter.class},
+			new SearchMultiDestinationMessagingProxyInvocationHandler(
+				searchIndexWriterProxyBean));
 	}
 
 	@Reference(unbind = "-")

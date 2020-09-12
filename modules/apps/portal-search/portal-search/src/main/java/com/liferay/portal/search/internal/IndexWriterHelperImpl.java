@@ -597,9 +597,13 @@ public class IndexWriterHelperImpl implements IndexWriterHelper {
 		searchContext.setCompanyId(companyId);
 		searchContext.setSearchEngineId(searchEngineId);
 
-		setCommitImmediately(
-			searchContext,
-			commitImmediately || ProxyModeThreadLocal.isForceSync());
+		if (false) {
+			if (ProxyModeThreadLocal.isForceSync()) {
+				commitImmediately = true;
+			}
+		}
+
+		setCommitImmediately(searchContext, commitImmediately);
 
 		indexWriter.updateDocument(searchContext, document);
 	}
@@ -670,7 +674,9 @@ public class IndexWriterHelperImpl implements IndexWriterHelper {
 		SearchContext searchContext, boolean commitImmediately) {
 
 		if (!commitImmediately) {
-			searchContext.setCommitImmediately(_commitImmediately);
+			if (false) {
+				searchContext.setCommitImmediately(_commitImmediately);
+			}
 		}
 		else {
 			searchContext.setCommitImmediately(true);
