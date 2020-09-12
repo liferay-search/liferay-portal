@@ -40,7 +40,13 @@ public class IndexerRequest {
 
 		_indexer = new NoAutoCommitIndexer<>(indexer);
 
-		_forceSync = ProxyModeThreadLocal.isForceSync();
+		if (false) {
+			_forceSync = ProxyModeThreadLocal.isForceSync();
+		}
+		else {
+			_forceSync = false;
+		}
+
 		_modelClassName = classedModel.getModelClassName();
 		_modelPrimaryKey = (Long)_classedModel.getPrimaryKeyObj();
 	}
@@ -55,7 +61,13 @@ public class IndexerRequest {
 		_modelPrimaryKey = modelPrimaryKey;
 
 		_classedModel = null;
-		_forceSync = ProxyModeThreadLocal.isForceSync();
+
+		if (false) {
+			_forceSync = ProxyModeThreadLocal.isForceSync();
+		}
+		else {
+			_forceSync = false;
+		}
 	}
 
 	@Override
@@ -85,17 +97,15 @@ public class IndexerRequest {
 	}
 
 	public void execute() throws Exception {
-		try (SafeClosable safeClosable =
-				ProxyModeThreadLocal.setWithSafeClosable(_forceSync)) {
+		if (false) {
+			try (SafeClosable safeClosable =
+					ProxyModeThreadLocal.setWithSafeClosable(_forceSync)) {
 
-			Class<?>[] parameterTypes = _method.getParameterTypes();
-
-			if (parameterTypes.length == 1) {
-				_method.invoke(_indexer, _classedModel);
+				doExecute();
 			}
-			else {
-				_method.invoke(_indexer, _modelClassName, _modelPrimaryKey);
-			}
+		}
+		else {
+			doExecute();
 		}
 	}
 
@@ -132,6 +142,17 @@ public class IndexerRequest {
 		sb.append("}");
 
 		return sb.toString();
+	}
+
+	protected void doExecute() throws Exception {
+		Class<?>[] parameterTypes = _method.getParameterTypes();
+
+		if (parameterTypes.length == 1) {
+			_method.invoke(_indexer, _classedModel);
+		}
+		else {
+			_method.invoke(_indexer, _modelClassName, _modelPrimaryKey);
+		}
 	}
 
 	private final ClassedModel _classedModel;

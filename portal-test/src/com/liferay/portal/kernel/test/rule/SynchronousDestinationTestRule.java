@@ -211,6 +211,14 @@ public class SynchronousDestinationTestRule
 				}
 			}
 
+			if (false) {
+
+
+
+
+
+
+
 			for (String searchEngineId :
 					SearchEngineHelperUtil.getSearchEngineIds()) {
 
@@ -220,6 +228,15 @@ public class SynchronousDestinationTestRule
 				replaceDestination(
 					SearchEngineHelperUtil.getSearchWriterDestinationName(
 						searchEngineId));
+			}
+
+
+
+
+
+
+
+
 			}
 
 			Destination schedulerDestination = _destinations.get(

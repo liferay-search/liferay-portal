@@ -76,9 +76,13 @@ public class UpdateDocumentIndexWriterImpl
 		searchContext.setCompanyId(companyId);
 		searchContext.setSearchEngineId(searchEngineId);
 
-		setCommitImmediately(
-			searchContext,
-			commitImmediately || ProxyModeThreadLocal.isForceSync());
+		if (false) {
+			if (ProxyModeThreadLocal.isForceSync()) {
+				commitImmediately = true;
+			}
+		}
+
+		setCommitImmediately(searchContext, commitImmediately);
 
 		try {
 			indexWriter.updateDocument(searchContext, document);
@@ -207,7 +211,9 @@ public class UpdateDocumentIndexWriterImpl
 		SearchContext searchContext, boolean commitImmediately) {
 
 		if (!commitImmediately) {
-			searchContext.setCommitImmediately(_commitImmediately);
+			if (false) {
+				searchContext.setCommitImmediately(_commitImmediately);
+			}
 		}
 		else {
 			searchContext.setCommitImmediately(true);

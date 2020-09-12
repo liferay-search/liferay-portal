@@ -9,6 +9,8 @@ dependencies {
 	testIntegrationCompile group: "com.liferay", name: "com.liferay.petra.function", version: "default"
 	testIntegrationCompile group: "com.liferay", name: "com.liferay.petra.string", version: "default"
 	testIntegrationCompile group: "javax.validation", name: "validation-api", version: "2.0.1.Final"
+	testIntegrationCompile group: "log4j", name: "log4j", version: "1.2.17"
+	testIntegrationCompile group: "org.apache.felix", name: "org.apache.felix.http.servlet-api", version: "1.1.2"
 	testIntegrationCompile group: "commons-beanutils", name: "commons-beanutils", version: "default"
 	testIntegrationCompile group: "commons-lang", name: "commons-lang", version: "default"
 	testIntegrationCompile group: "javax.ws.rs", name: "javax.ws.rs-api", version: "default"
@@ -16,7 +18,13 @@ dependencies {
 	testIntegrationCompile group: "com.liferay.portal", name: "com.liferay.portal.test", version: "default"
 	testIntegrationCompile group: "com.liferay.portal", name: "com.liferay.portal.test.integration", version: "default"
 
+	testIntegrationCompile project(":apps:portal-search:portal-search-api")
 	testIntegrationCompile project(":apps:portal-search:portal-search-test-util")
+	testIntegrationCompile project(":apps:commerce:commerce-currency-api")
+	testIntegrationCompile project(":apps:commerce:commerce-product-api")
+	testIntegrationCompile project(":apps:commerce:commerce-product-test-util")
+	testIntegrationCompile project(":apps:commerce:commerce-product-type-simple")
 	testIntegrationCompile project(":apps:commerce:headless:headless-commerce:headless-commerce-admin-catalog-client")
 	testIntegrationCompile project(":apps:commerce:headless:headless-commerce:headless-commerce-admin-catalog-api")
+	testIntegrationCompile project(":core:petra:petra-reflect")
 }
