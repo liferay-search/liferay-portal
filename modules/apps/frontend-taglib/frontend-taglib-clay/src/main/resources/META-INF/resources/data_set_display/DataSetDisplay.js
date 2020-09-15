@@ -393,15 +393,13 @@ function DataSetDisplay({
 	function executeAsyncItemAction(url, method) {
 		return executeAsyncAction(url, method)
 			.then((_) => {
-				delay(500).then(() => {
-					if (isMounted()) {
-						refreshData();
+				if (isMounted()) {
+					refreshData();
 
-						Liferay.fire(DATASET_ACTION_PERFORMED, {
-							id,
-						});
-					}
-				});
+					Liferay.fire(DATASET_ACTION_PERFORMED, {
+						id,
+					});
+				}
 			})
 			.catch((error) => {
 				logError(error);
