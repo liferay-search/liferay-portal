@@ -401,7 +401,7 @@ public class CommerceCatalogLocalServiceImpl
 	}
 
 	private static final String[] _SELECTED_FIELD_NAMES = {
-		Field.ENTRY_CLASS_PK, Field.COMPANY_ID
+		Field.ENTRY_CLASS_PK, Field.COMPANY_ID, Field.UID
 	};
 
 }
