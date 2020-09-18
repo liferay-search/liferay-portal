@@ -2,32 +2,31 @@
 /**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
+ * The contents of this file are subject to the terms of the Liferay Enterprise
+ * Subscription License ("License"). You may not use this file except in
+ * compliance with the License. You can obtain a copy of the License by
+ * contacting Liferay, Inc. See the License for the specific language governing
+ * permissions and limitations under the License, including but not limited to
+ * distribution rights of the Software.
  *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ *
+ *
  */
 --%>
 
-<%@ taglib prefix="aui" uri="http://liferay.com/tld/aui" %>
-<%@ taglib prefix="liferay-ui" uri="http://liferay.com/tld/ui" %>
-<%@ taglib prefix="liferay-frontend" uri="http://liferay.com/tld/frontend" %>
-<%@ taglib prefix="liferay-theme" uri="http://liferay.com/tld/theme" %>
-<%@ taglib prefix="portlet" uri="http://java.sun.com/portlet_2_0" %>
-<%@ page import="java.util.Map" %>
-<%@ page import="com.liferay.portal.kernel.util.HashMapBuilder" %>
-<%@ page
-	import="com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context.SelectBlueprintManagementToolbarDisplayContext" %>
-<%@ page
-	import="com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context.SelectBlueprintDisplayContext" %>
-<%@ page import="com.liferay.portal.kernel.util.HtmlUtil" %>
-<%@ page
-	import="com.liferay.portal.search.tuning.blueprints.constants.BlueprintTypes" %>
+<%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet" %>
+
+<%@ taglib uri="http://liferay.com/tld/aui" prefix="aui" %><%@
+taglib uri="http://liferay.com/tld/clay" prefix="clay" %><%@
+taglib uri="http://liferay.com/tld/frontend" prefix="liferay-frontend" %><%@
+taglib uri="http://liferay.com/tld/theme" prefix="liferay-theme" %><%@
+taglib uri="http://liferay.com/tld/ui" prefix="liferay-ui" %>
+
+<%@ page import="com.liferay.portal.kernel.util.HashMapBuilder" %><%@
+page import="com.liferay.portal.kernel.util.HtmlUtil" %><%@
+page import="com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context.SelectBlueprintDisplayContext" %><%@
+page import="com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context.SelectBlueprintManagementToolbarDisplayContext" %><%@
+page import="com.liferay.portal.search.tuning.blueprints.constants.BlueprintTypes" %>
 
 <liferay-frontend:defineObjects />
 
@@ -73,15 +72,16 @@ SelectBlueprintDisplayContext selectBlueprintDisplayContext = new SelectBlueprin
 			/>
 
 			<liferay-ui:search-container-column-text>
-				<%
-					Map<String, Object> data = HashMapBuilder.<String, Object>put(
-						"entityid", blueprint.getBlueprintId()
+				<aui:button
+					cssClass="selector-button"
+					data='<%= HashMapBuilder.<String, Object>put(
+					"entityid", blueprint.getBlueprintId()
 					).put(
-						"entityname", blueprint.getTitle(locale)
-					).build();
-				%>
-
-				<aui:button cssClass="selector-button" data="<%= data %>" value="choose" />
+					"entityname", blueprint.getTitle(locale)
+					).build()
+					%>'
+					value="choose"
+				/>
 			</liferay-ui:search-container-column-text>
 		</liferay-ui:search-container-row>
 

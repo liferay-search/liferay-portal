@@ -34,7 +34,12 @@
 		>
 
 			<%
-			String modifiedDateDescription = LanguageUtil.getTimeDescription(request, System.currentTimeMillis() - entry.getModifiedDate().getTime(), true);
+			String modifiedDateDescription = LanguageUtil.getTimeDescription(
+				request,
+				System.currentTimeMillis() -
+					entry.getModifiedDate(
+					).getTime(),
+				true);
 			%>
 
 			<h5 class="text-default">

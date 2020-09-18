@@ -14,7 +14,7 @@
  */
 --%>
 
-<%@ include file="./init.jsp" %>
+<%@ include file="/init.jsp" %>
 
 <liferay-ui:error key="errorDetails">
 	<liferay-ui:message arguments='<%= SessionErrors.get(liferayPortletRequest, "errorDetails") %>' key="error.search-configuration-service-error" />
@@ -40,9 +40,7 @@ queryFragmentsURL.setParameter(BlueprintsAdminWebKeys.BLUEPRINT_TYPE, String.val
 						navigationItem.setActive(tabs.equals("blueprints"));
 						navigationItem.setHref(configurationsURL, "tabs", "blueprints");
 						navigationItem.setLabel(LanguageUtil.get(request, "blueprints"));
-						navigationItem.putData(
-								BlueprintsAdminWebKeys.BLUEPRINT_TYPE,
-								String.valueOf(BlueprintTypes.BLUEPRINT));
+						navigationItem.putData(BlueprintsAdminWebKeys.BLUEPRINT_TYPE, String.valueOf(BlueprintTypes.BLUEPRINT));
 					});
 				add(
 					navigationItem -> {
@@ -55,9 +53,7 @@ queryFragmentsURL.setParameter(BlueprintsAdminWebKeys.BLUEPRINT_TYPE, String.val
 						navigationItem.setActive(tabs.equals("fragments"));
 						navigationItem.setHref(queryFragmentsURL, "tabs", "fragments");
 						navigationItem.setLabel(LanguageUtil.get(request, "fragments"));
-						navigationItem.putData(
-								BlueprintsAdminWebKeys.BLUEPRINT_TYPE,
-								String.valueOf(BlueprintTypes.QUERY_FRAGMENT));
+						navigationItem.putData(BlueprintsAdminWebKeys.BLUEPRINT_TYPE, String.valueOf(BlueprintTypes.QUERY_FRAGMENT));
 					});
 			}
 		}

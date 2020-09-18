@@ -3,10 +3,11 @@ package com.liferay.portal.search.tuning.blueprints.admin.web.internal.portlet.a
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCRenderCommand;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminMVCCommandNames;
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintsPortletKeys;
-import org.osgi.service.component.annotations.Component;
 
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+
+import org.osgi.service.component.annotations.Component;
 
 /**
  * @author Kevin Tan
@@ -19,8 +20,7 @@ import javax.portlet.RenderResponse;
 	},
 	service = MVCRenderCommand.class
 )
-public class SelectBlueprintMVCRenderCommand
-	implements MVCRenderCommand {
+public class SelectBlueprintMVCRenderCommand implements MVCRenderCommand {
 
 	@Override
 	public String render(
