@@ -18,15 +18,16 @@ import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.search.engine.adapter.search.SearchSearchResponse;
 import com.liferay.portal.search.hits.SearchHits;
-import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
+import com.liferay.portal.search.searcher.SearchRequest;
+import com.liferay.portal.search.searcher.SearchResponse;
+import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
+import com.liferay.portal.search.tuning.blueprints.message.Messages;
+import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.response.constants.JSONResponseKeys;
 import com.liferay.portal.search.tuning.blueprints.response.internal.util.ResponseUtil;
 import com.liferay.portal.search.tuning.blueprints.response.spi.contributor.ResponseContributor;
 import com.liferay.portal.search.tuning.blueprints.util.BlueprintHelper;
-
-import java.util.Map;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -34,25 +35,26 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Petteri Karttunen
  */
-@Component(immediate = true, service = ResponseContributor.class)
+@Component(
+	immediate = true, property = "type=paging",
+	service = ResponseContributor.class
+)
 public class PagingResponseContributor implements ResponseContributor {
 
 	@Override
 	public void contribute(
-		SearchRequestContext searchRequestContext,
-		SearchSearchResponse searchResponse,
-		Map<String, Object> responseAttributes, JSONObject responseJsonObject) {
+		JSONObject responseJsonObject, SearchResponse searchResponse,
+		Blueprint blueprint, BlueprintsAttributes blueprintsAttributes,
+		Messages messages) {
 
 		responseJsonObject.put(
-			JSONResponseKeys.PAGINATION,
-			_getPaging(searchRequestContext, searchResponse));
+			JSONResponseKeys.PAGINATION, _getPaging(searchResponse, blueprint));
 	}
 
-	protected JSONObject _getPaging(
-		SearchRequestContext searchRequestContext,
-		SearchSearchResponse searchResponse) {
+	private JSONObject _getPaging(
+		SearchResponse searchResponse, Blueprint blueprint) {
 
-		JSONObject pagingJsonObject = JSONFactoryUtil.createJSONObject();
+		JSONObject jsonObject = JSONFactoryUtil.createJSONObject();
 
 		SearchHits searchHits = searchResponse.getSearchHits();
 
@@ -60,34 +62,37 @@ public class PagingResponseContributor implements ResponseContributor {
 			int totalHits = Math.toIntExact(searchHits.getTotalHits());
 
 			if (totalHits == 0) {
-				return pagingJsonObject;
+				return jsonObject;
 			}
 
-			int pageSize = _blueprintHelper.getSize(
-					searchRequestContext.getBlueprint());
+			int pageSize = _blueprintHelper.getSize(blueprint);
 
-			int from = searchRequestContext.getFrom();
-			
-			int start = ResponseUtil.getStart(searchHits, pageSize, from);
+			SearchRequest searchRequest = searchResponse.getRequest();
 
-			int pageCount = (int)Math.ceil(
-				totalHits * 1.0 / pageSize);
+			int start = ResponseUtil.getStart(
+				totalHits, pageSize, searchRequest.getFrom());
+
+			int pageCount = (int)Math.ceil(totalHits * 1.0 / pageSize);
 
 			int currentPage = (int)Math.floor((start + 1) / pageSize) + 1;
-			
-			pagingJsonObject.put(JSONResponseKeys.ACTIVE_PAGE, currentPage);
-			pagingJsonObject.put(JSONResponseKeys.TOTAL_PAGES, pageCount);
+
+			jsonObject.put(
+				JSONResponseKeys.ACTIVE_PAGE, currentPage
+			).put(
+				JSONResponseKeys.TOTAL_PAGES, pageCount
+			);
 		}
 		catch (ArithmeticException arithmeticException) {
 			_log.error(arithmeticException.getMessage(), arithmeticException);
 		}
 
-		return pagingJsonObject;
+		return jsonObject;
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		PagingResponseContributor.class);
-	
+
 	@Reference
 	private BlueprintHelper _blueprintHelper;
+
 }

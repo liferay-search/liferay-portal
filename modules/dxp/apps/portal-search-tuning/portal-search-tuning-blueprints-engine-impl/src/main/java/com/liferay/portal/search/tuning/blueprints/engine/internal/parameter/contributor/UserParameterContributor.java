@@ -20,22 +20,25 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.User;
-import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
-import com.liferay.portal.kernel.theme.ThemeDisplay;
-import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.portal.search.tuning.blueprints.engine.message.Message;
-import com.liferay.portal.search.tuning.blueprints.engine.message.Severity;
+import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
+import com.liferay.portal.search.tuning.blueprints.engine.constants.ReservedParameterNames;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.BooleanParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.DateParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.IntegerParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.LongArrayParameter;
+import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterDataBuilder;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterDefinition;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.SearchParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.parameter.ParameterContributor;
+import com.liferay.portal.search.tuning.blueprints.message.Message;
+import com.liferay.portal.search.tuning.blueprints.message.Messages;
+import com.liferay.portal.search.tuning.blueprints.message.Severity;
+import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.segments.context.Context;
 import com.liferay.segments.provider.SegmentsEntryProvider;
 import com.liferay.segments.simulator.SegmentsEntrySimulator;
@@ -49,8 +52,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -69,25 +70,20 @@ public class UserParameterContributor implements ParameterContributor {
 
 	@Override
 	public void contribute(
-		HttpServletRequest httpServletRequest,
-		SearchParameterData searchParameterData) {
+		ParameterDataBuilder parameterDataBuilder, Blueprint blueprint,
+		BlueprintsAttributes blueprintsAttributes, Messages messages) {
 
-		ThemeDisplay themeDisplay =
-			(ThemeDisplay)httpServletRequest.getAttribute(
-				WebKeys.THEME_DISPLAY);
+		User user = _getUser(blueprintsAttributes, messages);
 
-		_contribute(
-			searchParameterData, themeDisplay.getCompanyId(),
-			themeDisplay.getUserId());
-	}
+		long companyId = blueprintsAttributes.getCompanyId();
 
-	@Override
-	public void contribute(
-		SearchContext searchContext, SearchParameterData searchParameterData) {
+		_addUserInfo(parameterDataBuilder, messages, user);
 
-		_contribute(
-			searchParameterData, searchContext.getCompanyId(),
-			searchContext.getUserId());
+		_addUserGroupIds(parameterDataBuilder, user);
+
+		_addUserRoleIds(parameterDataBuilder, user);
+
+		_addUserSegmentIds(parameterDataBuilder, companyId, user);
 	}
 
 	@Override
@@ -96,187 +92,235 @@ public class UserParameterContributor implements ParameterContributor {
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				"${user.full_name}", StringParameter.class.getName(),
-				"parameter.user.full-name"));
+				_getTemplateVariableName(
+					ReservedParameterNames.USER_FULL_NAME.getKey()),
+				StringParameter.class.getName(), "parameter.user.full-name"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				"${user.first_name}", StringParameter.class.getName(),
-				"parameter.user.first-name"));
+				_getTemplateVariableName(
+					ReservedParameterNames.USER_FIRST_NAME.getKey()),
+				StringParameter.class.getName(), "parameter.user.first-name"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				"${user.last_name}", StringParameter.class.getName(),
-				"parameter.user.last-name"));
+				_getTemplateVariableName(
+					ReservedParameterNames.USER_LAST_NAME.getKey()),
+				StringParameter.class.getName(), "parameter.user.last-name"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				"${user.language_id}", StringParameter.class.getName(),
-				"parameter.user.language-id"));
+				_getTemplateVariableName(
+					ReservedParameterNames.USER_LANGUAGE_ID.getKey()),
+				StringParameter.class.getName(), "parameter.user.language-id"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				"${user.job_title}", StringParameter.class.getName(),
-				"parameter.user.job-title"));
+				_getTemplateVariableName(
+					ReservedParameterNames.USER_JOB_TITLE.getKey()),
+				StringParameter.class.getName(), "parameter.user.job-title"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				"${user.create_date}", DateParameter.class.getName(),
-				"parameter.user.create-date"));
+				_getTemplateVariableName(
+					ReservedParameterNames.USER_CREATE_DATE.getKey()),
+				DateParameter.class.getName(), "parameter.user.create-date"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				"${user.birthday}", DateParameter.class.getName(),
-				"parameter.user.birthday"));
+				_getTemplateVariableName(
+					ReservedParameterNames.USER_BIRTHDAY.getKey()),
+				DateParameter.class.getName(), "parameter.user.birthday"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				"${user.age}", IntegerParameter.class.getName(),
-				"parameter.user.age"));
+				_getTemplateVariableName(
+					ReservedParameterNames.USER_AGE.getKey()),
+				IntegerParameter.class.getName(), "parameter.user.age"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				"${user.is_male}", BooleanParameter.class.getName(),
-				"parameter.user.is-male"));
+				_getTemplateVariableName(
+					ReservedParameterNames.USER_IS_MALE.getKey()),
+				BooleanParameter.class.getName(), "parameter.user.is-male"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				"${user.is_female}", BooleanParameter.class.getName(),
-				"parameter.user.is-female"));
+				_getTemplateVariableName(
+					ReservedParameterNames.USER_IS_FEMALE.getKey()),
+				BooleanParameter.class.getName(), "parameter.user.is-female"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				"${user.is_gender_x}", BooleanParameter.class.getName(),
+				_getTemplateVariableName(
+					ReservedParameterNames.USER_IS_GENDER_X.getKey()),
+				BooleanParameter.class.getName(),
 				"parameter.user.is-gender-x"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				"${user.email_domain}", StringParameter.class.getName(),
+				_getTemplateVariableName(
+					ReservedParameterNames.USER_EMAIL_DOMAIN.getKey()),
+				StringParameter.class.getName(),
 				"parameter.user.email-domain"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				"${user.group_ids}", LongArrayParameter.class.getName(),
+				_getTemplateVariableName(
+					ReservedParameterNames.USER_GROUP_IDS.getKey()),
+				LongArrayParameter.class.getName(),
 				"parameter.user.group-ids"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				"${user.role_ids}", LongArrayParameter.class.getName(),
-				"parameter.user.role-ids"));
+				_getTemplateVariableName(
+					ReservedParameterNames.USER_ROLE_IDS.getKey()),
+				LongArrayParameter.class.getName(), "parameter.user.role-ids"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				"${user.segment_entry_ids}", LongArrayParameter.class.getName(),
+				_getTemplateVariableName(
+					ReservedParameterNames.USER_SEGMENT_ENTRY_IDS.getKey()),
+				LongArrayParameter.class.getName(),
 				"parameter.user.segment-entry-ids"));
 
 		return parameterDefinitions;
 	}
 
-	private void _contribute(
-		SearchParameterData searchParameterData, long companyId, long userId) {
+	private void _addUserGroupIds(
+		ParameterDataBuilder parameterDataBuilder, User user) {
 
-		if (userId == 0) {
-			return;
-		}
-
-		User user;
-
-		try {
-			user = _userLocalService.getUser(userId);
-		}
-		catch (PortalException portalException) {
-			searchParameterData.addMessage(
-				new Message(
-					Severity.ERROR, "core", "core.error.user-not-found",
-					portalException.getMessage(), portalException, null, null,
-					String.valueOf(userId)));
-
-			_log.error(portalException.getMessage(), portalException);
-
-			return;
-		}
-
-		searchParameterData.addParameter(
-			new StringParameter(
-				"user.full_name", "${user.full_name}", user.getFullName()));
-		searchParameterData.addParameter(
-			new StringParameter(
-				"user.first_name", "${user.first_name}", user.getFirstName()));
-		searchParameterData.addParameter(
-			new StringParameter(
-				"user.last_name", "${user.last_name}", user.getLastName()));
-		searchParameterData.addParameter(
-			new StringParameter(
-				"user.language_id", "${user.language_id}",
-				user.getLanguageId()));
-		searchParameterData.addParameter(
-			new StringParameter(
-				"user.job_title", "${user.job_title}", user.getJobTitle()));
-		searchParameterData.addParameter(
-			new DateParameter(
-				"user.create_date", "${user.create_date}",
-				user.getCreateDate()));
-
-		try {
-			searchParameterData.addParameter(
-				new DateParameter(
-					"user.birthday", "${user.birthday}", user.getBirthday()));
-
-			searchParameterData.addParameter(
-				new IntegerParameter(
-					"user.age", "${user.age}",
-					_getUserAge(user.getBirthday())));
-			searchParameterData.addParameter(
-				new BooleanParameter(
-					"user.is_male", "${user.is_male}", user.isMale()));
-			searchParameterData.addParameter(
-				new BooleanParameter(
-					"user.is_female", "${user.is_female}", user.isFemale()));
-			searchParameterData.addParameter(
-				new BooleanParameter(
-					"user.is_gender_x", "${user.is_gender_x}",
-					!user.isFemale() && !user.isMale()));
-		}
-		catch (NumberFormatException numberFormatException) {
-			searchParameterData.addMessage(
-				new Message(
-					Severity.ERROR, "core", "core.error.unknown-exception",
-					numberFormatException.getMessage(), numberFormatException,
-					null, null, String.valueOf(userId)));
-			_log.error(
-				numberFormatException.getMessage(), numberFormatException);
-		}
-		catch (PortalException portalException) {
-			searchParameterData.addMessage(
-				new Message(
-					Severity.ERROR, "core", "core.error.unknown-exception",
-					portalException.getMessage(), portalException, null, null,
-					String.valueOf(userId)));
-			_log.error(portalException.getMessage(), portalException);
-		}
-
-		searchParameterData.addParameter(
-			new StringParameter(
-				"user.email_domain", "${user.email_domain}",
-				_getUserEmailDomain(user)));
-		searchParameterData.addParameter(
+		parameterDataBuilder.addParameter(
 			new LongArrayParameter(
-				"user.group_ids", "${user.group_ids}",
+				ReservedParameterNames.USER_GROUP_IDS.getKey(),
+				_getTemplateVariableName(
+					ReservedParameterNames.USER_GROUP_IDS.getKey()),
 				LongStream.of(
 					user.getGroupIds()
 				).boxed(
 				).toArray(
 					Long[]::new
 				)));
-		searchParameterData.addParameter(
+	}
+
+	private void _addUserInfo(
+		ParameterDataBuilder parameterDataBuilder, Messages messages,
+		User user) {
+
+		parameterDataBuilder.addParameter(
+			new StringParameter(
+				ReservedParameterNames.USER_FULL_NAME.getKey(),
+				_getTemplateVariableName(
+					ReservedParameterNames.USER_FULL_NAME.getKey()),
+				user.getFullName()));
+		parameterDataBuilder.addParameter(
+			new StringParameter(
+				ReservedParameterNames.USER_FIRST_NAME.getKey(),
+				_getTemplateVariableName(
+					ReservedParameterNames.USER_FIRST_NAME.getKey()),
+				user.getFirstName()));
+		parameterDataBuilder.addParameter(
+			new StringParameter(
+				ReservedParameterNames.USER_LAST_NAME.getKey(),
+				_getTemplateVariableName(
+					ReservedParameterNames.USER_LAST_NAME.getKey()),
+				user.getLastName()));
+		parameterDataBuilder.addParameter(
+			new StringParameter(
+				ReservedParameterNames.USER_LANGUAGE_ID.getKey(),
+				_getTemplateVariableName(
+					ReservedParameterNames.USER_LANGUAGE_ID.getKey()),
+				user.getLanguageId()));
+		parameterDataBuilder.addParameter(
+			new StringParameter(
+				ReservedParameterNames.USER_JOB_TITLE.getKey(),
+				_getTemplateVariableName(
+					ReservedParameterNames.USER_JOB_TITLE.getKey()),
+				user.getJobTitle()));
+		parameterDataBuilder.addParameter(
+			new DateParameter(
+				ReservedParameterNames.USER_CREATE_DATE.getKey(),
+				_getTemplateVariableName(
+					ReservedParameterNames.USER_CREATE_DATE.getKey()),
+				user.getCreateDate()));
+
+		try {
+			parameterDataBuilder.addParameter(
+				new DateParameter(
+					ReservedParameterNames.USER_BIRTHDAY.getKey(),
+					_getTemplateVariableName(
+						ReservedParameterNames.USER_BIRTHDAY.getKey()),
+					user.getBirthday()));
+
+			parameterDataBuilder.addParameter(
+				new IntegerParameter(
+					ReservedParameterNames.USER_AGE.getKey(),
+					_getTemplateVariableName(
+						ReservedParameterNames.USER_AGE.getKey()),
+					_getUserAge(user.getBirthday())));
+			parameterDataBuilder.addParameter(
+				new BooleanParameter(
+					ReservedParameterNames.USER_IS_MALE.getKey(),
+					_getTemplateVariableName(
+						ReservedParameterNames.USER_IS_MALE.getKey()),
+					user.isMale()));
+			parameterDataBuilder.addParameter(
+				new BooleanParameter(
+					ReservedParameterNames.USER_IS_FEMALE.getKey(),
+					_getTemplateVariableName(
+						ReservedParameterNames.USER_IS_FEMALE.getKey()),
+					user.isFemale()));
+			parameterDataBuilder.addParameter(
+				new BooleanParameter(
+					ReservedParameterNames.USER_IS_GENDER_X.getKey(),
+					_getTemplateVariableName(
+						ReservedParameterNames.USER_IS_GENDER_X.getKey()),
+					!user.isFemale() && !user.isMale()));
+		}
+		catch (NumberFormatException numberFormatException) {
+			messages.addMessage(
+				new Message(
+					Severity.ERROR, "core", "core.error.unknown-exception",
+					numberFormatException.getMessage(), numberFormatException,
+					null, null, String.valueOf(user.getUserId())));
+			_log.error(
+				numberFormatException.getMessage(), numberFormatException);
+		}
+		catch (PortalException portalException) {
+			messages.addMessage(
+				new Message(
+					Severity.ERROR, "core", "core.error.unknown-exception",
+					portalException.getMessage(), portalException, null, null,
+					String.valueOf(user.getUserId())));
+			_log.error(portalException.getMessage(), portalException);
+		}
+
+		parameterDataBuilder.addParameter(
+			new StringParameter(
+				ReservedParameterNames.USER_EMAIL_DOMAIN.getKey(),
+				_getTemplateVariableName(
+					ReservedParameterNames.USER_EMAIL_DOMAIN.getKey()),
+				_getUserEmailDomain(user)));
+	}
+
+	private void _addUserRoleIds(
+		ParameterDataBuilder parameterDataBuilder, User user) {
+
+		parameterDataBuilder.addParameter(
 			new LongArrayParameter(
-				"user.role_ids", "${user.role_ids}",
+				ReservedParameterNames.USER_ROLE_IDS.getKey(),
+				_getTemplateVariableName(
+					ReservedParameterNames.USER_ROLE_IDS.getKey()),
 				LongStream.of(
 					user.getRoleIds()
 				).boxed(
 				).toArray(
 					Long[]::new
 				)));
+	}
+
+	private void _addUserSegmentIds(
+		ParameterDataBuilder parameterDataBuilder, long companyId, User user) {
 
 		long[] userGroupIds = _getUserAccessibleSiteGroupIds(companyId, user);
 
@@ -285,13 +329,50 @@ public class UserParameterContributor implements ParameterContributor {
 				user, userGroupIds);
 
 			if (segmentsEntryIds.length > 0) {
-
-				searchParameterData.addParameter(
+				parameterDataBuilder.addParameter(
 					new LongArrayParameter(
-						"user.segment_entry_ids", "${user.segment_entry_ids}",
+						ReservedParameterNames.USER_SEGMENT_ENTRY_IDS.getKey(),
+						_getTemplateVariableName(
+							ReservedParameterNames.USER_SEGMENT_ENTRY_IDS.
+								getKey()),
 						segmentsEntryIds));
 			}
 		}
+	}
+
+	private String _getTemplateVariableName(String key) {
+		StringBundler sb = new StringBundler(3);
+
+		sb.append("${user.");
+		sb.append(key);
+		sb.append("}");
+
+		return sb.toString();
+	}
+
+	private User _getUser(
+		BlueprintsAttributes blueprintsAttributes, Messages messages) {
+
+		long userId = blueprintsAttributes.getUserId();
+
+		if (userId == 0) {
+			return null;
+		}
+
+		try {
+			return _userLocalService.getUser(userId);
+		}
+		catch (PortalException portalException) {
+			messages.addMessage(
+				new Message(
+					Severity.ERROR, "core", "core.error.user-not-found",
+					portalException.getMessage(), portalException, null, null,
+					String.valueOf(userId)));
+
+			_log.error(portalException.getMessage(), portalException);
+		}
+
+		return null;
 	}
 
 	private long[] _getUserAccessibleSiteGroupIds(long companyId, User user) {
@@ -335,14 +416,14 @@ public class UserParameterContributor implements ParameterContributor {
 		).toArray();
 	}
 
-	private int _getUserAge(Date birthday) throws NumberFormatException {
+	private int _getUserAge(Date birthday) {
 		Date now = new Date();
 
 		DateFormat formatter = new SimpleDateFormat("yyyyMMdd");
 
-		int d1 = Integer.parseInt(formatter.format(birthday));
+		int d1 = GetterUtil.getInteger(formatter.format(birthday));
 
-		int d2 = Integer.parseInt(formatter.format(now));
+		int d2 = GetterUtil.getInteger(formatter.format(now));
 
 		return (d2 - d1) / 10000;
 	}

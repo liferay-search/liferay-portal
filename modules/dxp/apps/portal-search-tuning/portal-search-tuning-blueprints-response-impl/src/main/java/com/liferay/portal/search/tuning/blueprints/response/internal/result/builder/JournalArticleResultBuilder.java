@@ -1,3 +1,16 @@
+/**
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of the Liferay Enterprise
+ * Subscription License ("License"). You may not use this file except in
+ * compliance with the License. You can obtain a copy of the License by
+ * contacting Liferay, Inc. See the License for the specific language governing
+ * permissions and limitations under the License, including but not limited to
+ * distribution rights of the Software.
+ *
+ *
+ *
+ */
 
 package com.liferay.portal.search.tuning.blueprints.response.internal.result.builder;
 
@@ -5,30 +18,24 @@ import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.service.JournalArticleService;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.search.Field;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.webserver.WebServerServletTokenUtil;
 import com.liferay.portal.search.document.Document;
-import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
+import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
 import com.liferay.portal.search.tuning.blueprints.poc.util.POCMockLinkUtil;
-import com.liferay.portal.search.tuning.blueprints.response.constants.JSONResponseAttributes;
 import com.liferay.portal.search.tuning.blueprints.response.spi.result.ResultBuilder;
-
-import java.util.Map;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
-import javax.portlet.WindowState;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * JournalArticle item type result builder.
- *
  * @author Petteri Karttunen
  */
 @Component(
@@ -41,8 +48,7 @@ public class JournalArticleResultBuilder
 
 	@Override
 	public String getThumbnail(
-			SearchRequestContext queryContext,
-			Map<String, Object> responseAttributes, Document document)
+			Document document, BlueprintsAttributes blueprintsAttributes)
 		throws Exception {
 
 		long smallImageId = _getJournalArticle(
@@ -61,44 +67,41 @@ public class JournalArticleResultBuilder
 
 	@Override
 	public String getViewURL(
-			SearchRequestContext searchRequestContext,
-			Map<String, Object> responseAttributes, Document document)
-		throws Exception {
+			Document document, BlueprintsAttributes blueprintsAttributes)
+		throws Exception, PortalException {
 
-		PortletRequest portletRequest = (PortletRequest)responseAttributes.get(
-			JSONResponseAttributes.PORTLET_REQUEST);
+		PortletRequest portletRequest = getPortletRequest(blueprintsAttributes);
 
-		PortletResponse portletResponse =
-			(PortletResponse)responseAttributes.get(
-				JSONResponseAttributes.PORTLET_RESPONSE);
+		PortletResponse portletResponse = getPortletResponse(
+			blueprintsAttributes);
 
 		if ((portletRequest == null) || (portletResponse == null)) {
 			return StringPool.BLANK;
 		}
 
-		boolean viewResultsInContext = GetterUtil.getBoolean(
-			responseAttributes.get(JSONResponseAttributes.VIEW_IN_CONTEXT));
+		boolean viewInContext = isViewInContext(blueprintsAttributes);
 
 		String viewURL = null;
 
-		if (viewResultsInContext) {
-			viewURL = 
-				getAssetRenderer(
-					document
-				).getURLViewInContext(
-					_portal.getLiferayPortletRequest(portletRequest),
-					_portal.getLiferayPortletResponse(portletResponse), null
-				);
+		LiferayPortletRequest liferayPortletRequest =
+			_portal.getLiferayPortletRequest(portletRequest);
+
+		if (viewInContext) {
+			viewURL = getAssetRenderer(
+				document
+			).getURLViewInContext(
+				liferayPortletRequest,
+				_portal.getLiferayPortletResponse(portletResponse), null
+			);
 		}
 
-		// TODO: POC
+		// TODO: https://issues.liferay.com/browse/LPS-119744
 
 		if (Validator.isBlank(viewURL)) {
-			
-			viewURL = POCMockLinkUtil.
-					getNotLayoutBoundJournalArticleUrl(portletRequest, _getJournalArticle(document));
+			viewURL = POCMockLinkUtil.getNotLayoutBoundJournalArticleUrl(
+				liferayPortletRequest, _getJournalArticle(document));
 		}
-			
+
 		return viewURL;
 	}
 
@@ -114,4 +117,5 @@ public class JournalArticleResultBuilder
 
 	@Reference
 	private Portal _portal;
+
 }

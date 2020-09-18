@@ -14,13 +14,13 @@
 
 package com.liferay.portal.search.tuning.blueprints.engine.spi.parameter;
 
-import com.liferay.portal.kernel.search.SearchContext;
+import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
+import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterDataBuilder;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterDefinition;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.SearchParameterData;
+import com.liferay.portal.search.tuning.blueprints.message.Messages;
+import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 
 import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author Petteri Karttunen
@@ -28,11 +28,10 @@ import javax.servlet.http.HttpServletRequest;
 public interface ParameterContributor {
 
 	public void contribute(
-		HttpServletRequest httpServletRequest,
-		SearchParameterData searchParameterData);
-
-	public void contribute(
-		SearchContext searchContext, SearchParameterData searchParameterData);
+		ParameterDataBuilder parameterDataBuilder, 
+		Blueprint blueprint,
+		BlueprintsAttributes blueprintsAttributes,
+		Messages messages);
 
 	public List<ParameterDefinition> getParameterDefinitions();
 

@@ -23,6 +23,8 @@ public class JSONResponseKeys {
 
 	public static final String AGGREGATIONS = "aggregations";
 
+	public static final String ERRORS = "errors";
+
 	public static final String EXECUTION_TIME = "executionTime";
 
 	public static final String INITIAL_KEYWORDS = "initialKeywords";
@@ -35,9 +37,9 @@ public class JSONResponseKeys {
 
 	public static final String PAGINATION = "pagination";
 
-	public static final String QUERY_SUGGESTIONS = "query_suggestions";
-
 	public static final String START = "start";
+
+	public static final String SUGGESTIONS = "suggestions";
 
 	public static final String TOTAL_HITS = "totalHits";
 

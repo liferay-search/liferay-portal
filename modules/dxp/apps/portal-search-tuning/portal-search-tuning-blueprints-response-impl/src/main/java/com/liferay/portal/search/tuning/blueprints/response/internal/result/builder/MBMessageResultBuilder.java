@@ -21,18 +21,14 @@ import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.search.Field;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.document.Document;
-import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
+import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
 import com.liferay.portal.search.tuning.blueprints.poc.util.POCMockLinkUtil;
-import com.liferay.portal.search.tuning.blueprints.response.constants.JSONResponseAttributes;
 import com.liferay.portal.search.tuning.blueprints.response.internal.util.ResponseUtil;
 import com.liferay.portal.search.tuning.blueprints.response.spi.result.ResultBuilder;
 import com.liferay.wiki.model.WikiPage;
-
-import java.util.Map;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
@@ -54,77 +50,65 @@ public class MBMessageResultBuilder
 
 	@Override
 	public String getTitle(
-			SearchRequestContext searchRequestContext,
-			Map<String, Object> responseAttributes, Document document)
+			Document document, BlueprintsAttributes blueprintsAttributes)
 		throws Exception {
 
 		String title = getStringFieldContent(
-			document, Field.CONTENT, searchRequestContext.getLocale());
+			document, Field.CONTENT, blueprintsAttributes.getLocale());
 
 		return ResponseUtil.stripHTML(title, -1);
 	}
 
 	@Override
 	public String getViewURL(
-			SearchRequestContext searchRequestContext,
-			Map<String, Object> responseAttributes, Document document)
+			Document document, BlueprintsAttributes blueprintsAttributes)
 		throws Exception {
 
-		PortletRequest portletRequest = (PortletRequest)responseAttributes.get(
-			JSONResponseAttributes.PORTLET_REQUEST);
-
-		PortletResponse portletResponse =
-			(PortletResponse)responseAttributes.get(
-				JSONResponseAttributes.PORTLET_RESPONSE);
+		PortletRequest portletRequest = getPortletRequest(blueprintsAttributes);
+		PortletResponse portletResponse = getPortletResponse(
+			blueprintsAttributes);
 
 		if ((portletRequest == null) || (portletResponse == null)) {
 			return StringPool.BLANK;
 		}
 
-		boolean viewResultsInContext = GetterUtil.getBoolean(
-			responseAttributes.get(JSONResponseAttributes.VIEW_IN_CONTEXT));
+		boolean viewInContext = isViewInContext(blueprintsAttributes);
 
 		long classNameId = document.getLong(Field.CLASS_NAME_ID);
 
 		long classPK = document.getLong(Field.CLASS_PK);
 
 		if (classNameId > 0) {
-
 			String className = _portal.getClassName(classNameId);
 
-			if (JournalArticle.class.getName(
-				).equals(
-					className
-				)) {
+			LiferayPortletRequest liferayPortletRequest =
+				_portal.getLiferayPortletRequest(portletRequest);
 
-				return getJournalArticleCommentLink(
-					portletRequest, portletResponse,
-					classPK, viewResultsInContext);
+			LiferayPortletResponse liferayPortletResponse =
+				_portal.getLiferayPortletResponse(portletResponse);
+
+			String journalArticleClassName = JournalArticle.class.getName();
+
+			String wikiPageClassName = WikiPage.class.getName();
+
+			if (className.equals(journalArticleClassName)) {
+				return _getJournalArticleCommentLink(
+					liferayPortletRequest, liferayPortletResponse, classPK,
+					viewInContext);
 			}
-			else if (WikiPage.class.getName(
-					).equals(
-						className
-					)) {
-
-				return getWikiPageCommentLink(
-					portletRequest, portletResponse, classPK,
-					viewResultsInContext);
+			else if (className.equals(wikiPageClassName)) {
+				return _getWikiPageCommentLink(
+					liferayPortletRequest, liferayPortletResponse, classPK,
+					viewInContext);
 			}
 		}
 
-		return super.getViewURL(
-			searchRequestContext, responseAttributes, document);
+		return super.getViewURL(document, blueprintsAttributes);
 	}
 
-	private String getDLFileEntryCommentLink() {
-		return null;
-	}
-
-	// TODO: POC
-	
-	private String getJournalArticleCommentLink(
-			PortletRequest portletRequest, PortletResponse portletResponse,
-			long classPK,
+	private String _getJournalArticleCommentLink(
+			LiferayPortletRequest liferayPortletRequest,
+			LiferayPortletResponse liferayPortletResponse, long classPK,
 			boolean viewResultsInContext)
 		throws Exception {
 
@@ -135,24 +119,26 @@ public class MBMessageResultBuilder
 
 		if (viewResultsInContext) {
 			link = assetRenderer.getURLViewInContext(
-				(LiferayPortletRequest)portletRequest,
-				(LiferayPortletResponse)portletResponse, null);
+				liferayPortletRequest, liferayPortletResponse, null);
 		}
 
 		if (Validator.isNull(link)) {
 			JournalArticle journalArticle =
 				_journalArticleService.getLatestArticle(classPK);
 
+			// TODO: https://issues.liferay.com/browse/LPS-119744
+
 			link = POCMockLinkUtil.getNotLayoutBoundJournalArticleUrl(
-				portletRequest, journalArticle);
+					liferayPortletRequest, journalArticle);
 		}
 
 		return link;
 	}
 
-	private String getWikiPageCommentLink(
-			PortletRequest portletRequest, PortletResponse portletResponse,
-			long classPK, boolean viewResultsInContext)
+	private String _getWikiPageCommentLink(
+			LiferayPortletRequest liferayPortletRequest,
+			LiferayPortletResponse liferayPortletResponse, long classPK,
+			boolean viewResultsInContext)
 		throws Exception {
 
 		AssetRenderer<?> assetRenderer = getAssetRenderer(
@@ -160,12 +146,11 @@ public class MBMessageResultBuilder
 
 		if (viewResultsInContext) {
 			return assetRenderer.getURLViewInContext(
-				(LiferayPortletRequest)portletRequest,
-				(LiferayPortletResponse)portletResponse, "");
+				liferayPortletRequest, liferayPortletResponse, "");
 		}
 
 		return assetRenderer.getURLView(
-			(LiferayPortletResponse)portletResponse, WindowState.MAXIMIZED);
+			liferayPortletResponse, WindowState.MAXIMIZED);
 	}
 
 	@Reference

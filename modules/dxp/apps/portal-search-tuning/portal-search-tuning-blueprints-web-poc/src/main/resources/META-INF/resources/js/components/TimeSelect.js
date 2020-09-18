@@ -72,7 +72,8 @@ export default function TimeSelect({setFilters}) {
 
 			if (value === 'any') {
 				setFilters({});
-			} else {
+			}
+			else {
 				setFilters({[`${namespace}time`]: value});
 			}
 		}

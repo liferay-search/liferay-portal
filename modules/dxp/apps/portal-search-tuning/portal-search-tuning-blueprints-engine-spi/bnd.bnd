@@ -5,11 +5,8 @@ Export-Package:\
 	com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation,\
 	com.liferay.portal.search.tuning.blueprints.engine.spi.clause,\
 	com.liferay.portal.search.tuning.blueprints.engine.spi.dataprovider,\
-	com.liferay.portal.search.tuning.blueprints.engine.spi.facet,\
+	com.liferay.portal.search.tuning.blueprints.engine.spi.keywords,\
 	com.liferay.portal.search.tuning.blueprints.engine.spi.parameter,\
 	com.liferay.portal.search.tuning.blueprints.engine.spi.query,\
-	com.liferay.portal.search.tuning.blueprints.engine.spi.query.postprocessor,\
-	com.liferay.portal.search.tuning.blueprints.engine.spi.response,\
-	com.liferay.portal.search.tuning.blueprints.engine.spi.result,\
 	com.liferay.portal.search.tuning.blueprints.engine.spi.searchrequest,\
 	com.liferay.portal.search.tuning.blueprints.engine.spi.suggester

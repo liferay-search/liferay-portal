@@ -24,9 +24,7 @@ import java.util.Map;
  */
 public interface BlueprintValidator {
 
-	public void validate(
-			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
-			String configuration)
+	public void validate(Map<Locale, String> titleMap, String configuration)
 		throws BlueprintValidationException;
 
 }

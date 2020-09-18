@@ -15,10 +15,10 @@
 package com.liferay.portal.search.tuning.blueprints.response.spi.contributor;
 
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.search.engine.adapter.search.SearchSearchResponse;
-import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
-
-import java.util.Map;
+import com.liferay.portal.search.searcher.SearchResponse;
+import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
+import com.liferay.portal.search.tuning.blueprints.message.Messages;
+import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 
 /**
  * @author Petteri Karttunen
@@ -26,8 +26,8 @@ import java.util.Map;
 public interface ResponseContributor {
 
 	public void contribute(
-		SearchRequestContext searchRequestContext,
-		SearchSearchResponse searchResponse,
-		Map<String, Object> responseAttributes, JSONObject responseJsonObject);
+		JSONObject responseJsonObject, SearchResponse searchResponse,
+		Blueprint blueprint, BlueprintsAttributes blueprintsAttributes,
+		Messages messages);
 
 }

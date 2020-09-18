@@ -16,6 +16,7 @@ package com.liferay.portal.search.tuning.blueprints.util;
 
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,51 +26,59 @@ import java.util.Optional;
  */
 public interface BlueprintHelper {
 
-	public Optional<JSONArray> getAggregationConfigurationOptional(
-		JSONObject blueprintJsonObject);
+	public Optional<JSONArray> getAggsConfigurationOptional(
+		Blueprint blueprint);
 
-	public Optional<JSONArray> getClauseConfigurationOptional(
-		JSONObject blueprintJsonObject);
+	public Optional<JSONArray> getCustomParameterConfigurationOptional(
+			Blueprint blueprint);
 
 	public Optional<JSONArray> getDefaultSortConfigurationOptional(
-		JSONObject blueprintJsonObject);
+		Blueprint blueprint);
 
 	public Optional<List<String>> getExcludedQueryContributorsOptional(
-		JSONObject blueprintJsonObject);
+		Blueprint blueprint);
 
 	public Optional<List<String>> getExcludedQueryPostProcessorsOptional(
-		JSONObject blueprintJsonObject);
+		Blueprint blueprint);
 
 	public Optional<JSONObject> getHighlightConfigurationOptional(
-		JSONObject blueprintJsonObject);
+		Blueprint blueprint);
 
-	public Optional<String[]> getIndexNamesOptional(
-		JSONObject blueprintJsonObject);
+	public Optional<JSONObject> getIndexesConfigurationOptional(
+			Blueprint blueprint);
+
+	public Optional<JSONArray> getJSONArrayConfigurationOptional(
+		Blueprint blueprint, String... paths);
+
+	public Optional<JSONObject> getJSONObjectConfigurationOptional(
+		Blueprint blueprint, String... paths);
 
 	public Optional<JSONObject> getKeywordIndexingConfigurationOptional(
-		JSONObject blueprintJsonObject);
+		Blueprint blueprint);
 
-	public Optional<String> getKeywordParameterNameOptional(
-		JSONObject blueprintJsonObject);
+	public Optional<String> getKeywordsParameterNameOptional(
+			Blueprint blueprint);
 
-	public Optional<JSONArray> getKeywordSuggestersOptional(
-		JSONObject blueprintJsonObject);
+	public Optional<JSONArray> getModelIndexerClassesOptional(
+			Blueprint blueprint);
 
-	public Optional<String> getPagingParameterNameOptional(
-		JSONObject blueprintJsonObject);
+	public Optional<String> getPageParameterNameOptional(
+			Blueprint blueprint);
 
-	public Optional<JSONObject> getRequestParameterConfigurationOptional(
-		JSONObject blueprintJsonObject);
+	public Optional<JSONObject> getParameterConfigurationOptional(
+		Blueprint blueprint);
 
-	public int getSize(JSONObject blueprintJsonObject);
+	public Optional<JSONArray> getQueryConfigurationOptional(
+		Blueprint blueprint);
+
+	public int getSize(Blueprint blueprint);
 
 	public Optional<JSONArray> getSortParameterConfigurationOptional(
-		JSONObject blueprintJsonObject);
+		Blueprint blueprint);
 
-	public Optional<JSONObject> getSpellCheckingConfigurationOptional(
-		JSONObject blueprintJsonObject);
+	public Optional<JSONArray> getSuggestConfigurationOptional(
+		Blueprint blueprint);
 
-	public Optional<JSONArray> getSpellCheckingSuggestersOptional(
-		JSONObject blueprintJsonObject);
+	public boolean isUseKeywordsDictionaryIndex(Blueprint blueprint);
 
 }

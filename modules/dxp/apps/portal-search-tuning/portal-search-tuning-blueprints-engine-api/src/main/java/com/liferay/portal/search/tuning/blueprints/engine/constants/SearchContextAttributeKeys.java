@@ -22,7 +22,4 @@ public class SearchContextAttributeKeys {
 	public static final String BLUEPRINT_ID = "blueprintId";
 
 	public static final String IP_ADDRESS = "ipAddress";
-
-	public static final String USER_ID = "userId";
-
 }

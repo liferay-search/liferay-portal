@@ -82,6 +82,8 @@ public class BlueprintTitleComparator extends OrderByComparator<Blueprint> {
 		return _ascending;
 	}
 
+	private static final long serialVersionUID = 1L;
+
 	private final boolean _ascending;
 	private Locale _locale;
 

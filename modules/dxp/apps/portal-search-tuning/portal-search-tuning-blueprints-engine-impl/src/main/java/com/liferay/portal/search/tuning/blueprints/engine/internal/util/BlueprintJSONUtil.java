@@ -30,7 +30,7 @@ public class BlueprintJSONUtil {
 		String[] stringArray = jsonArrayToStringArray(
 			jsonObject.getJSONArray(key));
 
-		if (stringArray == null) {
+		if ((stringArray == null) || (stringArray.length == 0)) {
 			return Optional.empty();
 		}
 

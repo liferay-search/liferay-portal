@@ -27,18 +27,16 @@ import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.tuning.blueprints.engine.cache.JsonDataProviderCache;
-import com.liferay.portal.search.tuning.blueprints.engine.message.Message;
-import com.liferay.portal.search.tuning.blueprints.engine.message.Severity;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.SearchParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.dataprovider.GeoLocationDataProvider;
 import com.liferay.portal.search.tuning.blueprints.ipstack.internal.configuration.IPStackConfiguration;
+import com.liferay.portal.search.tuning.blueprints.message.Message;
+import com.liferay.portal.search.tuning.blueprints.message.Messages;
+import com.liferay.portal.search.tuning.blueprints.message.Severity;
 
 import java.io.IOException;
-
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -61,17 +59,20 @@ public class IPStackDataProvider implements GeoLocationDataProvider {
 
 	@Override
 	public JSONObject getGeoLocationData(
-		SearchParameterData searchParameterData, String ipAddress) {
+		Messages messages,
+		String ipAddress) {
 
-		return getIpStackDataJsonObject(searchParameterData, ipAddress);
+		return getIpStackDataJsonObject(
+			messages, ipAddress);
 	}
 
 	@Override
 	public GeoLocationPoint getGeoLocationPoint(
-		SearchParameterData searchParameterData, String ipAddress) {
+		Messages messages,
+		String ipAddress) {
 
 		JSONObject jsonObject = getIpStackDataJsonObject(
-			searchParameterData, ipAddress);
+			messages, ipAddress);
 
 		if (jsonObject != null) {
 			double latitude = jsonObject.getDouble("latitude");
@@ -83,15 +84,42 @@ public class IPStackDataProvider implements GeoLocationDataProvider {
 		return null;
 	}
 
+	public boolean isEnabled() {
+		return _ipStackConfiguration.isEnabled();
+	}
+
+	@Activate
+	@Modified
+	protected void activate(Map<String, Object> properties) {
+		_ipStackConfiguration = ConfigurableUtil.createConfigurable(
+			IPStackConfiguration.class, properties);
+	}
+
+	protected String getIpAddress(String ipAddress) {
+		String testIPAddress = StringUtil.trim(
+			_ipStackConfiguration.testIpAddress());
+
+		if (!Validator.isBlank(testIPAddress)) {
+			if (_log.isDebugEnabled()) {
+				_log.debug("Using test IP address " + testIPAddress);
+			}
+
+			return testIPAddress;
+		}
+
+		return ipAddress;
+	}
+
 	protected JSONObject getIpStackDataJsonObject(
-		SearchParameterData searchParameterData, String ipAddress) {
+		Messages messages,
+		String ipAddress) {
 
 		try {
 			return getIpStackDataJsonObject(ipAddress);
 		}
 		catch (CheckpointFailedException checkpointFailedException) {
 			for (Message message : checkpointFailedException.getMessages()) {
-				searchParameterData.addMessage(message);
+				messages.addMessage(message);
 			}
 
 			return null;
@@ -125,32 +153,6 @@ public class IPStackDataProvider implements GeoLocationDataProvider {
 		return ipStackDataJsonObject2;
 	}
 
-	protected String getIpAddress(String ipAddress) {
-		String testIPAddress = StringUtil.trim(
-			_ipStackConfiguration.testIpAddress());
-
-		if (!Validator.isBlank(testIPAddress)) {
-			if (_log.isDebugEnabled()) {
-				_log.debug("Using test IP address " + testIPAddress);
-			}
-
-			return testIPAddress;
-		}
-
-		return ipAddress;
-	}
-
-	public boolean isEnabled() {
-		return _ipStackConfiguration.isEnabled();
-	}
-
-	@Activate
-	@Modified
-	protected void activate(Map<String, Object> properties) {
-		_ipStackConfiguration = ConfigurableUtil.createConfigurable(
-			IPStackConfiguration.class, properties);
-	}
-
 	protected String getIpStackResponse(String ipAddress) throws IOException {
 		if (ipAddress.equals("91.233.116.229")) {
 			return getIpStackResponse("Helsinki", "60.1699", "24.9384");
@@ -165,8 +167,8 @@ public class IPStackDataProvider implements GeoLocationDataProvider {
 		if (rawData == null) {
 			throw new CheckpointFailedException(
 				new Message(
-					Severity.ERROR, "ipstack",
-					"ipstack.error.empty-response"));
+					Severity.ERROR, "ipstack", "ipstack.error.empty-response",
+					"IPStack returned an empty response"));
 		}
 
 		return rawData;
@@ -203,7 +205,8 @@ public class IPStackDataProvider implements GeoLocationDataProvider {
 		if (Validator.isBlank(apiKey)) {
 			messages.add(
 				new Message(
-					Severity.ERROR, "ipstack", "ipstack.error.api-key-empty"));
+					Severity.ERROR, "ipstack", "ipstack.error.api-key-empty",
+					"IPStack API key is not defined"));
 
 			return null;
 		}
@@ -215,7 +218,8 @@ public class IPStackDataProvider implements GeoLocationDataProvider {
 		if (Validator.isBlank(apiURL)) {
 			messages.add(
 				new Message(
-					Severity.ERROR, "ipstack", "ipstack.error.api-url-empty"));
+					Severity.ERROR, "ipstack", "ipstack.error.api-url-empty",
+					"IPStack API URL is not defined"));
 
 			return null;
 		}
@@ -223,16 +227,14 @@ public class IPStackDataProvider implements GeoLocationDataProvider {
 		return apiURL;
 	}
 
-	private String _checkIpAddress(
-		String ipAddress, List<Message> messages) {
-
+	private String _checkIpAddress(String ipAddress, List<Message> messages) {
 		ipAddress = StringUtil.trim(ipAddress);
 
 		if (Validator.isBlank(ipAddress)) {
 			messages.add(
 				new Message(
-					Severity.ERROR, "ipstack",
-					"ipstack.error.empty-ip-address"));
+					Severity.ERROR, "ipstack", "ipstack.error.empty-ip-address",
+					"IP address cannot be blank"));
 
 			return null;
 		}
@@ -267,16 +269,19 @@ public class IPStackDataProvider implements GeoLocationDataProvider {
 		}
 
 		if (inet4Address.isSiteLocalAddress() ||
-				inet4Address.isAnyLocalAddress() ||
-				inet4Address.isLinkLocalAddress() ||
-				inet4Address.isLoopbackAddress() ||
-				inet4Address.isMulticastAddress()) {
+			inet4Address.isAnyLocalAddress() ||
+			inet4Address.isLinkLocalAddress() ||
+			inet4Address.isLoopbackAddress() ||
+			inet4Address.isMulticastAddress()) {
 
 			messages.add(
 				new Message(
 					Severity.ERROR, "ipstack",
-					"ipstack.error.unable-to-provide-geolocation-data-for-private-ip-address",
-					null, null, ipAddress));
+					"ipstack.error.unable-to-provide-geolocation-data-" +
+						"for-private-ip-address",
+					"Unable to provide geolocation data for a private " +
+						"IP address",
+					null, null, null, ipAddress));
 
 			return null;
 		}
@@ -295,8 +300,9 @@ public class IPStackDataProvider implements GeoLocationDataProvider {
 				throw new CheckpointFailedException(
 					new Message(
 						Severity.ERROR, "ipstack",
-						"ipstack.error.invalid-response-data", jsonObject, null,
-						null));
+						"ipstack.error.invalid-response-data",
+						"IPStack returned invalid response data", null, null,
+						null, jsonObject.toString()));
 			}
 
 			return jsonObject;
@@ -321,24 +327,6 @@ public class IPStackDataProvider implements GeoLocationDataProvider {
 		}
 	}
 
-	private static class CheckpointFailedException extends RuntimeException {
-
-		private final List<Message> _messages;
-
-		public List<Message> getMessages() {
-			return _messages;
-		}
-
-		public CheckpointFailedException(List<Message> messages) {
-			_messages = messages;
-		}
-
-		public CheckpointFailedException(Message... messages) {
-			_messages = Arrays.asList(messages);
-		}
-
-	}
-
 	private static final Log _log = LogFactoryUtil.getLog(
 		IPStackDataProvider.class);
 
@@ -349,5 +337,23 @@ public class IPStackDataProvider implements GeoLocationDataProvider {
 
 	@Reference
 	private JsonDataProviderCache _jsonDataProviderCache;
+
+	private static class CheckpointFailedException extends RuntimeException {
+
+		public CheckpointFailedException(List<Message> messages) {
+			_messages = messages;
+		}
+
+		public CheckpointFailedException(Message... messages) {
+			_messages = Arrays.asList(messages);
+		}
+
+		public List<Message> getMessages() {
+			return _messages;
+		}
+
+		private final List<Message> _messages;
+
+	}
 
 }

@@ -14,36 +14,37 @@
 
 package com.liferay.portal.search.tuning.blueprints.engine.internal.executor;
 
+import com.liferay.document.library.kernel.model.DLFileEntry;
+import com.liferay.journal.model.JournalArticle;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.search.aggregation.Aggregation;
-import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
-import com.liferay.portal.search.engine.adapter.search.SearchSearchRequest;
-import com.liferay.portal.search.engine.adapter.search.SearchSearchResponse;
 import com.liferay.portal.search.filter.ComplexQueryBuilderFactory;
-import com.liferay.portal.search.query.BooleanQuery;
 import com.liferay.portal.search.query.Queries;
-import com.liferay.portal.search.query.Query;
 import com.liferay.portal.search.rescore.Rescore;
 import com.liferay.portal.search.searcher.SearchRequest;
+import com.liferay.portal.search.searcher.SearchRequestBuilder;
+import com.liferay.portal.search.searcher.SearchRequestBuilderFactory;
+import com.liferay.portal.search.searcher.SearchResponse;
+import com.liferay.portal.search.searcher.Searcher;
 import com.liferay.portal.search.sort.Sort;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.advanced.HighlightingConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.engine.constants.SearchRequestAttributes;
-import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
-import com.liferay.portal.search.tuning.blueprints.engine.searchrequest.SearchRequestData;
+import com.liferay.portal.search.tuning.blueprints.engine.component.ServiceComponentReference;
+import com.liferay.portal.search.tuning.blueprints.engine.constants.ReservedParameterNames;
+import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.query.QueryPostProcessor;
+import com.liferay.portal.search.tuning.blueprints.message.Messages;
+import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.util.BlueprintHelper;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 import org.osgi.service.component.annotations.Component;
@@ -58,82 +59,41 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 public class SearchExecutorImpl implements SearchExecutor {
 
 	@Override
-	public SearchSearchResponse execute(
-		SearchRequestContext searchRequestContext,
-		SearchRequestData searchRequestData) {
+	public SearchResponse execute(
+		SearchRequestBuilder searchRequestBuilder, ParameterData parameterData,
+		Blueprint blueprint, Messages messages) {
 
-		SearchRequest searchRequest2 = searchRequestData.getSearchRequestBuilder().build();
+		searchRequestBuilder.modelIndexerClasses(_getModelIndexerClasses(blueprint));
+		searchRequestBuilder.excludeContributors("com.liferay.portal.search.tuning.blueprints");
+		searchRequestBuilder.explain(_isExplain(parameterData));
+		searchRequestBuilder.includeResponseString(
+			_isIncludeResponseString(parameterData));
 
-		SearchSearchRequest searchRequest = new SearchSearchRequest();
+		String[] indexNames = _getIndexNames(searchRequestBuilder, blueprint);
 
-		List<Aggregation> aggregations = searchRequestData.getAggregations();
-
-		if (!aggregations.isEmpty()) {
-			_setAggregations(searchRequest, aggregations);
+		if (indexNames != null) {
+			searchRequestBuilder.indexes(indexNames);
 		}
-
-		searchRequest.setExplain(_isExplain(searchRequestContext));
-
-		searchRequest.setIncludeResponseString(
-			_isIncludeResponseString(searchRequestContext));
-
-		searchRequest.setLocale(searchRequestContext.getLocale());
 
 		// Sorts cannot be used with rescorer (See Elasticsearch documentation)
 
-		List<Sort> sorts = searchRequestData.getSorts();
+		SearchRequest searchRequest = searchRequestBuilder.build();
 
-		List<Rescore> rescores = searchRequestData.getRescores();
+		List<Sort> sorts = searchRequest.getSorts();
 
-		if (!rescores.isEmpty()) {
-			searchRequest.setRescores(rescores);
-		}
-		else if (!sorts.isEmpty()) {
+		List<Rescore> rescores = searchRequest.getRescores();
+
+		SearchRequestBuilder searchRequestBuilder2 =
+			_searchRequestBuilderFactory.builder(searchRequest);
+
+		if (rescores.isEmpty() && !sorts.isEmpty()) {
 			Stream<Sort> sortsStream = sorts.stream();
 
-			searchRequest.addSorts(sortsStream.toArray(Sort[]::new));
+			searchRequestBuilder2.sorts(sortsStream.toArray(Sort[]::new));
 		}
 
-		BooleanQuery postFilterQuery = searchRequestData.getPostFilterQuery();
-
-		if (postFilterQuery.hasClauses()) {
-			searchRequest.setPostFilterQuery(postFilterQuery);
-		}
-
-		BooleanQuery booleanQuery = _queries.booleanQuery();
-
-		Query query = _complexQueryBuilderFactory.builder()
-			.addParts(searchRequest2.getComplexQueryParts())
-			.root(booleanQuery)
-			.build();
-
-		if (booleanQuery.hasClauses()) {
-			searchRequest.setQuery(query);
-		}
-
-		JSONObject blueprintJsonObject = searchRequestContext.getBlueprint();
-
-		_setHighlight(blueprintJsonObject, searchRequest);
-
-		_setIndexNames(blueprintJsonObject, searchRequest);
-
-		searchRequest.setSize(_blueprintHelper.getSize(blueprintJsonObject));
-
-		searchRequest.setStart(searchRequestContext.getFrom());
-
-		SearchSearchResponse searchResponse = _searchEngineAdapter.execute(
-			searchRequest);
-
-		if (_log.isDebugEnabled() && (searchResponse != null)) {
-			_log.debug(
-				"Request string: " + searchResponse.getSearchRequestString());
-			_log.debug("Hits: " + searchResponse.getCount());
-			_log.debug("Time:" + searchResponse.getExecutionTime());
-		}
-
-		_executeQueryPostProcessors(searchRequestContext, searchResponse);
-
-		return searchResponse;
+		return _execute(
+			searchRequestBuilder2, parameterData, blueprint, messages);
 	}
 
 	@Reference(
@@ -150,12 +110,31 @@ public class SearchExecutorImpl implements SearchExecutor {
 				Class<?> clazz = queryPostProcessor.getClass();
 
 				_log.warn(
-					"Unable to add query post processor " + clazz.getName() +
-						". Name property empty.");
+					"Unable to register query post processor " +
+						clazz.getName() + ". Name property empty.");
 			}
+
+			return;
 		}
 
-		_queryPostProcessors.put(name, queryPostProcessor);
+		int serviceRanking = GetterUtil.get(
+			properties.get("service.ranking"), 0);
+
+		ServiceComponentReference<QueryPostProcessor>
+			serviceComponentReference = new ServiceComponentReference<>(
+				queryPostProcessor, serviceRanking);
+
+		if (_queryPostProcessors.containsKey(name)) {
+			ServiceComponentReference<QueryPostProcessor> previousReference =
+				_queryPostProcessors.get(name);
+
+			if (previousReference.compareTo(serviceComponentReference) < 0) {
+				_queryPostProcessors.put(name, serviceComponentReference);
+			}
+		}
+		else {
+			_queryPostProcessors.put(name, serviceComponentReference);
+		}
 	}
 
 	protected void unregisterQueryPostProcessor(
@@ -170,9 +149,27 @@ public class SearchExecutorImpl implements SearchExecutor {
 		_queryPostProcessors.remove(name);
 	}
 
+	private SearchResponse _execute(
+		SearchRequestBuilder searchRequestBuilder, ParameterData parameterData,
+		Blueprint blueprint, Messages messages) {
+
+		SearchResponse searchResponse = _searcher.search(
+				searchRequestBuilder.build());
+
+		if (_log.isDebugEnabled() && (searchResponse != null)) {
+			_log.debug("Request string: " + searchResponse.getRequestString());
+			_log.debug("Hits: " + searchResponse.getCount());
+		}
+
+		_executeQueryPostProcessors(
+			searchResponse, parameterData, blueprint, messages);
+
+		return searchResponse;
+	}
+
 	private void _executeQueryPostProcessors(
-		SearchRequestContext searchRequestContext,
-		SearchSearchResponse searchResponse) {
+		SearchResponse searchResponse, ParameterData parameterData,
+		Blueprint blueprint, Messages messages) {
 
 		if (_log.isDebugEnabled()) {
 			_log.debug("Executing query post processors");
@@ -183,19 +180,21 @@ public class SearchExecutorImpl implements SearchExecutor {
 		}
 
 		List<String> excludedQueryPostProcessors =
-			_getExcludedQueryPostProcessors(
-				searchRequestContext.getBlueprint());
+			_getExcludedQueryPostProcessors(blueprint);
 
-		Stream<String> stream = excludedQueryPostProcessors.stream();
+		Stream<String> stream1 = excludedQueryPostProcessors.stream();
 
-		if (stream.anyMatch(s -> s.equals("*"))) {
+		if (stream1.anyMatch(s -> s.equals("*"))) {
 			return;
 		}
 
-		for (Map.Entry<String, QueryPostProcessor> entry :
-				_queryPostProcessors.entrySet()) {
+		for (Map.Entry<String, ServiceComponentReference<QueryPostProcessor>>
+				entry : _queryPostProcessors.entrySet()) {
 
-			QueryPostProcessor queryPostProcessor = entry.getValue();
+			ServiceComponentReference<QueryPostProcessor> value =
+				entry.getValue();
+
+			QueryPostProcessor queryPostProcessor = value.getServiceComponent();
 
 			Stream<String> stream2 = excludedQueryPostProcessors.stream();
 
@@ -209,16 +208,14 @@ public class SearchExecutorImpl implements SearchExecutor {
 				continue;
 			}
 
-			queryPostProcessor.process(searchRequestContext, searchResponse);
+			queryPostProcessor.process(
+				searchResponse, blueprint, parameterData, messages);
 		}
 	}
 
-	private List<String> _getExcludedQueryPostProcessors(
-		JSONObject blueprintJsonObject) {
-
+	private List<String> _getExcludedQueryPostProcessors(Blueprint blueprint) {
 		Optional<List<String>> excludedQueryPostProcessorsOptional =
-			_blueprintHelper.getExcludedQueryPostProcessorsOptional(
-				blueprintJsonObject);
+			_blueprintHelper.getExcludedQueryPostProcessorsOptional(blueprint);
 
 		if (excludedQueryPostProcessorsOptional.isPresent()) {
 			return excludedQueryPostProcessorsOptional.get();
@@ -227,103 +224,68 @@ public class SearchExecutorImpl implements SearchExecutor {
 		return new ArrayList<>();
 	}
 
-	private boolean _isExplain(SearchRequestContext searchRequestContext) {
-		Map<String, Object> searchRequestAttributes =
-			searchRequestContext.getAttributes();
+	private String[] _getIndexNames(
+		SearchRequestBuilder searchRequestBuilder, Blueprint blueprint) {
 
+		Optional<JSONObject> jsonObjectOptional =
+			_blueprintHelper.getIndexesConfigurationOptional(blueprint);
+
+		if (!jsonObjectOptional.isPresent()) {
+			return null;
+		}
+
+		// TODO: waiting for suggestions module implementation.
+		// boolean suggestionsIndex =
+
+		//		jsonObject.getBoolean("use_query_suggestions_index", false);
+
+		// Make SF happy for now
+
+		searchRequestBuilder.getClass();
+
+		return null;
+	}
+
+	// TODO: is this right and if is add other classes?
+	
+	private Class<?>[] _getModelIndexerClasses(Blueprint blueprint) {
+		
+		Optional<JSONArray> optional =
+				_blueprintHelper.getModelIndexerClassesOptional(blueprint);
+
+		if (!optional.isPresent()) {
+			return new Class<?>[0];
+		}
+
+		JSONArray jsonArray = optional.get();
+
+		List<Class<?>> list = new ArrayList<Class<?>>();
+		
+
+		for (int i = 0; i < jsonArray.length(); i++) {
+			
+			String s = jsonArray.getString(i);
+			
+			if (StringUtil.equals(s, JournalArticle.class.getName())) {
+				list.add(JournalArticle.class);
+//			} else if (StringUtil.equals(s, DLFileEntry.class.getName())) {
+//				list.add(DLFileEntry.class);
+			}
+		}
+		
+		return list.toArray(new Class<?>[0]);
+	}
+	
+	private boolean _isExplain(ParameterData parameterData) {
 		return GetterUtil.getBoolean(
-			searchRequestAttributes.get(SearchRequestAttributes.EXPLAIN));
+			parameterData.getByNameOptional(
+				ReservedParameterNames.EXPLAIN.getKey()));
 	}
 
-	private boolean _isIncludeResponseString(
-		SearchRequestContext searchRequestContext) {
-
-		Map<String, Object> searchRequestAttributes =
-			searchRequestContext.getAttributes();
-
+	private boolean _isIncludeResponseString(ParameterData parameterData) {
 		return GetterUtil.getBoolean(
-			searchRequestAttributes.get(
-				SearchRequestAttributes.INCLUDE_RESPONSE_STRING));
-	}
-
-	private void _setAggregations(
-		SearchSearchRequest searchRequest, List<Aggregation> aggregations) {
-
-		for (Aggregation aggregation : aggregations) {
-			searchRequest.addAggregation(aggregation);
-		}
-	}
-
-	private void _setHighlight(
-		JSONObject blueprintJsonObject, SearchSearchRequest searchRequest) {
-
-		Optional<JSONObject> highlightConfigurationJsonObjectOptional =
-			_blueprintHelper.getHighlightConfigurationOptional(
-				blueprintJsonObject);
-
-		if (!highlightConfigurationJsonObjectOptional.isPresent()) {
-			return;
-		}
-
-		JSONObject highlightConfigurationJsonObject =
-			highlightConfigurationJsonObjectOptional.get();
-
-		if (highlightConfigurationJsonObject.has(
-				HighlightingConfigurationKeys.ENABLED.getJsonKey())) {
-
-			searchRequest.setHighlightEnabled(
-				highlightConfigurationJsonObject.getBoolean(
-					HighlightingConfigurationKeys.ENABLED.getJsonKey()));
-		}
-
-		if (highlightConfigurationJsonObject.has(
-				HighlightingConfigurationKeys.FRAGMENT_SIZE.getJsonKey())) {
-
-			searchRequest.setHighlightFragmentSize(
-				highlightConfigurationJsonObject.getInt(
-					HighlightingConfigurationKeys.FRAGMENT_SIZE.getJsonKey()));
-		}
-
-		if (highlightConfigurationJsonObject.has(
-				HighlightingConfigurationKeys.SNIPPET_SIZE.getJsonKey())) {
-
-			searchRequest.setHighlightSnippetSize(
-				highlightConfigurationJsonObject.getInt(
-					HighlightingConfigurationKeys.SNIPPET_SIZE.getJsonKey()));
-		}
-
-		if (highlightConfigurationJsonObject.has(
-				HighlightingConfigurationKeys.REQUIRE_FIELD_MATCH.
-					getJsonKey())) {
-
-			searchRequest.setHighlightRequireFieldMatch(
-				highlightConfigurationJsonObject.getBoolean(
-					HighlightingConfigurationKeys.REQUIRE_FIELD_MATCH.
-						getJsonKey()));
-		}
-
-		if (highlightConfigurationJsonObject.has(
-				HighlightingConfigurationKeys.FIELD_NAMES.getJsonKey())) {
-
-			JSONArray fieldNamesJsonArray =
-				highlightConfigurationJsonObject.getJSONArray(
-					HighlightingConfigurationKeys.FIELD_NAMES.getJsonKey());
-
-			String[] fieldNames = JSONUtil.toStringArray(fieldNamesJsonArray);
-
-			searchRequest.setHighlightFieldNames(fieldNames);
-		}
-	}
-
-	private void _setIndexNames(
-		JSONObject blueprintJsonObject, SearchSearchRequest searchRequest) {
-
-		Optional<String[]> indexNamesOptional =
-			_blueprintHelper.getIndexNamesOptional(blueprintJsonObject);
-
-		if (indexNamesOptional.isPresent()) {
-			searchRequest.setIndexNames(indexNamesOptional.get());
-		}
+			parameterData.getByNameOptional(
+				ReservedParameterNames.INCLUDE_RESPONSE_STRING.getKey()));
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
@@ -338,10 +300,13 @@ public class SearchExecutorImpl implements SearchExecutor {
 	@Reference
 	private Queries _queries;
 
-	private volatile Map<String, QueryPostProcessor> _queryPostProcessors =
-		new HashMap<>();
+	private volatile Map<String, ServiceComponentReference<QueryPostProcessor>>
+		_queryPostProcessors = new ConcurrentHashMap<>();
 
 	@Reference
-	private SearchEngineAdapter _searchEngineAdapter;
+	private Searcher _searcher;
+
+	@Reference
+	private SearchRequestBuilderFactory _searchRequestBuilderFactory;
 
 }

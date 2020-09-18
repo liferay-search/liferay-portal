@@ -91,6 +91,8 @@ public class BlueprintModifiedDateComparator
 		return _ascending;
 	}
 
+	private static final long serialVersionUID = 1L;
+
 	private final boolean _ascending;
 
 }

@@ -14,18 +14,20 @@
  */
 --%>
 
-<%@ include file="./init.jsp" %>
+<%@ include file="/init.jsp" %>
 
-<liferay-ui:error key="errorDetails">
-	<liferay-ui:message arguments='<%= SessionErrors.get(liferayPortletRequest, "errorDetails") %>' key="error.search-configuration-service-error" />
+<liferay-ui:error key="<%= BlueprintsAdminWebKeys.ERROR_DETAILS %>">
+	<liferay-ui:message arguments='<%= SessionErrors.get(liferayPortletRequest, "errorDetails") %>' key="error.blueprint-service-error" />
 </liferay-ui:error>
 
 <%
 final String tabs = ParamUtil.getString(request, "tabs", "blueprints");
 PortletURL configurationsURL = renderResponse.createRenderURL();
 configurationsURL.setParameter(BlueprintsAdminWebKeys.BLUEPRINT_TYPE, String.valueOf(BlueprintTypes.BLUEPRINT));
+
 PortletURL templatesURL = renderResponse.createRenderURL();
 templatesURL.setParameter(BlueprintsAdminWebKeys.BLUEPRINT_TYPE, String.valueOf(BlueprintTypes.TEMPLATE));
+
 PortletURL queryFragmentsURL = renderResponse.createRenderURL();
 queryFragmentsURL.setParameter(BlueprintsAdminWebKeys.BLUEPRINT_TYPE, String.valueOf(BlueprintTypes.QUERY_FRAGMENT));
 %>
@@ -40,9 +42,7 @@ queryFragmentsURL.setParameter(BlueprintsAdminWebKeys.BLUEPRINT_TYPE, String.val
 						navigationItem.setActive(tabs.equals("blueprints"));
 						navigationItem.setHref(configurationsURL, "tabs", "blueprints");
 						navigationItem.setLabel(LanguageUtil.get(request, "blueprints"));
-						navigationItem.putData(
-								BlueprintsAdminWebKeys.BLUEPRINT_TYPE,
-								String.valueOf(BlueprintTypes.BLUEPRINT));
+						navigationItem.putData(BlueprintsAdminWebKeys.BLUEPRINT_TYPE, String.valueOf(BlueprintTypes.BLUEPRINT));
 					});
 				add(
 					navigationItem -> {
@@ -55,9 +55,7 @@ queryFragmentsURL.setParameter(BlueprintsAdminWebKeys.BLUEPRINT_TYPE, String.val
 						navigationItem.setActive(tabs.equals("fragments"));
 						navigationItem.setHref(queryFragmentsURL, "tabs", "fragments");
 						navigationItem.setLabel(LanguageUtil.get(request, "fragments"));
-						navigationItem.putData(
-								BlueprintsAdminWebKeys.BLUEPRINT_TYPE,
-								String.valueOf(BlueprintTypes.QUERY_FRAGMENT));
+						navigationItem.putData(BlueprintsAdminWebKeys.BLUEPRINT_TYPE, String.valueOf(BlueprintTypes.QUERY_FRAGMENT));
 					});
 			}
 		}

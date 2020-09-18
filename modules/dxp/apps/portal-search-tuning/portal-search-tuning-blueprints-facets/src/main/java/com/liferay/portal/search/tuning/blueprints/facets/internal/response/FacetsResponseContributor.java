@@ -17,15 +17,19 @@ package com.liferay.portal.search.tuning.blueprints.facets.internal.response;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.aggregation.AggregationResult;
-import com.liferay.portal.search.engine.adapter.search.SearchSearchResponse;
-import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
-import com.liferay.portal.search.tuning.blueprints.engine.spi.facet.FacetResponseHandler;
+import com.liferay.portal.search.searcher.SearchResponse;
+import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
+import com.liferay.portal.search.tuning.blueprints.constants.json.keys.BlueprintKeys;
 import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetJSONResponseKeys;
-import com.liferay.portal.search.tuning.blueprints.facets.internal.handler.response.FacetResponseHandlerFactory;
-import com.liferay.portal.search.tuning.blueprints.poc.util.POCMockUtil;
+import com.liferay.portal.search.tuning.blueprints.facets.internal.response.handler.FacetResponseHandlerFactory;
+import com.liferay.portal.search.tuning.blueprints.facets.spi.response.FacetResponseHandler;
+import com.liferay.portal.search.tuning.blueprints.message.Messages;
+import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.response.spi.contributor.ResponseContributor;
+import com.liferay.portal.search.tuning.blueprints.util.BlueprintHelper;
 
 import java.util.Map;
 import java.util.Optional;
@@ -41,74 +45,80 @@ public class FacetsResponseContributor implements ResponseContributor {
 
 	@Override
 	public void contribute(
-		SearchRequestContext searchRequestContext,
-		SearchSearchResponse searchResponse,
-		Map<String, Object> responseAttributes, JSONObject responseJsonObject) {
+		JSONObject responseJsonObject, SearchResponse searchResponse,
+		Blueprint blueprint, BlueprintsAttributes blueprintsAttributes,
+		Messages messages) {
 
 		responseJsonObject.put(
 			FacetJSONResponseKeys.FACETS,
-			_getFacets(searchRequestContext, searchResponse));
+			_getFacets(
+				searchResponse, blueprint, blueprintsAttributes, messages));
 	}
 
 	private JSONArray _getFacets(
-		SearchRequestContext searchRequestContext,
-		SearchSearchResponse searchResponse) {
+		SearchResponse searchResponse, Blueprint blueprint,
+		BlueprintsAttributes blueprintsAttributes, Messages messages) {
 
-		JSONArray facetsJsonArray = JSONFactoryUtil.createJSONArray();
+		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
 
-		// TODO
-
-		JSONArray facetsConfigurationJsonArray =
-			POCMockUtil.getFacetsParameterConfigurationMock();
+		Optional<JSONArray> configurationJsonArrayOptional =
+			_blueprintHelper.getJSONArrayConfigurationOptional(
+				blueprint,
+				"JSONArray/" +
+					BlueprintKeys.AGGREGATION_CONFIGURATION.getJsonKey());
 
 		Map<String, AggregationResult> aggregations =
 			searchResponse.getAggregationResultsMap();
 
-		if ((aggregations == null) || (facetsConfigurationJsonArray == null)) {
-			return facetsJsonArray;
+		if (aggregations.isEmpty() ||
+			!configurationJsonArrayOptional.isPresent()) {
+
+			return jsonArray;
 		}
 
-		for (int i = 0; i < facetsConfigurationJsonArray.length(); i++) {
-			JSONObject facetConfigurationJsonObject =
-				facetsConfigurationJsonArray.getJSONObject(i);
+		JSONArray configurationJsonArray = configurationJsonArrayOptional.get();
 
-			if (facetConfigurationJsonObject == null) {
-				continue;
-			}
+		for (int i = 0; i < configurationJsonArray.length(); i++) {
+			JSONObject configurationJsonObject =
+				configurationJsonArray.getJSONObject(i);
 
-			String facetResponseHandlerName =
-				facetConfigurationJsonObject.getString(
-					FacetConfigurationKeys.HANDLER.getJsonKey(), "default");
+			String responseHandlerName = configurationJsonObject.getString(
+				FacetConfigurationKeys.HANDLER.getJsonKey(), "default");
 
-			String aggregationName = facetConfigurationJsonObject.getString(
-				FacetConfigurationKeys.AGGREGATION_NAME.getJsonKey());
+			String aggregationName = configurationJsonObject.getString(
+				FacetConfigurationKeys.FIELD.getJsonKey());
 
 			for (Map.Entry<String, AggregationResult> entry :
 					aggregations.entrySet()) {
 
 				String aggregationResultName = entry.getKey();
 
-				if (!aggregationResultName.equalsIgnoreCase(aggregationName)) {
+				if (!StringUtil.equalsIgnoreCase(
+						aggregationResultName, aggregationName)) {
+
 					continue;
 				}
 
 				FacetResponseHandler facetResponseHandler =
 					_facetResponseHandlerFactory.getHandler(
-						facetResponseHandlerName);
+						responseHandlerName);
 
 				Optional<JSONObject> resultObject =
 					facetResponseHandler.getResultObject(
-						searchRequestContext, entry.getValue(),
-						facetConfigurationJsonObject);
+						entry.getValue(), blueprintsAttributes, messages,
+						configurationJsonObject);
 
 				if (resultObject.isPresent()) {
-					facetsJsonArray.put(resultObject.get());
+					jsonArray.put(resultObject.get());
 				}
 			}
 		}
 
-		return facetsJsonArray;
+		return jsonArray;
 	}
+
+	@Reference
+	private BlueprintHelper _blueprintHelper;
 
 	@Reference
 	private FacetResponseHandlerFactory _facetResponseHandlerFactory;

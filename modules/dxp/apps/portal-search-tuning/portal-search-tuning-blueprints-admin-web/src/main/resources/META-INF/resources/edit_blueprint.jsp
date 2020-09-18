@@ -14,7 +14,7 @@
  */
 --%>
 
-<%@ include file="./init.jsp" %>
+<%@ include file="/init.jsp" %>
 
 <%
 EditBlueprintDisplayContext editBlueprintDisplayContext = (EditBlueprintDisplayContext)request.getAttribute(BlueprintsAdminWebKeys.EDIT_BLUEPRINT_DISPLAY_CONTEXT);

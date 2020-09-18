@@ -14,23 +14,29 @@
 
 package com.liferay.portal.search.tuning.blueprints.openweathermap.internal.parameter;
 
+import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.search.geolocation.GeoLocationPoint;
-import com.liferay.portal.search.tuning.blueprints.engine.constants.SearchContextAttributeKeys;
+import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
+import com.liferay.portal.search.tuning.blueprints.engine.constants.ReservedParameterNames;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.DoubleParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.IntegerParameter;
+import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterDataBuilder;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterDefinition;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.SearchParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.dataprovider.GeoLocationDataProvider;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.parameter.ParameterContributor;
+import com.liferay.portal.search.tuning.blueprints.message.Message;
+import com.liferay.portal.search.tuning.blueprints.message.Messages;
+import com.liferay.portal.search.tuning.blueprints.message.Severity;
+import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.openweathermap.internal.dataprovider.OpenWeatherMapDataProvider;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
+import java.util.Optional;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -47,22 +53,24 @@ public class OpenWeatherMapParameterContributor
 
 	@Override
 	public void contribute(
-		HttpServletRequest httpServletRequest,
-		SearchParameterData searchParameterData) {
+			ParameterDataBuilder parameterDataBuilder, 
+			Blueprint blueprint, 
+			BlueprintsAttributes blueprintsAttributes,
+			Messages messages) {
 
-		String ipAddress = httpServletRequest.getRemoteAddr();
+		String ipAddress = _getIpAddress(blueprintsAttributes);
 
-		_provide(searchParameterData, ipAddress);
-	}
+		if (Validator.isBlank(ipAddress)) {
+			
+			messages.addMessage(
+					new Message(
+					Severity.INFO, "ipstack", "core.error.ip-parameter-not-found",
+					"IP address wat not found in parameter data"));
+			
+			return;
+		}
 
-	@Override
-	public void contribute(
-		SearchContext searchContext, SearchParameterData searchParameterData) {
-
-		String ipAddress = (String)searchContext.getAttribute(
-			SearchContextAttributeKeys.IP_ADDRESS);
-
-		_provide(searchParameterData, ipAddress);
+		_contribute(parameterDataBuilder, blueprintsAttributes, messages, ipAddress);
 	}
 
 	@Override
@@ -90,12 +98,21 @@ public class OpenWeatherMapParameterContributor
 		return parameterDefinitions;
 	}
 
-	private void _provide(
-		SearchParameterData searchParameterData, String ipAddress) {
+	private String _getIpAddress(BlueprintsAttributes blueprintsAttributes) {
+		Optional<Object> valueOptional = blueprintsAttributes.getAttributeOptional(
+			ReservedParameterNames.IP_ADDRESS.getKey());
+
+		return GetterUtil.getString(valueOptional.orElse(null));
+	}
+
+	private void _contribute(
+		ParameterDataBuilder parameterDataBuilder, 
+		BlueprintsAttributes blueprintsAttributes, 
+		Messages messages, String ipAddress) {
 
 		GeoLocationPoint geoLocationPoint =
 			_geoLocationDataProvider.getGeoLocationPoint(
-				searchParameterData, ipAddress);
+				messages, ipAddress);
 
 		if (geoLocationPoint == null) {
 			return;
@@ -103,38 +120,34 @@ public class OpenWeatherMapParameterContributor
 
 		JSONObject weatherDataJsonObject =
 			_openWeatherMapDataProvider.getWeatherData(
-				searchParameterData, geoLocationPoint);
+				messages, geoLocationPoint);
 
 		if (weatherDataJsonObject == null) {
 			return;
 		}
 
-		JSONObject weatherJsonObject = weatherDataJsonObject.getJSONArray(
-			"weather"
-		).getJSONObject(
-			0
-		);
+		JSONArray weatherJsonArray = weatherDataJsonObject.getJSONArray(
+			"weather");
+
+		JSONObject weatherJsonObject = weatherJsonArray.getJSONObject(0);
 
 		if (weatherJsonObject == null) {
 			return;
 		}
 
-		searchParameterData.addParameter(
+		parameterDataBuilder.addParameter(
 			new IntegerParameter(
-				"openweathermap.weather_id",
-				"${openweathermap.weather_id}",
+				"openweathermap.weather_id", "${openweathermap.weather_id}",
 				weatherJsonObject.getInt("id")));
 
-		searchParameterData.addParameter(
+		parameterDataBuilder.addParameter(
 			new StringParameter(
-				"openweathermap.weather_name",
-				"${openweathermap.weather_name}",
+				"openweathermap.weather_name", "${openweathermap.weather_name}",
 				weatherJsonObject.getString("main")));
 
-		searchParameterData.addParameter(
+		parameterDataBuilder.addParameter(
 			new DoubleParameter(
-				"openweathermap.temperature",
-				"${openweathermap.temperature}",
+				"openweathermap.temperature", "${openweathermap.temperature}",
 				weatherJsonObject.getDouble("temp")));
 	}
 

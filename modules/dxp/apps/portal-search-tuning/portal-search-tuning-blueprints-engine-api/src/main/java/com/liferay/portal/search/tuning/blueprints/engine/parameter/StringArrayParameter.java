@@ -27,10 +27,10 @@ import java.util.Map;
 public class StringArrayParameter implements Parameter {
 
 	public StringArrayParameter(
-		String name, String configurationVariable, String[] value) {
+		String name, String templateVariable, String[] value) {
 
 		_name = name;
-		_configurationVariable = configurationVariable;
+		_templateVariable = templateVariable;
 		_value = value;
 	}
 
@@ -42,7 +42,9 @@ public class StringArrayParameter implements Parameter {
 	}
 
 	@Override
-	public String accept(ToStringVisitor visitor, Map<String, String> options) throws Exception {
+	public String accept(ToStringVisitor visitor, Map<String, String> options)
+		throws Exception {
+
 		return visitor.visit(this, options);
 	}
 
@@ -64,7 +66,7 @@ public class StringArrayParameter implements Parameter {
 
 	@Override
 	public String getTemplateVariable() {
-		return _configurationVariable;
+		return _templateVariable;
 	}
 
 	@Override
@@ -72,8 +74,8 @@ public class StringArrayParameter implements Parameter {
 		return _value;
 	}
 
-	private final String _configurationVariable;
 	private final String _name;
+	private final String _templateVariable;
 	private final String[] _value;
 
 }

@@ -47,7 +47,6 @@ import java.util.stream.Stream;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionURL;
-import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -155,13 +154,12 @@ public class EditBlueprintDisplayBuilder {
 
 		String languageId = LocaleUtil.toLanguageId(locale);
 
+		languageId = StringUtil.replace(languageId, '_', "-");
+
 		jsonObject.put(
-			"label", StringUtil.replace(languageId, '_', "-")
+			"label", languageId
 		).put(
-			"symbol",
-			StringUtil.replace(
-				languageId, '_', "-"
-			).toLowerCase()
+			"symbol", StringUtil.toLowerCase(languageId)
 		);
 
 		return jsonObject;
@@ -183,10 +181,10 @@ public class EditBlueprintDisplayBuilder {
 		if (_blueprint != null) {
 			try {
 				props.put(
-					"initialClauseConfiguration",
+					"initialQueryConfiguration",
 					JSONHelperUtil.getConfigurationSection(
 						_blueprint,
-						BlueprintKeys.CLAUSE_CONFIGURATION.getJsonKey()));
+						BlueprintKeys.QUERY_CONFIGURATION.getJsonKey()));
 			}
 			catch (JSONException jsonException) {
 				_log.error("Unable to parse Blueprint JSON", jsonException);
@@ -202,9 +200,7 @@ public class EditBlueprintDisplayBuilder {
 		String redirect = ParamUtil.getString(_httpServletRequest, "redirect");
 
 		if (Validator.isNull(redirect)) {
-			PortletURL portletURL = _renderResponse.createRenderURL();
-
-			redirect = portletURL.toString();
+			redirect = String.valueOf(_renderResponse.createRenderURL());
 		}
 
 		return redirect;
@@ -264,7 +260,7 @@ public class EditBlueprintDisplayBuilder {
 
 		StringBundler sb = new StringBundler(2);
 
-		sb.append(_blueprint != null ? "edit-" : "add-");
+		sb.append((_blueprint != null) ? "edit-" : "add-");
 
 		if (_blueprintType == BlueprintTypes.BLUEPRINT) {
 			sb.append("blueprint");

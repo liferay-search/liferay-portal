@@ -20,9 +20,9 @@ package com.liferay.portal.search.tuning.blueprints.engine.parameter;
 public class ParameterDefinition {
 
 	public ParameterDefinition(
-		String variable, String className, String descriptionKey) {
+		String templateVariable, String className, String descriptionKey) {
 
-		_variable = variable;
+		_templateVariable = templateVariable;
 		_className = className;
 		_descriptionKey = descriptionKey;
 	}
@@ -36,11 +36,11 @@ public class ParameterDefinition {
 	}
 
 	public String getVariable() {
-		return _variable;
+		return _templateVariable;
 	}
 
 	private final String _className;
 	private final String _descriptionKey;
-	private final String _variable;
+	private final String _templateVariable;
 
 }

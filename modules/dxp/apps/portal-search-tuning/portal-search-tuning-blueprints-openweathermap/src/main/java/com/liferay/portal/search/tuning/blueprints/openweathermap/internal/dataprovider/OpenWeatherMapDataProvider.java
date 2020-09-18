@@ -25,13 +25,12 @@ import com.liferay.portal.kernel.util.Http;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.tuning.blueprints.engine.cache.JsonDataProviderCache;
-import com.liferay.portal.search.tuning.blueprints.engine.message.Message;
-import com.liferay.portal.search.tuning.blueprints.engine.message.Severity;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.SearchParameterData;
+import com.liferay.portal.search.tuning.blueprints.message.Message;
+import com.liferay.portal.search.tuning.blueprints.message.Messages;
+import com.liferay.portal.search.tuning.blueprints.message.Severity;
 import com.liferay.portal.search.tuning.blueprints.openweathermap.internal.configuration.OpenWeatherMapConfiguration;
 
 import java.io.IOException;
-
 import java.util.Map;
 
 import org.osgi.service.component.annotations.Activate;
@@ -53,14 +52,14 @@ import org.osgi.service.component.annotations.Reference;
 public class OpenWeatherMapDataProvider {
 
 	public JSONObject getWeatherData(
-		SearchParameterData searchParameterData,
+		Messages messages,
 		GeoLocationPoint geoLocationPoint) {
 
 		if (_openWeatherMapConfiguration.isEnabled()) {
 			return null;
 		}
 
-		if (!_validateConfiguration(searchParameterData)) {
+		if (!_validateConfiguration(messages)) {
 			return null;
 		}
 
@@ -72,10 +71,9 @@ public class OpenWeatherMapDataProvider {
 			return weatherDataJsonObject;
 		}
 
-		weatherDataJsonObject = _getWeatherData(
-			searchParameterData, geoLocationPoint);
+		weatherDataJsonObject = _getWeatherData(geoLocationPoint, messages);
 
-		if (!_validateData(searchParameterData, weatherDataJsonObject)) {
+		if (!_validateData(weatherDataJsonObject, messages)) {
 			return null;
 		}
 
@@ -123,8 +121,7 @@ public class OpenWeatherMapDataProvider {
 	}
 
 	private JSONObject _getWeatherData(
-		SearchParameterData searchParameterData,
-		GeoLocationPoint geoLocationPoint) {
+		GeoLocationPoint geoLocationPoint, Messages messages) {
 
 		String apiKey = _openWeatherMapConfiguration.apiKey();
 		String apiURL = _openWeatherMapConfiguration.apiURL();
@@ -137,10 +134,11 @@ public class OpenWeatherMapDataProvider {
 			String rawData = _http.URLtoString(url);
 
 			if (rawData == null) {
-				searchParameterData.addMessage(
+				messages.addMessage(
 					new Message(
 						Severity.ERROR, "openweathermap",
-						"openweathermap.error.esponse-empty"));
+						"openweathermap.error.esponse-empty",
+						"OpenWeatherMap response empty"));
 
 				return null;
 			}
@@ -148,7 +146,7 @@ public class OpenWeatherMapDataProvider {
 			weatherDataJsonObject = JSONFactoryUtil.createJSONObject(rawData);
 		}
 		catch (IOException ioException) {
-			searchParameterData.addMessage(
+			messages.addMessage(
 				new Message(
 					Severity.ERROR, "openweathermap",
 					"openweathermap.error.network-error",
@@ -156,7 +154,7 @@ public class OpenWeatherMapDataProvider {
 			_log.error(ioException.getMessage(), ioException);
 		}
 		catch (JSONException jsonException) {
-			searchParameterData.addMessage(
+			messages.addMessage(
 				new Message(
 					Severity.ERROR, "openweathermap",
 					"openweathermap.error.invalid-ipstack-response-format",
@@ -168,27 +166,27 @@ public class OpenWeatherMapDataProvider {
 		return weatherDataJsonObject;
 	}
 
-	private boolean _validateConfiguration(
-		SearchParameterData searchParameterData) {
-
+	private boolean _validateConfiguration(Messages messages) {
 		String apiKey = _openWeatherMapConfiguration.apiKey();
 		String apiURL = _openWeatherMapConfiguration.apiURL();
 
 		boolean valid = true;
 
 		if (Validator.isBlank(apiKey)) {
-			searchParameterData.addMessage(
+			messages.addMessage(
 				new Message(
 					Severity.ERROR, "openweathermap",
-					"openweathermap.error.api-key-empty"));
+					"openweathermap.error.api-key-empty",
+					"OpenWeatherMap API key is not defined"));
 			valid = false;
 		}
 
 		if (Validator.isBlank(apiURL)) {
-			searchParameterData.addMessage(
+			messages.addMessage(
 				new Message(
 					Severity.ERROR, "openweathermap",
-					"openweathermap.error.api-url-empty"));
+					"openweathermap.error.api-url-empty",
+					"OpenWeatherMap API URL is not defined"));
 
 			valid = false;
 		}
@@ -196,15 +194,14 @@ public class OpenWeatherMapDataProvider {
 		return valid;
 	}
 
-	private boolean _validateData(
-		SearchParameterData searchParameterData, JSONObject jsonObject) {
-
+	private boolean _validateData(JSONObject jsonObject, Messages messages) {
 		if ((jsonObject == null) || (jsonObject.get("weather") == null)) {
-			searchParameterData.addMessage(
+			messages.addMessage(
 				new Message(
 					Severity.ERROR, "openweathermap",
-					"openweathermap.error.invalid-response-data", jsonObject,
-					null, null));
+					"openweathermap.error.invalid-response-data",
+					"Invalid OpenWeatherMap response data", null, null, null,
+					jsonObject.toString()));
 
 			return false;
 		}

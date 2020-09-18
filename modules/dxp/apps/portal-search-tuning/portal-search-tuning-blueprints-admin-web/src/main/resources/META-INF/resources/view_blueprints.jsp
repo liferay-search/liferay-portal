@@ -14,14 +14,14 @@
  */
 --%>
 
-<%@ include file="./init.jsp" %>
+<%@ include file="/init.jsp" %>
 
 <%
 BlueprintEntriesManagementToolbarDisplayContext blueprintEntriesManagementToolbarDisplayContext = (BlueprintEntriesManagementToolbarDisplayContext)request.getAttribute(BlueprintsAdminWebKeys.BLUEPRINT_ENTRIES_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT);
 
 BlueprintEntriesDisplayContext blueprintEntriesDisplayContext = (BlueprintEntriesDisplayContext)request.getAttribute(BlueprintsAdminWebKeys.BLUEPRINT_ENTRIES_DISPLAY_CONTEXT);
 
-SearchContainer blueprintsSearchContainer = blueprintEntriesDisplayContext.getSearchContainer();
+SearchContainer<Blueprint> blueprintsSearchContainer = blueprintEntriesDisplayContext.getSearchContainer();
 
 String displayStyle = blueprintEntriesDisplayContext.getDisplayStyle();
 %>

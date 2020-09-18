@@ -44,7 +44,7 @@ public class ResultBuilderFactoryImpl implements ResultBuilderFactory {
 		if (serviceComponentReference == null) {
 			if (_log.isWarnEnabled()) {
 				_log.warn(
-					"Unable to find result item builder for " + type +
+					"Unable to find result builder for " + type +
 						". Falling back to default.");
 			}
 
@@ -59,16 +59,17 @@ public class ResultBuilderFactoryImpl implements ResultBuilderFactory {
 		policy = ReferencePolicy.DYNAMIC
 	)
 	protected void registerResultBuilder(
-		ResultBuilder ResultBuilder, Map<String, Object> properties) {
+		ResultBuilder resultBuilder, Map<String, Object> properties) {
 
 		String type = (String)properties.get("model.class.name");
+
+		Class<?> clazz = resultBuilder.getClass();
 
 		if (Validator.isBlank(type)) {
 			if (_log.isWarnEnabled()) {
 				_log.warn(
-					"Unable to add result item builder " +
-						ResultBuilder.getClass(
-						).getName() + ". model.class.name property empty.");
+					"Unable to add result builder " + clazz.getName() +
+						". model.class.name property empty.");
 			}
 
 			return;
@@ -78,7 +79,7 @@ public class ResultBuilderFactoryImpl implements ResultBuilderFactory {
 			properties.get("service.ranking"), 0);
 
 		ServiceComponentReference<ResultBuilder> serviceComponentReference =
-			new ServiceComponentReference<>(ResultBuilder, serviceRanking);
+			new ServiceComponentReference<>(resultBuilder, serviceRanking);
 
 		if (_resultBuilders.containsKey(type)) {
 			ServiceComponentReference<ResultBuilder> previousReference =
@@ -94,7 +95,7 @@ public class ResultBuilderFactoryImpl implements ResultBuilderFactory {
 	}
 
 	protected void unregisterResultBuilder(
-		ResultBuilder ResultBuilder, Map<String, Object> properties) {
+		ResultBuilder resultBuilder, Map<String, Object> properties) {
 
 		String type = (String)properties.get("model.class.name");
 

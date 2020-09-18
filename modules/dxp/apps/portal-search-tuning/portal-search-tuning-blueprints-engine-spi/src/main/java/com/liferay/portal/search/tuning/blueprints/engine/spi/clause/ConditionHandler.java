@@ -15,7 +15,8 @@
 package com.liferay.portal.search.tuning.blueprints.engine.spi.clause;
 
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
+import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
+import com.liferay.portal.search.tuning.blueprints.message.Messages;
 
 /**
  * @author Petteri Karttunen
@@ -23,7 +24,7 @@ import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestC
 public interface ConditionHandler {
 
 	public boolean isTrue(
-		SearchRequestContext searchRequestContext,
+		ParameterData parameterData, Messages messages,
 		JSONObject configurationJsonObject);
 
 }

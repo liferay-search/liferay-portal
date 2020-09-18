@@ -15,7 +15,7 @@
 package com.liferay.portal.search.tuning.blueprints.engine.exception;
 
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.search.tuning.blueprints.engine.message.Message;
+import com.liferay.portal.search.tuning.blueprints.message.Message;
 
 import java.util.List;
 

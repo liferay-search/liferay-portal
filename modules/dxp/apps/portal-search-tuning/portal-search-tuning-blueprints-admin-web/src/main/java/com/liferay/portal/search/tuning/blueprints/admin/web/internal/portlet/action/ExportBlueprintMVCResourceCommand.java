@@ -14,10 +14,9 @@
 
 package com.liferay.portal.search.tuning.blueprints.admin.web.internal.portlet.action;
 
-import com.liferay.exportimport.kernel.exception.NoSuchConfigurationException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONException;
-import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -31,6 +30,7 @@ import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminMVCCommandNames;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminWebKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintsPortletKeys;
+import com.liferay.portal.search.tuning.blueprints.exception.NoSuchBlueprintException;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
 
@@ -76,22 +76,25 @@ public class ExportBlueprintMVCResourceCommand extends BaseMVCResourceCommand {
 			_writeResponse(
 				resourceRequest, resourceResponse, title, configuration);
 		}
-		catch (NoSuchConfigurationException noSuchConfigurationException) {
+		catch (NoSuchBlueprintException noSuchBlueprintException) {
 			_log.error(
-				"Blueprint " + blueprintId + " not found.",
-				noSuchConfigurationException);
+				"Blueprint " + blueprintId + " not found",
+				noSuchBlueprintException);
 
 			SessionErrors.add(
-				resourceRequest, "errorDetails", noSuchConfigurationException);
+				resourceRequest, BlueprintsAdminWebKeys.ERROR_DETAILS,
+				noSuchBlueprintException);
 
 			_log.error(
-				noSuchConfigurationException.getMessage(),
-				noSuchConfigurationException);
+				noSuchBlueprintException.getMessage(),
+				noSuchBlueprintException);
 		}
 		catch (PortalException portalException) {
 			_log.error(portalException.getMessage(), portalException);
 
-			SessionErrors.add(resourceRequest, "errorDetails", portalException);
+			SessionErrors.add(
+				resourceRequest, BlueprintsAdminWebKeys.ERROR_DETAILS,
+				portalException);
 		}
 	}
 
@@ -99,13 +102,13 @@ public class ExportBlueprintMVCResourceCommand extends BaseMVCResourceCommand {
 		String configuration = blueprint.getConfiguration();
 
 		try {
-			JSONObject jsonObject = JSONFactoryUtil.createJSONObject(
+			JSONObject jsonObject = _jsonFactory.createJSONObject(
 				configuration);
 
 			return jsonObject.toString(4);
 		}
-		catch (JSONException e) {
-			_log.error(e.getMessage(), e);
+		catch (JSONException jsonException) {
+			_log.error(jsonException.getMessage(), jsonException);
 		}
 
 		return configuration;
@@ -143,7 +146,9 @@ public class ExportBlueprintMVCResourceCommand extends BaseMVCResourceCommand {
 		catch (IOException ioException) {
 			_log.error(ioException.getMessage(), ioException);
 
-			SessionErrors.add(resourceRequest, "errorDetails", ioException);
+			SessionErrors.add(
+				resourceRequest, BlueprintsAdminWebKeys.ERROR_DETAILS,
+				ioException);
 		}
 	}
 
@@ -152,6 +157,9 @@ public class ExportBlueprintMVCResourceCommand extends BaseMVCResourceCommand {
 
 	@Reference
 	private BlueprintService _blueprintService;
+
+	@Reference
+	private JSONFactory _jsonFactory;
 
 	@Reference
 	private Portal _portal;

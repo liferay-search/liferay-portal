@@ -24,9 +24,9 @@ public enum BlueprintKeys {
 
 	ADVANCED_CONFIGURATION("advanced_configuration"),
 	AGGREGATION_CONFIGURATION("aggregation_configuration"),
-	CLAUSE_CONFIGURATION("clause_configuration"),
-	REQUEST_PARAMETER_CONFIGURATION("request_parameter_configuration"),
-	SUGGESTER_CONFIGURATION("suggester_configuration");
+	PARAMETER_CONFIGURATION("parameter_configuration"),
+	QUERY_CONFIGURATION("query_configuration"),
+	SUGGEST_CONFIGURATION("suggest_configuration");
 
 	public static final BlueprintKeys findByJsonKey(String jsonKey) {
 		Stream<BlueprintKeys> blueprintKeysStream = Arrays.stream(

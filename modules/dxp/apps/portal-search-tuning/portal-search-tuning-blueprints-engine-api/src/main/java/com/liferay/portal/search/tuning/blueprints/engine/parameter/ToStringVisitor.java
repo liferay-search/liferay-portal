@@ -21,24 +21,37 @@ import java.util.Map;
  */
 public interface ToStringVisitor {
 
-	public String visit(BooleanParameter parameter, Map<String, String> options) throws Exception;
+	public String visit(BooleanParameter parameter, Map<String, String> options)
+		throws Exception;
 
-	public String visit(DateParameter parameter, Map<String, String> options) throws Exception;
+	public String visit(DateParameter parameter, Map<String, String> options)
+		throws Exception;
 
-	public String visit(DoubleParameter parameter, Map<String, String> options) throws Exception;
+	public String visit(DoubleParameter parameter, Map<String, String> options)
+		throws Exception;
 
-	public String visit(FloatParameter parameter, Map<String, String> options) throws Exception;
+	public String visit(FloatParameter parameter, Map<String, String> options)
+		throws Exception;
 
-	public String visit(IntegerArrayParameter parameter, Map<String, String> options) throws Exception;
+	public String visit(
+			IntegerArrayParameter parameter, Map<String, String> options)
+		throws Exception;
 
-	public String visit(IntegerParameter parameter, Map<String, String> options) throws Exception;
+	public String visit(IntegerParameter parameter, Map<String, String> options)
+		throws Exception;
 
-	public String visit(LongArrayParameter parameter, Map<String, String> options) throws Exception;
+	public String visit(
+			LongArrayParameter parameter, Map<String, String> options)
+		throws Exception;
 
-	public String visit(LongParameter parameter, Map<String, String> options) throws Exception;
+	public String visit(LongParameter parameter, Map<String, String> options)
+		throws Exception;
 
-	public String visit(StringArrayParameter parameter, Map<String, String> options) throws Exception;
+	public String visit(
+			StringArrayParameter parameter, Map<String, String> options)
+		throws Exception;
 
-	public String visit(StringParameter parameter, Map<String, String> options) throws Exception;
+	public String visit(StringParameter parameter, Map<String, String> options)
+		throws Exception;
 
 }

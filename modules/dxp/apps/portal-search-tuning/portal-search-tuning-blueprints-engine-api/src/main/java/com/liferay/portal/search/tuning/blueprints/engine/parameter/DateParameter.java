@@ -27,11 +27,9 @@ import java.util.Map;
  */
 public class DateParameter implements Parameter {
 
-	public DateParameter(
-		String name, String configurationVariable, Date value) {
-
+	public DateParameter(String name, String templateVariable, Date value) {
 		_name = name;
-		_configurationVariable = configurationVariable;
+		_templateVariable = templateVariable;
 		_value = value;
 	}
 
@@ -43,8 +41,7 @@ public class DateParameter implements Parameter {
 	}
 
 	@Override
-	public String accept(ToStringVisitor visitor, 
-			Map<String, String> options)
+	public String accept(ToStringVisitor visitor, Map<String, String> options)
 		throws Exception {
 
 		return visitor.visit(this, options);
@@ -73,7 +70,7 @@ public class DateParameter implements Parameter {
 
 	@Override
 	public String getTemplateVariable() {
-		return _configurationVariable;
+		return _templateVariable;
 	}
 
 	@Override
@@ -81,8 +78,8 @@ public class DateParameter implements Parameter {
 		return _value;
 	}
 
-	private final String _configurationVariable;
 	private final String _name;
+	private final String _templateVariable;
 	private final Date _value;
 
 }

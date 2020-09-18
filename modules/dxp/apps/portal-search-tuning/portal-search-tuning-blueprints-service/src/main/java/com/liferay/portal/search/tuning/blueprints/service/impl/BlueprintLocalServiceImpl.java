@@ -73,7 +73,7 @@ public class BlueprintLocalServiceImpl extends BlueprintLocalServiceBaseImpl {
 
 		User user = _userLocalService.getUser(userId);
 
-		_blueprintValidator.validate(titleMap, descriptionMap, configuration);
+		_blueprintValidator.validate(titleMap, configuration);
 
 		long blueprintId = counterLocalService.increment(
 			Blueprint.class.getName());
@@ -190,7 +190,7 @@ public class BlueprintLocalServiceImpl extends BlueprintLocalServiceBaseImpl {
 
 		Blueprint blueprint = getBlueprint(blueprintId);
 
-		_blueprintValidator.validate(titleMap, descriptionMap, configuration);
+		_blueprintValidator.validate(titleMap, configuration);
 
 		blueprint.setDescriptionMap(descriptionMap);
 		blueprint.setModifiedDate(serviceContext.getModifiedDate(new Date()));

@@ -55,8 +55,8 @@ public class EditBlueprintMVCRenderCommand implements MVCRenderCommand {
 
 		EditBlueprintDisplayContext editBlueprintDisplayContext =
 			new EditBlueprintDisplayBuilder(
-				portal.getHttpServletRequest(renderRequest), language, _log,
-				jsonFactory, renderRequest, renderResponse, _blueprintService
+				_portal.getHttpServletRequest(renderRequest), _language, _log,
+				_jsonFactory, renderRequest, renderResponse, _blueprintService
 			).build();
 
 		renderRequest.setAttribute(
@@ -74,19 +74,19 @@ public class EditBlueprintMVCRenderCommand implements MVCRenderCommand {
 		return "/edit_blueprint.jsp";
 	}
 
-	@Reference
-	protected JSONFactory jsonFactory;
-
-	@Reference
-	protected Language language;
-
-	@Reference
-	protected Portal portal;
-
 	private static final Log _log = LogFactoryUtil.getLog(
 		EditBlueprintMVCRenderCommand.class);
 
 	@Reference
 	private BlueprintService _blueprintService;
+
+	@Reference
+	private JSONFactory _jsonFactory;
+
+	@Reference
+	private Language _language;
+
+	@Reference
+	private Portal _portal;
 
 }

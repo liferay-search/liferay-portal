@@ -16,10 +16,22 @@
 
 <%@ include file="/init.jsp" %>
 
-<liferay-ui:error key="error.blueprint-not-defined" message="Please set Blueprint ID." />
-
 <%
 BlueprintDisplayContext blueprintDisplayContext = (BlueprintDisplayContext)request.getAttribute(BlueprintsWebPortletKeys.BLUEPRINTS_DISPLAY_CONTEXT);
 %>
 
-<react:component module="js/BlueprintsWebApp" data="<%= blueprintDisplayContext.getData() %>"/>
+<c:choose>
+	<c:when test="<%= !blueprintDisplayContext.isConfigured() %>">
+		<clay:alert
+			message="blueprint-not-set"
+			style="info"
+			title="info"
+		/>
+	</c:when>
+	<c:otherwise>
+		<react:component
+			data="<%= blueprintDisplayContext.getData() %>"
+			module="js/BlueprintsWebApp"
+		/>
+	</c:otherwise>
+</c:choose>

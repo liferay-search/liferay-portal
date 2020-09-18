@@ -21,12 +21,12 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.sort.SortOrder;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.clause.ConditionsConfigurationKeys;
+import com.liferay.portal.search.tuning.blueprints.constants.json.keys.query.ConditionConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.values.FilterMode;
 import com.liferay.portal.search.tuning.blueprints.constants.json.values.Operator;
 import com.liferay.portal.search.tuning.blueprints.engine.exception.ParameterEvaluationException;
-import com.liferay.portal.search.tuning.blueprints.engine.message.Message;
-import com.liferay.portal.search.tuning.blueprints.engine.message.Severity;
+import com.liferay.portal.search.tuning.blueprints.message.Message;
+import com.liferay.portal.search.tuning.blueprints.message.Severity;
 
 import java.util.Map;
 import java.util.Optional;
@@ -39,20 +39,21 @@ import java.util.stream.Stream;
  */
 public class BlueprintValueUtil {
 
-	public static JSONArray getConditionArrayValue(
+	public static JSONArray getConditionValueJSONArray(
 			JSONObject conditionJsonObject)
 		throws ParameterEvaluationException {
 
 		Object object = conditionJsonObject.get(
-			ConditionsConfigurationKeys.MATCH_VALUE.getJsonKey());
+			ConditionConfigurationKeys.MATCH_VALUE.getJsonKey());
 
 		if (!(object instanceof JSONArray)) {
 			throw new ParameterEvaluationException(
 				new Message(
 					Severity.ERROR, "core",
 					"core.error.expected-array-clause-condition-match-value",
-					null, null, conditionJsonObject,
-					ConditionsConfigurationKeys.MATCH_VALUE.getJsonKey(),
+					"Excepted an array clause condition match value", null,
+					conditionJsonObject,
+					ConditionConfigurationKeys.MATCH_VALUE.getJsonKey(),
 					object.toString()));
 		}
 

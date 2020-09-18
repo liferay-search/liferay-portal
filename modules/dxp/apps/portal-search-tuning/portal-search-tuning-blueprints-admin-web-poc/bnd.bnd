@@ -1,4 +1,0 @@
-Bundle-Name: Liferay Portal Search Tuning Blueprints Admin Web POC
-Bundle-SymbolicName: com.liferay.portal.search.tuning.blueprints.admin.web.poc
-Bundle-Version: 1.0.0
-Web-ContextPath: /portal-search-tuning-blueprints-admin-web-poc

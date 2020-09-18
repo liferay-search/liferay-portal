@@ -28,8 +28,7 @@ public interface Parameter {
 	public boolean accept(ConditionEvaluationVisitor visitor)
 		throws ParameterEvaluationException;
 
-	public String accept(ToStringVisitor visitor,
-			Map<String, String> options)
+	public String accept(ToStringVisitor visitor, Map<String, String> options)
 		throws Exception;
 
 	public String getName();

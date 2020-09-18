@@ -20,9 +20,11 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.search.aggregation.AggregationResult;
+import com.liferay.portal.search.aggregation.bucket.Bucket;
 import com.liferay.portal.search.aggregation.bucket.TermsAggregationResult;
 import com.liferay.portal.search.tuning.blueprints.response.spi.aggregation.AggregationResponseBuilder;
 
+import java.util.Collection;
 import java.util.Optional;
 
 import org.osgi.service.component.annotations.Component;
@@ -34,30 +36,34 @@ import org.osgi.service.component.annotations.Component;
 	immediate = true, property = "type=terms",
 	service = AggregationResponseBuilder.class
 )
-public class TermsAggregationResponseBuilder implements AggregationResponseBuilder {
+public class TermsAggregationResponseBuilder
+	implements AggregationResponseBuilder {
 
 	@Override
 	public Optional<JSONObject> build(AggregationResult aggregationResult) {
+		TermsAggregationResult termsAggregationResult =
+			(TermsAggregationResult)aggregationResult;
 
-		TermsAggregationResult termsAggregationResult = 
-				(TermsAggregationResult)aggregationResult;
-		
-		if (termsAggregationResult.getBuckets().size() == 0) {
+		Collection<Bucket> buckets = termsAggregationResult.getBuckets();
+
+		if (buckets.isEmpty()) {
 			return Optional.empty();
 		}
-			
+
 		try {
-			String json = JSONFactoryUtil.looseSerialize(termsAggregationResult, "buckets");
-	
+			String json = JSONFactoryUtil.looseSerialize(
+				termsAggregationResult, "buckets");
+
 			return Optional.of(JSONFactoryUtil.createJSONObject(json));
-		} catch (JSONException jsonException) {
+		}
+		catch (JSONException jsonException) {
 			_log.error(jsonException.getMessage(), jsonException);
 		}
-		
+
 		return Optional.empty();
-	}	
+	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
-			TermsAggregationResponseBuilder.class);
+		TermsAggregationResponseBuilder.class);
 
 }

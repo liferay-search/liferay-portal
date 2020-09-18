@@ -26,11 +26,9 @@ import java.util.Map;
  */
 public class LongParameter implements Parameter {
 
-	public LongParameter(
-		String name, String configurationVariable, Long value) {
-
+	public LongParameter(String name, String templateVariable, Long value) {
 		_name = name;
-		_configurationVariable = configurationVariable;
+		_templateVariable = templateVariable;
 		_value = value;
 	}
 
@@ -42,7 +40,9 @@ public class LongParameter implements Parameter {
 	}
 
 	@Override
-	public String accept(ToStringVisitor visitor, Map<String, String> options) throws Exception {
+	public String accept(ToStringVisitor visitor, Map<String, String> options)
+		throws Exception {
+
 		return visitor.visit(this, options);
 	}
 
@@ -80,7 +80,7 @@ public class LongParameter implements Parameter {
 
 	@Override
 	public String getTemplateVariable() {
-		return _configurationVariable;
+		return _templateVariable;
 	}
 
 	@Override
@@ -90,11 +90,11 @@ public class LongParameter implements Parameter {
 
 	@Override
 	public String toString() {
- 		return _name + "=" + _value;
- 	}
+		return _name + "=" + _value;
+	}
 
-	private final String _configurationVariable;
 	private final String _name;
+	private final String _templateVariable;
 	private final Long _value;
 
 }

@@ -21,25 +21,27 @@ import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.search.IndexerRegistryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.document.Document;
-import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
-import com.liferay.portal.search.tuning.blueprints.response.constants.JSONResponseAttributes;
+import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
+import com.liferay.portal.search.tuning.blueprints.response.constants.ResponseAttributeKeys;
 import com.liferay.portal.search.tuning.blueprints.response.internal.util.ResponseUtil;
 import com.liferay.portal.search.tuning.blueprints.response.spi.result.ResultBuilder;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
@@ -55,13 +57,12 @@ public abstract class BaseResultBuilder implements ResultBuilder {
 
 	@Override
 	public String getDate(
-			SearchRequestContext searchRequestContext,
-			Map<String, Object> responseAttributes, Document document)
+			Document document, BlueprintsAttributes blueprintsAttributes)
 		throws Exception {
 
 		String dateString = "";
 
-		Locale locale = searchRequestContext.getLocale();
+		Locale locale = blueprintsAttributes.getLocale();
 
 		try {
 			String modified = document.getDate(Field.MODIFIED_DATE);
@@ -75,12 +76,11 @@ public abstract class BaseResultBuilder implements ResultBuilder {
 				dateString = dateFormat.format(lastModified);
 			}
 		}
-		catch (Exception e) {
-			_log.error(
-				"Error in parsing date for:" +
-					document.getString(
-						_buildLocalizedFieldName(Field.TITLE, locale)),
-				e);
+		catch (Exception exception) {
+			String fieldName = document.getString(
+				_buildLocalizedFieldName(Field.TITLE, locale));
+
+			_log.error("Error in parsing date for: " + fieldName, exception);
 		}
 
 		return dateString;
@@ -88,27 +88,19 @@ public abstract class BaseResultBuilder implements ResultBuilder {
 
 	@Override
 	public String getDescription(
-			SearchRequestContext searchRequestContext,
-			Map<String, Object> responseAttributes, Document document)
+			Document document, BlueprintsAttributes blueprintsAttributes)
 		throws Exception {
 
-		int descriptionMaxLength = GetterUtil.getInteger(
-			responseAttributes.get(
-				JSONResponseAttributes.DESCRIPTION_MAX_LENGTH),
-			700);
-
-		Locale locale = searchRequestContext.getLocale();
-
 		String description = getStringFieldContent(
-			document, Field.CONTENT, locale);
+			document, Field.CONTENT, blueprintsAttributes.getLocale());
 
-		return ResponseUtil.stripHTML(description, descriptionMaxLength);
+		return ResponseUtil.stripHTML(
+			description, getDescriptionMaxLength(blueprintsAttributes));
 	}
 
 	@Override
 	public Map<String, String> getMetadata(
-			SearchRequestContext searchRequestContext,
-			Map<String, Object> responseAttributes, Document document)
+			Document document, BlueprintsAttributes blueprintsAttributes)
 		throws Exception {
 
 		return null;
@@ -116,8 +108,7 @@ public abstract class BaseResultBuilder implements ResultBuilder {
 
 	@Override
 	public String getThumbnail(
-			SearchRequestContext searchRequestContext,
-			Map<String, Object> responseAttributes, Document document)
+			Document document, BlueprintsAttributes blueprintsAttributes)
 		throws Exception {
 
 		return null;
@@ -125,13 +116,11 @@ public abstract class BaseResultBuilder implements ResultBuilder {
 
 	@Override
 	public String getTitle(
-			SearchRequestContext searchRequestContext,
-			Map<String, Object> responseAttributes, Document document)
+			Document document, BlueprintsAttributes blueprintsAttributes)
 		throws Exception {
 
-		Locale locale = searchRequestContext.getLocale();
-
-		String title = getStringFieldContent(document, Field.TITLE, locale);
+		String title = getStringFieldContent(
+			document, Field.TITLE, blueprintsAttributes.getLocale());
 
 		return ResponseUtil.stripHTML(title, -1);
 	}
@@ -143,46 +132,40 @@ public abstract class BaseResultBuilder implements ResultBuilder {
 
 	@Override
 	public String getViewURL(
-			SearchRequestContext searchRequestContext,
-			Map<String, Object> responseAttributes, Document document)
+			Document document, BlueprintsAttributes blueprintsAttributes)
 		throws Exception {
 
-		PortletRequest portletRequest = (PortletRequest)responseAttributes.get(
-			JSONResponseAttributes.PORTLET_REQUEST);
-
-		PortletResponse portletResponse =
-			(PortletResponse)responseAttributes.get(
-				JSONResponseAttributes.PORTLET_RESPONSE);
+		PortletRequest portletRequest = getPortletRequest(blueprintsAttributes);
+		PortletResponse portletResponse = getPortletResponse(
+			blueprintsAttributes);
 
 		if ((portletRequest == null) || (portletResponse == null)) {
 			return StringPool.BLANK;
 		}
 
-		boolean viewResultsInContext = GetterUtil.getBoolean(
-			responseAttributes.get(JSONResponseAttributes.VIEW_IN_CONTEXT));
+		LiferayPortletResponse liferayPortletResponse =
+			PortalUtil.getLiferayPortletResponse(portletResponse);
+
+		boolean viewInContext = isViewInContext(blueprintsAttributes);
 
 		StringBundler sb = new StringBundler(2);
 
-		if (viewResultsInContext) {
+		if (viewInContext) {
 			sb.append(
 				getAssetRenderer(
 					document
 				).getURLViewInContext(
-					(LiferayPortletRequest)portletRequest,
-					(LiferayPortletResponse)portletResponse, ""
+					PortalUtil.getLiferayPortletRequest(portletRequest),
+					liferayPortletResponse, ""
 				));
 		}
-
-		// If no view-in-context or URL failed
-		// (for example no Wiki portlet available)
 
 		if (sb.length() == 0) {
 			sb.append(
 				getAssetRenderer(
 					document
 				).getURLView(
-					(LiferayPortletResponse)portletResponse,
-					WindowState.MAXIMIZED
+					liferayPortletResponse, WindowState.MAXIMIZED
 				));
 		}
 
@@ -224,8 +207,48 @@ public abstract class BaseResultBuilder implements ResultBuilder {
 		return assetRendererFactory.getAssetRenderer(entryClassPK);
 	}
 
+	protected int getDescriptionMaxLength(
+		BlueprintsAttributes blueprintsAttributes) {
+
+		Optional<Object> descriptionMaxLengthOptional =
+			blueprintsAttributes.getAttributeOptional(
+				ResponseAttributeKeys.DESCRIPTION_MAX_LENGTH);
+
+		return GetterUtil.getInteger(descriptionMaxLengthOptional.orElse(700));
+	}
+
 	protected Indexer<Object> getIndexer(String className) {
 		return IndexerRegistryUtil.getIndexer(className);
+	}
+
+	protected PortletRequest getPortletRequest(
+			BlueprintsAttributes blueprintsAttributes)
+		throws ClassCastException {
+
+		Optional<Object> portletRequestOptional =
+			blueprintsAttributes.getAttributeOptional(
+				ResponseAttributeKeys.PORTLET_REQUEST);
+
+		if (!portletRequestOptional.isPresent()) {
+			return null;
+		}
+
+		return (PortletRequest)portletRequestOptional.get();
+	}
+
+	protected PortletResponse getPortletResponse(
+			BlueprintsAttributes blueprintsAttributes)
+		throws ClassCastException {
+
+		Optional<Object> portletResponseOptional =
+			blueprintsAttributes.getAttributeOptional(
+				ResponseAttributeKeys.PORTLET_RESPONSE);
+
+		if (!portletResponseOptional.isPresent()) {
+			return null;
+		}
+
+		return (PortletResponse)portletResponseOptional.get();
 	}
 
 	protected String getStringFieldContent(
@@ -236,22 +259,31 @@ public abstract class BaseResultBuilder implements ResultBuilder {
 
 		if (Validator.isNull(value)) {
 			fieldName = _buildLocalizedFieldName(field, locale);
+
 			value = document.getString(fieldName);
 		}
 
 		if (Validator.isNull(value)) {
 			fieldName = _buildLocalizedFieldName2(field, locale);
+
 			value = document.getString(fieldName);
 		}
-
-		// Try once more on non localized legacy field as
-		// some assets like Wiki still might have it.
 
 		if (Validator.isNull(value)) {
 			value = document.getString(value);
 		}
 
 		return value;
+	}
+
+	protected boolean isViewInContext(
+		BlueprintsAttributes blueprintsAttributes) {
+
+		Optional<Object> viewResultsInContextOptional =
+			blueprintsAttributes.getAttributeOptional(
+				ResponseAttributeKeys.VIEW_IN_CONTEXT);
+
+		return GetterUtil.getBoolean(viewResultsInContextOptional.orElse(true));
 	}
 
 	private String _buildLocalizedFieldName(String field, Locale locale) {

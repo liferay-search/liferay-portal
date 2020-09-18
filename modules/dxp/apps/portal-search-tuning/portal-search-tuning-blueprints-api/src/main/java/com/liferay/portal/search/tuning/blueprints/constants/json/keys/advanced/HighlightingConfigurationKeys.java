@@ -22,7 +22,7 @@ import java.util.stream.Stream;
  */
 public enum HighlightingConfigurationKeys {
 
-	ENABLED("enabled"), FIELD_NAMES("field_names"),
+	ENABLED("enabled"), FIELDS("fields"),
 	FRAGMENT_SIZE("fragment_size"), REQUIRE_FIELD_MATCH("require_field_match"),
 	SNIPPET_SIZE("snippet_size");
 
