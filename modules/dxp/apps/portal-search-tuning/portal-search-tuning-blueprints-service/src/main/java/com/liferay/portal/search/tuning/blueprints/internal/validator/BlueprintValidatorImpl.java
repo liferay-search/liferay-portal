@@ -14,8 +14,9 @@
 
 package com.liferay.portal.search.tuning.blueprints.internal.validator;
 
-import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.LocaleThreadLocal;
 import com.liferay.portal.kernel.util.MapUtil;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.tuning.blueprints.exception.BlueprintValidationException;
 import com.liferay.portal.search.tuning.blueprints.validation.BlueprintValidator;
@@ -28,38 +29,28 @@ import java.util.Map;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * TODO: https://issues.liferay.com/browse/LPS-119044
- *
  * @author Petteri Karttunen
  */
 @Component(immediate = true, service = BlueprintValidator.class)
 public class BlueprintValidatorImpl implements BlueprintValidator {
 
 	@Override
-	public void validate(
-			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
-			String configuration)
+	public void validate(Map<Locale, String> titleMap, String configuration)
 		throws BlueprintValidationException {
 
 		List<String> errors = new ArrayList<>();
 
-		if (!_isBlueprintValid(
-				titleMap, descriptionMap, configuration, errors)) {
-
+		if (!_isBlueprintValid(titleMap, configuration, errors)) {
 			throw new BlueprintValidationException(errors);
 		}
 	}
 
 	private boolean _isBlueprintValid(
-			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
-			String configuration, List<String> errors)
+			Map<Locale, String> titleMap, String configuration,
+			List<String> errors)
 		throws BlueprintValidationException {
 
 		boolean result = true;
-
-		// TODO: https://issues.liferay.com/browse/LPS-118942
-
-		// result &= _isDescriptionValid(descriptionMap, errors);
 
 		result &= _isConfigurationValid(configuration, errors);
 		result &= _isTitleValid(titleMap, errors);
@@ -70,30 +61,15 @@ public class BlueprintValidatorImpl implements BlueprintValidator {
 	private boolean _isConfigurationValid(
 		String configuration, List<String> errors) {
 
-		// TODO Auto-generated method stub
+		configuration = StringUtil.trim(configuration);
+
+		if (Validator.isBlank(configuration)) {
+			errors.add("configurationEmpty");
+
+			return false;
+		}
 
 		return true;
-	}
-
-	private boolean _isDescriptionValid(
-		final Map<Locale, String> descriptionMap, final List<String> errors) {
-
-		boolean result = true;
-
-		if (MapUtil.isEmpty(descriptionMap)) {
-			errors.add("descriptionEmpty");
-			result = false;
-		}
-		else {
-			Locale defaultLocale = LocaleUtil.getDefault();
-
-			if (Validator.isBlank(descriptionMap.get(defaultLocale))) {
-				errors.add("defaultLocaleDescriptionEmpty");
-				result = false;
-			}
-		}
-
-		return result;
 	}
 
 	private boolean _isTitleValid(
@@ -106,9 +82,9 @@ public class BlueprintValidatorImpl implements BlueprintValidator {
 			result = false;
 		}
 		else {
-			Locale defaultLocale = LocaleUtil.getDefault();
+			if (Validator.isBlank(
+					titleMap.get(LocaleThreadLocal.getDefaultLocale()))) {
 
-			if (Validator.isBlank(titleMap.get(defaultLocale))) {
 				errors.add("defaultLocaleTitleEmpty");
 				result = false;
 			}

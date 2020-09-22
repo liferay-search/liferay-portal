@@ -32,7 +32,7 @@ function BlueprintForm({
 	availableLocales = [],
 	blueprintId,
 	blueprintType,
-	initialClauseConfiguration,
+	initialQueryConfiguration,
 	initialTitle = {},
 	redirectURL = '',
 	submitFormURL = '',
@@ -49,7 +49,7 @@ function BlueprintForm({
 
 	const [selectedFragments, setSelectedFragments] = useState(
 		blueprintId !== '0'
-			? initialClauseConfiguration.map((configString) => ({
+			? initialQueryConfiguration.map((configString) => ({
 					...JSON.parse(configString),
 					id: fragmentIdCounter.current++,
 					jsonString: configString,
@@ -87,7 +87,7 @@ function BlueprintForm({
 
 			try {
 				formData.append(
-					`${namespace}clauseConfiguration`,
+					`${namespace}queryConfiguration`,
 					JSON.stringify(
 						selectedFragments.map((fragment) =>
 							JSON.parse(fragment.jsonString)
@@ -182,7 +182,7 @@ BlueprintForm.propTypes = {
 	availableLocales: PropTypes.arrayOf(PropTypes.object),
 	blueprintId: PropTypes.string,
 	blueprintType: PropTypes.number,
-	initialClauseConfiguration: PropTypes.arrayOf(PropTypes.string),
+	initialQueryConfiguration: PropTypes.arrayOf(PropTypes.string),
 	initialTitle: PropTypes.object,
 	redirectURL: PropTypes.string,
 	submitFormURL: PropTypes.string,

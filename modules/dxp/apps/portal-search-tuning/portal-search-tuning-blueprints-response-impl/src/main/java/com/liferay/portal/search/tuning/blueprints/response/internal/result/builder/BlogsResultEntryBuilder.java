@@ -18,10 +18,8 @@ import com.liferay.blogs.model.BlogsEntry;
 import com.liferay.blogs.service.BlogsEntryService;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.search.document.Document;
-import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
+import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
 import com.liferay.portal.search.tuning.blueprints.response.spi.result.ResultBuilder;
-
-import java.util.Map;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -39,8 +37,7 @@ public class BlogsResultEntryBuilder
 
 	@Override
 	public String getThumbnail(
-			SearchRequestContext searchRequestContext,
-			Map<String, Object> responseAttributes, Document document)
+			Document document, BlueprintsAttributes blueprintsAttributes)
 		throws Exception {
 
 		long entryClassPK = Long.valueOf(

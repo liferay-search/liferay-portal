@@ -26,11 +26,9 @@ import java.util.Map;
  */
 public class FloatParameter implements Parameter {
 
-	public FloatParameter(
-		String name, String configurationVariable, Float value) {
-
+	public FloatParameter(String name, String templateVariable, Float value) {
 		_name = name;
-		_configurationVariable = configurationVariable;
+		_templateVariable = templateVariable;
 		_value = value;
 	}
 
@@ -42,7 +40,9 @@ public class FloatParameter implements Parameter {
 	}
 
 	@Override
-	public String accept(ToStringVisitor visitor, Map<String, String> options) throws Exception {
+	public String accept(ToStringVisitor visitor, Map<String, String> options)
+		throws Exception {
+
 		return visitor.visit(this, options);
 	}
 
@@ -80,7 +80,7 @@ public class FloatParameter implements Parameter {
 
 	@Override
 	public String getTemplateVariable() {
-		return _configurationVariable;
+		return _templateVariable;
 	}
 
 	@Override
@@ -88,8 +88,8 @@ public class FloatParameter implements Parameter {
 		return _value;
 	}
 
-	private final String _configurationVariable;
 	private final String _name;
+	private final String _templateVariable;
 	private final Float _value;
 
 }

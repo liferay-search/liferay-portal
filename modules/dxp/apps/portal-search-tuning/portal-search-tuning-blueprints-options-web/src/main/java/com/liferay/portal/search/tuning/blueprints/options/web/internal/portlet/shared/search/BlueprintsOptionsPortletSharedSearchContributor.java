@@ -15,9 +15,7 @@
 package com.liferay.portal.search.tuning.blueprints.options.web.internal.portlet.shared.search;
 
 import com.liferay.portal.kernel.search.SearchContext;
-import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.Portal;
-import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.constants.SearchContextAttributeKeys;
 import com.liferay.portal.search.tuning.blueprints.options.web.internal.constants.BlueprintsOptionsPortletKeys;
 import com.liferay.portal.search.tuning.blueprints.options.web.internal.portlet.preferences.BlueprintsOptionsPortletPreferences;
@@ -64,13 +62,6 @@ public class BlueprintsOptionsPortletSharedSearchContributor
 		searchContext.setAttribute(
 			SearchContextAttributeKeys.IP_ADDRESS,
 			httpServletRequest.getRemoteAddr());
-
-		ThemeDisplay themeDisplay =
-			(ThemeDisplay)httpServletRequest.getAttribute(
-				WebKeys.THEME_DISPLAY);
-
-		searchContext.setAttribute(
-			SearchContextAttributeKeys.USER_ID, themeDisplay.getUserId());
 	}
 
 	@Reference

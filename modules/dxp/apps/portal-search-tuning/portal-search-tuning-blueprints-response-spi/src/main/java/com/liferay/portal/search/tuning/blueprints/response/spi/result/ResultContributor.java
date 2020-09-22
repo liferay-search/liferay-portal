@@ -16,9 +16,7 @@ package com.liferay.portal.search.tuning.blueprints.response.spi.result;
 
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.document.Document;
-import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
-
-import java.util.Map;
+import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
 
 /**
  * @author Petteri Karttunen
@@ -26,9 +24,7 @@ import java.util.Map;
 public interface ResultContributor {
 
 	public void contribute(
-		SearchRequestContext searchRequestContext,
-		Map<String, Object> responseAttributes,
-		ResultBuilder resultItemBuilder, Document document,
-		JSONObject resultItemJsonObject);
+		JSONObject responseJsonObject, Document document,
+		ResultBuilder resultBuilder, BlueprintsAttributes blueprintsAttributes);
 
 }

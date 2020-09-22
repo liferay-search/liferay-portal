@@ -22,9 +22,11 @@ import java.util.stream.Stream;
  */
 public enum AdvancedConfigurationKeys {
 
-	HIGHLIGHTING("highlighting"), INDEX_NAMES("index_names"),
-	QUERY_PROCESSING("query_processing"), SEARCH_RESULTS("search_results"),
-	SOURCE("source");
+	DEFAULT_SORTS("default_sorts"), HIGHLIGHTING("highlighting"),
+	INDEXES("indexes"), KEYWORD_INDEXING("keyword_indexing"),
+	MODEL_INDEXER_CLASSES("model_indexers"), PAGE_SIZE("page_size"),
+	QUERY_PROCESSING("query_processing"), SOURCE("source"),
+	USE_KEYWORDS_DICTIONARY_INDEX("use_keywords_dictionary_index");
 
 	public static final AdvancedConfigurationKeys findByJsonKey(
 		String jsonKey) {

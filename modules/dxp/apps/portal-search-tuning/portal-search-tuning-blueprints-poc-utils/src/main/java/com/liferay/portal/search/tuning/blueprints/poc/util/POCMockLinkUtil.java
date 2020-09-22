@@ -10,6 +10,7 @@ import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutTypePortlet;
 import com.liferay.portal.kernel.model.Portlet;
+import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
 import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
@@ -28,14 +29,14 @@ public class POCMockLinkUtil {
 	public static final String ASSET_PUBLISHER_PAGE = "/viewasset";
 	
 	public static String getNotLayoutBoundJournalArticleUrl(
-			PortletRequest portletRequest, JournalArticle journalArticle) {
+			LiferayPortletRequest liferayPortletRequest, JournalArticle journalArticle) {
 
-		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
+		ThemeDisplay themeDisplay = (ThemeDisplay)liferayPortletRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 		
 		try {
 			Layout layout = getLayoutByFriendlyURL(
-				portletRequest, ASSET_PUBLISHER_PAGE);
+				liferayPortletRequest, ASSET_PUBLISHER_PAGE);
 
 			String assetPublisherInstanceId =
 				findDefaultAssetPublisherInstanceId(layout);
@@ -86,10 +87,10 @@ public class POCMockLinkUtil {
 		}
 
 		public static String getCurrentLayoutFriendlyURL(
-				PortletRequest portletRequest)
+				LiferayPortletRequest liferayPortletRequest)
 			throws PortalException {
 
-			ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
+			ThemeDisplay themeDisplay = (ThemeDisplay)liferayPortletRequest.getAttribute(
 				WebKeys.THEME_DISPLAY);
 
 			Layout selectedLayout = LayoutLocalServiceUtil.getLayout(
@@ -99,10 +100,10 @@ public class POCMockLinkUtil {
 		}
 
 		public static Layout getLayoutByFriendlyURL(
-				PortletRequest portletRequest, String layoutFriendlyURL)
+				LiferayPortletRequest liferayPortletRequest, String layoutFriendlyURL)
 			throws PortalException {
 
-			ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
+			ThemeDisplay themeDisplay = (ThemeDisplay)liferayPortletRequest.getAttribute(
 				WebKeys.THEME_DISPLAY);
 
 			if (layoutFriendlyURL == null) {

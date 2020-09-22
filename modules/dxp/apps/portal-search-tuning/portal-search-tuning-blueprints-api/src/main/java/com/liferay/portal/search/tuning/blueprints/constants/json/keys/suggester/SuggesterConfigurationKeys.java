@@ -22,9 +22,8 @@ import java.util.stream.Stream;
  */
 public enum SuggesterConfigurationKeys {
 
-	KEYWORD_INDEXING("keyword_indexing"),
-	KEYWORD_SUGGESTIONS("keyword_suggestions"),
-	SPELL_CHECKING("spell_checking");
+	CONFIGURATION("configuration"), DESCRIPTION("description"),
+	ENABLED("enabled"), NAME("name"), TYPE("type");
 
 	public static final SuggesterConfigurationKeys findByJsonKey(
 		String jsonKey) {

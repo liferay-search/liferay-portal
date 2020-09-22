@@ -14,7 +14,7 @@
 
 package com.liferay.portal.search.tuning.blueprints.admin.web.internal.portlet.action;
 
-import com.liferay.exportimport.kernel.exception.NoSuchConfigurationException;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.log.Log;
@@ -29,12 +29,14 @@ import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminWebKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintsPortletKeys;
 import com.liferay.portal.search.tuning.blueprints.exception.BlueprintValidationException;
+import com.liferay.portal.search.tuning.blueprints.exception.NoSuchBlueprintException;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
 
 import java.io.IOException;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -71,14 +73,14 @@ public class CopyBlueprintMVCActionCommand extends BaseMVCActionCommand {
 
 			_createCopy(actionRequest, actionResponse, sourceBlueprint);
 		}
-		catch (NoSuchConfigurationException noSuchConfigurationException) {
+		catch (NoSuchBlueprintException noSuchBlueprintException) {
 			_log.error(
-				"Blueprint " + blueprintId + " not found.",
-				noSuchConfigurationException);
+				"Blueprint " + blueprintId + " not found",
+				noSuchBlueprintException);
 
 			SessionErrors.add(
 				actionRequest, BlueprintsAdminWebKeys.ERROR_DETAILS,
-				noSuchConfigurationException);
+				noSuchBlueprintException);
 		}
 		catch (PortalException portalException) {
 			_log.error(portalException.getMessage(), portalException);
@@ -111,10 +113,9 @@ public class CopyBlueprintMVCActionCommand extends BaseMVCActionCommand {
 				blueprintValidationException.getMessage(),
 				blueprintValidationException);
 
-			blueprintValidationException.getErrors(
-			).forEach(
-				key -> SessionErrors.add(actionRequest, key)
-			);
+			List<String> errors = blueprintValidationException.getErrors();
+
+			errors.forEach(key -> SessionErrors.add(actionRequest, key));
 		}
 		catch (PortalException portalException) {
 			_log.error(portalException.getMessage(), portalException);
@@ -137,10 +138,14 @@ public class CopyBlueprintMVCActionCommand extends BaseMVCActionCommand {
 		Map<Locale, String> targetTitleMap = new HashMap<>();
 
 		for (Map.Entry<Locale, String> entry : sourceTitleMap.entrySet()) {
-			targetTitleMap.put(
-				entry.getKey(),
-				entry.getValue() + " (" +
-					_language.get(entry.getKey(), "copy") + ")");
+			StringBundler sb = new StringBundler(4);
+
+			sb.append(entry.getValue());
+			sb.append(" (");
+			sb.append(_language.get(entry.getKey(), "copy"));
+			sb.append(")");
+
+			targetTitleMap.put(entry.getKey(), sb.toString());
 		}
 
 		return targetTitleMap;

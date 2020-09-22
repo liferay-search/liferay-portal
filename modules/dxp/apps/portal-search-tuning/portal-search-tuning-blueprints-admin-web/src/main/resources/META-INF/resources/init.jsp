@@ -48,6 +48,8 @@ page import="com.liferay.portal.search.tuning.blueprints.admin.web.internal.secu
 page import="com.liferay.portal.search.tuning.blueprints.constants.BlueprintTypes" %><%@
 page import="com.liferay.portal.search.tuning.blueprints.model.Blueprint" %>
 
+<%@ page import="java.util.Date" %>
+
 <%@ page import="javax.portlet.PortletURL" %>
 
 <liferay-frontend:defineObjects />

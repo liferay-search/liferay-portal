@@ -14,18 +14,31 @@
 
 package com.liferay.portal.search.tuning.blueprints.searchrequest.contributor.internal.searcher;
 
+import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.filter.ComplexQueryPartBuilderFactory;
+import com.liferay.portal.search.index.IndexNameBuilder;
 import com.liferay.portal.search.searcher.SearchRequest;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.searcher.SearchRequestBuilderFactory;
 import com.liferay.portal.search.spi.searcher.SearchRequestContributor;
+import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
+import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributesBuilder;
+import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributesBuilderFactory;
+import com.liferay.portal.search.tuning.blueprints.engine.constants.ReservedParameterNames;
 import com.liferay.portal.search.tuning.blueprints.engine.constants.SearchContextAttributeKeys;
-import com.liferay.portal.search.tuning.blueprints.engine.util.SearchClientHelper;
-import com.liferay.portal.search.tuning.blueprints.service.BlueprintLocalService;
+import com.liferay.portal.search.tuning.blueprints.engine.util.BlueprintsEngineHelper;
+import com.liferay.portal.search.tuning.blueprints.message.Messages;
+import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
+import com.liferay.portal.search.tuning.blueprints.util.BlueprintHelper;
+
+import java.util.Locale;
+import java.util.Optional;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -43,62 +56,209 @@ public class BlueprintsSearchRequestContributor
 
 	@Override
 	public SearchRequest contribute(SearchRequest searchRequest) {
-		_log.debug("Executing Search Blueprints search request contributor.");
-
-		int blueprintId = getBlueprintId(searchRequest);
-
-		_log.debug("Blueprint ID " + blueprintId);
+		long blueprintId = getBlueprintId(searchRequest);
 
 		long userId = getUserId(searchRequest);
 
-		_log.debug("User ID " + userId);
+		if (_log.isDebugEnabled()) {
+			_log.debug(
+				"Executing Search Blueprints search request contributor");
+			_log.debug("Blueprint ID " + blueprintId);
+			_log.debug("User ID " + userId);
+		}
 
 		if ((blueprintId == 0) || (userId == 0)) {
-			_log.debug(
-				"Blueprint and user ID have to be set in search context.");
+			if (_log.isDebugEnabled()) {
+				_log.debug(
+					"Blueprint and user ID have to be set in search context");
+			}
 
 			return searchRequest;
 		}
 
+		Messages messages = new Messages();
+
 		SearchRequestBuilder searchRequestBuilder =
 			_searchRequestBuilderFactory.builder(searchRequest);
 
-		_searchClientHelper.combine(searchRequestBuilder, blueprintId);
+		_blueprintsEngineHelper.combine(
+			searchRequestBuilder,
+			getBlueprintsAttributes(searchRequest, blueprintId), messages,
+			getBlueprintId(searchRequest));
+
+		if (isLowLevel(searchRequest)) {
+			searchRequestBuilder.indexes(
+				_indexNameBuilder.getIndexName(getCompanyId(searchRequest)));
+		}
 
 		return searchRequestBuilder.build();
 	}
 
-	protected long getUserId(SearchRequest searchRequest) {
-		if (true) {
-			return 1;
-		}
-
-		return _searchRequestBuilderFactory.builder(searchRequest)
-		.withSearchContextGet(
+	protected long getBlueprintId(SearchRequest searchRequest) {
+		return _searchRequestBuilderFactory.builder(
+			searchRequest
+		).withSearchContextGet(
 			searchContext -> GetterUtil.getLong(
 				searchContext.getAttribute(
-					SearchContextAttributeKeys.USER_ID)));
+					SearchContextAttributeKeys.BLUEPRINT_ID))
+		);
 	}
 
-	protected int getBlueprintId(SearchRequest searchRequest) {
-		return _searchRequestBuilderFactory.builder(searchRequest)
-		.withSearchContextGet(
-			searchContext -> GetterUtil.getInteger(
+	protected BlueprintsAttributes getBlueprintsAttributes(
+		SearchRequest searchRequest, long blueprintId) {
+
+		BlueprintsAttributesBuilder blueprintsAttributesBuilder =
+			_blueprintsAttributesBuilderFactory.builder();
+
+		String keywordsParameterName = getKeywordsParameterName(blueprintId);
+
+		if (!Validator.isBlank(keywordsParameterName)) {
+			blueprintsAttributesBuilder.addAttribute(
+				keywordsParameterName, getKeywords(searchRequest));
+		}
+
+		return blueprintsAttributesBuilder.companyId(
+			getCompanyId(searchRequest)
+		).locale(
+			getLocale(searchRequest)
+		).userId(
+			getUserId(searchRequest)
+		).addAttribute(
+			ReservedParameterNames.IP_ADDRESS.getKey(),
+			getIpAddress(searchRequest)
+		).addAttribute(
+			ReservedParameterNames.PLID.getKey(), getPlid(searchRequest)
+		).addAttribute(
+			ReservedParameterNames.SCOPE_GROUP_ID.getKey(),
+			getScopeGroupId(searchRequest)
+		).addAttribute(
+			ReservedParameterNames.TIMEZONE_ID.getKey(),
+			getTimezoneId(searchRequest)
+		).build();
+	}
+
+	protected long getCompanyId(SearchRequest searchRequest) {
+		return _searchRequestBuilderFactory.builder(
+			searchRequest
+		).withSearchContextGet(
+			searchContext -> searchContext.getCompanyId()
+		);
+	}
+
+	protected String getIpAddress(SearchRequest searchRequest) {
+		return _searchRequestBuilderFactory.builder(
+			searchRequest
+		).withSearchContextGet(
+			searchContext -> GetterUtil.getString(
 				searchContext.getAttribute(
-					SearchContextAttributeKeys.BLUEPRINT_ID)));
+					SearchContextAttributeKeys.IP_ADDRESS))
+		);
+	}
+
+	protected String getKeywords(SearchRequest searchRequest) {
+		return _searchRequestBuilderFactory.builder(
+			searchRequest
+		).withSearchContextGet(
+			searchContext -> searchContext.getKeywords()
+		);
+	}
+
+	protected String getKeywordsParameterName(long blueprintId) {
+
+		// TODO: REMOVE WHEN CONFIG AVAILABLE
+
+		if (true) {
+			return "q";
+		}
+
+		try {
+			Optional<String> optional =
+				_blueprintHelper.getKeywordsParameterNameOptional(
+					_blueprintService.getBlueprint(blueprintId));
+
+			return optional.orElse(StringPool.BLANK);
+		}
+		catch (PortalException portalException) {
+			_log.error(portalException.getMessage(), portalException);
+		}
+
+		return StringPool.BLANK;
+	}
+
+	protected Locale getLocale(SearchRequest searchRequest) {
+		return _searchRequestBuilderFactory.builder(
+			searchRequest
+		).withSearchContextGet(
+			searchContext -> searchContext.getLocale()
+		);
+	}
+
+	protected long getPlid(SearchRequest searchRequest) {
+		return _searchRequestBuilderFactory.builder(
+			searchRequest
+		).withSearchContextGet(
+			searchContext -> searchContext.getLayout(
+			).getPlid()
+		);
+	}
+
+	protected long getScopeGroupId(SearchRequest searchRequest) {
+		return _searchRequestBuilderFactory.builder(
+			searchRequest
+		).withSearchContextGet(
+			searchContext -> searchContext.getLayout(
+			).getGroupId()
+		);
+	}
+
+	protected String getTimezoneId(SearchRequest searchRequest) {
+		return _searchRequestBuilderFactory.builder(
+			searchRequest
+		).withSearchContextGet(
+			searchContext -> searchContext.getTimeZone(
+			).getID()
+		);
+	}
+
+	protected long getUserId(SearchRequest searchRequest) {
+		return _searchRequestBuilderFactory.builder(
+			searchRequest
+		).withSearchContextGet(
+			searchContext -> searchContext.getUserId()
+		);
+	}
+
+	protected boolean isLowLevel(SearchRequest searchRequest) {
+		return _searchRequestBuilderFactory.builder(
+			searchRequest
+		).withSearchContextGet(
+			searchContext -> GetterUtil.getBoolean(
+				searchContext.getAttribute(
+					SearchContextAttributeKeys.LOW_LEVEL))
+		);
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		BlueprintsSearchRequestContributor.class);
 
 	@Reference
-	private SearchClientHelper _searchClientHelper;
+	private BlueprintHelper _blueprintHelper;
 
 	@Reference
-	private BlueprintLocalService _blueprintLocalService;
+	private BlueprintsAttributesBuilderFactory
+		_blueprintsAttributesBuilderFactory;
+
+	@Reference
+	private BlueprintsEngineHelper _blueprintsEngineHelper;
+
+	@Reference
+	private BlueprintService _blueprintService;
 
 	@Reference
 	private ComplexQueryPartBuilderFactory _complexQueryPartBuilderFactory;
+
+	@Reference
+	private IndexNameBuilder _indexNameBuilder;
 
 	@Reference
 	private SearchRequestBuilderFactory _searchRequestBuilderFactory;

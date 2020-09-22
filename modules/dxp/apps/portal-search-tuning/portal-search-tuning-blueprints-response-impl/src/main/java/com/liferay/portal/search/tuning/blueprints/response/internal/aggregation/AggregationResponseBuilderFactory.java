@@ -22,7 +22,8 @@ import com.liferay.portal.search.tuning.blueprints.response.spi.aggregation.Aggr
 public interface AggregationResponseBuilderFactory {
 
 	public AggregationResponseBuilder getBuilder(String type)
-			throws IllegalArgumentException;
-	
-	public String[] getBuilderTypes();	
+		throws IllegalArgumentException;
+
+	public String[] getBuilderTypes();
+
 }

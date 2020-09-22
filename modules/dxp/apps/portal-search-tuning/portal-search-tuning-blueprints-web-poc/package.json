@@ -16,7 +16,7 @@
 		]
 	},
 	"main": "js/index.js",
-	"name": "portal-search-tuning-gsearch-web",
+	"name": "portal-search-tuning-blueprints-web",
 	"scripts": {
 		"build": "liferay-npm-scripts build",
 		"checkFormat": "liferay-npm-scripts check",

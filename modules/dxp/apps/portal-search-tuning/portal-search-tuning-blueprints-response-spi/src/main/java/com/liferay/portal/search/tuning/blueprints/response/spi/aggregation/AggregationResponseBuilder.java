@@ -24,6 +24,7 @@ import java.util.Optional;
  */
 public interface AggregationResponseBuilder {
 
-	public Optional<JSONObject> build(AggregationResult aggregationResult);
+	public Optional<JSONObject> buildJSONObjectOptional(
+		AggregationResult aggregationResult);
 
 }

@@ -45,7 +45,7 @@ public class AggregationResponseBuilderFactoryImpl
 
 		if (serviceComponentReference == null) {
 			throw new IllegalArgumentException(
-				"Unable to find aggregation builder for " + type);
+				"Unable to find aggregation response builder for " + type);
 		}
 
 		return serviceComponentReference.getServiceComponent();
@@ -64,16 +64,18 @@ public class AggregationResponseBuilderFactoryImpl
 		policy = ReferencePolicy.DYNAMIC
 	)
 	protected void registerAggregationResponseBuilder(
-		AggregationResponseBuilder aggregationResponseBuilder, Map<String, Object> properties) {
+		AggregationResponseBuilder aggregationResponseBuilder,
+		Map<String, Object> properties) {
 
 		String type = (String)properties.get("type");
 
 		if (Validator.isBlank(type)) {
 			if (_log.isWarnEnabled()) {
+				Class<?> clazz = aggregationResponseBuilder.getClass();
+
 				_log.warn(
-					"Unable to add aggregation builder " +
-						aggregationResponseBuilder.getClass(
-						).getName() + ". Type property empty.");
+					"Unable to add aggregation response builder " +
+						clazz.getName() + ". Type property empty.");
 			}
 
 			return;
@@ -87,11 +89,12 @@ public class AggregationResponseBuilderFactoryImpl
 				aggregationResponseBuilder, serviceRanking);
 
 		if (_aggregationResponseBuilders.containsKey(type)) {
-			ServiceComponentReference<AggregationResponseBuilder> previousReference =
-				_aggregationResponseBuilders.get(type);
+			ServiceComponentReference<AggregationResponseBuilder>
+				previousReference = _aggregationResponseBuilders.get(type);
 
 			if (previousReference.compareTo(serviceComponentReference) < 0) {
-				_aggregationResponseBuilders.put(type, serviceComponentReference);
+				_aggregationResponseBuilders.put(
+					type, serviceComponentReference);
 			}
 		}
 		else {
@@ -100,7 +103,8 @@ public class AggregationResponseBuilderFactoryImpl
 	}
 
 	protected void unregisterAggregationResponseBuilder(
-		AggregationResponseBuilder aggregationResponseBuilder, Map<String, Object> properties) {
+		AggregationResponseBuilder aggregationResponseBuilder,
+		Map<String, Object> properties) {
 
 		String type = (String)properties.get("type");
 
@@ -114,7 +118,8 @@ public class AggregationResponseBuilderFactoryImpl
 	private static final Log _log = LogFactoryUtil.getLog(
 		AggregationResponseBuilderFactoryImpl.class);
 
-	private volatile Map<String, ServiceComponentReference<AggregationResponseBuilder>>
-		_aggregationResponseBuilders = new ConcurrentHashMap<>();
+	private volatile Map
+		<String, ServiceComponentReference<AggregationResponseBuilder>>
+			_aggregationResponseBuilders = new ConcurrentHashMap<>();
 
 }

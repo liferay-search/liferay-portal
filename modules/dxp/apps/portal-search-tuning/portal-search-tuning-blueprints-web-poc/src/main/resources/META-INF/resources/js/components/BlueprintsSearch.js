@@ -126,7 +126,8 @@ export default function BlueprintsSearch({fetchResultsURL, suggestionsURL}) {
 						setQuery(val);
 						setActivePage(1);
 						setSelectedFacets({});
-					} else {
+					}
+					else {
 						refetch();
 					}
 				}}

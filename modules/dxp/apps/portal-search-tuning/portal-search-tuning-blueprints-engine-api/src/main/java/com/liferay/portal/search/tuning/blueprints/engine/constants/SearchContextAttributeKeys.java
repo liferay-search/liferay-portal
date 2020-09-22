@@ -23,6 +23,6 @@ public class SearchContextAttributeKeys {
 
 	public static final String IP_ADDRESS = "ipAddress";
 
-	public static final String USER_ID = "userId";
+	public static final String LOW_LEVEL = "lowLevel";
 
 }

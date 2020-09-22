@@ -29,11 +29,12 @@ import org.osgi.service.component.annotations.Reference;
 public class BlueprintPermission {
 
 	public static boolean contains(
-		PermissionChecker permissionChecker, long groupId, int type,
+		PermissionChecker permissionChecker, long groupId, int blueprintType,
 		String actionId) {
 
 		String typedActionKey =
-			BlueprintsActionKeys.getActionKeyForBlueprintType(type, actionId);
+			BlueprintsActionKeys.getActionKeyForBlueprintType(
+				blueprintType, actionId);
 
 		return _portletResourcePermission.contains(
 			permissionChecker, groupId, typedActionKey);

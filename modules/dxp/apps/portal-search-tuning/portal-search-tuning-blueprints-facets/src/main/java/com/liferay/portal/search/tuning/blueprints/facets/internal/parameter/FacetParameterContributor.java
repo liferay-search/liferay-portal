@@ -18,24 +18,23 @@ import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.search.SearchContext;
-import com.liferay.portal.kernel.util.ParamUtil;
-import com.liferay.portal.search.tuning.blueprints.engine.message.Message;
-import com.liferay.portal.search.tuning.blueprints.engine.message.Severity;
+import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.Parameter;
+import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterDataBuilder;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterDefinition;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.SearchParameterData;
-import com.liferay.portal.search.tuning.blueprints.engine.spi.facet.FacetRequestHandler;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.parameter.ParameterContributor;
 import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.facets.internal.handler.request.FacetRequestHandlerFactory;
-import com.liferay.portal.search.tuning.blueprints.poc.util.POCMockUtil;
+import com.liferay.portal.search.tuning.blueprints.facets.internal.request.FacetRequestHandlerFactory;
+import com.liferay.portal.search.tuning.blueprints.facets.spi.request.FacetRequestHandler;
+import com.liferay.portal.search.tuning.blueprints.message.Message;
+import com.liferay.portal.search.tuning.blueprints.message.Messages;
+import com.liferay.portal.search.tuning.blueprints.message.Severity;
+import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
+import com.liferay.portal.search.tuning.blueprints.util.BlueprintHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -51,98 +50,89 @@ public class FacetParameterContributor implements ParameterContributor {
 
 	@Override
 	public void contribute(
-		HttpServletRequest httpServletRequest,
-		SearchParameterData searchParameterData) {
+		ParameterDataBuilder parameterDataBuilder, Blueprint blueprint,
+		BlueprintsAttributes blueprintsAttributes, Messages messages) {
 
-		_provide(httpServletRequest, searchParameterData);
-	}
+		Optional<JSONArray> configurationJsonArrayOptional =
+			_blueprintHelper.getJSONArrayConfigurationOptional(
+				blueprint, "JSONArray/facets");
 
-	@Override
-	public void contribute(
-		SearchContext searchContext, SearchParameterData searchParameterData) {
+		if (!configurationJsonArrayOptional.isPresent()) {
+			return;
+		}
 
-		return;
+		JSONArray configurationJsonArray = configurationJsonArrayOptional.get();
+
+		for (int i = 0; i < configurationJsonArray.length(); i++) {
+			JSONObject configurationJsonObject =
+				configurationJsonArray.getJSONObject(i);
+
+			if (_validateFacetConfiguration(
+					messages, configurationJsonObject)) {
+
+				_parseFacetParameter(
+					parameterDataBuilder, blueprintsAttributes, messages,
+					configurationJsonObject);
+			}
+		}
 	}
 
 	@Override
 	public List<ParameterDefinition> getParameterDefinitions() {
 		List<ParameterDefinition> parameterDefinitions = new ArrayList<>();
 
+		// TODO: are these to be exposed as template variables?
+
 		return parameterDefinitions;
 	}
 
 	private void _parseFacetParameter(
-		HttpServletRequest httpServletRequest,
-		SearchParameterData searchParameterData, JSONObject facetJsonObject) {
+		ParameterDataBuilder parameterDataBuilder,
+		BlueprintsAttributes blueprintsAttributes, Messages messages,
+		JSONObject configurationJsonObject) {
 
-		String parameterName = facetJsonObject.getString(
-			FacetConfigurationKeys.PARAMETER_NAME.getJsonKey());
-
-		if (ParamUtil.getString(httpServletRequest, parameterName) == null) {
-			return;
-		}
-
-		String handler = facetJsonObject.getString(
+		String handler = configurationJsonObject.getString(
 			FacetConfigurationKeys.HANDLER.getJsonKey(), "default");
 
 		try {
 			FacetRequestHandler facetRequestHandler =
 				_facetRequestHandlerFactory.getHandler(handler);
 
-			Optional<Parameter> parameter = facetRequestHandler.getParameter(
-				httpServletRequest, searchParameterData, facetJsonObject);
+			Optional<Parameter> parameter =
+				facetRequestHandler.getParameterOptional(
+					blueprintsAttributes, messages, configurationJsonObject);
 
 			if (parameter.isPresent()) {
-				searchParameterData.addParameter(parameter.get());
+				parameterDataBuilder.addParameter(parameter.get());
 			}
 		}
-		catch (IllegalArgumentException iae) {
-			searchParameterData.addMessage(
+		catch (IllegalArgumentException illegalArgumentException) {
+			messages.addMessage(
 				new Message(
 					Severity.ERROR, "core", "core.error.unknown-facet-handler",
-					null, null, facetJsonObject,
+					illegalArgumentException.getMessage(),
+					illegalArgumentException, configurationJsonObject,
 					FacetConfigurationKeys.HANDLER.getJsonKey(), handler));
-			_log.error(iae.getMessage(), iae);
+			_log.error(
+				illegalArgumentException.getMessage(),
+				illegalArgumentException);
 		}
 	}
 
-	private void _provide(
-		HttpServletRequest httpServletRequest,
-		SearchParameterData searchParameterData) {
-
-		// TODO
-
-		JSONArray facetsConfigurationJsonArray =
-			POCMockUtil.getFacetsParameterConfigurationMock();
-
-		for (int i = 0; i < facetsConfigurationJsonArray.length(); i++) {
-			JSONObject facetConfigurationJsonObject =
-				facetsConfigurationJsonArray.getJSONObject(i);
-
-			if (_validateFacetParameterConfiguration(
-					searchParameterData, facetConfigurationJsonObject)) {
-
-				_parseFacetParameter(
-					httpServletRequest, searchParameterData,
-					facetConfigurationJsonObject);
-			}
-		}
-	}
-
-	private boolean _validateFacetParameterConfiguration(
-		SearchParameterData searchParameterData,
-		JSONObject facetConfigurationJsonObject) {
+	private boolean _validateFacetConfiguration(
+		Messages messages, JSONObject configurationJsonObject) {
 
 		boolean valid = true;
 
-		if (facetConfigurationJsonObject.isNull(
+		if (configurationJsonObject.isNull(
 				FacetConfigurationKeys.PARAMETER_NAME.getJsonKey())) {
 
-			searchParameterData.addMessage(
+			messages.addMessage(
 				new Message(
 					Severity.ERROR, "core",
-					"core.error.undefined-parameter-name", null, null,
-					facetConfigurationJsonObject,
+					"core.error.undefined-parameter-name",
+					"Facet parameter name is not defined", null,
+					configurationJsonObject,
 					FacetConfigurationKeys.PARAMETER_NAME.getJsonKey(), null));
 			valid = false;
 		}
@@ -152,6 +142,9 @@ public class FacetParameterContributor implements ParameterContributor {
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		FacetParameterContributor.class);
+
+	@Reference
+	private BlueprintHelper _blueprintHelper;
 
 	@Reference
 	private FacetRequestHandlerFactory _facetRequestHandlerFactory;

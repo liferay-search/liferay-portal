@@ -21,7 +21,7 @@ BlueprintEntriesManagementToolbarDisplayContext blueprintEntriesManagementToolba
 
 BlueprintEntriesDisplayContext blueprintEntriesDisplayContext = (BlueprintEntriesDisplayContext)request.getAttribute(BlueprintsAdminWebKeys.BLUEPRINT_ENTRIES_DISPLAY_CONTEXT);
 
-SearchContainer blueprintsSearchContainer = blueprintEntriesDisplayContext.getSearchContainer();
+SearchContainer<Blueprint> blueprintsSearchContainer = blueprintEntriesDisplayContext.getSearchContainer();
 
 String displayStyle = blueprintEntriesDisplayContext.getDisplayStyle();
 %>

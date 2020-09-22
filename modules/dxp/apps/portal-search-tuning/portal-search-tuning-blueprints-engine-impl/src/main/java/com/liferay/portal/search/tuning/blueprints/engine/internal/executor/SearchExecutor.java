@@ -14,17 +14,19 @@
 
 package com.liferay.portal.search.tuning.blueprints.engine.internal.executor;
 
-import com.liferay.portal.search.engine.adapter.search.SearchSearchResponse;
-import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
-import com.liferay.portal.search.tuning.blueprints.engine.searchrequest.SearchRequestData;
+import com.liferay.portal.search.searcher.SearchRequestBuilder;
+import com.liferay.portal.search.searcher.SearchResponse;
+import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
+import com.liferay.portal.search.tuning.blueprints.message.Messages;
+import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 
 /**
  * @author Petteri Karttunen
  */
 public interface SearchExecutor {
 
-	public SearchSearchResponse execute(
-		SearchRequestContext searchRequestContext,
-		SearchRequestData searchRequestData);
+	public SearchResponse execute(
+		SearchRequestBuilder searchRequestBuilder, ParameterData parameterData,
+		Blueprint blueprint, Messages messages);
 
 }

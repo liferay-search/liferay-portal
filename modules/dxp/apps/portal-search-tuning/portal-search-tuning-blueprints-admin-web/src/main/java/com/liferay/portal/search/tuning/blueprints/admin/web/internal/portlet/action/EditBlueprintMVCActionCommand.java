@@ -17,12 +17,13 @@ package com.liferay.portal.search.tuning.blueprints.admin.web.internal.portlet.a
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONException;
-import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.portlet.JSONPortletResponseUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
+import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextFactory;
 import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.LocalizationUtil;
@@ -75,14 +76,14 @@ public class EditBlueprintMVCActionCommand extends BaseMVCActionCommand {
 			LocalizationUtil.getLocalizationMap(
 				actionRequest, BlueprintsAdminWebKeys.DESCRIPTION);
 
-		String configuration = _buildConfigurationFromRequest(actionRequest);
-
 		String cmd = ParamUtil.getString(actionRequest, Constants.CMD);
 
 		try {
-			com.liferay.portal.kernel.service.ServiceContext serviceContext =
-				ServiceContextFactory.getInstance(
-					Blueprint.class.getName(), actionRequest);
+			String configuration = _buildConfigurationFromRequest(
+				actionRequest);
+
+			ServiceContext serviceContext = ServiceContextFactory.getInstance(
+				Blueprint.class.getName(), actionRequest);
 
 			if (Constants.ADD.equals(cmd)) {
 				_blueprintService.addCompanyBlueprint(
@@ -111,17 +112,16 @@ public class EditBlueprintMVCActionCommand extends BaseMVCActionCommand {
 	private String _buildConfigurationFromRequest(ActionRequest actionRequest)
 		throws JSONException {
 
-		String clauseConfigurationString = ParamUtil.getString(
-			actionRequest, "clauseConfiguration");
+		String queryConfigurationString = ParamUtil.getString(
+			actionRequest, "queryConfiguration");
 
-		JSONArray clauseConfigurationStringJSONArray =
-			JSONFactoryUtil.createJSONArray(clauseConfigurationString);
+		JSONArray jsonArray = _jsonFactory.createJSONArray(
+			queryConfigurationString);
 
-		JSONObject configuration = JSONUtil.put(
-			BlueprintKeys.CLAUSE_CONFIGURATION.getJsonKey(),
-			clauseConfigurationStringJSONArray);
+		JSONObject jsonObject = JSONUtil.put(
+			BlueprintKeys.QUERY_CONFIGURATION.getJsonKey(), jsonArray);
 
-		return configuration.toString();
+		return jsonObject.toString();
 	}
 
 	@Reference
@@ -129,5 +129,8 @@ public class EditBlueprintMVCActionCommand extends BaseMVCActionCommand {
 
 	@Reference
 	private BlueprintService _blueprintService;
+
+	@Reference
+	private JSONFactory _jsonFactory;
 
 }

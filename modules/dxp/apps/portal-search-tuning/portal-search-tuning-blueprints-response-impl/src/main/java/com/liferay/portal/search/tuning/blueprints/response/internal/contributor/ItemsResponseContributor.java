@@ -18,6 +18,7 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.User;
@@ -25,26 +26,30 @@ import com.liferay.portal.kernel.model.UserConstants;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.document.Document;
 import com.liferay.portal.search.document.Field;
-import com.liferay.portal.search.engine.adapter.search.SearchSearchResponse;
 import com.liferay.portal.search.highlight.HighlightField;
 import com.liferay.portal.search.hits.SearchHit;
 import com.liferay.portal.search.hits.SearchHits;
-import com.liferay.portal.search.tuning.blueprints.engine.constants.SearchRequestAttributes;
-import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
-import com.liferay.portal.search.tuning.blueprints.response.constants.JSONResponseAttributes;
+import com.liferay.portal.search.searcher.SearchResponse;
+import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
+import com.liferay.portal.search.tuning.blueprints.engine.component.ServiceComponentReference;
+import com.liferay.portal.search.tuning.blueprints.message.Messages;
+import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.response.constants.JSONResponseKeys;
+import com.liferay.portal.search.tuning.blueprints.response.constants.ResponseAttributeKeys;
 import com.liferay.portal.search.tuning.blueprints.response.internal.result.ResultBuilderFactory;
 import com.liferay.portal.search.tuning.blueprints.response.internal.util.ResponseUtil;
 import com.liferay.portal.search.tuning.blueprints.response.spi.contributor.ResponseContributor;
 import com.liferay.portal.search.tuning.blueprints.response.spi.result.ResultBuilder;
 import com.liferay.portal.search.tuning.blueprints.response.spi.result.ResultContributor;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -54,260 +59,266 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 /**
  * @author Petteri Karttunen
  */
-@Component(immediate = true, service = ResponseContributor.class)
+@Component(
+	immediate = true, property = "type=item",
+	service = ResponseContributor.class
+)
 public class ItemsResponseContributor implements ResponseContributor {
 
 	@Override
 	public void contribute(
-		SearchRequestContext searchRequestContext,
-		SearchSearchResponse searchResponse,
-		Map<String, Object> responseAttributes, JSONObject responseJsonObject) {
+		JSONObject responseJsonObject, SearchResponse searchResponse,
+		Blueprint blueprint, BlueprintsAttributes blueprintsAttributes,
+		Messages messages) {
 
 		responseJsonObject.put(
 			JSONResponseKeys.ITEMS,
-			_getItems(
-				searchRequestContext, searchResponse, responseAttributes));
+			_getItemsJSONArray(searchResponse, blueprintsAttributes));
 	}
 
-	protected void addResultContributor(
-		ResultContributor resultContributor) {
+	@Reference(
+		cardinality = ReferenceCardinality.MULTIPLE,
+		policy = ReferencePolicy.DYNAMIC
+	)
+	protected void registerResultContributor(
+		ResultContributor resultContributor, Map<String, Object> properties) {
 
-		if (_resultContributors == null) {
-			_resultContributors = new ArrayList<>();
-		}
+		String type = (String)properties.get("type");
 
-		_resultContributors.add(resultContributor);
-	}
+		if (Validator.isBlank(type)) {
+			if (_log.isWarnEnabled()) {
+				Class<?> clazz = resultContributor.getClass();
 
-	protected void executeResultContributors(
-		SearchRequestContext searchRequestContext,
-		Map<String, Object> responseAttributes, Document document,
-		ResultBuilder ResultBuilder, JSONObject resultItem) {
+				_log.warn(
+					"Unable to add response contributor " + clazz.getName() +
+						". Type property empty.");
+			}
 
-		if (_log.isDebugEnabled()) {
-			_log.debug("Executing result contributors.");
-		}
-
-		if (_resultContributors == null) {
 			return;
 		}
 
-		for (ResultContributor resultContributor :
-				_resultContributors) {
+		int serviceRanking = GetterUtil.get(
+			properties.get("service.ranking"), 0);
 
-			resultContributor.contribute(
-				searchRequestContext, responseAttributes, ResultBuilder,
-				document, resultItem);
+		ServiceComponentReference<ResultContributor> serviceComponentReference =
+			new ServiceComponentReference<>(resultContributor, serviceRanking);
+
+		if (_resultContributors.containsKey(type)) {
+			ServiceComponentReference<ResultContributor> previousReference =
+				_resultContributors.get(type);
+
+			if (previousReference.compareTo(serviceComponentReference) < 0) {
+				_resultContributors.put(type, serviceComponentReference);
+			}
+		}
+		else {
+			_resultContributors.put(type, serviceComponentReference);
 		}
 	}
 
-	protected void removeResultContributor(
-		ResultContributor resultContributor) {
+	protected void unregisterResultContributor(
+		ResultContributor resultContributor, Map<String, Object> properties) {
 
-		_resultContributors.remove(resultContributor);
+		String type = (String)properties.get("type");
+
+		if (Validator.isBlank(type)) {
+			return;
+		}
+
+		_resultContributors.remove(type);
 	}
 
-	private JSONArray _getItems(
-		SearchRequestContext searchRequestContext,
-		SearchSearchResponse searchResponse,
-		Map<String, Object> responseAttributes) {
+	private void _executeResultContributors(
+		JSONObject resultJsonObject, Document document,
+		ResultBuilder resultBuilder,
+		BlueprintsAttributes blueprintsAttributes) {
 
-		JSONArray resultItemsJsonArray = JSONFactoryUtil.createJSONArray();
+		for (Map.Entry<String, ServiceComponentReference<ResultContributor>>
+				entry : _resultContributors.entrySet()) {
+
+			ServiceComponentReference<ResultContributor> value =
+				entry.getValue();
+
+			ResultContributor resultContributor = value.getServiceComponent();
+
+			resultContributor.contribute(
+				resultJsonObject, document, resultBuilder,
+				blueprintsAttributes);
+		}
+	}
+
+	private JSONArray _getItemsJSONArray(
+		SearchResponse searchResponse,
+		BlueprintsAttributes blueprintsAttributes) {
+
+		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
 
 		SearchHits searchHits = searchResponse.getSearchHits();
 
-		List<SearchHit> items = searchHits.getSearchHits();
+		List<SearchHit> searchHitsList = searchHits.getSearchHits();
 
-		if ((items == null) || (items.size() == 0)) {
-			return resultItemsJsonArray;
+		if (searchHitsList.isEmpty()) {
+			return jsonArray;
 		}
 
-		for (SearchHit item : items) {
-			Document document = item.getDocument();
+		for (SearchHit searchHit : searchHitsList) {
+			Document document = searchHit.getDocument();
 
 			try {
 				if (_log.isDebugEnabled()) {
 					_log.debug(
 						"##############################################");
 
-					_log.debug("Score: " + item.getScore());
+					_log.debug("Score: " + searchHit.getScore());
 
-					for (Map.Entry<String, Field> e :
-							document.getFields(
-							).entrySet()) {
+					Map<String, Field> map = document.getFields();
 
-						_log.debug(
-							e.getKey() + ":" +
-								e.getValue(
-								).getValue());
+					for (Map.Entry<String, Field> entry : map.entrySet()) {
+						Field field = entry.getValue();
+
+						_log.debug(entry.getKey() + ":" + field.getValue());
 					}
 				}
 
-				JSONObject resultItemJsonObject =
-					JSONFactoryUtil.createJSONObject();
+				ResultBuilder resultBuilder = _resultBuilderFactory.getBuilder(
+					document.getString("entryClassName"));
 
-				ResultBuilder ResultBuilder =
-					_resultBuilderFactory.getBuilder(
-						document.getString("entryClassName"));
-
-				resultItemJsonObject.put(
-					"viewURL",
-					ResultBuilder.getViewURL(
-						searchRequestContext, responseAttributes, document));
-
-				resultItemJsonObject.put(
-					"title",
-					ResultBuilder.getTitle(
-						searchRequestContext, responseAttributes, document));
-
-				resultItemJsonObject.put(
+				JSONObject resultJsonObject = JSONUtil.put(
 					"date",
-					ResultBuilder.getDate(
-						searchRequestContext, responseAttributes, document));
-
-				resultItemJsonObject.put(
+					resultBuilder.getDate(document, blueprintsAttributes)
+				).put(
 					"description",
-					ResultBuilder.getDescription(
-						searchRequestContext, responseAttributes, document));
-
-				resultItemJsonObject.put(
-					"type",
-					ResultBuilder.getType(
-						document
-					).toLowerCase());
-
-				resultItemJsonObject.put(
+					resultBuilder.getDescription(document, blueprintsAttributes)
+				).put(
 					"metadata",
-					ResultBuilder.getMetadata(
-						searchRequestContext, responseAttributes, document));
+					resultBuilder.getMetadata(document, blueprintsAttributes)
+				).put(
+					"title",
+					resultBuilder.getTitle(document, blueprintsAttributes)
+				).put(
+					"type",
+					StringUtil.toLowerCase(resultBuilder.getType(document))
+				).put(
+					"viewURL",
+					resultBuilder.getViewURL(document, blueprintsAttributes)
+				);
 
-				if (GetterUtil.getBoolean(
-						JSONResponseAttributes.INCLUDE_THUMBNAIL)) {
+				_setThumbnail(
+					resultJsonObject, resultBuilder, document,
+					blueprintsAttributes);
 
-					resultItemJsonObject.put(
-						"imageSrc",
-						ResultBuilder.getThumbnail(
-							searchRequestContext, responseAttributes,
-							document));
-				}
+				_setUserPortrait(
+					resultJsonObject, document, blueprintsAttributes);
 
-				if (GetterUtil.getBoolean(
-						JSONResponseAttributes.INCLUDE_USER_PORTRAIT)) {
+				_setRawDocument(
+					resultJsonObject, document, blueprintsAttributes);
 
-					_setUserPortrait(
-						searchRequestContext, document, resultItemJsonObject);
-				}
+				_setAdditionalFields(
+					resultJsonObject, document, blueprintsAttributes);
 
-				if (GetterUtil.getBoolean(
-						JSONResponseAttributes.INCLUDE_RAW_DOCUMENT)) {
-
-					JSONObject doc = JSONFactoryUtil.createJSONObject();
-
-					for (Map.Entry<String, Field> e :
-							document.getFields(
-							).entrySet()) {
-
-						doc.put(
-							e.getKey(),
-							e.getValue(
-							).getValue());
-					}
-
-					resultItemJsonObject.put("document", doc);
-				}
-
-				Map<String, Class<?>> additionalResultItemFields =
-					(Map<String, Class<?>>)responseAttributes.get(
-						JSONResponseAttributes.ADDITIONAL_RESULT_ITEM_FIELDS);
-
-				if (additionalResultItemFields != null) {
-					_setAdditionalResultFields(
-						additionalResultItemFields, document,
-						resultItemJsonObject);
-				}
-
-				boolean explain = GetterUtil.getBoolean(
-					searchRequestContext.getAttributes(
-					).get(
-						SearchRequestAttributes.EXPLAIN
-					));
-
-				if (explain) {
-					resultItemJsonObject.put("explain", item.getExplanation());
-				}
-
-				int descriptionMaxLength = GetterUtil.getInteger(
-					responseAttributes.get(
-						JSONResponseAttributes.DESCRIPTION_MAX_LENGTH),
-					700);
+				_setExplain(resultJsonObject, searchHit, blueprintsAttributes);
 
 				_setHightlightFields(
-					item, resultItemJsonObject, descriptionMaxLength);
+					resultJsonObject, searchHit, blueprintsAttributes);
 
-				executeResultContributors(
-					searchRequestContext, responseAttributes, document,
-					ResultBuilder, resultItemJsonObject);
+				_executeResultContributors(
+					resultJsonObject, document, resultBuilder,
+					blueprintsAttributes);
 
-				resultItemsJsonArray.put(resultItemJsonObject);
+				jsonArray.put(resultJsonObject);
 			}
-			catch (Exception e) {
-				_log.error(e.getMessage(), e);
+			catch (Exception exception) {
+				_log.error(exception.getMessage(), exception);
 			}
 		}
 
-		return resultItemsJsonArray;
+		return jsonArray;
 	}
 
-	// TODO
+	private void _setAdditionalFields(
+			JSONObject resultJsonObject, Document document,
+			BlueprintsAttributes blueprintsAttributes)
+		throws Exception {
 
-	private void _setAdditionalResultFields(
-		Map<String, Class<?>> additionalResultItemFields, Document document,
-		JSONObject resultItemJsonObject) {
+		Optional<Object> additionalFieldsOptional =
+			blueprintsAttributes.getAttributeOptional(
+				ResponseAttributeKeys.ADDITIONAL_RESULT_FIELDS);
 
-		for (Map.Entry<String, Class<?>> entry :
-				additionalResultItemFields.entrySet()) {
+		if (!additionalFieldsOptional.isPresent()) {
+			return;
+		}
 
-			if (entry.getValue(
-				).isAssignableFrom(
-					String[].class
-				)) {
+		Map<String, Class<?>> additionalFields =
+			(Map<String, Class<?>>)additionalFieldsOptional.get();
 
+		for (Map.Entry<String, Class<?>> entry : additionalFields.entrySet()) {
+			Class<?> clazz = entry.getValue();
+
+			if (clazz.isAssignableFrom(String[].class)) {
 				List<Object> values = document.getValues(entry.getKey());
 
-				if ((values != null) && (values.size() > 0)) {
-					resultItemJsonObject.put(entry.getKey(), values);
+				if (values.isEmpty()) {
+					resultJsonObject.put(entry.getKey(), values);
 				}
 			}
 			else {
 				String value = document.getString(entry.getKey());
 
 				if (!Validator.isBlank(value)) {
-					resultItemJsonObject.put(entry.getKey(), value);
+					resultJsonObject.put(entry.getKey(), value);
 				}
 			}
 		}
 	}
 
+	private void _setExplain(
+		JSONObject resultJsonObject, SearchHit searchHit,
+		BlueprintsAttributes blueprintsAttributes) {
+
+		Optional<Object> includeExplainOptional =
+			blueprintsAttributes.getAttributeOptional(
+				ResponseAttributeKeys.INCLUDE_EXPLANATION);
+
+		if (!includeExplainOptional.isPresent()) {
+			return;
+		}
+
+		boolean includeExplain = GetterUtil.getBoolean(
+			includeExplainOptional.get());
+
+		if (!includeExplain) {
+			return;
+		}
+
+		resultJsonObject.put("explain", searchHit.getExplanation());
+	}
+
 	private void _setHightlightFields(
-		SearchHit searchHit, JSONObject resultItemJsonObject, int maxLength) {
+		JSONObject resultJsonObject, SearchHit searchHit,
+		BlueprintsAttributes blueprintsAttributes) {
 
 		if (searchHit.getHighlightFieldsMap() == null) {
 			return;
 		}
 
-		for (Map.Entry<String, HighlightField> entry :
-				searchHit.getHighlightFieldsMap(
-				).entrySet()) {
+		Optional<Object> descriptionMaxLengthOptional =
+			blueprintsAttributes.getAttributeOptional(
+				ResponseAttributeKeys.DESCRIPTION_MAX_LENGTH);
 
+		int descriptionMaxLength = GetterUtil.getInteger(
+			descriptionMaxLengthOptional.orElse(700));
+
+		Map<String, HighlightField> map = searchHit.getHighlightFieldsMap();
+
+		for (Map.Entry<String, HighlightField> entry : map.entrySet()) {
 			try {
 				StringBundler sb = new StringBundler();
 
 				int i = 0;
 
-				for (String s :
-						entry.getValue(
-						).getFragments()) {
+				HighlightField highlightField = entry.getValue();
 
+				for (String s : highlightField.getFragments()) {
 					if (i > 0) {
 						sb.append("...");
 					}
@@ -325,9 +336,9 @@ public class ItemsResponseContributor implements ResponseContributor {
 				}
 
 				String cleanedText = ResponseUtil.stripHTML(
-					sb.toString(), maxLength);
+					sb.toString(), descriptionMaxLength);
 
-				resultItemJsonObject.put(key + "_highlight", cleanedText);
+				resultJsonObject.put(key + "_highlight", cleanedText);
 			}
 			catch (IllegalStateException illegalStateException) {
 				_log.error(
@@ -338,15 +349,89 @@ public class ItemsResponseContributor implements ResponseContributor {
 					indexOutOfBoundsException.getMessage(),
 					indexOutOfBoundsException);
 			}
-			catch (Exception e) {
-				_log.error(e.getMessage(), e);
+			catch (Exception exception) {
+				_log.error(exception.getMessage(), exception);
 			}
 		}
 	}
 
+	private void _setRawDocument(
+			JSONObject resultJsonObject, Document document,
+			BlueprintsAttributes blueprintsAttributes)
+		throws Exception {
+
+		Optional<Object> includeRawDocumentlOptional =
+			blueprintsAttributes.getAttributeOptional(
+				ResponseAttributeKeys.INCLUDE_RAW_DOCUMENT);
+
+		if (!includeRawDocumentlOptional.isPresent()) {
+			return;
+		}
+
+		boolean includeRawDocument = GetterUtil.getBoolean(
+			includeRawDocumentlOptional.get());
+
+		if (!includeRawDocument) {
+			return;
+		}
+
+		JSONObject jsonObject = JSONFactoryUtil.createJSONObject();
+
+		Map<String, Field> map = document.getFields();
+
+		for (Map.Entry<String, Field> e : map.entrySet()) {
+			Field field = e.getValue();
+
+			jsonObject.put(e.getKey(), field.getValue());
+		}
+
+		resultJsonObject.put("document", jsonObject);
+	}
+
+	private void _setThumbnail(
+			JSONObject resultJsonObject, ResultBuilder resultBuilder,
+			Document document, BlueprintsAttributes blueprintsAttributes)
+		throws Exception {
+
+		Optional<Object> includeThumbnailOptional =
+			blueprintsAttributes.getAttributeOptional(
+				ResponseAttributeKeys.INCLUDE_THUMBNAIL);
+
+		if (!includeThumbnailOptional.isPresent()) {
+			return;
+		}
+
+		boolean includeThumbnail = GetterUtil.getBoolean(
+			includeThumbnailOptional.get());
+
+		if (!includeThumbnail) {
+			return;
+		}
+
+		resultJsonObject.put(
+			"imageSrc",
+			resultBuilder.getThumbnail(document, blueprintsAttributes));
+	}
+
 	private void _setUserPortrait(
-		SearchRequestContext searchRequestContext, Document document,
-		JSONObject resultItemJsonObject) {
+			JSONObject resultJsonObject, Document document,
+			BlueprintsAttributes blueprintsAttributes)
+		throws Exception {
+
+		Optional<Object> includeUserPortraitOptional =
+			blueprintsAttributes.getAttributeOptional(
+				ResponseAttributeKeys.INCLUDE_USER_PORTRAIT);
+
+		if (!includeUserPortraitOptional.isPresent()) {
+			return;
+		}
+
+		boolean includeUserPortrait = GetterUtil.getBoolean(
+			includeUserPortraitOptional.get());
+
+		if (!includeUserPortrait) {
+			return;
+		}
 
 		try {
 			long userId = document.getLong(
@@ -355,47 +440,47 @@ public class ItemsResponseContributor implements ResponseContributor {
 			User user = _userLocalService.getUser(userId);
 
 			if (user.getPortraitId() != 0) {
-				String userPortraitUrl = null;
-
-				userPortraitUrl = UserConstants.getPortraitURL(
+				String userPortraitUrl = UserConstants.getPortraitURL(
 					"/image", user.isMale(), user.getPortraitId(),
 					user.getUserUuid());
 
 				if (userPortraitUrl != null) {
-					resultItemJsonObject.put(
-						"userPortraitUrl", userPortraitUrl);
+					resultJsonObject.put("userPortraitUrl", userPortraitUrl);
 				}
 			}
 
-			resultItemJsonObject.put(
+			String firstName = user.getFirstName();
+
+			String firstNameInitials = firstName.substring(0, 1);
+
+			String lastName = user.getLastName();
+
+			String lastNameInitials = lastName.substring(0, 1);
+
+			resultJsonObject.put(
 				"userInitials",
-				user.getFirstName(
-				).substring(
-					0, 1
-				) +
-					user.getLastName(
-					).substring(
-						0, 1
-					));
-
-			resultItemJsonObject.put("userName", user.getFullName());
+				StringUtil.toUpperCase(firstNameInitials + lastNameInitials)
+			).put(
+				"userName", user.getFullName()
+			);
 		}
-		catch (PortalException pe) {
-			_log.warn(pe.getMessage());
-
+		catch (PortalException portalException) {
 			String name = document.getString(
 				com.liferay.portal.kernel.search.Field.USER_NAME);
 
 			String[] nameParts = name.split(" ");
 
-			resultItemJsonObject.put(
+			String firstNameInitials = nameParts[0].substring(0, 1);
+
+			String lastNameInitials = nameParts[1].substring(0, 1);
+
+			resultJsonObject.put(
 				"userInitials",
-				nameParts[0].substring(
-					0, 1
-				).toUpperCase() +
-					nameParts[0].substring(
-						0, 1
-					).toUpperCase());
+				StringUtil.toUpperCase(firstNameInitials + lastNameInitials));
+
+			if (_log.isWarnEnabled()) {
+				_log.warn(portalException.getMessage(), portalException);
+			}
 		}
 	}
 
@@ -405,13 +490,9 @@ public class ItemsResponseContributor implements ResponseContributor {
 	@Reference
 	private ResultBuilderFactory _resultBuilderFactory;
 
-	@Reference(
-		bind = "addResultContributor",
-		cardinality = ReferenceCardinality.MULTIPLE,
-		policy = ReferencePolicy.DYNAMIC, service = ResultContributor.class,
-		unbind = "removeResultContributor"
-	)
-	private volatile List<ResultContributor> _resultContributors;
+	private volatile Map<String, ServiceComponentReference<ResultContributor>>
+		_resultContributors = new ConcurrentHashMap<>();
+
 	@Reference
 	private UserLocalService _userLocalService;
 

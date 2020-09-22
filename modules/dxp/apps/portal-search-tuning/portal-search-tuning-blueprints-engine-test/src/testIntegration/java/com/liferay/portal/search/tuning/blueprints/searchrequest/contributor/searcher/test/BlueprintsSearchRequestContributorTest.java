@@ -29,6 +29,7 @@ import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.HashMapDictionary;
 import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.filter.ComplexQueryPartBuilderFactory;
 import com.liferay.portal.search.searcher.SearchRequestBuilderFactory;
@@ -90,13 +91,13 @@ public class BlueprintsSearchRequestContributorTest {
 		_addUsers("Brea", "Helsinki");
 
 		try (ConfigurationTemporarySwapper configurationTemporarySwapper =
-			getIPStackConfigurationTemporarySwapper("91.233.116.229")) {
+				getIPStackConfigurationTemporarySwapper("91.233.116.229")) {
 
 			_assertSearch("firstName", "[Helsinki]");
 		}
 
 		try (ConfigurationTemporarySwapper configurationTemporarySwapper =
-			getIPStackConfigurationTemporarySwapper("104.172.41.95")) {
+				getIPStackConfigurationTemporarySwapper("104.172.41.95")) {
 
 			_assertSearch("firstName", "[Brea]");
 		}
@@ -131,21 +132,34 @@ public class BlueprintsSearchRequestContributorTest {
 		throws Exception {
 
 		return new ConfigurationTemporarySwapper(
-			"com.liferay.portal.search.tuning.blueprints.ipstack.internal.configuration.IPStackConfiguration",
-			_toDictionary(HashMapBuilder.put(
-				"isEnabled", "true"
-			).put(
-				"testIpAddress", ip
-			).build()));
+			"com.liferay.portal.search.tuning.blueprints.ipstack.internal." +
+				"configuration.IPStackConfiguration",
+			_toDictionary(
+				HashMapBuilder.put(
+					"isEnabled", "true"
+				).put(
+					"testIpAddress", ip
+				).build()));
 	}
 
 	protected String readConfiguration() {
-		Class<?> clazz = this.getClass();
+		Class<?> clazz = getClass();
 
-		return StringUtil.read(
-			clazz,
-			clazz.getSimpleName() + CharPool.PERIOD + testName.getMethodName() +
-				CharPool.PERIOD + "json");
+		StringBundler sb = new StringBundler(5);
+
+		sb.append(clazz.getSimpleName());
+		sb.append(CharPool.PERIOD);
+		sb.append(testName.getMethodName());
+		sb.append(CharPool.PERIOD);
+		sb.append("json");
+
+		return StringUtil.read(clazz, sb.toString());
+	}
+
+	private static Dictionary<String, Object> _toDictionary(
+		Map<String, String> map) {
+
+		return new HashMapDictionary<>(new HashMap<String, Object>(map));
 	}
 
 	private Blueprint _addCompanyBlueprint(String configurationString)
@@ -188,12 +202,16 @@ public class BlueprintsSearchRequestContributorTest {
 		SearchResponse searchResponse = _searcher.search(
 			_searchRequestBuilderFactory.builder(
 			).addComplexQueryPart(
-				_complexQueryPartBuilderFactory.builder()
-					.field("screenName")
-					.occur("must_not")
-					.type("term")
-					.value("test")
-					.build()
+				_complexQueryPartBuilderFactory.builder(
+				).field(
+					"screenName"
+				).occur(
+					"must_not"
+				).type(
+					"term"
+				).value(
+					"test"
+				).build()
 			).companyId(
 				_group.getCompanyId()
 			).emptySearchEnabled(
@@ -216,14 +234,11 @@ public class BlueprintsSearchRequestContributorTest {
 			_group.getGroupId(), _user.getUserId());
 	}
 
-	private static Dictionary<String, Object> _toDictionary(
-		Map<String, String> map) {
-
-		return new HashMapDictionary<>(new HashMap<String, Object>(map));
-	}
-
 	@DeleteAfterTestRun
 	private Blueprint _blueprint;
+
+	@Inject
+	private BlueprintService _blueprintService;
 
 	@Inject
 	private ComplexQueryPartBuilderFactory _complexQueryPartBuilderFactory;
@@ -235,9 +250,6 @@ public class BlueprintsSearchRequestContributorTest {
 
 	@Inject
 	private PermissionCheckerFactory _permissionCheckerFactory;
-
-	@Inject
-	private BlueprintService _blueprintService;
 
 	@Inject
 	private Searcher _searcher;

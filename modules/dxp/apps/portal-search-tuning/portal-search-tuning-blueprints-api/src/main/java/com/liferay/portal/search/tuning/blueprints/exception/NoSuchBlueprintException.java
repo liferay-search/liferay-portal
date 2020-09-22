@@ -36,4 +36,6 @@ public class NoSuchBlueprintException extends NoSuchModelException {
 		super(throwable);
 	}
 
+	private static final long serialVersionUID = 1409818413197840373L;
+
 }

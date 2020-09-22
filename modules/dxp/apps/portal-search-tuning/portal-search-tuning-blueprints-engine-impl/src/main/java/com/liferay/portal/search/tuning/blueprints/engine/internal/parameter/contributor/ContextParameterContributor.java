@@ -14,23 +14,29 @@
 
 package com.liferay.portal.search.tuning.blueprints.engine.internal.parameter.contributor;
 
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.Language;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Layout;
-import com.liferay.portal.kernel.search.SearchContext;
-import com.liferay.portal.kernel.theme.ThemeDisplay;
-import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.kernel.service.LayoutLocalService;
+import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
+import com.liferay.portal.search.tuning.blueprints.engine.constants.ReservedParameterNames;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.LongParameter;
+import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterDataBuilder;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterDefinition;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.SearchParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.parameter.ParameterContributor;
+import com.liferay.portal.search.tuning.blueprints.message.Message;
+import com.liferay.portal.search.tuning.blueprints.message.Messages;
+import com.liferay.portal.search.tuning.blueprints.message.Severity;
+import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-
-import javax.servlet.http.HttpServletRequest;
+import java.util.Optional;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -46,34 +52,19 @@ public class ContextParameterContributor implements ParameterContributor {
 
 	@Override
 	public void contribute(
-		HttpServletRequest httpServletRequest,
-		SearchParameterData searchParameterData) {
+		ParameterDataBuilder parameterDataBuilder, Blueprint blueprint,
+		BlueprintsAttributes blueprintsAttributes, Messages messages) {
 
-		ThemeDisplay themeDisplay =
-			(ThemeDisplay)httpServletRequest.getAttribute(
-				WebKeys.THEME_DISPLAY);
+		_addCompanyId(parameterDataBuilder, blueprintsAttributes);
 
-		Layout layout = themeDisplay.getLayout();
+		_addScopeGroupId(parameterDataBuilder, blueprintsAttributes);
 
-		String layoutNameCurrentValue = layout.getNameCurrentValue();
+		_addLanguageId(parameterDataBuilder, blueprintsAttributes);
 
-		_contribute(
-			searchParameterData, themeDisplay.getCompanyId(),
-			themeDisplay.getScopeGroupId(), themeDisplay.getLocale(),
-			layoutNameCurrentValue);
-	}
+		_addLayoutNameCurrentValue(
+			parameterDataBuilder, blueprintsAttributes, messages);
 
-	@Override
-	public void contribute(
-		SearchContext searchContext, SearchParameterData searchParameterData) {
-
-		Long scopeGroupId = (Long)searchContext.getAttribute("scopeGroupId");
-		String layoutNameCurrentValue = (String)searchContext.getAttribute(
-			"layoutNameCurrentValue");
-
-		_contribute(
-			searchParameterData, searchContext.getCompanyId(), scopeGroupId,
-			searchContext.getLocale(), layoutNameCurrentValue);
+		_addPlid(parameterDataBuilder, blueprintsAttributes);
 	}
 
 	public List<ParameterDefinition> getParameterDefinitions() {
@@ -81,57 +72,150 @@ public class ContextParameterContributor implements ParameterContributor {
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				"${context.company_id}", LongParameter.class.getName(),
-				"parameter.context.company-id"));
+				_getTemplateVariableName(
+					ReservedParameterNames.COMPANY_ID.getKey()),
+				LongParameter.class.getName(), "parameter.context.company-id"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				"${context.scope_group_id}", LongParameter.class.getName(),
+				_getTemplateVariableName(
+					ReservedParameterNames.SCOPE_GROUP_ID.getKey()),
+				LongParameter.class.getName(),
 				"parameter.context.scope-group-id"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				"${context.layout_locale_name}",
+				_getTemplateVariableName(
+					ReservedParameterNames.LAYOUT_LOCALE_NAME.getKey()),
 				StringParameter.class.getName(),
 				"parameter.context.layout-locale-name"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				"${context.language_id}", StringParameter.class.getName(),
+				_getTemplateVariableName(ReservedParameterNames.PLID.getKey()),
+				LongParameter.class.getName(), "parameter.context.plid"));
+
+		parameterDefinitions.add(
+			new ParameterDefinition(
+				_getTemplateVariableName(
+					ReservedParameterNames.LANGUAGE_ID.getKey()),
+				StringParameter.class.getName(),
 				"parameter.context.language-id"));
 
 		return parameterDefinitions;
 	}
 
-	private void _contribute(
-		SearchParameterData searchParameterData, long companyId,
-		Long scopeGroupId, Locale locale, String layoutNameCurrentValue) {
+	private void _addCompanyId(
+		ParameterDataBuilder parameterDataBuilder,
+		BlueprintsAttributes blueprintsAttributes) {
 
-		searchParameterData.addParameter(
+		parameterDataBuilder.addParameter(
 			new LongParameter(
-				"context.company_id", "${context.company_id}", companyId));
-
-		if (scopeGroupId != null) {
-			searchParameterData.addParameter(
-				new LongParameter(
-					"context.scope_group_id", "${context.scope_group_id}",
-					scopeGroupId));
-		}
-
-		if (!Validator.isBlank(layoutNameCurrentValue)) {
-			searchParameterData.addParameter(
-				new StringParameter(
-					"context.layout_locale_name",
-					"${context.layout_locale_name}", layoutNameCurrentValue));
-		}
-
-		searchParameterData.addParameter(
-			new StringParameter(
-				"context.language_id", "${context.language_id}",
-				locale.toString()));
+				ReservedParameterNames.COMPANY_ID.getKey(),
+				_getTemplateVariableName(
+					ReservedParameterNames.COMPANY_ID.getKey()),
+				blueprintsAttributes.getCompanyId()));
 	}
+
+	private void _addLanguageId(
+		ParameterDataBuilder parameterDataBuilder,
+		BlueprintsAttributes blueprintsAttributes) {
+
+		parameterDataBuilder.addParameter(
+			new StringParameter(
+				ReservedParameterNames.LANGUAGE_ID.getKey(),
+				_getTemplateVariableName(
+					ReservedParameterNames.LANGUAGE_ID.getKey()),
+				_language.getLanguageId(blueprintsAttributes.getLocale())));
+	}
+
+	private void _addLayoutNameCurrentValue(
+		ParameterDataBuilder parameterDataBuilder,
+		BlueprintsAttributes blueprintsAttributes, Messages messages) {
+
+		Optional<Object> optional = blueprintsAttributes.getAttributeOptional(
+			ReservedParameterNames.PLID.getKey());
+
+		if (!optional.isPresent()) {
+			return;
+		}
+
+		try {
+			Layout layout = _layoutLocalService.getLayout(
+				GetterUtil.getLong(optional.get()));
+
+			parameterDataBuilder.addParameter(
+				new StringParameter(
+					ReservedParameterNames.LAYOUT_LOCALE_NAME.getKey(),
+					_getTemplateVariableName(
+						ReservedParameterNames.LAYOUT_LOCALE_NAME.getKey()),
+					layout.getName(blueprintsAttributes.getLocale(), true)));
+		}
+		catch (PortalException portalException) {
+			messages.addMessage(
+				new Message(
+					Severity.ERROR, "core", "core.error.layout-not-found",
+					portalException.getMessage(), portalException, null, null,
+					(String)optional.get()));
+
+			_log.error(portalException.getMessage(), portalException);
+		}
+	}
+
+	private void _addPlid(
+		ParameterDataBuilder parameterDataBuilder,
+		BlueprintsAttributes blueprintsAttributes) {
+
+		Optional<Object> optional = blueprintsAttributes.getAttributeOptional(
+			ReservedParameterNames.PLID.getKey());
+
+		if (!optional.isPresent()) {
+			return;
+		}
+
+		parameterDataBuilder.addParameter(
+			new LongParameter(
+				ReservedParameterNames.PLID.getKey(),
+				_getTemplateVariableName(ReservedParameterNames.PLID.getKey()),
+				GetterUtil.getLong(optional.get())));
+	}
+
+	private void _addScopeGroupId(
+		ParameterDataBuilder parameterDataBuilder,
+		BlueprintsAttributes blueprintsAttributes) {
+
+		Optional<Object> optional = blueprintsAttributes.getAttributeOptional(
+			ReservedParameterNames.SCOPE_GROUP_ID.getKey());
+
+		if (!optional.isPresent()) {
+			return;
+		}
+
+		parameterDataBuilder.addParameter(
+			new LongParameter(
+				ReservedParameterNames.SCOPE_GROUP_ID.getKey(),
+				_getTemplateVariableName(
+					ReservedParameterNames.SCOPE_GROUP_ID.getKey()),
+				GetterUtil.getLong(optional.get())));
+	}
+
+	private String _getTemplateVariableName(String key) {
+		StringBundler sb = new StringBundler(3);
+
+		sb.append("${context.");
+		sb.append(key);
+		sb.append("}");
+
+		return sb.toString();
+	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		ContextParameterContributor.class);
 
 	@Reference
 	private Language _language;
+
+	@Reference
+	private LayoutLocalService _layoutLocalService;
 
 }

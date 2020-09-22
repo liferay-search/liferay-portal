@@ -138,7 +138,8 @@ export default function MultiSelect({
 			event.preventDefault();
 
 			setNewValue(getFirstOfMatches());
-		} else if (
+		}
+		else if (
 			!inputValue &&
 			key === Keys.Backspace &&
 			inputRef.current &&

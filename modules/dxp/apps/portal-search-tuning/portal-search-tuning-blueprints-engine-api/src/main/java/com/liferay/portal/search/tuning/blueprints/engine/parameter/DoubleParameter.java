@@ -26,11 +26,9 @@ import java.util.Map;
  */
 public class DoubleParameter implements Parameter {
 
-	public DoubleParameter(
-		String name, String configurationVariable, Double value) {
-
+	public DoubleParameter(String name, String templateVariable, Double value) {
 		_name = name;
-		_configurationVariable = configurationVariable;
+		_templateVariable = templateVariable;
 		_value = value;
 	}
 
@@ -42,7 +40,9 @@ public class DoubleParameter implements Parameter {
 	}
 
 	@Override
-	public String accept(ToStringVisitor visitor, Map<String, String> options) throws Exception {
+	public String accept(ToStringVisitor visitor, Map<String, String> options)
+		throws Exception {
+
 		return visitor.visit(this, options);
 	}
 
@@ -80,7 +80,7 @@ public class DoubleParameter implements Parameter {
 
 	@Override
 	public String getTemplateVariable() {
-		return _configurationVariable;
+		return _templateVariable;
 	}
 
 	@Override
@@ -88,8 +88,8 @@ public class DoubleParameter implements Parameter {
 		return _value;
 	}
 
-	private final String _configurationVariable;
 	private final String _name;
+	private final String _templateVariable;
 	private final Double _value;
 
 }

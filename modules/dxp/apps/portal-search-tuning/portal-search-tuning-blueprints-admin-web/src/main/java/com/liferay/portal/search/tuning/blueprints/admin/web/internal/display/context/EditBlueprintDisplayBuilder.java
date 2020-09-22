@@ -34,7 +34,7 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminMVCCommandNames;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminWebKeys;
-import com.liferay.portal.search.tuning.blueprints.admin.web.internal.util.JSONHelperUtil;
+import com.liferay.portal.search.tuning.blueprints.admin.web.internal.util.BlueprintJSONUtil;
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintTypes;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.BlueprintKeys;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
@@ -47,7 +47,6 @@ import java.util.stream.Stream;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionURL;
-import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -96,7 +95,7 @@ public class EditBlueprintDisplayBuilder {
 		return editBlueprintDisplayContext;
 	}
 
-	private JSONArray _getAvailableLocales() {
+	private JSONArray _getAvailableLocalesJSONArray() {
 		JSONArray jsonArray = _jsonFactory.createJSONArray();
 
 		Set<Locale> locales = _language.getAvailableLocales();
@@ -155,13 +154,12 @@ public class EditBlueprintDisplayBuilder {
 
 		String languageId = LocaleUtil.toLanguageId(locale);
 
+		languageId = StringUtil.replace(languageId, '_', "-");
+
 		jsonObject.put(
-			"label", StringUtil.replace(languageId, '_', "-")
+			"label", languageId
 		).put(
-			"symbol",
-			StringUtil.replace(
-				languageId, '_', "-"
-			).toLowerCase()
+			"symbol", StringUtil.toLowerCase(languageId)
 		);
 
 		return jsonObject;
@@ -169,7 +167,7 @@ public class EditBlueprintDisplayBuilder {
 
 	private Map<String, Object> _getProps() {
 		Map<String, Object> props = HashMapBuilder.<String, Object>put(
-			"availableLocales", _getAvailableLocales()
+			"availableLocales", _getAvailableLocalesJSONArray()
 		).put(
 			"blueprintId", _blueprintId
 		).put(
@@ -183,16 +181,16 @@ public class EditBlueprintDisplayBuilder {
 		if (_blueprint != null) {
 			try {
 				props.put(
-					"initialClauseConfiguration",
-					JSONHelperUtil.getConfigurationSection(
+					"initialQueryConfiguration",
+					BlueprintJSONUtil.getConfigurationSection(
 						_blueprint,
-						BlueprintKeys.CLAUSE_CONFIGURATION.getJsonKey()));
+						BlueprintKeys.QUERY_CONFIGURATION.getJsonKey()));
 			}
 			catch (JSONException jsonException) {
 				_log.error("Unable to parse Blueprint JSON", jsonException);
 			}
 
-			props.put("initialTitle", _getTitle());
+			props.put("initialTitle", _getTitleJSONObject());
 		}
 
 		return props;
@@ -202,9 +200,7 @@ public class EditBlueprintDisplayBuilder {
 		String redirect = ParamUtil.getString(_httpServletRequest, "redirect");
 
 		if (Validator.isNull(redirect)) {
-			PortletURL portletURL = _renderResponse.createRenderURL();
-
-			redirect = portletURL.toString();
+			redirect = String.valueOf(_renderResponse.createRenderURL());
 		}
 
 		return redirect;
@@ -224,7 +220,7 @@ public class EditBlueprintDisplayBuilder {
 		return actionURL.toString();
 	}
 
-	private JSONObject _getTitle() {
+	private JSONObject _getTitleJSONObject() {
 		Map<Locale, String> titleMap = _blueprint.getTitleMap();
 
 		JSONObject titleJSONObject = _jsonFactory.createJSONObject();
@@ -264,7 +260,7 @@ public class EditBlueprintDisplayBuilder {
 
 		StringBundler sb = new StringBundler(2);
 
-		sb.append(_blueprint != null ? "edit-" : "add-");
+		sb.append((_blueprint != null) ? "edit-" : "add-");
 
 		if (_blueprintType == BlueprintTypes.BLUEPRINT) {
 			sb.append("blueprint");

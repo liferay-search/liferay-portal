@@ -16,17 +16,16 @@ package com.liferay.portal.search.tuning.blueprints.engine.spi.dataprovider;
 
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.search.geolocation.GeoLocationPoint;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.SearchParameterData;
+import com.liferay.portal.search.tuning.blueprints.message.Messages;
 
 /**
  * @author Petteri Karttunen
  */
 public interface GeoLocationDataProvider {
 
-	public JSONObject getGeoLocationData(
-		SearchParameterData searchParameterData, String ipAddress);
+	public JSONObject getGeoLocationData(Messages messages, String ipAddress);
 
 	public GeoLocationPoint getGeoLocationPoint(
-		SearchParameterData searchParameterData, String ipAddress);
+		Messages messages, String ipAddress);
 
 }

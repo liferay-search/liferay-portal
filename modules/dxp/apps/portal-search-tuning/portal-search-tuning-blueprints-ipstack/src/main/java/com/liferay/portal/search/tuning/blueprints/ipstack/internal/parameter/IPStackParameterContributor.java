@@ -15,19 +15,24 @@
 package com.liferay.portal.search.tuning.blueprints.ipstack.internal.parameter;
 
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.search.SearchContext;
-import com.liferay.portal.search.tuning.blueprints.engine.constants.SearchContextAttributeKeys;
+import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
+import com.liferay.portal.search.tuning.blueprints.engine.constants.ReservedParameterNames;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.DoubleParameter;
+import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterDataBuilder;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterDefinition;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.SearchParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.dataprovider.GeoLocationDataProvider;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.parameter.ParameterContributor;
+import com.liferay.portal.search.tuning.blueprints.message.Message;
+import com.liferay.portal.search.tuning.blueprints.message.Messages;
+import com.liferay.portal.search.tuning.blueprints.message.Severity;
+import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
+import java.util.Optional;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -43,22 +48,22 @@ public class IPStackParameterContributor implements ParameterContributor {
 
 	@Override
 	public void contribute(
-		HttpServletRequest httpServletRequest,
-		SearchParameterData searchParameterData) {
+		ParameterDataBuilder parameterDataBuilder, Blueprint blueprint,
+		BlueprintsAttributes blueprintsAttributes, Messages messages) {
 
-		String ipAddress = httpServletRequest.getRemoteAddr();
+		String ipAddress = _getIpAddress(blueprintsAttributes);
 
-		_provide(searchParameterData, ipAddress);
-	}
+		if (Validator.isBlank(ipAddress)) {
+			messages.addMessage(
+				new Message(
+					Severity.INFO, "ipstack",
+					"core.error.ip-parameter-not-found",
+					"IP address not found in parameter data"));
 
-	@Override
-	public void contribute(
-		SearchContext searchContext, SearchParameterData searchParameterData) {
+			return;
+		}
 
-		String ipAddress = (String)searchContext.getAttribute(
-			SearchContextAttributeKeys.IP_ADDRESS);
-
-		_provide(searchParameterData, ipAddress);
+		_contribute(parameterDataBuilder, messages, ipAddress);
 	}
 
 	@Override
@@ -109,66 +114,74 @@ public class IPStackParameterContributor implements ParameterContributor {
 		return parameterDefinitions;
 	}
 
-	private void _provide(
-		SearchParameterData searchParameterData, String ipAddress) {
+	private void _contribute(
+		ParameterDataBuilder parameterDataBuilder, Messages messages,
+		String ipAddress) {
 
 		JSONObject geoLocationJSONObject =
-			_geoLocationDataProvider.getGeoLocationData(
-				searchParameterData, ipAddress);
+			_geoLocationDataProvider.getGeoLocationData(messages, ipAddress);
 
 		if (geoLocationJSONObject == null) {
 			return;
 		}
 
-		searchParameterData.addParameter(
+		parameterDataBuilder.addParameter(
 			new StringParameter(
 				"ipstack.city", "${ipstack.city}",
 				geoLocationJSONObject.getString("city")));
 
-		searchParameterData.addParameter(
+		parameterDataBuilder.addParameter(
 			new StringParameter(
 				"ipstack.continent_code", "${ipstack.continent_code}",
 				geoLocationJSONObject.getString("continent_code")));
 
-		searchParameterData.addParameter(
+		parameterDataBuilder.addParameter(
 			new StringParameter(
 				"ipstack.continent_name", "${ipstack.continent_name}",
 				geoLocationJSONObject.getString("continent_name")));
 
-		searchParameterData.addParameter(
+		parameterDataBuilder.addParameter(
 			new StringParameter(
 				"ipstack.country_code", "${ipstack.country_code}",
 				geoLocationJSONObject.getString("country_code")));
 
-		searchParameterData.addParameter(
+		parameterDataBuilder.addParameter(
 			new StringParameter(
 				"ipstack.country_name", "${ipstack.country_name}",
 				geoLocationJSONObject.getString("country_name")));
 
-		searchParameterData.addParameter(
+		parameterDataBuilder.addParameter(
 			new DoubleParameter(
 				"ipstack.latitude", "${ipstack.latitude}",
 				geoLocationJSONObject.getDouble("latitude")));
 
-		searchParameterData.addParameter(
+		parameterDataBuilder.addParameter(
 			new DoubleParameter(
 				"ipstack.longitude", "${ipstack.longitude}",
 				geoLocationJSONObject.getDouble("longitude")));
 
-		searchParameterData.addParameter(
+		parameterDataBuilder.addParameter(
 			new StringParameter(
 				"ipstack.region_code", "${ipstack.region_code}",
 				geoLocationJSONObject.getString("region_code")));
 
-		searchParameterData.addParameter(
+		parameterDataBuilder.addParameter(
 			new StringParameter(
 				"ipstack.region_name", "${ipstack.region_name}",
 				geoLocationJSONObject.getString("region_name")));
 
-		searchParameterData.addParameter(
+		parameterDataBuilder.addParameter(
 			new StringParameter(
 				"ipstack.zip", "${ipstack.zip}",
 				geoLocationJSONObject.getString("zip")));
+	}
+
+	private String _getIpAddress(BlueprintsAttributes blueprintsAttributes) {
+		Optional<Object> valueOptional =
+			blueprintsAttributes.getAttributeOptional(
+				ReservedParameterNames.IP_ADDRESS.getKey());
+
+		return GetterUtil.getString(valueOptional.orElse(null));
 	}
 
 	@Reference

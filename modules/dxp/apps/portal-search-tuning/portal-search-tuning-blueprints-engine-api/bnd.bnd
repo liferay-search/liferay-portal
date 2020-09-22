@@ -5,10 +5,6 @@ Export-Package:\
 	com.liferay.portal.search.tuning.blueprints.engine.cache,\
 	com.liferay.portal.search.tuning.blueprints.engine.component,\
 	com.liferay.portal.search.tuning.blueprints.engine.constants,\
-	com.liferay.portal.search.tuning.blueprints.engine.context,\
 	com.liferay.portal.search.tuning.blueprints.engine.exception,\
-	com.liferay.portal.search.tuning.blueprints.engine.message,\
 	com.liferay.portal.search.tuning.blueprints.engine.parameter,\
-	com.liferay.portal.search.tuning.blueprints.engine.searchrequest,\
-	com.liferay.portal.search.tuning.blueprints.engine.suggester,\
 	com.liferay.portal.search.tuning.blueprints.engine.util

@@ -17,7 +17,9 @@ package com.liferay.portal.search.tuning.blueprints.engine.spi.query;
 import com.liferay.portal.search.query.Query;
 import com.liferay.portal.search.tuning.blueprints.constants.json.values.ClauseContext;
 import com.liferay.portal.search.tuning.blueprints.constants.json.values.Occur;
-import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
+import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
+import com.liferay.portal.search.tuning.blueprints.message.Messages;
+import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 
 import java.util.Optional;
 
@@ -26,9 +28,11 @@ import java.util.Optional;
  */
 public interface QueryContributor {
 
-	public Optional<Query> build(SearchRequestContext searchRequestContext);
+	public Optional<Query> build(
+		Blueprint blueprint, ParameterData parameterData, Messages messages);
 
 	public ClauseContext getClauseContext();
 
 	public Occur getOccur();
+
 }

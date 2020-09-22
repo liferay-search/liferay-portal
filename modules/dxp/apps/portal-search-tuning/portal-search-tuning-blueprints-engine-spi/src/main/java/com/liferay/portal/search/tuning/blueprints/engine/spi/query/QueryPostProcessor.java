@@ -14,8 +14,10 @@
 
 package com.liferay.portal.search.tuning.blueprints.engine.spi.query;
 
-import com.liferay.portal.search.engine.adapter.search.SearchSearchResponse;
-import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
+import com.liferay.portal.search.searcher.SearchResponse;
+import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
+import com.liferay.portal.search.tuning.blueprints.message.Messages;
+import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 
 /**
  * @author Petteri Karttunen
@@ -23,7 +25,7 @@ import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestC
 public interface QueryPostProcessor {
 
 	public boolean process(
-		SearchRequestContext searchRequestContext,
-		SearchSearchResponse searchResponse);
+		SearchResponse searchResponse, Blueprint blueprint,
+		ParameterData parameterData, Messages messages);
 
 }

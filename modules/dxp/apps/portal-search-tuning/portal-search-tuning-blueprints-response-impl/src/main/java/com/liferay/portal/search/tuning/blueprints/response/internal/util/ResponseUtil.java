@@ -16,22 +16,17 @@ package com.liferay.portal.search.tuning.blueprints.response.internal.util;
 
 import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.search.hits.SearchHits;
 
 /**
  * @author Petteri Karttunen
  */
 public class ResponseUtil {
 
-	public static int getStart(
-			SearchHits searchHits, int pageSize, int start)
+	public static int getStart(int totalHits, int pageSize, int start)
 		throws ArithmeticException {
 
-		int totalHits = Math.toIntExact(searchHits.getTotalHits());
-
 		if (totalHits < start) {
-			int pageCount = (int)Math.ceil(
-				totalHits * 1.0 / pageSize);
+			int pageCount = (int)Math.ceil(totalHits * 1.0 / pageSize);
 
 			start = (pageCount - 1) * pageSize;
 
@@ -48,7 +43,7 @@ public class ResponseUtil {
 			return string;
 		}
 
-		// Replace other than highlight tags.
+		// Replace other than highlight tags
 
 		string = string.replaceAll("<liferay-hl>", "---LR-HL-START---");
 		string = string.replaceAll("</liferay-hl>", "---LR-HL-STOP---");
@@ -59,7 +54,7 @@ public class ResponseUtil {
 		if ((length > -1) && (string.length() > length)) {
 			String temp = string.substring(0, length);
 
-			// Check that we are not breaking the HTML.
+			// Check that we are not breaking the HTML
 
 			if (temp.lastIndexOf("<") > temp.lastIndexOf(">")) {
 				temp = string.substring(

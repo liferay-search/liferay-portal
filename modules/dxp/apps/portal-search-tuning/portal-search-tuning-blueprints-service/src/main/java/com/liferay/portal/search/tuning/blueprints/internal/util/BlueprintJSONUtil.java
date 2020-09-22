@@ -72,6 +72,18 @@ public class BlueprintJSONUtil {
 		return getValue(value, Arrays.copyOfRange(paths, 1, paths.length));
 	}
 
+	public static Optional<Boolean> getValueAsBooleanOptional(
+		Object object, String... paths) {
+
+		Object value = getValue(object, paths);
+
+		if (value == null) {
+			return Optional.empty();
+		}
+
+		return Optional.of(GetterUtil.getBoolean(value));
+	}
+
 	public static Optional<Integer> getValueAsIntegerOptional(
 		Object object, String... paths) {
 

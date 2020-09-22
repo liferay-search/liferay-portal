@@ -87,7 +87,9 @@ public class ViewBlueprintsMVCRenderCommand implements MVCRenderCommand {
 		catch (PortalException portalException) {
 			_log.error(portalException.getMessage(), portalException);
 
-			SessionErrors.add(renderRequest, "errorDetails", portalException);
+			SessionErrors.add(
+				renderRequest, BlueprintsAdminWebKeys.ERROR_DETAILS,
+				portalException);
 		}
 
 		return "/view.jsp";

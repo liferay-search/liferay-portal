@@ -14,34 +14,33 @@
 
 package com.liferay.portal.search.tuning.blueprints.poc.util;
 
+import com.liferay.document.library.kernel.model.DLFileEntry;
+import com.liferay.journal.model.JournalArticle;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.search.Field;
-import com.liferay.portal.search.index.IndexNameBuilder;
+import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.BlueprintKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.advanced.AdvancedConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.advanced.HighlightingConfigurationKeys;
+import com.liferay.portal.search.tuning.blueprints.constants.json.keys.advanced.IndexesConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.advanced.QueryProcessingConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.advanced.SearchResultsConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.advanced.SourceConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.aggregation.AggregationConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.aggregation.TermsAggregationBodyConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.requestparameter.CustomRequestParameterConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.requestparameter.KeywordsConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.requestparameter.RequestParameterConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.requestparameter.SortConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.suggester.KeywordIndexingConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.suggester.KeywordSuggestionsConfigurationKeys;
+import com.liferay.portal.search.tuning.blueprints.constants.json.keys.parameter.CustomParameterConfigurationKeys;
+import com.liferay.portal.search.tuning.blueprints.constants.json.keys.parameter.KeywordsConfigurationKeys;
+import com.liferay.portal.search.tuning.blueprints.constants.json.keys.parameter.ParameterConfigurationKeys;
+import com.liferay.portal.search.tuning.blueprints.constants.json.keys.parameter.SortConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.suggester.PhraseSuggesterConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.suggester.SuggesterConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.suggester.SuggestersConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.constants.json.values.RequestParameterType;
+import com.liferay.portal.search.tuning.blueprints.constants.json.values.ParameterType;
 import com.liferay.portal.search.tuning.blueprints.constants.json.values.SuggesterType;
+import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 /**
  * TESTING & MOCKING.
@@ -54,7 +53,9 @@ import org.osgi.service.component.annotations.Reference;
 @Component(immediate = true, service = POCMockUtil.class)
 public class POCMockUtil {
 	
-	public static JSONArray getFacetsParameterConfigurationMock() {
+	
+	public static void mockFacetsConfiguration(
+			JSONObject bluePrintJsonObject) {
 
 		// Facets
 
@@ -72,7 +73,9 @@ public class POCMockUtil {
 
 		facetsConfigurationJsonArray.put(facetConfigurationJsonObject);
 
-		return facetsConfigurationJsonArray;
+		bluePrintJsonObject.put(
+				"facets_configuration",
+				facetsConfigurationJsonArray);
 	}
 
 
@@ -82,18 +85,25 @@ public class POCMockUtil {
 		JSONObject advancedConfigurationJsonObject =
 			JSONFactoryUtil.createJSONObject();
 
-		// Search results.
-
-		JSONObject searchResultsconfigurationJsonObject =
-			JSONFactoryUtil.createJSONObject();
-
-		searchResultsconfigurationJsonObject.put(
-			SearchResultsConfigurationKeys.PAGE_SIZE.getJsonKey(), 10);
+		// Model indexer classes
+		
+		JSONArray indexersJsonArray =
+			JSONFactoryUtil.createJSONArray();
+		indexersJsonArray.put(JournalArticle.class.getName());
+		indexersJsonArray.put(DLFileEntry.class.getName());
 
 		advancedConfigurationJsonObject.put(
-			AdvancedConfigurationKeys.SEARCH_RESULTS.getJsonKey(),
-			searchResultsconfigurationJsonObject);
+				AdvancedConfigurationKeys.MODEL_INDEXER_CLASSES.getJsonKey(), indexersJsonArray);
+				
+		// Page size
+		
+		advancedConfigurationJsonObject.put(
+				AdvancedConfigurationKeys.PAGE_SIZE.getJsonKey(), 10);
 
+		// Default sort
+
+		// JSONArray defaultSortsJsonArray = 	JSONFactoryUtil.createJSONArray();
+		
 		// Highlighting.
 
 		JSONObject highlightingConfigurationJsonObject =
@@ -109,7 +119,7 @@ public class POCMockUtil {
 		highlightFieldsJsonArray.put(
 			Field.TITLE + StringPool.UNDERLINE + "en_US");
 		highlightingConfigurationJsonObject.put(
-			HighlightingConfigurationKeys.FIELD_NAMES.getJsonKey(),
+			HighlightingConfigurationKeys.FIELDS.getJsonKey(),
 			highlightFieldsJsonArray);
 
 		highlightingConfigurationJsonObject.put(
@@ -124,17 +134,23 @@ public class POCMockUtil {
 			AdvancedConfigurationKeys.HIGHLIGHTING.getJsonKey(),
 			highlightingConfigurationJsonObject);
 
-		// Index names
+		// Indexes
+
+		JSONObject indexesConfigurationJsonObject =
+				JSONFactoryUtil.createJSONObject();
+
+		indexesConfigurationJsonObject.put(
+			IndexesConfigurationKeys.USE_QUERY_SUGGESTIONS_INDEX.getJsonKey(), false);
 
 		advancedConfigurationJsonObject.put(
-			AdvancedConfigurationKeys.INDEX_NAMES.getJsonKey(),
-			_stringArrayToJsonArray(_getIndexNames(companyId)));
+				AdvancedConfigurationKeys.INDEXES.getJsonKey(),
+				indexesConfigurationJsonObject);
 
 		// Query processing.
 
 		JSONObject queryProcessingConfigurationJsonObject =
 			JSONFactoryUtil.createJSONObject();
-
+		
 		queryProcessingConfigurationJsonObject.put(
 			QueryProcessingConfigurationKeys.EXCLUDE_QUERY_CONTRIBUTORS.
 				getJsonKey(),
@@ -178,7 +194,7 @@ public class POCMockUtil {
 		termAggregationConfigurationJsonObject.put(
 			AggregationConfigurationKeys.ENABLED.getJsonKey(), true);
 		termAggregationConfigurationJsonObject.put(
-			AggregationConfigurationKeys.NAME.getJsonKey(), "termsAggregation");
+			AggregationConfigurationKeys.NAME.getJsonKey(), "userNameAggregation");
 		termAggregationConfigurationJsonObject.put(
 			AggregationConfigurationKeys.TYPE.getJsonKey(), "terms");
 
@@ -186,7 +202,7 @@ public class POCMockUtil {
 
 		bodyJsonObject.put(
 			TermsAggregationBodyConfigurationKeys.FIELD.getJsonKey(),
-			"assetTagNames.raw");
+			"userName");
 
 		termAggregationConfigurationJsonObject.put(
 			AggregationConfigurationKeys.BODY.getJsonKey(), bodyJsonObject);
@@ -199,21 +215,36 @@ public class POCMockUtil {
 			aggregationConfigurationJsonArray);
 	}
 
-	public JSONObject mockConfigurations(
-		JSONObject bluePrintJsonObject, long companyId) {
+	public void mockConfigurations(Blueprint blueprint) throws Exception {
+		
+		JSONObject jsonObject = JSONFactoryUtil.createJSONObject(blueprint.getConfiguration());
 
-		mockAdvancedConfiguration(bluePrintJsonObject, companyId);
-		mockAggregationConfiguration(bluePrintJsonObject);
-		mockRequestParameterConfiguration(bluePrintJsonObject);
-		mockSuggesterConfiguration(bluePrintJsonObject);
+		long companyId = CompanyThreadLocal.getCompanyId();
 
-		return bluePrintJsonObject;
+		if (!jsonObject.has(BlueprintKeys.ADVANCED_CONFIGURATION.getJsonKey())) {
+			mockAdvancedConfiguration(jsonObject, companyId);
+		}
+		if (!jsonObject.has(BlueprintKeys.AGGREGATION_CONFIGURATION.getJsonKey())) {
+			mockAggregationConfiguration(jsonObject);
+		}
+		if (!jsonObject.has(BlueprintKeys.PARAMETER_CONFIGURATION.getJsonKey())) {
+			mockParameterConfiguration(jsonObject);
+		}
+		if (!jsonObject.has(BlueprintKeys.SUGGEST_CONFIGURATION.getJsonKey())) {
+			mockSuggestConfiguration(jsonObject);
+		}
+		if (!jsonObject.has("facets")) {
+			mockFacetsConfiguration(jsonObject);
+		}
+
+
+		blueprint.setConfiguration(jsonObject.toString());
 	}
 
-	public void mockRequestParameterConfiguration(
+	public void mockParameterConfiguration(
 		JSONObject bluePrintJsonObject) {
 
-		JSONObject requestParameterConfigurationJsonObject =
+		JSONObject parameterConfigurationJsonObject =
 			JSONFactoryUtil.createJSONObject();
 
 		// Keywords
@@ -223,8 +254,8 @@ public class POCMockUtil {
 
 		keywordsConfigurationJsonObject.put(
 			KeywordsConfigurationKeys.PARAMETER_NAME.getJsonKey(), "q");
-		requestParameterConfigurationJsonObject.put(
-			RequestParameterConfigurationKeys.KEYWORDS.getJsonKey(),
+		parameterConfigurationJsonObject.put(
+			ParameterConfigurationKeys.KEYWORDS.getJsonKey(),
 			keywordsConfigurationJsonObject);
 
 		// Paging
@@ -234,8 +265,8 @@ public class POCMockUtil {
 
 		pagingConfigurationJsonObject.put(
 			KeywordsConfigurationKeys.PARAMETER_NAME.getJsonKey(), "page");
-		requestParameterConfigurationJsonObject.put(
-			RequestParameterConfigurationKeys.PAGING.getJsonKey(),
+		parameterConfigurationJsonObject.put(
+			ParameterConfigurationKeys.PAGE.getJsonKey(),
 			pagingConfigurationJsonObject);
 
 		// Sorts
@@ -269,8 +300,8 @@ public class POCMockUtil {
 		
 		sortsConfigurationJsonArray.put(sortConfigurationJsonObject3);
 
-		requestParameterConfigurationJsonObject.put(
-			RequestParameterConfigurationKeys.SORTS.getJsonKey(),
+		parameterConfigurationJsonObject.put(
+			ParameterConfigurationKeys.SORT.getJsonKey(),
 			sortsConfigurationJsonArray);
 
 		// Custom
@@ -283,13 +314,13 @@ public class POCMockUtil {
 		JSONObject customParameterConfigurationJsonObject =
 			JSONFactoryUtil.createJSONObject();
 		customParameterConfigurationJsonObject.put(
-			CustomRequestParameterConfigurationKeys.PARAMETER_NAME.getJsonKey(),
+			CustomParameterConfigurationKeys.PARAMETER_NAME.getJsonKey(),
 			"dateFrom");
 		customParameterConfigurationJsonObject.put(
-			CustomRequestParameterConfigurationKeys.TYPE.getJsonKey(),
-			RequestParameterType.DATE.getJsonValue());
+			CustomParameterConfigurationKeys.TYPE.getJsonKey(),
+			ParameterType.DATE.getJsonValue());
 		customParameterConfigurationJsonObject.put(
-			CustomRequestParameterConfigurationKeys.DATE_FORMAT.getJsonKey(),
+			CustomParameterConfigurationKeys.DATE_FORMAT.getJsonKey(),
 			"yyyy-MM-dd");
 
 		customParameterConfigurationJsonArray.put(
@@ -300,11 +331,11 @@ public class POCMockUtil {
 		JSONObject customParameterConfigurationJsonObject1 =
 				JSONFactoryUtil.createJSONObject();
 		customParameterConfigurationJsonObject1.put(
-			CustomRequestParameterConfigurationKeys.PARAMETER_NAME.getJsonKey(),
+			CustomParameterConfigurationKeys.PARAMETER_NAME.getJsonKey(),
 			"groupId");
 		customParameterConfigurationJsonObject1.put(
-			CustomRequestParameterConfigurationKeys.TYPE.getJsonKey(),
-			RequestParameterType.LONG.getJsonValue());
+			CustomParameterConfigurationKeys.TYPE.getJsonKey(),
+			ParameterType.LONG.getJsonValue());
 				
 			customParameterConfigurationJsonArray.put(
 					customParameterConfigurationJsonObject1);
@@ -314,61 +345,35 @@ public class POCMockUtil {
 		JSONObject customParameterConfigurationJsonObject2 =
 				JSONFactoryUtil.createJSONObject();
 		customParameterConfigurationJsonObject2.put(
-			CustomRequestParameterConfigurationKeys.PARAMETER_NAME.getJsonKey(),
+			CustomParameterConfigurationKeys.PARAMETER_NAME.getJsonKey(),
 			"time");
 		customParameterConfigurationJsonObject2.put(
-			CustomRequestParameterConfigurationKeys.TYPE.getJsonKey(),
-			RequestParameterType.TIME_RANGE.getJsonValue());
+			CustomParameterConfigurationKeys.TYPE.getJsonKey(),
+			ParameterType.TIME_RANGE.getJsonValue());
 				
 		customParameterConfigurationJsonArray.put(
 				customParameterConfigurationJsonObject2);
 
-		requestParameterConfigurationJsonObject.put(
-			RequestParameterConfigurationKeys.CUSTOM.getJsonKey(),
+		parameterConfigurationJsonObject.put(
+			ParameterConfigurationKeys.CUSTOM.getJsonKey(),
 			customParameterConfigurationJsonArray);
 
 		bluePrintJsonObject.put(
-			BlueprintKeys.REQUEST_PARAMETER_CONFIGURATION.getJsonKey(),
-			requestParameterConfigurationJsonObject);
+			BlueprintKeys.PARAMETER_CONFIGURATION.getJsonKey(),
+			parameterConfigurationJsonObject);
 	}
 
-	public void mockSuggesterConfiguration(JSONObject bluePrintJsonObject) {
-		JSONObject suggesterConfigurationJsonObject =
-			JSONFactoryUtil.createJSONObject();
+	public void mockSuggestConfiguration(JSONObject bluePrintJsonObject) {
 
-		JSONObject keywordIndexingConfigurationJsonObject =
-			JSONFactoryUtil.createJSONObject();
-
-		keywordIndexingConfigurationJsonObject.put(
-			KeywordIndexingConfigurationKeys.ENABLED.getJsonKey(), true);
-		keywordIndexingConfigurationJsonObject.put(
-			KeywordIndexingConfigurationKeys.HITS_THRESHOLD.getJsonKey(), 2);
-
-		// TODO: blacklist
-
-		suggesterConfigurationJsonObject.put(
-			SuggesterConfigurationKeys.KEYWORD_INDEXING.getJsonKey(),
-			keywordIndexingConfigurationJsonObject);
-
-		// Keyword suggestions
-
-		JSONObject keywordSuggestionsConfigurationJsonObject =
-			JSONFactoryUtil.createJSONObject();
-
-		keywordSuggestionsConfigurationJsonObject.put(
-			KeywordSuggestionsConfigurationKeys.ENABLED.getJsonKey(), true);
-		keywordSuggestionsConfigurationJsonObject.put(
-			KeywordSuggestionsConfigurationKeys.SIZE.getJsonKey(), true);
-
-		JSONArray keywordSuggestersConfigurationJsonArray =
+		JSONArray suggestConfigurationJsonArray =
 			JSONFactoryUtil.createJSONArray();
 
 		JSONObject suggester1JsonObject = JSONFactoryUtil.createJSONObject();
 
 		suggester1JsonObject.put(
-			SuggestersConfigurationKeys.ENABLED.getJsonKey(), true);
+			SuggesterConfigurationKeys.ENABLED.getJsonKey(), true);
 		suggester1JsonObject.put(
-			SuggestersConfigurationKeys.TYPE.getJsonKey(),
+			SuggesterConfigurationKeys.TYPE.getJsonKey(),
 			SuggesterType.PHRASE.getJsonValue());
 
 		JSONObject suggester1ConfigurationJsonObject1 =
@@ -390,45 +395,15 @@ public class POCMockUtil {
 				PhraseSuggesterConfigurationKeys.SIZE.getJsonKey(), 10);
 
 		suggester1JsonObject.put(
-			SuggestersConfigurationKeys.CONFIGURATION.getJsonKey(),
+			SuggesterConfigurationKeys.CONFIGURATION.getJsonKey(),
 			suggester1ConfigurationJsonObject1);
 
-		keywordSuggestersConfigurationJsonArray.put(suggester1JsonObject);
-
-		keywordSuggestionsConfigurationJsonObject.put(
-			KeywordSuggestionsConfigurationKeys.SUGGESTERS.getJsonKey(),
-			keywordSuggestersConfigurationJsonArray);
-
-		suggesterConfigurationJsonObject.put(
-			SuggesterConfigurationKeys.KEYWORD_SUGGESTIONS.getJsonKey(),
-			keywordSuggestionsConfigurationJsonObject);
+		suggestConfigurationJsonArray.put(suggester1JsonObject);
 
 		// TODO: spellchecking
 
 		bluePrintJsonObject.put(
-			BlueprintKeys.SUGGESTER_CONFIGURATION.getJsonKey(),
-			suggesterConfigurationJsonObject);
+			BlueprintKeys.SUGGEST_CONFIGURATION.getJsonKey(),
+			suggestConfigurationJsonArray);
 	}
-
-	private String[] _getIndexNames(long companyId) {
-		return new String[] {_indexNameBuilder.getIndexName(companyId)};
-	}
-	
-	private JSONArray _stringArrayToJsonArray(String[] arr) {
-		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
-
-		if ((arr == null) || (arr.length == 0)) {
-			return jsonArray;
-		}
-
-		for (String s : arr) {
-			jsonArray.put(s);
-		}
-
-		return jsonArray;
-	}
-
-	@Reference
-	private IndexNameBuilder _indexNameBuilder;
-
 }

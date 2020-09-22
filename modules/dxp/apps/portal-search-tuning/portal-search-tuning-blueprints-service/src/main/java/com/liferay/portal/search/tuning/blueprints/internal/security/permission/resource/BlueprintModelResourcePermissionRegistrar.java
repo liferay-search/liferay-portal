@@ -47,7 +47,8 @@ public class BlueprintModelResourcePermissionRegistrar {
 		properties.put("model.class.name", Blueprint.class.getName());
 
 		_serviceRegistration = bundleContext.registerService(
-			ModelResourcePermission.class,
+			(Class<ModelResourcePermission<Blueprint>>)
+				(Class<?>)ModelResourcePermission.class,
 			ModelResourcePermissionFactory.create(
 				Blueprint.class, Blueprint::getBlueprintId,
 				_blueprintLocalService::getBlueprint,
@@ -73,7 +74,8 @@ public class BlueprintModelResourcePermissionRegistrar {
 	)
 	private PortletResourcePermission _portletResourcePermission;
 
-	private ServiceRegistration<ModelResourcePermission> _serviceRegistration;
+	private ServiceRegistration<ModelResourcePermission<Blueprint>>
+		_serviceRegistration;
 
 	@Reference
 	private StagingPermission _stagingPermission;

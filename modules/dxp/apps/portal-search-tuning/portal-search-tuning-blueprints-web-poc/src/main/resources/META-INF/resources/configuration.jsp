@@ -2,26 +2,28 @@
 /**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
+ * The contents of this file are subject to the terms of the Liferay Enterprise
+ * Subscription License ("License"). You may not use this file except in
+ * compliance with the License. You can obtain a copy of the License by
+ * contacting Liferay, Inc. See the License for the specific language governing
+ * permissions and limitations under the License, including but not limited to
+ * distribution rights of the Software.
  *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ *
+ *
  */
 --%>
 
 <%@ include file="/init.jsp" %>
 
-<%@page import="com.liferay.portal.kernel.util.Constants"%>
-<%@page import="com.liferay.portal.kernel.util.ParamUtil"%>
-<%@page import="javax.portlet.PortletPreferences"%>
-
 <%
-String blueprintId = preferences.getValue("blueprintId", "0");
+PortletPreferences preferences = renderRequest.getPreferences();
+
+String searchBlueprintId = preferences.getValue(BlueprintsWebPortletPreferenceKeys.SEARCH_BLUEPRINT_ID, "0");
+String typeaheadBlueprintId = preferences.getValue(BlueprintsWebPortletPreferenceKeys.TYPEAHEAD_BLUEPRINT_ID, "0");
+
+String searchBlueprintIdKey = "preferences--" + BlueprintsWebPortletPreferenceKeys.SEARCH_BLUEPRINT_ID + "--";
+String typeaheadBlueprintIdKey = "preferences--" + BlueprintsWebPortletPreferenceKeys.TYPEAHEAD_BLUEPRINT_ID + "--";
 %>
 
 <liferay-portlet:actionURL portletConfiguration="<%= true %>" var="configurationActionURL" />
@@ -39,15 +41,8 @@ String blueprintId = preferences.getValue("blueprintId", "0");
 	<liferay-frontend:edit-form-body>
 		<liferay-frontend:fieldset-group>
 			<liferay-frontend:fieldset>
-			
-				<aui:input label="Blueprint ID" name="preferences--blueprintId--" type="text" value="<%= blueprintId %>" />
-
-				<aui:select label="Suggestion type" name="preferences--suggestMode--">
-					<aui:option selected='<%= suggestMode.equals("contents") ? true : false %>' value="contents">Search as you type</aui:option>
-					<aui:option selected='<%= suggestMode.equals("keywords") ? true : false %>' value="keywords">Strip</aui:option>
-				</aui:select>
-
-			
+				<aui:input label="search-blueprint-id" name="<%= searchBlueprintIdKey %>" required="<%= true %>" type="text" value="<%= searchBlueprintId %>" />
+				<aui:input label="typeahead-blueprint-id" name="<%= typeaheadBlueprintIdKey %>" type="text" value="<%= typeaheadBlueprintId %>" />
 			</liferay-frontend:fieldset>
 		</liferay-frontend:fieldset-group>
 	</liferay-frontend:edit-form-body>

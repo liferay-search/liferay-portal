@@ -15,28 +15,31 @@
 package com.liferay.portal.search.tuning.blueprints.engine.internal.parameter.contributor;
 
 import com.liferay.portal.kernel.language.Language;
-import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.service.UserLocalService;
-import com.liferay.portal.kernel.theme.ThemeDisplay;
-import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.portal.kernel.util.TimeZoneUtil;
+import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
+import com.liferay.portal.search.tuning.blueprints.engine.constants.ReservedParameterNames;
+import com.liferay.portal.search.tuning.blueprints.engine.internal.util.BlueprintsAttributesHelper;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.DateParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.IntegerParameter;
+import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterDataBuilder;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterDefinition;
-import com.liferay.portal.search.tuning.blueprints.engine.parameter.SearchParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.parameter.ParameterContributor;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.TimeZone;
+import com.liferay.portal.search.tuning.blueprints.message.Messages;
+import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.TimeZone;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -52,21 +55,12 @@ public class TimeParameterContributor implements ParameterContributor {
 
 	@Override
 	public void contribute(
-		HttpServletRequest httpServletRequest,
-		SearchParameterData searchParameterData) {
+		ParameterDataBuilder parameterDataBuilder, Blueprint blueprint,
+		BlueprintsAttributes blueprintsAttributes, Messages messages) {
 
-		ThemeDisplay themeDisplay =
-			(ThemeDisplay)httpServletRequest.getAttribute(
-				WebKeys.THEME_DISPLAY);
+		TimeZone timeZone = _getTimeZone(blueprintsAttributes);
 
-		_provide(searchParameterData, themeDisplay.getTimeZone());
-	}
-
-	@Override
-	public void contribute(
-		SearchContext searchContext, SearchParameterData searchParameterData) {
-
-		_provide(searchParameterData, searchContext.getTimeZone());
+		_addParameters(parameterDataBuilder, blueprintsAttributes, timeZone);
 	}
 
 	@Override
@@ -75,39 +69,131 @@ public class TimeParameterContributor implements ParameterContributor {
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				"${time.current_date}", DateParameter.class.getName(),
-				"parameter.time.current-date"));
+				_getTemplateVariableName(
+					ReservedParameterNames.CURRENT_DATE.getKey()),
+				DateParameter.class.getName(), "parameter.time.current-date"));
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				"${time.current_day_of_month}",
+				_getTemplateVariableName(
+					ReservedParameterNames.CURRENT_DAY_OF_MONTH.getKey()),
 				IntegerParameter.class.getName(),
 				"parameter.time.current-day-of-month"));
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				"${time.current_day_of_week}", IntegerParameter.class.getName(),
+				_getTemplateVariableName(
+					ReservedParameterNames.CURRENT_DAY_OF_WEEK.getKey()),
+				IntegerParameter.class.getName(),
 				"parameter.time.current-day-of-week"));
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				"${time.current_day_of_year}", IntegerParameter.class.getName(),
+				_getTemplateVariableName(
+					ReservedParameterNames.CURRENT_DAY_OF_YEAR.getKey()),
+				IntegerParameter.class.getName(),
 				"parameter.time.current-day-of-year"));
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				"${time.current_hour}", IntegerParameter.class.getName(),
+				_getTemplateVariableName(
+					ReservedParameterNames.CURRENT_HOUR.getKey()),
+				IntegerParameter.class.getName(),
 				"parameter.time.current-hour"));
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				"${time.current_year}", IntegerParameter.class.getName(),
+				_getTemplateVariableName(
+					ReservedParameterNames.CURRENT_YEAR.getKey()),
+				IntegerParameter.class.getName(),
 				"parameter.time.current-year"));
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				"${time.time_of_day}", StringParameter.class.getName(),
-				"parameter.time.time-of-day"));
+				_getTemplateVariableName(
+					ReservedParameterNames.TIME_OF_DAY.getKey()),
+				StringParameter.class.getName(), "parameter.time.time-of-day"));
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				"${time.timezone_locale_name}", StringParameter.class.getName(),
+				_getTemplateVariableName(
+					ReservedParameterNames.TIMEZONE_LOCALE_NAME.getKey()),
+				StringParameter.class.getName(),
 				"parameter.time.timezone-locale-name"));
 
 		return parameterDefinitions;
+	}
+
+	private void _addParameters(
+		ParameterDataBuilder parameterDataBuilder,
+		BlueprintsAttributes blueprintsAttributes, TimeZone timeZone) {
+
+		LocalDateTime localDateTime = LocalDateTime.now(timeZone.toZoneId());
+
+		ZonedDateTime zonedDateTime = localDateTime.atZone(timeZone.toZoneId());
+
+		Date now = Date.from(zonedDateTime.toInstant());
+
+		parameterDataBuilder.addParameter(
+			new DateParameter(
+				ReservedParameterNames.CURRENT_DATE.getKey(),
+				_getTemplateVariableName(
+					ReservedParameterNames.CURRENT_DATE.getKey()),
+				now));
+
+		parameterDataBuilder.addParameter(
+			new IntegerParameter(
+				ReservedParameterNames.CURRENT_DAY_OF_MONTH.getKey(),
+				_getTemplateVariableName(
+					ReservedParameterNames.CURRENT_DAY_OF_MONTH.getKey()),
+				localDateTime.getDayOfMonth()));
+
+		DayOfWeek dayOfWeek = localDateTime.getDayOfWeek();
+
+		parameterDataBuilder.addParameter(
+			new IntegerParameter(
+				ReservedParameterNames.CURRENT_DAY_OF_WEEK.getKey(),
+				_getTemplateVariableName(
+					ReservedParameterNames.CURRENT_DAY_OF_WEEK.getKey()),
+				dayOfWeek.getValue()));
+
+		parameterDataBuilder.addParameter(
+			new IntegerParameter(
+				ReservedParameterNames.CURRENT_DAY_OF_YEAR.getKey(),
+				_getTemplateVariableName(
+					ReservedParameterNames.CURRENT_DAY_OF_YEAR.getKey()),
+				localDateTime.getDayOfYear()));
+
+		parameterDataBuilder.addParameter(
+			new IntegerParameter(
+				ReservedParameterNames.CURRENT_HOUR.getKey(),
+				_getTemplateVariableName(
+					ReservedParameterNames.CURRENT_HOUR.getKey()),
+				localDateTime.getHour()));
+
+		parameterDataBuilder.addParameter(
+			new IntegerParameter(
+				ReservedParameterNames.CURRENT_YEAR.getKey(),
+				_getTemplateVariableName(
+					ReservedParameterNames.CURRENT_YEAR.getKey()),
+				localDateTime.getYear()));
+
+		parameterDataBuilder.addParameter(
+			new StringParameter(
+				ReservedParameterNames.TIME_OF_DAY.getKey(),
+				_getTemplateVariableName(
+					ReservedParameterNames.TIME_OF_DAY.getKey()),
+				_getTimeOfTheDay(localDateTime.toLocalTime())));
+
+		parameterDataBuilder.addParameter(
+			new StringParameter(
+				ReservedParameterNames.TIMEZONE_LOCALE_NAME.getKey(),
+				_getTemplateVariableName(
+					ReservedParameterNames.TIMEZONE_LOCALE_NAME.getKey()),
+				timeZone.getDisplayName(blueprintsAttributes.getLocale())));
+	}
+
+	private String _getTemplateVariableName(String key) {
+		StringBundler sb = new StringBundler(3);
+
+		sb.append("${time.");
+		sb.append(key);
+		sb.append("}");
+
+		return sb.toString();
 	}
 
 	private String _getTimeOfTheDay(LocalTime localTime) {
@@ -125,6 +211,19 @@ public class TimeParameterContributor implements ParameterContributor {
 		}
 	}
 
+	private TimeZone _getTimeZone(BlueprintsAttributes blueprintsAttributes) {
+		Optional<String> optional =
+			_blueprintsAttributesHelper.getStringOptional(
+				blueprintsAttributes,
+				ReservedParameterNames.TIMEZONE_ID.getKey());
+
+		if (optional.isPresent()) {
+			return TimeZoneUtil.getTimeZone(optional.get());
+		}
+
+		return TimeZoneUtil.getDefault();
+	}
+
 	private boolean _isTimebetween(
 		LocalTime time, LocalTime start, LocalTime end) {
 
@@ -135,61 +234,6 @@ public class TimeParameterContributor implements ParameterContributor {
 		return false;
 	}
 
-	private void _provide(
-		SearchParameterData searchParameterData, TimeZone timeZone) {
-
-		if (timeZone == null) {
-			return;
-		}
-
-		LocalDateTime localDateTime = LocalDateTime.now(timeZone.toZoneId());
-
-		ZonedDateTime zonedDateTime = localDateTime.atZone(timeZone.toZoneId());
-
-		Date now = Date.from(zonedDateTime.toInstant());
-
-		searchParameterData.addParameter(
-			new DateParameter(
-				"time.current_date", "${time.current_date}", now));
-
-		searchParameterData.addParameter(
-			new IntegerParameter(
-				"time.current_day_of_month", "${time.current_day_of_month}",
-				localDateTime.getDayOfMonth()));
-
-		DayOfWeek dayOfWeek = localDateTime.getDayOfWeek();
-
-		searchParameterData.addParameter(
-			new IntegerParameter(
-				"time.current_day_of_week", "${time.current_day_of_week}",
-				dayOfWeek.getValue()));
-
-		searchParameterData.addParameter(
-			new IntegerParameter(
-				"time.current_day_of_year", "${time.current_day_of_year}",
-				localDateTime.getDayOfYear()));
-
-		searchParameterData.addParameter(
-			new IntegerParameter(
-				"time.current_hour", "${time.current_hour}",
-				localDateTime.getHour()));
-
-		searchParameterData.addParameter(
-			new IntegerParameter(
-				"time.current_year", "${time.current_year}",
-				localDateTime.getYear()));
-
-		searchParameterData.addParameter(
-			new StringParameter(
-				"time.time_of_day", "${time.time_of_day}",
-				_getTimeOfTheDay(localDateTime.toLocalTime())));
-
-		searchParameterData.addParameter(
-			new StringParameter(
-				"time.timezone", "${time.timezone}",
-				timeZone.getDisplayName()));
-	}
-
 	private static final LocalTime _AFTER_NOON = LocalTime.of(12, 0, 0);
 
 	private static final LocalTime _EVENING = LocalTime.of(16, 0, 0);
@@ -197,6 +241,9 @@ public class TimeParameterContributor implements ParameterContributor {
 	private static final LocalTime _MORNING = LocalTime.of(0, 0, 0);
 
 	private static final LocalTime _NIGHT = LocalTime.of(21, 0, 0);
+
+	@Reference
+	private BlueprintsAttributesHelper _blueprintsAttributesHelper;
 
 	@Reference
 	private Language _language;

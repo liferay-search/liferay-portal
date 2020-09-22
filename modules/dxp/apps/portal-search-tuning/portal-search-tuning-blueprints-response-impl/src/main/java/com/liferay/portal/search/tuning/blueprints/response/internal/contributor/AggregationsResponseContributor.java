@@ -19,12 +19,15 @@ import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.aggregation.AggregationResult;
-import com.liferay.portal.search.engine.adapter.search.SearchSearchResponse;
+import com.liferay.portal.search.searcher.SearchResponse;
+import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.aggregation.AggregationConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.engine.context.SearchRequestContext;
-import com.liferay.portal.search.tuning.blueprints.engine.message.Message;
-import com.liferay.portal.search.tuning.blueprints.engine.message.Severity;
+import com.liferay.portal.search.tuning.blueprints.message.Message;
+import com.liferay.portal.search.tuning.blueprints.message.Messages;
+import com.liferay.portal.search.tuning.blueprints.message.Severity;
+import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.response.constants.JSONResponseKeys;
 import com.liferay.portal.search.tuning.blueprints.response.internal.aggregation.AggregationResponseBuilderFactory;
 import com.liferay.portal.search.tuning.blueprints.response.spi.aggregation.AggregationResponseBuilder;
@@ -40,41 +43,42 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Petteri Karttunen
  */
-@Component(immediate = true, service = ResponseContributor.class)
+@Component(
+	immediate = true, property = "type=aggregations",
+	service = ResponseContributor.class
+)
 public class AggregationsResponseContributor implements ResponseContributor {
 
 	@Override
 	public void contribute(
-		SearchRequestContext searchRequestContext,
-		SearchSearchResponse searchResponse,
-		Map<String, Object> responseAttributes, JSONObject responseJsonObject) {
+		JSONObject responseJsonObject, SearchResponse searchResponse,
+		Blueprint blueprint, BlueprintsAttributes blueprintsAttributes,
+		Messages messages) {
 
 		responseJsonObject.put(
 			JSONResponseKeys.AGGREGATIONS,
-			_getAggregations(searchRequestContext, searchResponse));
+			_getAggregationsJSONObject(searchResponse, blueprint, messages));
 	}
 
-	private JSONObject _getAggregations(
-		SearchRequestContext searchRequestContext,
-		SearchSearchResponse searchResponse) {
+	private JSONObject _getAggregationsJSONObject(
+		SearchResponse searchResponse, Blueprint blueprint, Messages messages) {
 
 		JSONObject aggregationsJsonObject = JSONFactoryUtil.createJSONObject();
 
 		Optional<JSONArray> aggregationsConfigurationOptional =
-				_blueprintHelper.getAggregationConfigurationOptional(
-						searchRequestContext.getBlueprint());
-		
+			_blueprintHelper.getAggsConfigurationOptional(blueprint);
+
 		Map<String, AggregationResult> aggregations =
 			searchResponse.getAggregationResultsMap();
 
-		if ((aggregations == null) ||
-			(!aggregationsConfigurationOptional.isPresent())) {
+		if (aggregations.isEmpty() ||
+			!aggregationsConfigurationOptional.isPresent()) {
 
 			return aggregationsJsonObject;
 		}
-		
-		JSONArray aggregationsConfigurationJsonArray = 
-				aggregationsConfigurationOptional.get();
+
+		JSONArray aggregationsConfigurationJsonArray =
+			aggregationsConfigurationOptional.get();
 
 		for (int i = 0; i < aggregationsConfigurationJsonArray.length(); i++) {
 			JSONObject aggregationJsonObject =
@@ -84,36 +88,41 @@ public class AggregationsResponseContributor implements ResponseContributor {
 				AggregationConfigurationKeys.NAME.getJsonKey());
 
 			String type = aggregationJsonObject.getString(
-					AggregationConfigurationKeys.TYPE.getJsonKey());
+				AggregationConfigurationKeys.TYPE.getJsonKey());
 
 			for (Map.Entry<String, AggregationResult> entry :
 					aggregations.entrySet()) {
 
 				String aggregationResultName = entry.getKey();
 
-				if (!aggregationResultName.equalsIgnoreCase(aggregationName)) {
+				if (!StringUtil.equalsIgnoreCase(
+						aggregationResultName, aggregationName)) {
+
 					continue;
 				}
 
 				try {
 					AggregationResponseBuilder aggregationResponseBuilder =
-							_aggregationResponseBuilderFactory.getBuilder(type);
-	
+						_aggregationResponseBuilderFactory.getBuilder(type);
+
 					Optional<JSONObject> aggregationJsonOptional =
-							aggregationResponseBuilder.build(entry.getValue());
-	
+						aggregationResponseBuilder.buildJSONObjectOptional(
+							entry.getValue());
+
 					if (aggregationJsonOptional.isPresent()) {
-						aggregationsJsonObject.put(aggregationName, aggregationJsonOptional.get());
+						aggregationsJsonObject.put(
+							aggregationName, aggregationJsonOptional.get());
 					}
-				}	
+				}
 				catch (IllegalArgumentException illegalArgumentException) {
-					searchRequestContext.addMessage(
+					messages.addMessage(
 						new Message(
 							Severity.ERROR, "core",
 							"core.error.unknown-aggregation-type",
 							illegalArgumentException.getMessage(),
 							illegalArgumentException, aggregationJsonObject,
-							AggregationConfigurationKeys.TYPE.getJsonKey(), type));
+							AggregationConfigurationKeys.TYPE.getJsonKey(),
+							type));
 
 					_log.error(
 						illegalArgumentException.getMessage(),
@@ -126,12 +135,13 @@ public class AggregationsResponseContributor implements ResponseContributor {
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
-			AggregationsResponseContributor.class);
+		AggregationsResponseContributor.class);
 
 	@Reference
-	private AggregationResponseBuilderFactory _aggregationResponseBuilderFactory;
+	private AggregationResponseBuilderFactory
+		_aggregationResponseBuilderFactory;
 
 	@Reference
 	private BlueprintHelper _blueprintHelper;
-	
+
 }

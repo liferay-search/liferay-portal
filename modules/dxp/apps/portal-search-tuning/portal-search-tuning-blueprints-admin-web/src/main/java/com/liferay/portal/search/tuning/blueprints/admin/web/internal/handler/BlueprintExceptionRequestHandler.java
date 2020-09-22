@@ -27,12 +27,17 @@ import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.search.tuning.blueprints.exception.BlueprintValidationException;
 
+import java.util.List;
+
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
+/**
+ * @author Kevin Tan
+ */
 @Component(immediate = true, service = BlueprintExceptionRequestHandler.class)
 public class BlueprintExceptionRequestHandler {
 
@@ -54,8 +59,9 @@ public class BlueprintExceptionRequestHandler {
 				blueprintValidationException.getMessage(),
 				blueprintValidationException);
 
-			blueprintValidationException.getErrors(
-			).forEach(
+			List<String> errors = blueprintValidationException.getErrors();
+
+			errors.forEach(
 				key -> {
 					String errorMessage = "an-unexpected-error-occurred";
 
@@ -68,8 +74,7 @@ public class BlueprintExceptionRequestHandler {
 
 					jsonArray.put(
 						_language.get(themeDisplay.getRequest(), errorMessage));
-				}
-			);
+				});
 		}
 		else {
 			_log.error(portalException.getMessage(), portalException);
