@@ -18,7 +18,6 @@ import com.liferay.asset.kernel.service.AssetEntryLocalService;
 import com.liferay.document.library.kernel.service.DLAppService;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
-import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.search.Field;
@@ -32,9 +31,6 @@ import com.liferay.portal.search.tuning.blueprints.response.spi.result.ResultBui
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.portlet.PortletRequest;
-import javax.portlet.PortletResponse;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -84,26 +80,6 @@ public class DLFileEntryResultBuilder
 		return sb.toString();
 	}
 
-	@Override
-	public String getViewURL(
-			Document document, BlueprintsAttributes blueprintsAttributes)
-		throws Exception {
-
-		PortletRequest portletRequest = getPortletRequest(blueprintsAttributes);
-		PortletResponse portletResponse = getPortletResponse(
-			blueprintsAttributes);
-
-		if ((portletRequest == null) || (portletResponse == null)) {
-			return StringPool.BLANK;
-		}
-
-		// TODO: https://issues.liferay.com/browse/LPS-119744
-
-		// boolean viewInContext = isViewInContext(blueprintsAttributes);
-
-		return _getDirectLink(portletRequest, document);
-	}
-
 	private String _getDimensions(
 			Document document, BlueprintsAttributes blueprintsAttributes)
 		throws Exception {
@@ -118,22 +94,6 @@ public class DLFileEntryResultBuilder
 			document.getString(
 				_getTikaRawMetadataField(blueprintsAttributes, "LENGTH")));
 		sb.append(" px");
-
-		return sb.toString();
-	}
-
-	private String _getDirectLink(
-		PortletRequest portletRequest, Document document) {
-
-		StringBundler sb = new StringBundler(7);
-
-		sb.append(_portal.getPortalURL(portletRequest));
-		sb.append("/documents/");
-		sb.append(document.getString(Field.SCOPE_GROUP_ID));
-		sb.append("/");
-		sb.append(document.getString(Field.FOLDER_ID));
-		sb.append("/");
-		sb.append(document.getString("path"));
 
 		return sb.toString();
 	}

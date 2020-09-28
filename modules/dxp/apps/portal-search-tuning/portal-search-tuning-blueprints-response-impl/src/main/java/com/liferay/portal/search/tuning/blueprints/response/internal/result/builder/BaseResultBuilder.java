@@ -21,17 +21,16 @@ import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.search.IndexerRegistryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
-import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.document.Document;
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
 import com.liferay.portal.search.tuning.blueprints.response.constants.ResponseAttributeKeys;
+import com.liferay.portal.search.tuning.blueprints.response.internal.util.BlueprintUtil;
 import com.liferay.portal.search.tuning.blueprints.response.internal.util.ResponseUtil;
 import com.liferay.portal.search.tuning.blueprints.response.spi.result.ResultBuilder;
 
@@ -45,7 +44,6 @@ import java.util.Optional;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
-import javax.portlet.WindowState;
 
 /**
  * @author Petteri Karttunen
@@ -133,7 +131,7 @@ public abstract class BaseResultBuilder implements ResultBuilder {
 	@Override
 	public String getViewURL(
 			Document document, BlueprintsAttributes blueprintsAttributes)
-		throws Exception {
+		throws Exception, PortalException {
 
 		PortletRequest portletRequest = getPortletRequest(blueprintsAttributes);
 		PortletResponse portletResponse = getPortletResponse(
@@ -143,33 +141,10 @@ public abstract class BaseResultBuilder implements ResultBuilder {
 			return StringPool.BLANK;
 		}
 
-		LiferayPortletResponse liferayPortletResponse =
-			PortalUtil.getLiferayPortletResponse(portletResponse);
-
 		boolean viewInContext = isViewInContext(blueprintsAttributes);
 
-		StringBundler sb = new StringBundler(2);
-
-		if (viewInContext) {
-			sb.append(
-				getAssetRenderer(
-					document
-				).getURLViewInContext(
-					PortalUtil.getLiferayPortletRequest(portletRequest),
-					liferayPortletResponse, ""
-				));
-		}
-
-		if (sb.length() == 0) {
-			sb.append(
-				getAssetRenderer(
-					document
-				).getURLView(
-					liferayPortletResponse, WindowState.MAXIMIZED
-				));
-		}
-
-		return sb.toString();
+		return BlueprintUtil.getBlueprintViewURL(
+			document, portletRequest, portletResponse, viewInContext);
 	}
 
 	protected String buildLocalizedSnippetFieldName(
@@ -270,7 +245,7 @@ public abstract class BaseResultBuilder implements ResultBuilder {
 		}
 
 		if (Validator.isNull(value)) {
-			value = document.getString(value);
+			value = document.getString(field);
 		}
 
 		return value;

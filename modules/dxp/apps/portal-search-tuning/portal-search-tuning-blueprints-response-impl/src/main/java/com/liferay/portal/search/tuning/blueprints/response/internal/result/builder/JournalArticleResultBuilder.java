@@ -16,21 +16,13 @@ package com.liferay.portal.search.tuning.blueprints.response.internal.result.bui
 
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.service.JournalArticleService;
-import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.search.Field;
-import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.webserver.WebServerServletTokenUtil;
 import com.liferay.portal.search.document.Document;
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
-import com.liferay.portal.search.tuning.blueprints.poc.util.POCMockLinkUtil;
 import com.liferay.portal.search.tuning.blueprints.response.spi.result.ResultBuilder;
-
-import javax.portlet.PortletRequest;
-import javax.portlet.PortletResponse;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -65,46 +57,6 @@ public class JournalArticleResultBuilder
 		return sb.toString();
 	}
 
-	@Override
-	public String getViewURL(
-			Document document, BlueprintsAttributes blueprintsAttributes)
-		throws Exception, PortalException {
-
-		PortletRequest portletRequest = getPortletRequest(blueprintsAttributes);
-
-		PortletResponse portletResponse = getPortletResponse(
-			blueprintsAttributes);
-
-		if ((portletRequest == null) || (portletResponse == null)) {
-			return StringPool.BLANK;
-		}
-
-		boolean viewInContext = isViewInContext(blueprintsAttributes);
-
-		String viewURL = null;
-
-		LiferayPortletRequest liferayPortletRequest =
-			_portal.getLiferayPortletRequest(portletRequest);
-
-		if (viewInContext) {
-			viewURL = getAssetRenderer(
-				document
-			).getURLViewInContext(
-				liferayPortletRequest,
-				_portal.getLiferayPortletResponse(portletResponse), null
-			);
-		}
-
-		// TODO: https://issues.liferay.com/browse/LPS-119744
-
-		if (Validator.isBlank(viewURL)) {
-			viewURL = POCMockLinkUtil.getNotLayoutBoundJournalArticleUrl(
-				liferayPortletRequest, _getJournalArticle(document));
-		}
-
-		return viewURL;
-	}
-
 	private JournalArticle _getJournalArticle(Document document)
 		throws PortalException {
 
@@ -114,8 +66,5 @@ public class JournalArticleResultBuilder
 
 	@Reference
 	private JournalArticleService _journalArticleService;
-
-	@Reference
-	private Portal _portal;
 
 }
