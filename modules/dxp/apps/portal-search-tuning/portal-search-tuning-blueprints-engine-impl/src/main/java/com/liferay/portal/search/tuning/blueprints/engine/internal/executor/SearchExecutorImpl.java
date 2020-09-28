@@ -204,7 +204,7 @@ public class SearchExecutorImpl implements SearchExecutor {
 
 		List<Rescore> rescores = searchRequest.getRescores();
 
-		if (!rescores.isEmpty()) {
+		if (rescores != null && !rescores.isEmpty()) {
 			searchRequestBuilder2.sorts(new Sort[0]);
 		}
 
