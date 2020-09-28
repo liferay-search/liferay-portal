@@ -174,7 +174,7 @@ export default function BlueprintsSearch({fetchResultsURL, suggestionsURL}) {
 								onPageChange={(page) => {
 									setActivePage(page);
 								}}
-								query={resource.meta.keywords}
+								query={query}
 								totalHits={resource.meta.totalHits}
 								totalPages={resource.pagination.totalPages}
 							/>

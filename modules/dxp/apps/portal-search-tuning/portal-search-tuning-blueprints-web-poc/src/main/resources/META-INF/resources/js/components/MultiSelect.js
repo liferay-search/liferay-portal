@@ -29,7 +29,7 @@ const defaultFilter = (items, item, inputValue, locator) =>
 		: item[locator.label]);
 
 const escapeRegExp = (str) => {
-	return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
+	return str.replace(/[-[\]{}()*+?.^$|]/g, '\\$&');
 };
 
 const MultiSelectMenuRenderer = ({
@@ -127,10 +127,14 @@ export default function MultiSelect({
 		}
 
 		if (key === 'ArrowDown') {
+			event.preventDefault();
+
 			setIsOpenMenu(true);
 		}
 
 		if (key === 'ArrowUp') {
+			event.preventDefault();
+
 			setIsOpenMenu(false);
 		}
 

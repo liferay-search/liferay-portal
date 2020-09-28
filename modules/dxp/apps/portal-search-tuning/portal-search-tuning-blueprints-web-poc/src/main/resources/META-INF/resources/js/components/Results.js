@@ -66,6 +66,8 @@ export default function Results({
 												: item.title,
 										}}
 										href={item.viewURL}
+										rel="noopener noreferrer"
+										target="_blank"
 									/>
 								) : (
 									<span

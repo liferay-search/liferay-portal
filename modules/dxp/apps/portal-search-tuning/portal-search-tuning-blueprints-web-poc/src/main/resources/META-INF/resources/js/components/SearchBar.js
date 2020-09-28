@@ -16,14 +16,15 @@ import ClayDropDown from '@clayui/drop-down';
 import {ClayInput} from '@clayui/form';
 import ClayIcon from '@clayui/icon';
 import {PropTypes} from 'prop-types';
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 
 export default function SearchBar({handleSubmit, suggestionsURL}) {
+	const containerRef = useRef(null);
 	const [value, setValue] = useState('');
 	const [state, setState] = useState({
 		error: false,
-		initialLoading: false,
 		loading: false,
+		typing: false,
 	});
 	const [view, setView] = useState(false);
 
@@ -33,8 +34,8 @@ export default function SearchBar({handleSubmit, suggestionsURL}) {
 		onNetworkStatusChange: (status) =>
 			setState({
 				error: status === 5,
-				initialLoading: status === 1,
 				loading: status < 4,
+				typing: false,
 			}),
 		variables: {q: value},
 	});
@@ -42,14 +43,6 @@ export default function SearchBar({handleSubmit, suggestionsURL}) {
 	function handleKeyDown(event) {
 		if (!event.currentTarget.value.trim()) {
 			return;
-		}
-
-		if (event.key === 'ArrowDown') {
-			setView(true);
-		}
-
-		if (event.key === 'ArrowUp') {
-			setView(false);
 		}
 
 		if (event.key === 'Enter') {
@@ -63,13 +56,17 @@ export default function SearchBar({handleSubmit, suggestionsURL}) {
 
 	return (
 		<ClayInput.Group className="searchbar">
-			<ClayAutocomplete>
+			<ClayAutocomplete ref={containerRef}>
 				<ClayAutocomplete.Input
 					aria-label={Liferay.Language.get('keyword')}
 					className="input-group-inset input-group-inset-after"
 					onChange={(event) => {
 						setView(true);
+						setState({typing: true});
 						setValue(event.target.value);
+					}}
+					onClick={() => {
+						setView(true);
 					}}
 					onKeyDown={handleKeyDown}
 					placeholder={Liferay.Language.get('search')}
@@ -77,8 +74,16 @@ export default function SearchBar({handleSubmit, suggestionsURL}) {
 				/>
 				<ClayAutocomplete.DropDown
 					active={
-						(!!resource && !!value && view) || state.initialLoading
+						!!resource &&
+						!!value &&
+						view &&
+						(_hasResults() ||
+							state.loading ||
+							state.typing ||
+							state.error)
 					}
+					alignElementRef={containerRef}
+					onSetActive={setView}
 				>
 					<ClayDropDown.ItemList>
 						{state.error && (
