@@ -106,7 +106,7 @@ function BlueprintForm({
 			}
 
 			formData.append(`${namespace}type`, blueprintType);
-			formData.append(`${namespace}searchblueprintId`, blueprintId);
+			formData.append(`${namespace}blueprintId`, blueprintId);
 			formData.append(`${namespace}redirect`, redirectURL);
 
 			return fetch(submitFormURL, {
