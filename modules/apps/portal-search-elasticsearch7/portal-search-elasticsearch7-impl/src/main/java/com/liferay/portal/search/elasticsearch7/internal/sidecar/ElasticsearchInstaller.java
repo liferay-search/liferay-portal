@@ -54,32 +54,27 @@ public class ElasticsearchInstaller {
 			elasticsearchInstaller._installationDirectoryPath;
 	}
 
-	public void install() {
+	public void install() throws SidecarException {
 		if (isAlreadyInstalled()) {
 			return;
 		}
 
-		createDestinationDirectory();
-
 		try {
+			createDestinationDirectory();
+
 			createTemporaryDownloadDirectory();
 
-			try {
-				downloadAndInstallElasticsearch();
+			downloadAndInstallElasticsearch();
 
-				downloadAndInstallPlugins();
-			}
-			catch (IOException ioException) {
-				throw new RuntimeException(ioException);
-			}
-			finally {
-				deleteTemporaryDownloadDirectory();
-			}
+			downloadAndInstallPlugins();
 		}
-		catch (RuntimeException runtimeException) {
+		catch (IOException ioException) {
 			deleteDestinationDirectory();
 
-			throw runtimeException;
+			throw new SidecarException(ioException);
+		}
+		finally {
+			deleteTemporaryDownloadDirectory();
 		}
 	}
 
@@ -150,20 +145,15 @@ public class ElasticsearchInstaller {
 		}
 	}
 
-	protected void createDestinationDirectory() {
+	protected void createDestinationDirectory() throws IOException {
 		createDirectories(_installationDirectoryPath);
 	}
 
-	protected void createDirectories(Path directoryPath) {
-		try {
-			Files.createDirectories(directoryPath);
-		}
-		catch (IOException ioException) {
-			throw new RuntimeException(ioException);
-		}
+	protected void createDirectories(Path directoryPath) throws IOException {
+		Files.createDirectories(directoryPath);
 	}
 
-	protected void createTemporaryDownloadDirectory() {
+	protected void createTemporaryDownloadDirectory() throws IOException {
 		createDirectories(_temporaryDirectoryPath);
 	}
 

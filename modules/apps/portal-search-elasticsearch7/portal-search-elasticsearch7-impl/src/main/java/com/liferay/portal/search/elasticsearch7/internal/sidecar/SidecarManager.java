@@ -136,8 +136,15 @@ public class SidecarManager implements ElasticsearchConfigurationObserver {
 				}
 			);
 
-			elasticsearchConnectionManager.addElasticsearchConnection(
-				elasticsearchConnectionBuilder.build());
+			try {
+				elasticsearchConnectionManager.addElasticsearchConnection(
+					elasticsearchConnectionBuilder.build());
+			}
+			catch (Exception exception) {
+				if (_log.isDebugEnabled()) {
+					_log.debug(exception, exception);
+				}
+			}
 		}
 	}
 
