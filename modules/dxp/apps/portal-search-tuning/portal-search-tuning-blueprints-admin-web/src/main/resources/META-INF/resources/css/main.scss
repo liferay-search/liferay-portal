@@ -2,6 +2,7 @@
 
 .blueprints-admin-root {
 	@import '_builder';
+	@import '_config';
 	@import '_page_toolbar';
 	@import '_sidebar';
 

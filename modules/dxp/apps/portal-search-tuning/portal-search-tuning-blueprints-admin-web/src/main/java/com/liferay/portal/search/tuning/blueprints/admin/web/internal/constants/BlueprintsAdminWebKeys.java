@@ -28,6 +28,14 @@ public class BlueprintsAdminWebKeys {
 
 	public static final String BLUEPRINT_ID = "blueprintId";
 
+	public static final String
+		BLUEPRINT_SELECT_ORGANIZATION_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT =
+			"BLUEPRINT_SELECT_ORGANIZATION_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT";
+
+	public static final String
+		BLUEPRINT_SELECT_USER_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT =
+			"BLUEPRINT_SELECT_USER_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT";
+
 	public static final String BLUEPRINT_TYPE = "type";
 
 	public static final String DESCRIPTION = "description";
@@ -40,6 +48,12 @@ public class BlueprintsAdminWebKeys {
 	public static final String PAGE_TITLE_KEY = "pageTitleKey";
 
 	public static final String ROW_IDS = "rowIds";
+
+	public static final String SELECT_ORGANIZATIONS_DISPLAY_CONTEXT =
+		"SELECT_ORGANIZATIONS_DISPLAY_CONTEXT";
+
+	public static final String SELECT_USERS_DISPLAY_CONTEXT =
+		"SELECT_USERS_DISPLAY_CONTEXT";
 
 	public static final String TITLE = "title";
 
