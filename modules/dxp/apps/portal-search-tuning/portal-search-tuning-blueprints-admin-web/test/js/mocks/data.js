@@ -32,19 +32,18 @@ export const INITIAL_QUERY_FRAGMENTS = [
 	{
 		clauses: [
 			{
-				context: 'query',
+				context: 'pre_filter',
 				occur: 'must',
 				query: {
 					query: {
-						query_string: {
-							default_operator: 'or',
-							fields: [
-								'title_${context.language_id}^2',
-								'title',
-								'content_${context.language_id}',
-								'content',
+						bool: {
+							must: [
+								{
+									term: {
+										status: 0,
+									},
+								},
 							],
-							query: '${keywords}',
 						},
 					},
 				},
@@ -53,29 +52,131 @@ export const INITIAL_QUERY_FRAGMENTS = [
 		],
 		conditions: [],
 		description: {
-			en_US: 'Search title and content',
+			en_US: 'Limit search to published content',
 		},
 		enabled: true,
-		icon: 'vocabulary',
+		icon: 'filter',
 		title: {
-			en_US: 'Match Any Keyword',
+			en_US: 'Filter Published Content',
 		},
 	},
 	{
 		clauses: [
 			{
-				context: 'query',
-				occur: 'should',
+				context: 'pre_filter',
+				occur: 'must',
 				query: {
 					query: {
-						multi_match: {
-							boost: 4,
-							fields: [
-								'title_${context.language_id}^2',
-								'content_${context.language_id}',
+						bool: {
+							should: [
+								{
+									bool: {
+										must: [
+											{
+												range: {
+													displayDate_sortable: {
+														from:
+															'-9223372036854775808',
+														include_lower: true,
+														include_upper: true,
+														to:
+															'${time.current_date|dateFormat=timestamp}',
+													},
+												},
+											},
+											{
+												range: {
+													expirationDate_sortable: {
+														from:
+															'${time.current_date|dateFormat=timestamp}',
+														include_lower: true,
+														include_upper: true,
+														to:
+															'9223372036854775807',
+													},
+												},
+											},
+											{
+												term: {
+													entryClassName:
+														'com.liferay.blogs.kernel.model.BlogsEntry',
+												},
+											},
+										],
+									},
+								},
+								{
+									bool: {
+										must: [
+											{
+												range: {
+													displayDate_sortable: {
+														from:
+															'-9223372036854775808',
+														include_lower: true,
+														include_upper: true,
+														to:
+															'${time.current_date|dateFormat=timestamp}',
+													},
+												},
+											},
+											{
+												range: {
+													expirationDate_sortable: {
+														from:
+															'${time.current_date|dateFormat=timestamp}',
+														include_lower: true,
+														include_upper: true,
+														to:
+															'9223372036854775807',
+													},
+												},
+											},
+											{
+												term: {
+													entryClassName:
+														'com.liferay.journal.model.JournalArticle',
+												},
+											},
+											{
+												term: {
+													head: 'true',
+												},
+											},
+										],
+									},
+								},
+								{
+									term: {
+										entryClassName:
+											'com.liferay.document.library.kernel.model.DLFileEntry',
+									},
+								},
+								{
+									term: {
+										entryClassName:
+											'com.liferay.knowledge.base.model.KBArticle',
+									},
+								},
+								{
+									term: {
+										entryClassName:
+											'com.liferay.message.boards.kernel.model.MBMessage',
+									},
+								},
+								{
+									term: {
+										entryClassName:
+											'com.liferay.portal.kernel.model.User',
+									},
+								},
+								{
+									term: {
+										entryClassName:
+											'com.liferay.wiki.model.WikiPage',
+									},
+								},
 							],
-							operator: 'and',
-							query: '${keywords}',
 						},
 					},
 				},
@@ -84,29 +185,35 @@ export const INITIAL_QUERY_FRAGMENTS = [
 		],
 		conditions: [],
 		description: {
-			en_US: 'Boost content matching all the keywords in a single field',
+			en_US: 'Limit content types to be searched',
 		},
 		enabled: true,
-		icon: 'time',
+		icon: 'filter',
 		title: {
-			en_US: 'Boost All Keywords Match',
+			en_US: 'Filter Content Type',
 		},
 	},
 	{
 		clauses: [
 			{
-				context: 'query',
-				occur: 'should',
+				context: 'pre_filter',
+				occur: 'must',
 				query: {
 					query: {
-						multi_match: {
-							boost: 5,
-							fields: [
-								'title_${context.language_id}^2',
-								'content_${context.language_id}',
+						bool: {
+							should: [
+								{
+									term: {
+										entryClassName:
+											'com.liferay.portal.kernel.model.User',
+									},
+								},
+								{
+									term: {
+										stagingGroup: false,
+									},
+								},
 							],
-							query: '${keywords}',
-							type: 'phrase',
 						},
 					},
 				},
@@ -115,12 +222,12 @@ export const INITIAL_QUERY_FRAGMENTS = [
 		],
 		conditions: [],
 		description: {
-			en_US: 'Boost content having a phrase match',
+			en_US: 'Exclude staged groups from search',
 		},
 		enabled: true,
-		icon: 'time',
+		icon: 'filter',
 		title: {
-			en_US: 'Boost Phrase Match',
+			en_US: 'Filter Published Sites',
 		},
 	},
 ];
