@@ -24,6 +24,7 @@ import ClayLayout from '@clayui/layout';
 
 import BlueprintForm from '../../src/main/resources/META-INF/resources/js/components/BlueprintForm';
 import Builder from '../../src/main/resources/META-INF/resources/js/components/Builder';
+import ConfigFragment from '../../src/main/resources/META-INF/resources/js/components/ConfigFragment';
 import Fragment from '../../src/main/resources/META-INF/resources/js/components/Fragment';
 import PageToolbar from '../../src/main/resources/META-INF/resources/js/components/PageToolbar';
 import Sidebar from '../../src/main/resources/META-INF/resources/js/components/Sidebar';
@@ -111,3 +112,8 @@ storiesOf('Components|Fragment', module)
 			title={QUERY_FRAGMENTS[0].title}
 		/>
 	));
+
+storiesOf('Components|ConfigFragment', module)
+	.addDecorator(withBuilderClass)
+	.addDecorator(withContainer)
+	.add('ConfigFragment', () => <ConfigFragment />);

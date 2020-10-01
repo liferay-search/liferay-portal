@@ -14,20 +14,35 @@
 
 package com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context;
 
+import com.liferay.asset.kernel.model.AssetTag;
 import com.liferay.exportimport.kernel.exception.NoSuchConfigurationException;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactory;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.language.Language;
+import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.model.Organization;
+import com.liferay.portal.kernel.model.Role;
+import com.liferay.portal.kernel.model.Team;
+import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.model.UserGroup;
+import com.liferay.portal.kernel.portlet.LiferayWindowState;
+import com.liferay.portal.kernel.portlet.PortletProvider;
+import com.liferay.portal.kernel.portlet.PortletProviderUtil;
+import com.liferay.portal.kernel.security.permission.ResourceActionsUtil;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -35,6 +50,7 @@ import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminWebKeys;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.util.BlueprintJSONUtil;
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintTypes;
+import com.liferay.portal.search.tuning.blueprints.constants.BlueprintsPortletKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.BlueprintKeys;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
@@ -44,6 +60,8 @@ import java.util.Map;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionURL;
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -90,6 +108,12 @@ public class EditBlueprintDisplayBuilder {
 		_setRedirect(editBlueprintDisplayContext);
 
 		return editBlueprintDisplayContext;
+	}
+
+	protected String getSelectEntityTitle(Locale locale, String className) {
+		String title = ResourceActionsUtil.getModelResource(locale, className);
+
+		return LanguageUtil.format(locale, "select-x", title);
 	}
 
 	private Blueprint _getBlueprint() {
@@ -144,11 +168,30 @@ public class EditBlueprintDisplayBuilder {
 		return descriptionJSONObject;
 	}
 
+	private JSONObject _getEntityJSONObject() {
+		String[] entityClassNames = {
+			AssetTag.class.getName(), Group.class.getName(),
+			Organization.class.getName(), Team.class.getName(),
+			Role.class.getName(), User.class.getName(),
+			UserGroup.class.getName()
+		};
+
+		JSONObject jsonObject = JSONFactoryUtil.createJSONObject();
+
+		for (String entityClassName : entityClassNames) {
+			jsonObject.put(entityClassName, _getSelectEntity(entityClassName));
+		}
+
+		return jsonObject;
+	}
+
 	private Map<String, Object> _getProps() {
 		Map<String, Object> props = HashMapBuilder.<String, Object>put(
 			"blueprintId", _blueprintId
 		).put(
 			"blueprintType", _blueprintType
+		).put(
+			"entityJSON", _getEntityJSONObject()
 		).put(
 			"redirectURL", _getRedirect()
 		).put(
@@ -182,6 +225,60 @@ public class EditBlueprintDisplayBuilder {
 		}
 
 		return redirect;
+	}
+
+	private JSONObject _getSelectEntity(String className) {
+		try {
+			PortletURL portletURL = PortletProviderUtil.getPortletURL(
+				_renderRequest, className, PortletProvider.Action.BROWSE);
+
+			if (portletURL == null) {
+				return null;
+			}
+
+			boolean multiple = false;
+
+			if (className == User.class.getName()) {
+				portletURL = PortalUtil.getControlPanelPortletURL(
+					_renderRequest, BlueprintsPortletKeys.BLUEPRINTS_ADMIN,
+					PortletRequest.RENDER_PHASE);
+
+				portletURL.setParameter("mvcRenderCommandName", "selectUsers");
+				portletURL.setParameter("eventName", "selectEntity");
+				portletURL.setWindowState(LiferayWindowState.POP_UP);
+
+				multiple = true;
+			}
+
+			if (className == Organization.class.getName()) {
+				portletURL = PortalUtil.getControlPanelPortletURL(
+					_renderRequest, BlueprintsPortletKeys.BLUEPRINTS_ADMIN,
+					PortletRequest.RENDER_PHASE);
+
+				portletURL.setParameter(
+					"mvcRenderCommandName", "selectOrganizations");
+				portletURL.setParameter("eventName", "selectEntity");
+				portletURL.setWindowState(LiferayWindowState.POP_UP);
+
+				multiple = true;
+			}
+
+			return JSONUtil.put(
+				"multiple", multiple
+			).put(
+				"title",
+				getSelectEntityTitle(_themeDisplay.getLocale(), className)
+			).put(
+				"url", portletURL.toString()
+			);
+		}
+		catch (Exception exception) {
+			if (_log.isWarnEnabled()) {
+				_log.warn("Unable to get select entity", exception);
+			}
+
+			return null;
+		}
 	}
 
 	private String _getSubmitFormURL() {

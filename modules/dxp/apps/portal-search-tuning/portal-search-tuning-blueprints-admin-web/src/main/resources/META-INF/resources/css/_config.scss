@@ -1,0 +1,71 @@
+.configuration-fragment-sheet {
+	padding: 0;
+
+	.configuration-header-list {
+		margin: 8px 0;
+
+		.list-group-item {
+			border: 0;
+			padding: 16px 12px;
+		}
+	}
+
+	.configuration-form-list {
+		margin: 0;
+		padding: 12px 24px;
+
+		.list-group-header {
+			background-color: unset;
+			border: 0;
+			padding-left: 8px;
+		}
+
+		.list-group-item {
+			border-bottom: 0;
+			border-left: 0;
+			border-right: 0;
+			border-top-left-radius: 0;
+			border-top-right-radius: 0;
+			padding: 8px 0;
+
+			.list-item-label {
+				padding-left: 8px;
+				width: 40%;
+
+				label {
+					margin: auto 0;
+				}
+
+				.sticker {
+					.lexicon-icon {
+						margin-top: -3px;
+					}
+				}
+			}
+
+			.arrowless-input {
+				input::-webkit-outer-spin-button,
+				input::-webkit-inner-spin-button {
+					-webkit-appearance: none;
+					margin: 0;
+				}
+
+				input[type='number'] {
+					-moz-appearance: textfield;
+				}
+			}
+
+			.date-picker-input {
+				display: flex;
+
+				.date-picker {
+					display: contents;
+				}
+			}
+
+			.slider-configuration {
+				padding: 10px;
+			}
+		}
+	}
+}

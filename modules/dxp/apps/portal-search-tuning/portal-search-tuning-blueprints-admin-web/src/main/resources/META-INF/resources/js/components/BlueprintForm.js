@@ -32,6 +32,7 @@ function BlueprintForm({
 	blueprintId,
 	blueprintType,
 	initialDescription = {},
+	entityJSON,
 	initialQueryConfiguration,
 	initialTitle = {},
 	redirectURL = '',
@@ -94,8 +95,16 @@ function BlueprintForm({
 						)
 					)
 				);
-			}
-			catch {
+
+				//fragmentFormConfiguration - contains
+				// [
+				// 	{
+				// 	   "inputJSON": {...}
+				// 	   "configurationJSON": {...}
+				// 	   "configValues": {...}
+				// 	}
+				//   ]
+			} catch {
 				openErrorToast({
 					message: Liferay.Language.get('the-json-is-invalid'),
 				});
@@ -126,8 +135,7 @@ function BlueprintForm({
 						);
 
 						setIsSubmitting(false);
-					}
-					else {
+					} else {
 						navigate(redirectURL);
 					}
 				})
@@ -170,6 +178,7 @@ function BlueprintForm({
 			<div className={`${showSidebar ? 'shifted' : ''}`}>
 				<Builder
 					deleteFragment={deleteFragment}
+					entityJSON={entityJSON}
 					selectedFragments={selectedFragments}
 					updateFragment={updateFragment}
 				/>

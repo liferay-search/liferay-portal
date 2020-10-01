@@ -46,12 +46,19 @@ page import="com.liferay.portal.search.tuning.blueprints.admin.web.internal.disp
 page import="com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context.EditBlueprintDisplayContext" %><%@
 page import="com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context.SelectBlueprintDisplayContext" %><%@
 page import="com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context.SelectBlueprintManagementToolbarDisplayContext" %><%@
+page import="com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context.SelectOrganizationsDisplayContext" %><%@
+page import="com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context.SelectOrganizationsManagementToolbarDisplayContext" %><%@
+page import="com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context.SelectUsersDisplayContext" %><%@
+page import="com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context.SelectUsersManagementToolbarDisplayContext" %><%@
 page import="com.liferay.portal.search.tuning.blueprints.admin.web.internal.security.permission.resource.BlueprintEntryPermission" %><%@
 page import="com.liferay.portal.search.tuning.blueprints.admin.web.internal.security.permission.resource.BlueprintPermission" %><%@
+page import="com.liferay.portal.search.tuning.blueprints.admin.web.internal.servlet.taglib.clay.SelectUserUserCard" %><%@
 page import="com.liferay.portal.search.tuning.blueprints.constants.BlueprintTypes" %><%@
 page import="com.liferay.portal.search.tuning.blueprints.model.Blueprint" %>
 
-<%@ page import="java.util.Date" %>
+<%@ page import="java.util.Date" %><%@
+page import="java.util.Map" %><%@
+page import="java.util.Objects" %>
 
 <%@ page import="javax.portlet.PortletURL" %>
 

@@ -15,6 +15,7 @@
 		"@clayui/toolbar": "3.0.0",
 		"classnames": "2.2.6",
 		"codemirror": "^5.52.0",
+		"date-fns": "^2.16.1",
 		"frontend-js-react-web": "*",
 		"frontend-js-web": "*",
 		"prop-types": "15.7.2",

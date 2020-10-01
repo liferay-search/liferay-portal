@@ -14,9 +14,15 @@ import ClayLayout from '@clayui/layout';
 import {PropTypes} from 'prop-types';
 import React, {useState} from 'react';
 
+import ConfigFragment from './ConfigFragment';
 import Fragment from './Fragment';
 
-function Builder({deleteFragment, selectedFragments, updateFragment}) {
+function Builder({
+	deleteFragment,
+	entityJSON,
+	selectedFragments,
+	updateFragment,
+}) {
 	const [collapseAll, setCollapseAll] = useState(false);
 
 	return (
@@ -40,6 +46,8 @@ function Builder({deleteFragment, selectedFragments, updateFragment}) {
 					</ClayButton>
 				</ClayLayout.Col>
 			</ClayLayout.Row>
+
+			<ConfigFragment entityJSON={entityJSON} />
 
 			{selectedFragments.map((item, index) => {
 				return (
