@@ -56,6 +56,11 @@ String displayStyle = blueprintEntriesDisplayContext.getDisplayStyle();
 	</aui:form>
 </clay:container-fluid>
 
+<liferay-frontend:component
+	componentId="<%= blueprintEntriesManagementToolbarDisplayContext.getDefaultEventHandler() %>"
+	module="js/BlueprintEntriesManagementToolbarDefaultEventHandler"
+/>
+
 <aui:script sandbox="<%= true %>">
 	var submitForm = function (url) {
 		var searchContainer = document.getElementById(

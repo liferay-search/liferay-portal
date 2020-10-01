@@ -27,17 +27,21 @@ import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminMVCCommandNames;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminWebKeys;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.security.permission.resource.BlueprintPermission;
+import com.liferay.portal.search.tuning.blueprints.constants.BlueprintTypes;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 
 import java.util.List;
 import java.util.Objects;
 
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionURL;
 import javax.portlet.PortletURL;
 
 import javax.servlet.http.HttpServletRequest;
@@ -93,22 +97,33 @@ public class BlueprintEntriesManagementToolbarDisplayContext
 			return null;
 		}
 
-		PortletURL renderURL = liferayPortletResponse.createRenderURL();
-
-		renderURL.setProperty(
-			BlueprintsAdminWebKeys.BLUEPRINT_TYPE,
-			String.valueOf(_blueprintType));
-
 		return CreationMenuBuilder.addDropdownItem(
 			dropdownItem -> {
-				dropdownItem.setHref(
-					renderURL, "mvcRenderCommandName",
-					BlueprintsAdminMVCCommandNames.EDIT_BLUEPRINT, "redirect",
-					currentURLObj.toString());
+				dropdownItem.putData("action", "addBlueprint");
+
+				PortletURL editBlueprintURL =
+					liferayPortletResponse.createActionURL();
+
+				editBlueprintURL.setParameter(
+					ActionRequest.ACTION_NAME,
+					BlueprintsAdminMVCCommandNames.EDIT_BLUEPRINT);
+				editBlueprintURL.setParameter(Constants.CMD, Constants.ADD);
+				editBlueprintURL.setParameter(
+					"redirect", currentURLObj.toString());
+
+				dropdownItem.putData(
+					"editBlueprintURL", editBlueprintURL.toString());
+				dropdownItem.putData(
+					"type", String.valueOf(BlueprintTypes.BLUEPRINT));
 				dropdownItem.setLabel(
 					LanguageUtil.get(request, "add-blueprint"));
 			}
 		).build();
+	}
+
+	@Override
+	public String getDefaultEventHandler() {
+		return "BLUEPRINT_ENTRIES_MANAGEMENT_TOOLBAR_DEFAULT_EVENT_HANDLER";
 	}
 
 	@Override
@@ -152,8 +167,6 @@ public class BlueprintEntriesManagementToolbarDisplayContext
 
 		return new ViewTypeItemList(portletURL, _displayStyle) {
 			{
-				addCardViewTypeItem();
-
 				addListViewTypeItem();
 
 				addTableViewTypeItem();

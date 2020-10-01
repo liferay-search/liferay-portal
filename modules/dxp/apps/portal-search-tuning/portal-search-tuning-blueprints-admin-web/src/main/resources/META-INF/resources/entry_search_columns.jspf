@@ -32,17 +32,9 @@
 		<liferay-ui:search-container-column-text
 			colspan="<%= 2 %>"
 		>
-
-			<%
-			Date modified = entry.getModifiedDate();
-
-			String modifiedDateDescription = LanguageUtil.getTimeDescription(request, System.currentTimeMillis() - modified.getTime(), true);
-			%>
-
-			<h5 class="text-default">
-				ID: <%= String.valueOf(entry.getBlueprintId()) %>,
-				<liferay-ui:message arguments="<%= new String[] {entry.getUserName(), modifiedDateDescription} %>" key="modified-by-x-x-ago" />
-			</h5>
+			<div class="id-text">
+				<liferay-ui:message arguments="<%= String.valueOf(entry.getBlueprintId()) %>" key="id-x" />
+			</div>
 
 			<h4>
 				<aui:a href="<%= editBlueprintURL %>">
@@ -50,57 +42,24 @@
 				</aui:a>
 			</h4>
 
-			<p>
-				<aui:a href="<%= editBlueprintURL %>">
-					<%= entry.getDescription(locale) %>
-				</aui:a>
-			</p>
+			<h5 class="text-default text-truncate" title="<%= entry.getDescription(locale) %>">
+				<%= entry.getDescription(locale) %>
+			</h5>
 
-			<h5 class="text-default">
-				<aui:workflow-status markupView="lexicon" showIcon="<%= true %>" showLabel="<%= false %>" status="<%= entry.getStatus() %>" />
+			<%
+			Date modified = entry.getModifiedDate();
+
+			String modifiedDateDescription = LanguageUtil.getTimeDescription(request, System.currentTimeMillis() - modified.getTime(), true);
+			%>
+
+			<h5 class="text-default text-truncate">
+				<liferay-ui:message arguments="<%= new String[] {entry.getUserName(), modifiedDateDescription} %>" key="modified-by-x-x-ago" />
 			</h5>
 		</liferay-ui:search-container-column-text>
 
 		<liferay-ui:search-container-column-jsp
 			path="/entry_actions.jsp"
 		/>
-	</c:when>
-
-	<%-- Card view --%>
-
-	<c:when test='<%= blueprintEntriesDisplayContext.getDisplayStyle().equals("icon") %>'>
-
-		<%
-		row.setCssClass("lfr-asset-item");
-		%>
-
-		<liferay-ui:search-container-column-text>
-			<liferay-frontend:icon-vertical-card
-				actionJsp="/entry_actions.jsp"
-				actionJspServletContext="<%= application %>"
-				icon="cards2"
-				resultRow="<%= row %>"
-				title="<%= entry.getTitle(locale) %>"
-				url="<%= editBlueprintURL %>"
-			>
-				<liferay-frontend:vertical-card-sticker-bottom>
-					<liferay-ui:user-portrait
-						cssClass="sticker sticker-bottom"
-						userId="<%= entry.getUserId() %>"
-					/>
-				</liferay-frontend:vertical-card-sticker-bottom>
-
-				<liferay-frontend:vertical-card-footer>
-					<h5>Id: <%= String.valueOf(entry.getBlueprintId()) %></h5>
-
-					<aui:workflow-status markupView="lexicon" showIcon="<%= true %>" showLabel="<%= false %>" status="<%= entry.getStatus() %>" />
-
-					<div class="truncate-text">
-						<%= HtmlUtil.stripHtml(entry.getDescription(locale)) %>
-					</div>
-				</liferay-frontend:vertical-card-footer>
-			</liferay-frontend:icon-vertical-card>
-		</liferay-ui:search-container-column-text>
 	</c:when>
 
 	<%-- Table view --%>
@@ -113,23 +72,26 @@
 		/>
 
 		<liferay-ui:search-container-column-text
+			cssClass="table-cell-expand table-cell-minw-200 table-title"
 			href="<%= editBlueprintURL %>"
 			name="title"
 			value="<%= entry.getTitle(locale) %>"
 		/>
 
-		<liferay-ui:search-container-column-user
+		<liferay-ui:search-container-column-text
+			cssClass="table-cell-expand table-cell-minw-200"
+			name="description"
+			value="<%= entry.getDescription(locale) %>"
+		/>
+
+		<liferay-ui:search-container-column-text
 			name="author"
-			userId="<%= entry.getUserId() %>"
+			value="<%= entry.getUserName() %>"
 		/>
 
 		<liferay-ui:search-container-column-date
 			name="modified-date"
 			property="modifiedDate"
-		/>
-
-		<liferay-ui:search-container-column-status
-			name="status"
 		/>
 
 		<liferay-ui:search-container-column-jsp

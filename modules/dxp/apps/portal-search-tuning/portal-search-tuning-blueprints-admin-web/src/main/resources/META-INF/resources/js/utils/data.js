@@ -13,6 +13,39 @@
  * Temporary data. This data should eventually be fetched from the server.
  */
 
+export const DEFAULT_FRAGMENT = {
+	clauses: [
+		{
+			occur: 'must',
+			query: {
+				query: {
+					query_string: {
+						default_operator: 'or',
+						query: '${keywords}',
+						fields: [
+							'title_${context.language_id}^2',
+							'title',
+							'content_${context.language_id}',
+							'content',
+						],
+					},
+				},
+			},
+			context: 'query',
+			type: 'wrapper',
+		},
+	],
+	icon: 'vocabulary',
+	description: {
+		en_US: 'Search title and content',
+	},
+	title: {
+		en_US: 'Match Any Keyword',
+	},
+	conditions: [],
+	enabled: true,
+};
+
 export const QUERY_FRAGMENTS = [
 	{
 		clauses: [

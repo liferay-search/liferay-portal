@@ -10,25 +10,153 @@
  */
 
 import ClayButton from '@clayui/button';
+import ClayForm, {ClayInput} from '@clayui/form';
+import ClayIcon from '@clayui/icon';
+import ClayLayout from '@clayui/layout';
 import ClayLink from '@clayui/link';
-import ClayLocalizedInput from '@clayui/localized-input';
-import ClayManagementToolbar from '@clayui/management-toolbar';
+import ClayModal, {useModal} from '@clayui/modal';
+import ClayToolbar from '@clayui/toolbar';
 import PropTypes from 'prop-types';
-import React, {useContext, useState} from 'react';
+import React, {useContext, useRef, useState} from 'react';
 
 import ThemeContext from '../ThemeContext';
 
+const DEFAULT_LOCALE = 'en-US';
+
+function EditTitleModal({
+	initialDescription,
+	initialTitle,
+	modalFieldFocus,
+	observer,
+	onClose,
+	onSubmit,
+}) {
+	const [description, setDescription] = useState(initialDescription);
+	const [title, setTitle] = useState(initialTitle);
+	const [hasError, setHasError] = useState(false);
+
+	const titleInput = useRef();
+
+	const _handleSubmit = (event) => {
+		event.preventDefault();
+
+		if (!title[DEFAULT_LOCALE]) {
+			setHasError(true);
+
+			titleInput.current.focus();
+		} else {
+			onSubmit({description, title});
+
+			onClose();
+		}
+	};
+
+	return (
+		<ClayModal observer={observer} size="md">
+			<ClayModal.Header>{Liferay.Language.get('edit')}</ClayModal.Header>
+
+			<ClayForm onSubmit={_handleSubmit}>
+				<ClayModal.Body>
+					<ClayForm.Group className={hasError ? 'has-error' : ''}>
+						<label htmlFor="name">
+							{Liferay.Language.get('name')}
+
+							<ClayIcon
+								className="ml-1 reference-mark"
+								focusable="false"
+								role="presentation"
+								symbol="asterisk"
+							/>
+						</label>
+
+						<ClayInput
+							autoFocus={modalFieldFocus === 'name'}
+							id="name"
+							onBlur={({currentTarget}) => {
+								setHasError(!currentTarget.value);
+							}}
+							onChange={({target: {value}}) =>
+								setTitle({
+									[DEFAULT_LOCALE]: value,
+								})
+							}
+							ref={titleInput}
+							type="text"
+							value={title[DEFAULT_LOCALE]}
+						/>
+
+						{hasError && (
+							<ClayForm.FeedbackGroup>
+								<ClayForm.FeedbackItem>
+									<ClayForm.FeedbackIndicator symbol="exclamation-full" />
+									{Liferay.Language.get(
+										'this-field-is-required'
+									)}
+								</ClayForm.FeedbackItem>
+							</ClayForm.FeedbackGroup>
+						)}
+					</ClayForm.Group>
+
+					<ClayForm.Group>
+						<label htmlFor="description">
+							{Liferay.Language.get('description')}
+						</label>
+
+						<ClayInput
+							autoFocus={modalFieldFocus === 'description'}
+							component="textarea"
+							id="description"
+							onChange={({target: {value}}) =>
+								setDescription({
+									[DEFAULT_LOCALE]: value,
+								})
+							}
+							type="text"
+							value={description[DEFAULT_LOCALE]}
+						/>
+					</ClayForm.Group>
+				</ClayModal.Body>
+
+				<ClayModal.Footer
+					last={
+						<ClayButton.Group spaced>
+							<ClayButton
+								displayType="secondary"
+								onClick={onClose}
+							>
+								{Liferay.Language.get('cancel')}
+							</ClayButton>
+
+							<ClayButton displayType="primary" type="submit">
+								{Liferay.Language.get('done')}
+							</ClayButton>
+						</ClayButton.Group>
+					}
+				/>
+			</ClayForm>
+		</ClayModal>
+	);
+}
+
 export default function PageToolbar({
 	availableLocales,
-	initialTitle,
+	initialDescription = {},
+	initialTitle = {},
 	isSubmitting,
 	onCancel,
 	onSubmit,
 }) {
 	const {namespace} = useContext(ThemeContext);
 
-	const [selectedLocale, setSelectedLocale] = useState(availableLocales[0]);
+	const [description, setDescription] = useState(initialDescription);
 	const [title, setTitle] = useState(initialTitle);
+
+	const [modalFieldFocus, setModalFieldFocus] = useState('name');
+	const [modalVisible, setModalVisible] = useState(false);
+
+	const {observer, onClose} = useModal({
+		onClose: () => setModalVisible(false),
+	});
 
 	const _renderLocalizedInputs = (inputId, translations) => {
 		return Object.keys(translations).map((key) => (
@@ -41,60 +169,119 @@ export default function PageToolbar({
 		));
 	};
 
+	const descriptionInputId = `${namespace}description`;
 	const titleInputId = `${namespace}title`;
 
+	const _handleClickEdit = (fieldFocus) => () => {
+		setModalFieldFocus(fieldFocus);
+
+		setModalVisible(true);
+	};
+
+	const _handleEditTitleSubmit = ({description, title}) => {
+		setDescription(description);
+		setTitle(title);
+	};
+
 	return (
-		<ClayManagementToolbar
-			aria-label={Liferay.Language.get('save')}
-			className="page-toolbar-root"
-		>
-			<ClayManagementToolbar.ItemList expand>
-				<ClayManagementToolbar.Item className="localized-title">
-					<ClayLocalizedInput
-						aria-label={Liferay.Language.get('title')}
-						className="form-control form-control-inline input-group-inset"
-						id={titleInputId}
-						label=""
-						locales={availableLocales}
-						onSelectedLocaleChange={setSelectedLocale}
-						onTranslationsChange={setTitle}
-						placeholder={Liferay.Language.get('untitled')}
-						selectedLocale={selectedLocale}
-						translations={title}
-					/>
+		<ClayToolbar className="page-toolbar-root" light>
+			<ClayLayout.ContainerFluid>
+				<ClayToolbar.Nav>
+					<ClayToolbar.Item className="text-left" expand>
+						{modalVisible && (
+							<EditTitleModal
+								initialDescription={description}
+								initialTitle={title}
+								modalFieldFocus={modalFieldFocus}
+								observer={observer}
+								onClose={onClose}
+								onSubmit={_handleEditTitleSubmit}
+							/>
+						)}
 
-					{_renderLocalizedInputs(titleInputId, title)}
-				</ClayManagementToolbar.Item>
-			</ClayManagementToolbar.ItemList>
+						<div>
+							<ClayButton
+								aria-label={Liferay.Language.get('edit-name')}
+								className="blueprint-heading-edit-button"
+								displayType="unstyled"
+								monospaced={false}
+								onClick={_handleClickEdit('name')}
+							>
+								<div className="blueprint-title text-truncate">
+									{title[DEFAULT_LOCALE]}
 
-			<ClayManagementToolbar.ItemList>
-				<ClayManagementToolbar.Item>
-					<ClayLink
-						displayType="secondary"
-						href={onCancel}
-						outline="secondary"
-					>
-						{Liferay.Language.get('cancel')}
-					</ClayLink>
-				</ClayManagementToolbar.Item>
+									<ClayIcon
+										className="blueprint-heading-edit-icon"
+										symbol="pencil"
+									/>
+								</div>
+							</ClayButton>
 
-				<ClayManagementToolbar.Item>
-					<ClayButton
-						disabled={isSubmitting}
-						onClick={onSubmit}
-						small
-						type="submit"
-					>
-						{Liferay.Language.get('save')}
-					</ClayButton>
-				</ClayManagementToolbar.Item>
-			</ClayManagementToolbar.ItemList>
-		</ClayManagementToolbar>
+							{_renderLocalizedInputs(titleInputId, title)}
+
+							<ClayButton
+								aria-label={Liferay.Language.get(
+									'edit-description'
+								)}
+								className="blueprint-heading-edit-button"
+								displayType="unstyled"
+								monospaced={false}
+								onClick={_handleClickEdit('description')}
+							>
+								<div className="blueprint-description text-truncate">
+									{description[DEFAULT_LOCALE] ? (
+										description[DEFAULT_LOCALE]
+									) : (
+										<span className="blueprint-description-blank">
+											{Liferay.Language.get(
+												'no-description'
+											)}
+										</span>
+									)}
+
+									<ClayIcon
+										className="blueprint-heading-edit-icon"
+										symbol="pencil"
+									/>
+								</div>
+							</ClayButton>
+
+							{_renderLocalizedInputs(
+								descriptionInputId,
+								description
+							)}
+						</div>
+					</ClayToolbar.Item>
+
+					<ClayToolbar.Item>
+						<ClayLink
+							displayType="secondary"
+							href={onCancel}
+							outline="secondary"
+						>
+							{Liferay.Language.get('cancel')}
+						</ClayLink>
+					</ClayToolbar.Item>
+
+					<ClayToolbar.Item>
+						<ClayButton
+							disabled={isSubmitting}
+							onClick={onSubmit}
+							small
+							type="submit"
+						>
+							{Liferay.Language.get('save')}
+						</ClayButton>
+					</ClayToolbar.Item>
+				</ClayToolbar.Nav>
+			</ClayLayout.ContainerFluid>
+		</ClayToolbar>
 	);
 }
 
 PageToolbar.propTypes = {
 	availableLocales: PropTypes.arrayOf(PropTypes.object),
+	initialDescription: PropTypes.object,
 	initialTitle: PropTypes.object,
 	isSubmitting: PropTypes.bool,
 	onCancel: PropTypes.string.isRequired,

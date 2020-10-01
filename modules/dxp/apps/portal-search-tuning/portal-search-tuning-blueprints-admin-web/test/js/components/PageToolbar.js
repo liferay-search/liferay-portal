@@ -9,13 +9,15 @@
  * distribution rights of the Software.
  */
 
-import {fireEvent, render} from '@testing-library/react';
+import {act, fireEvent, render} from '@testing-library/react';
 import React from 'react';
 
 import PageToolbar from '../../../src/main/resources/META-INF/resources/js/components/PageToolbar';
 import {AVAILABLE_LOCALES} from './../mocks/data';
 
 import '@testing-library/jest-dom/extend-expect';
+
+jest.useFakeTimers();
 
 const onSubmit = jest.fn();
 
@@ -41,7 +43,6 @@ describe('PageToolbar', () => {
 	it('renders the title', () => {
 		const initialTitle = {
 			'en-US': 'Apple',
-			'es-ES': 'Manzana',
 		};
 
 		const {getByText} = renderPageToolbar({
@@ -51,14 +52,63 @@ describe('PageToolbar', () => {
 		getByText(initialTitle['en-US']);
 	});
 
-	it('updates the input title', () => {
-		const {getByPlaceholderText, getByText} = renderPageToolbar();
+	it('updates the title', () => {
+		const initialTitle = {
+			'en-US': 'Apple',
+		};
 
-		fireEvent.change(getByPlaceholderText('untitled'), {
-			target: {value: 'Test Title'},
+		const {getByLabelText, getByText, queryByText} = renderPageToolbar({
+			initialTitle,
 		});
 
-		getByText('Test Title');
+		getByText('Apple');
+
+		fireEvent.click(getByLabelText('edit-name'));
+
+		act(() => jest.runAllTimers());
+
+		fireEvent.change(getByLabelText('name'), {
+			target: {value: 'Banana'},
+		});
+
+		fireEvent.click(getByText('done'));
+
+		act(() => jest.runAllTimers());
+
+		expect(queryByText('Apple')).toBeNull();
+		getByText('Banana');
+	});
+
+	it('updates the description', () => {
+		const initialTitle = {
+			'en-US': 'Apple',
+		};
+
+		const initialDescription = {
+			'en-US': 'A fruit',
+		};
+
+		const {getByLabelText, getByText, queryByText} = renderPageToolbar({
+			initialDescription,
+			initialTitle,
+		});
+
+		getByText('A fruit');
+
+		fireEvent.click(getByLabelText('edit-description'));
+
+		act(() => jest.runAllTimers());
+
+		fireEvent.change(getByLabelText('description'), {
+			target: {value: 'A red fruit'},
+		});
+
+		fireEvent.click(getByText('done'));
+
+		act(() => jest.runAllTimers());
+
+		expect(queryByText('A fruit')).toBeNull();
+		getByText('A red fruit');
 	});
 
 	it('offers link to cancel', () => {
@@ -79,5 +129,37 @@ describe('PageToolbar', () => {
 		const {getByText} = renderPageToolbar({isSubmitting: true});
 
 		expect(getByText('save')).toBeDisabled();
+	});
+
+	it('focuses on the name input when clicked on', () => {
+		const initialTitle = {
+			'en-US': 'Apple',
+		};
+
+		const {getByLabelText} = renderPageToolbar({
+			initialTitle,
+		});
+
+		fireEvent.click(getByLabelText('edit-name'));
+
+		act(() => jest.runAllTimers());
+
+		expect(getByLabelText('name')).toHaveFocus();
+	});
+
+	it('focuses on the description input when clicked on', () => {
+		const initialTitle = {
+			'en-US': 'Apple',
+		};
+
+		const {getByLabelText} = renderPageToolbar({
+			initialTitle,
+		});
+
+		fireEvent.click(getByLabelText('edit-description'));
+
+		act(() => jest.runAllTimers());
+
+		expect(getByLabelText('description')).toHaveFocus();
 	});
 });

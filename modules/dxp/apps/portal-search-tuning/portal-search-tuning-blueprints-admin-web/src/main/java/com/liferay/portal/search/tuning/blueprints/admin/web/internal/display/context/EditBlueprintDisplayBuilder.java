@@ -149,6 +149,18 @@ public class EditBlueprintDisplayBuilder {
 		).build();
 	}
 
+	private JSONObject _getDescriptionJSONObject() {
+		Map<Locale, String> descriptionMap = _blueprint.getDescriptionMap();
+
+		JSONObject descriptionJSONObject = _jsonFactory.createJSONObject();
+
+		descriptionMap.forEach(
+			(key, value) -> descriptionJSONObject.put(
+				StringUtil.replace(key.toString(), '_', "-"), value));
+
+		return descriptionJSONObject;
+	}
+
 	private JSONObject _getLocaleJSONObject(Locale locale) {
 		JSONObject jsonObject = _jsonFactory.createJSONObject();
 
@@ -190,6 +202,7 @@ public class EditBlueprintDisplayBuilder {
 				_log.error("Unable to parse Blueprint JSON", jsonException);
 			}
 
+			props.put("initialDescription", _getDescriptionJSONObject());
 			props.put("initialTitle", _getTitleJSONObject());
 		}
 

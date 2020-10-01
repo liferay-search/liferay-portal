@@ -224,7 +224,7 @@ describe('ResultRankingsForm', () => {
 
 		await waitForElement(() => getByTestId('100'));
 
-		expect(pinnedIdsEndIndexInput.value).toBe('4');
+		expect(pinnedIdsEndIndexInput.value).`toBe`('4');
 
 		fireEvent.click(container.querySelector('.load-more-button'));
 

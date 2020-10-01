@@ -1,5 +1,5 @@
 .page-toolbar-root {
-	&.navbar {
+	&.tbar {
 		border-color: $mainLighten74;
 		border-style: solid;
 		border-width: 0 0 1px;
@@ -12,24 +12,43 @@
 		z-index: 971;
 	}
 
-	.localized-title {
-		width: 100%;
+	.blueprint-description {
+		color: $secondary;
+		font-size: 14px;
+		font-weight: 400;
 
-		.form-group {
-			margin-bottom: 0;
-			width: 100%;
-
-			.form-text {
-				display: none;
-			}
-		}
-
-		.input-group {
-			flex-direction: row-reverse;
+		.blueprint-description-blank {
+			font-style: italic;
 		}
 	}
 
-	.nav-item {
+	.blueprint-heading-edit-button {
+		display: block;
+
+		.blueprint-heading-edit-icon {
+			color: $main;
+			font-size: 0.875rem;
+			line-height: 1.15;
+			margin-left: 8px;
+			opacity: 0;
+		}
+
+		&:focus,
+		&:hover {
+			.blueprint-heading-edit-icon {
+				opacity: 1;
+			}
+		}
+	}
+
+	.blueprint-title {
+		color: $main;
+		font-size: 18px;
+		font-weight: 700;
+		line-height: 1;
+	}
+
+	.tbar-item {
 		padding-left: 0.5rem;
 		padding-right: 0.5rem;
 

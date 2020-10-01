@@ -14,7 +14,7 @@ import {PropTypes} from 'prop-types';
 import React, {useCallback, useContext, useRef, useState} from 'react';
 
 import ThemeContext from '../ThemeContext';
-import {QUERY_FRAGMENTS} from '../utils/data';
+import {DEFAULT_FRAGMENT} from '../utils/data';
 import {openErrorToast} from '../utils/utils';
 import Builder from './Builder';
 import PageToolbar from './PageToolbar';
@@ -22,9 +22,9 @@ import Sidebar from './Sidebar';
 
 const DEFAULT_SELECTED_FRAGMENTS = [
 	{
-		...QUERY_FRAGMENTS[0],
+		...DEFAULT_FRAGMENT,
 		id: 0,
-		jsonString: JSON.stringify(QUERY_FRAGMENTS[0], null, '\t'),
+		jsonString: JSON.stringify(DEFAULT_FRAGMENT, null, '\t'),
 	},
 ];
 
@@ -32,6 +32,7 @@ function BlueprintForm({
 	availableLocales = [],
 	blueprintId,
 	blueprintType,
+	initialDescription = {},
 	initialQueryConfiguration,
 	initialTitle = {},
 	redirectURL = '',
@@ -94,8 +95,7 @@ function BlueprintForm({
 						)
 					)
 				);
-			}
-			catch {
+			} catch {
 				openErrorToast({
 					message: Liferay.Language.get('the-json-is-invalid'),
 				});
@@ -126,8 +126,7 @@ function BlueprintForm({
 						);
 
 						setIsSubmitting(false);
-					}
-					else {
+					} else {
 						navigate(redirectURL);
 					}
 				})
@@ -159,6 +158,7 @@ function BlueprintForm({
 		<form ref={form}>
 			<PageToolbar
 				availableLocales={availableLocales}
+				initialDescription={initialDescription}
 				initialTitle={initialTitle}
 				isSubmitting={isSubmitting}
 				onCancel={redirectURL}
@@ -182,6 +182,7 @@ BlueprintForm.propTypes = {
 	availableLocales: PropTypes.arrayOf(PropTypes.object),
 	blueprintId: PropTypes.string,
 	blueprintType: PropTypes.number,
+	initialDescription: PropTypes.object,
 	initialQueryConfiguration: PropTypes.arrayOf(PropTypes.string),
 	initialTitle: PropTypes.object,
 	redirectURL: PropTypes.string,
