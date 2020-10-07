@@ -16,34 +16,34 @@
 export const DEFAULT_FRAGMENT = {
 	clauses: [
 		{
+			context: 'query',
 			occur: 'must',
 			query: {
 				query: {
 					query_string: {
 						default_operator: 'or',
-						query: '${keywords}',
 						fields: [
 							'title_${context.language_id}^2',
 							'title',
 							'content_${context.language_id}',
 							'content',
 						],
+						query: '${keywords}',
 					},
 				},
 			},
-			context: 'query',
 			type: 'wrapper',
 		},
 	],
-	icon: 'vocabulary',
+	conditions: [],
 	description: {
 		en_US: 'Search title and content',
 	},
+	enabled: true,
+	icon: 'vocabulary',
 	title: {
 		en_US: 'Match Any Keyword',
 	},
-	conditions: [],
-	enabled: true,
 };
 
 export const QUERY_FRAGMENTS = [

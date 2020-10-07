@@ -29,7 +29,6 @@ const DEFAULT_SELECTED_FRAGMENTS = [
 ];
 
 function BlueprintForm({
-	availableLocales = [],
 	blueprintId,
 	blueprintType,
 	initialDescription = {},
@@ -95,7 +94,8 @@ function BlueprintForm({
 						)
 					)
 				);
-			} catch {
+			}
+			catch {
 				openErrorToast({
 					message: Liferay.Language.get('the-json-is-invalid'),
 				});
@@ -126,7 +126,8 @@ function BlueprintForm({
 						);
 
 						setIsSubmitting(false);
-					} else {
+					}
+					else {
 						navigate(redirectURL);
 					}
 				})
@@ -157,7 +158,6 @@ function BlueprintForm({
 	return (
 		<form ref={form}>
 			<PageToolbar
-				availableLocales={availableLocales}
 				initialDescription={initialDescription}
 				initialTitle={initialTitle}
 				isSubmitting={isSubmitting}
@@ -179,7 +179,6 @@ function BlueprintForm({
 }
 
 BlueprintForm.propTypes = {
-	availableLocales: PropTypes.arrayOf(PropTypes.object),
 	blueprintId: PropTypes.string,
 	blueprintType: PropTypes.number,
 	initialDescription: PropTypes.object,

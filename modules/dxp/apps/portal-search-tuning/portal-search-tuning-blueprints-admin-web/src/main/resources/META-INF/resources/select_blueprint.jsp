@@ -74,11 +74,12 @@ SelectBlueprintDisplayContext selectBlueprintDisplayContext = new SelectBlueprin
 			<liferay-ui:search-container-column-text>
 				<aui:button
 					cssClass="selector-button"
-					data='<%= HashMapBuilder.<String, Object>put(
-					"entityid", blueprint.getBlueprintId()
-					).put(
-					"entityname", blueprint.getTitle(locale)
-					).build()
+					data='<%=
+						HashMapBuilder.<String, Object>put(
+							"entityid", blueprint.getBlueprintId()
+						).put(
+							"entityname", blueprint.getTitle(locale)
+						).build()
 					%>'
 					value="choose"
 				/>

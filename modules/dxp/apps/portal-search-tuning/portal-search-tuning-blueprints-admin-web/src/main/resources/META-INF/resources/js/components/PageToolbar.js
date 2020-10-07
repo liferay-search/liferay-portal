@@ -44,7 +44,8 @@ function EditTitleModal({
 			setHasError(true);
 
 			titleInput.current.focus();
-		} else {
+		}
+		else {
 			onSubmit({description, title});
 
 			onClose();
@@ -139,7 +140,6 @@ function EditTitleModal({
 }
 
 export default function PageToolbar({
-	availableLocales,
 	initialDescription = {},
 	initialTitle = {},
 	isSubmitting,
@@ -280,7 +280,6 @@ export default function PageToolbar({
 }
 
 PageToolbar.propTypes = {
-	availableLocales: PropTypes.arrayOf(PropTypes.object),
 	initialDescription: PropTypes.object,
 	initialTitle: PropTypes.object,
 	isSubmitting: PropTypes.bool,

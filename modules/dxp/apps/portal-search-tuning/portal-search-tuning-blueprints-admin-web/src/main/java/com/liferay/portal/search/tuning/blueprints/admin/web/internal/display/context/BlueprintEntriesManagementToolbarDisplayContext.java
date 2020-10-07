@@ -32,7 +32,6 @@ import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminMVCCommandNames;
-import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminWebKeys;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.security.permission.resource.BlueprintPermission;
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintTypes;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
@@ -41,7 +40,6 @@ import java.util.List;
 import java.util.Objects;
 
 import javax.portlet.ActionRequest;
-import javax.portlet.ActionURL;
 import javax.portlet.PortletURL;
 
 import javax.servlet.http.HttpServletRequest;
@@ -113,6 +111,7 @@ public class BlueprintEntriesManagementToolbarDisplayContext
 
 				dropdownItem.putData(
 					"editBlueprintURL", editBlueprintURL.toString());
+
 				dropdownItem.putData(
 					"type", String.valueOf(BlueprintTypes.BLUEPRINT));
 				dropdownItem.setLabel(

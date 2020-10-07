@@ -97,14 +97,14 @@ public class EditBlueprintMVCActionCommand extends BaseMVCActionCommand {
 				LiferayActionResponse liferayActionResponse =
 					(LiferayActionResponse)actionResponse;
 
-				PortletURL editBlueprintURL = liferayActionResponse.createRenderURL();
+				PortletURL editBlueprintURL =
+					liferayActionResponse.createRenderURL();
 
 				editBlueprintURL.setParameter(
 					"mvcRenderCommandName",
 					BlueprintsAdminMVCCommandNames.EDIT_BLUEPRINT);
 				editBlueprintURL.setParameter(
-					"redirect",
-					ParamUtil.getString(actionRequest, "redirect"));
+					"redirect", ParamUtil.getString(actionRequest, "redirect"));
 				editBlueprintURL.setParameter(
 					BlueprintsAdminWebKeys.BLUEPRINT_ID,
 					String.valueOf(blueprint.getBlueprintId()));
