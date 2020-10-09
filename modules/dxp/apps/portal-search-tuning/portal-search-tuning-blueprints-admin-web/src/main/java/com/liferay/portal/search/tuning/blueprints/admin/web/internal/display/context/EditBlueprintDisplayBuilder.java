@@ -17,7 +17,6 @@ package com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.c
 import com.liferay.exportimport.kernel.exception.NoSuchConfigurationException;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -42,8 +41,6 @@ import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
 
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Stream;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionURL;
@@ -95,22 +92,6 @@ public class EditBlueprintDisplayBuilder {
 		return editBlueprintDisplayContext;
 	}
 
-	private JSONArray _getAvailableLocalesJSONArray() {
-		JSONArray jsonArray = _jsonFactory.createJSONArray();
-
-		Set<Locale> locales = _language.getAvailableLocales();
-
-		Stream<Locale> stream = locales.stream();
-
-		stream.map(
-			this::_getLocaleJSONObject
-		).forEach(
-			jsonArray::put
-		);
-
-		return jsonArray;
-	}
-
 	private Blueprint _getBlueprint() {
 		Blueprint blueprint = null;
 
@@ -143,6 +124,8 @@ public class EditBlueprintDisplayBuilder {
 
 	private Map<String, Object> _getContext() {
 		return HashMapBuilder.<String, Object>put(
+			"defaultLocale", LocaleUtil.toLanguageId(LocaleUtil.getDefault())
+		).put(
 			"locale", _themeDisplay.getLanguageId()
 		).put(
 			"namespace", _renderResponse.getNamespace()
@@ -161,26 +144,8 @@ public class EditBlueprintDisplayBuilder {
 		return descriptionJSONObject;
 	}
 
-	private JSONObject _getLocaleJSONObject(Locale locale) {
-		JSONObject jsonObject = _jsonFactory.createJSONObject();
-
-		String languageId = LocaleUtil.toLanguageId(locale);
-
-		languageId = StringUtil.replace(languageId, '_', "-");
-
-		jsonObject.put(
-			"label", languageId
-		).put(
-			"symbol", StringUtil.toLowerCase(languageId)
-		);
-
-		return jsonObject;
-	}
-
 	private Map<String, Object> _getProps() {
 		Map<String, Object> props = HashMapBuilder.<String, Object>put(
-			"availableLocales", _getAvailableLocalesJSONArray()
-		).put(
 			"blueprintId", _blueprintId
 		).put(
 			"blueprintType", _blueprintType

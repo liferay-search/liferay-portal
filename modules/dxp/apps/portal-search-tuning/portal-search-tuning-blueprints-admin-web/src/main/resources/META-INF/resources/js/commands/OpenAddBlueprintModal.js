@@ -44,16 +44,13 @@ function dispose() {
 
 function openAddBlueprintModal({
 	alert,
-	checkboxFieldLabel,
-	checkboxFieldName,
-	checkboxFieldValue,
+	defaultLocale,
 	dialogTitle,
 	formSubmitURL,
 	idFieldName,
 	idFieldValue,
 	namespace,
 	onFormSuccess,
-	submitButtonLabel,
 	type,
 }) {
 	dispose();
@@ -61,10 +58,8 @@ function openAddBlueprintModal({
 	render(
 		<AddBlueprintModal
 			alert={alert}
-			checkboxFieldLabel={checkboxFieldLabel}
-			checkboxFieldName={checkboxFieldName}
-			checkboxFieldValue={checkboxFieldValue}
 			closeModal={dispose}
+			defaultLocale={defaultLocale}
 			dialogTitle={dialogTitle}
 			formSubmitURL={formSubmitURL}
 			idFieldName={idFieldName}
@@ -72,7 +67,6 @@ function openAddBlueprintModal({
 			initialVisible="true"
 			namespace={namespace}
 			onFormSuccess={onFormSuccess}
-			submitButtonLabel={submitButtonLabel}
 			type={type}
 		/>,
 		DEFAULT_RENDER_DATA,

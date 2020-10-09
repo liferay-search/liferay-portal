@@ -11,7 +11,6 @@
 
 import ClayAlert from '@clayui/alert';
 import ClayButton from '@clayui/button';
-import {ClayCheckbox} from '@clayui/form';
 import ClayIcon from '@clayui/icon';
 import ClayModal, {useModal} from '@clayui/modal';
 import {useIsMounted} from 'frontend-js-react-web';
@@ -26,10 +25,8 @@ import {DEFAULT_FRAGMENT} from '../utils/data';
  */
 const AddBlueprintModal = ({
 	alert,
-	checkboxFieldLabel,
-	checkboxFieldName,
-	checkboxFieldValue,
 	closeModal,
+	defaultLocale,
 	dialogTitle,
 	formSubmitURL,
 	initialVisible,
@@ -44,7 +41,6 @@ const AddBlueprintModal = ({
 	const [visible, setVisible] = useState(initialVisible);
 	const [inputValue, setInputValue] = useState('');
 	const [descriptionInputValue, setDescriptionInputValue] = useState('');
-	const [isChecked, setChecked] = useState(checkboxFieldValue);
 
 	const handleFormError = (responseContent) => {
 		setErrorMessage(responseContent.error || '');
@@ -163,8 +159,8 @@ const AddBlueprintModal = ({
 							/>
 
 							<input
-								id={`${namespace}title_en_US`}
-								name={`${namespace}title_en_US`}
+								id={`${namespace}title_${defaultLocale}`}
+								name={`${namespace}title_${defaultLocale}`}
 								type="hidden"
 								value={inputValue}
 							/>
@@ -201,26 +197,12 @@ const AddBlueprintModal = ({
 							/>
 
 							<input
-								id={`${namespace}description_en_US`}
-								name={`${namespace}description_en_US`}
+								id={`${namespace}description_${defaultLocale}`}
+								name={`${namespace}description_${defaultLocale}`}
 								type="hidden"
 								value={descriptionInputValue}
 							/>
 						</div>
-
-						{checkboxFieldName && checkboxFieldLabel && (
-							<div className="form-check">
-								<ClayCheckbox
-									checked={isChecked}
-									disabled={loadingResponse}
-									label={checkboxFieldLabel}
-									name={`${namespace}${checkboxFieldName}`}
-									onChange={() =>
-										setChecked((isChecked) => !isChecked)
-									}
-								/>
-							</div>
-						)}
 					</ClayModal.Body>
 
 					<ClayModal.Footer
