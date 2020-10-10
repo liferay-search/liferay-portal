@@ -66,13 +66,19 @@ describe('BlueprintForm', () => {
 	it('adds additional query fragment from sidebar', () => {
 		const {container, getByLabelText} = renderBlueprintForm();
 
+		const fragmentCountBefore = container.querySelectorAll(
+			'.configuration-fragment'
+		).length;
+
 		fireEvent.mouseOver(container.querySelectorAll('.list-group-title')[1]);
 
 		fireEvent.click(getByLabelText('add'));
 
-		const {getByText} = within(container.querySelector('.builder'));
+		const fragmentCountAfter = container.querySelectorAll(
+			'.configuration-fragment'
+		).length;
 
-		getByText(INITIAL_QUERY_FRAGMENTS[1].title['en_US']);
+		expect(fragmentCountAfter).toBe(fragmentCountBefore + 1);
 	});
 
 	it('enables removal of additional query fragments', () => {
@@ -80,21 +86,25 @@ describe('BlueprintForm', () => {
 			container,
 			getAllByLabelText,
 			getAllByText,
-			getByLabelText,
-		} = renderBlueprintForm();
+		} = renderBlueprintForm({
+			blueprintId: '1',
+			initialQueryConfiguration: INITIAL_QUERY_FRAGMENTS.map((fragment) =>
+				JSON.stringify(fragment)
+			),
+		});
 
-		fireEvent.mouseOver(container.querySelectorAll('.list-group-title')[1]);
-
-		fireEvent.click(getByLabelText('add'));
+		const fragmentCountBefore = container.querySelectorAll(
+			'.configuration-fragment'
+		).length;
 
 		fireEvent.click(getAllByLabelText('dropdown')[0]);
 
 		fireEvent.click(getAllByText('delete')[1]);
 
-		const {queryByText} = within(container.querySelector('.builder'));
+		const fragmentCountAfter = container.querySelectorAll(
+			'.configuration-fragment'
+		).length;
 
-		expect(
-			queryByText(INITIAL_QUERY_FRAGMENTS[1].title['en_US'])
-		).toBeNull();
+		expect(fragmentCountAfter).toBe(fragmentCountBefore - 1);
 	});
 });
