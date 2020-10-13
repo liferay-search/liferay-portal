@@ -15,25 +15,17 @@ import React, {useCallback, useContext, useRef, useState} from 'react';
 
 import ThemeContext from '../ThemeContext';
 import {DEFAULT_FRAGMENT} from '../utils/data';
-import {openErrorToast} from '../utils/utils';
+import {convertSelectedFragment, openErrorToast} from '../utils/utils';
 import Builder from './Builder';
 import PageToolbar from './PageToolbar';
 import Sidebar from './Sidebar';
 
-const DEFAULT_SELECTED_FRAGMENTS = [
-	{
-		...DEFAULT_FRAGMENT,
-		id: 0,
-		jsonString: JSON.stringify(DEFAULT_FRAGMENT, null, '\t'),
-	},
-];
-
 function BlueprintForm({
 	blueprintId,
 	blueprintType,
-	initialDescription = {},
 	entityJSON,
-	initialQueryConfiguration,
+	initialDescription = {},
+	initialSelectedFragments,
 	initialTitle = {},
 	redirectURL = '',
 	submitFormURL = '',
@@ -50,21 +42,16 @@ function BlueprintForm({
 
 	const [selectedFragments, setSelectedFragments] = useState(
 		blueprintId !== '0'
-			? initialQueryConfiguration.map((configString) => ({
+			? initialSelectedFragments.map((configString) => ({
 					...JSON.parse(configString),
 					id: fragmentIdCounter.current++,
-					jsonString: configString,
 			  }))
-			: DEFAULT_SELECTED_FRAGMENTS
+			: [convertSelectedFragment(DEFAULT_FRAGMENT)]
 	);
 
 	const onAddFragment = useCallback((fragment) => {
 		setSelectedFragments((selectedFragments) => [
-			{
-				...fragment,
-				id: fragmentIdCounter.current++,
-				jsonString: JSON.stringify(fragment, null, '\t'),
-			},
+			convertSelectedFragment(fragment, fragmentIdCounter.current++),
 			...selectedFragments,
 		]);
 	}, []);
@@ -83,28 +70,27 @@ function BlueprintForm({
 
 			const formData = new FormData(form.current);
 
-			// JSON needs to be stringified as an array. We have to parse the
-			// jsonString first to avoid performing stringify twice.
-
 			try {
 				formData.append(
 					`${namespace}queryConfiguration`,
 					JSON.stringify(
-						selectedFragments.map((fragment) =>
-							JSON.parse(fragment.jsonString)
-						)
+						selectedFragments.map((item) => item.queryConfig)
 					)
 				);
 
-				//fragmentFormConfiguration - contains
-				// [
-				// 	{
-				// 	   "inputJSON": {...}
-				// 	   "configurationJSON": {...}
-				// 	   "configValues": {...}
-				// 	}
-				//   ]
-			} catch {
+				formData.append(
+					`${namespace}selectedFragments`,
+					JSON.stringify(
+						selectedFragments.map((item) => ({
+							configJSON: item.configJSON,
+							configValues: item.configValues,
+							inputJSON: item.inputJSON,
+							queryConfig: item.queryConfig,
+						}))
+					)
+				);
+			}
+			catch {
 				openErrorToast({
 					message: Liferay.Language.get('the-json-is-invalid'),
 				});
@@ -135,7 +121,8 @@ function BlueprintForm({
 						);
 
 						setIsSubmitting(false);
-					} else {
+					}
+					else {
 						navigate(redirectURL);
 					}
 				})
@@ -148,17 +135,17 @@ function BlueprintForm({
 		[
 			blueprintId,
 			blueprintType,
+			selectedFragments,
 			namespace,
 			redirectURL,
-			selectedFragments,
 			submitFormURL,
 		]
 	);
 
-	const updateFragment = useCallback((index, fragment) => {
+	const updateFragment = useCallback((index, configs) => {
 		setSelectedFragments((selectedFragments) => [
 			...selectedFragments.slice(0, index),
-			fragment,
+			configs,
 			...selectedFragments.slice(index + 1),
 		]);
 	}, []);
@@ -190,8 +177,9 @@ function BlueprintForm({
 BlueprintForm.propTypes = {
 	blueprintId: PropTypes.string,
 	blueprintType: PropTypes.number,
+	entityJSON: PropTypes.object,
 	initialDescription: PropTypes.object,
-	initialQueryConfiguration: PropTypes.arrayOf(PropTypes.string),
+	initialSelectedFragments: PropTypes.arrayOf(PropTypes.string),
 	initialTitle: PropTypes.object,
 	redirectURL: PropTypes.string,
 	submitFormURL: PropTypes.string,

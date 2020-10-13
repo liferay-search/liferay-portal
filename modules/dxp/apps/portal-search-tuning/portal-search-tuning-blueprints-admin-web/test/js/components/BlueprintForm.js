@@ -13,7 +13,8 @@ import {fireEvent, render, within} from '@testing-library/react';
 import React from 'react';
 
 import BlueprintForm from '../../../src/main/resources/META-INF/resources/js/components/BlueprintForm';
-import {AVAILABLE_LOCALES, INITIAL_QUERY_FRAGMENTS} from './../mocks/data';
+import {DEFAULT_FRAGMENT} from '../../../src/main/resources/META-INF/resources/js/utils/data';
+import {AVAILABLE_LOCALES, SELECTED_FRAGMENTS} from './../mocks/data';
 
 import '@testing-library/jest-dom/extend-expect';
 
@@ -52,22 +53,14 @@ describe('BlueprintForm', () => {
 
 		const {getByText} = within(container.querySelector('.builder'));
 
-		getByText(INITIAL_QUERY_FRAGMENTS[0].title['en_US']);
-	});
-
-	it('disables removal of default query fragment from sidebar', () => {
-		const {getByLabelText, getByText} = renderBlueprintForm();
-
-		fireEvent.click(getByLabelText('dropdown'));
-
-		expect(getByText('delete')).toBeDisabled();
+		getByText(DEFAULT_FRAGMENT.inputJSON.title['en_US']);
 	});
 
 	it('adds additional query fragment from sidebar', () => {
 		const {container, getByLabelText} = renderBlueprintForm();
 
 		const fragmentCountBefore = container.querySelectorAll(
-			'.configuration-fragment'
+			'.configuration-fragment-sheet'
 		).length;
 
 		fireEvent.mouseOver(container.querySelectorAll('.list-group-title')[1]);
@@ -75,7 +68,7 @@ describe('BlueprintForm', () => {
 		fireEvent.click(getByLabelText('add'));
 
 		const fragmentCountAfter = container.querySelectorAll(
-			'.configuration-fragment'
+			'.configuration-fragment-sheet'
 		).length;
 
 		expect(fragmentCountAfter).toBe(fragmentCountBefore + 1);
@@ -88,13 +81,13 @@ describe('BlueprintForm', () => {
 			getAllByText,
 		} = renderBlueprintForm({
 			blueprintId: '1',
-			initialQueryConfiguration: INITIAL_QUERY_FRAGMENTS.map((fragment) =>
+			initialSelectedFragments: SELECTED_FRAGMENTS.map((fragment) =>
 				JSON.stringify(fragment)
 			),
 		});
 
 		const fragmentCountBefore = container.querySelectorAll(
-			'.configuration-fragment'
+			'.configuration-fragment-sheet'
 		).length;
 
 		fireEvent.click(getAllByLabelText('dropdown')[0]);
@@ -102,7 +95,7 @@ describe('BlueprintForm', () => {
 		fireEvent.click(getAllByText('delete')[1]);
 
 		const fragmentCountAfter = container.querySelectorAll(
-			'.configuration-fragment'
+			'.configuration-fragment-sheet'
 		).length;
 
 		expect(fragmentCountAfter).toBe(fragmentCountBefore - 1);

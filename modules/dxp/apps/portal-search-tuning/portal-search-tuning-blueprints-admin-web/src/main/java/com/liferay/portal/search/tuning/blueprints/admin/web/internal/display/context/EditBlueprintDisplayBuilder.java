@@ -201,6 +201,9 @@ public class EditBlueprintDisplayBuilder {
 		if (_blueprint != null) {
 			try {
 				props.put(
+					"initialSelectedFragments",
+					BlueprintJSONUtil.getSelectedFragmentsSection(_blueprint));
+				props.put(
 					"initialQueryConfiguration",
 					BlueprintJSONUtil.getConfigurationSection(
 						_blueprint,

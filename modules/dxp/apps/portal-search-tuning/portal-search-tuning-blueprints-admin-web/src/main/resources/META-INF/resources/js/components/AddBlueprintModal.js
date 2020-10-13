@@ -18,6 +18,9 @@ import {fetch, navigate} from 'frontend-js-web';
 import React, {useState} from 'react';
 
 import {DEFAULT_FRAGMENT} from '../utils/data';
+import {convertSelectedFragment} from '../utils/utils';
+
+const DEFAULT_SELECTED_FRAGMENT = convertSelectedFragment(DEFAULT_FRAGMENT);
 
 /**
  * A slightly modified version of frontend-js-web module's SimpleInputModal
@@ -119,7 +122,15 @@ const AddBlueprintModal = ({
 						<input
 							name={`${namespace}queryConfiguration`}
 							type="hidden"
-							value={JSON.stringify([DEFAULT_FRAGMENT])}
+							value={JSON.stringify([
+								DEFAULT_SELECTED_FRAGMENT.queryConfig,
+							])}
+						/>
+
+						<input
+							name={`${namespace}selectedFragments`}
+							type="hidden"
+							value={JSON.stringify([DEFAULT_SELECTED_FRAGMENT])}
 						/>
 
 						<input

@@ -9,42 +9,32 @@
  * distribution rights of the Software.
  */
 
-import {fireEvent, render} from '@testing-library/react';
+import {fireEvent, render, waitForElement} from '@testing-library/react';
 import React from 'react';
 
-import Fragment from '../../../src/main/resources/META-INF/resources/js/components/Fragment';
-import {SELECTED_FRAGMENTS} from './../mocks/data';
+import ConfigFragment from '../../../src/main/resources/META-INF/resources/js/components/ConfigFragment';
+import {SELECTED_FRAGMENTS} from '../mocks/data';
 
 import '@testing-library/jest-dom/extend-expect';
 
-jest.mock(
-	'../../../src/main/resources/META-INF/resources/js/components/CodeMirrorEditor',
-	() => ({onChange, value}) => (
-		<textarea aria-label="text-area" onChange={onChange} value={value} />
-	)
-);
-
 const deleteFragment = jest.fn();
-const updateJson = jest.fn();
+const updateFragment = jest.fn();
 
 function renderFragment(props) {
 	return render(
-		<Fragment
+		<ConfigFragment
 			collapseAll={false}
+			configJSON={SELECTED_FRAGMENTS[0].configJSON}
+			configValues={SELECTED_FRAGMENTS[0].configValues}
 			deleteFragment={deleteFragment}
-			description={SELECTED_FRAGMENTS[0].inputJSON.description}
-			disabled={false}
-			icon={SELECTED_FRAGMENTS[0].inputJSON.icon}
-			id={SELECTED_FRAGMENTS[0].inputJSON.id}
-			jsonString={SELECTED_FRAGMENTS[0].inputJSON.jsonString}
-			title={SELECTED_FRAGMENTS[0].inputJSON.title}
-			updateJson={updateJson}
+			inputJSON={SELECTED_FRAGMENTS[0].inputJSON}
+			updateFragment={updateFragment}
 			{...props}
 		/>
 	);
 }
 
-describe('Fragment', () => {
+describe('ConfigFragment', () => {
 	it('renders the fragment', () => {
 		const {container} = renderFragment();
 
@@ -78,17 +68,19 @@ describe('Fragment', () => {
 
 		fireEvent.click(getByLabelText('collapse'));
 
-		expect(container.querySelector('.configuration-editor')).toBeNull();
+		expect(container.querySelector('.configuration-form-list')).toBeNull();
 	});
 
-	it('calls updateJson when typing in the editor', () => {
+	it('calls updateJson when typing in one of the form inputs', async () => {
 		const {getByLabelText} = renderFragment();
 
-		fireEvent.change(getByLabelText('text-area'), {
+		getByLabelText('Context Language');
+
+		fireEvent.change(getByLabelText('Context Language'), {
 			target: {value: 'test'},
 		});
 
-		expect(updateJson).toHaveBeenCalled();
+		waitForElement(() => expect(updateFragment).toHaveBeenCalled());
 	});
 
 	it('calls deleteFragment when clicking on delete from dropdown', () => {

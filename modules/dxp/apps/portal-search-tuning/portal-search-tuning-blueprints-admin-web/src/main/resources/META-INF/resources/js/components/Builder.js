@@ -15,7 +15,6 @@ import {PropTypes} from 'prop-types';
 import React, {useState} from 'react';
 
 import ConfigFragment from './ConfigFragment';
-import Fragment from './Fragment';
 
 function Builder({
 	deleteFragment,
@@ -47,23 +46,23 @@ function Builder({
 				</ClayLayout.Col>
 			</ClayLayout.Row>
 
-			<ConfigFragment entityJSON={entityJSON} />
-
 			{selectedFragments.map((item, index) => {
 				return (
-					<Fragment
+					<ConfigFragment
 						collapseAll={collapseAll}
-						deleteFragment={deleteFragment}
-						description={item.description}
-						disabled={item.id === 0}
-						icon={item.icon}
-						id={item.id}
-						jsonString={item.jsonString}
+						configJSON={item.configJSON}
+						configValues={item.configValues}
+						deleteFragment={() => deleteFragment(item.id)}
+						entityJSON={entityJSON}
+						inputJSON={item.inputJSON}
 						key={item.id}
-						title={item.title}
-						updateJson={(jsonString) =>
-							updateFragment(index, {...item, jsonString})
-						}
+						updateFragment={(configValues, queryConfig) => {
+							updateFragment(index, {
+								...item,
+								configValues,
+								queryConfig,
+							});
+						}}
 					/>
 				);
 			})}
@@ -73,6 +72,7 @@ function Builder({
 
 Builder.propTypes = {
 	deleteFragment: PropTypes.func,
+	entityJSON: PropTypes.object,
 	selectedFragments: PropTypes.arrayOf(PropTypes.object),
 	updateFragment: PropTypes.func,
 };

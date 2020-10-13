@@ -37,7 +37,7 @@ const QueryFragmentList = ({onAddFragment, queryFragments}) => {
 
 	return (
 		<ClayList>
-			{queryFragments.map((item, index) => {
+			{queryFragments.map(({configJSON, inputJSON}, index) => {
 				return (
 					<ClayList.Item
 						className={`${showAdd === index ? 'hover' : ''}`}
@@ -51,17 +51,17 @@ const QueryFragmentList = ({onAddFragment, queryFragments}) => {
 								className="icon"
 								displayType="secondary"
 							>
-								<ClayIcon symbol={item.icon} />
+								<ClayIcon symbol={inputJSON.icon} />
 							</ClaySticker>
 						</ClayList.ItemField>
 
 						<ClayList.ItemField expand>
 							<ClayList.ItemTitle>
-								{item.title[locale]}
+								{inputJSON.title[locale]}
 							</ClayList.ItemTitle>
 
 							<ClayList.ItemText subtext={true}>
-								{item.description[locale]}
+								{inputJSON.description[locale]}
 							</ClayList.ItemText>
 						</ClayList.ItemField>
 
@@ -74,7 +74,12 @@ const QueryFragmentList = ({onAddFragment, queryFragments}) => {
 												'add'
 											)}
 											displayType="secondary"
-											onClick={() => onAddFragment(item)}
+											onClick={() =>
+												onAddFragment({
+													configJSON,
+													inputJSON,
+												})
+											}
 											small
 										>
 											{Liferay.Language.get('add')}

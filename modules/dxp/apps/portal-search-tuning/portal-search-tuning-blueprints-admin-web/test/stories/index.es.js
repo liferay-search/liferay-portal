@@ -28,7 +28,7 @@ import ConfigFragment from '../../src/main/resources/META-INF/resources/js/compo
 import Fragment from '../../src/main/resources/META-INF/resources/js/components/Fragment';
 import PageToolbar from '../../src/main/resources/META-INF/resources/js/components/PageToolbar';
 import Sidebar from '../../src/main/resources/META-INF/resources/js/components/Sidebar';
-import {AVAILABLE_LOCALES, QUERY_FRAGMENTS} from './../js/mocks/data';
+import {AVAILABLE_LOCALES, SELECTED_FRAGMENTS} from './../js/mocks/data';
 
 const {addDecorator, storiesOf} = StorybookReact;
 const {action} = StorybookAddonActions;
@@ -85,7 +85,7 @@ storiesOf('Components|PageToolbar', module).add('PageToolbar', () => (
 storiesOf('Components|Sidebar', module).add('Sidebar', () => (
 	<Sidebar
 		addFragment={action('addFragment')}
-		queryFragments={QUERY_FRAGMENTS}
+		queryFragments={SELECTED_FRAGMENTS}
 	/>
 ));
 
@@ -94,7 +94,7 @@ storiesOf('Components|Builder', module)
 	.add('Builder', () => (
 		<Builder
 			deleteFragment={action('buildFragment')}
-			selectedFragments={QUERY_FRAGMENTS}
+			selectedFragments={SELECTED_FRAGMENTS}
 			updateFragments={action('updateFragments')}
 		/>
 	));
@@ -105,15 +105,23 @@ storiesOf('Components|Fragment', module)
 	.add('Fragment', () => (
 		<Fragment
 			deleteFragment={action('deleteFragment')}
-			description={QUERY_FRAGMENTS[0].description}
+			description={SELECTED_FRAGMENTS[0].inputJSON.description}
 			disabled={false}
-			icon={QUERY_FRAGMENTS[0].icon}
-			jsonString={QUERY_FRAGMENTS[0].jsonString}
-			title={QUERY_FRAGMENTS[0].title}
+			icon={SELECTED_FRAGMENTS[0].inputJSON.icon}
+			jsonString={SELECTED_FRAGMENTS[0].inputJSON.jsonString}
+			title={SELECTED_FRAGMENTS[0].inputJSON.title}
 		/>
 	));
 
 storiesOf('Components|ConfigFragment', module)
 	.addDecorator(withBuilderClass)
 	.addDecorator(withContainer)
-	.add('ConfigFragment', () => <ConfigFragment />);
+	.add('ConfigFragment', () => (
+		<ConfigFragment
+			configJSON={SELECTED_FRAGMENTS[0].configJSON}
+			configValues={SELECTED_FRAGMENTS[0].configValues}
+			deleteFragment={action('deleteFragment')}
+			inputJSON={SELECTED_FRAGMENTS[0].inputJSON}
+			updateFragment={action('updateFragment')}
+		/>
+	));

@@ -13,7 +13,7 @@ import {fireEvent, render} from '@testing-library/react';
 import React from 'react';
 
 import Sidebar from '../../../src/main/resources/META-INF/resources/js/components/Sidebar';
-import {QUERY_FRAGMENTS} from './../mocks/data';
+import {SELECTED_FRAGMENTS} from './../mocks/data';
 
 import '@testing-library/jest-dom/extend-expect';
 
@@ -21,7 +21,7 @@ function renderSidebar(props) {
 	return render(
 		<Sidebar
 			addFragment={jest.fn()}
-			queryFragments={QUERY_FRAGMENTS}
+			queryFragments={SELECTED_FRAGMENTS}
 			{...props}
 		/>
 	);
@@ -37,23 +37,27 @@ describe('Sidebar', () => {
 	it('renders the titles for the possible query fragments', () => {
 		const {getByText} = renderSidebar();
 
-		QUERY_FRAGMENTS.map((fragment) => getByText(fragment.title['en_US']));
+		SELECTED_FRAGMENTS.map((fragment) =>
+			getByText(fragment.inputJSON.title['en_US'])
+		);
 	});
 
 	it('renders the descriptions for the possible query fragments', () => {
 		const {getByText} = renderSidebar();
 
-		QUERY_FRAGMENTS.map((fragment) =>
-			getByText(fragment.description['en_US'])
+		SELECTED_FRAGMENTS.map((fragment) =>
+			getByText(fragment.inputJSON.description['en_US'])
 		);
 	});
 
 	it('renders the matching icons for the possible query fragments', () => {
 		const {container} = renderSidebar();
 
-		QUERY_FRAGMENTS.map((fragment) =>
+		SELECTED_FRAGMENTS.map((fragment) =>
 			expect(
-				container.querySelector(`.lexicon-icon-${fragment.icon}`)
+				container.querySelector(
+					`.lexicon-icon-${fragment.inputJSON.icon}`
+				)
 			).toBeInTheDocument()
 		);
 	});
