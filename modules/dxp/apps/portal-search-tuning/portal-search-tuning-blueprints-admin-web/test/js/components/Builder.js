@@ -13,7 +13,7 @@ import {fireEvent, render} from '@testing-library/react';
 import React from 'react';
 
 import Builder from '../../../src/main/resources/META-INF/resources/js/components/Builder';
-import {QUERY_FRAGMENTS} from './../mocks/data';
+import {SELECTED_FRAGMENTS} from './../mocks/data';
 
 import '@testing-library/jest-dom/extend-expect';
 
@@ -30,7 +30,7 @@ function renderBuilder(props) {
 	return render(
 		<Builder
 			deleteFragment={jest.fn()}
-			selectedFragments={QUERY_FRAGMENTS}
+			selectedFragments={SELECTED_FRAGMENTS}
 			updateFragment={updateFragment}
 			{...props}
 		/>
@@ -47,23 +47,27 @@ describe('Builder', () => {
 	it('renders the titles for the selected query fragments', () => {
 		const {getByText} = renderBuilder();
 
-		QUERY_FRAGMENTS.map((fragment) => getByText(fragment.title['en_US']));
+		SELECTED_FRAGMENTS.map((fragment) =>
+			getByText(fragment.inputJSON.title['en_US'])
+		);
 	});
 
 	it('renders the description for the selected query fragments', () => {
 		const {getByText} = renderBuilder();
 
-		QUERY_FRAGMENTS.map((fragment) =>
-			getByText(fragment.description['en_US'])
+		SELECTED_FRAGMENTS.map((fragment) =>
+			getByText(fragment.inputJSON.description['en_US'])
 		);
 	});
 
 	it('renders the matching icons for the possible query fragments', () => {
 		const {container} = renderBuilder();
 
-		QUERY_FRAGMENTS.map((fragment) =>
+		SELECTED_FRAGMENTS.map((fragment) =>
 			expect(
-				container.querySelector(`.lexicon-icon-${fragment.icon}`)
+				container.querySelector(
+					`.lexicon-icon-${fragment.inputJSON.icon}`
+				)
 			).toBeInTheDocument()
 		);
 	});
@@ -73,9 +77,9 @@ describe('Builder', () => {
 
 		fireEvent.click(getByText('collapse-all'));
 
-		expect(container.querySelectorAll('.configuration-editor').length).toBe(
-			0
-		);
+		expect(
+			container.querySelectorAll('.configuration-form-list').length
+		).toBe(0);
 	});
 
 	it('can expand all the query fragments', () => {
@@ -85,8 +89,8 @@ describe('Builder', () => {
 
 		fireEvent.click(getByText('expand-all'));
 
-		expect(container.querySelectorAll('.configuration-editor').length).toBe(
-			QUERY_FRAGMENTS.length
-		);
+		expect(
+			container.querySelectorAll('.configuration-form-list').length
+		).toBe(SELECTED_FRAGMENTS.length);
 	});
 });

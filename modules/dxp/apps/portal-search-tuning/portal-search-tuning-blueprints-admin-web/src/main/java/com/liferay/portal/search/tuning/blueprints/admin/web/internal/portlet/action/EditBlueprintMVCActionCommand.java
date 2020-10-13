@@ -83,6 +83,8 @@ public class EditBlueprintMVCActionCommand extends BaseMVCActionCommand {
 		try {
 			String configuration = _buildConfigurationFromRequest(
 				actionRequest);
+			String selectedFragments = ParamUtil.getString(
+				actionRequest, "selectedFragments");
 
 			ServiceContext serviceContext = ServiceContextFactory.getInstance(
 				Blueprint.class.getName(), actionRequest);
@@ -91,8 +93,8 @@ public class EditBlueprintMVCActionCommand extends BaseMVCActionCommand {
 
 			if (Constants.ADD.equals(cmd)) {
 				Blueprint blueprint = _blueprintService.addCompanyBlueprint(
-					titleMap, descriptionMap, configuration, type,
-					serviceContext);
+					titleMap, descriptionMap, configuration, selectedFragments,
+					type, serviceContext);
 
 				LiferayActionResponse liferayActionResponse =
 					(LiferayActionResponse)actionResponse;
@@ -115,7 +117,7 @@ public class EditBlueprintMVCActionCommand extends BaseMVCActionCommand {
 			else {
 				_blueprintService.updateBlueprint(
 					blueprintId, titleMap, descriptionMap, configuration,
-					serviceContext);
+					selectedFragments, serviceContext);
 			}
 
 			JSONPortletResponseUtil.writeJSON(

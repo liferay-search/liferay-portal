@@ -11,6 +11,7 @@
 
 import ClayButton from '@clayui/button';
 import ClayDatePicker from '@clayui/date-picker';
+import ClayDropDown from '@clayui/drop-down';
 import {ClayInput, ClaySelect} from '@clayui/form';
 import ClayIcon from '@clayui/icon';
 import ClayList from '@clayui/list';
@@ -23,184 +24,32 @@ import {PropTypes} from 'prop-types';
 import React, {useContext, useEffect, useState} from 'react';
 
 import ThemeContext from '../ThemeContext';
-
-const getDefaultValue = (item) => {
-	return {
-		value: !item.defaultValue
-			? item.typeOptions
-				? item.typeOptions[0].value
-				: ''
-			: item.defaultValue,
-	};
-};
-
-const INPUT_JSON = {
-	clauses: [
-		{
-			context: 'query',
-			occur: 'must',
-			query: {
-				boost: 2,
-				default_operator: '${config.operator}',
-				fields: [
-					{
-						boost: '${config.title.boost}',
-						field: 'title_${context.language_id}',
-					},
-					{
-						boost: '${config.content.boost}',
-						field: 'content_${context.language_id}',
-					},
-				],
-			},
-			type: 'simple_query_string',
-		},
-	],
-	conditions: [],
-	description: {
-		en_US: 'A simple query string example',
-	},
-	enabled: '${config.lfr.enabled}',
-	icon: 'time',
-	title: {
-		en_US: 'Match Any Keyword',
-	},
-	validate: [
-		'${config.operator}',
-		'${config.title.boost}',
-		'${context.language_id}',
-		'${context.timespan}',
-		'${context.count}',
-		'${context.date}',
-		'${config.select.modal.role}',
-		'${config.select.modal.user}',
-		'${config.select.modal.organization}',
-	],
-};
-
-const CONFIG_JSON = {
-	configurationValues: [
-		{
-			defaultValue: 'or',
-			helpText: 'This is the ...',
-			key: 'config.operator',
-			name: 'Query Clause Operator',
-			type: 'single-select',
-			typeOptions: [
-				{
-					label: 'OR',
-					value: 'or',
-				},
-				{
-					label: 'AND',
-					value: 'and',
-				},
-			],
-		},
-		{
-			defaultValue: 10,
-			key: 'config.title.boost',
-			name: 'Title Boost',
-			type: 'slider',
-		},
-		{
-			defaultValue: 'English',
-			key: 'context.language_id',
-			name: 'Context Language',
-			type: 'text',
-		},
-		{
-			defaultValue: 3,
-			key: 'context.timespan',
-			name: 'Time span',
-			type: 'number',
-			unit: 'days',
-		},
-		{
-			defaultValue: 3,
-			key: 'context.count',
-			name: 'Number count',
-			type: 'number',
-		},
-		{
-			defaultValue: 1601751600, // Oct 3, 2020
-			key: 'context.date',
-			name: 'Relevant date',
-			type: 'date',
-		},
-		{
-			className: 'com.liferay.portal.kernel.model.Role',
-			helpText: 'Select modal ...',
-			key: 'config.select.modal.role',
-			name: 'Select Modal',
-			type: 'entity',
-		},
-		{
-			className: 'com.liferay.portal.kernel.model.User',
-			helpText: 'Select modal ...',
-			key: 'config.select.modal.user',
-			name: 'Select Modal',
-			type: 'entity',
-		},
-		{
-			className: 'com.liferay.portal.kernel.model.Organization',
-			helpText: 'Select modal ...',
-			key: 'config.select.modal.organization',
-			name: 'Select Organization',
-			type: 'entity',
-		},
-	],
-};
+import {replaceConfigValues} from '../utils/utils';
 
 export default function ConfigFragment({
-	configurationJSON = CONFIG_JSON,
+	collapseAll,
+	configJSON,
+	configValues,
+	deleteFragment,
 	entityJSON,
-	inputJSON = INPUT_JSON,
-	configValues = null,
+	inputJSON,
+	updateFragment,
 }) {
 	const {locale} = useContext(ThemeContext);
 	const [collapse, setCollapse] = useState(false);
-	const [, setOutputJSON] = useState(configurationJSON);
-	const [inputValues, setInputValues] = useState(
-		configValues
-			? configValues
-			: configurationJSON.configurationValues.reduce((acc, curr) => {
-					return {
-						...acc,
-						[`${curr.key}`]: getDefaultValue(curr),
-					};
-			  }, {})
-	);
+	const [active, setActive] = useState(false);
 
 	useEffect(() => {
-		let flattenJSON = JSON.stringify(inputJSON);
-
-		configurationJSON.configurationValues.map((config) => {
-			if (inputValues[config.key].value) {
-				if (
-					config.type === 'slider' ||
-					config.type === 'number' ||
-					config.type === 'date'
-				) {
-					flattenJSON = flattenJSON.replaceAll(
-						`"$\{${config.key}}"`,
-						inputValues[config.key].value
-					);
-				}
-				flattenJSON = flattenJSON.replaceAll(
-					`\${${config.key}}`,
-					inputValues[config.key].value
-				);
-			}
-		});
-
-		setOutputJSON(JSON.parse(flattenJSON));
-	}, [configurationJSON, inputJSON, inputValues]);
+		setCollapse(collapseAll);
+	}, [collapseAll]);
 
 	const _handleChange = debounce((key, item) => {
-		setInputValues((inputValues) => {
-			return {...inputValues, [key]: item};
-		});
+		const newConfigValues = {...configValues, [key]: item};
+
+		updateFragment(
+			newConfigValues,
+			replaceConfigValues(configJSON, inputJSON, newConfigValues)
+		);
 	}, 20);
 
 	const _handleMutipleSelect = (key, className) => {
@@ -220,7 +69,8 @@ export default function ConfigFragment({
 				title: entityJSON[`${className}`].title,
 				url: entityJSON[`${className}`].url,
 			});
-		} else {
+		}
+		else {
 			openSelectionModal({
 				buttonAddLabel: Liferay.Language.get('select'),
 				onSelect: (event) => {
@@ -251,10 +101,10 @@ export default function ConfigFragment({
 							placeholder="MM/DD/YYYY"
 							readOnly
 							value={
-								inputValues[`${config.key}`].value
+								configValues[`${config.key}`].value
 									? format(
 											fromUnixTime(
-												inputValues[`${config.key}`]
+												configValues[`${config.key}`]
 													.value
 											),
 											'MM/dd/yyyy'
@@ -267,7 +117,7 @@ export default function ConfigFragment({
 							}}
 						/>
 
-						{inputValues[config.key].value && (
+						{configValues[config.key].value && (
 							<ClayInput.GroupItem shrink>
 								<ClayButton
 									aria-label={Liferay.Language.get('delete')}
@@ -292,20 +142,20 @@ export default function ConfigFragment({
 							<ClayInput
 								aria-label={config.name}
 								id={config.key}
-								insetAfter={inputValues[config.key].label}
+								insetAfter={configValues[config.key].label}
 								readOnly
 								type={'text'}
 								value={
-									inputValues[config.key].label &&
+									configValues[config.key].label &&
 									entityJSON &&
 									entityJSON[`${config.className}`].multiple
-										? inputValues[config.key].label.join(
+										? configValues[config.key].label.join(
 												', '
 										  )
-										: inputValues[config.key].label
+										: configValues[config.key].label
 								}
 							/>
-							{inputValues[config.key].label && (
+							{configValues[config.key].label && (
 								<ClayInput.GroupInsetItem after>
 									<ClayButton
 										aria-label={Liferay.Language.get(
@@ -351,7 +201,7 @@ export default function ConfigFragment({
 								value: event.target.value,
 							});
 						}}
-						value={inputValues[`${config.key}`].value}
+						value={configValues[`${config.key}`].value}
 					>
 						{config.typeOptions.map((item) => (
 							<ClaySelect.Option
@@ -368,7 +218,7 @@ export default function ConfigFragment({
 						keyword={config.key}
 						name={config.name}
 						onChange={_handleChange}
-						value={inputValues[`${config.key}`].value}
+						value={configValues[`${config.key}`].value}
 					/>
 				);
 			case 'number':
@@ -386,7 +236,7 @@ export default function ConfigFragment({
 									});
 								}}
 								type={'number'}
-								value={inputValues[config.key].value}
+								value={configValues[config.key].value}
 							/>
 						</ClayInput.GroupItem>
 						{config.unit && (
@@ -411,7 +261,7 @@ export default function ConfigFragment({
 									})
 								}
 								type={'text'}
-								value={inputValues[config.key].value}
+								value={configValues[config.key].value}
 							/>
 						</ClayInput.GroupItem>
 					</ClayInput.Group>
@@ -439,6 +289,31 @@ export default function ConfigFragment({
 						</ClayList.ItemText>
 					</ClayList.ItemField>
 
+					<ClayDropDown
+						active={active}
+						alignmentPosition={3}
+						onActiveChange={setActive}
+						trigger={
+							<ClayList.ItemField>
+								<ClayButton
+									aria-label={Liferay.Language.get(
+										'dropdown'
+									)}
+									className="component-action"
+									displayType="unstyled"
+								>
+									<ClayIcon symbol="ellipsis-v" />
+								</ClayButton>
+							</ClayList.ItemField>
+						}
+					>
+						<ClayDropDown.ItemList>
+							<ClayDropDown.Item onClick={deleteFragment}>
+								{Liferay.Language.get('delete')}
+							</ClayDropDown.Item>
+						</ClayDropDown.ItemList>
+					</ClayDropDown>
+
 					<ClayList.ItemField>
 						<ClayButton
 							aria-label={
@@ -462,41 +337,44 @@ export default function ConfigFragment({
 				</ClayList.Item>
 			</ClayList>
 
-			{!collapse && (
-				<ClayList className="configuration-form-list">
-					<ClayList.Header>
-						{Liferay.Language.get('clauses')}
-					</ClayList.Header>
+			{!collapse &&
+				!!configJSON &&
+				!!configJSON.configurationValues &&
+				configJSON.configurationValues.length > 0 && (
+					<ClayList className="configuration-form-list">
+						<ClayList.Header>
+							{Liferay.Language.get('clauses')}
+						</ClayList.Header>
 
-					{configurationJSON.configurationValues.map((config) => (
-						<ClayList.Item flex key={config.key}>
-							<ClayList.ItemField className="list-item-label">
-								<label htmlFor={config.key}>
-									{config.name}
-									{config.helpText && (
-										<ClayTooltipProvider>
-											<ClaySticker
-												displayType="unstyled"
-												size="sm"
-											>
-												<ClayIcon
-													data-tooltip-align="top"
-													symbol="info-circle"
-													title={config.helpText}
-												/>
-											</ClaySticker>
-										</ClayTooltipProvider>
-									)}
-								</label>
-							</ClayList.ItemField>
+						{configJSON.configurationValues.map((config) => (
+							<ClayList.Item flex key={config.key}>
+								<ClayList.ItemField className="list-item-label">
+									<label htmlFor={config.key}>
+										{config.name}
+										{config.helpText && (
+											<ClayTooltipProvider>
+												<ClaySticker
+													displayType="unstyled"
+													size="sm"
+												>
+													<ClayIcon
+														data-tooltip-align="top"
+														symbol="info-circle"
+														title={config.helpText}
+													/>
+												</ClaySticker>
+											</ClayTooltipProvider>
+										)}
+									</label>
+								</ClayList.ItemField>
 
-							<ClayList.ItemField expand>
-								{_renderInput(config)}
-							</ClayList.ItemField>
-						</ClayList.Item>
-					))}
-				</ClayList>
-			)}
+								<ClayList.ItemField expand>
+									{_renderInput(config)}
+								</ClayList.ItemField>
+							</ClayList.Item>
+						))}
+					</ClayList>
+				)}
 		</div>
 	);
 }
@@ -549,6 +427,11 @@ function Slider({keyword, name, onChange, value}) {
 }
 
 ConfigFragment.propTypes = {
-	configurationJSON: PropTypes.object,
+	collapseAll: PropTypes.bool,
+	configJSON: PropTypes.object,
+	configValues: PropTypes.object,
+	deleteFragment: PropTypes.func,
+	entityJSON: PropTypes.object,
 	inputJSON: PropTypes.object,
+	updateFragment: PropTypes.func,
 };

@@ -49,6 +49,47 @@ public class BlueprintJSONUtil {
 		return array;
 	}
 
+	public static String[] getSelectedFragmentsSection(Blueprint blueprint)
+		throws JSONException {
+
+		JSONArray jsonArray = _getFragmentSectionJSONArray(blueprint);
+
+		if (jsonArray == null) {
+			return new String[0];
+		}
+
+		String[] array = new String[jsonArray.length()];
+
+		for (int i = 0; i < jsonArray.length(); i++) {
+			array[i] = jsonArray.getJSONObject(
+				i
+			).toString(
+				4
+			);
+		}
+
+		return array;
+	}
+
+	private static JSONArray _getFragmentSectionJSONArray(Blueprint blueprint)
+		throws JSONException {
+
+		if ((blueprint == null) ||
+			Validator.isBlank(blueprint.getSelectedFragments())) {
+
+			return null;
+		}
+
+		JSONArray jsonArray = JSONFactoryUtil.createJSONArray(
+			blueprint.getSelectedFragments());
+
+		if (jsonArray == null) {
+			return null;
+		}
+
+		return jsonArray;
+	}
+
 	private static JSONArray _getSectionJSONArray(
 			Blueprint blueprint, String key)
 		throws JSONException {

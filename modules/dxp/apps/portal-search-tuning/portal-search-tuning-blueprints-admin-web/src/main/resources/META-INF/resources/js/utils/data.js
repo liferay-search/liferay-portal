@@ -14,6 +14,493 @@
  */
 
 export const DEFAULT_FRAGMENT = {
+	configJSON: {
+		configurationValues: [
+			{
+				defaultValue: 'English',
+				key: 'context.language_id',
+				name: 'Context Language',
+				type: 'text',
+			},
+		],
+	},
+	inputJSON: {
+		clauses: [
+			{
+				context: 'query',
+				occur: 'must',
+				query: {
+					query: {
+						query_string: {
+							default_operator: 'or',
+							fields: [
+								'title_${context.language_id}',
+								'title',
+								'content_${context.language_id}',
+								'content',
+							],
+							query: '${keywords}',
+						},
+					},
+				},
+				type: 'wrapper',
+			},
+		],
+		conditions: [],
+		description: {
+			en_US: 'Search title and content',
+		},
+		enabled: true,
+		icon: 'vocabulary',
+		title: {
+			en_US: 'Match Any Keyword',
+		},
+	},
+};
+
+export const QUERY_FRAGMENTS = [
+	{
+		configJSON: {
+			configurationValues: [
+				{
+					defaultValue: 'or',
+					helpText: 'This is the ...',
+					key: 'config.operator',
+					name: 'Query Clause Operator',
+					type: 'single-select',
+					typeOptions: [
+						{
+							label: 'OR',
+							value: 'or',
+						},
+						{
+							label: 'AND',
+							value: 'and',
+						},
+					],
+				},
+				{
+					defaultValue: 10,
+					key: 'config.title.boost',
+					name: 'Title Boost',
+					type: 'slider',
+				},
+				{
+					defaultValue: 'English',
+					key: 'context.language_id',
+					name: 'Context Language',
+					type: 'text',
+				},
+				{
+					defaultValue: 3,
+					key: 'context.timespan',
+					name: 'Time span',
+					type: 'number',
+					unit: 'days',
+				},
+				{
+					defaultValue: 3,
+					key: 'context.count',
+					name: 'Number count',
+					type: 'number',
+				},
+				{
+					defaultValue: 1601751600, // Oct 3, 2020
+					key: 'context.date',
+					name: 'Relevant date',
+					type: 'date',
+				},
+				{
+					className: 'com.liferay.portal.kernel.model.Role',
+					helpText: 'Select modal ...',
+					key: 'config.select.modal.role',
+					name: 'Select Modal',
+					type: 'entity',
+				},
+				{
+					className: 'com.liferay.portal.kernel.model.User',
+					helpText: 'Select modal ...',
+					key: 'config.select.modal.user',
+					name: 'Select Modal',
+					type: 'entity',
+				},
+				{
+					className: 'com.liferay.portal.kernel.model.Organization',
+					helpText: 'Select modal ...',
+					key: 'config.select.modal.organization',
+					name: 'Select Organization',
+					type: 'entity',
+				},
+			],
+		},
+		inputJSON: {
+			clauses: [
+				{
+					context: 'query',
+					occur: 'must',
+					query: {
+						boost: 2,
+						default_operator: '${config.operator}',
+						fields: [
+							{
+								boost: '${config.title.boost}',
+								field: 'title_${context.language_id}',
+							},
+							{
+								boost: '${config.content.boost}',
+								field: 'content_${context.language_id}',
+							},
+						],
+					},
+					type: 'simple_query_string',
+				},
+			],
+			conditions: [],
+			description: {
+				en_US: 'Use this to test variety of configuration types',
+			},
+			enabled: '${config.lfr.enabled}',
+			icon: 'time',
+			title: {
+				en_US: 'Sample Configuration (All Types)',
+			},
+			validate: [
+				'${config.operator}',
+				'${config.title.boost}',
+				'${context.language_id}',
+				'${context.timespan}',
+				'${context.count}',
+				'${context.date}',
+				'${config.select.modal.role}',
+				'${config.select.modal.user}',
+				'${config.select.modal.organization}',
+			],
+		},
+	},
+	{
+		configJSON: {
+			configurationValues: [
+				{
+					className: 'com.liferay.portal.kernel.model.User',
+					helpText: 'Select user ...',
+					key: 'config.select.modal.user',
+					name: 'Select User',
+					type: 'entity',
+				},
+			],
+		},
+		inputJSON: {
+			clauses: [
+				{
+					context: 'pre_filter',
+					occur: 'must',
+					query: {
+						query: {
+							bool: {
+								must: [
+									{
+										term: {
+											status: 0,
+										},
+									},
+								],
+							},
+						},
+					},
+					type: 'wrapper',
+				},
+			],
+			conditions: [],
+			description: {
+				en_US: 'Limit search to published content',
+			},
+			enabled: true,
+			icon: 'filter',
+			title: {
+				en_US: 'Filter Published Content',
+			},
+		},
+	},
+	{
+		configJSON: {
+			configurationValues: [
+				{
+					key: 'time.current_date',
+					name: 'Relevant date',
+					type: 'date',
+				},
+				{
+					className: 'com.liferay.asset.kernel.model.AssetTag',
+					helpText: 'Select AssetTag ...',
+					key: 'config.select.modal.assetTag',
+					name: 'Select Asset',
+					type: 'entity',
+				},
+			],
+		},
+		inputJSON: {
+			clauses: [
+				{
+					context: 'pre_filter',
+					occur: 'must',
+					query: {
+						query: {
+							bool: {
+								should: [
+									{
+										bool: {
+											must: [
+												{
+													range: {
+														displayDate_sortable: {
+															from:
+																'-9223372036854775808',
+															include_lower: true,
+															include_upper: true,
+															to:
+																'${time.current_date|dateFormat=timestamp}',
+														},
+													},
+												},
+												{
+													range: {
+														expirationDate_sortable: {
+															from:
+																'${time.current_date|dateFormat=timestamp}',
+															include_lower: true,
+															include_upper: true,
+															to:
+																'9223372036854775807',
+														},
+													},
+												},
+												{
+													term: {
+														entryClassName:
+															'com.liferay.blogs.kernel.model.BlogsEntry',
+													},
+												},
+											],
+										},
+									},
+									{
+										bool: {
+											must: [
+												{
+													range: {
+														displayDate_sortable: {
+															from:
+																'-9223372036854775808',
+															include_lower: true,
+															include_upper: true,
+															to:
+																'${time.current_date|dateFormat=timestamp}',
+														},
+													},
+												},
+												{
+													range: {
+														expirationDate_sortable: {
+															from:
+																'${time.current_date|dateFormat=timestamp}',
+															include_lower: true,
+															include_upper: true,
+															to:
+																'9223372036854775807',
+														},
+													},
+												},
+												{
+													term: {
+														entryClassName:
+															'com.liferay.journal.model.JournalArticle',
+													},
+												},
+												{
+													term: {
+														head: 'true',
+													},
+												},
+											],
+										},
+									},
+									{
+										term: {
+											entryClassName:
+												'com.liferay.document.library.kernel.model.DLFileEntry',
+										},
+									},
+									{
+										term: {
+											entryClassName:
+												'com.liferay.knowledge.base.model.KBArticle',
+										},
+									},
+									{
+										term: {
+											entryClassName:
+												'com.liferay.message.boards.kernel.model.MBMessage',
+										},
+									},
+									{
+										term: {
+											entryClassName:
+												'com.liferay.portal.kernel.model.User',
+										},
+									},
+									{
+										term: {
+											entryClassName:
+												'com.liferay.wiki.model.WikiPage',
+										},
+									},
+									{
+										term: {
+											entryClassName:
+												'com.liferay.wiki.model.WikiPage',
+										},
+									},
+								],
+							},
+						},
+					},
+					type: 'wrapper',
+				},
+			],
+			conditions: [],
+			description: {
+				en_US: 'Limit content types to be searched',
+			},
+			enabled: true,
+			icon: 'filter',
+			title: {
+				en_US: 'Filter Content Type',
+			},
+		},
+	},
+	{
+		configJSON: {
+			configurationValues: [
+				{
+					defaultValue: 'or',
+					helpText: 'This is the ...',
+					key: 'config.operator',
+					name: 'Query Clause Operator',
+					type: 'single-select',
+					typeOptions: [
+						{
+							label: 'OR',
+							value: 'or',
+						},
+						{
+							label: 'AND',
+							value: 'and',
+						},
+					],
+				},
+				{
+					className: 'com.liferay.portal.kernel.model.User',
+					helpText: 'Select user ...',
+					key: 'config.select.modal.user',
+					name: 'Select User',
+					type: 'entity',
+				},
+			],
+		},
+		inputJSON: {
+			clauses: [
+				{
+					context: 'pre_filter',
+					occur: 'must',
+					query: {
+						query: {
+							bool: {
+								should: [
+									{
+										term: {
+											entryClassName:
+												'com.liferay.portal.kernel.model.User',
+										},
+									},
+									{
+										term: {
+											stagingGroup: false,
+										},
+									},
+								],
+							},
+						},
+					},
+					type: 'wrapper',
+				},
+			],
+			conditions: [],
+			description: {
+				en_US: 'Exclude staged groups from search',
+			},
+			enabled: true,
+			icon: 'filter',
+			title: {
+				en_US: 'Filter Published Sites',
+			},
+		},
+	},
+	{
+		configJSON: {
+			configurationValues: [
+				{
+					defaultValue: 10,
+					key: 'ipstack.latitude',
+					name: 'Latitude',
+					type: 'slider',
+				},
+				{
+					defaultValue: 10,
+					key: 'ipstack.longitude',
+					name: 'Longitude',
+					type: 'slider',
+				},
+			],
+		},
+		inputJSON: {
+			clauses: [
+				{
+					context: 'query',
+					occur: 'should',
+					query: {
+						query: {
+							function_score: {
+								boost: 100,
+								gauss: {
+									expando__keyword__custom_fields__location_geolocation: {
+										decay: 0.3,
+										origin: {
+											lat: '${ipstack.latitude}',
+											lon: '${ipstack.longitude}',
+										},
+										scale: '1000km',
+									},
+								},
+							},
+						},
+					},
+					type: 'wrapper',
+				},
+			],
+			conditions: [],
+			description: {
+				en_US: 'Boost content close to my location',
+			},
+			enabled: true,
+			icon: 'time',
+			title: {
+				en_US: 'Boost Proximity',
+			},
+		},
+	},
+];
+
+export const DEFAULT_FRAGMENT_ORIGINAL = {
 	clauses: [
 		{
 			context: 'query',
@@ -46,7 +533,7 @@ export const DEFAULT_FRAGMENT = {
 	},
 };
 
-export const QUERY_FRAGMENTS = [
+export const QUERY_FRAGMENTS_ORIGINAL = [
 	{
 		clauses: [
 			{
