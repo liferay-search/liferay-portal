@@ -55,8 +55,8 @@ const MultiSelectMenuRenderer = ({
 );
 
 export default function MultiSelect({
-	clearAllTitle = 'Clear All',
-	closeButtonAriaLabel = 'Remove {0}',
+	clearAllTitle = Liferay.Language.get('clear-all'),
+	closeButtonAriaLabel = Liferay.Language.get('remove-x'),
 	disabled,
 	disabledClearAll,
 	filter = defaultFilter,
