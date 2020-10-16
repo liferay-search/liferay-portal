@@ -67,8 +67,8 @@ public class BlueprintLocalServiceImpl extends BlueprintLocalServiceBaseImpl {
 	@Override
 	public Blueprint addBlueprint(
 			long userId, long groupId, Map<Locale, String> titleMap,
-			Map<Locale, String> descriptionMap, String configuration, int type,
-			ServiceContext serviceContext)
+			Map<Locale, String> descriptionMap, String configuration,
+			String selectedFragments, int type, ServiceContext serviceContext)
 		throws PortalException {
 
 		User user = _userLocalService.getUser(userId);
@@ -80,12 +80,12 @@ public class BlueprintLocalServiceImpl extends BlueprintLocalServiceBaseImpl {
 
 		Blueprint blueprint = createBlueprint(blueprintId);
 
-		blueprint.setCompanyId(user.getCompanyId());
-		blueprint.setCreateDate(serviceContext.getCreateDate(new Date()));
 		blueprint.setGroupId(groupId);
-		blueprint.setModifiedDate(serviceContext.getModifiedDate(new Date()));
+		blueprint.setCompanyId(user.getCompanyId());
 		blueprint.setUserId(user.getUserId());
 		blueprint.setUserName(user.getFullName());
+		blueprint.setCreateDate(serviceContext.getCreateDate(new Date()));
+		blueprint.setModifiedDate(serviceContext.getModifiedDate(new Date()));
 		blueprint.setUuid(serviceContext.getUuid());
 
 		blueprint.setTitleMap(titleMap);
@@ -99,6 +99,7 @@ public class BlueprintLocalServiceImpl extends BlueprintLocalServiceBaseImpl {
 		blueprint.setStatusDate(serviceContext.getModifiedDate(null));
 
 		blueprint.setConfiguration(configuration);
+		blueprint.setSelectedFragments(selectedFragments);
 		blueprint.setType(type);
 
 		blueprint = super.addBlueprint(blueprint);
@@ -185,7 +186,7 @@ public class BlueprintLocalServiceImpl extends BlueprintLocalServiceBaseImpl {
 	public Blueprint updateBlueprint(
 			long userId, long blueprintId, Map<Locale, String> titleMap,
 			Map<Locale, String> descriptionMap, String configuration,
-			ServiceContext serviceContext)
+			String selectedFragments, ServiceContext serviceContext)
 		throws PortalException {
 
 		Blueprint blueprint = getBlueprint(blueprintId);
@@ -197,6 +198,7 @@ public class BlueprintLocalServiceImpl extends BlueprintLocalServiceBaseImpl {
 		blueprint.setTitleMap(titleMap);
 
 		blueprint.setConfiguration(configuration);
+		blueprint.setSelectedFragments(selectedFragments);
 
 		return updateBlueprint(blueprint);
 	}

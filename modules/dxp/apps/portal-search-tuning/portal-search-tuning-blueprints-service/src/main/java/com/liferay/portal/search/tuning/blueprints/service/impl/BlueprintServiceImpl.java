@@ -64,7 +64,8 @@ public class BlueprintServiceImpl extends BlueprintServiceBaseImpl {
 
 	public Blueprint addCompanyBlueprint(
 			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
-			String configuration, int type, ServiceContext serviceContext)
+			String configuration, String selectedFragments, int type,
+			ServiceContext serviceContext)
 		throws PortalException {
 
 		String actionKey = BlueprintsActionKeys.getActionKeyForBlueprintType(
@@ -76,13 +77,14 @@ public class BlueprintServiceImpl extends BlueprintServiceBaseImpl {
 			getPermissionChecker(), groupId, actionKey);
 
 		return blueprintLocalService.addBlueprint(
-			getUserId(), groupId, titleMap, descriptionMap, configuration, type,
-			serviceContext);
+			getUserId(), groupId, titleMap, descriptionMap, configuration,
+			selectedFragments, type, serviceContext);
 	}
 
 	public Blueprint addGroupBlueprint(
 			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
-			String configuration, int type, ServiceContext serviceContext)
+			String configuration, String selectedFragments, int type,
+			ServiceContext serviceContext)
 		throws PortalException {
 
 		String actionKey = BlueprintsActionKeys.getActionKeyForBlueprintType(
@@ -94,8 +96,8 @@ public class BlueprintServiceImpl extends BlueprintServiceBaseImpl {
 			getPermissionChecker(), groupId, actionKey);
 
 		return blueprintLocalService.addBlueprint(
-			getUserId(), groupId, titleMap, descriptionMap, configuration, type,
-			serviceContext);
+			getUserId(), groupId, titleMap, descriptionMap, configuration,
+			selectedFragments, type, serviceContext);
 	}
 
 	public Blueprint deleteBlueprint(long blueprintId) throws PortalException {
@@ -179,7 +181,7 @@ public class BlueprintServiceImpl extends BlueprintServiceBaseImpl {
 	public Blueprint updateBlueprint(
 			long blueprintId, Map<Locale, String> titleMap,
 			Map<Locale, String> descriptionMap, String configuration,
-			ServiceContext serviceContext)
+			String selectedFragments, ServiceContext serviceContext)
 		throws PortalException {
 
 		Blueprint blueprint = _blueprintLocalService.getBlueprint(blueprintId);
@@ -192,7 +194,7 @@ public class BlueprintServiceImpl extends BlueprintServiceBaseImpl {
 
 		return _blueprintLocalService.updateBlueprint(
 			getUserId(), blueprintId, titleMap, descriptionMap, configuration,
-			serviceContext);
+			selectedFragments, serviceContext);
 	}
 
 	private long _getCompanyGroupId(ServiceContext serviceContext)

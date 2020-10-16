@@ -56,7 +56,7 @@ public class BlueprintServiceHttp {
 				HttpPrincipal httpPrincipal,
 				java.util.Map<java.util.Locale, String> titleMap,
 				java.util.Map<java.util.Locale, String> descriptionMap,
-				String configuration, int type,
+				String configuration, String selectedFragments, int type,
 				com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
@@ -66,7 +66,7 @@ public class BlueprintServiceHttp {
 				_addCompanyBlueprintParameterTypes0);
 
 			MethodHandler methodHandler = new MethodHandler(
-				methodKey, titleMap, descriptionMap, configuration, type,
+				methodKey, titleMap, descriptionMap, configuration, selectedFragments, type,
 				serviceContext);
 
 			Object returnObj = null;
@@ -103,7 +103,7 @@ public class BlueprintServiceHttp {
 				HttpPrincipal httpPrincipal,
 				java.util.Map<java.util.Locale, String> titleMap,
 				java.util.Map<java.util.Locale, String> descriptionMap,
-				String configuration, int type,
+				String configuration, String selectedFragments, int type,
 				com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
@@ -113,7 +113,7 @@ public class BlueprintServiceHttp {
 				_addGroupBlueprintParameterTypes1);
 
 			MethodHandler methodHandler = new MethodHandler(
-				methodKey, titleMap, descriptionMap, configuration, type,
+				methodKey, titleMap, descriptionMap, configuration, selectedFragments, type,
 				serviceContext);
 
 			Object returnObj = null;
@@ -451,7 +451,7 @@ public class BlueprintServiceHttp {
 				HttpPrincipal httpPrincipal, long blueprintId,
 				java.util.Map<java.util.Locale, String> titleMap,
 				java.util.Map<java.util.Locale, String> descriptionMap,
-				String configuration,
+				String configuration, String selectedFragments,
 				com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
@@ -462,7 +462,7 @@ public class BlueprintServiceHttp {
 
 			MethodHandler methodHandler = new MethodHandler(
 				methodKey, blueprintId, titleMap, descriptionMap, configuration,
-				serviceContext);
+				selectedFragments, serviceContext);
 
 			Object returnObj = null;
 
