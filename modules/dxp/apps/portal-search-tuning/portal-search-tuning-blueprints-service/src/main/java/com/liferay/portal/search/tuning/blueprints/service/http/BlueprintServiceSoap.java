@@ -73,7 +73,7 @@ public class BlueprintServiceSoap {
 					String[] titleMapLanguageIds, String[] titleMapValues,
 					String[] descriptionMapLanguageIds,
 					String[] descriptionMapValues, String configuration,
-					int type,
+					String selectedFragments, int type,
 					com.liferay.portal.kernel.service.ServiceContext
 						serviceContext)
 			throws RemoteException {
@@ -87,8 +87,8 @@ public class BlueprintServiceSoap {
 
 			com.liferay.portal.search.tuning.blueprints.model.Blueprint
 				returnValue = BlueprintServiceUtil.addCompanyBlueprint(
-					titleMap, descriptionMap, configuration, type,
-					serviceContext);
+					titleMap, descriptionMap, configuration, selectedFragments,
+					type, serviceContext);
 
 			return com.liferay.portal.search.tuning.blueprints.model.
 				BlueprintSoap.toSoapModel(returnValue);
@@ -106,7 +106,7 @@ public class BlueprintServiceSoap {
 					String[] titleMapLanguageIds, String[] titleMapValues,
 					String[] descriptionMapLanguageIds,
 					String[] descriptionMapValues, String configuration,
-					int type,
+					String selectedFragments, int type,
 					com.liferay.portal.kernel.service.ServiceContext
 						serviceContext)
 			throws RemoteException {
@@ -120,8 +120,8 @@ public class BlueprintServiceSoap {
 
 			com.liferay.portal.search.tuning.blueprints.model.Blueprint
 				returnValue = BlueprintServiceUtil.addGroupBlueprint(
-					titleMap, descriptionMap, configuration, type,
-					serviceContext);
+					titleMap, descriptionMap, configuration, selectedFragments,
+					type, serviceContext);
 
 			return com.liferay.portal.search.tuning.blueprints.model.
 				BlueprintSoap.toSoapModel(returnValue);
@@ -303,6 +303,7 @@ public class BlueprintServiceSoap {
 					long blueprintId, String[] titleMapLanguageIds,
 					String[] titleMapValues, String[] descriptionMapLanguageIds,
 					String[] descriptionMapValues, String configuration,
+					String selectedFragments,
 					com.liferay.portal.kernel.service.ServiceContext
 						serviceContext)
 			throws RemoteException {
@@ -317,7 +318,7 @@ public class BlueprintServiceSoap {
 			com.liferay.portal.search.tuning.blueprints.model.Blueprint
 				returnValue = BlueprintServiceUtil.updateBlueprint(
 					blueprintId, titleMap, descriptionMap, configuration,
-					serviceContext);
+					selectedFragments, serviceContext);
 
 			return com.liferay.portal.search.tuning.blueprints.model.
 				BlueprintSoap.toSoapModel(returnValue);
