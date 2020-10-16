@@ -59,6 +59,7 @@ public class BlueprintWrapper
 		attributes.put("title", getTitle());
 		attributes.put("description", getDescription());
 		attributes.put("configuration", getConfiguration());
+		attributes.put("selectedFragments", getSelectedFragments());
 		attributes.put("type", getType());
 
 		return attributes;
@@ -162,6 +163,12 @@ public class BlueprintWrapper
 			setConfiguration(configuration);
 		}
 
+		String selectedFragments = (String)attributes.get("selectedFragments");
+
+		if (selectedFragments != null) {
+			setSelectedFragments(selectedFragments);
+		}
+
 		Integer type = (Integer)attributes.get("type");
 
 		if (type != null) {
@@ -202,6 +209,16 @@ public class BlueprintWrapper
 	@Override
 	public String getConfiguration() {
 		return model.getConfiguration();
+	}
+
+	/**
+	 * Returns the configuration of this blueprint.
+	 *
+	 * @return the configuration of this blueprint
+	 */
+	@Override
+	public String getSelectedFragments() {
+		return model.getSelectedFragments();
 	}
 
 	/**
@@ -639,6 +656,16 @@ public class BlueprintWrapper
 	@Override
 	public void setConfiguration(String configuration) {
 		model.setConfiguration(configuration);
+	}
+
+	/**
+	 * Sets the fragments of this blueprint.
+	 *
+	 * @param selectedFragments the fragments of this blueprint
+	 */
+	@Override
+	public void setSelectedFragments(String selectedFragments) {
+		model.setSelectedFragments(selectedFragments);
 	}
 
 	/**

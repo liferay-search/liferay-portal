@@ -231,6 +231,14 @@ public class BlueprintSoap implements Serializable {
 		_configuration = configuration;
 	}
 
+	public String getSelectedFragments() {
+		return _selectedFragments;
+	}
+
+	public void setSelectedFragments(String selectedFragments) {
+		_selectedFragments = selectedFragments;
+	}
+
 	public int getType() {
 		return _type;
 	}
@@ -255,6 +263,7 @@ public class BlueprintSoap implements Serializable {
 	private String _title;
 	private String _description;
 	private String _configuration;
+	private String _selectedFragments;
 	private int _type;
 
 }
