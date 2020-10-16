@@ -41,24 +41,24 @@ public class BlueprintServiceUtil {
 			addCompanyBlueprint(
 				java.util.Map<java.util.Locale, String> titleMap,
 				java.util.Map<java.util.Locale, String> descriptionMap,
-				String configuration, int type,
+				String configuration, String selectedFragments, int type,
 				com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return getService().addCompanyBlueprint(
-			titleMap, descriptionMap, configuration, type, serviceContext);
+			titleMap, descriptionMap, configuration, selectedFragments, type, serviceContext);
 	}
 
 	public static com.liferay.portal.search.tuning.blueprints.model.Blueprint
 			addGroupBlueprint(
 				java.util.Map<java.util.Locale, String> titleMap,
 				java.util.Map<java.util.Locale, String> descriptionMap,
-				String configuration, int type,
+				String configuration, String selectedFragments, int type,
 				com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return getService().addGroupBlueprint(
-			titleMap, descriptionMap, configuration, type, serviceContext);
+			titleMap, descriptionMap, configuration, selectedFragments, type, serviceContext);
 	}
 
 	public static com.liferay.portal.search.tuning.blueprints.model.Blueprint
@@ -139,12 +139,12 @@ public class BlueprintServiceUtil {
 				long blueprintId,
 				java.util.Map<java.util.Locale, String> titleMap,
 				java.util.Map<java.util.Locale, String> descriptionMap,
-				String configuration,
+				String configuration, String selectedFragments,
 				com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return getService().updateBlueprint(
-			blueprintId, titleMap, descriptionMap, configuration,
+			blueprintId, titleMap, descriptionMap, configuration, selectedFragments,
 			serviceContext);
 	}
 

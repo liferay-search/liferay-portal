@@ -35,12 +35,12 @@ public class BlueprintServiceWrapper
 			addCompanyBlueprint(
 				java.util.Map<java.util.Locale, String> titleMap,
 				java.util.Map<java.util.Locale, String> descriptionMap,
-				String configuration, int type,
+				String configuration, String selectedFragments, int type,
 				com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return _blueprintService.addCompanyBlueprint(
-			titleMap, descriptionMap, configuration, type, serviceContext);
+			titleMap, descriptionMap, configuration, selectedFragments, type, serviceContext);
 	}
 
 	@Override
@@ -48,12 +48,12 @@ public class BlueprintServiceWrapper
 			addGroupBlueprint(
 				java.util.Map<java.util.Locale, String> titleMap,
 				java.util.Map<java.util.Locale, String> descriptionMap,
-				String configuration, int type,
+				String configuration, String selectedFragments, int type,
 				com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return _blueprintService.addGroupBlueprint(
-			titleMap, descriptionMap, configuration, type, serviceContext);
+			titleMap, descriptionMap, configuration, selectedFragments, type, serviceContext);
 	}
 
 	@Override
@@ -144,13 +144,13 @@ public class BlueprintServiceWrapper
 				long blueprintId,
 				java.util.Map<java.util.Locale, String> titleMap,
 				java.util.Map<java.util.Locale, String> descriptionMap,
-				String configuration,
+				String configuration, String selectedFragments,
 				com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return _blueprintService.updateBlueprint(
 			blueprintId, titleMap, descriptionMap, configuration,
-			serviceContext);
+			selectedFragments, serviceContext);
 	}
 
 	@Override

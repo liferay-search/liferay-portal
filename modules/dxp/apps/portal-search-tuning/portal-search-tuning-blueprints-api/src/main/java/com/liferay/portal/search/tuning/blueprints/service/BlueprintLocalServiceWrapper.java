@@ -57,12 +57,12 @@ public class BlueprintLocalServiceWrapper
 				long userId, long groupId,
 				java.util.Map<java.util.Locale, String> titleMap,
 				java.util.Map<java.util.Locale, String> descriptionMap,
-				String configuration, int type,
+				String configuration, String selectedFragments, int type,
 				com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return _blueprintLocalService.addBlueprint(
-			userId, groupId, titleMap, descriptionMap, configuration, type,
+			userId, groupId, titleMap, descriptionMap, configuration, selectedFragments, type,
 			serviceContext);
 	}
 
@@ -484,13 +484,13 @@ public class BlueprintLocalServiceWrapper
 				long userId, long blueprintId,
 				java.util.Map<java.util.Locale, String> titleMap,
 				java.util.Map<java.util.Locale, String> descriptionMap,
-				String configuration,
+				String configuration, String selectedFragments,
 				com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return _blueprintLocalService.updateBlueprint(
 			userId, blueprintId, titleMap, descriptionMap, configuration,
-			serviceContext);
+			selectedFragments, serviceContext);
 	}
 
 	@Override
