@@ -53,9 +53,11 @@ function EditTitleModal({
 	};
 
 	return (
-		<ClayModal observer={observer} size="md">
-			<ClayModal.Header>{Liferay.Language.get('edit')}</ClayModal.Header>
-
+		<ClayModal
+			className="blueprint-edit-title-modal"
+			observer={observer}
+			size="md"
+		>
 			<ClayForm onSubmit={_handleSubmit}>
 				<ClayModal.Body>
 					<ClayForm.Group className={hasError ? 'has-error' : ''}>

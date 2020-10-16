@@ -22,6 +22,10 @@
 	}
 }
 
+.blueprint-edit-title-modal .modal-body .form-group:last-of-type {
+	margin-bottom: 0;
+}
+
 .portlet-blueprints-admin {
 	.id-text {
 		color: $secondary;
