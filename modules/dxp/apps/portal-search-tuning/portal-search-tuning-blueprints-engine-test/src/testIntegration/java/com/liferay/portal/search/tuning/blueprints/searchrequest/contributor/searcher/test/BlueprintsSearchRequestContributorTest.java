@@ -168,7 +168,7 @@ public class BlueprintsSearchRequestContributorTest {
 		Blueprint blueprint = _blueprintService.addCompanyBlueprint(
 			Collections.singletonMap(LocaleUtil.US, "testTitle"),
 			Collections.singletonMap(LocaleUtil.US, "testDescription"),
-			configurationString, 1, _getServiceContext());
+			configurationString, "", 1, _getServiceContext());
 
 		_blueprint = blueprint;
 
