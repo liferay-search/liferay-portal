@@ -56,6 +56,7 @@ function Builder({
 						entityJSON={entityJSON}
 						inputJSON={item.inputJSON}
 						key={item.id}
+						queryConfig={item.queryConfig}
 						updateFragment={(configValues, queryConfig) => {
 							updateFragment(index, {
 								...item,

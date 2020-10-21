@@ -9,6 +9,7 @@
  * distribution rights of the Software.
  */
 
+import {getUnixTime, isValid} from 'date-fns';
 import {openToast} from 'frontend-js-web';
 
 export const openErrorToast = (config) => {
@@ -20,17 +21,34 @@ export const openErrorToast = (config) => {
 	});
 };
 
+export const getDefaultValue = (item) => {
+	switch (item.type) {
+		case 'single-select':
+			return isNotNull(item.defaultValue)
+				? item.defaultValue
+				: item.typeOptions && item.typeOptions[0].value
+				? item.typeOptions[0].value
+				: '';
+		case 'date':
+			return isNotNull(item.defaultValue)
+				? typeof item.defaultValue == 'number'
+					? item.defaultValue
+					: isValid(new Date(item.defaultValue))
+					? getUnixTime(new Date(item.defaultValue))
+					: ''
+				: '';
+		default:
+			return isNotNull(item.defaultValue) ? item.defaultValue : '';
+	}
+};
+
 export const getConfigValues = (configJSON) => {
 	if (!!configJSON && configJSON.configurationValues) {
 		return configJSON.configurationValues.reduce((acc, curr) => {
 			return {
 				...acc,
 				[`${curr.key}`]: {
-					value: !curr.defaultValue
-						? curr.typeOptions
-							? curr.typeOptions[0].value
-							: ''
-						: curr.defaultValue,
+					value: getDefaultValue(curr),
 				},
 			};
 		}, {});
@@ -48,22 +66,24 @@ export const replaceConfigValues = (
 		let flattenJSON = JSON.stringify(inputJSON);
 
 		configJSON.configurationValues.map((config) => {
-			if (configValues[config.key].value) {
+			const configValue = configValues[config.key].value;
+
+			if (isNotNull(configValue)) {
 				if (
-					config.type === 'slider' ||
-					config.type === 'number' ||
-					config.type === 'date'
+					typeof configValue === 'number' ||
+					typeof configValue === 'boolean' ||
+					config.type === 'number'
 				) {
 					flattenJSON = replaceStr(
 						flattenJSON,
 						`"$\{${config.key}}"`,
-						configValues[config.key].value
+						configValue
 					);
 				}
 				flattenJSON = replaceStr(
 					flattenJSON,
 					`\${${config.key}}`,
-					configValues[config.key].value
+					configValue
 				);
 			}
 		});
@@ -87,3 +107,47 @@ export const convertSelectedFragment = ({configJSON, inputJSON}, id = 0) => {
 		queryConfig: replaceConfigValues(configJSON, inputJSON),
 	};
 };
+
+export const validateConfigJSON = (configJSON) => {
+	return configJSON.configurationValues.every((item) => {
+		if (
+			isNotNull(item.type) &&
+			isNotNull(item.key) &&
+			isNotNull(item.name)
+		) {
+			switch (item.type) {
+				case 'single-select':
+					return (
+						!!item.typeOptions &&
+						item.typeOptions.length > 0 &&
+						item.typeOptions.every(
+							(option) =>
+								isNotNull(option.label) &&
+								isNotNull(option.value)
+						)
+					);
+				case 'entity':
+					return (
+						item.className && entityKeys.includes(item.className)
+					);
+				default:
+					return true;
+			}
+		} else {
+			return false;
+		}
+	});
+};
+
+const entityKeys = [
+	'com.liferay.asset.kernel.model.AssetTag',
+	'com.liferay.portal.kernel.model.Group',
+	'com.liferay.portal.kernel.model.Organization',
+	'com.liferay.portal.kernel.model.Role',
+	'com.liferay.portal.kernel.model.Team',
+	'com.liferay.portal.kernel.model.User',
+	'com.liferay.portal.kernel.model.UserGroup',
+];
+
+const isNotNull = (item) =>
+	item !== 'null' && item !== '' && item !== undefined;

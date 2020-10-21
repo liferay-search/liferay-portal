@@ -17,6 +17,13 @@ import {SELECTED_FRAGMENTS} from '../mocks/data';
 
 import '@testing-library/jest-dom/extend-expect';
 
+jest.mock(
+	'../../../src/main/resources/META-INF/resources/js/components/CodeMirrorEditor',
+	() => ({onChange, value}) => (
+		<textarea aria-label="text-area" onChange={onChange} value={value} />
+	)
+);
+
 const deleteFragment = jest.fn();
 const updateFragment = jest.fn();
 

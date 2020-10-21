@@ -9,6 +9,7 @@
  * distribution rights of the Software.
  */
 
+import ClayAlert from '@clayui/alert';
 import ClayButton from '@clayui/button';
 import ClayDatePicker from '@clayui/date-picker';
 import ClayDropDown from '@clayui/drop-down';
@@ -24,20 +25,23 @@ import {PropTypes} from 'prop-types';
 import React, {useContext, useEffect, useState} from 'react';
 
 import ThemeContext from '../ThemeContext';
-import {replaceConfigValues} from '../utils/utils';
+import {replaceConfigValues, validateConfigJSON} from '../utils/utils';
+import JsonModal from './JsonModal';
 
-export default function ConfigFragment({
+function ConfigFragment({
 	collapseAll,
 	configJSON,
 	configValues,
 	deleteFragment,
 	entityJSON,
 	inputJSON,
+	queryConfig,
 	updateFragment,
 }) {
 	const {locale} = useContext(ThemeContext);
 	const [collapse, setCollapse] = useState(false);
 	const [active, setActive] = useState(false);
+	const [visible, setVisible] = useState(false);
 
 	useEffect(() => {
 		setCollapse(collapseAll);
@@ -85,6 +89,11 @@ export default function ConfigFragment({
 			});
 		}
 	};
+
+	const _hasConfigurationValues =
+		!!configJSON &&
+		!!configJSON.configurationValues &&
+		configJSON.configurationValues.length > 0;
 
 	function _renderInput(config) {
 		switch (config.type) {
@@ -203,13 +212,14 @@ export default function ConfigFragment({
 						}}
 						value={configValues[`${config.key}`].value}
 					>
-						{config.typeOptions.map((item) => (
-							<ClaySelect.Option
-								key={item.value}
-								label={item.label}
-								value={item.value}
-							/>
-						))}
+						{config.typeOptions &&
+							config.typeOptions.map((item) => (
+								<ClaySelect.Option
+									key={item.value}
+									label={item.label}
+									value={item.value}
+								/>
+							))}
 					</ClaySelect>
 				);
 			case 'slider':
@@ -311,6 +321,20 @@ export default function ConfigFragment({
 							<ClayDropDown.Item onClick={deleteFragment}>
 								{Liferay.Language.get('delete')}
 							</ClayDropDown.Item>
+							<ClayDropDown.Item
+								onClick={() => setVisible(!visible)}
+							>
+								{Liferay.Language.get('query-configuration')}
+
+								<JsonModal
+									json={queryConfig}
+									setVisible={setVisible}
+									title={Liferay.Language.get(
+										'query-configuration'
+									)}
+									visible={visible}
+								/>
+							</ClayDropDown.Item>
 						</ClayDropDown.ItemList>
 					</ClayDropDown>
 
@@ -337,44 +361,59 @@ export default function ConfigFragment({
 				</ClayList.Item>
 			</ClayList>
 
-			{!collapse &&
-				!!configJSON &&
-				!!configJSON.configurationValues &&
-				configJSON.configurationValues.length > 0 && (
-					<ClayList className="configuration-form-list">
-						<ClayList.Header>
-							{Liferay.Language.get('clauses')}
-						</ClayList.Header>
+			{!collapse && (
+				<>
+					{(!_hasConfigurationValues ||
+						!validateConfigJSON(configJSON)) && (
+						<ClayAlert
+							displayType="danger"
+							title={Liferay.Language.get('info')}
+						>
+							{Liferay.Language.get(
+								'an-error-is-preventing-one-or-more-fields-from-displaying'
+							)}
+						</ClayAlert>
+					)}
 
-						{configJSON.configurationValues.map((config) => (
-							<ClayList.Item flex key={config.key}>
-								<ClayList.ItemField className="list-item-label">
-									<label htmlFor={config.key}>
-										{config.name}
-										{config.helpText && (
-											<ClayTooltipProvider>
-												<ClaySticker
-													displayType="unstyled"
-													size="sm"
-												>
-													<ClayIcon
-														data-tooltip-align="top"
-														symbol="info-circle"
-														title={config.helpText}
-													/>
-												</ClaySticker>
-											</ClayTooltipProvider>
-										)}
-									</label>
-								</ClayList.ItemField>
+					{_hasConfigurationValues && (
+						<ClayList className="configuration-form-list">
+							<ClayList.Header>
+								{Liferay.Language.get('clauses')}
+							</ClayList.Header>
 
-								<ClayList.ItemField expand>
-									{_renderInput(config)}
-								</ClayList.ItemField>
-							</ClayList.Item>
-						))}
-					</ClayList>
-				)}
+							{configJSON.configurationValues.map((config) => (
+								<ClayList.Item flex key={config.key}>
+									<ClayList.ItemField className="list-item-label">
+										<label htmlFor={config.key}>
+											{config.name}
+											{config.helpText && (
+												<ClayTooltipProvider>
+													<ClaySticker
+														displayType="unstyled"
+														size="sm"
+													>
+														<ClayIcon
+															data-tooltip-align="top"
+															symbol="info-circle"
+															title={
+																config.helpText
+															}
+														/>
+													</ClaySticker>
+												</ClayTooltipProvider>
+											)}
+										</label>
+									</ClayList.ItemField>
+
+									<ClayList.ItemField expand>
+										{_renderInput(config)}
+									</ClayList.ItemField>
+								</ClayList.Item>
+							))}
+						</ClayList>
+					)}
+				</>
+			)}
 		</div>
 	);
 }
@@ -435,3 +474,5 @@ ConfigFragment.propTypes = {
 	inputJSON: PropTypes.object,
 	updateFragment: PropTypes.func,
 };
+
+export default React.memo(ConfigFragment);

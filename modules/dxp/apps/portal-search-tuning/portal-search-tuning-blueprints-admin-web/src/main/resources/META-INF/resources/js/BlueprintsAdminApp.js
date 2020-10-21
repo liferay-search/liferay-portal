@@ -13,12 +13,15 @@ import React from 'react';
 
 import ThemeContext from './ThemeContext';
 import BlueprintForm from './components/BlueprintForm';
+import ErrorBoundary from './shared/ErrorBoundary';
 
 export default function ({context, props}) {
 	return (
 		<ThemeContext.Provider value={context}>
 			<div className="blueprints-admin-root">
-				<BlueprintForm {...props} />
+				<ErrorBoundary>
+					<BlueprintForm {...props} />
+				</ErrorBoundary>
 			</div>
 		</ThemeContext.Provider>
 	);

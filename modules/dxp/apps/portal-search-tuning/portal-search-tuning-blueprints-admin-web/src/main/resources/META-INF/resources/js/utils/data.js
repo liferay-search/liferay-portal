@@ -17,10 +17,28 @@ export const DEFAULT_FRAGMENT = {
 	configJSON: {
 		configurationValues: [
 			{
-				defaultValue: 'English',
+				defaultValue: 'or',
 				key: 'context.language_id',
-				name: 'Context Language',
-				type: 'text',
+				name: 'Context Language ID',
+				type: 'single-select',
+				typeOptions: [
+					{
+						label: 'English',
+						value: 'en_US',
+					},
+					{
+						label: 'Spanish',
+						value: 'es_ES',
+					},
+					{
+						label: 'French',
+						value: 'fr_FR',
+					},
+					{
+						label: 'Japanese',
+						value: 'ja_JP',
+					},
+				],
 			},
 		],
 	},
@@ -80,13 +98,34 @@ export const QUERY_FRAGMENTS = [
 					],
 				},
 				{
+					key: 'config.lfr.enabled',
+					name: 'Enabled',
+					type: 'single-select',
+					typeOptions: [
+						{
+							label: 'True',
+							value: true,
+						},
+						{
+							label: 'False',
+							value: false,
+						},
+					],
+				},
+				{
 					defaultValue: 10,
 					key: 'config.title.boost',
 					name: 'Title Boost',
 					type: 'slider',
 				},
 				{
-					defaultValue: 'English',
+					defaultValue: 10,
+					key: 'config.content.boost',
+					name: 'Content Boost',
+					type: 'slider',
+				},
+				{
+					defaultValue: 'en_US',
 					key: 'context.language_id',
 					name: 'Context Language',
 					type: 'text',
@@ -94,34 +133,34 @@ export const QUERY_FRAGMENTS = [
 				{
 					defaultValue: 3,
 					key: 'context.timespan',
-					name: 'Time span',
+					name: 'Time Span',
 					type: 'number',
 					unit: 'days',
 				},
 				{
 					defaultValue: 3,
 					key: 'context.count',
-					name: 'Number count',
+					name: 'Number Count',
 					type: 'number',
 				},
 				{
 					defaultValue: 1601751600, // Oct 3, 2020
 					key: 'context.date',
-					name: 'Relevant date',
+					name: 'Relevant Date',
 					type: 'date',
 				},
 				{
 					className: 'com.liferay.portal.kernel.model.Role',
 					helpText: 'Select modal ...',
 					key: 'config.select.modal.role',
-					name: 'Select Modal',
+					name: 'Select Role',
 					type: 'entity',
 				},
 				{
 					className: 'com.liferay.portal.kernel.model.User',
 					helpText: 'Select modal ...',
 					key: 'config.select.modal.user',
-					name: 'Select Modal',
+					name: 'Select User',
 					type: 'entity',
 				},
 				{
@@ -181,11 +220,20 @@ export const QUERY_FRAGMENTS = [
 		configJSON: {
 			configurationValues: [
 				{
-					className: 'com.liferay.portal.kernel.model.User',
-					helpText: 'Select user ...',
-					key: 'config.select.modal.user',
-					name: 'Select User',
-					type: 'entity',
+					defaultValue: '0',
+					key: 'config.status',
+					name: 'Status',
+					type: 'single-select',
+					typeOptions: [
+						{
+							label: 'Published',
+							value: '0',
+						},
+						{
+							label: 'Unpublished',
+							value: '1',
+						},
+					],
 				},
 			],
 		},
@@ -200,7 +248,7 @@ export const QUERY_FRAGMENTS = [
 								must: [
 									{
 										term: {
-											status: 0,
+											status: '${config.status}',
 										},
 									},
 								],
@@ -225,16 +273,65 @@ export const QUERY_FRAGMENTS = [
 		configJSON: {
 			configurationValues: [
 				{
-					key: 'time.current_date',
-					name: 'Relevant date',
+					key: 'time.display_date.from',
+					name: 'Display date: From',
 					type: 'date',
 				},
 				{
-					className: 'com.liferay.asset.kernel.model.AssetTag',
-					helpText: 'Select AssetTag ...',
-					key: 'config.select.modal.assetTag',
-					name: 'Select Asset',
-					type: 'entity',
+					key: 'time.display_date.to',
+					name: 'Display date: To',
+					type: 'date',
+				},
+				{
+					key: 'time.expiration_date.from',
+					name: 'Expiration date: From',
+					type: 'date',
+				},
+				{
+					key: 'time.expiration_date.to',
+					name: 'Expiration date: To',
+					type: 'date',
+				},
+				{
+					defaultValue: 'com.liferay.blogs.kernel.model.BlogsEntry',
+					key: 'config.entryClassName',
+					name: 'Entry Class Name',
+					type: 'single-select',
+					typeOptions: [
+						{
+							label: 'Asset Tag',
+							value: 'com.liferay.asset.kernel.model.AssetTag',
+						},
+						{
+							label: 'Blogs Entry',
+							value: 'com.liferay.blogs.kernel.model.BlogsEntry',
+						},
+						{
+							label: 'Group',
+							value: 'com.liferay.portal.kernel.model.Group',
+						},
+						{
+							label: 'Organization',
+							value:
+								'com.liferay.portal.kernel.model.Organization',
+						},
+						{
+							label: 'Role',
+							value: 'com.liferay.portal.kernel.model.Role',
+						},
+						{
+							label: 'Team',
+							value: 'com.liferay.portal.kernel.model.Team',
+						},
+						{
+							label: 'User',
+							value: 'com.liferay.portal.kernel.model.User',
+						},
+						{
+							label: 'User Group',
+							value: 'com.liferay.portal.kernel.model.UserGroup',
+						},
+					],
 				},
 			],
 		},
@@ -254,7 +351,7 @@ export const QUERY_FRAGMENTS = [
 													range: {
 														displayDate_sortable: {
 															from:
-																'-9223372036854775808',
+																'${time.display_date.from}',
 															include_lower: true,
 															include_upper: true,
 															to:
@@ -270,14 +367,14 @@ export const QUERY_FRAGMENTS = [
 															include_lower: true,
 															include_upper: true,
 															to:
-																'9223372036854775807',
+																'${time.expiration_date.to}',
 														},
 													},
 												},
 												{
 													term: {
 														entryClassName:
-															'com.liferay.blogs.kernel.model.BlogsEntry',
+															'${config.entryClassName}',
 													},
 												},
 											],
@@ -290,7 +387,7 @@ export const QUERY_FRAGMENTS = [
 													range: {
 														displayDate_sortable: {
 															from:
-																'-9223372036854775808',
+																'${time.display_date.from}',
 															include_lower: true,
 															include_upper: true,
 															to:
@@ -306,7 +403,7 @@ export const QUERY_FRAGMENTS = [
 															include_lower: true,
 															include_upper: true,
 															to:
-																'9223372036854775807',
+																'${time.expiration_date.to}',
 														},
 													},
 												},
@@ -382,28 +479,61 @@ export const QUERY_FRAGMENTS = [
 		configJSON: {
 			configurationValues: [
 				{
-					defaultValue: 'or',
-					helpText: 'This is the ...',
-					key: 'config.operator',
-					name: 'Query Clause Operator',
+					defaultValue: 'com.liferay.portal.kernel.model.User',
+					key: 'config.entryClassName',
+					name: 'Entry Class Name',
 					type: 'single-select',
 					typeOptions: [
 						{
-							label: 'OR',
-							value: 'or',
+							label: 'Asset Tag',
+							value: 'com.liferay.asset.kernel.model.AssetTag',
 						},
 						{
-							label: 'AND',
-							value: 'and',
+							label: 'Blogs Entry',
+							value: 'com.liferay.blogs.kernel.model.BlogsEntry',
+						},
+						{
+							label: 'Group',
+							value: 'com.liferay.portal.kernel.model.Group',
+						},
+						{
+							label: 'Organization',
+							value:
+								'com.liferay.portal.kernel.model.Organization',
+						},
+						{
+							label: 'Role',
+							value: 'com.liferay.portal.kernel.model.Role',
+						},
+						{
+							label: 'Team',
+							value: 'com.liferay.portal.kernel.model.Team',
+						},
+						{
+							label: 'User',
+							value: 'com.liferay.portal.kernel.model.User',
+						},
+						{
+							label: 'User Group',
+							value: 'com.liferay.portal.kernel.model.UserGroup',
 						},
 					],
 				},
 				{
-					className: 'com.liferay.portal.kernel.model.User',
-					helpText: 'Select user ...',
-					key: 'config.select.modal.user',
-					name: 'Select User',
-					type: 'entity',
+					defaultValue: false,
+					key: 'config.stagingGroup',
+					name: 'Status',
+					type: 'single-select',
+					typeOptions: [
+						{
+							label: 'False',
+							value: false,
+						},
+						{
+							label: 'True',
+							value: true,
+						},
+					],
 				},
 			],
 		},
@@ -419,12 +549,13 @@ export const QUERY_FRAGMENTS = [
 									{
 										term: {
 											entryClassName:
-												'com.liferay.portal.kernel.model.User',
+												'${config.entryClassName}',
 										},
 									},
 									{
 										term: {
-											stagingGroup: false,
+											stagingGroup:
+												'${config.stagingGroup}',
 										},
 									},
 								],
@@ -449,52 +580,55 @@ export const QUERY_FRAGMENTS = [
 		configJSON: {
 			configurationValues: [
 				{
-					defaultValue: 10,
-					key: 'ipstack.latitude',
-					name: 'Latitude',
-					type: 'slider',
-				},
-				{
-					defaultValue: 10,
-					key: 'ipstack.longitude',
-					name: 'Longitude',
-					type: 'slider',
+					key: 'parameter.time',
+					name: 'Parameter Time',
+					type: 'date',
 				},
 			],
 		},
 		inputJSON: {
 			clauses: [
 				{
-					context: 'query',
-					occur: 'should',
+					context: 'pre_filter',
 					query: {
 						query: {
-							function_score: {
-								boost: 100,
-								gauss: {
-									expando__keyword__custom_fields__location_geolocation: {
-										decay: 0.3,
-										origin: {
-											lat: '${ipstack.latitude}',
-											lon: '${ipstack.longitude}',
+							bool: {
+								must: [
+									{
+										range: {
+											modified_sortable: {
+												from: '${parameter.time}',
+												include_lower: true,
+												include_upper: true,
+												to:
+													'${time.current_date|dateFormat=timestamp}',
+											},
 										},
-										scale: '1000km',
 									},
-								},
+								],
 							},
 						},
 					},
 					type: 'wrapper',
 				},
 			],
-			conditions: [],
+			conditions: [
+				{
+					configuration: {
+						evaluation_type: 'exists',
+						parameter_name: '${parameter.time}',
+					},
+					handler: 'default',
+				},
+			],
 			description: {
-				en_US: 'Boost content close to my location',
+				en_US:
+					'Limit search to requested time range (requires a parameter definition)',
 			},
 			enabled: true,
-			icon: 'time',
+			icon: 'filter',
 			title: {
-				en_US: 'Boost Proximity',
+				en_US: 'Filter by Time Range',
 			},
 		},
 	},
