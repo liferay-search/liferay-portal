@@ -12,7 +12,7 @@
 import {fireEvent, render} from '@testing-library/react';
 import React from 'react';
 
-import Builder from '../../../src/main/resources/META-INF/resources/js/components/Builder';
+import QueryBuilder from '../../../src/main/resources/META-INF/resources/js/tabs/QueryBuilder';
 import {SELECTED_FRAGMENTS} from './../mocks/data';
 
 import '@testing-library/jest-dom/extend-expect';
@@ -28,7 +28,7 @@ const updateFragment = jest.fn();
 
 function renderBuilder(props) {
 	return render(
-		<Builder
+		<QueryBuilder
 			deleteFragment={jest.fn()}
 			selectedFragments={SELECTED_FRAGMENTS}
 			updateFragment={updateFragment}

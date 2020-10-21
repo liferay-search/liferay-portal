@@ -1,6 +1,6 @@
 .builder {
 	max-width: 624px;
-	padding-top: 6rem;
+	padding-top: $pageToolbarHeight + 40px;
 
 	.configuration-fragment {
 		margin-bottom: 1rem;

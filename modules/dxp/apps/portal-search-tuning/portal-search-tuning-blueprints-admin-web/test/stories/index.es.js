@@ -23,12 +23,12 @@ import '../../src/main/resources/META-INF/resources/css/main.scss';
 import ClayLayout from '@clayui/layout';
 
 import BlueprintForm from '../../src/main/resources/META-INF/resources/js/components/BlueprintForm';
-import Builder from '../../src/main/resources/META-INF/resources/js/components/Builder';
 import ConfigFragment from '../../src/main/resources/META-INF/resources/js/components/ConfigFragment';
 import Fragment from '../../src/main/resources/META-INF/resources/js/components/Fragment';
 import PageToolbar from '../../src/main/resources/META-INF/resources/js/components/PageToolbar';
 import Sidebar from '../../src/main/resources/META-INF/resources/js/components/Sidebar';
 import ErrorBoundary from '../../src/main/resources/META-INF/resources/js/shared/ErrorBoundary';
+import QueryBuilder from '../../src/main/resources/META-INF/resources/js/tabs/QueryBuilder';
 import {AVAILABLE_LOCALES, SELECTED_FRAGMENTS} from './../js/mocks/data';
 
 const {addDecorator, storiesOf} = StorybookReact;
@@ -95,7 +95,7 @@ storiesOf('Components|Sidebar', module).add('Sidebar', () => (
 storiesOf('Components|Builder', module)
 	.addDecorator(withContainer)
 	.add('Builder', () => (
-		<Builder
+		<QueryBuilder
 			deleteFragment={action('buildFragment')}
 			selectedFragments={SELECTED_FRAGMENTS}
 			updateFragments={action('updateFragments')}

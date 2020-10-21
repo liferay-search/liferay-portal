@@ -15,6 +15,7 @@ import ClayIcon from '@clayui/icon';
 import ClayLayout from '@clayui/layout';
 import ClayLink from '@clayui/link';
 import ClayModal, {useModal} from '@clayui/modal';
+import ClayNavigationBar from '@clayui/navigation-bar';
 import ClayToolbar from '@clayui/toolbar';
 import PropTypes from 'prop-types';
 import React, {useContext, useRef, useState} from 'react';
@@ -32,8 +33,8 @@ function EditTitleModal({
 	onSubmit,
 }) {
 	const [description, setDescription] = useState(initialDescription);
-	const [title, setTitle] = useState(initialTitle);
 	const [hasError, setHasError] = useState(false);
+	const [title, setTitle] = useState(initialTitle);
 
 	const titleInput = useRef();
 
@@ -44,8 +45,7 @@ function EditTitleModal({
 			setHasError(true);
 
 			titleInput.current.focus();
-		}
-		else {
+		} else {
 			onSubmit({description, title});
 
 			onClose();
@@ -146,7 +146,10 @@ export default function PageToolbar({
 	initialTitle = {},
 	isSubmitting,
 	onCancel,
+	onChangeTab,
 	onSubmit,
+	tab,
+	tabs,
 }) {
 	const {namespace} = useContext(ThemeContext);
 
@@ -186,98 +189,123 @@ export default function PageToolbar({
 	};
 
 	return (
-		<ClayToolbar className="page-toolbar-root" light>
-			<ClayLayout.ContainerFluid>
-				<ClayToolbar.Nav>
-					<ClayToolbar.Item className="text-left" expand>
-						{modalVisible && (
-							<EditTitleModal
-								initialDescription={description}
-								initialTitle={title}
-								modalFieldFocus={modalFieldFocus}
-								observer={observer}
-								onClose={onClose}
-								onSubmit={_handleEditTitleSubmit}
-							/>
-						)}
-
-						<div>
-							<ClayButton
-								aria-label={Liferay.Language.get('edit-name')}
-								className="blueprint-heading-edit-button"
-								displayType="unstyled"
-								monospaced={false}
-								onClick={_handleClickEdit('name')}
-							>
-								<div className="blueprint-title text-truncate">
-									{title[DEFAULT_LOCALE]}
-
-									<ClayIcon
-										className="blueprint-heading-edit-icon"
-										symbol="pencil"
-									/>
-								</div>
-							</ClayButton>
-
-							{_renderLocalizedInputs(titleInputId, title)}
-
-							<ClayButton
-								aria-label={Liferay.Language.get(
-									'edit-description'
-								)}
-								className="blueprint-heading-edit-button"
-								displayType="unstyled"
-								monospaced={false}
-								onClick={_handleClickEdit('description')}
-							>
-								<div className="blueprint-description text-truncate">
-									{description[DEFAULT_LOCALE] ? (
-										description[DEFAULT_LOCALE]
-									) : (
-										<span className="blueprint-description-blank">
-											{Liferay.Language.get(
-												'no-description'
-											)}
-										</span>
-									)}
-
-									<ClayIcon
-										className="blueprint-heading-edit-icon"
-										symbol="pencil"
-									/>
-								</div>
-							</ClayButton>
-
-							{_renderLocalizedInputs(
-								descriptionInputId,
-								description
+		<div className="page-toolbar-root">
+			<ClayToolbar light>
+				<ClayLayout.ContainerFluid>
+					<ClayToolbar.Nav>
+						<ClayToolbar.Item className="text-left" expand>
+							{modalVisible && (
+								<EditTitleModal
+									initialDescription={description}
+									initialTitle={title}
+									modalFieldFocus={modalFieldFocus}
+									observer={observer}
+									onClose={onClose}
+									onSubmit={_handleEditTitleSubmit}
+								/>
 							)}
-						</div>
-					</ClayToolbar.Item>
 
-					<ClayToolbar.Item>
-						<ClayLink
-							displayType="secondary"
-							href={onCancel}
-							outline="secondary"
-						>
-							{Liferay.Language.get('cancel')}
-						</ClayLink>
-					</ClayToolbar.Item>
+							<div>
+								<ClayButton
+									aria-label={Liferay.Language.get(
+										'edit-name'
+									)}
+									className="blueprint-heading-edit-button"
+									displayType="unstyled"
+									monospaced={false}
+									onClick={_handleClickEdit('name')}
+								>
+									<div className="blueprint-title text-truncate">
+										{title[DEFAULT_LOCALE]}
 
-					<ClayToolbar.Item>
+										<ClayIcon
+											className="blueprint-heading-edit-icon"
+											symbol="pencil"
+										/>
+									</div>
+								</ClayButton>
+
+								{_renderLocalizedInputs(titleInputId, title)}
+
+								<ClayButton
+									aria-label={Liferay.Language.get(
+										'edit-description'
+									)}
+									className="blueprint-heading-edit-button"
+									displayType="unstyled"
+									monospaced={false}
+									onClick={_handleClickEdit('description')}
+								>
+									<div className="blueprint-description text-truncate">
+										{description[DEFAULT_LOCALE] ? (
+											description[DEFAULT_LOCALE]
+										) : (
+											<span className="blueprint-description-blank">
+												{Liferay.Language.get(
+													'no-description'
+												)}
+											</span>
+										)}
+
+										<ClayIcon
+											className="blueprint-heading-edit-icon"
+											symbol="pencil"
+										/>
+									</div>
+								</ClayButton>
+
+								{_renderLocalizedInputs(
+									descriptionInputId,
+									description
+								)}
+							</div>
+						</ClayToolbar.Item>
+
+						<ClayToolbar.Item>
+							<ClayLink
+								displayType="secondary"
+								href={onCancel}
+								outline="secondary"
+							>
+								{Liferay.Language.get('cancel')}
+							</ClayLink>
+						</ClayToolbar.Item>
+
+						<ClayToolbar.Item>
+							<ClayButton
+								disabled={isSubmitting}
+								onClick={onSubmit}
+								small
+								type="submit"
+							>
+								{Liferay.Language.get('save')}
+							</ClayButton>
+						</ClayToolbar.Item>
+					</ClayToolbar.Nav>
+				</ClayLayout.ContainerFluid>
+			</ClayToolbar>
+
+			<ClayNavigationBar triggerLabel={tabs[tab]}>
+				{Object.keys(tabs).map((tabKey) => (
+					<ClayNavigationBar.Item
+						active={tab === tabKey}
+						key={tabKey}
+					>
 						<ClayButton
-							disabled={isSubmitting}
-							onClick={onSubmit}
+							block
+							className="nav-link"
+							displayType="unstyled"
+							onClick={() => onChangeTab(tabKey)}
 							small
-							type="submit"
 						>
-							{Liferay.Language.get('save')}
+							<span className="navbar-text-truncate">
+								{tabs[tabKey]}
+							</span>
 						</ClayButton>
-					</ClayToolbar.Item>
-				</ClayToolbar.Nav>
-			</ClayLayout.ContainerFluid>
-		</ClayToolbar>
+					</ClayNavigationBar.Item>
+				))}
+			</ClayNavigationBar>
+		</div>
 	);
 }
 

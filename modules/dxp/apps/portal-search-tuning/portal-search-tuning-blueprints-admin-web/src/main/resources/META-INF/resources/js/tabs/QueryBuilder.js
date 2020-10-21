@@ -14,9 +14,9 @@ import ClayLayout from '@clayui/layout';
 import {PropTypes} from 'prop-types';
 import React, {useState} from 'react';
 
-import ConfigFragment from './ConfigFragment';
+import ConfigFragment from '../components/ConfigFragment';
 
-function Builder({
+function QueryBuilder({
 	deleteFragment,
 	entityJSON,
 	selectedFragments,
@@ -31,7 +31,7 @@ function Builder({
 				justify="between"
 			>
 				<ClayLayout.Col size={4}>
-					{Liferay.Language.get('builder')}
+					{Liferay.Language.get('query-builder')}
 				</ClayLayout.Col>
 				<ClayLayout.Col size={3}>
 					<ClayButton
@@ -71,11 +71,11 @@ function Builder({
 	);
 }
 
-Builder.propTypes = {
+QueryBuilder.propTypes = {
 	deleteFragment: PropTypes.func,
 	entityJSON: PropTypes.object,
 	selectedFragments: PropTypes.arrayOf(PropTypes.object),
 	updateFragment: PropTypes.func,
 };
 
-export default React.memo(Builder);
+export default React.memo(QueryBuilder);
