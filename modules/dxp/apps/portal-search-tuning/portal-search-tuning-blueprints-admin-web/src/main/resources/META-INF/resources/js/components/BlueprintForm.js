@@ -14,11 +14,25 @@ import {PropTypes} from 'prop-types';
 import React, {useCallback, useContext, useRef, useState} from 'react';
 
 import ThemeContext from '../ThemeContext';
+import Aggregations from '../tabs/Aggregations';
+import QueryBuilder from '../tabs/QueryBuilder';
+import Settings from '../tabs/Settings';
+import Suggesters from '../tabs/Suggesters';
 import {DEFAULT_FRAGMENT} from '../utils/data';
 import {convertSelectedFragment, openErrorToast} from '../utils/utils';
-import Builder from './Builder';
 import PageToolbar from './PageToolbar';
 import Sidebar from './Sidebar';
+
+// Tabs in display order
+
+/* eslint-disable sort-keys */
+const TABS = {
+	'query-builder': Liferay.Language.get('query-builder'),
+	aggregations: Liferay.Language.get('aggregations'),
+	suggesters: Liferay.Language.get('suggesters'),
+	settings: Liferay.Language.get('settings'),
+};
+/* eslint-enable sort-keys */
 
 function BlueprintForm({
 	blueprintId,
@@ -33,12 +47,18 @@ function BlueprintForm({
 	const {namespace} = useContext(ThemeContext);
 
 	const [showSidebar] = useState(true);
+	const [tab, setTab] = useState('query-builder');
 
 	const form = useRef();
 
 	const fragmentIdCounter = useRef(1); // 0 reserved for default fragment
 
 	const [isSubmitting, setIsSubmitting] = useState(false);
+
+	const [advancedConfig, setAdvancedConfig] = useState('');
+	const [aggregationConfig, setAggregationConfig] = useState('');
+	const [parameterConfig, setParameterConfig] = useState('');
+	const [suggestConfig, setSuggestConfig] = useState('');
 
 	const [selectedFragments, setSelectedFragments] = useState(
 		blueprintId !== '0'
@@ -72,12 +92,23 @@ function BlueprintForm({
 
 			try {
 				formData.append(
+					`${namespace}advancedConfiguration`,
+					advancedConfig
+				);
+				formData.append(
+					`${namespace}aggregationConfiguration`,
+					aggregationConfig
+				);
+				formData.append(
+					`${namespace}parameterConfiguration`,
+					parameterConfig
+				);
+				formData.append(
 					`${namespace}queryConfiguration`,
 					JSON.stringify(
 						selectedFragments.map((item) => item.queryConfig)
 					)
 				);
-
 				formData.append(
 					`${namespace}selectedFragments`,
 					JSON.stringify(
@@ -89,8 +120,11 @@ function BlueprintForm({
 						}))
 					)
 				);
-			}
-			catch {
+				formData.append(
+					`${namespace}suggestConfiguration`,
+					suggestConfig
+				);
+			} catch {
 				openErrorToast({
 					message: Liferay.Language.get('the-json-is-invalid'),
 				});
@@ -121,8 +155,7 @@ function BlueprintForm({
 						);
 
 						setIsSubmitting(false);
-					}
-					else {
+					} else {
 						navigate(redirectURL);
 					}
 				})
@@ -133,12 +166,16 @@ function BlueprintForm({
 				});
 		},
 		[
-			blueprintId,
-			blueprintType,
-			selectedFragments,
 			namespace,
+			blueprintType,
+			blueprintId,
 			redirectURL,
 			submitFormURL,
+			advancedConfig,
+			aggregationConfig,
+			parameterConfig,
+			suggestConfig,
+			selectedFragments,
 		]
 	);
 
@@ -150,6 +187,55 @@ function BlueprintForm({
 		]);
 	}, []);
 
+	const _renderTabContent = () => {
+		switch (tab) {
+			case 'aggregations':
+				return (
+					<Aggregations
+						aggregationConfig={aggregationConfig}
+						onAggregationConfigChange={(val) =>
+							setAggregationConfig(val)
+						}
+					/>
+				);
+			case 'suggesters':
+				return (
+					<Suggesters
+						onSuggestConfigChange={(val) => setSuggestConfig(val)}
+						suggestConfig={suggestConfig}
+					/>
+				);
+			case 'settings':
+				return (
+					<Settings
+						advancedConfig={advancedConfig}
+						onAdvancedConfigChange={(val) => setAdvancedConfig(val)}
+						onParameterConfigChange={(val) =>
+							setParameterConfig(val)
+						}
+						parameterConfig={parameterConfig}
+					/>
+				);
+			default:
+				return (
+					<>
+						{showSidebar && (
+							<Sidebar onAddFragment={onAddFragment} />
+						)}
+
+						<div className={`${showSidebar ? 'shifted' : ''}`}>
+							<QueryBuilder
+								deleteFragment={deleteFragment}
+								entityJSON={entityJSON}
+								selectedFragments={selectedFragments}
+								updateFragment={updateFragment}
+							/>
+						</div>
+					</>
+				);
+		}
+	};
+
 	return (
 		<form ref={form}>
 			<PageToolbar
@@ -157,19 +243,13 @@ function BlueprintForm({
 				initialTitle={initialTitle}
 				isSubmitting={isSubmitting}
 				onCancel={redirectURL}
+				onChangeTab={(tab) => setTab(tab)}
 				onSubmit={handleSubmit}
+				tab={tab}
+				tabs={TABS}
 			/>
 
-			{showSidebar && <Sidebar onAddFragment={onAddFragment} />}
-
-			<div className={`${showSidebar ? 'shifted' : ''}`}>
-				<Builder
-					deleteFragment={deleteFragment}
-					entityJSON={entityJSON}
-					selectedFragments={selectedFragments}
-					updateFragment={updateFragment}
-				/>
-			</div>
+			{_renderTabContent()}
 		</form>
 	);
 }

@@ -1,16 +1,7 @@
 .page-toolbar-root {
-	&.tbar {
-		border-color: $mainLighten74;
-		border-style: solid;
-		border-width: 0 0 1px;
-		font-size: 1.125rem;
-		height: 4rem;
-		left: 0;
-		position: fixed;
-		transition: left ease 0.5s, width ease 0.5s;
-		width: 100%;
-		z-index: 971;
-	}
+	position: fixed;
+	width: 100%;
+	z-index: 971;
 
 	.blueprint-description {
 		color: $secondary;
