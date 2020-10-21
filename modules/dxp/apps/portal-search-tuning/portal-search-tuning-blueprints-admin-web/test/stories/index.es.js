@@ -28,6 +28,7 @@ import ConfigFragment from '../../src/main/resources/META-INF/resources/js/compo
 import Fragment from '../../src/main/resources/META-INF/resources/js/components/Fragment';
 import PageToolbar from '../../src/main/resources/META-INF/resources/js/components/PageToolbar';
 import Sidebar from '../../src/main/resources/META-INF/resources/js/components/Sidebar';
+import ErrorBoundary from '../../src/main/resources/META-INF/resources/js/shared/ErrorBoundary';
 import {AVAILABLE_LOCALES, SELECTED_FRAGMENTS} from './../js/mocks/data';
 
 const {addDecorator, storiesOf} = StorybookReact;
@@ -59,16 +60,18 @@ const withContainer = (storyFn) => (
 );
 
 storiesOf('Pages|BlueprintForm', module).add('default', () => (
-	<BlueprintForm
-		availableLocales={AVAILABLE_LOCALES}
-		blueprintId="0"
-		blueprintType={0}
-		initialTitle={{
-			'en-US': 'Test Title',
-		}}
-		redirectURL=""
-		submitFormURL=""
-	/>
+	<ErrorBoundary>
+		<BlueprintForm
+			availableLocales={AVAILABLE_LOCALES}
+			blueprintId="0"
+			blueprintType={0}
+			initialTitle={{
+				'en-US': 'Test Title',
+			}}
+			redirectURL=""
+			submitFormURL=""
+		/>
+	</ErrorBoundary>
 ));
 
 storiesOf('Components|PageToolbar', module).add('PageToolbar', () => (
