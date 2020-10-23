@@ -1,0 +1,339 @@
+/**
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of the Liferay Enterprise
+ * Subscription License ("License"). You may not use this file except in
+ * compliance with the License. You can obtain a copy of the License by
+ * contacting Liferay, Inc. See the License for the specific language governing
+ * permissions and limitations under the License, including but not limited to
+ * distribution rights of the Software.
+ *
+ *
+ *
+ */
+
+package com.liferay.portal.search.tuning.blueprints.util.attributes;
+
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributesBuilder;
+import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributesBuilderFactory;
+import com.liferay.portal.search.tuning.blueprints.constants.json.keys.parameter.CustomParameterConfigurationKeys;
+import com.liferay.portal.search.tuning.blueprints.constants.json.keys.parameter.KeywordsConfigurationKeys;
+import com.liferay.portal.search.tuning.blueprints.constants.json.keys.parameter.PageConfigurationKeys;
+import com.liferay.portal.search.tuning.blueprints.constants.json.keys.parameter.ParameterConfigurationKeys;
+import com.liferay.portal.search.tuning.blueprints.engine.constants.ReservedParameterNames;
+import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetConfigurationKeys;
+import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetsBlueprintContributorKeys;
+import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
+import com.liferay.portal.search.tuning.blueprints.poc.util.POCMockUtil;
+import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
+import com.liferay.portal.search.tuning.blueprints.util.BlueprintHelper;
+
+import java.util.Optional;
+
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
+/**
+ * @author Petteri Karttunen
+ */
+@Component(immediate = true, service = BlueprintsAttributesHelper.class)
+public class BlueprintsAttributesHelperImpl
+	implements BlueprintsAttributesHelper {
+
+	@Override
+	public BlueprintsAttributesBuilder getBlueprintsRequestAttributesBuilder(
+		PortletRequest portletRequest, long blueprintId) {
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		HttpServletRequest httpServletRequest = _portal.getHttpServletRequest(
+			portletRequest);
+
+		BlueprintsAttributesBuilder blueprintsAttributesBuilder =
+			_blueprintsAttributesBuilderFactory.builder();
+
+		blueprintsAttributesBuilder.companyId(
+			themeDisplay.getCompanyId()
+		).locale(
+			themeDisplay.getLocale()
+		).userId(
+			themeDisplay.getUserId()
+		).addAttribute(
+			ReservedParameterNames.IP_ADDRESS.getKey(),
+			httpServletRequest.getRemoteAddr()
+		).addAttribute(
+			ReservedParameterNames.PLID.getKey(), themeDisplay.getPlid()
+		).addAttribute(
+			ReservedParameterNames.SCOPE_GROUP_ID.getKey(),
+			themeDisplay.getScopeGroupId()
+		).addAttribute(
+			ReservedParameterNames.TIMEZONE_ID.getKey(),
+			themeDisplay.getScopeGroupId()
+		);
+
+		return _addConfiguredParameters(
+			portletRequest, blueprintsAttributesBuilder, blueprintId);
+	}
+
+	@Override
+	public BlueprintsAttributesBuilder getBlueprintsResponsetAttributesBuilder(
+		PortletRequest portletRequest, PortletResponse portletResponse,
+		long blueprintId) {
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		BlueprintsAttributesBuilder blueprintsAttributesBuilder =
+			_blueprintsAttributesBuilderFactory.builder();
+
+		return blueprintsAttributesBuilder.companyId(
+			themeDisplay.getCompanyId()
+		).locale(
+			themeDisplay.getLocale()
+		).userId(
+			themeDisplay.getUserId()
+		).addAttribute(
+			"portletRequest", portletRequest
+		).addAttribute(
+			"portletResponse", portletResponse
+		);
+	}
+
+	private BlueprintsAttributesBuilder _addConfiguredParameters(
+		PortletRequest portletRequest,
+		BlueprintsAttributesBuilder blueprintsAttributesBuilder,
+		long blueprintId) {
+
+		Blueprint blueprint = null;
+
+		try {
+			blueprint = _getBlueprint(blueprintId);
+
+			// TODO: remove
+
+			_pocMockUtil.mockConfigurations(blueprint);
+		}
+		catch (PortalException portalException) {
+			_log.error(portalException.getMessage(), portalException);
+
+			return blueprintsAttributesBuilder;
+		}
+		catch (Exception exception) {
+			_log.error(exception.getMessage(), exception);
+
+			return blueprintsAttributesBuilder;
+		}
+
+		Optional<JSONObject> configurationJsonObjectOptional =
+			_blueprintHelper.getParameterConfigurationOptional(blueprint);
+
+		if (!configurationJsonObjectOptional.isPresent()) {
+			return blueprintsAttributesBuilder;
+		}
+
+		JSONObject configurationJsonObject =
+			configurationJsonObjectOptional.get();
+
+		_addKeywordParameter(
+			portletRequest, blueprintsAttributesBuilder,
+			configurationJsonObject.getJSONObject(
+				ParameterConfigurationKeys.KEYWORDS.getJsonKey()));
+
+		_addPagingParameters(
+			portletRequest, blueprintsAttributesBuilder,
+			configurationJsonObject.getJSONObject(
+				ParameterConfigurationKeys.PAGE.getJsonKey()));
+
+		_addSortParameters(
+			portletRequest, blueprintsAttributesBuilder,
+			blueprint);
+
+		_addCustomParameters(
+			portletRequest, blueprintsAttributesBuilder,
+			configurationJsonObject.getJSONArray(
+				ParameterConfigurationKeys.CUSTOM.getJsonKey()));
+
+		_addFacetParameters(
+			portletRequest, blueprintsAttributesBuilder,
+			configurationJsonObject.getJSONArray(
+					FacetsBlueprintContributorKeys.CONFIGURATION_SECTION));
+
+		return blueprintsAttributesBuilder;
+	}
+
+	private void _addCustomParameters(
+		PortletRequest portletRequest,
+		BlueprintsAttributesBuilder blueprintsAttributesBuilder,
+		JSONArray jsonArray) {
+
+		if ((jsonArray == null) || (jsonArray.length() == 0)) {
+			return;
+		}
+
+		for (int i = 0; i < jsonArray.length(); i++) {
+			JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+			String key = jsonObject.getString(
+				CustomParameterConfigurationKeys.PARAMETER_NAME.getJsonKey());
+			String type = jsonObject.getString(
+				CustomParameterConfigurationKeys.TYPE.getJsonKey());
+
+			if (_isArrayValue(type)) {
+				_addStringValues(
+					portletRequest, blueprintsAttributesBuilder, key);
+			}
+			else {
+				_addStringValue(
+					portletRequest, blueprintsAttributesBuilder, key);
+			}
+		}
+	}
+
+	private void _addFacetParameters(
+		PortletRequest portletRequest,
+		BlueprintsAttributesBuilder blueprintsAttributesBuilder,
+		JSONArray jsonArray) {
+
+		if ((jsonArray == null) || (jsonArray.length() == 0)) {
+			return;
+		}
+
+		for (int i = 0; i < jsonArray.length(); i++) {
+			JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+			String key = jsonObject.getString(
+				FacetConfigurationKeys.PARAMETER_NAME.getJsonKey());
+
+			boolean arrayValue = jsonObject.getBoolean(
+				FacetConfigurationKeys.MULTI_VALUE.getJsonKey());
+
+			if (arrayValue) {
+				_addStringValues(
+					portletRequest, blueprintsAttributesBuilder, key);
+			}
+			else {
+				_addStringValue(
+					portletRequest, blueprintsAttributesBuilder, key);
+			}
+		}
+	}
+
+	private void _addKeywordParameter(
+		PortletRequest portletRequest,
+		BlueprintsAttributesBuilder blueprintsAttributesBuilder,
+		JSONObject jsonObject) {
+
+		_addStringValue(
+			portletRequest, blueprintsAttributesBuilder,
+			jsonObject.getString(
+				KeywordsConfigurationKeys.PARAMETER_NAME.getJsonKey()));
+	}
+
+	private void _addPagingParameters(
+		PortletRequest portletRequest,
+		BlueprintsAttributesBuilder blueprintsAttributesBuilder,
+		JSONObject jsonObject) {
+
+		_addStringValue(
+			portletRequest, blueprintsAttributesBuilder,
+			jsonObject.getString(
+				PageConfigurationKeys.PARAMETER_NAME.getJsonKey()));
+	}
+
+	private void _addSortParameters(
+		PortletRequest portletRequest,
+		BlueprintsAttributesBuilder blueprintsAttributesBuilder,
+		Blueprint blueprint) {
+		
+		Optional<JSONArray> jsonArrayOptional = _blueprintHelper.getSortParameterConfigurationOptional(blueprint);
+
+		if (!jsonArrayOptional.isPresent()) {
+			return;
+		}
+		
+		JSONArray jsonArray = jsonArrayOptional.get();
+		
+		for (int i = 0; i < jsonArray.length(); i++) {
+			JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+			String key = jsonObject.getString(
+				CustomParameterConfigurationKeys.PARAMETER_NAME.getJsonKey());
+
+			_addStringValue(portletRequest, blueprintsAttributesBuilder, key);
+		}
+	}
+
+	private void _addStringValue(
+		PortletRequest portletRequest,
+		BlueprintsAttributesBuilder blueprintsAttributesBuilder, String key) {
+
+		String s = ParamUtil.getString(portletRequest, key);
+
+		if (!Validator.isBlank(s)) {
+			blueprintsAttributesBuilder.addAttribute(key, s);
+		}
+	}
+
+	private void _addStringValues(
+		PortletRequest portletRequest,
+		BlueprintsAttributesBuilder blueprintsAttributesBuilder, String key) {
+
+		String[] arr = ParamUtil.getStringValues(portletRequest, key);
+
+		if ((arr != null) && (arr.length > 0)) {
+			blueprintsAttributesBuilder.addAttribute(key, arr);
+		}
+	}
+
+	private Blueprint _getBlueprint(long blueprintId) throws PortalException {
+		return _blueprintService.getBlueprint(blueprintId);
+	}
+
+	private boolean _isArrayValue(String type) {
+		if (StringUtil.equals(type, "string_array") ||
+			StringUtil.equals(type, "integer_array") ||
+			StringUtil.equals(type, "long_array")) {
+
+			return true;
+		}
+
+		return false;
+	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		BlueprintsAttributesHelperImpl.class);
+
+	@Reference
+	private BlueprintHelper _blueprintHelper;
+
+	@Reference
+	private BlueprintsAttributesBuilderFactory
+		_blueprintsAttributesBuilderFactory;
+
+	@Reference
+	private BlueprintService _blueprintService;
+
+	@Reference
+	private POCMockUtil _pocMockUtil;
+
+	@Reference
+	private Portal _portal;
+
+}

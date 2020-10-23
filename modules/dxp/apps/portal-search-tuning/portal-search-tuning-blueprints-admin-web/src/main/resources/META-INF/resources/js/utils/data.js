@@ -1,0 +1,659 @@
+/**
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of the Liferay Enterprise
+ * Subscription License ("License"). You may not use this file except in
+ * compliance with the License. You can obtain a copy of the License by
+ * contacting Liferay, Inc. See the License for the specific language governing
+ * permissions and limitations under the License, including but not limited to
+ * distribution rights of the Software.
+ */
+
+/**
+ * Temporary data. This data should eventually be fetched from the server.
+ */
+
+export const DEFAULT_FRAGMENT = {
+	clauses: [
+		{
+			context: 'query',
+			occur: 'must',
+			query: {
+				query: {
+					query_string: {
+						default_operator: 'or',
+						fields: [
+							'title_${context.language_id}^2',
+							'title',
+							'content_${context.language_id}',
+							'content',
+						],
+						query: '${keywords}',
+					},
+				},
+			},
+			type: 'wrapper',
+		},
+	],
+	conditions: [],
+	description: {
+		en_US: 'Search title and content',
+	},
+	enabled: true,
+	icon: 'vocabulary',
+	title: {
+		en_US: 'Match Any Keyword',
+	},
+};
+
+export const QUERY_FRAGMENTS = [
+	{
+		clauses: [
+			{
+				context: 'pre_filter',
+				occur: 'must',
+				query: {
+					query: {
+						bool: {
+							must: [
+								{
+									term: {
+										status: 0,
+									},
+								},
+							],
+						},
+					},
+				},
+				type: 'wrapper',
+			},
+		],
+		conditions: [],
+		description: {
+			en_US: 'Limit search to published content',
+		},
+		enabled: true,
+		icon: 'filter',
+		title: {
+			en_US: 'Filter Published Content',
+		},
+	},
+	{
+		clauses: [
+			{
+				context: 'pre_filter',
+				occur: 'must',
+				query: {
+					query: {
+						bool: {
+							should: [
+								{
+									bool: {
+										must: [
+											{
+												range: {
+													displayDate_sortable: {
+														from:
+															'-9223372036854775808',
+														include_lower: true,
+														include_upper: true,
+														to:
+															'${time.current_date|dateFormat=timestamp}',
+													},
+												},
+											},
+											{
+												range: {
+													expirationDate_sortable: {
+														from:
+															'${time.current_date|dateFormat=timestamp}',
+														include_lower: true,
+														include_upper: true,
+														to:
+															'9223372036854775807',
+													},
+												},
+											},
+											{
+												term: {
+													entryClassName:
+														'com.liferay.blogs.kernel.model.BlogsEntry',
+												},
+											},
+										],
+									},
+								},
+								{
+									bool: {
+										must: [
+											{
+												range: {
+													displayDate_sortable: {
+														from:
+															'-9223372036854775808',
+														include_lower: true,
+														include_upper: true,
+														to:
+															'${time.current_date|dateFormat=timestamp}',
+													},
+												},
+											},
+											{
+												range: {
+													expirationDate_sortable: {
+														from:
+															'${time.current_date|dateFormat=timestamp}',
+														include_lower: true,
+														include_upper: true,
+														to:
+															'9223372036854775807',
+													},
+												},
+											},
+											{
+												term: {
+													entryClassName:
+														'com.liferay.journal.model.JournalArticle',
+												},
+											},
+											{
+												term: {
+													head: 'true',
+												},
+											},
+										],
+									},
+								},
+								{
+									term: {
+										entryClassName:
+											'com.liferay.document.library.kernel.model.DLFileEntry',
+									},
+								},
+								{
+									term: {
+										entryClassName:
+											'com.liferay.knowledge.base.model.KBArticle',
+									},
+								},
+								{
+									term: {
+										entryClassName:
+											'com.liferay.message.boards.kernel.model.MBMessage',
+									},
+								},
+								{
+									term: {
+										entryClassName:
+											'com.liferay.portal.kernel.model.User',
+									},
+								},
+								{
+									term: {
+										entryClassName:
+											'com.liferay.wiki.model.WikiPage',
+									},
+								},
+							],
+						},
+					},
+				},
+				type: 'wrapper',
+			},
+		],
+		conditions: [],
+		description: {
+			en_US: 'Limit content types to be searched',
+		},
+		enabled: true,
+		icon: 'filter',
+		title: {
+			en_US: 'Filter Content Type',
+		},
+	},
+	{
+		clauses: [
+			{
+				context: 'pre_filter',
+				occur: 'must',
+				query: {
+					query: {
+						bool: {
+							should: [
+								{
+									term: {
+										entryClassName:
+											'com.liferay.portal.kernel.model.User',
+									},
+								},
+								{
+									term: {
+										stagingGroup: false,
+									},
+								},
+							],
+						},
+					},
+				},
+				type: 'wrapper',
+			},
+		],
+		conditions: [],
+		description: {
+			en_US: 'Exclude staged groups from search',
+		},
+		enabled: true,
+		icon: 'filter',
+		title: {
+			en_US: 'Filter Published Sites',
+		},
+	},
+	{
+		clauses: [
+			{
+				context: 'pre_filter',
+				query: {
+					query: {
+						bool: {
+							must: [
+								{
+									range: {
+										modified_sortable: {
+											from:
+												'${parameter.time|dateFormat=timestamp}',
+											include_lower: true,
+											include_upper: true,
+											to:
+												'${time.current_date|dateFormat=timestamp}',
+										},
+									},
+								},
+							],
+						},
+					},
+				},
+				type: 'wrapper',
+			},
+		],
+		conditions: [
+			{
+				handler: 'default',
+				configuration: {
+					evaluation_type: 'exists',
+					parameter_name: '${parameter.time}',
+				},
+			},
+		],
+		description: {
+			en_US:
+				'Limit search to requested time range (requires a parameter definition)',
+		},
+		enabled: true,
+		icon: 'filter',
+		title: {
+			en_US: 'Filter by Time Range',
+		},
+	},
+	{
+		clauses: [
+			{
+				context: 'pre_filter',
+				query: {
+					query: {
+						bool: {
+							must: [
+								{
+									term: {
+										scopeGroupId:
+											'${context.scope_group_id}',
+									},
+								},
+							],
+						},
+					},
+				},
+				type: 'wrapper',
+			},
+		],
+		conditions: [
+			{
+				handler: 'default',
+				configuration: {
+					evaluation_type: 'exists',
+					parameter_name: '${context.scope_group_id}',
+				},
+			},
+		],
+		description: {
+			en_US: 'Limit search to requested group',
+		},
+		enabled: true,
+		icon: 'filter',
+		title: {
+			en_US: 'Filter by Scope',
+		},
+	},
+	{
+		clauses: [
+			{
+				context: 'query',
+				occur: 'must',
+				query: {
+					query: {
+						query_string: {
+							default_operator: 'or',
+							fields: [
+								'content',
+								'content_${context.language_id}',
+								'title',
+								'title_${context.language_id}^2',
+							],
+							query: '${keywords}',
+						},
+					},
+				},
+				type: 'wrapper',
+			},
+		],
+		conditions: [],
+		description: {
+			en_US: 'Search title and content',
+		},
+		enabled: true,
+		icon: 'vocabulary',
+		title: {
+			en_US: 'Match Any Keyword',
+		},
+	},
+	{
+		clauses: [
+			{
+				context: 'query',
+				occur: 'should',
+				query: {
+					query: {
+						function_score: {
+							boost: 100,
+							gauss: {
+								expando__keyword__custom_fields__location_geolocation: {
+									decay: 0.3,
+									origin: {
+										lat: '${ipstack.latitude}',
+										lon: '${ipstack.longitude}',
+									},
+									scale: '1000km',
+								},
+							},
+						},
+					},
+				},
+				type: 'wrapper',
+			},
+		],
+		conditions: [],
+		description: {
+			en_US: 'Boost content close to my location',
+		},
+		enabled: true,
+		icon: 'time',
+		title: {
+			en_US: 'Boost Proximity',
+		},
+	},
+	{
+		clauses: [
+			{
+				context: 'query',
+				occur: 'should',
+				query: {
+					query: {
+						function_score: {
+							boost: 50,
+							gauss: {
+								modified: {
+									decay: 0.4,
+									offset: '3d',
+									origin:
+										'${time.current_date|dateFormat=yyyyMMddHHmmss}',
+									scale: '30d',
+								},
+							},
+						},
+					},
+				},
+				type: 'wrapper',
+			},
+		],
+		conditions: [],
+		description: {
+			en_US: 'Boost content modified within a time frame',
+		},
+		enabled: true,
+		icon: 'time',
+		title: {
+			en_US: 'Boost Freshness',
+		},
+	},
+	{
+		clauses: [
+			{
+				context: 'query',
+				occur: 'should',
+				query: {
+					query: {
+						match: {
+							assetTagNames: {
+								boost: 3,
+								operator: 'or',
+								query: '${keywords}',
+							},
+						},
+					},
+				},
+				type: 'wrapper',
+			},
+		],
+		conditions: [],
+		description: {
+			en_US: 'Boost content having a match in tags',
+		},
+		enabled: true,
+		icon: 'time',
+		title: {
+			en_US: 'Boost Tags Matching Keywords',
+		},
+	},
+	{
+		clauses: [
+			{
+				context: 'query',
+				occur: 'should',
+				query: {
+					query: {
+						match: {
+							boost: 20,
+							'content_${context.language_id}': 'restaurant',
+						},
+					},
+				},
+				type: 'wrapper',
+			},
+		],
+		conditions: [
+			{
+				handler: 'default',
+				configuration: {
+					evaluation_type: 'any_word_in',
+					match_value: ['food'],
+					parameter_name: '${keywords}',
+				},
+				operator: 'AND',
+			},
+		],
+		description: {
+			en_US: 'Boost if keywords match a given value',
+		},
+		enabled: true,
+		icon: 'time',
+		title: {
+			en_US: 'Boost by Keyword Match',
+		},
+	},
+	{
+		clauses: [
+			{
+				context: 'query',
+				occur: 'should',
+				query: {
+					query: {
+						multi_match: {
+							boost: 4,
+							fields: [
+								'content_${context.language_id}',
+								'title_${context.language_id}^2',
+							],
+							operator: 'and',
+							query: '${keywords}',
+						},
+					},
+				},
+				type: 'wrapper',
+			},
+		],
+		conditions: [],
+		description: {
+			en_US: 'Boost content matching all the keywords in a single field',
+		},
+		enabled: true,
+		icon: 'time',
+		title: {
+			en_US: 'Boost All Keywords Match',
+		},
+	},
+	{
+		clauses: [
+			{
+				context: 'query',
+				occur: 'should',
+				query: {
+					query: {
+						multi_match: {
+							boost: 5,
+							fields: [
+								'content_${context.language_id}',
+								'title_${context.language_id}^2',
+							],
+							query: '${keywords}',
+							type: 'phrase',
+						},
+					},
+				},
+				type: 'wrapper',
+			},
+		],
+		conditions: [],
+		description: {
+			en_US: 'Boost content having a phrase match',
+		},
+		enabled: true,
+		icon: 'time',
+		title: {
+			en_US: 'Boost Phrase Match',
+		},
+	},
+	{
+		clauses: [
+			{
+				context: 'query',
+				occur: 'should',
+				query: {
+					query: {
+						multi_match: {
+							boost: 5,
+							fields: [
+								'content_${context.language_id}',
+								'title_${context.language_id}^2',
+							],
+							query: '${keywords}',
+							type: 'phrase_prefix',
+						},
+					},
+				},
+				type: 'wrapper',
+			},
+		],
+		conditions: [],
+		description: {
+			en_US:
+				'Boost content having a phrase match in the beginning of a field',
+		},
+		enabled: true,
+		icon: 'time',
+		title: {
+			en_US: 'Boost Phrase Prefix Match',
+		},
+	},
+	{
+		clauses: [
+			{
+				occur: 'should',
+				query: {
+					query: {
+						term: {
+							'localized_title_${context.language_id}': {
+								boost: 10,
+								value: 'liferay',
+							},
+						},
+					},
+				},
+				context: 'query',
+				type: 'wrapper',
+			},
+		],
+		icon: 'time',
+		description: {
+			en_US: 'Boost if user belongs to a user segment',
+		},
+		conditions: [
+			{
+				handler: 'default',
+				configuration: {
+					evaluation_type: 'contains',
+					parameter_name: '${user.user_segment_entry_ids}',
+					match_value: [123456],
+				},
+				operator: 'and',
+			},
+		],
+		title: {
+			en_US: 'Boost Content For a User Segment',
+		},
+		enabled: true,
+	},
+	{
+		clauses: [
+			{
+				occur: 'should',
+				query: {
+					query: {
+						terms: {
+							commerceAccountGroupIds:
+								'${commerce.commerce_account_group_ids}',
+							boost: 1000,
+						},
+					},
+				},
+				context: 'query',
+				type: 'wrapper',
+			},
+		],
+		icon: 'time',
+		description: {
+			en_US:
+				'Boost Commerce Items Filtered for Current Account Groups Only',
+		},
+		title: {en_US: 'Boost My Commerce Items'},
+		enabled: true,
+	},
+];

@@ -1,0 +1,46 @@
+{
+	"mappings": {
+		"_doc": {
+			"properties": {
+				"companyId": {
+					"store": true,
+					"type": "keyword"
+				},
+				"created": {
+					"format": "yyyyMMddHHmmss",
+					"store": true,
+					"type": "date"
+				},
+				"groupId": {
+					"store": true,
+					"type": "keyword"
+				},
+				"mappings": {
+					"enabled": false,
+					"type": "object"
+				},
+				"modified": {
+					"format": "yyyyMMddHHmmss",
+					"store": true,
+					"type": "date"
+				},
+				"name": {
+					"store": true,
+					"type": "text"
+				},
+				"uid": {
+					"store": true,
+					"type": "keyword"
+				},
+				"userId": {
+					"store": true,
+					"type": "keyword"
+				}
+			}
+		}
+	},
+	"settings": {
+		"index.auto_expand_replicas": "0-all",
+		"index.number_of_shards": 1
+	}
+}
