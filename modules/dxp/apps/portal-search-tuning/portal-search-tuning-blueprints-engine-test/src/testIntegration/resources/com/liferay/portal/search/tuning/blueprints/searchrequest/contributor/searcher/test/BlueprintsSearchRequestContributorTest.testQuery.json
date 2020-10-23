@@ -1,0 +1,17 @@
+{
+	"clause_configuration": [
+		{
+			"clauses": [
+				{
+					"context": "query",
+					"occur": "must",
+					"query": {
+						"query": "{\"term\": { \"screenName\" : \"user3\" }}"
+					},
+					"type": "wrapper"
+				}
+			],
+			"enabled": true
+		}
+	]
+}

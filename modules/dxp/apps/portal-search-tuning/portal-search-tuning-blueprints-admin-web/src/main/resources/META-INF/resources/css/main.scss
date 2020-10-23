@@ -1,0 +1,36 @@
+@import '_variables';
+
+.blueprints-admin-root {
+	@import '_builder';
+	@import '_page_toolbar';
+	@import '_sidebar';
+
+	.bold {
+		font-weight: 700;
+	}
+
+	.icon {
+		background-color: $secondaryHover;
+	}
+
+	.italic {
+		font-style: italic;
+	}
+
+	.secondary {
+		color: $secondaryL1;
+	}
+}
+
+.blueprint-edit-title-modal .modal-body .form-group:last-of-type {
+	margin-bottom: 0;
+}
+
+.portlet-blueprints-admin {
+	.id-text {
+		color: $secondary;
+		font-size: 11px;
+		font-weight: 600;
+		text-transform: uppercase;
+	}
+}

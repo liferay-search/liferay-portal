@@ -1,0 +1,3 @@
+Bundle-Name: Liferay Portal Search Tuning Blueprints Query Index Implementation
+Bundle-SymbolicName: com.liferay.portal.search.tuning.blueprints.query.index.impl
+Bundle-Version: 1.0.0

@@ -1,0 +1,125 @@
+/**
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of the Liferay Enterprise
+ * Subscription License ("License"). You may not use this file except in
+ * compliance with the License. You can obtain a copy of the License by
+ * contacting Liferay, Inc. See the License for the specific language governing
+ * permissions and limitations under the License, including but not limited to
+ * distribution rights of the Software.
+ *
+ *
+ *
+ */
+
+package com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.request;
+
+import com.liferay.portal.kernel.dao.search.SearchContainer;
+import com.liferay.portal.kernel.search.SearchContext;
+import com.liferay.portal.kernel.search.SearchContextFactory;
+import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
+import com.liferay.portal.search.engine.adapter.search.SearchSearchRequest;
+import com.liferay.portal.search.engine.adapter.search.SearchSearchResponse;
+import com.liferay.portal.search.hits.SearchHits;
+import com.liferay.portal.search.query.Queries;
+import com.liferay.portal.search.query.Query;
+import com.liferay.portal.search.sort.Sort;
+import com.liferay.portal.search.sort.SortOrder;
+import com.liferay.portal.search.sort.Sorts;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.display.context.MisspellingsDefinitionDisplayContext;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.MisspellingsDefinitionFields;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.name.MisspellingsDefinitionIndexName;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Objects;
+
+import javax.servlet.http.HttpServletRequest;
+
+/**
+ * @author Petteri Karttunen
+ */
+public class SearchMisspellingsDefinitionRequest {
+
+	public SearchMisspellingsDefinitionRequest(
+		MisspellingsDefinitionIndexName misspellingsDefinitionIndexName,
+		HttpServletRequest httpServletRequest, Queries queries, Sorts sorts,
+		SearchContainer<MisspellingsDefinitionDisplayContext> searchContainer,
+		SearchEngineAdapter searchEngineAdapter) {
+
+		_misspellingsDefinitionIndexName = misspellingsDefinitionIndexName;
+		_httpServletRequest = httpServletRequest;
+		_queries = queries;
+		_sorts = sorts;
+		_searchContext = SearchContextFactory.getInstance(httpServletRequest);
+		_searchContainer = searchContainer;
+		_searchEngineAdapter = searchEngineAdapter;
+	}
+
+	public SearchMisspellingsDefinitionResponse search() {
+		SearchSearchRequest searchSearchRequest = new SearchSearchRequest();
+
+		searchSearchRequest.setFetchSource(true);
+		searchSearchRequest.setIndexNames(
+			_misspellingsDefinitionIndexName.getIndexName());
+		searchSearchRequest.setPreferLocalCluster(false);
+		searchSearchRequest.setQuery(_getQuery());
+		searchSearchRequest.setSize(_searchContainer.getDelta());
+		searchSearchRequest.setSorts(_getSorts());
+		searchSearchRequest.setStart(_searchContainer.getStart());
+
+		SearchSearchResponse searchSearchResponse =
+			_searchEngineAdapter.execute(searchSearchRequest);
+
+		SearchMisspellingsDefinitionResponse
+			searchMisspellingsDefinitionResponse =
+				new SearchMisspellingsDefinitionResponse();
+
+		SearchHits searchHits = searchSearchResponse.getSearchHits();
+
+		searchMisspellingsDefinitionResponse.setSearchHits(searchHits);
+		searchMisspellingsDefinitionResponse.setTotalHits(
+			(int)searchHits.getTotalHits());
+
+		return searchMisspellingsDefinitionResponse;
+	}
+
+	private Query _getQuery() {
+		String keywords = _searchContext.getKeywords();
+
+		if (!Validator.isBlank(keywords)) {
+			return _queries.match(MisspellingsDefinitionFields.NAME, keywords);
+		}
+
+		return _queries.matchAll();
+	}
+
+	private Collection<Sort> _getSorts() {
+		String orderByCol = ParamUtil.getString(
+			_httpServletRequest, "orderByCol",
+			MisspellingsDefinitionFields.UID);
+		String orderByType = ParamUtil.getString(
+			_httpServletRequest, "orderByType", "asc");
+
+		SortOrder sortOrder = SortOrder.ASC;
+
+		if (Objects.equals(orderByType, "desc")) {
+			sortOrder = SortOrder.DESC;
+		}
+
+		return Arrays.asList(_sorts.field(orderByCol, sortOrder));
+	}
+
+	private final HttpServletRequest _httpServletRequest;
+	private final MisspellingsDefinitionIndexName
+		_misspellingsDefinitionIndexName;
+	private final Queries _queries;
+	private final SearchContainer<MisspellingsDefinitionDisplayContext>
+		_searchContainer;
+	private final SearchContext _searchContext;
+	private final SearchEngineAdapter _searchEngineAdapter;
+	private final Sorts _sorts;
+
+}
