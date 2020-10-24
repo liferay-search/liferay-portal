@@ -62,8 +62,8 @@ public class BlueprintEntriesManagementToolbarDisplayContext
 			httpServletRequest, liferayPortletRequest, liferayPortletResponse,
 			searchContainer);
 
-		_displayStyle = displayStyle;
 		_blueprintType = blueprintType;
+		_displayStyle = displayStyle;
 		_themeDisplay = (ThemeDisplay)httpServletRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 	}
@@ -137,7 +137,7 @@ public class BlueprintEntriesManagementToolbarDisplayContext
 			"mvcRenderCommandName",
 			BlueprintsAdminMVCCommandNames.VIEW_BLUEPRINT);
 
-		String tabs = ParamUtil.getString(request, "tabs", "blueprints");
+		String tabs = ParamUtil.getString(liferayPortletRequest, "tabs", "blueprints");
 
 		searchURL.setProperty("tabs", tabs);
 
@@ -208,7 +208,7 @@ public class BlueprintEntriesManagementToolbarDisplayContext
 
 		sortingURL.setProperty(SearchContainer.DEFAULT_CUR_PARAM, "0");
 
-		String keywords = ParamUtil.getString(request, "keywords");
+		String keywords = ParamUtil.getString(liferayPortletRequest, "keywords");
 
 		if (Validator.isNotNull(keywords)) {
 			sortingURL.setProperty("keywords", keywords);
