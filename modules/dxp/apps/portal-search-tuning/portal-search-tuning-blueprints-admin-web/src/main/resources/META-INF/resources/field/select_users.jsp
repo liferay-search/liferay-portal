@@ -38,13 +38,12 @@ SelectUsersDisplayContext selectUsersDisplayContext = (SelectUsersDisplayContext
 		>
 
 			<%
-			Map<String, Object> data = HashMapBuilder.<String, Object>put(
-				"id", user2.getUserId()
-			).put(
-				"name", user2.getFullName()
-			).build();
-
-			row.setData(data);
+			row.setData(
+				HashMapBuilder.<String, Object>put(
+					"id", user2.getUserId()
+				).put(
+					"name", user2.getFullName()
+				).build());
 			%>
 
 			<c:choose>

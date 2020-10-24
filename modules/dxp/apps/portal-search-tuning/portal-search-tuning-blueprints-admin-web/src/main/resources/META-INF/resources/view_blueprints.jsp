@@ -20,10 +20,6 @@
 BlueprintEntriesManagementToolbarDisplayContext blueprintEntriesManagementToolbarDisplayContext = (BlueprintEntriesManagementToolbarDisplayContext)request.getAttribute(BlueprintsAdminWebKeys.BLUEPRINT_ENTRIES_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT);
 
 BlueprintEntriesDisplayContext blueprintEntriesDisplayContext = (BlueprintEntriesDisplayContext)request.getAttribute(BlueprintsAdminWebKeys.BLUEPRINT_ENTRIES_DISPLAY_CONTEXT);
-
-SearchContainer<Blueprint> blueprintsSearchContainer = blueprintEntriesDisplayContext.getSearchContainer();
-
-String displayStyle = blueprintEntriesDisplayContext.getDisplayStyle();
 %>
 
 <clay:management-toolbar
@@ -38,7 +34,7 @@ String displayStyle = blueprintEntriesDisplayContext.getDisplayStyle();
 
 		<liferay-ui:search-container
 			id="blueprintEntries"
-			searchContainer="<%= blueprintsSearchContainer %>"
+			searchContainer="<%= blueprintEntriesDisplayContext.getSearchContainer() %>"
 		>
 			<liferay-ui:search-container-row
 				className="com.liferay.portal.search.tuning.blueprints.model.Blueprint"
@@ -49,7 +45,7 @@ String displayStyle = blueprintEntriesDisplayContext.getDisplayStyle();
 			</liferay-ui:search-container-row>
 
 			<liferay-ui:search-iterator
-				displayStyle="<%= displayStyle %>"
+				displayStyle="<%= blueprintEntriesDisplayContext.getDisplayStyle() %>"
 				markupView="lexicon"
 			/>
 		</liferay-ui:search-container>
