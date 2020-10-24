@@ -124,7 +124,8 @@ function BlueprintForm({
 					`${namespace}suggestConfiguration`,
 					suggestConfig
 				);
-			} catch {
+			}
+			catch {
 				openErrorToast({
 					message: Liferay.Language.get('the-json-is-invalid'),
 				});
@@ -155,7 +156,8 @@ function BlueprintForm({
 						);
 
 						setIsSubmitting(false);
-					} else {
+					}
+					else {
 						navigate(redirectURL);
 					}
 				})

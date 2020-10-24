@@ -938,11 +938,11 @@ export const QUERY_FRAGMENTS_ORIGINAL = [
 		],
 		conditions: [
 			{
-				handler: 'default',
 				configuration: {
 					evaluation_type: 'exists',
 					parameter_name: '${context.scope_group_id}',
 				},
+				handler: 'default',
 			},
 		],
 		description: {
@@ -1102,12 +1102,12 @@ export const QUERY_FRAGMENTS_ORIGINAL = [
 		],
 		conditions: [
 			{
-				handler: 'default',
 				configuration: {
 					evaluation_type: 'any_word_in',
 					match_value: ['food'],
 					parameter_name: '${keywords}',
 				},
+				handler: 'default',
 				operator: 'AND',
 			},
 		],
@@ -1233,9 +1233,6 @@ export const QUERY_FRAGMENTS_ORIGINAL = [
 			},
 		],
 		icon: 'time',
-		description: {
-			en_US: 'Boost if user belongs to a user segment',
-		},
 		conditions: [
 			{
 				handler: 'default',
@@ -1247,6 +1244,9 @@ export const QUERY_FRAGMENTS_ORIGINAL = [
 				operator: 'and',
 			},
 		],
+		description: {
+			en_US: 'Boost if user belongs to a user segment',
+		},
 		title: {
 			en_US: 'Boost Content For a User Segment',
 		},

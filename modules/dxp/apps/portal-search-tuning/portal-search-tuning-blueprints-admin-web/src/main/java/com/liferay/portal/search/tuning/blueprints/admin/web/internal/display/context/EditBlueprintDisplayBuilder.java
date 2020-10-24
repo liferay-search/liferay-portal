@@ -179,7 +179,8 @@ public class EditBlueprintDisplayBuilder {
 		JSONObject jsonObject = JSONFactoryUtil.createJSONObject();
 
 		for (String entityClassName : entityClassNames) {
-			jsonObject.put(entityClassName, _getSelectEntity(entityClassName));
+			jsonObject.put(
+				entityClassName, _getSelectEntityJSONObject(entityClassName));
 		}
 
 		return jsonObject;
@@ -230,7 +231,7 @@ public class EditBlueprintDisplayBuilder {
 		return redirect;
 	}
 
-	private JSONObject _getSelectEntity(String className) {
+	private JSONObject _getSelectEntityJSONObject(String className) {
 		try {
 			PortletURL portletURL = PortletProviderUtil.getPortletURL(
 				_renderRequest, className, PortletProvider.Action.BROWSE);

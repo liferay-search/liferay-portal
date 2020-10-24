@@ -45,7 +45,8 @@ function EditTitleModal({
 			setHasError(true);
 
 			titleInput.current.focus();
-		} else {
+		}
+		else {
 			onSubmit({description, title});
 
 			onClose();

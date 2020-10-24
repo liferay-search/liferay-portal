@@ -121,7 +121,7 @@ public class SelectBlueprintDisplayContext {
 		return entriesSearchContainer;
 	}
 
-	private static OrderByComparator<Blueprint> _getOrderByComparator(
+	private OrderByComparator<Blueprint> _getOrderByComparator(
 		Locale locale, String orderByCol, String orderByType) {
 
 		boolean orderByAsc = true;
