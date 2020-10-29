@@ -9,9 +9,11 @@
  * distribution rights of the Software.
  */
 
-import ClayForm, {ClayInput} from '@clayui/form';
+import ClayForm from '@clayui/form';
 import ClayLayout from '@clayui/layout';
 import React from 'react';
+
+import CodeMirrorEditor from '../components/CodeMirrorEditor';
 
 function Aggregations({aggregationConfig, onAggregationConfigChange}) {
 	return (
@@ -26,13 +28,8 @@ function Aggregations({aggregationConfig, onAggregationConfigChange}) {
 						{Liferay.Language.get('aggregation-configuration')}
 					</label>
 
-					<ClayInput
-						component="textarea"
-						id="aggregation-configuration"
-						onChange={({target: {value}}) =>
-							onAggregationConfigChange(value)
-						}
-						type="text"
+					<CodeMirrorEditor
+						onChange={(value) => onAggregationConfigChange(value)}
 						value={aggregationConfig}
 					/>
 				</ClayForm.Group>

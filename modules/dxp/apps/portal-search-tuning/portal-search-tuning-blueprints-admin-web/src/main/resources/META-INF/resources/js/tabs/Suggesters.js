@@ -9,9 +9,11 @@
  * distribution rights of the Software.
  */
 
-import ClayForm, {ClayInput} from '@clayui/form';
+import ClayForm from '@clayui/form';
 import ClayLayout from '@clayui/layout';
 import React from 'react';
+
+import CodeMirrorEditor from '../components/CodeMirrorEditor';
 
 function Suggesters({onSuggestConfigChange, suggestConfig}) {
 	return (
@@ -26,13 +28,8 @@ function Suggesters({onSuggestConfigChange, suggestConfig}) {
 						{Liferay.Language.get('suggest-configuration')}
 					</label>
 
-					<ClayInput
-						component="textarea"
-						id="suggest-configuration"
-						onChange={({target: {value}}) =>
-							onSuggestConfigChange(value)
-						}
-						type="text"
+					<CodeMirrorEditor
+						onChange={(value) => onSuggestConfigChange(value)}
 						value={suggestConfig}
 					/>
 				</ClayForm.Group>

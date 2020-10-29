@@ -137,7 +137,8 @@ public class BlueprintEntriesManagementToolbarDisplayContext
 			"mvcRenderCommandName",
 			BlueprintsAdminMVCCommandNames.VIEW_BLUEPRINT);
 
-		String tabs = ParamUtil.getString(liferayPortletRequest, "tabs", "blueprints");
+		String tabs = ParamUtil.getString(
+			liferayPortletRequest, "tabs", "blueprints");
 
 		searchURL.setProperty("tabs", tabs);
 
@@ -208,7 +209,8 @@ public class BlueprintEntriesManagementToolbarDisplayContext
 
 		sortingURL.setProperty(SearchContainer.DEFAULT_CUR_PARAM, "0");
 
-		String keywords = ParamUtil.getString(liferayPortletRequest, "keywords");
+		String keywords = ParamUtil.getString(
+			liferayPortletRequest, "keywords");
 
 		if (Validator.isNotNull(keywords)) {
 			sortingURL.setProperty("keywords", keywords);

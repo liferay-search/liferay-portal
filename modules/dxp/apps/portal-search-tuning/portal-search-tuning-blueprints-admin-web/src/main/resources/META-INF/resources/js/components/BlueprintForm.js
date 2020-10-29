@@ -38,8 +38,9 @@ function BlueprintForm({
 	blueprintId,
 	blueprintType,
 	entityJSON,
+	initialConfigurationString = '{}',
 	initialDescription = {},
-	initialSelectedFragments,
+	initialSelectedFragmentsString = '{}',
 	initialTitle = {},
 	redirectURL = '',
 	submitFormURL = '',
@@ -55,29 +56,58 @@ function BlueprintForm({
 
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
-	const [advancedConfig, setAdvancedConfig] = useState('');
-	const [aggregationConfig, setAggregationConfig] = useState('');
-	const [parameterConfig, setParameterConfig] = useState('');
-	const [suggestConfig, setSuggestConfig] = useState('');
+	const initialConfiguration = JSON.parse(initialConfigurationString);
+	const initialSelectedFragments = JSON.parse(initialSelectedFragmentsString);
 
-	const [selectedFragments, setSelectedFragments] = useState(
+	const [advancedConfig, setAdvancedConfig] = useState(
+		JSON.stringify(
+			initialConfiguration['advanced_configuration'],
+			null,
+			'\t'
+		)
+	);
+	const [aggregationConfig, setAggregationConfig] = useState(
+		JSON.stringify(
+			initialConfiguration['aggregation_configuration'],
+			null,
+			'\t'
+		)
+	);
+	const [parameterConfig, setParameterConfig] = useState(
+		JSON.stringify(
+			initialConfiguration['parameter_configuration'],
+			null,
+			'\t'
+		)
+	);
+	const [suggestConfig, setSuggestConfig] = useState(
+		JSON.stringify(
+			initialConfiguration['suggest_configuration'],
+			null,
+			'\t'
+		)
+	);
+
+	const [selectedQueryFragments, setSelectedQueryFragments] = useState(
 		blueprintId !== '0'
-			? initialSelectedFragments.map((configString) => ({
-					...JSON.parse(configString),
-					id: fragmentIdCounter.current++,
-			  }))
+			? initialSelectedFragments['query_configuration'].map(
+					(selectedFragment) => ({
+						...selectedFragment,
+						id: fragmentIdCounter.current++,
+					})
+			  )
 			: [convertToSelectedFragment(DEFAULT_FRAGMENT)]
 	);
 
 	const onAddFragment = useCallback((fragment) => {
-		setSelectedFragments((selectedFragments) => [
+		setSelectedQueryFragments((selectedFragments) => [
 			convertToSelectedFragment(fragment, fragmentIdCounter.current++),
 			...selectedFragments,
 		]);
 	}, []);
 
 	const deleteFragment = useCallback((id) => {
-		setSelectedFragments((selectedFragments) =>
+		setSelectedQueryFragments((selectedFragments) =>
 			selectedFragments.filter((item) => item.id !== id)
 		);
 	}, []);
@@ -92,39 +122,35 @@ function BlueprintForm({
 
 			try {
 				formData.append(
-					`${namespace}advancedConfiguration`,
-					advancedConfig
+					`${namespace}configuration`,
+					JSON.stringify({
+						advanced_configuration: JSON.parse(advancedConfig),
+						aggregation_configuration: JSON.parse(
+							aggregationConfig
+						),
+						parameter_configuration: JSON.parse(parameterConfig),
+						query_configuration: selectedQueryFragments.map(
+							(item) => item.queryConfig
+						),
+						suggest_configuration: JSON.parse(suggestConfig),
+					})
 				);
-				formData.append(
-					`${namespace}aggregationConfiguration`,
-					aggregationConfig
-				);
-				formData.append(
-					`${namespace}parameterConfiguration`,
-					parameterConfig
-				);
-				formData.append(
-					`${namespace}queryConfiguration`,
-					JSON.stringify(
-						selectedFragments.map((item) => item.queryConfig)
-					)
-				);
+
 				formData.append(
 					`${namespace}selectedFragments`,
-					JSON.stringify(
-						selectedFragments.map((item) => ({
-							configJSON: item.configJSON,
-							configValues: item.configValues,
-							inputJSON: item.inputJSON,
-							queryConfig: item.queryConfig,
-						}))
-					)
+					JSON.stringify({
+						query_configuration: selectedQueryFragments.map(
+							(item) => ({
+								configJSON: item.configJSON,
+								configValues: item.configValues,
+								inputJSON: item.inputJSON,
+								queryConfig: item.queryConfig,
+							})
+						), // Removes ID field
+					})
 				);
-				formData.append(
-					`${namespace}suggestConfiguration`,
-					suggestConfig
-				);
-			} catch {
+			}
+			catch {
 				openErrorToast({
 					message: Liferay.Language.get('the-json-is-invalid'),
 				});
@@ -155,7 +181,8 @@ function BlueprintForm({
 						);
 
 						setIsSubmitting(false);
-					} else {
+					}
+					else {
 						navigate(redirectURL);
 					}
 				})
@@ -166,24 +193,24 @@ function BlueprintForm({
 				});
 		},
 		[
-			namespace,
-			blueprintType,
-			blueprintId,
-			redirectURL,
-			submitFormURL,
 			advancedConfig,
 			aggregationConfig,
+			blueprintType,
+			blueprintId,
+			namespace,
 			parameterConfig,
+			redirectURL,
+			selectedQueryFragments,
+			submitFormURL,
 			suggestConfig,
-			selectedFragments,
 		]
 	);
 
-	const updateFragment = useCallback((index, configs) => {
-		setSelectedFragments((selectedFragments) => [
-			...selectedFragments.slice(0, index),
+	const updateQueryFragment = useCallback((index, configs) => {
+		setSelectedQueryFragments((selectedQueryFragments) => [
+			...selectedQueryFragments.slice(0, index),
 			configs,
-			...selectedFragments.slice(index + 1),
+			...selectedQueryFragments.slice(index + 1),
 		]);
 	}, []);
 
@@ -227,8 +254,8 @@ function BlueprintForm({
 							<QueryBuilder
 								deleteFragment={deleteFragment}
 								entityJSON={entityJSON}
-								selectedFragments={selectedFragments}
-								updateFragment={updateFragment}
+								selectedFragments={selectedQueryFragments}
+								updateFragment={updateQueryFragment}
 							/>
 						</div>
 					</>
@@ -258,8 +285,9 @@ BlueprintForm.propTypes = {
 	blueprintId: PropTypes.string,
 	blueprintType: PropTypes.number,
 	entityJSON: PropTypes.object,
+	initialConfiguration: PropTypes.string,
 	initialDescription: PropTypes.object,
-	initialSelectedFragments: PropTypes.arrayOf(PropTypes.string),
+	initialSelectedFragments: PropTypes.string,
 	initialTitle: PropTypes.object,
 	redirectURL: PropTypes.string,
 	submitFormURL: PropTypes.string,

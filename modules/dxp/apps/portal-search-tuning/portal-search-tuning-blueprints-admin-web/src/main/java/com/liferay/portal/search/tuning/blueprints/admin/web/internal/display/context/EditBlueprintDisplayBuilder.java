@@ -200,21 +200,9 @@ public class EditBlueprintDisplayBuilder {
 		).build();
 
 		if (_blueprint != null) {
-			try {
-				props.put(
-					"initialSelectedFragments",
-					BlueprintJSONUtil.getSelectedFragmentsSection(_blueprint));
-				props.put(
-					"initialQueryConfiguration",
-					BlueprintJSONUtil.getConfigurationSection(
-						_blueprint,
-						BlueprintKeys.QUERY_CONFIGURATION.getJsonKey()));
-			}
-			catch (JSONException jsonException) {
-				_log.error("Unable to parse Blueprint JSON", jsonException);
-			}
-
+			props.put("initialConfigurationString", _blueprint.getConfiguration());
 			props.put("initialDescription", _getDescriptionJSONObject());
+			props.put("initialSelectedFragmentsString", _blueprint.getSelectedFragments());
 			props.put("initialTitle", _getTitleJSONObject());
 		}
 
@@ -242,7 +230,7 @@ public class EditBlueprintDisplayBuilder {
 
 			boolean multiple = false;
 
-			if (className == User.class.getName()) {
+			if (className.equals(User.class.getName())) {
 				portletURL = PortalUtil.getControlPanelPortletURL(
 					_renderRequest, BlueprintsPortletKeys.BLUEPRINTS_ADMIN,
 					PortletRequest.RENDER_PHASE);
@@ -254,7 +242,7 @@ public class EditBlueprintDisplayBuilder {
 				multiple = true;
 			}
 
-			if (className == Organization.class.getName()) {
+			if (className.equals(Organization.class.getName())) {
 				portletURL = PortalUtil.getControlPanelPortletURL(
 					_renderRequest, BlueprintsPortletKeys.BLUEPRINTS_ADMIN,
 					PortletRequest.RENDER_PHASE);
