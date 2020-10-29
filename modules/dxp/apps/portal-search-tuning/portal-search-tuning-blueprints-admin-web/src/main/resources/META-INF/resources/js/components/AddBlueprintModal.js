@@ -56,6 +56,24 @@ const AddBlueprintModal = ({
 			document.querySelector(`#${namespace}form`)
 		);
 
+		formData.append(
+			`${namespace}configuration`,
+			JSON.stringify({
+				advanced_configuration: {},
+				aggregation_configuration: [],
+				parameter_configuration: {},
+				query_configuration: [DEFAULT_SELECTED_FRAGMENT.queryConfig],
+				suggest_configuration: [],
+			})
+		);
+
+		formData.append(
+			`${namespace}selectedFragments`,
+			JSON.stringify({
+				query_configuration: [DEFAULT_SELECTED_FRAGMENT],
+			})
+		);
+
 		fetch(formSubmitURL, {
 			body: formData,
 			method: 'POST',
@@ -118,20 +136,6 @@ const AddBlueprintModal = ({
 								{alert.message}
 							</ClayAlert>
 						)}
-
-						<input
-							name={`${namespace}queryConfiguration`}
-							type="hidden"
-							value={JSON.stringify([
-								DEFAULT_SELECTED_FRAGMENT.queryConfig,
-							])}
-						/>
-
-						<input
-							name={`${namespace}selectedFragments`}
-							type="hidden"
-							value={JSON.stringify([DEFAULT_SELECTED_FRAGMENT])}
-						/>
 
 						<input
 							name={`${namespace}type`}

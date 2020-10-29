@@ -9,9 +9,11 @@
  * distribution rights of the Software.
  */
 
-import ClayForm, {ClayInput} from '@clayui/form';
+import ClayForm from '@clayui/form';
 import ClayLayout from '@clayui/layout';
 import React from 'react';
+
+import CodeMirrorEditor from '../components/CodeMirrorEditor';
 
 function Settings({
 	advancedConfig,
@@ -31,13 +33,9 @@ function Settings({
 						{Liferay.Language.get('parameter-configuration')}
 					</label>
 
-					<ClayInput
-						component="textarea"
+					<CodeMirrorEditor
 						id="parameter-configuration"
-						onChange={({target: {value}}) =>
-							onParameterConfigChange(value)
-						}
-						type="text"
+						onChange={(value) => onParameterConfigChange(value)}
 						value={parameterConfig}
 					/>
 				</ClayForm.Group>
@@ -47,13 +45,9 @@ function Settings({
 						{Liferay.Language.get('advanced-configuration')}
 					</label>
 
-					<ClayInput
-						component="textarea"
+					<CodeMirrorEditor
 						id="advanced-configuration"
-						onChange={({target: {value}}) =>
-							onAdvancedConfigChange(value)
-						}
-						type="text"
+						onChange={(value) => onAdvancedConfigChange(value)}
 						value={advancedConfig}
 					/>
 				</ClayForm.Group>

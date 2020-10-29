@@ -81,8 +81,8 @@ public class EditBlueprintMVCActionCommand extends BaseMVCActionCommand {
 		String cmd = ParamUtil.getString(actionRequest, Constants.CMD);
 
 		try {
-			String configuration = _buildConfigurationFromRequest(
-				actionRequest);
+			String configuration = ParamUtil.getString(
+				actionRequest, "configuration");
 			String selectedFragments = ParamUtil.getString(
 				actionRequest, "selectedFragments");
 
@@ -129,21 +129,6 @@ public class EditBlueprintMVCActionCommand extends BaseMVCActionCommand {
 			_blueprintExceptionRequestHandler.handlePortalException(
 				actionRequest, actionResponse, portalException);
 		}
-	}
-
-	private String _buildConfigurationFromRequest(ActionRequest actionRequest)
-		throws JSONException {
-
-		String queryConfigurationString = ParamUtil.getString(
-			actionRequest, "queryConfiguration");
-
-		JSONArray jsonArray = _jsonFactory.createJSONArray(
-			queryConfigurationString);
-
-		JSONObject jsonObject = JSONUtil.put(
-			BlueprintKeys.QUERY_CONFIGURATION.getJsonKey(), jsonArray);
-
-		return jsonObject.toString();
 	}
 
 	@Reference

@@ -56,7 +56,7 @@ function ConfigFragment({
 		);
 	}, 20);
 
-	const _handleMutipleSelect = (key, className) => {
+	const _handleMultipleSelect = (key, className) => {
 		if (entityJSON[`${className}`].multiple) {
 			openSelectionModal({
 				buttonAddLabel: Liferay.Language.get('select'),
@@ -70,7 +70,8 @@ function ConfigFragment({
 				title: entityJSON[`${className}`].title,
 				url: entityJSON[`${className}`].url,
 			});
-		} else {
+		}
+		else {
 			openSelectionModal({
 				buttonAddLabel: Liferay.Language.get('select'),
 				onSelect: (event) => {
@@ -169,6 +170,7 @@ function ConfigFragment({
 								</ClayInput.GroupInsetItem>
 							)}
 						</ClayInput.GroupItem>
+
 						<ClayInput.GroupItem shrink>
 							<ClayButton
 								aria-label={Liferay.Language.get('select')}
@@ -176,7 +178,7 @@ function ConfigFragment({
 								displayType="secondary"
 								onClick={() => {
 									if (entityJSON) {
-										_handleMutipleSelect(
+										_handleMultipleSelect(
 											config.key,
 											config.className
 										);
@@ -236,6 +238,7 @@ function ConfigFragment({
 								value={configValues[config.key]}
 							/>
 						</ClayInput.GroupItem>
+
 						{config.unit && (
 							<ClayInput.GroupItem append shrink>
 								<ClayInput.GroupText>

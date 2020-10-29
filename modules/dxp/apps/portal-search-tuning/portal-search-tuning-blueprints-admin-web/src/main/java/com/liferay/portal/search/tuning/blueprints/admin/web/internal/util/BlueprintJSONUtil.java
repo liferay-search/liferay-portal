@@ -26,27 +26,44 @@ import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
  */
 public class BlueprintJSONUtil {
 
-	public static String[] getConfigurationSection(
+	public static JSONArray getConfigurationSectionJSONArray(
 			Blueprint blueprint, String key)
 		throws JSONException {
 
-		JSONArray jsonArray = _getSectionJSONArray(blueprint, key);
+		if ((blueprint == null) ||
+			Validator.isBlank(blueprint.getConfiguration())) {
 
-		if (jsonArray == null) {
-			return new String[0];
+			return null;
 		}
 
-		String[] array = new String[jsonArray.length()];
+		JSONObject jsonObject = JSONFactoryUtil.createJSONObject(
+			blueprint.getConfiguration());
 
-		for (int i = 0; i < jsonArray.length(); i++) {
-			array[i] = jsonArray.getJSONObject(
-				i
-			).toString(
-				4
-			);
+		if (jsonObject == null) {
+			return null;
 		}
 
-		return array;
+		return jsonObject.getJSONArray(key);
+	}
+
+	public static JSONObject getConfigurationSectionJSONObject(
+		Blueprint blueprint, String key)
+		throws JSONException {
+
+		if ((blueprint == null) ||
+			Validator.isBlank(blueprint.getConfiguration())) {
+
+			return null;
+		}
+
+		JSONObject jsonObject = JSONFactoryUtil.createJSONObject(
+			blueprint.getConfiguration());
+
+		if (jsonObject == null) {
+			return null;
+		}
+
+		return jsonObject.getJSONObject(key);
 	}
 
 	public static String[] getSelectedFragmentsSection(Blueprint blueprint)
@@ -88,26 +105,6 @@ public class BlueprintJSONUtil {
 		}
 
 		return jsonArray;
-	}
-
-	private static JSONArray _getSectionJSONArray(
-			Blueprint blueprint, String key)
-		throws JSONException {
-
-		if ((blueprint == null) ||
-			Validator.isBlank(blueprint.getConfiguration())) {
-
-			return null;
-		}
-
-		JSONObject jsonObject = JSONFactoryUtil.createJSONObject(
-			blueprint.getConfiguration());
-
-		if (jsonObject == null) {
-			return null;
-		}
-
-		return jsonObject.getJSONArray(key);
 	}
 
 }

@@ -13,6 +13,66 @@
  * Temporary data. This data should eventually be fetched from the server.
  */
 
+// Not used anywhere yet.
+
+export const DEFAULT_ADVANCED_CONFIGURATION = {
+	entry_class_names: [
+		'com.liferay.commerce.product.model.CPDefinition',
+		'com.liferay.wiki.model.WikiPage',
+		'com.liferay.blogs.model.BlogsEntry',
+		'com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecord',
+		'com.liferay.journal.model.JournalArticle',
+		'com.liferay.bookmarks.model.BookmarksEntry',
+		'com.liferay.journal.model.JournalFolder',
+		'com.liferay.calendar.model.CalendarBooking',
+		'com.liferay.document.library.kernel.model.DLFileEntry',
+		'com.liferay.portal.kernel.model.User',
+		'com.liferay.bookmarks.model.BookmarksFolder',
+		'com.liferay.document.library.kernel.model.DLFolder',
+		'com.liferay.portal.kernel.model.Layout',
+		'com.liferay.dynamic.data.lists.model.DDLRecord',
+		'com.liferay.message.boards.model.MBMessage',
+		'com.liferay.knowledge.base.model.KBArticle',
+	],
+	highlighting: {
+		enabled: 'true',
+		fields: [
+			'title_${context.language_id}',
+			'content_${context.language_id}',
+		],
+		fragment_size: '50',
+		require_field_match: 'true',
+		snippet_size: '10',
+	},
+	misspellings_definition_ids: ['1', '2'],
+	page_size: 10,
+	query_indexing: {
+		blacklist: ["don't index me", 'dirty', 'shit', 'fuc*'],
+		enabled: true,
+		hits_threshold: 3,
+		query_index_configuration_id: '1',
+	},
+	query_processing: {
+		exclude_query_contributors: '',
+		exclude_query_post_processors: '',
+	},
+	source: {
+		fetch_source: true,
+		source_excludes: '',
+		source_includes: '',
+	},
+};
+
+export const DEFAULT_AGGREGATION_CONFIGURATION = [
+	{
+		body: {
+			field: 'assetTags',
+		},
+		name: 'tags',
+		type: 'terms',
+	},
+];
+
 export const DEFAULT_FRAGMENT = {
 	configJSON: {
 		configurationValues: [
@@ -75,6 +135,45 @@ export const DEFAULT_FRAGMENT = {
 		},
 	},
 };
+
+// Not used anywhere yet.
+
+export const DEFAULT_PARAMETER_CONFIGURATION = {
+	custom: [
+		{
+			configuration: {
+				date_format: 'yyyy-mm-dd',
+				max: '2020-11-11',
+				min: '1970-11-11',
+			},
+			parameter_name: 'dateFrom',
+			type: 'date',
+		},
+		{
+			parameter_name: 'time',
+			type: 'time_range',
+		},
+	],
+	keywords: {
+		parameter_name: 'q',
+	},
+	page: {
+		parameter_name: 'page',
+	},
+};
+
+// Not used anywhere yet.
+
+export const DEFAULT_SUGGEST_CONFIGURATION = [
+	{
+		configuration: {
+			field: 'keywordSearch_${context.language_id}.suggest',
+		},
+		description: 'A completion suggester example',
+		enabled: true,
+		type: 'completion',
+	},
+];
 
 export const QUERY_FRAGMENTS = [
 	{

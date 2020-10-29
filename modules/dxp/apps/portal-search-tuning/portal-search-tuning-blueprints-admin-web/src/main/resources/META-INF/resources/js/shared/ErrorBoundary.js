@@ -28,9 +28,7 @@ class ErrorBoundary extends Component {
 	componentDidCatch() {
 		if (this.props.toast) {
 			openToast({
-				message: Liferay.Language.get(
-					'an-error-has-occurred-and-we-were-unable-to-load-the-results'
-				),
+				message: Liferay.Language.get('an-unexpected-error-occurred'),
 				type: 'danger',
 			});
 		}
@@ -41,7 +39,7 @@ class ErrorBoundary extends Component {
 			? !this.props.toast && (
 					<ClayEmptyState
 						description={Liferay.Language.get(
-							'an-error-has-occurred-and-we-were-unable-to-load-the-results'
+							'an-unexpected-error-occurred'
 						)}
 						imgSrc="/o/admin-theme/images/states/empty_state.gif"
 						title={Liferay.Language.get('unable-to-load-content')}
