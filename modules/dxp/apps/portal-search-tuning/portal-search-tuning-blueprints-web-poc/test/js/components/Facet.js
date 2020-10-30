@@ -41,7 +41,7 @@ describe('BlueprintsSearch', () => {
 		});
 
 		SELECTED_FACETS['entryClassName'].map((item) =>
-			getByLabelText(`Remove ${item.value}`)
+			getByLabelText(`${item.value}`)
 		);
 	});
 

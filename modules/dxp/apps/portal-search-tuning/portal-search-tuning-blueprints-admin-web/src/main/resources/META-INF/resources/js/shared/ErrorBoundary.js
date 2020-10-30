@@ -43,8 +43,7 @@ class ErrorBoundary extends Component {
 						description={Liferay.Language.get(
 							'an-error-has-occurred-and-we-were-unable-to-load-the-results'
 						)}
-						displayType="primary"
-						imgSrc="/images/empty_state.gif"
+						imgSrc="/o/admin-theme/images/states/empty_state.gif"
 						title={Liferay.Language.get('unable-to-load-content')}
 					/>
 			  )

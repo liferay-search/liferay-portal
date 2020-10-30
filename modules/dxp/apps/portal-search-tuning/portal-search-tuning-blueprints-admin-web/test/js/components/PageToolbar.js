@@ -25,9 +25,15 @@ function renderPageToolbar(props) {
 	return render(
 		<PageToolbar
 			availableLocales={AVAILABLE_LOCALES}
+			initialDescription={{}}
 			initialTitle={{}}
 			onCancel="/link"
+			onChangeTab={jest.fn()}
 			onSubmit={onSubmit}
+			tab={'query-builder'}
+			tabs={{
+				'query-builder': 'query-builder',
+			}}
 			{...props}
 		/>
 	);

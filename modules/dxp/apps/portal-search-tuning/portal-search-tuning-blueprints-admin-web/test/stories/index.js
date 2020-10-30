@@ -82,6 +82,10 @@ storiesOf('Components|PageToolbar', module).add('PageToolbar', () => (
 		}}
 		onCancel=""
 		onPublish={action('onPublish')}
+		tab={'query-builder'}
+		tabs={{
+			'query-builder': 'query-builder',
+		}}
 	/>
 ));
 

@@ -9,8 +9,8 @@
  * distribution rights of the Software.
  */
 
-import {getUnixTime, isValid} from 'date-fns';
 import {openToast} from 'frontend-js-web';
+import moment from 'moment';
 
 export const openErrorToast = (config) => {
 	openToast({
@@ -33,8 +33,8 @@ export const getDefaultValue = (item) => {
 			return isNotNull(item.defaultValue)
 				? typeof item.defaultValue == 'number'
 					? item.defaultValue
-					: isValid(new Date(item.defaultValue))
-					? getUnixTime(new Date(item.defaultValue))
+					: moment(item.defaultValue).isValid()
+					? moment(item.defaultValue).unix()
 					: ''
 				: '';
 		default:
