@@ -19,8 +19,8 @@ import ClayList from '@clayui/list';
 import ClaySlider from '@clayui/slider';
 import ClaySticker from '@clayui/sticker';
 import {ClayTooltipProvider} from '@clayui/tooltip';
-import {format, fromUnixTime, getUnixTime} from 'date-fns';
 import {debounce, openSelectionModal} from 'frontend-js-web';
+import moment from 'moment';
 import {PropTypes} from 'prop-types';
 import React, {useContext, useEffect, useState} from 'react';
 
@@ -41,7 +41,6 @@ function ConfigFragment({
 	const {locale} = useContext(ThemeContext);
 	const [collapse, setCollapse] = useState(false);
 	const [active, setActive] = useState(false);
-	const [visible, setVisible] = useState(false);
 
 	useEffect(() => {
 		setCollapse(collapseAll);
@@ -104,20 +103,19 @@ function ConfigFragment({
 							dateFormat="MM/dd/yyyy"
 							onValueChange={(value) => {
 								_handleChange(config.key, {
-									value: getUnixTime(value),
+									value: moment(value).unix(),
 								});
 							}}
 							placeholder="MM/DD/YYYY"
 							readOnly
 							value={
 								configValues[`${config.key}`].value
-									? format(
-											fromUnixTime(
+									? moment
+											.unix(
 												configValues[`${config.key}`]
 													.value
-											),
-											'MM/dd/yyyy'
-									  )
+											)
+											.format('MM/DD/YYYY')
 									: ''
 							}
 							years={{
@@ -321,20 +319,18 @@ function ConfigFragment({
 							<ClayDropDown.Item onClick={deleteFragment}>
 								{Liferay.Language.get('delete')}
 							</ClayDropDown.Item>
-							<ClayDropDown.Item
-								onClick={() => setVisible(!visible)}
+							<JsonModal
+								json={queryConfig}
+								title={Liferay.Language.get(
+									'query-configuration'
+								)}
 							>
-								{Liferay.Language.get('query-configuration')}
-
-								<JsonModal
-									json={queryConfig}
-									setVisible={setVisible}
-									title={Liferay.Language.get(
+								<ClayDropDown.Item>
+									{Liferay.Language.get(
 										'query-configuration'
 									)}
-									visible={visible}
-								/>
-							</ClayDropDown.Item>
+								</ClayDropDown.Item>
+							</JsonModal>
 						</ClayDropDown.ItemList>
 					</ClayDropDown>
 

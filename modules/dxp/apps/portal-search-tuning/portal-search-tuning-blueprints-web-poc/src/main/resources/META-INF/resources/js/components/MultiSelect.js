@@ -179,6 +179,7 @@ export default function MultiSelect({
 						return (
 							<React.Fragment key={i}>
 								<ClayLabel
+									aria-label={item[locator.label]}
 									closeButtonProps={{
 										'aria-label': sub(
 											closeButtonAriaLabel,

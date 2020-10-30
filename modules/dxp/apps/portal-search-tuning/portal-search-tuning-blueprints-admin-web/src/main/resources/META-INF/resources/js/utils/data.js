@@ -17,7 +17,7 @@ export const DEFAULT_FRAGMENT = {
 	configJSON: {
 		configurationValues: [
 			{
-				defaultValue: 'or',
+				defaultValue: 'en_US',
 				key: 'context.language_id',
 				name: 'Context Language ID',
 				type: 'single-select',

@@ -11,41 +11,45 @@
 
 import ClayButton from '@clayui/button';
 import ClayModal, {useModal} from '@clayui/modal';
-import React from 'react';
+import React, {useState} from 'react';
 
 import CodeMirrorEditor from './CodeMirrorEditor';
 
-const JsonModal = ({json, setVisible, title, visible}) => {
+const JsonModal = ({children, json, title}) => {
+	const [visible, setVisible] = useState(false);
 	const {observer, onClose} = useModal({
 		onClose: () => setVisible(false),
 	});
 
 	return (
-		visible && (
-			<ClayModal observer={observer} size="md">
-				<ClayModal.Header>{title}</ClayModal.Header>
+		<>
+			{visible && (
+				<ClayModal observer={observer} size="md">
+					<ClayModal.Header>{title}</ClayModal.Header>
 
-				<ClayModal.Body>
-					<CodeMirrorEditor
-						readOnly
-						value={JSON.stringify(json, null, '\t')}
+					<ClayModal.Body>
+						<CodeMirrorEditor
+							readOnly
+							value={JSON.stringify(json, null, '\t')}
+						/>
+					</ClayModal.Body>
+
+					<ClayModal.Footer
+						last={
+							<ClayButton.Group spaced>
+								<ClayButton
+									displayType="secondary"
+									onClick={onClose}
+								>
+									{Liferay.Language.get('close')}
+								</ClayButton>
+							</ClayButton.Group>
+						}
 					/>
-				</ClayModal.Body>
-
-				<ClayModal.Footer
-					last={
-						<ClayButton.Group spaced>
-							<ClayButton
-								displayType="secondary"
-								onClick={onClose}
-							>
-								{Liferay.Language.get('close')}
-							</ClayButton>
-						</ClayButton.Group>
-					}
-				/>
-			</ClayModal>
-		)
+				</ClayModal>
+			)}
+			<div onClick={() => setVisible(!visible)}>{children}</div>
+		</>
 	);
 };
 
