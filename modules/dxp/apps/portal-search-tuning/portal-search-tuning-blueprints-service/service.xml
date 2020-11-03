@@ -30,6 +30,7 @@
 		<column localized="true" name="title" type="String" />
 		<column localized="true" name="description" type="String" />
 		<column name="configuration" type="String" />
+		<column name="selectedFragments" type="String" />
 		<column name="type" type="int" />
 
 		<!-- Finder methods -->
