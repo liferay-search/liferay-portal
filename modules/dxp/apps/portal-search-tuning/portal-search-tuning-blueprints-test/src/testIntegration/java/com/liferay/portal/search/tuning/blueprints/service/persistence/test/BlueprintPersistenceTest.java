@@ -155,6 +155,8 @@ public class BlueprintPersistenceTest {
 
 		newBlueprint.setConfiguration(RandomTestUtil.randomString());
 
+		newBlueprint.setSelectedFragments(RandomTestUtil.randomString());
+
 		newBlueprint.setType(RandomTestUtil.nextInt());
 
 		_blueprints.add(_persistence.update(newBlueprint));
@@ -200,6 +202,9 @@ public class BlueprintPersistenceTest {
 		Assert.assertEquals(
 			existingBlueprint.getConfiguration(),
 			newBlueprint.getConfiguration());
+		Assert.assertEquals(
+			existingBlueprint.getSelectedFragments(),
+			newBlueprint.getSelectedFragments());
 		Assert.assertEquals(
 			existingBlueprint.getType(), newBlueprint.getType());
 	}
@@ -614,6 +619,8 @@ public class BlueprintPersistenceTest {
 		blueprint.setDescription(RandomTestUtil.randomString());
 
 		blueprint.setConfiguration(RandomTestUtil.randomString());
+
+		blueprint.setSelectedFragments(RandomTestUtil.randomString());
 
 		blueprint.setType(RandomTestUtil.nextInt());
 
