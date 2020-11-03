@@ -66,8 +66,8 @@ public class BlueprintServiceHttp {
 				_addCompanyBlueprintParameterTypes0);
 
 			MethodHandler methodHandler = new MethodHandler(
-				methodKey, titleMap, descriptionMap, configuration, selectedFragments, type,
-				serviceContext);
+				methodKey, titleMap, descriptionMap, configuration,
+				selectedFragments, type, serviceContext);
 
 			Object returnObj = null;
 
@@ -113,8 +113,8 @@ public class BlueprintServiceHttp {
 				_addGroupBlueprintParameterTypes1);
 
 			MethodHandler methodHandler = new MethodHandler(
-				methodKey, titleMap, descriptionMap, configuration, selectedFragments, type,
-				serviceContext);
+				methodKey, titleMap, descriptionMap, configuration,
+				selectedFragments, type, serviceContext);
 
 			Object returnObj = null;
 
@@ -497,12 +497,14 @@ public class BlueprintServiceHttp {
 
 	private static final Class<?>[] _addCompanyBlueprintParameterTypes0 =
 		new Class[] {
-			java.util.Map.class, java.util.Map.class, String.class, int.class,
+			java.util.Map.class, java.util.Map.class, String.class,
+			String.class, int.class,
 			com.liferay.portal.kernel.service.ServiceContext.class
 		};
 	private static final Class<?>[] _addGroupBlueprintParameterTypes1 =
 		new Class[] {
-			java.util.Map.class, java.util.Map.class, String.class, int.class,
+			java.util.Map.class, java.util.Map.class, String.class,
+			String.class, int.class,
 			com.liferay.portal.kernel.service.ServiceContext.class
 		};
 	private static final Class<?>[] _deleteBlueprintParameterTypes2 =
@@ -531,7 +533,7 @@ public class BlueprintServiceHttp {
 	private static final Class<?>[] _updateBlueprintParameterTypes10 =
 		new Class[] {
 			long.class, java.util.Map.class, java.util.Map.class, String.class,
-			com.liferay.portal.kernel.service.ServiceContext.class
+			String.class, com.liferay.portal.kernel.service.ServiceContext.class
 		};
 
 }
