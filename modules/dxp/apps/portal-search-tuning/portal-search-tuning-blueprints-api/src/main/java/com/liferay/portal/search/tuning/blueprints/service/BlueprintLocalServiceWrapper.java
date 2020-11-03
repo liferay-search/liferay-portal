@@ -62,8 +62,8 @@ public class BlueprintLocalServiceWrapper
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return _blueprintLocalService.addBlueprint(
-			userId, groupId, titleMap, descriptionMap, configuration, selectedFragments, type,
-			serviceContext);
+			userId, groupId, titleMap, descriptionMap, configuration,
+			selectedFragments, type, serviceContext);
 	}
 
 	/**

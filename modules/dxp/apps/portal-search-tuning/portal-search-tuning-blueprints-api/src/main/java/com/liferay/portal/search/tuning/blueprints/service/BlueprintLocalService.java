@@ -86,8 +86,7 @@ public interface BlueprintLocalService
 	public Blueprint addBlueprint(
 			long userId, long groupId, Map<Locale, String> titleMap,
 			Map<Locale, String> descriptionMap, String configuration,
-			String selectedFragments, int type,
-			ServiceContext serviceContext)
+			String selectedFragments, int type, ServiceContext serviceContext)
 		throws PortalException;
 
 	/**
@@ -366,4 +365,5 @@ public interface BlueprintLocalService
 	@Indexable(type = IndexableType.REINDEX)
 	public Blueprint updateStatus(long userId, long blueprintId, int status)
 		throws PortalException;
+
 }

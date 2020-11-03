@@ -533,7 +533,7 @@ public interface BlueprintModel
 	/**
 	 * Sets the selected fragments of this blueprint.
 	 *
-	 * @param selectedFragments the configuration of this blueprint
+	 * @param selectedFragments the selected fragments of this blueprint
 	 */
 	public void setSelectedFragments(String selectedFragments);
 

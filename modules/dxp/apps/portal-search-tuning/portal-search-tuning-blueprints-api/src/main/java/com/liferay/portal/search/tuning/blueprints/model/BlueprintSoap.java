@@ -49,6 +49,7 @@ public class BlueprintSoap implements Serializable {
 		soapModel.setTitle(model.getTitle());
 		soapModel.setDescription(model.getDescription());
 		soapModel.setConfiguration(model.getConfiguration());
+		soapModel.setSelectedFragments(model.getSelectedFragments());
 		soapModel.setType(model.getType());
 
 		return soapModel;

@@ -212,16 +212,6 @@ public class BlueprintWrapper
 	}
 
 	/**
-	 * Returns the configuration of this blueprint.
-	 *
-	 * @return the configuration of this blueprint
-	 */
-	@Override
-	public String getSelectedFragments() {
-		return model.getSelectedFragments();
-	}
-
-	/**
 	 * Returns the create date of this blueprint.
 	 *
 	 * @return the create date of this blueprint
@@ -350,6 +340,16 @@ public class BlueprintWrapper
 	@Override
 	public long getPrimaryKey() {
 		return model.getPrimaryKey();
+	}
+
+	/**
+	 * Returns the selected fragments of this blueprint.
+	 *
+	 * @return the selected fragments of this blueprint
+	 */
+	@Override
+	public String getSelectedFragments() {
+		return model.getSelectedFragments();
 	}
 
 	/**
@@ -659,16 +659,6 @@ public class BlueprintWrapper
 	}
 
 	/**
-	 * Sets the fragments of this blueprint.
-	 *
-	 * @param selectedFragments the fragments of this blueprint
-	 */
-	@Override
-	public void setSelectedFragments(String selectedFragments) {
-		model.setSelectedFragments(selectedFragments);
-	}
-
-	/**
 	 * Sets the create date of this blueprint.
 	 *
 	 * @param createDate the create date of this blueprint
@@ -783,6 +773,16 @@ public class BlueprintWrapper
 	@Override
 	public void setPrimaryKey(long primaryKey) {
 		model.setPrimaryKey(primaryKey);
+	}
+
+	/**
+	 * Sets the selected fragments of this blueprint.
+	 *
+	 * @param selectedFragments the selected fragments of this blueprint
+	 */
+	@Override
+	public void setSelectedFragments(String selectedFragments) {
+		model.setSelectedFragments(selectedFragments);
 	}
 
 	/**
