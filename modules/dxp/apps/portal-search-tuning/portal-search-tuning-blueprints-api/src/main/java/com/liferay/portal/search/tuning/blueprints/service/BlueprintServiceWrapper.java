@@ -40,7 +40,8 @@ public class BlueprintServiceWrapper
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return _blueprintService.addCompanyBlueprint(
-			titleMap, descriptionMap, configuration, selectedFragments, type, serviceContext);
+			titleMap, descriptionMap, configuration, selectedFragments, type,
+			serviceContext);
 	}
 
 	@Override
@@ -53,7 +54,8 @@ public class BlueprintServiceWrapper
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return _blueprintService.addGroupBlueprint(
-			titleMap, descriptionMap, configuration, selectedFragments, type, serviceContext);
+			titleMap, descriptionMap, configuration, selectedFragments, type,
+			serviceContext);
 	}
 
 	@Override

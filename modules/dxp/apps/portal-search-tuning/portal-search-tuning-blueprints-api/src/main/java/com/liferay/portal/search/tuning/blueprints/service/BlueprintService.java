@@ -57,12 +57,14 @@ public interface BlueprintService extends BaseService {
 	 */
 	public Blueprint addCompanyBlueprint(
 			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
-			String configuration, String selectedFragments, int type, ServiceContext serviceContext)
+			String configuration, String selectedFragments, int type,
+			ServiceContext serviceContext)
 		throws PortalException;
 
 	public Blueprint addGroupBlueprint(
 			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
-			String configuration, String selectedFragments, int type, ServiceContext serviceContext)
+			String configuration, String selectedFragments, int type,
+			ServiceContext serviceContext)
 		throws PortalException;
 
 	public Blueprint deleteBlueprint(long blueprintId) throws PortalException;

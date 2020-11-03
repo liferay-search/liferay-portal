@@ -46,7 +46,8 @@ public class BlueprintServiceUtil {
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return getService().addCompanyBlueprint(
-			titleMap, descriptionMap, configuration, selectedFragments, type, serviceContext);
+			titleMap, descriptionMap, configuration, selectedFragments, type,
+			serviceContext);
 	}
 
 	public static com.liferay.portal.search.tuning.blueprints.model.Blueprint
@@ -58,7 +59,8 @@ public class BlueprintServiceUtil {
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return getService().addGroupBlueprint(
-			titleMap, descriptionMap, configuration, selectedFragments, type, serviceContext);
+			titleMap, descriptionMap, configuration, selectedFragments, type,
+			serviceContext);
 	}
 
 	public static com.liferay.portal.search.tuning.blueprints.model.Blueprint
@@ -144,8 +146,8 @@ public class BlueprintServiceUtil {
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return getService().updateBlueprint(
-			blueprintId, titleMap, descriptionMap, configuration, selectedFragments,
-			serviceContext);
+			blueprintId, titleMap, descriptionMap, configuration,
+			selectedFragments, serviceContext);
 	}
 
 	public static BlueprintService getService() {
