@@ -16,6 +16,7 @@ package com.liferay.portal.search.tuning.blueprints.facets.internal.request.hand
 
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -40,10 +41,10 @@ import org.osgi.service.component.annotations.Component;
  * @author Petteri Karttunen
  */
 @Component(
-	immediate = true, property = "name=file_extension",
+	immediate = true, property = "name=value_aggregations",
 	service = FacetRequestHandler.class
 )
-public class FileExtensionFacetRequestHandler
+public class ValueAggregationsFacetRequestHandler
 	extends BaseFacetRequestHandler implements FacetRequestHandler {
 
 	public Optional<Parameter> getParameterOptional(
@@ -103,10 +104,10 @@ public class FileExtensionFacetRequestHandler
 
 		JSONArray valueAggregationsJsonArray =
 			handlerParametersJsonObject.getJSONArray(
-				FacetConfigurationKeys.VALUE_AGGREGATIONS.getJsonKey());
+				"aggregations");
 
 		for (String requestValue : valueArray) {
-			String[] translatedValueArray = null;
+			JSONArray translatedValuesJsonArray = null;
 
 			for (int i = 0; i < valueAggregationsJsonArray.length(); i++) {
 				try {
@@ -114,17 +115,13 @@ public class FileExtensionFacetRequestHandler
 						valueAggregationsJsonArray.getJSONObject(i);
 
 					if (jsonObject.getString(
-							FacetConfigurationKeys.VALUE_AGGREGATION_KEY.
-								getJsonKey()
+							"key"
 						).equals(
 							requestValue
 						)) {
 
-						translatedValueArray = jsonObject.getString(
-							FacetConfigurationKeys.VALUE_AGGREGATION_VALUES.
-								getJsonKey()
-						).split(
-							","
+						translatedValuesJsonArray = jsonObject.getJSONArray(
+							"values"
 						);
 
 						break;
@@ -135,8 +132,8 @@ public class FileExtensionFacetRequestHandler
 				}
 			}
 
-			if (translatedValueArray != null) {
-				Collections.addAll(values, translatedValueArray);
+			if (translatedValuesJsonArray != null && translatedValuesJsonArray.length() > 0) {
+				Collections.addAll(values, JSONUtil.toStringArray(translatedValuesJsonArray));
 			}
 			else {
 				values.add(requestValue);
@@ -170,16 +167,16 @@ public class FileExtensionFacetRequestHandler
 
 		if ((handlerParametersJsonObject == null) ||
 			!handlerParametersJsonObject.has(
-				FacetConfigurationKeys.VALUE_AGGREGATIONS.getJsonKey())) {
+				"aggregations")) {
 
 			messages.addMessage(
 				new Message(
 					Severity.ERROR, "core",
 					"core.error.undefined-facet-handler-aggregations",
-					"File extension facet handler's value mappings are not " +
+					"Value aggregator facet handler's value mappings are not " +
 						"defined",
 					null, configurationJsonObject,
-					FacetConfigurationKeys.VALUE_AGGREGATIONS.getJsonKey(),
+					"aggregations",
 					null));
 
 			valid = false;
@@ -189,6 +186,6 @@ public class FileExtensionFacetRequestHandler
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
-		FileExtensionFacetRequestHandler.class);
+		ValueAggregationsFacetRequestHandler.class);
 
 }

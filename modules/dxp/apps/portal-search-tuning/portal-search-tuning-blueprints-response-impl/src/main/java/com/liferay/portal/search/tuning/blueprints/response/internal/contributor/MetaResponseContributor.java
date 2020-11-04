@@ -28,6 +28,7 @@ import com.liferay.portal.search.tuning.blueprints.response.constants.JSONRespon
 import com.liferay.portal.search.tuning.blueprints.response.spi.contributor.ResponseContributor;
 
 import java.util.IllegalFormatException;
+import java.util.ResourceBundle;
 
 import org.osgi.service.component.annotations.Component;
 
@@ -44,6 +45,7 @@ public class MetaResponseContributor implements ResponseContributor {
 	public void contribute(
 		JSONObject responseJsonObject, SearchResponse searchResponse,
 		Blueprint blueprint, BlueprintsAttributes blueprintsAttributes,
+		ResourceBundle resourceBundle,
 		Messages messages) {
 
 		responseJsonObject.put(

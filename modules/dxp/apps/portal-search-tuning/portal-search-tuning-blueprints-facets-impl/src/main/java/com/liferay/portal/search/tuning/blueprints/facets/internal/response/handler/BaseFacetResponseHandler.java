@@ -14,10 +14,12 @@
 
 package com.liferay.portal.search.tuning.blueprints.facets.internal.response.handler;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
+import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.search.facet.Facet;
 import com.liferay.portal.kernel.search.facet.collector.FacetCollector;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -32,6 +34,7 @@ import com.liferay.portal.search.tuning.blueprints.message.Messages;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.ResourceBundle;
 
 /**
  * @author Petteri Karttunen
@@ -41,7 +44,8 @@ public abstract class BaseFacetResponseHandler implements FacetResponseHandler {
 	@Override
 	public Optional<JSONObject> getResultOptional(
 		AggregationResult aggregationResult,
-		BlueprintsAttributes blueprintsAttributes, Messages messages,
+		BlueprintsAttributes blueprintsAttributes, ResourceBundle resourceBundle,
+		Messages messages,
 		JSONObject configurationJsonObject) {
 
 		TermsAggregationResult termsAggregationResult =
@@ -50,10 +54,17 @@ public abstract class BaseFacetResponseHandler implements FacetResponseHandler {
 		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
 
 		for (Bucket bucket : termsAggregationResult.getBuckets()) {
+			
+			long frequency = bucket.getDocCount();
+			
 			JSONObject jsonObject = JSONUtil.put(
-				FacetJSONResponseKeys.FREQUENCY, bucket.getDocCount());
+				FacetJSONResponseKeys.FREQUENCY, frequency);
 
-			jsonObject.put(FacetJSONResponseKeys.VALUE, bucket.getKey());
+			String value = bucket.getKey();
+			
+			jsonObject.put(FacetJSONResponseKeys.VALUE, value);
+
+			jsonObject.put(FacetJSONResponseKeys.TEXT, getText(value, frequency, resourceBundle));
 
 			jsonArray.put(jsonObject);
 		}
@@ -62,20 +73,32 @@ public abstract class BaseFacetResponseHandler implements FacetResponseHandler {
 			return Optional.empty();
 		}
 
-		return createResultObject(jsonArray, configurationJsonObject);
+		return createResultObject(jsonArray, configurationJsonObject, resourceBundle);
 	}
 
 	protected Optional<JSONObject> createResultObject(
-		JSONArray jsonArray, JSONObject configurationJsonObject) {
+		JSONArray jsonArray, JSONObject configurationJsonObject, 
+		ResourceBundle resourceBundle) {
 
+		String parameterName = configurationJsonObject.getString(
+				FacetConfigurationKeys.PARAMETER_NAME.getJsonKey());
+		
 		return Optional.of(
 			JSONUtil.put(
 				FacetJSONResponseKeys.PARAMETER_NAME,
-				configurationJsonObject.getString(
-					FacetConfigurationKeys.PARAMETER_NAME.getJsonKey())
+				parameterName
+			).put(
+				FacetJSONResponseKeys.ANY_OPTION, 
+				getAnyOption(parameterName, resourceBundle)
 			).put(
 				FacetJSONResponseKeys.VALUES, jsonArray
 			));
+	}
+	
+	protected String getAnyOption(
+			String parameterName, ResourceBundle resourceBundle) {
+
+		return LanguageUtil.get(resourceBundle, "any-" + StringUtil.toLowerCase(parameterName));
 	}
 
 	protected FacetCollector getFacetCollector(
@@ -95,5 +118,23 @@ public abstract class BaseFacetResponseHandler implements FacetResponseHandler {
 
 		return null;
 	}
+		
+	protected String getText( 
+			String value, long frequency, ResourceBundle resourceBundle) {
 
+			value = StringUtil.toLowerCase(value);
+
+			StringBundler sb = new StringBundler(4);
+
+			if (resourceBundle == null) {
+				sb.append(value);
+			} else {
+				sb.append(LanguageUtil.get(resourceBundle, value));
+			}
+			sb.append(" (");
+			sb.append(String.valueOf(frequency));
+			sb.append(")");
+
+			return sb.toString();
+	}
 }

@@ -22,12 +22,11 @@ import java.util.stream.Stream;
  */
 public enum FacetConfigurationKeys {
 
-	FIELD("field"), FILTER_MODE("filter_mode"), HANDLER("handler"),
+	AGGREGATION_TYPE("aggregation_type"), FIELD("field"), 
+	FILTER_MODE("filter_mode"), HANDLER("handler"),
 	HANDLER_PARAMETERS("handler_parameters"), MULTI_VALUE("multi_value"),
 	MULTI_VALUE_OPERATOR("multi_value_operator"),
-	PARAMETER_NAME("parameter_name"), SIZE("size"),
-	VALUE_AGGREGATION_KEY("key"), VALUE_AGGREGATION_VALUES("values"),
-	VALUE_AGGREGATIONS("aggregations");
+	PARAMETER_NAME("parameter_name"), SIZE("size");
 
 	public static final FacetConfigurationKeys findByJsonKey(String jsonKey) {
 		Stream<FacetConfigurationKeys> facetConfigurationKeysStream =

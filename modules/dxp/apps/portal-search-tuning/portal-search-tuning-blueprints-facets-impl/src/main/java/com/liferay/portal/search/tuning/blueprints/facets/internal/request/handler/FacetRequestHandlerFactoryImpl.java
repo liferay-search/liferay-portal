@@ -14,6 +14,7 @@
 
 package com.liferay.portal.search.tuning.blueprints.facets.internal.request.handler;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -45,8 +46,15 @@ public class FacetRequestHandlerFactoryImpl
 			serviceComponentReference = _facetRequestHandlers.get(name);
 
 		if (serviceComponentReference == null) {
-			throw new IllegalArgumentException(
-				"No registered facet request handler for " + name);
+			
+			StringBundler sb = new StringBundler();
+			
+			sb.append("No registered facet request handler for ");
+			sb.append(name);
+			sb.append(". Falling back to default");
+			_log.info(sb.toString());
+			
+			serviceComponentReference = _facetRequestHandlers.get("default");
 		}
 
 		return serviceComponentReference.getServiceComponent();

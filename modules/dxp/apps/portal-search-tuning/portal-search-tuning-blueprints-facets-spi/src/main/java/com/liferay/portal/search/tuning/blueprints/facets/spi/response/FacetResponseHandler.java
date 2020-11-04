@@ -20,6 +20,7 @@ import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttribut
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 
 import java.util.Optional;
+import java.util.ResourceBundle;
 
 /**
  * @author Petteri Karttunen
@@ -28,7 +29,9 @@ public interface FacetResponseHandler {
 
 	public Optional<JSONObject> getResultOptional(
 		AggregationResult aggregationResult,
-		BlueprintsAttributes blueprintsAttributes, Messages messages,
+		BlueprintsAttributes blueprintsAttributes,
+		ResourceBundle resourceBundle,
+		Messages messages,
 		JSONObject configurationJsonObject);
 
 }

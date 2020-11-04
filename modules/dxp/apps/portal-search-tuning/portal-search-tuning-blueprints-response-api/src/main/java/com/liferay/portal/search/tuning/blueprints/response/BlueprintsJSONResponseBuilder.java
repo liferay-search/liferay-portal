@@ -20,14 +20,18 @@ import com.liferay.portal.search.searcher.SearchResponse;
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 
+import java.util.ResourceBundle;
+
 /**
  * @author Petteri Karttunen
  */
-public interface BlueprintsResponseBuilder {
+public interface BlueprintsJSONResponseBuilder {
 
 	public JSONObject buildJSONObject(
 			SearchResponse searchResponse,
-			BlueprintsAttributes blueprintsAttributes, Messages messages,
+			BlueprintsAttributes blueprintsAttributes, 
+			ResourceBundle resourceBundle,
+			Messages messages,
 			long blueprintId)
 		throws PortalException;
 

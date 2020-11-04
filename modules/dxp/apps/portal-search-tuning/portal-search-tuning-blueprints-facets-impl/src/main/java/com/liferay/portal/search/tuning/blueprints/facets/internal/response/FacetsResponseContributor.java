@@ -33,6 +33,7 @@ import com.liferay.portal.search.tuning.blueprints.util.BlueprintHelper;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.ResourceBundle;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -47,17 +48,19 @@ public class FacetsResponseContributor implements ResponseContributor {
 	public void contribute(
 		JSONObject responseJsonObject, SearchResponse searchResponse,
 		Blueprint blueprint, BlueprintsAttributes blueprintsAttributes,
+		ResourceBundle resourceBundle,
 		Messages messages) {
 
 		responseJsonObject.put(
 			FacetJSONResponseKeys.FACETS,
 			_getFacetsJSONArray(
-				searchResponse, blueprint, blueprintsAttributes, messages));
+				searchResponse, blueprint, blueprintsAttributes, resourceBundle, messages));
 	}
 
 	private JSONArray _getFacetsJSONArray(
 		SearchResponse searchResponse, Blueprint blueprint,
-		BlueprintsAttributes blueprintsAttributes, Messages messages) {
+		BlueprintsAttributes blueprintsAttributes, ResourceBundle resourceBundle,
+		Messages messages) {
 
 		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
 
@@ -77,7 +80,8 @@ public class FacetsResponseContributor implements ResponseContributor {
 		}
 
 		_processFacets(
-			jsonArray, aggregationResultsMap, blueprintsAttributes, messages,
+			jsonArray, aggregationResultsMap, blueprintsAttributes, resourceBundle, 
+			messages,
 			configurationJsonArrayOptional.get());
 
 		return jsonArray;
@@ -86,7 +90,8 @@ public class FacetsResponseContributor implements ResponseContributor {
 	private void _processFacets(
 		JSONArray jsonArray,
 		Map<String, AggregationResult> aggregationResultsMap,
-		BlueprintsAttributes blueprintsAttributes, Messages messages,
+		BlueprintsAttributes blueprintsAttributes, ResourceBundle resourceBundle, 
+		Messages messages,
 		JSONArray configurationJsonArray) {
 
 		for (int i = 0; i < configurationJsonArray.length(); i++) {
@@ -116,7 +121,8 @@ public class FacetsResponseContributor implements ResponseContributor {
 
 				Optional<JSONObject> resultOptional =
 					facetResponseHandler.getResultOptional(
-						entry.getValue(), blueprintsAttributes, messages,
+						entry.getValue(), blueprintsAttributes, resourceBundle,
+						messages,
 						configurationJsonObject);
 
 				if (resultOptional.isPresent()) {

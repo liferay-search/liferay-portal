@@ -27,11 +27,12 @@ import com.liferay.portal.search.tuning.blueprints.engine.component.ServiceCompo
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.poc.util.POCMockUtil;
-import com.liferay.portal.search.tuning.blueprints.response.BlueprintsResponseBuilder;
+import com.liferay.portal.search.tuning.blueprints.response.BlueprintsJSONResponseBuilder;
 import com.liferay.portal.search.tuning.blueprints.response.spi.contributor.ResponseContributor;
 import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
 
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.osgi.service.component.annotations.Component;
@@ -42,14 +43,16 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 /**
  * @author Petteri Karttunen
  */
-@Component(immediate = true, service = BlueprintsResponseBuilder.class)
-public class BlueprintsResponseBuilderImpl
-	implements BlueprintsResponseBuilder {
+@Component(immediate = true, service = BlueprintsJSONResponseBuilder.class)
+public class BlueprintsJSONResponseBuilderImpl
+	implements BlueprintsJSONResponseBuilder {
 
 	@Override
 	public JSONObject buildJSONObject(
 			SearchResponse searchResponse,
-			BlueprintsAttributes blueprintsAttributes, Messages messages,
+			BlueprintsAttributes blueprintsAttributes, 
+			ResourceBundle resourceBundle,
+			Messages messages,
 			long blueprintId)
 		throws PortalException {
 
@@ -78,7 +81,7 @@ public class BlueprintsResponseBuilderImpl
 
 			responseContributor.contribute(
 				responseJsonObject, searchResponse, blueprint,
-				blueprintsAttributes, messages);
+				blueprintsAttributes, resourceBundle, messages);
 		}
 
 		if (_log.isDebugEnabled()) {
@@ -146,7 +149,7 @@ public class BlueprintsResponseBuilderImpl
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
-		BlueprintsResponseBuilderImpl.class);
+		BlueprintsJSONResponseBuilderImpl.class);
 
 	@Reference
 	private BlueprintService _blueprintService;

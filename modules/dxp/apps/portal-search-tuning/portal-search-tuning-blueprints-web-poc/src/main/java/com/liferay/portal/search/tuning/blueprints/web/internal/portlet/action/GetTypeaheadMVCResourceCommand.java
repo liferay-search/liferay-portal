@@ -23,21 +23,25 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.JSONPortletResponseUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCResourceCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCResourceCommand;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.ResourceBundleUtil;
+import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.search.searcher.SearchResponse;
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributesBuilder;
 import com.liferay.portal.search.tuning.blueprints.engine.exception.BlueprintsEngineException;
 import com.liferay.portal.search.tuning.blueprints.engine.util.BlueprintsEngineHelper;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.response.BlueprintsResponseBuilder;
+import com.liferay.portal.search.tuning.blueprints.response.BlueprintsJSONResponseBuilder;
 import com.liferay.portal.search.tuning.blueprints.response.constants.JSONResponseKeys;
 import com.liferay.portal.search.tuning.blueprints.util.attributes.BlueprintsAttributesHelper;
 import com.liferay.portal.search.tuning.blueprints.web.internal.constants.BlueprintsWebPortletKeys;
 import com.liferay.portal.search.tuning.blueprints.web.internal.constants.ResourceRequestKeys;
 import com.liferay.portal.search.tuning.blueprints.web.internal.portlet.preferences.BlueprintsWebPortletPreferences;
 import com.liferay.portal.search.tuning.blueprints.web.internal.portlet.preferences.BlueprintsWebPortletPreferencesImpl;
-import com.liferay.portal.search.tuning.blueprints.web.internal.util.BlueprintsLocalizationHelper;
+
+import java.util.ResourceBundle;
 
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
@@ -85,10 +89,17 @@ public class GetTypeaheadMVCResourceCommand extends BaseMVCResourceCommand {
 					resourceRequest, resourceResponse, blueprintId);
 
 			Messages responseMessages = new Messages();
+			
+			ThemeDisplay themeDisplay =
+					(ThemeDisplay)resourceRequest.getAttribute(
+						WebKeys.THEME_DISPLAY);
+
+		    ResourceBundle resourceBundle =  ResourceBundleUtil.getBundle(
+		            "content.Language", themeDisplay.getLocale(), getClass());
 
 			responseJsonObject = _blueprintsResponseBuilder.buildJSONObject(
-				searchResponse, blueprintsResponseAttributes, responseMessages,
-				blueprintId);
+				searchResponse, blueprintsResponseAttributes, resourceBundle,
+				responseMessages, blueprintId); 
 		}
 		catch (JSONException jsonException) {
 			_log.error(jsonException.getMessage(), jsonException);
@@ -157,10 +168,7 @@ public class GetTypeaheadMVCResourceCommand extends BaseMVCResourceCommand {
 	private BlueprintsEngineHelper _blueprintsEngineHelper;
 
 	@Reference
-	private BlueprintsLocalizationHelper _blueprintsLocalizationHelper;
-
-	@Reference
-	private BlueprintsResponseBuilder _blueprintsResponseBuilder;
+	private BlueprintsJSONResponseBuilder _blueprintsResponseBuilder;
 
 	@Reference
 	private Portal _portal;

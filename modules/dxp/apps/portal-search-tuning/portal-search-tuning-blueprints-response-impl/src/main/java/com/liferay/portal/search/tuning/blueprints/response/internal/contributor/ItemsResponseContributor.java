@@ -19,6 +19,7 @@ import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
+import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.User;
@@ -49,6 +50,7 @@ import com.liferay.portal.search.tuning.blueprints.response.spi.result.ResultCon
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.osgi.service.component.annotations.Component;
@@ -69,11 +71,12 @@ public class ItemsResponseContributor implements ResponseContributor {
 	public void contribute(
 		JSONObject responseJsonObject, SearchResponse searchResponse,
 		Blueprint blueprint, BlueprintsAttributes blueprintsAttributes,
+		ResourceBundle resourceBundle,
 		Messages messages) {
 
 		responseJsonObject.put(
 			JSONResponseKeys.ITEMS,
-			_getItemsJSONArray(searchResponse, blueprintsAttributes));
+			_getItemsJSONArray(searchResponse, blueprintsAttributes, resourceBundle));
 	}
 
 	@Reference(
@@ -131,7 +134,7 @@ public class ItemsResponseContributor implements ResponseContributor {
 	private void _executeResultContributors(
 		JSONObject resultJsonObject, Document document,
 		ResultBuilder resultBuilder,
-		BlueprintsAttributes blueprintsAttributes) {
+		BlueprintsAttributes blueprintsAttributes, ResourceBundle resourceBundle) {
 
 		for (Map.Entry<String, ServiceComponentReference<ResultContributor>>
 				entry : _resultContributors.entrySet()) {
@@ -143,13 +146,14 @@ public class ItemsResponseContributor implements ResponseContributor {
 
 			resultContributor.contribute(
 				resultJsonObject, document, resultBuilder,
-				blueprintsAttributes);
+				blueprintsAttributes, resourceBundle);
 		}
 	}
 
 	private JSONArray _getItemsJSONArray(
 		SearchResponse searchResponse,
-		BlueprintsAttributes blueprintsAttributes) {
+		BlueprintsAttributes blueprintsAttributes, 
+		ResourceBundle resourceBundle) {
 
 		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
 
@@ -196,13 +200,12 @@ public class ItemsResponseContributor implements ResponseContributor {
 					"title",
 					resultBuilder.getTitle(document, blueprintsAttributes)
 				).put(
-					"type",
-					StringUtil.toLowerCase(resultBuilder.getType(document))
-				).put(
 					"viewURL",
 					resultBuilder.getViewURL(document, blueprintsAttributes)
 				);
 
+				_setType(resultJsonObject, resultBuilder.getType(document), resourceBundle);
+				
 				_setThumbnail(
 					resultJsonObject, resultBuilder, document,
 					blueprintsAttributes);
@@ -223,7 +226,7 @@ public class ItemsResponseContributor implements ResponseContributor {
 
 				_executeResultContributors(
 					resultJsonObject, document, resultBuilder,
-					blueprintsAttributes);
+					blueprintsAttributes, resourceBundle);
 
 				jsonArray.put(resultJsonObject);
 			}
@@ -412,6 +415,16 @@ public class ItemsResponseContributor implements ResponseContributor {
 			"imageSrc",
 			resultBuilder.getThumbnail(document, blueprintsAttributes));
 	}
+	
+	private void _setType(
+			JSONObject resultJsonObject,  String type, 
+			ResourceBundle resourceBundle) {
+	
+		resultJsonObject.put(
+				"type",
+				_language.get(resourceBundle, StringUtil.toLowerCase(type)));				
+	}
+	
 
 	private void _setUserPortrait(
 			JSONObject resultJsonObject, Document document,
@@ -487,6 +500,9 @@ public class ItemsResponseContributor implements ResponseContributor {
 	private static final Log _log = LogFactoryUtil.getLog(
 		ItemsResponseContributor.class);
 
+	@Reference
+	private Language _language;
+	
 	@Reference
 	private ResultBuilderFactory _resultBuilderFactory;
 

@@ -40,6 +40,7 @@ import com.liferay.portal.search.tuning.blueprints.message.Severity;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.ResourceBundle;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -57,7 +58,9 @@ public class DDMStructureNameFacetHandler
 	@Override
 	public Optional<JSONObject> getResultOptional(
 		AggregationResult aggregationResult,
-		BlueprintsAttributes blueprintsAttributes, Messages messages,
+		BlueprintsAttributes blueprintsAttributes,
+		ResourceBundle resourceBundle,
+		Messages messages,
 		JSONObject configurationJsonObject) {
 
 		TermsAggregationResult termsAggregationResult =
@@ -68,7 +71,7 @@ public class DDMStructureNameFacetHandler
 		for (Bucket bucket : termsAggregationResult.getBuckets()) {
 			try {
 				JSONObject jsonObject = _getDDMStructureJSONObject(
-					bucket, blueprintsAttributes.getLocale());
+					bucket, resourceBundle, blueprintsAttributes.getLocale());
 
 				jsonArray.put(jsonObject);
 			}
@@ -86,7 +89,7 @@ public class DDMStructureNameFacetHandler
 			}
 		}
 
-		return createResultObject(jsonArray, configurationJsonObject);
+		return createResultObject(jsonArray, configurationJsonObject, resourceBundle);
 	}
 
 	private DDMStructure _getDDMStructure(String ddmStructureKey)
@@ -103,21 +106,30 @@ public class DDMStructureNameFacetHandler
 		return structures.get(0);
 	}
 
-	private JSONObject _getDDMStructureJSONObject(Bucket bucket, Locale locale)
+	private JSONObject _getDDMStructureJSONObject(Bucket bucket,
+			ResourceBundle resourceBundle, Locale locale)
 		throws PortalException {
 
-		DDMStructure ddmStructure = _getDDMStructure(bucket.getKey());
+		String value =  bucket.getKey();
+
+		DDMStructure ddmStructure = _getDDMStructure(value);
 
 		Group group = _groupLocalService.getGroup(ddmStructure.getGroupId());
 
+		long frequency = bucket.getDocCount();
+
+		String name = ddmStructure.getName(locale, true);
+				
 		return JSONUtil.put(
 			FacetJSONResponseKeys.FREQUENCY, bucket.getDocCount()
 		).put(
 			FacetJSONResponseKeys.GROUP_NAME, group.getName(locale, true)
 		).put(
-			FacetJSONResponseKeys.NAME, ddmStructure.getName(locale, true)
+			FacetJSONResponseKeys.NAME, name
 		).put(
-			FacetJSONResponseKeys.VALUE, bucket.getKey()
+			FacetJSONResponseKeys.TEXT, getText(name, frequency, null)
+		).put(
+			FacetJSONResponseKeys.VALUE, value
 		);
 	}
 

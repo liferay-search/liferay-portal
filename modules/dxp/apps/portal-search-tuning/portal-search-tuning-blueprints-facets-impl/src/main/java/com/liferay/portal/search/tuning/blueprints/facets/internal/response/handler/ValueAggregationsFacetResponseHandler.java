@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -48,16 +49,18 @@ import org.osgi.service.component.annotations.Component;
  * @author Petteri Karttunen
  */
 @Component(
-	immediate = true, property = "name=file_extension",
+	immediate = true, property = "name=value_aggregations",
 	service = FacetResponseHandler.class
 )
-public class FileExtensionFacetResponseHandler
+public class ValueAggregationsFacetResponseHandler
 	extends BaseFacetResponseHandler implements FacetResponseHandler {
 
 	@Override
 	public Optional<JSONObject> getResultOptional(
 		AggregationResult aggregationResult,
-		BlueprintsAttributes blueprintsAttributes, Messages messages,
+		BlueprintsAttributes blueprintsAttributes, 
+		ResourceBundle resourceBundle,
+		Messages messages,
 		JSONObject configurationJsonObject) {
 
 		TermsAggregationResult termsAggregationResult =
@@ -71,8 +74,7 @@ public class FileExtensionFacetResponseHandler
 					FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey());
 
 			JSONArray aggregationsJsonArray =
-				handlerParametersJsonObject.getJSONArray(
-					FacetConfigurationKeys.VALUE_AGGREGATIONS.getJsonKey());
+				handlerParametersJsonObject.getJSONArray("aggregations");
 
 			Map<String, Integer> termsMap = new HashMap<>();
 
@@ -82,22 +84,20 @@ public class FileExtensionFacetResponseHandler
 				}
 
 				boolean mappingFound = false;
-
+				
 				for (int i = 0; i < aggregationsJsonArray.length(); i++) {
 					JSONObject aggregationJsonObject =
 						aggregationsJsonArray.getJSONObject(i);
 
-					String key = aggregationJsonObject.getString(
-						FacetConfigurationKeys.VALUE_AGGREGATION_KEY.
-							getJsonKey());
-					String[] values = aggregationJsonObject.getString(
-						FacetConfigurationKeys.VALUE_AGGREGATION_VALUES.
-							getJsonKey()
-					).split(
-						","
+					String key = aggregationJsonObject.getString("key");
+					JSONArray valuesJsonArray = aggregationJsonObject.getJSONArray(
+							"values"
 					);
 
-					for (String val : values) {
+					for (int j = 0; j < valuesJsonArray.length(); j++) {
+
+						String val = valuesJsonArray.getString(j);
+						
 						if (StringUtil.equals(val, bucket.getKey())) {
 							if (termsMap.get(key) != null) {
 								int newValue =
@@ -122,7 +122,7 @@ public class FileExtensionFacetResponseHandler
 
 			Map<String, Integer> termMapOrdered = _sort(termsMap);
 
-			jsonArray = _getTermsJSONArray(termMapOrdered);
+			jsonArray = _getTermsJSONArray(termMapOrdered, resourceBundle);
 		}
 		catch (Exception exception) {
 			messages.addMessage(
@@ -134,20 +134,27 @@ public class FileExtensionFacetResponseHandler
 			_log.error(exception.getMessage(), exception);
 		}
 
-		return createResultObject(jsonArray, configurationJsonObject);
+		return createResultObject(jsonArray, configurationJsonObject, resourceBundle);
 	}
 
-	private JSONArray _getTermsJSONArray(Map<String, Integer> termsMap) {
+	private JSONArray _getTermsJSONArray(Map<String, Integer> termsMap, ResourceBundle resourceBundle) {
 		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
 
 		for (Map.Entry<String, Integer> entry : termsMap.entrySet()) {
+			
+			long frequency = entry.getValue();
+
+			String value =  entry.getKey();
+			
 			jsonArray.put(
 				JSONUtil.put(
-					FacetJSONResponseKeys.FREQUENCY, entry.getValue()
+					FacetJSONResponseKeys.FREQUENCY, frequency
 				).put(
-					FacetJSONResponseKeys.NAME, entry.getKey()
+					FacetJSONResponseKeys.NAME, value
 				).put(
-					FacetJSONResponseKeys.VALUE, entry.getKey()
+					FacetJSONResponseKeys.TEXT, getText(value, frequency, resourceBundle)
+				).put(
+					FacetJSONResponseKeys.VALUE, value
 				));
 		}
 
@@ -171,6 +178,6 @@ public class FileExtensionFacetResponseHandler
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
-		FileExtensionFacetResponseHandler.class);
+		ValueAggregationsFacetResponseHandler.class);
 
 }

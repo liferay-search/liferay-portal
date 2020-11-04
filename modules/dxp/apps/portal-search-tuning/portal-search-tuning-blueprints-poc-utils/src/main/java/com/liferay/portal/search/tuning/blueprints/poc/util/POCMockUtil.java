@@ -59,17 +59,31 @@ public class POCMockUtil {
 		JSONArray facetsConfigurationJsonArray =
 			JSONFactoryUtil.createJSONArray();
 
-		JSONObject facetConfigurationJsonObject =
+		JSONObject jsonObject1 =
 			JSONFactoryUtil.createJSONObject();
 
-		facetConfigurationJsonObject.put(
-			"aggregation_name", "termsAggregation");
-		facetConfigurationJsonObject.put("field", "assetTagNames.raw");
-		facetConfigurationJsonObject.put("filter_mode", "PRE");
-		facetConfigurationJsonObject.put("parameter_name", "assetTagNames");
+		jsonObject1.put("field", "assetTagNames.raw");
+		jsonObject1.put("filter_mode", "PRE");
+		jsonObject1.put("parameter_name", "assetTagNames");
 
-		facetsConfigurationJsonArray.put(facetConfigurationJsonObject);
+		facetsConfigurationJsonArray.put(jsonObject1);
 
+		JSONObject jsonObject2 =
+				JSONFactoryUtil.createJSONObject();
+
+		jsonObject2.put("field", "assetCategoryIds");
+		jsonObject2.put("filter_mode", "POST");
+		jsonObject2.put("parameter_name", "treeTest");
+		jsonObject2.put("handler", "category_tree");
+
+		JSONObject jsonObject3 =
+				JSONFactoryUtil.createJSONObject();
+		jsonObject3.put("root_vocabulary_id", "43604");
+
+		jsonObject2.put("handler_parameters", jsonObject3);
+		
+		facetsConfigurationJsonArray.put(jsonObject2);		
+		
 		bluePrintJsonObject.put(
 				"facets_configuration",
 				facetsConfigurationJsonArray);
