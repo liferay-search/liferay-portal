@@ -18,6 +18,8 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.document.Document;
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
 
+import java.util.ResourceBundle;
+
 /**
  * @author Petteri Karttunen
  */
@@ -25,6 +27,7 @@ public interface ResultContributor {
 
 	public void contribute(
 		JSONObject responseJsonObject, Document document,
-		ResultBuilder resultBuilder, BlueprintsAttributes blueprintsAttributes);
+		ResultBuilder resultBuilder, BlueprintsAttributes blueprintsAttributes,
+		ResourceBundle resourceBundle);
 
 }

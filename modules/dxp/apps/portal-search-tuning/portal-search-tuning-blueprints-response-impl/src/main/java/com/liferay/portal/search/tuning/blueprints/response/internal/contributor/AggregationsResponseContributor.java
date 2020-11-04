@@ -36,6 +36,7 @@ import com.liferay.portal.search.tuning.blueprints.util.BlueprintHelper;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.ResourceBundle;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -53,6 +54,7 @@ public class AggregationsResponseContributor implements ResponseContributor {
 	public void contribute(
 		JSONObject responseJsonObject, SearchResponse searchResponse,
 		Blueprint blueprint, BlueprintsAttributes blueprintsAttributes,
+		ResourceBundle resourceBundle,
 		Messages messages) {
 
 		responseJsonObject.put(

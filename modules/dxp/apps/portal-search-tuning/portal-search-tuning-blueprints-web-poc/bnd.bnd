@@ -2,3 +2,5 @@ Bundle-Name: Liferay Portal Search Tuning Blueprints Web POC
 Bundle-SymbolicName: com.liferay.portal.search.tuning.blueprints.web.poc
 Bundle-Version: 1.0.0
 Web-ContextPath: /portal-search-tuning-blueprints-web-poc
+-liferay-aggregate-resource-bundles: \
+    com.liferay.portal.search.tuning.blueprints.lang

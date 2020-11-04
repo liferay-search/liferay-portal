@@ -23,6 +23,8 @@ import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.response.constants.JSONResponseKeys;
 import com.liferay.portal.search.tuning.blueprints.response.spi.contributor.ResponseContributor;
 
+import java.util.ResourceBundle;
+
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -38,6 +40,7 @@ public class SuggestionsResponseContributor implements ResponseContributor {
 	public void contribute(
 		JSONObject responseJsonObject, SearchResponse searchResponse,
 		Blueprint blueprint, BlueprintsAttributes blueprintsAttributes,
+		ResourceBundle resourceBundle,	
 		Messages messages) {
 
 		// TODO: Waiting for suggest support in SearchRequest & SearchResponse

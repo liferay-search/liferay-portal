@@ -14,9 +14,7 @@
 
 package com.liferay.portal.search.tuning.blueprints.web.internal.portlet.action;
 
-import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
@@ -27,26 +25,23 @@ import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCResourceCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCResourceCommand;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.Portal;
-import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.search.searcher.SearchResponse;
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributesBuilder;
 import com.liferay.portal.search.tuning.blueprints.engine.exception.BlueprintsEngineException;
 import com.liferay.portal.search.tuning.blueprints.engine.util.BlueprintsEngineHelper;
-import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetJSONResponseKeys;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.response.BlueprintsResponseBuilder;
+import com.liferay.portal.search.tuning.blueprints.response.BlueprintsJSONResponseBuilder;
 import com.liferay.portal.search.tuning.blueprints.response.constants.JSONResponseKeys;
 import com.liferay.portal.search.tuning.blueprints.util.attributes.BlueprintsAttributesHelper;
 import com.liferay.portal.search.tuning.blueprints.web.internal.constants.BlueprintsWebPortletKeys;
 import com.liferay.portal.search.tuning.blueprints.web.internal.constants.ResourceRequestKeys;
 import com.liferay.portal.search.tuning.blueprints.web.internal.portlet.preferences.BlueprintsWebPortletPreferences;
 import com.liferay.portal.search.tuning.blueprints.web.internal.portlet.preferences.BlueprintsWebPortletPreferencesImpl;
-import com.liferay.portal.search.tuning.blueprints.web.internal.util.BlueprintsLocalizationHelper;
 
-import java.util.Locale;
+import java.util.ResourceBundle;
 
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
@@ -91,11 +86,17 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 
 			Messages responseMessages = new Messages();
 
-			responseJsonObject = _blueprintsResponseBuilder.buildJSONObject(
-				searchResponse, blueprintsResponseAttributes, responseMessages,
-				blueprintId);
+			ThemeDisplay themeDisplay =
+					(ThemeDisplay)resourceRequest.getAttribute(
+						WebKeys.THEME_DISPLAY);
 
-			_processResults(resourceRequest, responseJsonObject);
+		    ResourceBundle resourceBundle =  ResourceBundleUtil.getBundle(
+		            "content.Language", themeDisplay.getLocale(), getClass());
+
+			responseJsonObject = _blueprintsJSONResponseBuilder.buildJSONObject(
+				searchResponse, blueprintsResponseAttributes, resourceBundle,
+				responseMessages,
+				blueprintId);
 		}
 		catch (JSONException jsonException) {
 			_log.error(jsonException.getMessage(), jsonException);
@@ -156,92 +157,6 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 		return blueprintsWebPortletPreferences.getSearchBlueprintId();
 	}
 
-	private void _localizeFacets(
-		JSONObject searchResultsJsonObject, Locale locale) {
-
-		if (!searchResultsJsonObject.has(FacetJSONResponseKeys.FACETS)) {
-			return;
-		}
-
-		JSONArray facetsJsonArray = searchResultsJsonObject.getJSONArray(
-			FacetJSONResponseKeys.FACETS);
-
-		for (int i = 0; i < facetsJsonArray.length(); i++) {
-			JSONObject facetJsonObject = facetsJsonArray.getJSONObject(i);
-
-			facetJsonObject.put(
-				"anyOption",
-				_blueprintsLocalizationHelper.get(
-					locale,
-					"any-" +
-						facetJsonObject.getString(
-							FacetJSONResponseKeys.PARAMETER_NAME
-						).toLowerCase()));
-
-			JSONArray facetValuesJsonArray = facetJsonObject.getJSONArray(
-				FacetConfigurationKeys.VALUE_AGGREGATION_VALUES.getJsonKey());
-
-			for (int j = 0; j < facetValuesJsonArray.length(); j++) {
-				JSONObject valueJsonObject = facetValuesJsonArray.getJSONObject(
-					j);
-
-				String value = valueJsonObject.getString(
-					FacetJSONResponseKeys.VALUE);
-
-				value = StringUtil.toLowerCase(value);
-
-				StringBundler sb = new StringBundler(4);
-
-				sb.append(_blueprintsLocalizationHelper.get(locale, value));
-				sb.append(" (");
-				sb.append(
-					valueJsonObject.getString(FacetJSONResponseKeys.FREQUENCY));
-				sb.append(")");
-
-				valueJsonObject.put("text", sb.toString());
-			}
-		}
-	}
-
-	private void _localizeResultItemType(
-		JSONObject responseJsonObject, Locale locale) {
-
-		JSONArray itemsJsonArray = responseJsonObject.getJSONArray(
-			JSONResponseKeys.ITEMS);
-
-		for (int i = 0; i < itemsJsonArray.length(); i++) {
-			JSONObject itemJsonObject = itemsJsonArray.getJSONObject(i);
-
-			String type = itemJsonObject.getString("type");
-
-			type = StringUtil.toLowerCase(type);
-
-			itemsJsonArray.getJSONObject(
-				i
-			).put(
-				"type", _blueprintsLocalizationHelper.get(locale, type)
-			);
-		}
-	}
-
-	private void _processResults(
-		ResourceRequest resourceRequest, JSONObject responseJsonObject) {
-
-		if (responseJsonObject.getJSONArray(
-				JSONResponseKeys.ITEMS
-			).length() > 0) {
-
-			ThemeDisplay themeDisplay =
-				(ThemeDisplay)resourceRequest.getAttribute(
-					WebKeys.THEME_DISPLAY);
-
-			_localizeFacets(responseJsonObject, themeDisplay.getLocale());
-
-			_localizeResultItemType(
-				responseJsonObject, themeDisplay.getLocale());
-		}
-	}
-
 	private static final Log _log = LogFactoryUtil.getLog(
 		GetSearchResultsMVCResourceCommand.class);
 
@@ -252,10 +167,7 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 	private BlueprintsEngineHelper _blueprintsEngineHelper;
 
 	@Reference
-	private BlueprintsLocalizationHelper _blueprintsLocalizationHelper;
-
-	@Reference
-	private BlueprintsResponseBuilder _blueprintsResponseBuilder;
+	private BlueprintsJSONResponseBuilder _blueprintsJSONResponseBuilder;
 
 	@Reference
 	private Portal _portal;

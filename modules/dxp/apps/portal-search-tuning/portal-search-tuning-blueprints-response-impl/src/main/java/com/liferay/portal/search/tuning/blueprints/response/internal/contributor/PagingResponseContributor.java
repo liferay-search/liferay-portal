@@ -29,6 +29,8 @@ import com.liferay.portal.search.tuning.blueprints.response.internal.util.Respon
 import com.liferay.portal.search.tuning.blueprints.response.spi.contributor.ResponseContributor;
 import com.liferay.portal.search.tuning.blueprints.util.BlueprintHelper;
 
+import java.util.ResourceBundle;
+
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -45,6 +47,7 @@ public class PagingResponseContributor implements ResponseContributor {
 	public void contribute(
 		JSONObject responseJsonObject, SearchResponse searchResponse,
 		Blueprint blueprint, BlueprintsAttributes blueprintsAttributes,
+		ResourceBundle resourceBundle,	
 		Messages messages) {
 
 		responseJsonObject.put(
