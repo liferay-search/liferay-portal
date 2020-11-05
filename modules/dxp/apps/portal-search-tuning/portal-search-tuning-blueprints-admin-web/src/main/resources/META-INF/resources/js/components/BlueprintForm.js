@@ -19,7 +19,7 @@ import QueryBuilder from '../tabs/QueryBuilder';
 import Settings from '../tabs/Settings';
 import Suggesters from '../tabs/Suggesters';
 import {DEFAULT_FRAGMENT} from '../utils/data';
-import {convertSelectedFragment, openErrorToast} from '../utils/utils';
+import {convertToSelectedFragment, openErrorToast} from '../utils/utils';
 import PageToolbar from './PageToolbar';
 import Sidebar from './Sidebar';
 
@@ -66,12 +66,12 @@ function BlueprintForm({
 					...JSON.parse(configString),
 					id: fragmentIdCounter.current++,
 			  }))
-			: [convertSelectedFragment(DEFAULT_FRAGMENT)]
+			: [convertToSelectedFragment(DEFAULT_FRAGMENT)]
 	);
 
 	const onAddFragment = useCallback((fragment) => {
 		setSelectedFragments((selectedFragments) => [
-			convertSelectedFragment(fragment, fragmentIdCounter.current++),
+			convertToSelectedFragment(fragment, fragmentIdCounter.current++),
 			...selectedFragments,
 		]);
 	}, []);
@@ -124,8 +124,7 @@ function BlueprintForm({
 					`${namespace}suggestConfiguration`,
 					suggestConfig
 				);
-			}
-			catch {
+			} catch {
 				openErrorToast({
 					message: Liferay.Language.get('the-json-is-invalid'),
 				});
@@ -156,8 +155,7 @@ function BlueprintForm({
 						);
 
 						setIsSubmitting(false);
-					}
-					else {
+					} else {
 						navigate(redirectURL);
 					}
 				})

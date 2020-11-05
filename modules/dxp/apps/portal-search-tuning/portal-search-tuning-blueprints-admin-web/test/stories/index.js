@@ -25,11 +25,12 @@ import ClayLayout from '@clayui/layout';
 import BlueprintForm from '../../src/main/resources/META-INF/resources/js/components/BlueprintForm';
 import ConfigFragment from '../../src/main/resources/META-INF/resources/js/components/ConfigFragment';
 import Fragment from '../../src/main/resources/META-INF/resources/js/components/Fragment';
+import FragmentForm from '../../src/main/resources/META-INF/resources/js/components/FragmentForm';
 import PageToolbar from '../../src/main/resources/META-INF/resources/js/components/PageToolbar';
 import Sidebar from '../../src/main/resources/META-INF/resources/js/components/Sidebar';
 import ErrorBoundary from '../../src/main/resources/META-INF/resources/js/shared/ErrorBoundary';
 import QueryBuilder from '../../src/main/resources/META-INF/resources/js/tabs/QueryBuilder';
-import {AVAILABLE_LOCALES, SELECTED_FRAGMENTS} from './../js/mocks/data';
+import {AVAILABLE_LOCALES, SELECTED_FRAGMENTS} from '../js/mocks/data';
 
 const {addDecorator, storiesOf} = StorybookReact;
 const {action} = StorybookAddonActions;
@@ -46,10 +47,16 @@ addDecorator((storyFn) => {
 
 	return (
 		<ClayIconSpriteContext.Provider value={context.spritemap}>
-			<div className="blueprints-admin-root">{storyFn()}</div>
+			{storyFn()}
 		</ClayIconSpriteContext.Provider>
 	);
 });
+
+const withBlueprintsClass = (storyFn) => (
+	<ErrorBoundary>
+		<div className="blueprints-admin-root">{storyFn()}</div>
+	</ErrorBoundary>
+);
 
 const withBuilderClass = (storyFn) => (
 	<div className="builder">{storyFn()}</div>
@@ -59,44 +66,103 @@ const withContainer = (storyFn) => (
 	<ClayLayout.ContainerFluid size="md">{storyFn()}</ClayLayout.ContainerFluid>
 );
 
-storiesOf('Pages|BlueprintForm', module).add('default', () => (
+const withFragmentsClass = (storyFn) => (
 	<ErrorBoundary>
+		<div className="fragment-admin-root">{storyFn()}</div>
+	</ErrorBoundary>
+);
+
+storiesOf('Pages|FragmentForm', module)
+	.addDecorator(withFragmentsClass)
+	.add('default', () => (
+		<FragmentForm
+			originalConfigJSON={SELECTED_FRAGMENTS[0].configJSON}
+			originalInputJSON={SELECTED_FRAGMENTS[0].inputJSON}
+			redirectURL=""
+			submitFormURL=""
+		/>
+	));
+
+storiesOf('Pages|BlueprintForm', module)
+	.addDecorator(withBlueprintsClass)
+	.add('default', () => (
 		<BlueprintForm
 			availableLocales={AVAILABLE_LOCALES}
 			blueprintId="0"
 			blueprintType={0}
+			entityJSON={{
+				'com.liferay.asset.kernel.model.AssetTag': {
+					multiple: false,
+					title: 'Select Tag',
+					url: 'http:…',
+				},
+				'com.liferay.portal.kernel.model.Group': {
+					multiple: false,
+					title: 'Select Site',
+					url: 'http:…',
+				},
+				'com.liferay.portal.kernel.model.Organization': {
+					multiple: true,
+					title: 'Select Organization',
+					url: 'http:/…',
+				},
+				'com.liferay.portal.kernel.model.Role': {
+					multiple: false,
+					title: 'Select Role',
+					url: 'http:…',
+				},
+				'com.liferay.portal.kernel.model.Team': {
+					multiple: false,
+					title: 'Select Team',
+					url: 'http:…',
+				},
+				'com.liferay.portal.kernel.model.User': {
+					multiple: true,
+					title: 'Select User',
+					url: 'http:/…',
+				},
+				'com.liferay.portal.kernel.model.UserGroup': {
+					multiple: false,
+					title: 'Select User Group',
+					url: 'http:…',
+				},
+			}}
 			initialTitle={{
 				'en-US': 'Test Title',
 			}}
 			redirectURL=""
 			submitFormURL=""
 		/>
-	</ErrorBoundary>
-));
+	));
 
-storiesOf('Components|PageToolbar', module).add('PageToolbar', () => (
-	<PageToolbar
-		availableLocales={AVAILABLE_LOCALES}
-		initialTitle={{
-			'en-US': 'Test Title',
-		}}
-		onCancel=""
-		onPublish={action('onPublish')}
-		tab={'query-builder'}
-		tabs={{
-			'query-builder': 'query-builder',
-		}}
-	/>
-));
+storiesOf('Components|PageToolbar', module)
+	.addDecorator(withBlueprintsClass)
+	.add('PageToolbar', () => (
+		<PageToolbar
+			availableLocales={AVAILABLE_LOCALES}
+			initialTitle={{
+				'en-US': 'Test Title',
+			}}
+			onCancel=""
+			onPublish={action('onPublish')}
+			tab={'query-builder'}
+			tabs={{
+				'query-builder': Liferay.Language.get('query-builder'),
+			}}
+		/>
+	));
 
-storiesOf('Components|Sidebar', module).add('Sidebar', () => (
-	<Sidebar
-		addFragment={action('addFragment')}
-		queryFragments={SELECTED_FRAGMENTS}
-	/>
-));
+storiesOf('Components|Sidebar', module)
+	.addDecorator(withBlueprintsClass)
+	.add('Sidebar', () => (
+		<Sidebar
+			addFragment={action('addFragment')}
+			queryFragments={SELECTED_FRAGMENTS}
+		/>
+	));
 
 storiesOf('Components|Builder', module)
+	.addDecorator(withBlueprintsClass)
 	.addDecorator(withContainer)
 	.add('Builder', () => (
 		<QueryBuilder
@@ -107,6 +173,7 @@ storiesOf('Components|Builder', module)
 	));
 
 storiesOf('Components|Fragment', module)
+	.addDecorator(withBlueprintsClass)
 	.addDecorator(withBuilderClass)
 	.addDecorator(withContainer)
 	.add('Fragment', () => (
@@ -121,6 +188,7 @@ storiesOf('Components|Fragment', module)
 	));
 
 storiesOf('Components|ConfigFragment', module)
+	.addDecorator(withBlueprintsClass)
 	.addDecorator(withBuilderClass)
 	.addDecorator(withContainer)
 	.add('ConfigFragment', () => (

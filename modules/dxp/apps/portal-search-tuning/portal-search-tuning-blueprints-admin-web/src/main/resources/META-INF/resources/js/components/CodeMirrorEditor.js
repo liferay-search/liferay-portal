@@ -42,47 +42,77 @@ const MODES = {
 	},
 };
 
-const CodeMirrorEditor = ({
-	onChange = () => {},
-	mode = 'json',
-	value = '',
-	readOnly = false,
-}) => {
-	const editor = useRef();
-	const editorWrapper = useRef();
+//https://itnext.io/reusing-the-ref-from-forwardref-with-react-hooks-4ce9df693dd
 
-	useEffect(() => {
-		if (editorWrapper.current) {
-			const codeMirror = CodeMirror(editorWrapper.current, {
-				autoCloseTags: true,
-				autoRefresh: true,
-				extraKeys: {
-					'Ctrl-Space': 'autocomplete',
-				},
-				foldGutter: true,
-				gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
-				indentWithTabs: true,
-				inputStyle: 'contenteditable',
-				lineNumbers: true,
-				matchBrackets: true,
-				mode: {globalVars: true, name: MODES[mode].type},
-				readOnly,
-				tabSize: 2,
-				value,
-				viewportMargin: Infinity,
-			});
+function useCombinedRefs(...refs) {
+	const targetRef = React.useRef();
 
-			codeMirror.on('change', (cm) => {
-				onChange(cm.getValue());
-			});
+	React.useEffect(() => {
+		refs.forEach((ref) => {
+			if (!ref) {
+				return;
+			}
 
-			editor.current = codeMirror;
-		}
-	}, [editorWrapper]); // eslint-disable-line
+			if (typeof ref === 'function') {
+				ref(targetRef.current);
+			}
+			else {
+				ref.current = targetRef.current;
+			}
+		});
+	}, [refs]);
 
-	return (
-		<div className="codemirror-editor-wrapper" ref={editorWrapper}></div>
-	);
-};
+	return targetRef;
+}
+
+const CodeMirrorEditor = React.forwardRef(
+	(
+		{onChange = () => {}, mode = 'json', value = '', readOnly = false},
+		ref
+	) => {
+		const innerRef = useRef(ref);
+		const editorWrapper = useRef();
+		const editor = useCombinedRefs(ref, innerRef);
+
+		useEffect(() => {
+			if (editorWrapper.current) {
+				const codeMirror = CodeMirror(editorWrapper.current, {
+					autoCloseTags: true,
+					autoRefresh: true,
+					extraKeys: {
+						'Ctrl-Space': 'autocomplete',
+					},
+					foldGutter: true,
+					gutters: [
+						'CodeMirror-linenumbers',
+						'CodeMirror-foldgutter',
+					],
+					indentWithTabs: true,
+					inputStyle: 'contenteditable',
+					lineNumbers: true,
+					matchBrackets: true,
+					mode: {globalVars: true, name: MODES[mode].type},
+					readOnly,
+					tabSize: 2,
+					value,
+					viewportMargin: Infinity,
+				});
+
+				codeMirror.on('change', (cm) => {
+					onChange(cm.getValue());
+				});
+
+				editor.current = codeMirror;
+			}
+		}, [editorWrapper]); // eslint-disable-line
+
+		return (
+			<div
+				className="codemirror-editor-wrapper"
+				ref={editorWrapper}
+			></div>
+		);
+	}
+);
 
 export default CodeMirrorEditor;

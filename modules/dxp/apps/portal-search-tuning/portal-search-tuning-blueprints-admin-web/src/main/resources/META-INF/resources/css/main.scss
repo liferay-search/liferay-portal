@@ -35,3 +35,7 @@
 		text-transform: uppercase;
 	}
 }
+
+.fragment-admin-root {
+	@import '_fragment_form';
+}

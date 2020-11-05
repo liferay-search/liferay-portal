@@ -13,9 +13,7 @@ import ClayButton from '@clayui/button';
 import ClayModal, {useModal} from '@clayui/modal';
 import React, {useState} from 'react';
 
-import CodeMirrorEditor from './CodeMirrorEditor';
-
-const JsonModal = ({children, json, title}) => {
+const PreviewModal = ({body, children, size = 'md', title}) => {
 	const [visible, setVisible] = useState(false);
 	const {observer, onClose} = useModal({
 		onClose: () => setVisible(false),
@@ -24,15 +22,10 @@ const JsonModal = ({children, json, title}) => {
 	return (
 		<>
 			{visible && (
-				<ClayModal observer={observer} size="md">
+				<ClayModal observer={observer} size={size}>
 					<ClayModal.Header>{title}</ClayModal.Header>
 
-					<ClayModal.Body>
-						<CodeMirrorEditor
-							readOnly
-							value={JSON.stringify(json, null, '\t')}
-						/>
-					</ClayModal.Body>
+					<ClayModal.Body>{body}</ClayModal.Body>
 
 					<ClayModal.Footer
 						last={
@@ -53,4 +46,4 @@ const JsonModal = ({children, json, title}) => {
 	);
 };
 
-export default JsonModal;
+export default PreviewModal;
