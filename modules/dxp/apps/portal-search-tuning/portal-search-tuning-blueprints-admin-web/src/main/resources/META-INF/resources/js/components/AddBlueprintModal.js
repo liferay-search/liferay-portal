@@ -18,9 +18,9 @@ import {fetch, navigate} from 'frontend-js-web';
 import React, {useState} from 'react';
 
 import {DEFAULT_FRAGMENT} from '../utils/data';
-import {convertSelectedFragment} from '../utils/utils';
+import {convertToSelectedFragment} from '../utils/utils';
 
-const DEFAULT_SELECTED_FRAGMENT = convertSelectedFragment(DEFAULT_FRAGMENT);
+const DEFAULT_SELECTED_FRAGMENT = convertToSelectedFragment(DEFAULT_FRAGMENT);
 
 /**
  * A slightly modified version of frontend-js-web module's SimpleInputModal

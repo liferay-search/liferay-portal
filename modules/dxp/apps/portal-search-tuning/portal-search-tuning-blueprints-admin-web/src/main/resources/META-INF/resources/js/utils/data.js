@@ -667,6 +667,49 @@ export const DEFAULT_FRAGMENT_ORIGINAL = {
 	},
 };
 
+export const PREDEFINED_VARIABLES = [
+	{
+		categoryName: 'User',
+		variables: [
+			{
+				className: 'String',
+				description: "Current user's full name",
+				name: 'Full Name',
+				variable: 'user_full_name',
+			},
+			{
+				className: 'Number',
+				description: "Current user's age",
+				name: 'Age',
+				variable: 'user_age',
+			},
+		],
+	},
+	{
+		categoryName: 'Context',
+		variables: [
+			{
+				className: 'String',
+				description: 'Context Title',
+				name: 'Title',
+				variable: 'context_title',
+			},
+			{
+				className: 'String',
+				description: 'Current context description',
+				name: 'Description',
+				variable: 'context_description',
+			},
+			{
+				className: 'Number',
+				description: 'Current context boost',
+				name: 'Boost',
+				variable: 'context_boost',
+			},
+		],
+	},
+];
+
 export const QUERY_FRAGMENTS_ORIGINAL = [
 	{
 		clauses: [

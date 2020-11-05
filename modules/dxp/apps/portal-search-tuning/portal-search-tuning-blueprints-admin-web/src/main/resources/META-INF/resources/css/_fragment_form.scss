@@ -1,0 +1,75 @@
+.fragment-section {
+	border-color: $mainLighten65;
+	border-style: solid;
+	border-width: 0 0.0625rem 0 0;
+	padding: 0;
+
+	.fragment-header {
+		border-color: $mainLighten74;
+		border-style: solid;
+		border-width: 0 0 0.0625rem;
+		display: flex;
+
+		button {
+			margin: 8px 12px;
+		}
+
+		.expand-header {
+			flex-grow: 1;
+
+			.header-label {
+				text-align: center;
+
+				label {
+					color: $secondary;
+					margin: 0;
+					padding-bottom: 12px;
+					padding-top: 12px;
+
+					.sticker {
+						.lexicon-icon {
+							margin-top: -3px;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	.json-section {
+		padding: 0;
+
+		.sidebar {
+			border-color: $mainLighten74;
+			border-style: solid;
+			border-width: 0 0.0625rem 0 0;
+
+			.sidebar-dt {
+				margin-bottom: 8px;
+				margin-top: 32px;
+			}
+
+			.sidebar-input {
+				margin-bottom: 24px;
+			}
+
+			.text-truncate {
+				color: $secondary;
+				font-size: 14px;
+				font-weight: 600;
+			}
+		}
+	}
+
+	.codemirror-editor-wrapper {
+		width: 100%;
+
+		.cm-s-default {
+			height: calc(100vh - 105px);
+		}
+	}
+}
+
+.row {
+	margin: 0;
+}

@@ -37,6 +37,24 @@ export const getDefaultValue = (item) => {
 					? moment(item.defaultValue).unix()
 					: ''
 				: '';
+		case 'entity':
+			return isNotNull(item.defaultValue) &&
+				item.defaultValue.length > 0 &&
+				item.defaultValue.every(
+					(item) => isNotNull(item.id) && isNotNull(item.name)
+				)
+				? item.defaultValue
+				: [];
+		case 'number':
+			return isNotNull(item.defaultValue) &&
+				typeof item.defaultValue == 'number'
+				? item.defaultValue
+				: '';
+		case 'slider':
+			return isNotNull(item.defaultValue) &&
+				typeof item.defaultValue == 'number'
+				? item.defaultValue
+				: '';
 		default:
 			return isNotNull(item.defaultValue) ? item.defaultValue : '';
 	}
@@ -47,9 +65,7 @@ export const getConfigValues = (configJSON) => {
 		return configJSON.configurationValues.reduce((acc, curr) => {
 			return {
 				...acc,
-				[`${curr.key}`]: {
-					value: getDefaultValue(curr),
-				},
+				[`${curr.key}`]: getDefaultValue(curr),
 			};
 		}, {});
 	}
@@ -66,13 +82,15 @@ export const replaceConfigValues = (
 		let flattenJSON = JSON.stringify(inputJSON);
 
 		configJSON.configurationValues.map((config) => {
-			const configValue = configValues[config.key].value;
+			const configValue =
+				config.type === 'entity'
+					? configValues[config.key].map((item) => item.id).join(',')
+					: configValues[config.key];
 
 			if (isNotNull(configValue)) {
 				if (
 					typeof configValue === 'number' ||
-					typeof configValue === 'boolean' ||
-					config.type === 'number'
+					typeof configValue === 'boolean'
 				) {
 					flattenJSON = replaceStr(
 						flattenJSON,
@@ -98,7 +116,7 @@ export const replaceStr = (str, search, replace) => {
 	return str.split(search).join(replace);
 };
 
-export const convertSelectedFragment = ({configJSON, inputJSON}, id = 0) => {
+export const convertToSelectedFragment = ({configJSON, inputJSON}, id = 0) => {
 	return {
 		configJSON,
 		configValues: getConfigValues(configJSON),
@@ -133,8 +151,7 @@ export const validateConfigJSON = (configJSON) => {
 				default:
 					return true;
 			}
-		}
-		else {
+		} else {
 			return false;
 		}
 	});

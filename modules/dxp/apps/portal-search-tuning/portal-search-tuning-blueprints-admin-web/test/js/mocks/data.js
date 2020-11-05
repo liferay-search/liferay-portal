@@ -10,7 +10,7 @@
  */
 
 import {QUERY_FRAGMENTS} from '../../../src/main/resources/META-INF/resources/js/utils/data';
-import {convertSelectedFragment} from '../../../src/main/resources/META-INF/resources/js/utils/utils';
+import {convertToSelectedFragment} from '../../../src/main/resources/META-INF/resources/js/utils/utils';
 
 export const AVAILABLE_LOCALES = [
 	{
@@ -32,5 +32,5 @@ export const AVAILABLE_LOCALES = [
 ];
 
 export const SELECTED_FRAGMENTS = QUERY_FRAGMENTS.map((fragment, index) => {
-	return convertSelectedFragment(fragment, index);
+	return convertToSelectedFragment(fragment, index);
 });

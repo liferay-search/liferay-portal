@@ -25,8 +25,9 @@ import {PropTypes} from 'prop-types';
 import React, {useContext, useEffect, useState} from 'react';
 
 import ThemeContext from '../ThemeContext';
+import PreviewModal from '../shared/PreviewModal';
 import {replaceConfigValues, validateConfigJSON} from '../utils/utils';
-import JsonModal from './JsonModal';
+import CodeMirrorEditor from './CodeMirrorEditor';
 
 function ConfigFragment({
 	collapseAll,
@@ -36,7 +37,7 @@ function ConfigFragment({
 	entityJSON,
 	inputJSON,
 	queryConfig,
-	updateFragment,
+	updateFragment = () => {},
 }) {
 	const {locale} = useContext(ThemeContext);
 	const [collapse, setCollapse] = useState(false);
@@ -62,25 +63,23 @@ function ConfigFragment({
 				multiple: true,
 				onSelect: (selectedItems) => {
 					if (selectedItems) {
-						_handleChange(key, {
-							label: selectedItems.map((item) => item.name),
-							value: selectedItems.map((item) => item.id),
-						});
+						_handleChange(key, selectedItems);
 					}
 				},
 				selectEventName: 'selectEntity',
 				title: entityJSON[`${className}`].title,
 				url: entityJSON[`${className}`].url,
 			});
-		}
-		else {
+		} else {
 			openSelectionModal({
 				buttonAddLabel: Liferay.Language.get('select'),
 				onSelect: (event) => {
-					_handleChange(key, {
-						label: event.entityname,
-						value: event.entityid,
-					});
+					_handleChange(key, [
+						{
+							id: event.entityid,
+							name: event.entityname,
+						},
+					]);
 				},
 				selectEventName: 'selectEntity',
 				title: entityJSON[`${className}`].title,
@@ -102,19 +101,14 @@ function ConfigFragment({
 						<ClayDatePicker
 							dateFormat="MM/dd/yyyy"
 							onValueChange={(value) => {
-								_handleChange(config.key, {
-									value: moment(value).unix(),
-								});
+								_handleChange(config.key, moment(value).unix());
 							}}
 							placeholder="MM/DD/YYYY"
 							readOnly
 							value={
-								configValues[`${config.key}`].value
+								configValues[`${config.key}`]
 									? moment
-											.unix(
-												configValues[`${config.key}`]
-													.value
-											)
+											.unix(configValues[`${config.key}`])
 											.format('MM/DD/YYYY')
 									: ''
 							}
@@ -124,16 +118,14 @@ function ConfigFragment({
 							}}
 						/>
 
-						{configValues[config.key].value && (
+						{configValues[config.key] && (
 							<ClayInput.GroupItem shrink>
 								<ClayButton
 									aria-label={Liferay.Language.get('delete')}
 									displayType="unstyled"
 									monospaced
 									onClick={() =>
-										_handleChange(config.key, {
-											value: '',
-										})
+										_handleChange(config.key, '')
 									}
 								>
 									<ClayIcon symbol="times-circle" />
@@ -149,20 +141,18 @@ function ConfigFragment({
 							<ClayInput
 								aria-label={config.name}
 								id={config.key}
-								insetAfter={configValues[config.key].label}
+								insetAfter={configValues[config.key].length > 0}
 								readOnly
 								type={'text'}
 								value={
-									configValues[config.key].label &&
-									entityJSON &&
-									entityJSON[`${config.className}`].multiple
-										? configValues[config.key].label.join(
-												', '
-										  )
-										: configValues[config.key].label
+									configValues[config.key].length > 0
+										? configValues[config.key]
+												.map((item) => item.name)
+												.join(', ')
+										: ''
 								}
 							/>
-							{configValues[config.key].label && (
+							{configValues[config.key].length > 0 && (
 								<ClayInput.GroupInsetItem after>
 									<ClayButton
 										aria-label={Liferay.Language.get(
@@ -171,10 +161,7 @@ function ConfigFragment({
 										className="component-action"
 										displayType="unstyled"
 										onClick={() =>
-											_handleChange(config.key, {
-												label: '',
-												value: '',
-											})
+											_handleChange(config.key, [])
 										}
 									>
 										<ClayIcon symbol="times-circle" />
@@ -185,13 +172,16 @@ function ConfigFragment({
 						<ClayInput.GroupItem shrink>
 							<ClayButton
 								aria-label={Liferay.Language.get('select')}
+								disabled={!entityJSON}
 								displayType="secondary"
-								onClick={() =>
-									_handleMutipleSelect(
-										config.key,
-										config.className
-									)
-								}
+								onClick={() => {
+									if (entityJSON) {
+										_handleMutipleSelect(
+											config.key,
+											config.className
+										);
+									}
+								}}
 							>
 								{Liferay.Language.get('select')}
 							</ClayButton>
@@ -204,11 +194,9 @@ function ConfigFragment({
 						aria-label={name}
 						id={config.key}
 						onChange={(event) => {
-							_handleChange(config.key, {
-								value: event.target.value,
-							});
+							_handleChange(config.key, event.target.value);
 						}}
-						value={configValues[`${config.key}`].value}
+						value={configValues[`${config.key}`]}
 					>
 						{config.typeOptions &&
 							config.typeOptions.map((item) => (
@@ -226,7 +214,7 @@ function ConfigFragment({
 						keyword={config.key}
 						name={config.name}
 						onChange={_handleChange}
-						value={configValues[`${config.key}`].value}
+						value={configValues[`${config.key}`]}
 					/>
 				);
 			case 'number':
@@ -239,12 +227,13 @@ function ConfigFragment({
 							<ClayInput
 								aria-label={config.name}
 								onChange={(event) => {
-									_handleChange(config.key, {
-										value: event.target.value,
-									});
+									_handleChange(
+										config.key,
+										parseInt(event.target.value, 10)
+									);
 								}}
 								type={'number'}
-								value={configValues[config.key].value}
+								value={configValues[config.key]}
 							/>
 						</ClayInput.GroupItem>
 						{config.unit && (
@@ -264,12 +253,13 @@ function ConfigFragment({
 								aria-label={config.name}
 								id={config.key}
 								onChange={(event) =>
-									_handleChange(config.key, {
-										value: event.target.value,
-									})
+									_handleChange(
+										config.key,
+										event.target.value
+									)
 								}
 								type={'text'}
-								value={configValues[config.key].value}
+								value={configValues[config.key]}
 							/>
 						</ClayInput.GroupItem>
 					</ClayInput.Group>
@@ -297,42 +287,58 @@ function ConfigFragment({
 						</ClayList.ItemText>
 					</ClayList.ItemField>
 
-					<ClayDropDown
-						active={active}
-						alignmentPosition={3}
-						onActiveChange={setActive}
-						trigger={
-							<ClayList.ItemField>
-								<ClayButton
-									aria-label={Liferay.Language.get(
-										'dropdown'
-									)}
-									className="component-action"
-									displayType="unstyled"
-								>
-									<ClayIcon symbol="ellipsis-v" />
-								</ClayButton>
-							</ClayList.ItemField>
-						}
-					>
-						<ClayDropDown.ItemList>
-							<ClayDropDown.Item onClick={deleteFragment}>
-								{Liferay.Language.get('delete')}
-							</ClayDropDown.Item>
-							<JsonModal
-								json={queryConfig}
-								title={Liferay.Language.get(
-									'query-configuration'
+					{(queryConfig || deleteFragment) && (
+						<ClayDropDown
+							active={active}
+							alignmentPosition={3}
+							onActiveChange={setActive}
+							trigger={
+								<ClayList.ItemField>
+									<ClayButton
+										aria-label={Liferay.Language.get(
+											'dropdown'
+										)}
+										className="component-action"
+										displayType="unstyled"
+									>
+										<ClayIcon symbol="ellipsis-v" />
+									</ClayButton>
+								</ClayList.ItemField>
+							}
+						>
+							<ClayDropDown.ItemList>
+								{deleteFragment && (
+									<ClayDropDown.Item onClick={deleteFragment}>
+										{Liferay.Language.get('delete')}
+									</ClayDropDown.Item>
 								)}
-							>
-								<ClayDropDown.Item>
-									{Liferay.Language.get(
-										'query-configuration'
-									)}
-								</ClayDropDown.Item>
-							</JsonModal>
-						</ClayDropDown.ItemList>
-					</ClayDropDown>
+
+								{queryConfig && (
+									<PreviewModal
+										body={
+											<CodeMirrorEditor
+												readOnly
+												value={JSON.stringify(
+													queryConfig,
+													null,
+													'\t'
+												)}
+											/>
+										}
+										title={Liferay.Language.get(
+											'query-configuration'
+										)}
+									>
+										<ClayDropDown.Item>
+											{Liferay.Language.get(
+												'query-configuration'
+											)}
+										</ClayDropDown.Item>
+									</PreviewModal>
+								)}
+							</ClayDropDown.ItemList>
+						</ClayDropDown>
+					)}
 
 					<ClayList.ItemField>
 						<ClayButton
@@ -425,7 +431,7 @@ function Slider({keyword, name, onChange, value}) {
 						aria-label={name}
 						insetAfter
 						onChange={(event) => {
-							onChange(keyword, {value: event.target.value});
+							onChange(keyword, parseInt(event.target.value, 10));
 						}}
 						type={'number'}
 						value={value}
@@ -451,7 +457,7 @@ function Slider({keyword, name, onChange, value}) {
 						max={100}
 						min={-100}
 						onValueChange={(value) => {
-							onChange(keyword, {value});
+							onChange(keyword, value);
 						}}
 						value={value}
 					/>
