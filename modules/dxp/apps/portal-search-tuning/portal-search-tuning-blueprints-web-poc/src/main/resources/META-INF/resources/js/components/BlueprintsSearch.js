@@ -122,13 +122,26 @@ export default function BlueprintsSearch({fetchResultsURL, suggestionsURL}) {
 		<>
 			<SearchBar
 				handleSubmit={(val) => {
-					if (val !== query) {
-						setQuery(val);
-						setActivePage(1);
-						setSelectedFacets({});
-					}
-					else {
-						refetch();
+					if (_hasResults()) {
+						if (val !== query) {
+							setQuery(val);
+							setActivePage(1);
+							setSelectedFacets({});
+						} else {
+							refetch();
+						}
+					} else {
+						if (val !== query) {
+							setQuery(val);
+							setActivePage(1);
+							setSelectedFacets({});
+							setSortBy({});
+							setTimeRange({});
+						} else {
+							setSortBy({});
+							setTimeRange({});
+							refetch();
+						}
 					}
 				}}
 				suggestionsURL={suggestionsURL}
