@@ -118,7 +118,7 @@ function ConfigFragment({
 							}}
 						/>
 
-						{configValues[config.key] && (
+						{!!configValues[config.key] && (
 							<ClayInput.GroupItem shrink>
 								<ClayButton
 									aria-label={Liferay.Language.get('delete')}
