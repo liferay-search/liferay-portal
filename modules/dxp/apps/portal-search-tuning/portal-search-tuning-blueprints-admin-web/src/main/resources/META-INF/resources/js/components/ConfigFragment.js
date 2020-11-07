@@ -310,12 +310,6 @@ function ConfigFragment({
 							}
 						>
 							<ClayDropDown.ItemList>
-								{deleteFragment && (
-									<ClayDropDown.Item onClick={deleteFragment}>
-										{Liferay.Language.get('delete')}
-									</ClayDropDown.Item>
-								)}
-
 								{queryConfig && (
 									<PreviewModal
 										body={
@@ -338,6 +332,12 @@ function ConfigFragment({
 											)}
 										</ClayDropDown.Item>
 									</PreviewModal>
+								)}
+
+								{deleteFragment && (
+									<ClayDropDown.Item onClick={deleteFragment}>
+										{Liferay.Language.get('delete')}
+									</ClayDropDown.Item>
 								)}
 							</ClayDropDown.ItemList>
 						</ClayDropDown>
