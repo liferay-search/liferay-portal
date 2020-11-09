@@ -11,7 +11,7 @@
 
 import {DefaultEventHandler} from 'frontend-js-web';
 
-import openAddBlueprintModal from './commands/OpenAddBlueprintModal';
+import openAddBlueprintModal from './OpenAddBlueprintModalCommand';
 
 class BlueprintEntriesManagementToolbarDefaultEventHandler extends DefaultEventHandler {
 	addBlueprint(itemData) {

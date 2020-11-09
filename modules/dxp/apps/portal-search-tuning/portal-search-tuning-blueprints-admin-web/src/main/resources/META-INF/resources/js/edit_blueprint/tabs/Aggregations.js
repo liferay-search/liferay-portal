@@ -13,42 +13,24 @@ import ClayForm from '@clayui/form';
 import ClayLayout from '@clayui/layout';
 import React from 'react';
 
-import CodeMirrorEditor from '../components/CodeMirrorEditor';
+import CodeMirrorEditor from '../../shared/CodeMirrorEditor';
 
-function Settings({
-	advancedConfig,
-	onAdvancedConfigChange,
-	onParameterConfigChange,
-	parameterConfig,
-}) {
+function Aggregations({aggregationConfig, onAggregationConfigChange}) {
 	return (
 		<ClayLayout.ContainerFluid className="builder" size="md">
 			<div className="sheet">
 				<h2 className="sheet-title">
-					{Liferay.Language.get('settings')}
+					{Liferay.Language.get('aggregations')}
 				</h2>
 
 				<ClayForm.Group>
-					<label htmlFor="parameter-configuration">
-						{Liferay.Language.get('parameter-configuration')}
+					<label htmlFor="aggregation-configuration">
+						{Liferay.Language.get('aggregation-configuration')}
 					</label>
 
 					<CodeMirrorEditor
-						id="parameter-configuration"
-						onChange={(value) => onParameterConfigChange(value)}
-						value={parameterConfig}
-					/>
-				</ClayForm.Group>
-
-				<ClayForm.Group>
-					<label htmlFor="advanced-configuration">
-						{Liferay.Language.get('advanced-configuration')}
-					</label>
-
-					<CodeMirrorEditor
-						id="advanced-configuration"
-						onChange={(value) => onAdvancedConfigChange(value)}
-						value={advancedConfig}
+						onChange={(value) => onAggregationConfigChange(value)}
+						value={aggregationConfig}
 					/>
 				</ClayForm.Group>
 			</div>
@@ -56,4 +38,4 @@ function Settings({
 	);
 }
 
-export default React.memo(Settings);
+export default React.memo(Aggregations);

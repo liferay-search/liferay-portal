@@ -13,24 +13,24 @@ import ClayForm from '@clayui/form';
 import ClayLayout from '@clayui/layout';
 import React from 'react';
 
-import CodeMirrorEditor from '../components/CodeMirrorEditor';
+import CodeMirrorEditor from '../../shared/CodeMirrorEditor';
 
-function Aggregations({aggregationConfig, onAggregationConfigChange}) {
+function Suggesters({onSuggestConfigChange, suggestConfig}) {
 	return (
 		<ClayLayout.ContainerFluid className="builder" size="md">
 			<div className="sheet">
 				<h2 className="sheet-title">
-					{Liferay.Language.get('aggregations')}
+					{Liferay.Language.get('suggesters')}
 				</h2>
 
 				<ClayForm.Group>
-					<label htmlFor="aggregation-configuration">
-						{Liferay.Language.get('aggregation-configuration')}
+					<label htmlFor="suggest-configuration">
+						{Liferay.Language.get('suggest-configuration')}
 					</label>
 
 					<CodeMirrorEditor
-						onChange={(value) => onAggregationConfigChange(value)}
-						value={aggregationConfig}
+						onChange={(value) => onSuggestConfigChange(value)}
+						value={suggestConfig}
 					/>
 				</ClayForm.Group>
 			</div>
@@ -38,4 +38,4 @@ function Aggregations({aggregationConfig, onAggregationConfigChange}) {
 	);
 }
 
-export default React.memo(Aggregations);
+export default React.memo(Suggesters);

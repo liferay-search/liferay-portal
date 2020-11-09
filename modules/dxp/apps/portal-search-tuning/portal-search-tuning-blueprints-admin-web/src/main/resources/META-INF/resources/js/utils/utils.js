@@ -259,7 +259,8 @@ export const validateConfigJSON = (configJSON) => {
 				default:
 					return true;
 			}
-		} else {
+		}
+		else {
 			return false;
 		}
 	});

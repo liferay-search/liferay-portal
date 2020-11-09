@@ -24,10 +24,10 @@ import moment from 'moment';
 import {PropTypes} from 'prop-types';
 import React, {useContext, useEffect, useState} from 'react';
 
-import ThemeContext from '../ThemeContext';
-import PreviewModal from '../shared/PreviewModal';
 import {replaceConfigValues, validateConfigJSON} from '../utils/utils';
 import CodeMirrorEditor from './CodeMirrorEditor';
+import PreviewModal from './PreviewModal';
+import ThemeContext from './ThemeContext';
 
 function ConfigFragment({
 	collapseAll,

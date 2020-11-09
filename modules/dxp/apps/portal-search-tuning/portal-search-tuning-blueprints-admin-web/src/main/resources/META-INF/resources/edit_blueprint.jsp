@@ -25,6 +25,6 @@ renderResponse.setTitle(editBlueprintDisplayContext.getPageTitle());
 <div>
 	<react:component
 		data="<%= editBlueprintDisplayContext.getData() %>"
-		module="js/BlueprintsAdminApp"
+		module="js/edit_blueprint/index"
 	/>
 </div>

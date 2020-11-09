@@ -20,7 +20,7 @@ import ClayToolbar from '@clayui/toolbar';
 import PropTypes from 'prop-types';
 import React, {useContext, useRef, useState} from 'react';
 
-import ThemeContext from '../ThemeContext';
+import ThemeContext from '../shared/ThemeContext';
 
 const DEFAULT_LOCALE = 'en-US';
 

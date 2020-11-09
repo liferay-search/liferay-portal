@@ -22,16 +22,16 @@ import {fetch, navigate} from 'frontend-js-web';
 import {PropTypes} from 'prop-types';
 import React, {useContext, useRef, useState} from 'react';
 
-import ThemeContext from '../ThemeContext';
+import CodeMirrorEditor from '../shared/CodeMirrorEditor';
+import ConfigFragment from '../shared/ConfigFragment';
 import PreviewModal from '../shared/PreviewModal';
+import ThemeContext from '../shared/ThemeContext';
 import {PREDEFINED_VARIABLES} from '../utils/data';
 import {
 	getConfigValues,
 	openErrorToast,
 	replaceConfigValues,
 } from '../utils/utils';
-import CodeMirrorEditor from './CodeMirrorEditor';
-import ConfigFragment from './ConfigFragment';
 
 export default function FragmentForm({
 	originalConfigJSON,
@@ -69,7 +69,8 @@ export default function FragmentForm({
 		try {
 			previewInputJSON = JSON.parse(inputJSON);
 			previewConfigJSON = JSON.parse(configJSON);
-		} catch (e) {
+		}
+		catch (e) {
 			return (
 				<ClayEmptyState
 					description={Liferay.Language.get(
@@ -109,7 +110,8 @@ export default function FragmentForm({
 				configuration: inputJSON.replaceAll(/\n|\t/g, ''),
 				fragmentConfiguration: configJSON.replaceAll(/\n|\t/g, ''),
 			});
-		} catch {
+		}
+		catch {
 			openErrorToast({
 				message: Liferay.Language.get('the-json-is-invalid'),
 			});
@@ -136,7 +138,8 @@ export default function FragmentForm({
 					);
 
 					setIsSubmitting(false);
-				} else {
+				}
+				else {
 					navigate(redirectURL);
 				}
 			})
