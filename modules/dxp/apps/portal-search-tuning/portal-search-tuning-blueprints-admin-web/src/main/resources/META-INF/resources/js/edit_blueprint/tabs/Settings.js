@@ -13,24 +13,42 @@ import ClayForm from '@clayui/form';
 import ClayLayout from '@clayui/layout';
 import React from 'react';
 
-import CodeMirrorEditor from '../components/CodeMirrorEditor';
+import CodeMirrorEditor from '../../shared/CodeMirrorEditor';
 
-function Suggesters({onSuggestConfigChange, suggestConfig}) {
+function Settings({
+	advancedConfig,
+	onAdvancedConfigChange,
+	onParameterConfigChange,
+	parameterConfig,
+}) {
 	return (
 		<ClayLayout.ContainerFluid className="builder" size="md">
 			<div className="sheet">
 				<h2 className="sheet-title">
-					{Liferay.Language.get('suggesters')}
+					{Liferay.Language.get('settings')}
 				</h2>
 
 				<ClayForm.Group>
-					<label htmlFor="suggest-configuration">
-						{Liferay.Language.get('suggest-configuration')}
+					<label htmlFor="parameter-configuration">
+						{Liferay.Language.get('parameter-configuration')}
 					</label>
 
 					<CodeMirrorEditor
-						onChange={(value) => onSuggestConfigChange(value)}
-						value={suggestConfig}
+						id="parameter-configuration"
+						onChange={(value) => onParameterConfigChange(value)}
+						value={parameterConfig}
+					/>
+				</ClayForm.Group>
+
+				<ClayForm.Group>
+					<label htmlFor="advanced-configuration">
+						{Liferay.Language.get('advanced-configuration')}
+					</label>
+
+					<CodeMirrorEditor
+						id="advanced-configuration"
+						onChange={(value) => onAdvancedConfigChange(value)}
+						value={advancedConfig}
 					/>
 				</ClayForm.Group>
 			</div>
@@ -38,4 +56,4 @@ function Suggesters({onSuggestConfigChange, suggestConfig}) {
 	);
 }
 
-export default React.memo(Suggesters);
+export default React.memo(Settings);

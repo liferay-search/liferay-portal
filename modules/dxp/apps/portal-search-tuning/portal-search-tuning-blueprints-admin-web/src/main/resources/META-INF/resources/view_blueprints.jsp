@@ -54,7 +54,7 @@ BlueprintEntriesDisplayContext blueprintEntriesDisplayContext = (BlueprintEntrie
 
 <liferay-frontend:component
 	componentId="<%= blueprintEntriesManagementToolbarDisplayContext.getDefaultEventHandler() %>"
-	module="js/BlueprintEntriesManagementToolbarDefaultEventHandler"
+	module="js/view_blueprints/BlueprintEntriesManagementToolbarDefaultEventHandler"
 />
 
 <aui:script sandbox="<%= true %>">

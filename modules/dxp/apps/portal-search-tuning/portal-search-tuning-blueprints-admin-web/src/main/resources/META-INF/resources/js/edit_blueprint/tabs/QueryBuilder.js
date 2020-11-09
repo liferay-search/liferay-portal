@@ -14,7 +14,7 @@ import ClayLayout from '@clayui/layout';
 import {PropTypes} from 'prop-types';
 import React, {useState} from 'react';
 
-import ConfigFragment from '../components/ConfigFragment';
+import ConfigFragment from '../../shared/ConfigFragment';
 
 function QueryBuilder({
 	deleteFragment,

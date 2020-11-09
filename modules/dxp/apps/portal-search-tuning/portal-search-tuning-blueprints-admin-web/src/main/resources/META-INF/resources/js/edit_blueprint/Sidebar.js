@@ -19,7 +19,7 @@ import ClaySticker from '@clayui/sticker';
 import PropTypes from 'prop-types';
 import React, {useContext, useEffect, useRef, useState} from 'react';
 
-import ThemeContext from '../ThemeContext';
+import ThemeContext from '../shared/ThemeContext';
 import {QUERY_FRAGMENTS} from '../utils/data';
 
 const EmptyListMessage = () => (

@@ -17,8 +17,8 @@ import ClaySticker from '@clayui/sticker';
 import {PropTypes} from 'prop-types';
 import React, {useContext, useEffect, useMemo, useState} from 'react';
 
-import ThemeContext from '../ThemeContext';
 import CodeMirrorEditor from './CodeMirrorEditor';
+import ThemeContext from './ThemeContext';
 
 function Fragment({
 	collapseAll,

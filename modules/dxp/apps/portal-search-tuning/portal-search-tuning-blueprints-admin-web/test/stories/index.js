@@ -22,31 +22,33 @@ import '../../src/main/resources/META-INF/resources/css/main.scss';
 
 import ClayLayout from '@clayui/layout';
 
-import BlueprintForm from '../../src/main/resources/META-INF/resources/js/components/BlueprintForm';
-import ConfigFragment from '../../src/main/resources/META-INF/resources/js/components/ConfigFragment';
-import Fragment from '../../src/main/resources/META-INF/resources/js/components/Fragment';
-import FragmentForm from '../../src/main/resources/META-INF/resources/js/components/FragmentForm';
-import PageToolbar from '../../src/main/resources/META-INF/resources/js/components/PageToolbar';
-import Sidebar from '../../src/main/resources/META-INF/resources/js/components/Sidebar';
+import BlueprintForm from '../../src/main/resources/META-INF/resources/js/edit_blueprint';
+import PageToolbar from '../../src/main/resources/META-INF/resources/js/edit_blueprint/PageToolbar';
+import Sidebar from '../../src/main/resources/META-INF/resources/js/edit_blueprint/Sidebar';
+import QueryBuilder from '../../src/main/resources/META-INF/resources/js/edit_blueprint/tabs/QueryBuilder';
+import FragmentForm from '../../src/main/resources/META-INF/resources/js/edit_fragment/FragmentForm';
+import ConfigFragment from '../../src/main/resources/META-INF/resources/js/shared/ConfigFragment';
 import ErrorBoundary from '../../src/main/resources/META-INF/resources/js/shared/ErrorBoundary';
-import QueryBuilder from '../../src/main/resources/META-INF/resources/js/tabs/QueryBuilder';
+import Fragment from '../../src/main/resources/META-INF/resources/js/shared/Fragment';
 import {AVAILABLE_LOCALES, SELECTED_FRAGMENTS} from '../js/mocks/data';
 
 const {addDecorator, storiesOf} = StorybookReact;
 const {action} = StorybookAddonActions;
 const {withKnobs} = StorybookAddonKnobs;
 
+const CONTEXT = {
+	defaultLocale: 'en_US',
+	locale: 'en_US',
+	namespace:
+		'_com_liferay_portal_search_tuning_gsearch_configuration_web_internal_portlet_SearchConfigurationAdminPortlet_',
+	spritemap: STORYBOOK_CONSTANTS.SPRITEMAP_PATH,
+};
+
 addDecorator(withKnobs);
 
 addDecorator((storyFn) => {
-	const context = {
-		namespace:
-			'_com_liferay_portal_search_tuning_gsearch_configuration_web_internal_portlet_SearchConfigurationAdminPortlet_',
-		spritemap: STORYBOOK_CONSTANTS.SPRITEMAP_PATH,
-	};
-
 	return (
-		<ClayIconSpriteContext.Provider value={context.spritemap}>
+		<ClayIconSpriteContext.Provider value={CONTEXT.spritemap}>
 			{storyFn()}
 		</ClayIconSpriteContext.Provider>
 	);
@@ -87,51 +89,54 @@ storiesOf('Pages|BlueprintForm', module)
 	.addDecorator(withBlueprintsClass)
 	.add('default', () => (
 		<BlueprintForm
-			availableLocales={AVAILABLE_LOCALES}
-			blueprintId="0"
-			blueprintType={0}
-			entityJSON={{
-				'com.liferay.asset.kernel.model.AssetTag': {
-					multiple: false,
-					title: 'Select Tag',
-					url: 'http:…',
+			context={CONTEXT}
+			props={{
+				availableLocales: {AVAILABLE_LOCALES},
+				blueprintId: '0',
+				blueprintType: 0,
+				entityJSON: {
+					'com.liferay.asset.kernel.model.AssetTag': {
+						multiple: false,
+						title: 'Select Tag',
+						url: 'http:…',
+					},
+					'com.liferay.portal.kernel.model.Group': {
+						multiple: false,
+						title: 'Select Site',
+						url: 'http:…',
+					},
+					'com.liferay.portal.kernel.model.Organization': {
+						multiple: true,
+						title: 'Select Organization',
+						url: 'http:/…',
+					},
+					'com.liferay.portal.kernel.model.Role': {
+						multiple: false,
+						title: 'Select Role',
+						url: 'http:…',
+					},
+					'com.liferay.portal.kernel.model.Team': {
+						multiple: false,
+						title: 'Select Team',
+						url: 'http:…',
+					},
+					'com.liferay.portal.kernel.model.User': {
+						multiple: true,
+						title: 'Select User',
+						url: 'http:/…',
+					},
+					'com.liferay.portal.kernel.model.UserGroup': {
+						multiple: false,
+						title: 'Select User Group',
+						url: 'http:…',
+					},
 				},
-				'com.liferay.portal.kernel.model.Group': {
-					multiple: false,
-					title: 'Select Site',
-					url: 'http:…',
+				initialTitle: {
+					'en-US': 'Test Title',
 				},
-				'com.liferay.portal.kernel.model.Organization': {
-					multiple: true,
-					title: 'Select Organization',
-					url: 'http:/…',
-				},
-				'com.liferay.portal.kernel.model.Role': {
-					multiple: false,
-					title: 'Select Role',
-					url: 'http:…',
-				},
-				'com.liferay.portal.kernel.model.Team': {
-					multiple: false,
-					title: 'Select Team',
-					url: 'http:…',
-				},
-				'com.liferay.portal.kernel.model.User': {
-					multiple: true,
-					title: 'Select User',
-					url: 'http:/…',
-				},
-				'com.liferay.portal.kernel.model.UserGroup': {
-					multiple: false,
-					title: 'Select User Group',
-					url: 'http:…',
-				},
+				redirectURL: '',
+				submitFormURL: '',
 			}}
-			initialTitle={{
-				'en-US': 'Test Title',
-			}}
-			redirectURL=""
-			submitFormURL=""
 		/>
 	));
 

@@ -13,15 +13,16 @@ import {fetch, navigate} from 'frontend-js-web';
 import {PropTypes} from 'prop-types';
 import React, {useCallback, useContext, useRef, useState} from 'react';
 
-import ThemeContext from '../ThemeContext';
-import Aggregations from '../tabs/Aggregations';
-import QueryBuilder from '../tabs/QueryBuilder';
-import Settings from '../tabs/Settings';
-import Suggesters from '../tabs/Suggesters';
+import ErrorBoundary from '../shared/ErrorBoundary';
+import ThemeContext from '../shared/ThemeContext';
 import {DEFAULT_FRAGMENT} from '../utils/data';
 import {convertToSelectedFragment, openErrorToast} from '../utils/utils';
 import PageToolbar from './PageToolbar';
 import Sidebar from './Sidebar';
+import Aggregations from './tabs/Aggregations';
+import QueryBuilder from './tabs/QueryBuilder';
+import Settings from './tabs/Settings';
+import Suggesters from './tabs/Suggesters';
 
 // Tabs in display order
 
@@ -34,7 +35,7 @@ const TABS = {
 };
 /* eslint-enable sort-keys */
 
-function BlueprintForm({
+function EditBlueprintForm({
 	blueprintId,
 	blueprintType,
 	entityJSON,
@@ -281,7 +282,7 @@ function BlueprintForm({
 	);
 }
 
-BlueprintForm.propTypes = {
+EditBlueprintForm.propTypes = {
 	blueprintId: PropTypes.string,
 	blueprintType: PropTypes.number,
 	entityJSON: PropTypes.object,
@@ -293,4 +294,16 @@ BlueprintForm.propTypes = {
 	submitFormURL: PropTypes.string,
 };
 
-export default React.memo(BlueprintForm);
+React.memo(EditBlueprintForm);
+
+export default function ({context, props}) {
+	return (
+		<ThemeContext.Provider value={context}>
+			<div className="blueprints-admin-root">
+				<ErrorBoundary>
+					<EditBlueprintForm {...props} />
+				</ErrorBoundary>
+			</div>
+		</ThemeContext.Provider>
+	);
+}

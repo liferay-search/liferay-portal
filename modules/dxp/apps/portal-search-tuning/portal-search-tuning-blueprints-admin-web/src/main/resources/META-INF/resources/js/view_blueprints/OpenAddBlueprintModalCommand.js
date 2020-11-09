@@ -13,7 +13,7 @@ import {render} from 'frontend-js-react-web';
 import React from 'react';
 import {unmountComponentAtNode} from 'react-dom';
 
-import AddBlueprintModal from '../components/AddBlueprintModal';
+import AddBlueprintModal from './AddBlueprintModal';
 
 /**
  * A slightly modified version of frontend-js-web module's OpenSimpleInputModal
