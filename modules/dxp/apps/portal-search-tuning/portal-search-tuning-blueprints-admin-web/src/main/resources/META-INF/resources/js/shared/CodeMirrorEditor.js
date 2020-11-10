@@ -42,7 +42,10 @@ const MODES = {
 	},
 };
 
-//https://itnext.io/reusing-the-ref-from-forwardref-with-react-hooks-4ce9df693dd
+/**
+ * Reusing the `ref` from `forwardRef` with React hooks
+ * https://itnext.io/reusing-the-ref-from-forwardref-with-react-hooks-4ce9df693dd
+ */
 
 function useCombinedRefs(...refs) {
 	const targetRef = React.useRef();

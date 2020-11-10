@@ -1,6 +1,8 @@
 .sidebar {
+	height: $sidebarHeight;
 	margin-top: $pageToolbarHeight;
 	min-width: 384px;
+	padding-bottom: 45px;
 	position: fixed;
 	right: 0;
 	width: 20%;

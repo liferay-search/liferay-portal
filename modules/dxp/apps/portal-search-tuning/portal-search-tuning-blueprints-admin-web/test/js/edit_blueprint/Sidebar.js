@@ -12,8 +12,8 @@
 import {fireEvent, render} from '@testing-library/react';
 import React from 'react';
 
-import Sidebar from '../../../src/main/resources/META-INF/resources/js/components/Sidebar';
-import {SELECTED_FRAGMENTS} from './../mocks/data';
+import Sidebar from '../../../src/main/resources/META-INF/resources/js/edit_blueprint/Sidebar';
+import {SELECTED_FRAGMENTS} from '../mocks/data';
 
 import '@testing-library/jest-dom/extend-expect';
 

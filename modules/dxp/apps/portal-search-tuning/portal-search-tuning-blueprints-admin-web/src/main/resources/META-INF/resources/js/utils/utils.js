@@ -148,12 +148,15 @@ export const replaceConfigValues = (
 		configJSON.configurationValues.map((config) => {
 			const configValue =
 				config.type === 'entity'
-					? configValues[config.key].map((item) => item.id).join(',')
+					? JSON.stringify(
+							configValues[config.key].map((item) => item.id)
+					  )
 					: configValues[config.key];
 
 			if (
 				typeof configValue === 'number' ||
-				typeof configValue === 'boolean'
+				typeof configValue === 'boolean' ||
+				config.type === 'entity'
 			) {
 				flattenJSON = replaceStr(
 					flattenJSON,

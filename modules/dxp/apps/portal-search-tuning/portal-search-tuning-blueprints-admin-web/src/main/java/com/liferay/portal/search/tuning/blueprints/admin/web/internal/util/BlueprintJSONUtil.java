@@ -47,7 +47,7 @@ public class BlueprintJSONUtil {
 	}
 
 	public static JSONObject getConfigurationSectionJSONObject(
-		Blueprint blueprint, String key)
+			Blueprint blueprint, String key)
 		throws JSONException {
 
 		if ((blueprint == null) ||

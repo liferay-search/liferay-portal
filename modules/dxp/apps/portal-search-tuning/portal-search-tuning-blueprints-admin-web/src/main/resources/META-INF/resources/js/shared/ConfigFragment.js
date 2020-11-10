@@ -196,7 +196,14 @@ function ConfigFragment({
 						aria-label={name}
 						id={config.key}
 						onChange={(event) => {
-							_handleChange(config.key, event.target.value);
+							const value =
+								typeof config.typeOptions[0].value ==
+									'boolean' ||
+								typeof config.typeOptions[0].value == 'number'
+									? JSON.parse(event.target.value)
+									: event.target.value;
+
+							_handleChange(config.key, value);
 						}}
 						value={configValues[`${config.key}`]}
 					>
@@ -231,7 +238,9 @@ function ConfigFragment({
 								onChange={(event) => {
 									_handleChange(
 										config.key,
-										parseInt(event.target.value, 10)
+										event.target.value !== ''
+											? JSON.parse(event.target.value)
+											: event.target.value
 									);
 								}}
 								type={'number'}
@@ -477,6 +486,7 @@ ConfigFragment.propTypes = {
 	deleteFragment: PropTypes.func,
 	entityJSON: PropTypes.object,
 	inputJSON: PropTypes.object,
+	queryConfig: PropTypes.object,
 	updateFragment: PropTypes.func,
 };
 

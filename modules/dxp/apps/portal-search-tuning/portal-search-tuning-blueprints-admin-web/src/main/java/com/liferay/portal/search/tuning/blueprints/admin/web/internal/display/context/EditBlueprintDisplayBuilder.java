@@ -18,7 +18,6 @@ import com.liferay.asset.kernel.model.AssetTag;
 import com.liferay.exportimport.kernel.exception.NoSuchConfigurationException;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -48,10 +47,8 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminMVCCommandNames;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminWebKeys;
-import com.liferay.portal.search.tuning.blueprints.admin.web.internal.util.BlueprintJSONUtil;
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintTypes;
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintsPortletKeys;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.BlueprintKeys;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
 
@@ -200,9 +197,12 @@ public class EditBlueprintDisplayBuilder {
 		).build();
 
 		if (_blueprint != null) {
-			props.put("initialConfigurationString", _blueprint.getConfiguration());
+			props.put(
+				"initialConfigurationString", _blueprint.getConfiguration());
 			props.put("initialDescription", _getDescriptionJSONObject());
-			props.put("initialSelectedFragmentsString", _blueprint.getSelectedFragments());
+			props.put(
+				"initialSelectedFragmentsString",
+				_blueprint.getSelectedFragments());
 			props.put("initialTitle", _getTitleJSONObject());
 		}
 

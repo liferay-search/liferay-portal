@@ -12,25 +12,6 @@
 import {QUERY_FRAGMENTS} from '../../../src/main/resources/META-INF/resources/js/utils/data';
 import {convertToSelectedFragment} from '../../../src/main/resources/META-INF/resources/js/utils/utils';
 
-export const AVAILABLE_LOCALES = [
-	{
-		label: 'en-US',
-		symbol: 'en-us',
-	},
-	{
-		label: 'es-ES',
-		symbol: 'es-es',
-	},
-	{
-		label: 'fr-FR',
-		symbol: 'fr-fr',
-	},
-	{
-		label: 'hr-HR',
-		symbol: 'hr-hr',
-	},
-];
-
 export const SELECTED_FRAGMENTS = QUERY_FRAGMENTS.map((fragment, index) => {
 	return convertToSelectedFragment(fragment, index);
 });
