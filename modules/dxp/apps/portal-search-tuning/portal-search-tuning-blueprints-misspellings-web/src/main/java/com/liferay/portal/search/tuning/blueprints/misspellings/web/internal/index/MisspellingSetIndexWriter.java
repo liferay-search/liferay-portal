@@ -14,24 +14,22 @@
 
 package com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index;
 
-import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.name.MisspellingsDefinitionIndexName;
-
-import java.util.List;
-import java.util.Optional;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.name.MisspellingSetIndexName;
 
 /**
  * @author Petteri Karttunen
  */
-public interface MisspellingsDefinitionIndexReader {
+public interface MisspellingSetIndexWriter {
 
-	public Optional<MisspellingsDefinition> fetchOptional(
-		MisspellingsDefinitionIndexName misspellingsDefinitionIndexName,
-		String uid);
+	public String create(
+		MisspellingSetIndexName misspellingsIndexName,
+		MisspellingSet misspellingSet);
 
-	public boolean isExists(
-		MisspellingsDefinitionIndexName misspellingsDefinitionIndexName);
+	public void remove(
+		MisspellingSetIndexName misspellingsIndexName, String uid);
 
-	public List<MisspellingsDefinition> search(
-		MisspellingsDefinitionIndexName misspellingsDefinitionIndexName);
+	public void update(
+		MisspellingSetIndexName misspellingsIndexName,
+		MisspellingSet misspellingSet);
 
 }

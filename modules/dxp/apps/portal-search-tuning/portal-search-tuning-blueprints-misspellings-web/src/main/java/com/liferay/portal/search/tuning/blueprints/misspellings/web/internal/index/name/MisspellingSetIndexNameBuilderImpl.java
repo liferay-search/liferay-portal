@@ -23,15 +23,15 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Petteri Karttunen
  */
-@Component(service = MisspellingsDefinitionIndexNameBuilder.class)
-public class MisspellingsDefinitionIndexNameBuilderImpl
-	implements MisspellingsDefinitionIndexNameBuilder {
+@Component(service = MisspellingSetIndexNameBuilder.class)
+public class MisspellingSetIndexNameBuilderImpl
+	implements MisspellingSetIndexNameBuilder {
 
 	@Override
-	public MisspellingsDefinitionIndexName getMisspellingsDefinitionIndexName(
+	public MisspellingSetIndexName getMisspellingSetIndexName(
 		long companyId) {
 
-		return new MisspellingsDefinitionIndexNameImpl(
+		return new MisspellingSetIndexNameImpl(
 			_indexNameBuilder.getIndexName(companyId) + StringPool.DASH +
 				MISSPELLINGS_INDEX_NAME_SUFFIX);
 	}
@@ -46,10 +46,10 @@ public class MisspellingsDefinitionIndexNameBuilderImpl
 
 	private IndexNameBuilder _indexNameBuilder;
 
-	private static class MisspellingsDefinitionIndexNameImpl
-		implements MisspellingsDefinitionIndexName {
+	private static class MisspellingSetIndexNameImpl
+		implements MisspellingSetIndexName {
 
-		public MisspellingsDefinitionIndexNameImpl(String indexName) {
+		public MisspellingSetIndexNameImpl(String indexName) {
 			_indexName = indexName;
 		}
 

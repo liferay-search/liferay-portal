@@ -12,27 +12,14 @@
  *
  */
 
-package com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index;
+package com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.name;
 
 /**
  * @author Petteri Karttunen
  */
-public class MisspellingsDefinitionFields {
+public interface MisspellingSetIndexNameBuilder {
 
-	public static final String COMPANY_ID = "companyId";
-
-	public static final String CREATED = "created";
-
-	public static final String GROUP_ID = "groupId";
-
-	public static final String MAPPINGS = "mappings";
-
-	public static final String MODIFIED = "modified";
-
-	public static final String NAME = "name";
-
-	public static final String UID = "uid";
-
-	public static final String USER_ID = "userId";
+	public MisspellingSetIndexName getMisspellingSetIndexName(
+		long companyId);
 
 }

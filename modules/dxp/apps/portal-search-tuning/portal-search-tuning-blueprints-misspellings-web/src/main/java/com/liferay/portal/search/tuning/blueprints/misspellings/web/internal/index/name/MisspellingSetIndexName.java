@@ -12,17 +12,13 @@
  *
  */
 
-package com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.constants;
+package com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.name;
 
 /**
  * @author Petteri Karttunen
  */
-public class MisspellingsWebKeys {
+public interface MisspellingSetIndexName {
 
-	public static final String EDIT_MISSPELLING_SET_DISPLAY_CONTEXT =
-		"EDIT_MISSPELLING_SET_DISPLAY_CONTEXT";
-
-	public static final String MISSPELLINGS_DISPLAY_CONTEXT =
-		"MISSPELLINGS_DISPLAY_CONTEXT";
+	public String getIndexName();
 
 }

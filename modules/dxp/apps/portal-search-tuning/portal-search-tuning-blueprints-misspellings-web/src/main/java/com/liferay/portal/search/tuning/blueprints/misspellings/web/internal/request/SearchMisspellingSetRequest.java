@@ -28,9 +28,9 @@ import com.liferay.portal.search.query.Query;
 import com.liferay.portal.search.sort.Sort;
 import com.liferay.portal.search.sort.SortOrder;
 import com.liferay.portal.search.sort.Sorts;
-import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.display.context.MisspellingsDefinitionDisplayContext;
-import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.MisspellingsDefinitionFields;
-import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.name.MisspellingsDefinitionIndexName;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.display.context.MisspellingSetDisplayContext;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.MisspellingSetFields;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.name.MisspellingSetIndexName;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -41,15 +41,15 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * @author Petteri Karttunen
  */
-public class SearchMisspellingsDefinitionRequest {
+public class SearchMisspellingSetRequest {
 
-	public SearchMisspellingsDefinitionRequest(
-		MisspellingsDefinitionIndexName misspellingsDefinitionIndexName,
+	public SearchMisspellingSetRequest(
+		MisspellingSetIndexName misspellingSetIndexName,
 		HttpServletRequest httpServletRequest, Queries queries, Sorts sorts,
-		SearchContainer<MisspellingsDefinitionDisplayContext> searchContainer,
+		SearchContainer<MisspellingSetDisplayContext> searchContainer,
 		SearchEngineAdapter searchEngineAdapter) {
 
-		_misspellingsDefinitionIndexName = misspellingsDefinitionIndexName;
+		_misspellingSetIndexName = misspellingSetIndexName;
 		_httpServletRequest = httpServletRequest;
 		_queries = queries;
 		_sorts = sorts;
@@ -58,12 +58,12 @@ public class SearchMisspellingsDefinitionRequest {
 		_searchEngineAdapter = searchEngineAdapter;
 	}
 
-	public SearchMisspellingsDefinitionResponse search() {
+	public SearchMisspellingSetResponse search() {
 		SearchSearchRequest searchSearchRequest = new SearchSearchRequest();
 
 		searchSearchRequest.setFetchSource(true);
 		searchSearchRequest.setIndexNames(
-			_misspellingsDefinitionIndexName.getIndexName());
+			_misspellingSetIndexName.getIndexName());
 		searchSearchRequest.setPreferLocalCluster(false);
 		searchSearchRequest.setQuery(_getQuery());
 		searchSearchRequest.setSize(_searchContainer.getDelta());
@@ -73,24 +73,24 @@ public class SearchMisspellingsDefinitionRequest {
 		SearchSearchResponse searchSearchResponse =
 			_searchEngineAdapter.execute(searchSearchRequest);
 
-		SearchMisspellingsDefinitionResponse
-			searchMisspellingsDefinitionResponse =
-				new SearchMisspellingsDefinitionResponse();
+		SearchMisspellingSetResponse
+			searchMisspellingSetResponse =
+				new SearchMisspellingSetResponse();
 
 		SearchHits searchHits = searchSearchResponse.getSearchHits();
 
-		searchMisspellingsDefinitionResponse.setSearchHits(searchHits);
-		searchMisspellingsDefinitionResponse.setTotalHits(
+		searchMisspellingSetResponse.setSearchHits(searchHits);
+		searchMisspellingSetResponse.setTotalHits(
 			(int)searchHits.getTotalHits());
 
-		return searchMisspellingsDefinitionResponse;
+		return searchMisspellingSetResponse;
 	}
 
 	private Query _getQuery() {
 		String keywords = _searchContext.getKeywords();
 
 		if (!Validator.isBlank(keywords)) {
-			return _queries.match(MisspellingsDefinitionFields.NAME, keywords);
+			return _queries.match(MisspellingSetFields.NAME, keywords);
 		}
 
 		return _queries.matchAll();
@@ -99,7 +99,7 @@ public class SearchMisspellingsDefinitionRequest {
 	private Collection<Sort> _getSorts() {
 		String orderByCol = ParamUtil.getString(
 			_httpServletRequest, "orderByCol",
-			MisspellingsDefinitionFields.UID);
+			MisspellingSetFields.UID);
 		String orderByType = ParamUtil.getString(
 			_httpServletRequest, "orderByType", "asc");
 
@@ -113,10 +113,10 @@ public class SearchMisspellingsDefinitionRequest {
 	}
 
 	private final HttpServletRequest _httpServletRequest;
-	private final MisspellingsDefinitionIndexName
-		_misspellingsDefinitionIndexName;
+	private final MisspellingSetIndexName
+		_misspellingSetIndexName;
 	private final Queries _queries;
-	private final SearchContainer<MisspellingsDefinitionDisplayContext>
+	private final SearchContainer<MisspellingSetDisplayContext>
 		_searchContainer;
 	private final SearchContext _searchContext;
 	private final SearchEngineAdapter _searchEngineAdapter;

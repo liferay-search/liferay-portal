@@ -23,8 +23,10 @@ import com.liferay.portal.search.index.IndexNameBuilder;
 import com.liferay.portal.search.query.Queries;
 import com.liferay.portal.search.sort.Sorts;
 import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.constants.MisspellingsPortletKeys;
-import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.DocumentToMisspellingsDefinitionTranslator;
-import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.name.MisspellingsDefinitionIndexNameBuilder;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.constants.MisspellingsWebKeys;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.display.context.MisspellingsDisplayBuilder;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.DocumentToMisspellingSetTranslator;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.name.MisspellingSetIndexNameBuilder;
 
 import java.io.IOException;
 
@@ -66,12 +68,24 @@ public class MisspellingsPortlet extends MVCPortlet {
 			RenderRequest renderRequest, RenderResponse renderResponse)
 		throws IOException, PortletException {
 
+		MisspellingsDisplayBuilder misspellingsDisplayBuilder =
+				new MisspellingsDisplayBuilder(
+					_documentToMisspellingSetTranslator,
+					_portal.getHttpServletRequest(renderRequest), _language,
+					_portal, _queries, renderRequest, renderResponse,
+					_searchEngineAdapter, _searchEngineInformation, _sorts,
+					_misspellingSetIndexNameBuilder);
+
+			renderRequest.setAttribute(
+				MisspellingsWebKeys.MISSPELLINGS_DISPLAY_CONTEXT,
+				misspellingsDisplayBuilder.build());
+
 		super.render(renderRequest, renderResponse);
 	}
 
 	@Reference
-	private DocumentToMisspellingsDefinitionTranslator
-		_documentToMisspellingsDefinitionTranslator;
+	private DocumentToMisspellingSetTranslator
+		_documentToMisspellingSetTranslator;
 
 	@Reference
 	private IndexNameBuilder _indexNameBuilder;
@@ -80,8 +94,8 @@ public class MisspellingsPortlet extends MVCPortlet {
 	private Language _language;
 
 	@Reference
-	private MisspellingsDefinitionIndexNameBuilder
-		_misspellingsDefinitionIndexNameBuilder;
+	private MisspellingSetIndexNameBuilder
+		_misspellingSetIndexNameBuilder;
 
 	@Reference
 	private Portal _portal;

@@ -14,9 +14,6 @@
 
 package com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index;
 
-import com.liferay.portal.kernel.json.JSONException;
-import com.liferay.portal.kernel.json.JSONFactoryUtil;
-import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.search.document.Document;
@@ -25,7 +22,6 @@ import com.liferay.portal.search.hits.SearchHits;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,37 +32,40 @@ import org.osgi.service.component.annotations.Component;
 /**
  * @author Petteri Karttunen
  */
-@Component(service = DocumentToMisspellingsDefinitionTranslator.class)
-public class DocumentToMisspellingsDefinitionTranslatorImpl
-	implements DocumentToMisspellingsDefinitionTranslator {
+@Component(service = DocumentToMisspellingSetTranslator.class)
+public class DocumentToMisspellingSetTranslatorImpl
+	implements DocumentToMisspellingSetTranslator {
 
 	@Override
-	public MisspellingsDefinition translate(Document document) {
+	public MisspellingSet translate(Document document) {
 		return builder(
 		).companyId(
-			document.getLong(MisspellingsDefinitionFields.COMPANY_ID)
+			document.getLong(MisspellingSetFields.COMPANY_ID)
 		).created(
 			parseDateStringFieldValue(
-				document.getDate(MisspellingsDefinitionFields.CREATED))
+				document.getDate(MisspellingSetFields.CREATED))
 		).groupId(
-			document.getLong(MisspellingsDefinitionFields.GROUP_ID)
-		).mappings(
-			parseJsonFieldValue(
-				document.getString(MisspellingsDefinitionFields.MAPPINGS))
-		).misspellingsDefinitionId(
-			document.getString(MisspellingsDefinitionFields.UID)
+			document.getLong(MisspellingSetFields.GROUP_ID)
+		).languageId(
+				document.getString(MisspellingSetFields.LANGUAGE_ID)
+		).misspellings(
+				document.getStrings(MisspellingSetFields.MISSPELLINGS)
+		).misspellingSetId(
+			document.getString(MisspellingSetFields.UID)
 		).modified(
 			parseDateStringFieldValue(
-				document.getDate(MisspellingsDefinitionFields.MODIFIED))
+				document.getDate(MisspellingSetFields.MODIFIED))
+		).phrase(
+				document.getString(MisspellingSetFields.PHRASE)
 		).name(
-			document.getString(MisspellingsDefinitionFields.NAME)
+			document.getString(MisspellingSetFields.NAME)
 		).userId(
-			document.getLong(MisspellingsDefinitionFields.USER_ID)
+			document.getLong(MisspellingSetFields.USER_ID)
 		).build();
 	}
 
 	@Override
-	public List<MisspellingsDefinition> translateAll(SearchHits searchHits) {
+	public List<MisspellingSet> translateAll(SearchHits searchHits) {
 		List<SearchHit> list = searchHits.getSearchHits();
 
 		Stream<SearchHit> stream = list.stream();
@@ -78,8 +77,8 @@ public class DocumentToMisspellingsDefinitionTranslatorImpl
 		);
 	}
 
-	protected MisspellingsDefinition.MisspellingsBuilder builder() {
-		return new MisspellingsDefinition.MisspellingsBuilder();
+	protected MisspellingSet.MisspellingSetBuilder builder() {
+		return new MisspellingSet.MisspellingSetBuilder();
 	}
 
 	protected Date parseDateStringFieldValue(String dateStringFieldValue) {
@@ -95,18 +94,7 @@ public class DocumentToMisspellingsDefinitionTranslatorImpl
 		return null;
 	}
 
-	protected JSONObject parseJsonFieldValue(String jsonString) {
-		try {
-			return JSONFactoryUtil.createJSONObject(jsonString);
-		}
-		catch (JSONException jsonException) {
-			_log.error(jsonException.getMessage(), jsonException);
-		}
-
-		return JSONFactoryUtil.createJSONObject();
-	}
-
 	private static final Log _log = LogFactoryUtil.getLog(
-		DocumentToMisspellingsDefinitionTranslatorImpl.class);
+		DocumentToMisspellingSetTranslatorImpl.class);
 
 }

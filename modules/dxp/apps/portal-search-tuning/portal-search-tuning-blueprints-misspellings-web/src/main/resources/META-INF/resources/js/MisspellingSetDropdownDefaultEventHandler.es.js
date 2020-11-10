@@ -7,15 +7,24 @@
  * contacting Liferay, Inc. See the License for the specific language governing
  * permissions and limitations under the License, including but not limited to
  * distribution rights of the Software.
- *
- *
- *
  */
 
-package com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.display.context;
+import {DefaultEventHandler} from 'frontend-js-web';
 
-/**
- * @author Petteri Karttunen
- */
-public class MisspellingsDefinitionDisplayContext {
+class MisspellingSetDropdownDefaultEventHandler extends DefaultEventHandler {
+	delete(itemData) {
+		const message = Liferay.Language.get(
+			'are-you-sure-you-want-to-delete-this'
+		);
+
+		if (confirm(message)) {
+			this._send(itemData.deleteURL);
+		}
+	}
+
+	_send(url) {
+		submitForm(document.hrefFm, url);
+	}
 }
+
+export default MisspellingSetDropdownDefaultEventHandler;

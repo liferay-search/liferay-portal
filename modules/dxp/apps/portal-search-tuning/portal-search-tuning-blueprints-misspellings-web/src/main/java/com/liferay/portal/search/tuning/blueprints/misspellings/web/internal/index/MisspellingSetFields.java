@@ -14,22 +14,29 @@
 
 package com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index;
 
-import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.name.MisspellingsDefinitionIndexName;
-
 /**
  * @author Petteri Karttunen
  */
-public interface MisspellingsDefinitionIndexWriter {
+public class MisspellingSetFields {
 
-	public String create(
-		MisspellingsDefinitionIndexName misspellingsIndexName,
-		MisspellingsDefinition misspellingsDefinition);
+	public static final String COMPANY_ID = "companyId";
 
-	public void remove(
-		MisspellingsDefinitionIndexName misspellingsIndexName, String uid);
+	public static final String CREATED = "created";
 
-	public void update(
-		MisspellingsDefinitionIndexName misspellingsIndexName,
-		MisspellingsDefinition misspellingsDefinition);
+	public static final String GROUP_ID = "groupId";
+
+	public static final String LANGUAGE_ID = "languageId";
+
+	public static final String MISSPELLINGS = "misspellings";
+
+	public static final String MODIFIED = "modified";
+
+	public static final String NAME = "name";
+	
+	public static final String PHRASE = "phrase";
+	
+	public static final String UID = "uid";
+
+	public static final String USER_ID = "userId";
 
 }

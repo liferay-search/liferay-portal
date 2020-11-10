@@ -18,7 +18,7 @@ import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
 import com.liferay.portal.search.engine.adapter.document.DeleteDocumentRequest;
 import com.liferay.portal.search.engine.adapter.document.IndexDocumentRequest;
 import com.liferay.portal.search.engine.adapter.document.IndexDocumentResponse;
-import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.name.MisspellingsDefinitionIndexName;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.name.MisspellingSetIndexName;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -26,17 +26,17 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Petteri Karttunen
  */
-@Component(service = MisspellingsDefinitionIndexWriter.class)
-public class MisspellingsDefinitionIndexWriterImpl
-	implements MisspellingsDefinitionIndexWriter {
+@Component(service = MisspellingSetIndexWriter.class)
+public class MisspellingSetIndexWriterImpl
+	implements MisspellingSetIndexWriter {
 
 	@Override
 	public String create(
-		MisspellingsDefinitionIndexName misspellingsDefinitionIndexName,
-		MisspellingsDefinition misspellings) {
+		MisspellingSetIndexName misspellingSetIndexName,
+		MisspellingSet misspellings) {
 
 		IndexDocumentRequest documentRequest = new IndexDocumentRequest(
-			misspellingsDefinitionIndexName.getIndexName(),
+				misspellingSetIndexName.getIndexName(),
 			_misspellingsToDocumentTranslator.translate(misspellings));
 
 		documentRequest.setRefresh(true);
@@ -49,11 +49,11 @@ public class MisspellingsDefinitionIndexWriterImpl
 
 	@Override
 	public void remove(
-		MisspellingsDefinitionIndexName misspellingsDefinitionIndexName,
+		MisspellingSetIndexName misspellingSetIndexName,
 		String uid) {
 
 		DeleteDocumentRequest deleteDocumentRequest = new DeleteDocumentRequest(
-			misspellingsDefinitionIndexName.getIndexName(), uid);
+				misspellingSetIndexName.getIndexName(), uid);
 
 		deleteDocumentRequest.setRefresh(true);
 
@@ -62,14 +62,14 @@ public class MisspellingsDefinitionIndexWriterImpl
 
 	@Override
 	public void update(
-		MisspellingsDefinitionIndexName misspellingsDefinitionIndexName,
-		MisspellingsDefinition misspellingsDefinition) {
+		MisspellingSetIndexName misspellingSetIndexName,
+		MisspellingSet misspellingSet) {
 
 		IndexDocumentRequest indexDocumentRequest = new IndexDocumentRequest(
-			misspellingsDefinitionIndexName.getIndexName(),
-			misspellingsDefinition.getMisspellingsDefinitionId(),
+				misspellingSetIndexName.getIndexName(),
+				misspellingSet.getMisspellingSetId(),
 			_misspellingsToDocumentTranslator.translate(
-				misspellingsDefinition));
+					misspellingSet));
 
 		indexDocumentRequest.setRefresh(true);
 
@@ -77,7 +77,7 @@ public class MisspellingsDefinitionIndexWriterImpl
 	}
 
 	@Reference
-	private MisspellingsDefinitionToDocumentTranslator
+	private MisspellingSetToDocumentTranslator
 		_misspellingsToDocumentTranslator;
 
 	@Reference
