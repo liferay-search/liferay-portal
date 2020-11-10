@@ -18,10 +18,10 @@ import com.liferay.portal.instance.lifecycle.BasePortalInstanceLifecycleListener
 import com.liferay.portal.instance.lifecycle.PortalInstanceLifecycleListener;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.search.engine.SearchEngineInformation;
-import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.MisspellingsDefinitionIndexCreator;
-import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.MisspellingsDefinitionIndexReader;
-import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.name.MisspellingsDefinitionIndexName;
-import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.name.MisspellingsDefinitionIndexNameBuilder;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.MisspellingSetIndexCreator;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.MisspellingSetIndexReader;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.name.MisspellingSetIndexName;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.name.MisspellingSetIndexNameBuilder;
 
 import java.util.Objects;
 
@@ -32,7 +32,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Petteri Karttunen
  */
 @Component(immediate = true, service = PortalInstanceLifecycleListener.class)
-public class MisspellingsDefinitionIndexCreationPortalInstanceLifecycleListener
+public class MisspellingSetIndexCreationPortalInstanceLifecycleListener
 	extends BasePortalInstanceLifecycleListener {
 
 	@Override
@@ -43,29 +43,29 @@ public class MisspellingsDefinitionIndexCreationPortalInstanceLifecycleListener
 			return;
 		}
 
-		MisspellingsDefinitionIndexName misspellingsDefinitionIndexName =
-			_misspellingsDefinitionIndexNameBuilder.
-				getMisspellingsDefinitionIndexName(company.getCompanyId());
+		MisspellingSetIndexName misspellingSetIndexName =
+			_misspellingSetIndexNameBuilder.
+				getMisspellingSetIndexName(company.getCompanyId());
 
-		if (!_misspellingsDefinitionIndexReader.isExists(
-				misspellingsDefinitionIndexName)) {
+		if (!_misspellingSetIndexReader.isExists(
+				misspellingSetIndexName)) {
 
-			_misspellingsDefinitionIndexCreator.create(
-				misspellingsDefinitionIndexName);
+			_misspellingSetIndexCreator.create(
+					misspellingSetIndexName);
 		}
 	}
 
 	@Reference
-	private MisspellingsDefinitionIndexCreator
-		_misspellingsDefinitionIndexCreator;
+	private MisspellingSetIndexCreator
+		_misspellingSetIndexCreator;
 
 	@Reference
-	private MisspellingsDefinitionIndexNameBuilder
-		_misspellingsDefinitionIndexNameBuilder;
+	private MisspellingSetIndexNameBuilder
+		_misspellingSetIndexNameBuilder;
 
 	@Reference
-	private MisspellingsDefinitionIndexReader
-		_misspellingsDefinitionIndexReader;
+	private MisspellingSetIndexReader
+		_misspellingSetIndexReader;
 
 	@Reference
 	private SearchEngineInformation _searchEngineInformation;

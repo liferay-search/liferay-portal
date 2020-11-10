@@ -22,8 +22,8 @@ import com.liferay.portal.search.document.DocumentBuilderFactory;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-
 import java.util.Date;
+import java.util.stream.Stream;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -31,36 +31,45 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Petteri Karttunen
  */
-@Component(service = MisspellingsDefinitionToDocumentTranslator.class)
-public class MisspellingsDefinitionToDocumentTranslatorImpl
-	implements MisspellingsDefinitionToDocumentTranslator {
+@Component(service = MisspellingSetToDocumentTranslator.class)
+public class MisspellingSetToDocumentTranslatorImpl
+	implements MisspellingSetToDocumentTranslator {
 
 	@Override
-	public Document translate(MisspellingsDefinition misspellingsDefinition) {
+	public Document translate(MisspellingSet misspellingSet) {
+		
+		Stream<String>stream = misspellingSet.getMisspellings().stream();
+		
 		return _documentBuilderFactory.builder(
 		).setLong(
-			MisspellingsDefinitionFields.COMPANY_ID,
-			misspellingsDefinition.getCompanyId()
+			MisspellingSetFields.COMPANY_ID,
+			misspellingSet.getCompanyId()
 		).setDate(
-			MisspellingsDefinitionFields.CREATED,
-			parseDateString(misspellingsDefinition.getCreated())
+			MisspellingSetFields.CREATED,
+			parseDateString(misspellingSet.getCreated())
 		).setLong(
-			MisspellingsDefinitionFields.GROUP_ID,
-			misspellingsDefinition.getGroupId()
+			MisspellingSetFields.GROUP_ID,
+			misspellingSet.getGroupId()
 		).setValue(
-			MisspellingsDefinitionFields.MAPPINGS,
-			misspellingsDefinition.getMappingsJSONObject()
+				MisspellingSetFields.LANGUAGE_ID,
+				misspellingSet.getLanguageId()
+		).setStrings(
+			MisspellingSetFields.MISSPELLINGS,
+			stream.toArray(String[]::new)
 		).setDate(
-			MisspellingsDefinitionFields.MODIFIED,
-			parseDateString(misspellingsDefinition.getModified())
+			MisspellingSetFields.MODIFIED,
+			parseDateString(misspellingSet.getModified())
 		).setString(
-			MisspellingsDefinitionFields.NAME, misspellingsDefinition.getName()
+			MisspellingSetFields.NAME, misspellingSet.getName()
+		).setValue(
+				MisspellingSetFields.PHRASE,
+				misspellingSet.getPhrase()
 		).setLong(
-			MisspellingsDefinitionFields.USER_ID,
-			misspellingsDefinition.getUserId()
+			MisspellingSetFields.USER_ID,
+			misspellingSet.getUserId()
 		).setString(
-			MisspellingsDefinitionFields.UID,
-			misspellingsDefinition.getMisspellingsDefinitionId()
+			MisspellingSetFields.UID,
+			misspellingSet.getMisspellingSetId()
 		).build();
 	}
 
@@ -85,7 +94,7 @@ public class MisspellingsDefinitionToDocumentTranslatorImpl
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
-		MisspellingsDefinitionToDocumentTranslatorImpl.class);
+		MisspellingSetToDocumentTranslatorImpl.class);
 
 	private DocumentBuilderFactory _documentBuilderFactory;
 

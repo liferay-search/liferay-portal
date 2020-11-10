@@ -25,7 +25,7 @@ import java.util.Optional;
 /**
  * @author Petteri Karttunen
  */
-public class SearchMisspellingsDefinitionResponse {
+public class SearchMisspellingSetResponse {
 
 	public List<Document> getDocuments() {
 		return _documents;

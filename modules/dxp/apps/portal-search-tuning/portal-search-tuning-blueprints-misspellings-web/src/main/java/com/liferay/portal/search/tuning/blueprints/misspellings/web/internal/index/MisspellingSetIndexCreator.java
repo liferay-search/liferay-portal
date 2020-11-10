@@ -12,13 +12,19 @@
  *
  */
 
-package com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.name;
+package com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index;
+
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.name.MisspellingSetIndexName;
 
 /**
  * @author Petteri Karttunen
  */
-public interface MisspellingsDefinitionIndexName {
+public interface MisspellingSetIndexCreator {
 
-	public String getIndexName();
+	public void create(
+		MisspellingSetIndexName misspellingSetIndexName);
+
+	public void delete(
+		MisspellingSetIndexName misspellingSetIndexName);
 
 }

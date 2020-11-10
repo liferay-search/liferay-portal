@@ -14,11 +14,69 @@
  */
 --%>
 
-<%@ taglib uri="http://liferay.com/tld/frontend" prefix="liferay-frontend" %><%@
-taglib uri="http://liferay.com/tld/theme" prefix="liferay-theme" %>
+<%@ include file="/init.jsp" %>
 
-<liferay-frontend:defineObjects />
+<%                         
+MisspellingsDisplayContext misspellingsDisplayContext = (MisspellingsDisplayContext)request.getAttribute(MisspellingsWebKeys.MISSPELLINGS_DISPLAY_CONTEXT);
+%>
 
-<liferay-theme:defineObjects />
+<clay:management-toolbar
+	actionDropdownItems="<%= misspellingsDisplayContext.getActionDropdownMultipleItems() %>"
+	componentId="misspellingsSetEntriesManagementToolbar"
+	creationMenu="<%= misspellingsDisplayContext.getCreationMenu() %>"
+	disabled="<%= misspellingsDisplayContext.isDisabledManagementBar() %>"
+	itemsTotal="<%= misspellingsDisplayContext.getItemsTotal() %>"
+	searchContainerId="misspellingSetEntries"
+	selectable="<%= true %>"
+	showCreationMenu="<%= true %>"
+	showSearch="<%= false %>"
+/>
 
-Please implement me.
+<portlet:actionURL name="deleteMisspellingSet" var="deleteMisspellingSetActionURL">
+	<portlet:param name="redirect" value="<%= currentURL %>" />
+</portlet:actionURL>
+
+<aui:form action="<%= deleteMisspellingSetActionURL %>" cssClass="container-fluid-1280" method="post" name="misspellingSetEntriesFm">
+	<aui:input name="deleteMisspellingSetString" type="hidden" value="" />
+
+	<liferay-ui:search-container
+		id="misspellingSetEntries"
+		searchContainer="<%= misspellingsDisplayContext.getSearchContainer() %>"
+	>
+		<liferay-ui:search-container-row
+			className="com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.display.context.MisspellingSetDisplayContext"
+			keyProperty="misspellingSetId"
+			modelVar="misspellingSetDisplayContext"
+		>
+			<liferay-ui:search-container-column-text
+				colspan="<%= 2 %>"
+				cssClass="table-cell-expand table-title"
+			>
+				<aui:a href="<%= misspellingSetDisplayContext.getEditRenderURL() %>">
+					<%= misspellingSetDisplayContext.getName() %>
+				</aui:a>
+			</liferay-ui:search-container-column-text>
+
+			<liferay-ui:search-container-column-text>
+				<clay:dropdown-actions
+					defaultEventHandler="misspellingSetDropdownDefaultEventHandler"
+					dropdownItems="<%= misspellingSetDisplayContext.getDropdownItems() %>"
+				/>
+			</liferay-ui:search-container-column-text>
+		</liferay-ui:search-container-row>
+
+		<liferay-ui:search-iterator
+			markupView="lexicon"
+			paginate="<%= false %>"
+		/>
+	</liferay-ui:search-container>
+</aui:form>
+
+<aui:script require='<%= npmResolvedPackageName + "/js/MultipleCheckboxAction.es as MultipleCheckboxAction" %>'>
+	new MultipleCheckboxAction.default('<portlet:namespace />');
+</aui:script>
+
+<liferay-frontend:component
+	componentId="MisspellingSetDropdownDefaultEventHandler"
+	module="js/MisspellingSetDropdownDefaultEventHandler.es"
+/>

@@ -12,14 +12,15 @@
  *
  */
 
-package com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.name;
+package com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index;
+
+import com.liferay.portal.search.document.Document;
 
 /**
  * @author Petteri Karttunen
  */
-public interface MisspellingsDefinitionIndexNameBuilder {
+public interface MisspellingSetToDocumentTranslator {
 
-	public MisspellingsDefinitionIndexName getMisspellingsDefinitionIndexName(
-		long companyId);
+	public Document translate(MisspellingSet misspellingSet);
 
 }

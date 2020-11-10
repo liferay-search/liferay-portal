@@ -7,25 +7,22 @@
  * contacting Liferay, Inc. See the License for the specific language governing
  * permissions and limitations under the License, including but not limited to
  * distribution rights of the Software.
- *
- *
- *
  */
 
-package com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index;
+import ClayButton from '@clayui/button';
+import ClayForm, {ClayInput} from '@clayui/form';
+import ClayLayout from '@clayui/layout';
+import ClayMultiSelect from '@clayui/multi-select';
+import PropTypes from 'prop-types';
+import React, {Component} from 'react';
 
-import com.liferay.portal.search.document.Document;
-import com.liferay.portal.search.hits.SearchHits;
+class MisspellingSetForm extends Component {
 
-import java.util.List;
-
-/**
- * @author Petteri Karttunen
- */
-public interface DocumentToMisspellingsDefinitionTranslator {
-
-	public MisspellingsDefinition translate(Document document);
-
-	public List<MisspellingsDefinition> translateAll(SearchHits searchHits);
-
+	render() {
+		return (
+				<div>https://issues.liferay.com/browse/LPS-118898</div>
+		);
+	}
 }
+
+export default MisspellingSetForm;

@@ -18,7 +18,7 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
 import com.liferay.portal.search.engine.adapter.index.CreateIndexRequest;
 import com.liferay.portal.search.engine.adapter.index.DeleteIndexRequest;
-import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.name.MisspellingsDefinitionIndexName;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.name.MisspellingSetIndexName;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -26,16 +26,16 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Petteri Karttunen
  */
-@Component(service = MisspellingsDefinitionIndexCreator.class)
-public class MisspellingsDefinitionIndexCreatorImpl
-	implements MisspellingsDefinitionIndexCreator {
+@Component(service = MisspellingSetIndexCreator.class)
+public class MisspellingSetIndexCreatorImpl
+	implements MisspellingSetIndexCreator {
 
 	@Override
 	public void create(
-		MisspellingsDefinitionIndexName misspellingsDefinitionIndexName) {
+		MisspellingSetIndexName misspellingSetIndexName) {
 
 		CreateIndexRequest createIndexRequest = new CreateIndexRequest(
-			misspellingsDefinitionIndexName.getIndexName());
+				misspellingSetIndexName.getIndexName());
 
 		createIndexRequest.setSource(readIndexSettings());
 
@@ -44,10 +44,10 @@ public class MisspellingsDefinitionIndexCreatorImpl
 
 	@Override
 	public void delete(
-		MisspellingsDefinitionIndexName misspellingsDefinitionIndexName) {
+		MisspellingSetIndexName misspellingSetIndexName) {
 
 		DeleteIndexRequest deleteIndexRequest = new DeleteIndexRequest(
-			misspellingsDefinitionIndexName.getIndexName());
+				misspellingSetIndexName.getIndexName());
 
 		_searchEngineAdapter.execute(deleteIndexRequest);
 	}

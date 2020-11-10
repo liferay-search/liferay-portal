@@ -15,9 +15,13 @@
 					"store": true,
 					"type": "keyword"
 				},
-				"mappings": {
-					"enabled": false,
-					"type": "object"
+				"languageId": {
+					"store": true,
+					"type": "keyword"
+				},
+				"misspellings": {
+					"store": true,
+					"type": "keyword"
 				},
 				"modified": {
 					"format": "yyyyMMddHHmmss",
@@ -27,6 +31,10 @@
 				"name": {
 					"store": true,
 					"type": "text"
+				},
+				"phrase": {
+					"store": true,
+					"type": "keyword"
 				},
 				"uid": {
 					"store": true,

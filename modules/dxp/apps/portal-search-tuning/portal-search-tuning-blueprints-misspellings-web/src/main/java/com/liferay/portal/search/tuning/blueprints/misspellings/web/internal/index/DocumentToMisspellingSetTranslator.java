@@ -14,17 +14,18 @@
 
 package com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index;
 
-import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.name.MisspellingsDefinitionIndexName;
+import com.liferay.portal.search.document.Document;
+import com.liferay.portal.search.hits.SearchHits;
+
+import java.util.List;
 
 /**
  * @author Petteri Karttunen
  */
-public interface MisspellingsDefinitionIndexCreator {
+public interface DocumentToMisspellingSetTranslator {
 
-	public void create(
-		MisspellingsDefinitionIndexName misspellingsDefinitionIndexName);
+	public MisspellingSet translate(Document document);
 
-	public void delete(
-		MisspellingsDefinitionIndexName misspellingsDefinitionIndexName);
+	public List<MisspellingSet> translateAll(SearchHits searchHits);
 
 }
