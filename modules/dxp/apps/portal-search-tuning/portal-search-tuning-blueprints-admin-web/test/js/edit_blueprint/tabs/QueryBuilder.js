@@ -12,13 +12,13 @@
 import {fireEvent, render} from '@testing-library/react';
 import React from 'react';
 
-import QueryBuilder from '../../../src/main/resources/META-INF/resources/js/tabs/QueryBuilder';
-import {SELECTED_FRAGMENTS} from './../mocks/data';
+import QueryBuilder from '../../../../src/main/resources/META-INF/resources/js/edit_blueprint/tabs/QueryBuilder';
+import {SELECTED_FRAGMENTS} from '../../mocks/data';
 
 import '@testing-library/jest-dom/extend-expect';
 
 jest.mock(
-	'../../../src/main/resources/META-INF/resources/js/components/CodeMirrorEditor',
+	'../../../../src/main/resources/META-INF/resources/js/shared/CodeMirrorEditor',
 	() => ({onChange, value}) => (
 		<textarea aria-label="text-area" onChange={onChange} value={value} />
 	)
@@ -37,7 +37,7 @@ function renderBuilder(props) {
 	);
 }
 
-describe('Builder', () => {
+describe('QueryBuilder', () => {
 	it('renders the builder', () => {
 		const {container} = renderBuilder();
 

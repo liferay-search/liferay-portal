@@ -30,7 +30,7 @@ import FragmentForm from '../../src/main/resources/META-INF/resources/js/edit_fr
 import ConfigFragment from '../../src/main/resources/META-INF/resources/js/shared/ConfigFragment';
 import ErrorBoundary from '../../src/main/resources/META-INF/resources/js/shared/ErrorBoundary';
 import Fragment from '../../src/main/resources/META-INF/resources/js/shared/Fragment';
-import {AVAILABLE_LOCALES, SELECTED_FRAGMENTS} from '../js/mocks/data';
+import {SELECTED_FRAGMENTS} from '../js/mocks/data';
 
 const {addDecorator, storiesOf} = StorybookReact;
 const {action} = StorybookAddonActions;
@@ -91,8 +91,7 @@ storiesOf('Pages|BlueprintForm', module)
 		<BlueprintForm
 			context={CONTEXT}
 			props={{
-				availableLocales: {AVAILABLE_LOCALES},
-				blueprintId: '0',
+				blueprintId: '1',
 				blueprintType: 0,
 				entityJSON: {
 					'com.liferay.asset.kernel.model.AssetTag': {
@@ -131,6 +130,10 @@ storiesOf('Pages|BlueprintForm', module)
 						url: 'http:…',
 					},
 				},
+				initialDescription: {},
+				initialSelectedFragmentsString: JSON.stringify({
+					query_configuration: SELECTED_FRAGMENTS,
+				}),
 				initialTitle: {
 					'en-US': 'Test Title',
 				},
@@ -144,7 +147,6 @@ storiesOf('Components|PageToolbar', module)
 	.addDecorator(withBlueprintsClass)
 	.add('PageToolbar', () => (
 		<PageToolbar
-			availableLocales={AVAILABLE_LOCALES}
 			initialTitle={{
 				'en-US': 'Test Title',
 			}}
@@ -152,7 +154,7 @@ storiesOf('Components|PageToolbar', module)
 			onPublish={action('onPublish')}
 			tab={'query-builder'}
 			tabs={{
-				'query-builder': Liferay.Language.get('query-builder'),
+				'query-builder': 'query-builder',
 			}}
 		/>
 	));
@@ -173,7 +175,7 @@ storiesOf('Components|Builder', module)
 		<QueryBuilder
 			deleteFragment={action('buildFragment')}
 			selectedFragments={SELECTED_FRAGMENTS}
-			updateFragments={action('updateFragments')}
+			updateFragment={action('updateFragment')}
 		/>
 	));
 

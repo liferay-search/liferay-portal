@@ -12,8 +12,7 @@
 import {act, fireEvent, render} from '@testing-library/react';
 import React from 'react';
 
-import PageToolbar from '../../../src/main/resources/META-INF/resources/js/components/PageToolbar';
-import {AVAILABLE_LOCALES} from './../mocks/data';
+import PageToolbar from '../../../src/main/resources/META-INF/resources/js/edit_blueprint/PageToolbar';
 
 import '@testing-library/jest-dom/extend-expect';
 
@@ -24,7 +23,6 @@ const onSubmit = jest.fn();
 function renderPageToolbar(props) {
 	return render(
 		<PageToolbar
-			availableLocales={AVAILABLE_LOCALES}
 			initialDescription={{}}
 			initialTitle={{}}
 			onCancel="/link"

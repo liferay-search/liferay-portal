@@ -12,14 +12,14 @@
 import {fireEvent, render, within} from '@testing-library/react';
 import React from 'react';
 
-import BlueprintForm from '../../../src/main/resources/META-INF/resources/js/components/BlueprintForm';
+import EditBlueprintForm from '../../../src/main/resources/META-INF/resources/js/edit_blueprint/index';
 import {DEFAULT_FRAGMENT} from '../../../src/main/resources/META-INF/resources/js/utils/data';
-import {AVAILABLE_LOCALES, SELECTED_FRAGMENTS} from './../mocks/data';
+import {SELECTED_FRAGMENTS} from '../mocks/data';
 
 import '@testing-library/jest-dom/extend-expect';
 
 jest.mock(
-	'../../../src/main/resources/META-INF/resources/js/components/CodeMirrorEditor',
+	'../../../src/main/resources/META-INF/resources/js/shared/CodeMirrorEditor',
 	() => ({onChange, value}) => (
 		<textarea aria-label="text-area" onChange={onChange} value={value} />
 	)
@@ -27,16 +27,25 @@ jest.mock(
 
 function renderBlueprintForm(props) {
 	return render(
-		<BlueprintForm
-			availableLocales={AVAILABLE_LOCALES}
-			blueprintId="0"
-			blueprintType={0}
-			initialTitle={{
-				'en-US': 'Test Title',
+		<EditBlueprintForm
+			context={{
+				defaultLocale: 'en_US',
+				locale: 'en_US',
+				namespace:
+					'_com_liferay_portal_search_tuning_gsearch_configuration_web_internal_portlet_SearchConfigurationAdminPortlet_',
 			}}
-			redirectURL=""
-			submitFormURL=""
-			{...props}
+			props={{
+				blueprintId: '0',
+				blueprintType: 0,
+				entityJSON: {},
+				initialDescription: {},
+				initialTitle: {
+					'en-US': 'Test Title',
+				},
+				redirectURL: '',
+				submitFormURL: '',
+				...props,
+			}}
 		/>
 	);
 }
@@ -80,10 +89,12 @@ describe('BlueprintForm', () => {
 			getAllByLabelText,
 			getAllByText,
 		} = renderBlueprintForm({
-			blueprintId: '1',
-			initialSelectedFragments: SELECTED_FRAGMENTS.map((fragment) =>
-				JSON.stringify(fragment)
-			),
+			props: {
+				blueprintId: '1',
+				initialSelectedFragmentsString: JSON.stringify({
+					query_configuration: SELECTED_FRAGMENTS,
+				}),
+			},
 		});
 
 		const fragmentCountBefore = container.querySelectorAll(
@@ -92,7 +103,7 @@ describe('BlueprintForm', () => {
 
 		fireEvent.click(getAllByLabelText('dropdown')[0]);
 
-		fireEvent.click(getAllByText('delete')[1]);
+		fireEvent.click(getAllByText('delete')[0]);
 
 		const fragmentCountAfter = container.querySelectorAll(
 			'.configuration-fragment-sheet'

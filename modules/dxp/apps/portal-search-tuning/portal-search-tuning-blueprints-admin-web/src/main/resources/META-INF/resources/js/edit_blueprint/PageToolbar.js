@@ -315,5 +315,8 @@ PageToolbar.propTypes = {
 	initialTitle: PropTypes.object,
 	isSubmitting: PropTypes.bool,
 	onCancel: PropTypes.string.isRequired,
+	onChangeTab: PropTypes.func,
 	onSubmit: PropTypes.func.isRequired,
+	tab: PropTypes.string,
+	tabs: PropTypes.object,
 };

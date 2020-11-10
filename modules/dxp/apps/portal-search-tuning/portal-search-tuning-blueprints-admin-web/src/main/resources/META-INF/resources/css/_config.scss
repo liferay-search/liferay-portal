@@ -33,6 +33,14 @@
 			border-top-right-radius: 0;
 			padding: 8px 0;
 
+			&:hover {
+				.list-item-label {
+					.sticker {
+						display: inline-flex;
+					}
+				}
+			}
+
 			.list-item-label {
 				padding-left: 8px;
 				width: 40%;
@@ -42,6 +50,8 @@
 				}
 
 				.sticker {
+					display: none;
+
 					.lexicon-icon {
 						margin-top: -3px;
 					}
