@@ -9,6 +9,7 @@
  * distribution rights of the Software.
  */
 
+import ClayButton from '@clayui/button';
 import {fetch, navigate} from 'frontend-js-web';
 import {PropTypes} from 'prop-types';
 import React, {useCallback, useContext, useRef, useState} from 'react';
@@ -17,7 +18,11 @@ import ErrorBoundary from '../shared/ErrorBoundary';
 import PageToolbar from '../shared/PageToolbar';
 import ThemeContext from '../shared/ThemeContext';
 import {DEFAULT_FRAGMENT} from '../utils/data';
-import {convertToSelectedFragment, openErrorToast} from '../utils/utils';
+import {
+	convertToSelectedFragment,
+	openErrorToast,
+	openSuccessToast,
+} from '../utils/utils';
 import Sidebar from './Sidebar';
 import Aggregations from './tabs/Aggregations';
 import QueryBuilder from './tabs/QueryBuilder';
@@ -111,6 +116,10 @@ function EditBlueprintForm({
 		setSelectedQueryFragments((selectedFragments) =>
 			selectedFragments.filter((item) => item.id !== id)
 		);
+
+		openSuccessToast({
+			message: Liferay.Language.get('fragment-removed'),
+		});
 	}, []);
 
 	const handleSubmit = useCallback(

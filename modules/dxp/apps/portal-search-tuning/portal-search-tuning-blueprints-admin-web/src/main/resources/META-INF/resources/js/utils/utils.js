@@ -21,6 +21,15 @@ export const openErrorToast = (config) => {
 	});
 };
 
+export const openSuccessToast = (config) => {
+	openToast({
+		message: Liferay.Language.get('your-request-completed-successfully'),
+		title: Liferay.Language.get('success'),
+		type: 'success',
+		...config,
+	});
+};
+
 /**
  * Function for retrieving a valid default value from one fragment
  * configuration entry.

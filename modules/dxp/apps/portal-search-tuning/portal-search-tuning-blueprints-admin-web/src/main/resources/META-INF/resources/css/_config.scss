@@ -2,6 +2,14 @@
 	margin-bottom: 1rem;
 	padding: 0;
 
+	&:hover {
+		border-top: 4px solid $primaryL3;
+
+		.configuration-header-list {
+			margin-top: 5px;
+		}
+	}
+
 	.alert-danger {
 		margin: 12px 24px;
 	}
