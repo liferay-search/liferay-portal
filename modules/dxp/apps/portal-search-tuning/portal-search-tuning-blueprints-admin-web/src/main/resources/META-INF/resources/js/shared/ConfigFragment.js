@@ -332,12 +332,12 @@ function ConfigFragment({
 											/>
 										}
 										title={Liferay.Language.get(
-											'query-configuration'
+											'query-configuration-json'
 										)}
 									>
 										<ClayDropDown.Item>
 											{Liferay.Language.get(
-												'query-configuration'
+												'query-configuration-json'
 											)}
 										</ClayDropDown.Item>
 									</PreviewModal>
@@ -345,7 +345,7 @@ function ConfigFragment({
 
 								{deleteFragment && (
 									<ClayDropDown.Item onClick={deleteFragment}>
-										{Liferay.Language.get('delete')}
+										{Liferay.Language.get('remove')}
 									</ClayDropDown.Item>
 								)}
 							</ClayDropDown.ItemList>
