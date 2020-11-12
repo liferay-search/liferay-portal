@@ -12,7 +12,7 @@
 import {act, fireEvent, render} from '@testing-library/react';
 import React from 'react';
 
-import PageToolbar from '../../../src/main/resources/META-INF/resources/js/edit_blueprint/PageToolbar';
+import PageToolbar from '../../../src/main/resources/META-INF/resources/js/shared/PageToolbar';
 
 import '@testing-library/jest-dom/extend-expect';
 

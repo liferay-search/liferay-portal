@@ -23,13 +23,13 @@ import '../../src/main/resources/META-INF/resources/css/main.scss';
 import ClayLayout from '@clayui/layout';
 
 import BlueprintForm from '../../src/main/resources/META-INF/resources/js/edit_blueprint';
-import PageToolbar from '../../src/main/resources/META-INF/resources/js/edit_blueprint/PageToolbar';
 import Sidebar from '../../src/main/resources/META-INF/resources/js/edit_blueprint/Sidebar';
 import QueryBuilder from '../../src/main/resources/META-INF/resources/js/edit_blueprint/tabs/QueryBuilder';
-import FragmentForm from '../../src/main/resources/META-INF/resources/js/edit_fragment/FragmentForm';
+import FragmentForm from '../../src/main/resources/META-INF/resources/js/edit_fragment';
 import ConfigFragment from '../../src/main/resources/META-INF/resources/js/shared/ConfigFragment';
 import ErrorBoundary from '../../src/main/resources/META-INF/resources/js/shared/ErrorBoundary';
 import Fragment from '../../src/main/resources/META-INF/resources/js/shared/Fragment';
+import PageToolbar from '../../src/main/resources/META-INF/resources/js/shared/PageToolbar';
 import {SELECTED_FRAGMENTS} from '../js/mocks/data';
 
 const {addDecorator, storiesOf} = StorybookReact;
@@ -78,62 +78,13 @@ storiesOf('Pages|FragmentForm', module)
 	.addDecorator(withFragmentsClass)
 	.add('default', () => (
 		<FragmentForm
-			originalConfigJSON={SELECTED_FRAGMENTS[0].configJSON}
-			originalInputJSON={SELECTED_FRAGMENTS[0].inputJSON}
-			redirectURL=""
-			submitFormURL=""
-		/>
-	));
-
-storiesOf('Pages|BlueprintForm', module)
-	.addDecorator(withBlueprintsClass)
-	.add('default', () => (
-		<BlueprintForm
 			context={CONTEXT}
 			props={{
-				blueprintId: '1',
-				blueprintType: 0,
-				entityJSON: {
-					'com.liferay.asset.kernel.model.AssetTag': {
-						multiple: false,
-						title: 'Select Tag',
-						url: 'http:…',
-					},
-					'com.liferay.portal.kernel.model.Group': {
-						multiple: false,
-						title: 'Select Site',
-						url: 'http:…',
-					},
-					'com.liferay.portal.kernel.model.Organization': {
-						multiple: true,
-						title: 'Select Organization',
-						url: 'http:/…',
-					},
-					'com.liferay.portal.kernel.model.Role': {
-						multiple: false,
-						title: 'Select Role',
-						url: 'http:…',
-					},
-					'com.liferay.portal.kernel.model.Team': {
-						multiple: false,
-						title: 'Select Team',
-						url: 'http:…',
-					},
-					'com.liferay.portal.kernel.model.User': {
-						multiple: true,
-						title: 'Select User',
-						url: 'http:/…',
-					},
-					'com.liferay.portal.kernel.model.UserGroup': {
-						multiple: false,
-						title: 'Select User Group',
-						url: 'http:…',
-					},
-				},
-				initialDescription: {},
-				initialSelectedFragmentsString: JSON.stringify({
-					query_configuration: SELECTED_FRAGMENTS,
+				initialConfigurationString: JSON.stringify({
+					fragmentTemplate: SELECTED_FRAGMENTS[0].inputJSON,
+					uiConfiguration: SELECTED_FRAGMENTS[0].configJSON,
 				}),
+				initialDescription: {},
 				initialTitle: {
 					'en-US': 'Test Title',
 				},
@@ -142,6 +93,62 @@ storiesOf('Pages|BlueprintForm', module)
 			}}
 		/>
 	));
+
+storiesOf('Pages|BlueprintForm', module).add('default', () => (
+	<BlueprintForm
+		context={CONTEXT}
+		props={{
+			blueprintId: '1',
+			blueprintType: 0,
+			entityJSON: {
+				'com.liferay.asset.kernel.model.AssetTag': {
+					multiple: false,
+					title: 'Select Tag',
+					url: 'http:…',
+				},
+				'com.liferay.portal.kernel.model.Group': {
+					multiple: false,
+					title: 'Select Site',
+					url: 'http:…',
+				},
+				'com.liferay.portal.kernel.model.Organization': {
+					multiple: true,
+					title: 'Select Organization',
+					url: 'http:/…',
+				},
+				'com.liferay.portal.kernel.model.Role': {
+					multiple: false,
+					title: 'Select Role',
+					url: 'http:…',
+				},
+				'com.liferay.portal.kernel.model.Team': {
+					multiple: false,
+					title: 'Select Team',
+					url: 'http:…',
+				},
+				'com.liferay.portal.kernel.model.User': {
+					multiple: true,
+					title: 'Select User',
+					url: 'http:/…',
+				},
+				'com.liferay.portal.kernel.model.UserGroup': {
+					multiple: false,
+					title: 'Select User Group',
+					url: 'http:…',
+				},
+			},
+			initialDescription: {},
+			initialSelectedFragmentsString: JSON.stringify({
+				query_configuration: SELECTED_FRAGMENTS,
+			}),
+			initialTitle: {
+				'en-US': 'Test Title',
+			},
+			redirectURL: '',
+			submitFormURL: '',
+		}}
+	/>
+));
 
 storiesOf('Components|PageToolbar', module)
 	.addDecorator(withBlueprintsClass)

@@ -20,7 +20,7 @@ import ClayToolbar from '@clayui/toolbar';
 import PropTypes from 'prop-types';
 import React, {useContext, useRef, useState} from 'react';
 
-import ThemeContext from '../shared/ThemeContext';
+import ThemeContext from './ThemeContext';
 
 const DEFAULT_LOCALE = 'en-US';
 
@@ -151,6 +151,7 @@ export default function PageToolbar({
 	onSubmit,
 	tab,
 	tabs,
+	toolbarItem,
 }) {
 	const {namespace} = useContext(ThemeContext);
 
@@ -262,6 +263,10 @@ export default function PageToolbar({
 							</div>
 						</ClayToolbar.Item>
 
+						{toolbarItem && (
+							<ClayToolbar.Item>{toolbarItem}</ClayToolbar.Item>
+						)}
+
 						<ClayToolbar.Item>
 							<ClayLink
 								displayType="secondary"
@@ -286,26 +291,28 @@ export default function PageToolbar({
 				</ClayLayout.ContainerFluid>
 			</ClayToolbar>
 
-			<ClayNavigationBar triggerLabel={tabs[tab]}>
-				{Object.keys(tabs).map((tabKey) => (
-					<ClayNavigationBar.Item
-						active={tab === tabKey}
-						key={tabKey}
-					>
-						<ClayButton
-							block
-							className="nav-link"
-							displayType="unstyled"
-							onClick={() => onChangeTab(tabKey)}
-							small
+			{onChangeTab && (
+				<ClayNavigationBar triggerLabel={tabs[tab]}>
+					{Object.keys(tabs).map((tabKey) => (
+						<ClayNavigationBar.Item
+							active={tab === tabKey}
+							key={tabKey}
 						>
-							<span className="navbar-text-truncate">
-								{tabs[tabKey]}
-							</span>
-						</ClayButton>
-					</ClayNavigationBar.Item>
-				))}
-			</ClayNavigationBar>
+							<ClayButton
+								block
+								className="nav-link"
+								displayType="unstyled"
+								onClick={() => onChangeTab(tabKey)}
+								small
+							>
+								<span className="navbar-text-truncate">
+									{tabs[tabKey]}
+								</span>
+							</ClayButton>
+						</ClayNavigationBar.Item>
+					))}
+				</ClayNavigationBar>
+			)}
 		</div>
 	);
 }
@@ -319,4 +326,5 @@ PageToolbar.propTypes = {
 	onSubmit: PropTypes.func.isRequired,
 	tab: PropTypes.string,
 	tabs: PropTypes.object,
+	toolbarItem: PropTypes.element,
 };

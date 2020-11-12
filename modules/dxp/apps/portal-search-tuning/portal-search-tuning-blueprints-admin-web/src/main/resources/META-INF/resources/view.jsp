@@ -62,4 +62,11 @@ queryFragmentsURL.setParameter(BlueprintsAdminWebKeys.BLUEPRINT_TYPE, String.val
 	%>'
 />
 
-<liferay-util:include page="/view_blueprints.jsp" servletContext="<%= application %>" />
+<c:choose>
+	<c:when test='<%= tabs.equals("fragments") %>'>
+		<liferay-util:include page="/view_fragments.jsp" servletContext="<%= application %>" />
+	</c:when>
+	<c:otherwise>
+		<liferay-util:include page="/view_blueprints.jsp" servletContext="<%= application %>" />
+	</c:otherwise>
+</c:choose>
