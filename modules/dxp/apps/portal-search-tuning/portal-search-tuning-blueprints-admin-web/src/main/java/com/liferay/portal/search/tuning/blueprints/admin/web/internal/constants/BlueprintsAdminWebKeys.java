@@ -43,7 +43,17 @@ public class BlueprintsAdminWebKeys {
 	public static final String EDIT_BLUEPRINT_DISPLAY_CONTEXT =
 		"EDIT_BLUEPRINT_DISPLAY_CONTEXT";
 
+	public static final String EDIT_FRAGMENT_DISPLAY_CONTEXT =
+		"EDIT_FRAGMENT_DISPLAY_CONTEXT";
+
 	public static final String ERROR_DETAILS = "errorDetails";
+
+	public static final String FRAGMENT_ENTRIES_DISPLAY_CONTEXT =
+		"FRAGMENT_ENTRIES_DISPLAY_CONTEXT";
+
+	public static final String
+		FRAGMENT_ENTRIES_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT =
+			"FRAGMENT_ENTRIES_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT";
 
 	public static final String PAGE_TITLE_KEY = "pageTitleKey";
 

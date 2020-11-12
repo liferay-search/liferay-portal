@@ -48,10 +48,10 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * @author Petteri Karttunen
  */
-public class BlueprintEntriesManagementToolbarDisplayContext
+public class FragmentEntriesManagementToolbarDisplayContext
 	extends SearchContainerManagementToolbarDisplayContext {
 
-	public BlueprintEntriesManagementToolbarDisplayContext(
+	public FragmentEntriesManagementToolbarDisplayContext(
 		HttpServletRequest httpServletRequest,
 		LiferayPortletRequest liferayPortletRequest,
 		LiferayPortletResponse liferayPortletResponse,
@@ -72,7 +72,7 @@ public class BlueprintEntriesManagementToolbarDisplayContext
 	public List<DropdownItem> getActionDropdownItems() {
 		return DropdownItemListBuilder.add(
 			dropdownItem -> {
-				dropdownItem.putData("action", "deleteBlueprintEntries");
+				dropdownItem.putData("action", "deleteFragmentEntries");
 
 				dropdownItem.setLabel(LanguageUtil.get(request, "delete"));
 
@@ -98,35 +98,35 @@ public class BlueprintEntriesManagementToolbarDisplayContext
 
 		return CreationMenuBuilder.addDropdownItem(
 			dropdownItem -> {
-				dropdownItem.putData("action", "addBlueprint");
+				dropdownItem.putData("action", "addFragment");
 				dropdownItem.putData(
 					"defaultLocale",
 					LocaleUtil.toLanguageId(LocaleUtil.getDefault()));
 
-				PortletURL editBlueprintURL =
+				PortletURL editFragmentURL =
 					liferayPortletResponse.createActionURL();
 
-				editBlueprintURL.setParameter(
+				editFragmentURL.setParameter(
 					ActionRequest.ACTION_NAME,
-					BlueprintsAdminMVCCommandNames.EDIT_BLUEPRINT);
-				editBlueprintURL.setParameter(Constants.CMD, Constants.ADD);
-				editBlueprintURL.setParameter(
+					BlueprintsAdminMVCCommandNames.EDIT_FRAGMENT);
+				editFragmentURL.setParameter(Constants.CMD, Constants.ADD);
+				editFragmentURL.setParameter(
 					"redirect", currentURLObj.toString());
 
 				dropdownItem.putData(
-					"editBlueprintURL", editBlueprintURL.toString());
+					"editFragmentURL", editFragmentURL.toString());
 
 				dropdownItem.putData(
-					"type", String.valueOf(BlueprintTypes.BLUEPRINT));
+					"type", String.valueOf(BlueprintTypes.QUERY_FRAGMENT));
 				dropdownItem.setLabel(
-					LanguageUtil.get(request, "add-blueprint"));
+					LanguageUtil.get(request, "add-fragment"));
 			}
 		).build();
 	}
 
 	@Override
 	public String getDefaultEventHandler() {
-		return "BLUEPRINT_ENTRIES_MANAGEMENT_TOOLBAR_DEFAULT_EVENT_HANDLER";
+		return "FRAGMENT_ENTRIES_MANAGEMENT_TOOLBAR_DEFAULT_EVENT_HANDLER";
 	}
 
 	@Override
@@ -135,10 +135,10 @@ public class BlueprintEntriesManagementToolbarDisplayContext
 
 		searchURL.setProperty(
 			"mvcRenderCommandName",
-			BlueprintsAdminMVCCommandNames.VIEW_BLUEPRINT);
+			BlueprintsAdminMVCCommandNames.VIEW_FRAGMENT);
 
 		String tabs = ParamUtil.getString(
-			liferayPortletRequest, "tabs", "blueprints");
+			liferayPortletRequest, "tabs", "fragments");
 
 		searchURL.setProperty("tabs", tabs);
 
@@ -154,7 +154,7 @@ public class BlueprintEntriesManagementToolbarDisplayContext
 
 		portletURL.setProperty(
 			"mvcRenderCommandName",
-			BlueprintsAdminMVCCommandNames.VIEW_BLUEPRINT);
+			BlueprintsAdminMVCCommandNames.VIEW_FRAGMENT);
 
 		if (searchContainer.getDelta() > 0) {
 			portletURL.setProperty(
@@ -205,7 +205,7 @@ public class BlueprintEntriesManagementToolbarDisplayContext
 
 		sortingURL.setProperty(
 			"mvcRenderCommandName",
-			BlueprintsAdminMVCCommandNames.VIEW_BLUEPRINT);
+			BlueprintsAdminMVCCommandNames.VIEW_FRAGMENT);
 
 		sortingURL.setProperty(SearchContainer.DEFAULT_CUR_PARAM, "0");
 

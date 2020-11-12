@@ -26,6 +26,8 @@ import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminWebKeys;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context.BlueprintEntriesDisplayContext;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context.BlueprintEntriesManagementToolbarDisplayContext;
+import com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context.FragmentEntriesDisplayContext;
+import com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context.FragmentEntriesManagementToolbarDisplayContext;
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintTypes;
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintsPortletKeys;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
@@ -59,16 +61,27 @@ public class ViewBlueprintsMVCRenderCommand implements MVCRenderCommand {
 		int blueprintType = ParamUtil.getInteger(
 			renderRequest, BlueprintsAdminWebKeys.BLUEPRINT_TYPE,
 			BlueprintTypes.BLUEPRINT);
+		int blueprintTypeFragment = ParamUtil.getInteger(
+			renderRequest, BlueprintsAdminWebKeys.BLUEPRINT_TYPE,
+			BlueprintTypes.QUERY_FRAGMENT);
 
 		BlueprintEntriesDisplayContext blueprintEntriesDisplayContext =
 			new BlueprintEntriesDisplayContext(
 				_portal.getLiferayPortletRequest(renderRequest),
 				_portal.getLiferayPortletResponse(renderResponse),
 				blueprintType);
+		FragmentEntriesDisplayContext fragmentEntriesDisplayContext =
+			new FragmentEntriesDisplayContext(
+				_portal.getLiferayPortletRequest(renderRequest),
+				_portal.getLiferayPortletResponse(renderResponse),
+				blueprintTypeFragment);
 
 		renderRequest.setAttribute(
 			BlueprintsAdminWebKeys.BLUEPRINT_ENTRIES_DISPLAY_CONTEXT,
 			blueprintEntriesDisplayContext);
+		renderRequest.setAttribute(
+			BlueprintsAdminWebKeys.FRAGMENT_ENTRIES_DISPLAY_CONTEXT,
+			fragmentEntriesDisplayContext);
 
 		try {
 			BlueprintEntriesManagementToolbarDisplayContext
@@ -79,10 +92,23 @@ public class ViewBlueprintsMVCRenderCommand implements MVCRenderCommand {
 						blueprintEntriesDisplayContext.getDisplayStyle(),
 						blueprintType);
 
+			FragmentEntriesManagementToolbarDisplayContext
+				fragmentsManagementToolbarDisplayContext =
+					_getFragmentsManagementToolbar(
+						renderRequest, renderResponse,
+						blueprintEntriesDisplayContext.getSearchContainer(),
+						blueprintEntriesDisplayContext.getDisplayStyle(),
+						blueprintTypeFragment);
+
 			renderRequest.setAttribute(
 				BlueprintsAdminWebKeys.
 					BLUEPRINT_ENTRIES_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT,
 				blueprintsManagementToolbarDisplayContext);
+
+			renderRequest.setAttribute(
+				BlueprintsAdminWebKeys.
+					FRAGMENT_ENTRIES_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT,
+				fragmentsManagementToolbarDisplayContext);
 		}
 		catch (PortalException portalException) {
 			_log.error(portalException.getMessage(), portalException);
@@ -102,6 +128,19 @@ public class ViewBlueprintsMVCRenderCommand implements MVCRenderCommand {
 			int blueprintType) {
 
 		return new BlueprintEntriesManagementToolbarDisplayContext(
+			_portal.getHttpServletRequest(renderRequest),
+			_portal.getLiferayPortletRequest(renderRequest),
+			_portal.getLiferayPortletResponse(renderResponse), searchContainer,
+			displayStyle, blueprintType);
+	}
+
+	private FragmentEntriesManagementToolbarDisplayContext
+		_getFragmentsManagementToolbar(
+			RenderRequest renderRequest, RenderResponse renderResponse,
+			SearchContainer<Blueprint> searchContainer, String displayStyle,
+			int blueprintType) {
+
+		return new FragmentEntriesManagementToolbarDisplayContext(
 			_portal.getHttpServletRequest(renderRequest),
 			_portal.getLiferayPortletRequest(renderRequest),
 			_portal.getLiferayPortletResponse(renderResponse), searchContainer,
