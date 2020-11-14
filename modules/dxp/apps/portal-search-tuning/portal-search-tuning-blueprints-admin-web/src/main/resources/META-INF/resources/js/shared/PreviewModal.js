@@ -9,13 +9,12 @@
  * distribution rights of the Software.
  */
 
-import ClayButton from '@clayui/button';
 import ClayModal, {useModal} from '@clayui/modal';
 import React, {useState} from 'react';
 
 const PreviewModal = ({body, children, size = 'md', title}) => {
 	const [visible, setVisible] = useState(false);
-	const {observer, onClose} = useModal({
+	const {observer} = useModal({
 		onClose: () => setVisible(false),
 	});
 
@@ -26,19 +25,6 @@ const PreviewModal = ({body, children, size = 'md', title}) => {
 					<ClayModal.Header>{title}</ClayModal.Header>
 
 					<ClayModal.Body>{body}</ClayModal.Body>
-
-					<ClayModal.Footer
-						last={
-							<ClayButton.Group spaced>
-								<ClayButton
-									displayType="secondary"
-									onClick={onClose}
-								>
-									{Liferay.Language.get('close')}
-								</ClayButton>
-							</ClayButton.Group>
-						}
-					/>
 				</ClayModal>
 			)}
 			<div onClick={() => setVisible(!visible)}>{children}</div>

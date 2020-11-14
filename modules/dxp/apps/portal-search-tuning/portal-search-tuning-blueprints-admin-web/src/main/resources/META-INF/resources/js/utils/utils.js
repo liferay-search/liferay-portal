@@ -36,27 +36,28 @@ export const openSuccessToast = (config) => {
  *
  * Examples:
  * getDefaultValue({
-		defaultValue: 10,
-		key: 'config.title.boost',
-		name: 'Title Boost',
-		type: 'slider',
-	})
+ *  	defaultValue: 10,
+ *  	key: 'config.title.boost',
+ *  	name: 'Title Boost',
+ *  	type: 'slider',
+ *  })
  * => 10
+ *
  * getDefaultValue({
-		key: 'config.lfr.enabled',
-		name: 'Enabled',
-		type: 'single-select',
-		typeOptions: [
-			{
-				label: 'True',
-				value: true,
-			},
-			{
-				label: 'False',
-				value: false,
-			},
-		],
-	})
+ *  	key: 'config.lfr.enabled',
+ *  	name: 'Enabled',
+ *  	type: 'single-select',
+ *  	typeOptions: [
+ *  		{
+ *  			label: 'True',
+ *  			value: true,
+ *  		},
+ *  		{
+ *  			label: 'False',
+ *  			value: false,
+ *  		},
+ *  	],
+ *  })
  * => true
  *
  * @param {object} item Configuration with key, name, type, defaultValue
@@ -105,30 +106,30 @@ export const getDefaultValue = (item) => {
  * Function for getting all the default values from a UI configuration.
  *
  * Example:
- * getConfigValues({
-		configurationValues: [
-			{
-				defaultValue: 10,
-				key: 'config.title.boost',
-				name: 'Title Boost',
-				type: 'slider',
-			},
-			{
-				defaultValue: 'en_US',
-				key: 'context.language_id',
-				name: 'Context Language',
-				type: 'text',
-			}
-		],
-	})
+ * getUIConfigurationValues(
+ *  	[
+ *  		{
+ *  			defaultValue: 10,
+ *  			key: 'config.title.boost',
+ *  			name: 'Title Boost',
+ *  			type: 'slider',
+ *  		},
+ *  		{
+ *  			defaultValue: 'en_US',
+ *  			key: 'context.language_id',
+ *  			name: 'Context Language',
+ *  			type: 'text',
+ *  		}
+ *  	]
+ * )
  * => {context.title.boost: 10, context.language_id: 'en_US'}
  *
- * @param {object} configJSON Object with UI configuration
+ * @param {object} uiConfigurationJSON Object with UI configuration
  * @return {object}
  */
-export const getConfigValues = (configJSON) => {
-	if (!!configJSON && configJSON.configurationValues) {
-		return configJSON.configurationValues.reduce((acc, curr) => {
+export const getUIConfigurationValues = (uiConfigurationJSON) => {
+	if (uiConfigurationJSON) {
+		return uiConfigurationJSON.reduce((acc, curr) => {
 			return {
 				...acc,
 				[`${curr.key}`]: getDefaultValue(curr),
@@ -142,25 +143,27 @@ export const getConfigValues = (configJSON) => {
 /**
  * Function for replacing the ${variable_name} with actual value.
  *
- * @param {object} configJSON Object with UI configuration
- * @param {object} inputJSON Actual fragment template for blueprint configuration
+ * @param {object} uiConfigurationJSON Object with UI configuration
+ * @param {object} fragmentTemplateJSON Actual fragment template for blueprint configuration
  * @return {object}
  */
-export const replaceConfigValues = (
-	configJSON,
-	inputJSON,
-	configValues = getConfigValues(configJSON)
+export const replaceUIConfigurationValues = (
+	uiConfigurationJSON,
+	fragmentTemplateJSON,
+	uiConfigurationValues = getUIConfigurationValues(uiConfigurationJSON)
 ) => {
-	if (!!configJSON && configJSON.configurationValues) {
-		let flattenJSON = JSON.stringify(inputJSON);
+	if (uiConfigurationJSON) {
+		let flattenJSON = JSON.stringify(fragmentTemplateJSON);
 
-		configJSON.configurationValues.map((config) => {
+		uiConfigurationJSON.map((config) => {
 			const configValue =
 				config.type === 'entity'
 					? JSON.stringify(
-							configValues[config.key].map((item) => item.id)
+							uiConfigurationValues[config.key].map(
+								(item) => item.id
+							)
 					  )
-					: configValues[config.key];
+					: uiConfigurationValues[config.key];
 
 			if (
 				typeof configValue === 'number' ||
@@ -184,7 +187,7 @@ export const replaceConfigValues = (
 		return JSON.parse(flattenJSON);
 	}
 
-	return inputJSON;
+	return fragmentTemplateJSON;
 };
 
 /**
@@ -208,18 +211,24 @@ export const replaceStr = (str, search, replace) => {
  * form will use, by including the id, configuration values, and
  * fragment for submission.
  *
- * @param {object} {configJSON, inputJSON} Object with UI configuration
+ * @param {object} `{uiConfigurationJSON, fragmentTemplateJSON}` Object with UI configuration
  * and fragment template
  * @param {number} id ID number of fragment
  * @return {object}
  */
-export const convertToSelectedFragment = ({configJSON, inputJSON}, id = 0) => {
+export const convertToSelectedFragment = (
+	{fragmentTemplateJSON, uiConfigurationJSON},
+	id = 0
+) => {
 	return {
-		configJSON,
-		configValues: getConfigValues(configJSON),
+		fragmentOutput: replaceUIConfigurationValues(
+			uiConfigurationJSON,
+			fragmentTemplateJSON
+		),
+		fragmentTemplateJSON,
 		id,
-		inputJSON,
-		queryConfig: replaceConfigValues(configJSON, inputJSON),
+		uiConfigurationJSON,
+		uiConfigurationValues: getUIConfigurationValues(uiConfigurationJSON),
 	};
 };
 
@@ -228,26 +237,27 @@ export const convertToSelectedFragment = ({configJSON, inputJSON}, id = 0) => {
  * user is missing a required value.
  *
  * Examples:
- * validateConfigJSON({
-		defaultValue: 10,
-		name: 'Title Boost',
-		type: 'slider'
-	})
+ * validateUIConfigurationJSON({
+ *  	defaultValue: 10,
+ *  	name: 'Title Boost',
+ *  	type: 'slider'
+ *  })
  * => false
- * validateConfigJSON({
-		defaultValue: 3,
-		key: 'context.timespan',
-		name: 'Time Span',
-		type: 'number',
-		unit: 'days'
-	}
+ *
+ * validateUIConfigurationJSON({
+ *  	defaultValue: 3,
+ *  	key: 'context.timespan',
+ *  	name: 'Time Span',
+ *  	type: 'number',
+ *  	unit: 'days'
+ *  }
  * => true
  *
- * @param {object} configJSON Object with UI configuration
+ * @param {object} uiConfigurationJSON Object with UI configuration
  * @return {boolean}
  */
-export const validateConfigJSON = (configJSON) => {
-	return configJSON.configurationValues.every((item) => {
+export const validateUIConfigurationJSON = (uiConfigurationJSON) => {
+	return uiConfigurationJSON.every((item) => {
 		if (
 			isNotNull(item.type) &&
 			isNotNull(item.key) &&
@@ -266,7 +276,7 @@ export const validateConfigJSON = (configJSON) => {
 					);
 				case 'entity':
 					return (
-						item.className && entityKeys.includes(item.className)
+						item.className && ENTITY_KEYS.includes(item.className)
 					);
 				default:
 					return true;
@@ -278,7 +288,7 @@ export const validateConfigJSON = (configJSON) => {
 	});
 };
 
-const entityKeys = [
+const ENTITY_KEYS = [
 	'com.liferay.asset.kernel.model.AssetTag',
 	'com.liferay.portal.kernel.model.Group',
 	'com.liferay.portal.kernel.model.Organization',

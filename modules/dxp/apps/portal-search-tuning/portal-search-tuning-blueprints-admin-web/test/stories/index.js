@@ -197,11 +197,11 @@ storiesOf('Components|Fragment', module)
 	.add('JSONFragment', () => (
 		<JSONFragment
 			deleteFragment={action('deleteFragment')}
-			description={SELECTED_FRAGMENTS[0].inputJSON.description}
+			description={SELECTED_FRAGMENTS[0].fragmentTemplateJSON.description}
 			disabled={false}
-			icon={SELECTED_FRAGMENTS[0].inputJSON.icon}
-			jsonString={SELECTED_FRAGMENTS[0].inputJSON.jsonString}
-			title={SELECTED_FRAGMENTS[0].inputJSON.title}
+			fragmentTemplateJSON={SELECTED_FRAGMENTS[0].fragmentTemplateJSON}
+			icon={SELECTED_FRAGMENTS[0].fragmentTemplateJSON.icon}
+			title={SELECTED_FRAGMENTS[0].fragmentTemplateJSON.title}
 			updateJSON={() => {}}
 		/>
 	));
@@ -212,10 +212,10 @@ storiesOf('Components|ConfigFragment', module)
 	.addDecorator(withContainer)
 	.add('ConfigFragment', () => (
 		<ConfigFragment
-			configJSON={SELECTED_FRAGMENTS[0].configJSON}
-			configValues={SELECTED_FRAGMENTS[0].configValues}
 			deleteFragment={action('deleteFragment')}
-			inputJSON={SELECTED_FRAGMENTS[0].inputJSON}
+			fragmentTemplateJSON={SELECTED_FRAGMENTS[0].fragmentTemplateJSON}
+			uiConfigurationJSON={SELECTED_FRAGMENTS[0].uiConfigurationJSON}
+			uiConfigurationValues={SELECTED_FRAGMENTS[0].uiConfigurationValues}
 			updateFragment={action('updateFragment')}
 		/>
 	));

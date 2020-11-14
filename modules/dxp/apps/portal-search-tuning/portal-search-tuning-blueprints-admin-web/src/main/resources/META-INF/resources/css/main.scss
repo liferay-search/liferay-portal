@@ -10,10 +10,11 @@
 }
 
 .portlet-blueprints-admin {
+	@import '_config_fragment';
+	@import '_page_toolbar';
+
 	.edit-blueprint-root {
 		@import '_builder';
-		@import '_config';
-		@import '_page_toolbar';
 		@import '_sidebar';
 
 		.bold {
@@ -39,17 +40,12 @@
 		font-weight: 600;
 		text-transform: uppercase;
 	}
-}
 
-.edit-fragment-root {
-	display: flex;
-	flex-direction: column;
-	height: calc(100vh - 96px);
+	.edit-fragment-root {
+		display: flex;
+		flex-direction: column;
+		height: calc(100vh - 96px);
 
-	@import '_fragment_form';
-}
-
-.blueprints-admin-root,
-.edit-fragment-root {
-	@import '_page_toolbar';
+		@import '_fragment_form';
+	}
 }

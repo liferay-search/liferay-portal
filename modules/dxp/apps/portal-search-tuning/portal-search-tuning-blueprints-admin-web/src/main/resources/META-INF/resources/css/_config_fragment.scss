@@ -25,7 +25,7 @@
 
 	.configuration-form-list {
 		margin: 0;
-		padding: 12px 24px;
+		padding: 0 24px 12px;
 
 		.list-group-header {
 			background-color: unset;
@@ -50,8 +50,8 @@
 			}
 
 			.list-item-label {
-				padding-left: 8px;
-				width: 40%;
+				padding-left: 0;
+				width: 30%;
 
 				label {
 					margin: auto 0;

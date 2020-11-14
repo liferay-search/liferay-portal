@@ -67,7 +67,7 @@ describe('EditBlueprint', () => {
 
 		const {getByText} = within(container.querySelector('.builder'));
 
-		getByText(DEFAULT_FRAGMENT.inputJSON.title['en_US']);
+		getByText(DEFAULT_FRAGMENT.fragmentTemplateJSON.title['en_US']);
 	});
 
 	it('adds additional query fragment from sidebar', () => {

@@ -48,21 +48,24 @@ function QueryBuilder({
 			</ClayLayout.Row>
 
 			{selectedFragments.map((fragment, index) => {
-				return fragment.configJSON ? (
+				return fragment.uiConfigurationJSON ? (
 					<ConfigFragment
 						collapseAll={collapseAll}
-						configJSON={fragment.configJSON}
-						configValues={fragment.configValues}
 						deleteFragment={() => deleteFragment(fragment.id)}
 						entityJSON={entityJSON}
-						inputJSON={fragment.inputJSON}
+						fragmentOutput={fragment.fragmentOutput}
+						fragmentTemplateJSON={fragment.fragmentTemplateJSON}
 						key={fragment.id}
-						queryConfig={fragment.queryConfig}
-						updateFragment={(configValues, queryConfig) => {
+						uiConfigurationJSON={fragment.uiConfigurationJSON}
+						uiConfigurationValues={fragment.uiConfigurationValues}
+						updateFragment={(
+							uiConfigurationValues,
+							fragmentOutput
+						) => {
 							updateFragment(index, {
 								...fragment,
-								configValues,
-								queryConfig,
+								fragmentOutput,
+								uiConfigurationValues,
 							});
 						}}
 					/>
@@ -70,13 +73,13 @@ function QueryBuilder({
 					<JSONFragment
 						collapseAll={collapseAll}
 						deleteFragment={() => deleteFragment(fragment.id)}
-						inputJSON={fragment.inputJSON}
+						fragmentTemplateJSON={fragment.fragmentTemplateJSON}
 						key={fragment.id}
-						updateFragment={(queryConfig) => {
+						updateFragment={(fragmentOutput) => {
 							updateFragment(index, {
 								...fragment,
-								inputJSON: queryConfig,
-								queryConfig,
+								fragmentOutput,
+								fragmentTemplateJSON: fragmentOutput,
 							});
 						}}
 					/>

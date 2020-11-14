@@ -139,7 +139,7 @@ function EditBlueprintForm({
 						),
 						parameter_configuration: JSON.parse(parameterConfig),
 						query_configuration: selectedQueryFragments.map(
-							(item) => item.queryConfig
+							(item) => item.fragmentOutput
 						),
 						suggest_configuration: JSON.parse(suggestConfig),
 					})
@@ -150,10 +150,11 @@ function EditBlueprintForm({
 					JSON.stringify({
 						query_configuration: selectedQueryFragments.map(
 							(item) => ({
-								configJSON: item.configJSON,
-								configValues: item.configValues,
-								inputJSON: item.inputJSON,
-								queryConfig: item.queryConfig,
+								fragmentOutput: item.fragmentOutput,
+								fragmentTemplateJSON: item.fragmentTemplateJSON,
+								uiConfigurationJSON: item.uiConfigurationJSON,
+								uiConfigurationValues:
+									item.uiConfigurationValues,
 							})
 						), // Removes ID field
 					})

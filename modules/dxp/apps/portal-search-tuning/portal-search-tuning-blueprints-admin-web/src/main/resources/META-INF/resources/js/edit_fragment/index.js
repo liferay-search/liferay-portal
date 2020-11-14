@@ -28,9 +28,9 @@ import PreviewModal from '../shared/PreviewModal';
 import ThemeContext from '../shared/ThemeContext';
 import {PREDEFINED_VARIABLES} from '../utils/data';
 import {
-	getConfigValues,
+	getUIConfigurationValues,
 	openErrorToast,
-	replaceConfigValues,
+	replaceUIConfigurationValues,
 } from '../utils/utils';
 
 function EditFragmentForm({
@@ -48,32 +48,32 @@ function EditFragmentForm({
 	const initialConfiguration = JSON.parse(initialConfigurationString);
 
 	const form = useRef();
-	const inputJSONRef = useRef();
+	const fragmentTemplateJSONRef = useRef();
 
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [expand, setExpand] = useState(false);
 
-	const [inputJSON, setInputJSON] = useState(
+	const [fragmentTemplateJSON, setFragmentTemplateJSON] = useState(
 		JSON.stringify(initialConfiguration.fragmentTemplate, null, '\t')
 	);
-	const [configJSON, setConfigJSON] = useState(
+	const [uiConfigurationJSON, setUIConfigurationJSON] = useState(
 		JSON.stringify(initialConfiguration.uiConfiguration, null, '\t')
 	);
 
-	function addInputJSONVariable(variable) {
-		var doc = inputJSONRef.current.getDoc();
+	function addFragmentTemplateJSONVariable(variable) {
+		var doc = fragmentTemplateJSONRef.current.getDoc();
 		var cursor = doc.getCursor();
 
 		doc.replaceRange(variable, cursor);
 	}
 
 	function _renderPreviewBody() {
-		let previewInputJSON = {};
-		let previewConfigJSON = {};
+		let previewFragmentTemplateJSON = {};
+		let previewUIConfigurationJSON = {};
 
 		try {
-			previewInputJSON = JSON.parse(inputJSON);
-			previewConfigJSON = JSON.parse(configJSON);
+			previewFragmentTemplateJSON = JSON.parse(fragmentTemplateJSON);
+			previewUIConfigurationJSON = JSON.parse(uiConfigurationJSON);
 		}
 		catch (e) {
 			return (
@@ -92,12 +92,14 @@ function EditFragmentForm({
 				<ErrorBoundary>
 					<ConfigFragment
 						collapseAll={false}
-						configJSON={previewConfigJSON}
-						configValues={getConfigValues(previewConfigJSON)}
-						inputJSON={previewInputJSON}
-						queryConfig={replaceConfigValues(
-							previewConfigJSON,
-							previewInputJSON
+						fragmentOutput={replaceUIConfigurationValues(
+							previewUIConfigurationJSON,
+							previewFragmentTemplateJSON
+						)}
+						fragmentTemplateJSON={previewFragmentTemplateJSON}
+						uiConfigurationJSON={previewUIConfigurationJSON}
+						uiConfigurationValues={getUIConfigurationValues(
+							previewUIConfigurationJSON
 						)}
 					/>
 				</ErrorBoundary>
@@ -116,8 +118,8 @@ function EditFragmentForm({
 			formData.append(
 				`${namespace}configuration`,
 				JSON.stringify({
-					fragmentTemplate: JSON.parse(inputJSON),
-					uiConfiguration: JSON.parse(configJSON),
+					fragmentTemplate: JSON.parse(fragmentTemplateJSON),
+					uiConfiguration: JSON.parse(uiConfigurationJSON),
 				})
 			);
 		}
@@ -273,7 +275,7 @@ function EditFragmentForm({
 																item.categoryName
 															}
 															handleClick={
-																addInputJSONVariable
+																addFragmentTemplateJSONVariable
 															}
 															item={item}
 															key={
@@ -296,9 +298,11 @@ function EditFragmentForm({
 								size={expand ? 9 : 12}
 							>
 								<CodeMirrorEditor
-									onChange={(value) => setInputJSON(value)}
-									ref={inputJSONRef}
-									value={inputJSON}
+									onChange={(value) =>
+										setFragmentTemplateJSON(value)
+									}
+									ref={fragmentTemplateJSONRef}
+									value={fragmentTemplateJSON}
 								/>
 							</ClayLayout.Col>
 						</ClayLayout.Row>
@@ -334,8 +338,8 @@ function EditFragmentForm({
 						</div>
 
 						<CodeMirrorEditor
-							onChange={(value) => setConfigJSON(value)}
-							value={configJSON}
+							onChange={(value) => setUIConfigurationJSON(value)}
+							value={uiConfigurationJSON}
 						/>
 					</div>
 				</ClayLayout.Col>

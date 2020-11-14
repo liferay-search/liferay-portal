@@ -22,8 +22,8 @@ import ThemeContext from './ThemeContext';
 function JSONFragment({
 	collapseAll,
 	deleteFragment,
+	fragmentTemplateJSON,
 	id,
-	inputJSON,
 	updateFragment,
 }) {
 	const {locale} = useContext(ThemeContext);
@@ -49,14 +49,20 @@ function JSONFragment({
 					<ClayList className="configuration-header-list">
 						<ClayList.Item flex>
 							<ClayList.ItemField expand>
-								<ClayList.ItemTitle>
-									{inputJSON.title[locale] || inputJSON.title}
-								</ClayList.ItemTitle>
+								{fragmentTemplateJSON.title && (
+									<ClayList.ItemTitle>
+										{fragmentTemplateJSON.title[locale] ||
+											fragmentTemplateJSON.title}
+									</ClayList.ItemTitle>
+								)}
 
-								<ClayList.ItemText subtext={true}>
-									{inputJSON.description[locale] ||
-										inputJSON.description}
-								</ClayList.ItemText>
+								{fragmentTemplateJSON.description && (
+									<ClayList.ItemText subtext={true}>
+										{fragmentTemplateJSON.description[
+											locale
+										] || fragmentTemplateJSON.description}
+									</ClayList.ItemText>
+								)}
 							</ClayList.ItemField>
 
 							<ClayDropDown
@@ -110,13 +116,20 @@ function JSONFragment({
 						</ClayList.Item>
 					</ClayList>
 				);
-			}, [active, collapse, deleteFragment, id, inputJSON, locale])}
+			}, [
+				active,
+				collapse,
+				deleteFragment,
+				id,
+				fragmentTemplateJSON,
+				locale,
+			])}
 
 			{!collapse && (
 				<div className="json-configuration-editor">
 					<CodeMirrorEditor
 						onChange={handleChange}
-						value={JSON.stringify(inputJSON, null, '\t')}
+						value={JSON.stringify(fragmentTemplateJSON, null, '\t')}
 					/>
 				</div>
 			)}
@@ -127,9 +140,9 @@ function JSONFragment({
 JSONFragment.propTypes = {
 	collapseAll: PropTypes.bool,
 	deleteFragment: PropTypes.func,
+	fragmentTemplateJSON: PropTypes.object,
 	icon: PropTypes.string,
 	id: PropTypes.number,
-	inputJSON: PropTypes.object,
 	updateFragment: PropTypes.func,
 };
 

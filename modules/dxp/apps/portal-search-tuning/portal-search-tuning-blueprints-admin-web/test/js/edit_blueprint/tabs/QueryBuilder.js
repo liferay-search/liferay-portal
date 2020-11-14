@@ -48,7 +48,7 @@ describe('QueryBuilder', () => {
 		const {getByText} = renderBuilder();
 
 		SELECTED_FRAGMENTS.map((fragment) =>
-			getByText(fragment.inputJSON.title['en_US'])
+			getByText(fragment.fragmentTemplateJSON.title['en_US'])
 		);
 	});
 
@@ -56,19 +56,7 @@ describe('QueryBuilder', () => {
 		const {getByText} = renderBuilder();
 
 		SELECTED_FRAGMENTS.map((fragment) =>
-			getByText(fragment.inputJSON.description['en_US'])
-		);
-	});
-
-	it('renders the matching icons for the possible query fragments', () => {
-		const {container} = renderBuilder();
-
-		SELECTED_FRAGMENTS.map((fragment) =>
-			expect(
-				container.querySelector(
-					`.lexicon-icon-${fragment.inputJSON.icon}`
-				)
-			).toBeInTheDocument()
+			getByText(fragment.fragmentTemplateJSON.description['en_US'])
 		);
 	});
 
