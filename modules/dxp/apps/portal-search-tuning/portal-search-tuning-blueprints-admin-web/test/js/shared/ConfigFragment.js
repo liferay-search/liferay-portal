@@ -31,10 +31,10 @@ function renderFragment(props) {
 	return render(
 		<ConfigFragment
 			collapseAll={false}
-			configJSON={SELECTED_FRAGMENTS[0].configJSON}
-			configValues={SELECTED_FRAGMENTS[0].configValues}
 			deleteFragment={deleteFragment}
-			inputJSON={SELECTED_FRAGMENTS[0].inputJSON}
+			fragmentTemplateJSON={SELECTED_FRAGMENTS[0].fragmentTemplateJSON}
+			uiConfigurationJSON={SELECTED_FRAGMENTS[0].uiConfigurationJSON}
+			uiConfigurationValues={SELECTED_FRAGMENTS[0].uiConfigurationValues}
 			updateFragment={updateFragment}
 			{...props}
 		/>
@@ -51,23 +51,15 @@ describe('ConfigFragment', () => {
 	it('displays the title', () => {
 		const {getByText} = renderFragment();
 
-		getByText(SELECTED_FRAGMENTS[0].inputJSON.title['en_US']);
+		getByText(SELECTED_FRAGMENTS[0].fragmentTemplateJSON.title['en_US']);
 	});
 
 	it('displays the description', () => {
 		const {getByText} = renderFragment();
 
-		getByText(SELECTED_FRAGMENTS[0].inputJSON.description['en_US']);
-	});
-
-	it('displays the matching icon', () => {
-		const {container} = renderFragment();
-
-		expect(
-			container.querySelector(
-				`.lexicon-icon-${SELECTED_FRAGMENTS[0].inputJSON.icon}`
-			)
-		).toBeInTheDocument();
+		getByText(
+			SELECTED_FRAGMENTS[0].fragmentTemplateJSON.description['en_US']
+		);
 	});
 
 	it('can collapse the query fragments', () => {

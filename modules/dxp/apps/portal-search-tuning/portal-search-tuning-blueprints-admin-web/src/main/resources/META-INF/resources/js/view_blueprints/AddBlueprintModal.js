@@ -62,7 +62,7 @@ const AddBlueprintModal = ({
 				advanced_configuration: {},
 				aggregation_configuration: [],
 				parameter_configuration: {},
-				query_configuration: [DEFAULT_SELECTED_FRAGMENT.queryConfig],
+				query_configuration: [DEFAULT_SELECTED_FRAGMENT.fragmentOutput],
 				suggest_configuration: [],
 			})
 		);

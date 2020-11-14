@@ -14,7 +14,7 @@
  */
 
 export const CUSTOM_JSON_FRAGMENT = {
-	inputJSON: {
+	fragmentTemplateJSON: {
 		clauses: [],
 		conditions: [],
 		description: Liferay.Language.get('editable-json-text-area'),
@@ -84,49 +84,7 @@ export const DEFAULT_AGGREGATION_CONFIGURATION = [
 ];
 
 export const DEFAULT_FRAGMENT = {
-	configJSON: {
-		configurationValues: [
-			{
-				key: 'config.default_operator',
-				name: 'Default Operator',
-				type: 'single-select',
-				typeOptions: [
-					{
-						label: 'OR',
-						value: 'or',
-					},
-					{
-						label: 'AND',
-						value: 'and',
-					},
-				],
-			},
-			{
-				key: 'context.language_id',
-				name: 'Context Language ID',
-				type: 'single-select',
-				typeOptions: [
-					{
-						label: 'English',
-						value: 'en_US',
-					},
-					{
-						label: 'Spanish',
-						value: 'es_ES',
-					},
-					{
-						label: 'French',
-						value: 'fr_FR',
-					},
-					{
-						label: 'Japanese',
-						value: 'ja_JP',
-					},
-				],
-			},
-		],
-	},
-	inputJSON: {
+	fragmentTemplateJSON: {
 		clauses: [
 			{
 				context: 'query',
@@ -158,6 +116,46 @@ export const DEFAULT_FRAGMENT = {
 			en_US: 'Match Any Keyword',
 		},
 	},
+	uiConfigurationJSON: [
+		{
+			key: 'config.default_operator',
+			name: 'Default Operator',
+			type: 'single-select',
+			typeOptions: [
+				{
+					label: 'OR',
+					value: 'or',
+				},
+				{
+					label: 'AND',
+					value: 'and',
+				},
+			],
+		},
+		{
+			key: 'context.language_id',
+			name: 'Context Language ID',
+			type: 'single-select',
+			typeOptions: [
+				{
+					label: 'English',
+					value: 'en_US',
+				},
+				{
+					label: 'Spanish',
+					value: 'es_ES',
+				},
+				{
+					label: 'French',
+					value: 'fr_FR',
+				},
+				{
+					label: 'Japanese',
+					value: 'ja_JP',
+				},
+			],
+		},
+	],
 };
 
 // Not used anywhere yet.
@@ -201,27 +199,7 @@ export const DEFAULT_SUGGEST_CONFIGURATION = [
 
 export const QUERY_FRAGMENTS = [
 	{
-		configJSON: {
-			configurationValues: [
-				{
-					defaultValue: 0,
-					key: 'config.status',
-					name: 'Status',
-					type: 'single-select',
-					typeOptions: [
-						{
-							label: 'Published',
-							value: 0,
-						},
-						{
-							label: 'Unpublished',
-							value: 1,
-						},
-					],
-				},
-			],
-		},
-		inputJSON: {
+		fragmentTemplateJSON: {
 			clauses: [
 				{
 					context: 'pre_filter',
@@ -252,74 +230,27 @@ export const QUERY_FRAGMENTS = [
 				en_US: 'Filter Published Content',
 			},
 		},
+		uiConfigurationJSON: [
+			{
+				defaultValue: 0,
+				key: 'config.status',
+				name: 'Status',
+				type: 'single-select',
+				typeOptions: [
+					{
+						label: 'Published',
+						value: 0,
+					},
+					{
+						label: 'Unpublished',
+						value: 1,
+					},
+				],
+			},
+		],
 	},
 	{
-		configJSON: {
-			configurationValues: [
-				{
-					key: 'time.display_date.from',
-					name: 'Display date: From',
-					type: 'date',
-				},
-				{
-					key: 'time.display_date.to',
-					name: 'Display date: To',
-					type: 'date',
-				},
-				{
-					key: 'time.expiration_date.from',
-					name: 'Expiration date: From',
-					type: 'date',
-				},
-				{
-					key: 'time.expiration_date.to',
-					name: 'Expiration date: To',
-					type: 'date',
-				},
-				{
-					defaultValue: 'com.liferay.blogs.kernel.model.BlogsEntry',
-					key: 'config.entryClassName',
-					name: 'Entry Class Name',
-					type: 'single-select',
-					typeOptions: [
-						{
-							label: 'Asset Tag',
-							value: 'com.liferay.asset.kernel.model.AssetTag',
-						},
-						{
-							label: 'Blogs Entry',
-							value: 'com.liferay.blogs.kernel.model.BlogsEntry',
-						},
-						{
-							label: 'Group',
-							value: 'com.liferay.portal.kernel.model.Group',
-						},
-						{
-							label: 'Organization',
-							value:
-								'com.liferay.portal.kernel.model.Organization',
-						},
-						{
-							label: 'Role',
-							value: 'com.liferay.portal.kernel.model.Role',
-						},
-						{
-							label: 'Team',
-							value: 'com.liferay.portal.kernel.model.Team',
-						},
-						{
-							label: 'User',
-							value: 'com.liferay.portal.kernel.model.User',
-						},
-						{
-							label: 'User Group',
-							value: 'com.liferay.portal.kernel.model.UserGroup',
-						},
-					],
-				},
-			],
-		},
-		inputJSON: {
+		fragmentTemplateJSON: {
 			clauses: [
 				{
 					context: 'pre_filter',
@@ -458,70 +389,71 @@ export const QUERY_FRAGMENTS = [
 				en_US: 'Filter Content Type',
 			},
 		},
+		uiConfigurationJSON: [
+			{
+				key: 'time.display_date.from',
+				name: 'Display date: From',
+				type: 'date',
+			},
+			{
+				key: 'time.display_date.to',
+				name: 'Display date: To',
+				type: 'date',
+			},
+			{
+				key: 'time.expiration_date.from',
+				name: 'Expiration date: From',
+				type: 'date',
+			},
+			{
+				key: 'time.expiration_date.to',
+				name: 'Expiration date: To',
+				type: 'date',
+			},
+			{
+				defaultValue: 'com.liferay.blogs.kernel.model.BlogsEntry',
+				key: 'config.entryClassName',
+				name: 'Entry Class Name',
+				type: 'single-select',
+				typeOptions: [
+					{
+						label: 'Asset Tag',
+						value: 'com.liferay.asset.kernel.model.AssetTag',
+					},
+					{
+						label: 'Blogs Entry',
+						value: 'com.liferay.blogs.kernel.model.BlogsEntry',
+					},
+					{
+						label: 'Group',
+						value: 'com.liferay.portal.kernel.model.Group',
+					},
+					{
+						label: 'Organization',
+						value: 'com.liferay.portal.kernel.model.Organization',
+					},
+					{
+						label: 'Role',
+						value: 'com.liferay.portal.kernel.model.Role',
+					},
+					{
+						label: 'Team',
+						value: 'com.liferay.portal.kernel.model.Team',
+					},
+					{
+						label: 'User',
+						value: 'com.liferay.portal.kernel.model.User',
+					},
+					{
+						label: 'User Group',
+						value: 'com.liferay.portal.kernel.model.UserGroup',
+					},
+				],
+			},
+		],
 	},
 	{
-		configJSON: {
-			configurationValues: [
-				{
-					defaultValue: 'com.liferay.portal.kernel.model.User',
-					key: 'config.entryClassName',
-					name: 'Entry Class Name',
-					type: 'single-select',
-					typeOptions: [
-						{
-							label: 'Asset Tag',
-							value: 'com.liferay.asset.kernel.model.AssetTag',
-						},
-						{
-							label: 'Blogs Entry',
-							value: 'com.liferay.blogs.kernel.model.BlogsEntry',
-						},
-						{
-							label: 'Group',
-							value: 'com.liferay.portal.kernel.model.Group',
-						},
-						{
-							label: 'Organization',
-							value:
-								'com.liferay.portal.kernel.model.Organization',
-						},
-						{
-							label: 'Role',
-							value: 'com.liferay.portal.kernel.model.Role',
-						},
-						{
-							label: 'Team',
-							value: 'com.liferay.portal.kernel.model.Team',
-						},
-						{
-							label: 'User',
-							value: 'com.liferay.portal.kernel.model.User',
-						},
-						{
-							label: 'User Group',
-							value: 'com.liferay.portal.kernel.model.UserGroup',
-						},
-					],
-				},
-				{
-					defaultValue: false,
-					key: 'config.stagingGroup',
-					name: 'Status',
-					type: 'single-select',
-					typeOptions: [
-						{
-							label: 'False',
-							value: false,
-						},
-						{
-							label: 'True',
-							value: true,
-						},
-					],
-				},
-			],
-		},
-		inputJSON: {
+		fragmentTemplateJSON: {
 			clauses: [
 				{
 					context: 'pre_filter',
@@ -559,45 +491,67 @@ export const QUERY_FRAGMENTS = [
 				en_US: 'Filter Published Sites',
 			},
 		},
+		uiConfigurationJSON: [
+			{
+				defaultValue: 'com.liferay.portal.kernel.model.User',
+				key: 'config.entryClassName',
+				name: 'Entry Class Name',
+				type: 'single-select',
+				typeOptions: [
+					{
+						label: 'Asset Tag',
+						value: 'com.liferay.asset.kernel.model.AssetTag',
+					},
+					{
+						label: 'Blogs Entry',
+						value: 'com.liferay.blogs.kernel.model.BlogsEntry',
+					},
+					{
+						label: 'Group',
+						value: 'com.liferay.portal.kernel.model.Group',
+					},
+					{
+						label: 'Organization',
+						value: 'com.liferay.portal.kernel.model.Organization',
+					},
+					{
+						label: 'Role',
+						value: 'com.liferay.portal.kernel.model.Role',
+					},
+					{
+						label: 'Team',
+						value: 'com.liferay.portal.kernel.model.Team',
+					},
+					{
+						label: 'User',
+						value: 'com.liferay.portal.kernel.model.User',
+					},
+					{
+						label: 'User Group',
+						value: 'com.liferay.portal.kernel.model.UserGroup',
+					},
+				],
+			},
+			{
+				defaultValue: false,
+				key: 'config.stagingGroup',
+				name: 'Status',
+				type: 'single-select',
+				typeOptions: [
+					{
+						label: 'False',
+						value: false,
+					},
+					{
+						label: 'True',
+						value: true,
+					},
+				],
+			},
+		],
 	},
 	{
-		configJSON: {
-			configurationValues: [
-				{
-					defaultValue: '${parameter.time}',
-					key: 'modified.from',
-					name: 'Modified From',
-					type: 'single-select',
-					typeOptions: [
-						{
-							label: 'Parameter Time',
-							value: '${parameter.time}',
-						},
-						{
-							label: 'Time Current',
-							value: '${time.current_date|dateFormat=timestamp}',
-						},
-					],
-				},
-				{
-					defaultValue: '${time.current_date|dateFormat=timestamp}',
-					key: 'modified.to',
-					name: 'Modified To',
-					type: 'single-select',
-					typeOptions: [
-						{
-							label: 'Parameter Time',
-							value: '${parameter.time}',
-						},
-						{
-							label: 'Time Current',
-							value: '${time.current_date|dateFormat=timestamp}',
-						},
-					],
-				},
-			],
-		},
-		inputJSON: {
+		fragmentTemplateJSON: {
 			clauses: [
 				{
 					context: 'pre_filter',
@@ -641,30 +595,43 @@ export const QUERY_FRAGMENTS = [
 				en_US: 'Filter by Time Range',
 			},
 		},
+		uiConfigurationJSON: [
+			{
+				defaultValue: '${parameter.time}',
+				key: 'modified.from',
+				name: 'Modified From',
+				type: 'single-select',
+				typeOptions: [
+					{
+						label: 'Parameter Time',
+						value: '${parameter.time}',
+					},
+					{
+						label: 'Time Current',
+						value: '${time.current_date|dateFormat=timestamp}',
+					},
+				],
+			},
+			{
+				defaultValue: '${time.current_date|dateFormat=timestamp}',
+				key: 'modified.to',
+				name: 'Modified To',
+				type: 'single-select',
+				typeOptions: [
+					{
+						label: 'Parameter Time',
+						value: '${parameter.time}',
+					},
+					{
+						label: 'Time Current',
+						value: '${time.current_date|dateFormat=timestamp}',
+					},
+				],
+			},
+		],
 	},
 	{
-		configJSON: {
-			configurationValues: [
-				{
-					defaultValue: '${context.scope_group_id}',
-					key: 'context.parameter_name',
-					name: 'Parameter Name',
-					type: 'single-select',
-					typeOptions: [
-						{
-							label: 'Group Name',
-							value: '${context.scope_group_id}',
-						},
-					],
-				},
-				{
-					key: 'context.scope_group_id',
-					name: 'Scope Group ID',
-					type: 'text',
-				},
-			],
-		},
-		inputJSON: {
+		fragmentTemplateJSON: {
 			clauses: [
 				{
 					context: 'pre_filter',
@@ -703,53 +670,28 @@ export const QUERY_FRAGMENTS = [
 				en_US: 'Filter by Scope',
 			},
 		},
+		uiConfigurationJSON: [
+			{
+				defaultValue: '${context.scope_group_id}',
+				key: 'context.parameter_name',
+				name: 'Parameter Name',
+				type: 'single-select',
+				typeOptions: [
+					{
+						label: 'Group Name',
+						value: '${context.scope_group_id}',
+					},
+				],
+			},
+			{
+				key: 'context.scope_group_id',
+				name: 'Scope Group ID',
+				type: 'text',
+			},
+		],
 	},
 	{
-		configJSON: {
-			configurationValues: [
-				{
-					defaultValue: 'or',
-					key: 'config.default_operator',
-					name: 'Default Operator',
-					type: 'single-select',
-					typeOptions: [
-						{
-							label: 'OR',
-							value: 'or',
-						},
-						{
-							label: 'AND',
-							value: 'and',
-						},
-					],
-				},
-				{
-					defaultValue: 'en_US',
-					key: 'context.language_id',
-					name: 'Context Language ID',
-					type: 'single-select',
-					typeOptions: [
-						{
-							label: 'English',
-							value: 'en_US',
-						},
-						{
-							label: 'Spanish',
-							value: 'es_ES',
-						},
-						{
-							label: 'French',
-							value: 'fr_FR',
-						},
-						{
-							label: 'Japanese',
-							value: 'ja_JP',
-						},
-					],
-				},
-			],
-		},
-		inputJSON: {
+		fragmentTemplateJSON: {
 			clauses: [
 				{
 					context: 'query',
@@ -781,32 +723,51 @@ export const QUERY_FRAGMENTS = [
 				en_US: 'Match Any Keyword',
 			},
 		},
+		uiConfigurationJSON: [
+			{
+				defaultValue: 'or',
+				key: 'config.default_operator',
+				name: 'Default Operator',
+				type: 'single-select',
+				typeOptions: [
+					{
+						label: 'OR',
+						value: 'or',
+					},
+					{
+						label: 'AND',
+						value: 'and',
+					},
+				],
+			},
+			{
+				defaultValue: 'en_US',
+				key: 'context.language_id',
+				name: 'Context Language ID',
+				type: 'single-select',
+				typeOptions: [
+					{
+						label: 'English',
+						value: 'en_US',
+					},
+					{
+						label: 'Spanish',
+						value: 'es_ES',
+					},
+					{
+						label: 'French',
+						value: 'fr_FR',
+					},
+					{
+						label: 'Japanese',
+						value: 'ja_JP',
+					},
+				],
+			},
+		],
 	},
 	{
-		configJSON: {
-			configurationValues: [
-				{
-					defaultValue: 100,
-					key: 'config.boost',
-					name: 'Boost',
-					type: 'slider',
-				},
-				{
-					defaultValue: 0.3,
-					key: 'config.decay',
-					name: 'Decay',
-					type: 'number',
-				},
-				{
-					defaultValue: 100,
-					key: 'config.scale',
-					name: 'Scale',
-					type: 'number',
-					unit: 'kilometers',
-				},
-			],
-		},
-		inputJSON: {
+		fragmentTemplateJSON: {
 			clauses: [
 				{
 					context: 'query',
@@ -841,39 +802,30 @@ export const QUERY_FRAGMENTS = [
 				en_US: 'Boost Proximity',
 			},
 		},
+		uiConfigurationJSON: [
+			{
+				defaultValue: 100,
+				key: 'config.boost',
+				name: 'Boost',
+				type: 'slider',
+			},
+			{
+				defaultValue: 0.3,
+				key: 'config.decay',
+				name: 'Decay',
+				type: 'number',
+			},
+			{
+				defaultValue: 100,
+				key: 'config.scale',
+				name: 'Scale',
+				type: 'number',
+				unit: 'kilometers',
+			},
+		],
 	},
 	{
-		configJSON: {
-			configurationValues: [
-				{
-					defaultValue: 50,
-					key: 'config.freshness.boost',
-					name: 'Freshness Boost',
-					type: 'slider',
-				},
-				{
-					defaultValue: 0.4,
-					key: 'config.decay',
-					name: 'Decay',
-					type: 'text',
-				},
-				{
-					defaultValue: 3,
-					key: 'config.offset',
-					name: 'Offset',
-					type: 'number',
-					unit: 'days',
-				},
-				{
-					defaultValue: 30,
-					key: 'config.scale',
-					name: 'Minimum Should Match',
-					type: 'number',
-					unit: 'days',
-				},
-			],
-		},
-		inputJSON: {
+		fragmentTemplateJSON: {
 			clauses: [
 				{
 					context: 'query',
@@ -907,34 +859,37 @@ export const QUERY_FRAGMENTS = [
 				en_US: 'Boost Freshness',
 			},
 		},
+		uiConfigurationJSON: [
+			{
+				defaultValue: 50,
+				key: 'config.freshness.boost',
+				name: 'Freshness Boost',
+				type: 'slider',
+			},
+			{
+				defaultValue: 0.4,
+				key: 'config.decay',
+				name: 'Decay',
+				type: 'text',
+			},
+			{
+				defaultValue: 3,
+				key: 'config.offset',
+				name: 'Offset',
+				type: 'number',
+				unit: 'days',
+			},
+			{
+				defaultValue: 30,
+				key: 'config.scale',
+				name: 'Minimum Should Match',
+				type: 'number',
+				unit: 'days',
+			},
+		],
 	},
 	{
-		configJSON: {
-			configurationValues: [
-				{
-					defaultValue: 3,
-					key: 'context.boost',
-					name: 'Boost',
-					type: 'slider',
-				},
-				{
-					key: 'config.default_operator',
-					name: 'Default Operator',
-					type: 'single-select',
-					typeOptions: [
-						{
-							label: 'OR',
-							value: 'or',
-						},
-						{
-							label: 'AND',
-							value: 'and',
-						},
-					],
-				},
-			],
-		},
-		inputJSON: {
+		fragmentTemplateJSON: {
 			clauses: [
 				{
 					context: 'query',
@@ -963,48 +918,32 @@ export const QUERY_FRAGMENTS = [
 				en_US: 'Boost Tags Matching Keywords',
 			},
 		},
+		uiConfigurationJSON: [
+			{
+				defaultValue: 3,
+				key: 'context.boost',
+				name: 'Boost',
+				type: 'slider',
+			},
+			{
+				key: 'config.default_operator',
+				name: 'Default Operator',
+				type: 'single-select',
+				typeOptions: [
+					{
+						label: 'OR',
+						value: 'or',
+					},
+					{
+						label: 'AND',
+						value: 'and',
+					},
+				],
+			},
+		],
 	},
 	{
-		configJSON: {
-			configurationValues: [
-				{
-					defaultValue: 20,
-					key: 'context.boost',
-					name: 'Boost',
-					type: 'slider',
-				},
-				{
-					defaultValue: 'en_US',
-					key: 'context.language_id',
-					name: 'Context Language ID',
-					type: 'single-select',
-					typeOptions: [
-						{
-							label: 'English',
-							value: 'en_US',
-						},
-						{
-							label: 'Spanish',
-							value: 'es_ES',
-						},
-						{
-							label: 'French',
-							value: 'fr_FR',
-						},
-						{
-							label: 'Japanese',
-							value: 'ja_JP',
-						},
-					],
-				},
-				{
-					key: 'context.match_value',
-					name: 'Match Value',
-					type: 'text',
-				},
-			],
-		},
-		inputJSON: {
+		fragmentTemplateJSON: {
 			clauses: [
 				{
 					context: 'query',
@@ -1040,58 +979,46 @@ export const QUERY_FRAGMENTS = [
 				en_US: 'Boost by Keyword Match',
 			},
 		},
+		uiConfigurationJSON: [
+			{
+				defaultValue: 20,
+				key: 'context.boost',
+				name: 'Boost',
+				type: 'slider',
+			},
+			{
+				defaultValue: 'en_US',
+				key: 'context.language_id',
+				name: 'Context Language ID',
+				type: 'single-select',
+				typeOptions: [
+					{
+						label: 'English',
+						value: 'en_US',
+					},
+					{
+						label: 'Spanish',
+						value: 'es_ES',
+					},
+					{
+						label: 'French',
+						value: 'fr_FR',
+					},
+					{
+						label: 'Japanese',
+						value: 'ja_JP',
+					},
+				],
+			},
+			{
+				key: 'context.match_value',
+				name: 'Match Value',
+				type: 'text',
+			},
+		],
 	},
 	{
-		configJSON: {
-			configurationValues: [
-				{
-					defaultValue: 4,
-					key: 'context.boost',
-					name: 'Boost',
-					type: 'slider',
-				},
-				{
-					defaultValue: 'en_US',
-					key: 'context.language_id',
-					name: 'Context Language ID',
-					type: 'single-select',
-					typeOptions: [
-						{
-							label: 'English',
-							value: 'en_US',
-						},
-						{
-							label: 'Spanish',
-							value: 'es_ES',
-						},
-						{
-							label: 'French',
-							value: 'fr_FR',
-						},
-						{
-							label: 'Japanese',
-							value: 'ja_JP',
-						},
-					],
-				},
-				{
-					key: 'config.default_operator',
-					name: 'Default Operator',
-					type: 'single-select',
-					typeOptions: [
-						{
-							label: 'OR',
-							value: 'or',
-						},
-						{
-							label: 'AND',
-							value: 'and',
-						},
-					],
-				},
-			],
-		},
-		inputJSON: {
+		fragmentTemplateJSON: {
 			clauses: [
 				{
 					context: 'query',
@@ -1123,43 +1050,56 @@ export const QUERY_FRAGMENTS = [
 				en_US: 'Boost All Keywords Match',
 			},
 		},
+		uiConfigurationJSON: [
+			{
+				defaultValue: 4,
+				key: 'context.boost',
+				name: 'Boost',
+				type: 'slider',
+			},
+			{
+				defaultValue: 'en_US',
+				key: 'context.language_id',
+				name: 'Context Language ID',
+				type: 'single-select',
+				typeOptions: [
+					{
+						label: 'English',
+						value: 'en_US',
+					},
+					{
+						label: 'Spanish',
+						value: 'es_ES',
+					},
+					{
+						label: 'French',
+						value: 'fr_FR',
+					},
+					{
+						label: 'Japanese',
+						value: 'ja_JP',
+					},
+				],
+			},
+			{
+				key: 'config.default_operator',
+				name: 'Default Operator',
+				type: 'single-select',
+				typeOptions: [
+					{
+						label: 'OR',
+						value: 'or',
+					},
+					{
+						label: 'AND',
+						value: 'and',
+					},
+				],
+			},
+		],
 	},
 	{
-		configJSON: {
-			configurationValues: [
-				{
-					defaultValue: 5,
-					key: 'context.boost',
-					name: 'Boost',
-					type: 'slider',
-				},
-				{
-					defaultValue: 'en_US',
-					key: 'context.language_id',
-					name: 'Context Language ID',
-					type: 'single-select',
-					typeOptions: [
-						{
-							label: 'English',
-							value: 'en_US',
-						},
-						{
-							label: 'Spanish',
-							value: 'es_ES',
-						},
-						{
-							label: 'French',
-							value: 'fr_FR',
-						},
-						{
-							label: 'Japanese',
-							value: 'ja_JP',
-						},
-					],
-				},
-			],
-		},
-		inputJSON: {
+		fragmentTemplateJSON: {
 			clauses: [
 				{
 					context: 'query',
@@ -1190,43 +1130,41 @@ export const QUERY_FRAGMENTS = [
 				en_US: 'Boost Phrase Match',
 			},
 		},
+		uiConfigurationJSON: [
+			{
+				defaultValue: 5,
+				key: 'context.boost',
+				name: 'Boost',
+				type: 'slider',
+			},
+			{
+				defaultValue: 'en_US',
+				key: 'context.language_id',
+				name: 'Context Language ID',
+				type: 'single-select',
+				typeOptions: [
+					{
+						label: 'English',
+						value: 'en_US',
+					},
+					{
+						label: 'Spanish',
+						value: 'es_ES',
+					},
+					{
+						label: 'French',
+						value: 'fr_FR',
+					},
+					{
+						label: 'Japanese',
+						value: 'ja_JP',
+					},
+				],
+			},
+		],
 	},
 	{
-		configJSON: {
-			configurationValues: [
-				{
-					defaultValue: 5,
-					key: 'context.boost',
-					name: 'Boost',
-					type: 'slider',
-				},
-				{
-					defaultValue: 'en_US',
-					key: 'context.language_id',
-					name: 'Context Language ID',
-					type: 'single-select',
-					typeOptions: [
-						{
-							label: 'English',
-							value: 'en_US',
-						},
-						{
-							label: 'Spanish',
-							value: 'es_ES',
-						},
-						{
-							label: 'French',
-							value: 'fr_FR',
-						},
-						{
-							label: 'Japanese',
-							value: 'ja_JP',
-						},
-					],
-				},
-			],
-		},
-		inputJSON: {
+		fragmentTemplateJSON: {
 			clauses: [
 				{
 					context: 'query',
@@ -1258,56 +1196,41 @@ export const QUERY_FRAGMENTS = [
 				en_US: 'Boost Phrase Prefix Match',
 			},
 		},
+		uiConfigurationJSON: [
+			{
+				defaultValue: 5,
+				key: 'context.boost',
+				name: 'Boost',
+				type: 'slider',
+			},
+			{
+				defaultValue: 'en_US',
+				key: 'context.language_id',
+				name: 'Context Language ID',
+				type: 'single-select',
+				typeOptions: [
+					{
+						label: 'English',
+						value: 'en_US',
+					},
+					{
+						label: 'Spanish',
+						value: 'es_ES',
+					},
+					{
+						label: 'French',
+						value: 'fr_FR',
+					},
+					{
+						label: 'Japanese',
+						value: 'ja_JP',
+					},
+				],
+			},
+		],
 	},
 	{
-		configJSON: {
-			configurationValues: [
-				{
-					defaultValue: 'en_US',
-					key: 'context.language_id',
-					name: 'Context Language ID',
-					type: 'single-select',
-					typeOptions: [
-						{
-							label: 'English',
-							value: 'en_US',
-						},
-						{
-							label: 'Spanish',
-							value: 'es_ES',
-						},
-						{
-							label: 'French',
-							value: 'fr_FR',
-						},
-						{
-							label: 'Japanese',
-							value: 'ja_JP',
-						},
-					],
-				},
-				{
-					defaultValue: 10,
-					key: 'context.boost',
-					name: 'Name Boost',
-					type: 'slider',
-				},
-				{
-					defaultValue: 'liferay',
-					key: 'context.query_value',
-					name: 'Query',
-					type: 'text',
-				},
-				{
-					className: 'com.liferay.portal.kernel.model.UserGroup',
-					helpText: 'Select user group',
-					key: 'condition.match_value',
-					name: 'Match Value',
-					type: 'entity',
-				},
-			],
-		},
-		inputJSON: {
+		fragmentTemplateJSON: {
 			clauses: [
 				{
 					context: 'query',
@@ -1345,18 +1268,54 @@ export const QUERY_FRAGMENTS = [
 				en_US: 'Boost Content For a User Segment',
 			},
 		},
+		uiConfigurationJSON: [
+			{
+				defaultValue: 'en_US',
+				key: 'context.language_id',
+				name: 'Context Language ID',
+				type: 'single-select',
+				typeOptions: [
+					{
+						label: 'English',
+						value: 'en_US',
+					},
+					{
+						label: 'Spanish',
+						value: 'es_ES',
+					},
+					{
+						label: 'French',
+						value: 'fr_FR',
+					},
+					{
+						label: 'Japanese',
+						value: 'ja_JP',
+					},
+				],
+			},
+			{
+				defaultValue: 10,
+				key: 'context.boost',
+				name: 'Name Boost',
+				type: 'slider',
+			},
+			{
+				defaultValue: 'liferay',
+				key: 'context.query_value',
+				name: 'Query',
+				type: 'text',
+			},
+			{
+				className: 'com.liferay.portal.kernel.model.UserGroup',
+				helpText: 'Select user group',
+				key: 'condition.match_value',
+				name: 'Match Value',
+				type: 'entity',
+			},
+		],
 	},
 	{
-		configJSON: {
-			configurationValues: [
-				{
-					key: 'commerce.commerce_account_group_ids',
-					name: 'Commerce Account Group IDs',
-					type: 'text',
-				},
-			],
-		},
-		inputJSON: {
+		fragmentTemplateJSON: {
 			clauses: [
 				{
 					context: 'query',
@@ -1381,6 +1340,13 @@ export const QUERY_FRAGMENTS = [
 			icon: 'time',
 			title: {en_US: 'Boost My Commerce Items'},
 		},
+		uiConfigurationJSON: [
+			{
+				key: 'commerce.commerce_account_group_ids',
+				name: 'Commerce Account Group IDs',
+				type: 'text',
+			},
+		],
 	},
 ];
 

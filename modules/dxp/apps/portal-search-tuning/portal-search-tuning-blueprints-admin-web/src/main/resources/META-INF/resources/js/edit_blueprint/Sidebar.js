@@ -12,10 +12,8 @@
 import ClayButton from '@clayui/button';
 import ClayEmptyState from '@clayui/empty-state';
 import {ClayInput} from '@clayui/form';
-import ClayIcon from '@clayui/icon';
 import ClayList from '@clayui/list';
 import ClayLoadingIndicator from '@clayui/loading-indicator';
-import ClaySticker from '@clayui/sticker';
 import PropTypes from 'prop-types';
 import React, {useContext, useEffect, useRef, useState} from 'react';
 
@@ -37,52 +35,55 @@ const QueryFragmentList = ({onAddFragment, queryFragments}) => {
 
 	return (
 		<ClayList>
-			{queryFragments.map(({configJSON, inputJSON}, index) => {
-				return (
-					<ClayList.Item
-						className={`${showAdd === index ? 'hover' : ''}`}
-						flex
-						key={index}
-						onMouseEnter={() => setShowAdd(index)}
-						onMouseLeave={() => setShowAdd(-1)}
-					>
-						<ClayList.ItemField expand>
-							<ClayList.ItemTitle>
-								{inputJSON.title[locale] || inputJSON.title}
-							</ClayList.ItemTitle>
+			{queryFragments.map(
+				({fragmentTemplateJSON, uiConfigurationJSON}, index) => {
+					return (
+						<ClayList.Item
+							className={`${showAdd === index ? 'hover' : ''}`}
+							flex
+							key={index}
+							onMouseEnter={() => setShowAdd(index)}
+							onMouseLeave={() => setShowAdd(-1)}
+						>
+							<ClayList.ItemField expand>
+								<ClayList.ItemTitle>
+									{fragmentTemplateJSON.title[locale] ||
+										fragmentTemplateJSON.title}
+								</ClayList.ItemTitle>
 
-							<ClayList.ItemText subtext={true}>
-								{inputJSON.description[locale] ||
-									inputJSON.description}
-							</ClayList.ItemText>
-						</ClayList.ItemField>
+								<ClayList.ItemText subtext={true}>
+									{fragmentTemplateJSON.description[locale] ||
+										fragmentTemplateJSON.description}
+								</ClayList.ItemText>
+							</ClayList.ItemField>
 
-						<ClayList.ItemField>
-							{showAdd === index && (
-								<div className="button-wrapper">
-									<div className="add-fragment-button">
-										<ClayButton
-											aria-label={Liferay.Language.get(
-												'add'
-											)}
-											displayType="secondary"
-											onClick={() =>
-												onAddFragment({
-													configJSON,
-													inputJSON,
-												})
-											}
-											small
-										>
-											{Liferay.Language.get('add')}
-										</ClayButton>
+							<ClayList.ItemField>
+								{showAdd === index && (
+									<div className="button-wrapper">
+										<div className="add-fragment-button">
+											<ClayButton
+												aria-label={Liferay.Language.get(
+													'add'
+												)}
+												displayType="secondary"
+												onClick={() =>
+													onAddFragment({
+														fragmentTemplateJSON,
+														uiConfigurationJSON,
+													})
+												}
+												small
+											>
+												{Liferay.Language.get('add')}
+											</ClayButton>
+										</div>
 									</div>
-								</div>
-							)}
-						</ClayList.ItemField>
-					</ClayList.Item>
-				);
-			})}
+								)}
+							</ClayList.ItemField>
+						</ClayList.Item>
+					);
+				}
+			)}
 		</ClayList>
 	);
 };
@@ -118,8 +119,8 @@ function Sidebar({onAddFragment}) {
 
 				if (value) {
 					const fragmentTitle =
-						fragment.inputJSON.title[locale] ||
-						fragment.inputJSON.title;
+						fragment.fragmentTemplateJSON.title[locale] ||
+						fragment.fragmentTemplateJSON.title;
 
 					return fragmentTitle
 						.toLowerCase()

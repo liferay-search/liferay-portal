@@ -32,10 +32,10 @@ function renderFragment(props) {
 		<JSONFragment
 			collapseAll={false}
 			deleteFragment={deleteFragment}
-			description={SELECTED_FRAGMENTS[0].inputJSON.description}
-			id={SELECTED_FRAGMENTS[0].inputJSON.id}
-			inputJSON={SELECTED_FRAGMENTS[0].inputJSON}
-			title={SELECTED_FRAGMENTS[0].inputJSON.title}
+			description={SELECTED_FRAGMENTS[0].fragmentTemplateJSON.description}
+			fragmentTemplateJSON={SELECTED_FRAGMENTS[0].fragmentTemplateJSON}
+			id={SELECTED_FRAGMENTS[0].fragmentTemplateJSON.id}
+			title={SELECTED_FRAGMENTS[0].fragmentTemplateJSON.title}
 			updateFragment={updateFragment}
 			{...props}
 		/>
@@ -52,13 +52,15 @@ describe('Fragment', () => {
 	it('displays the title', () => {
 		const {getByText} = renderFragment();
 
-		getByText(SELECTED_FRAGMENTS[0].inputJSON.title['en_US']);
+		getByText(SELECTED_FRAGMENTS[0].fragmentTemplateJSON.title['en_US']);
 	});
 
 	it('displays the description', () => {
 		const {getByText} = renderFragment();
 
-		getByText(SELECTED_FRAGMENTS[0].inputJSON.description['en_US']);
+		getByText(
+			SELECTED_FRAGMENTS[0].fragmentTemplateJSON.description['en_US']
+		);
 	});
 
 	it('can collapse the query fragments', () => {
