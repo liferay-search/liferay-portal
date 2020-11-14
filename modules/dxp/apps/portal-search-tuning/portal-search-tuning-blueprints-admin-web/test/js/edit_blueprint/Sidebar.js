@@ -50,18 +50,6 @@ describe('Sidebar', () => {
 		);
 	});
 
-	it('renders the matching icons for the possible query fragments', () => {
-		const {container} = renderSidebar();
-
-		SELECTED_FRAGMENTS.map((fragment) =>
-			expect(
-				container.querySelector(
-					`.lexicon-icon-${fragment.inputJSON.icon}`
-				)
-			).toBeInTheDocument()
-		);
-	});
-
 	it('renders the add button when mouseOver item', () => {
 		const {container, getByLabelText, queryByLabelText} = renderSidebar();
 

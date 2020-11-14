@@ -13,23 +13,18 @@ import ClayButton from '@clayui/button';
 import ClayDropDown from '@clayui/drop-down';
 import ClayIcon from '@clayui/icon';
 import ClayList from '@clayui/list';
-import ClaySticker from '@clayui/sticker';
 import {PropTypes} from 'prop-types';
 import React, {useContext, useEffect, useMemo, useState} from 'react';
 
 import CodeMirrorEditor from './CodeMirrorEditor';
 import ThemeContext from './ThemeContext';
 
-function Fragment({
+function JSONFragment({
 	collapseAll,
 	deleteFragment,
-	description,
-	disabled = false,
-	icon,
 	id,
-	jsonString,
-	title,
-	updateJson,
+	inputJSON,
+	updateFragment,
 }) {
 	const {locale} = useContext(ThemeContext);
 
@@ -41,31 +36,26 @@ function Fragment({
 	}, [collapseAll]);
 
 	function handleChange(value) {
-		updateJson(value);
+		try {
+			updateFragment(JSON.parse(value));
+		}
+		catch {}
 	}
 
 	return (
-		<div className="configuration-fragment sheet">
+		<div className="configuration-fragment-sheet sheet">
 			{useMemo(() => {
 				return (
-					<ClayList>
+					<ClayList className="configuration-header-list">
 						<ClayList.Item flex>
-							<ClayList.ItemField>
-								<ClaySticker
-									className="icon"
-									displayType="secondary"
-								>
-									<ClayIcon symbol={icon} />
-								</ClaySticker>
-							</ClayList.ItemField>
-
 							<ClayList.ItemField expand>
 								<ClayList.ItemTitle>
-									{title[locale]}
+									{inputJSON.title[locale] || inputJSON.title}
 								</ClayList.ItemTitle>
 
 								<ClayList.ItemText subtext={true}>
-									{description[locale]}
+									{inputJSON.description[locale] ||
+										inputJSON.description}
 								</ClayList.ItemText>
 							</ClayList.ItemField>
 
@@ -89,10 +79,9 @@ function Fragment({
 							>
 								<ClayDropDown.ItemList>
 									<ClayDropDown.Item
-										disabled={disabled}
 										onClick={() => deleteFragment(id)}
 									>
-										{Liferay.Language.get('delete')}
+										{Liferay.Language.get('remove')}
 									</ClayDropDown.Item>
 								</ClayDropDown.ItemList>
 							</ClayDropDown>
@@ -121,23 +110,13 @@ function Fragment({
 						</ClayList.Item>
 					</ClayList>
 				);
-			}, [
-				active,
-				collapse,
-				deleteFragment,
-				description,
-				disabled,
-				icon,
-				id,
-				locale,
-				title,
-			])}
+			}, [active, collapse, deleteFragment, id, inputJSON, locale])}
 
 			{!collapse && (
-				<div className="configuration-editor">
+				<div className="json-configuration-editor">
 					<CodeMirrorEditor
 						onChange={handleChange}
-						value={jsonString}
+						value={JSON.stringify(inputJSON, null, '\t')}
 					/>
 				</div>
 			)}
@@ -145,16 +124,13 @@ function Fragment({
 	);
 }
 
-Fragment.propTypes = {
+JSONFragment.propTypes = {
 	collapseAll: PropTypes.bool,
 	deleteFragment: PropTypes.func,
-	description: PropTypes.object,
-	disabled: PropTypes.bool,
 	icon: PropTypes.string,
 	id: PropTypes.number,
-	jsonString: PropTypes.string,
-	title: PropTypes.object,
-	updateJson: PropTypes.func,
+	inputJSON: PropTypes.object,
+	updateFragment: PropTypes.func,
 };
 
-export default React.memo(Fragment);
+export default React.memo(JSONFragment);

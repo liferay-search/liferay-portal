@@ -12,8 +12,9 @@
 import {fireEvent, render, within} from '@testing-library/react';
 import React from 'react';
 
-import EditBlueprintForm from '../../../src/main/resources/META-INF/resources/js/edit_blueprint/index';
+import EditBlueprint from '../../../src/main/resources/META-INF/resources/js/edit_blueprint/index';
 import {DEFAULT_FRAGMENT} from '../../../src/main/resources/META-INF/resources/js/utils/data';
+const Utils = require('../../../src/main/resources/META-INF/resources/js/utils/utils');
 import {SELECTED_FRAGMENTS} from '../mocks/data';
 
 import '@testing-library/jest-dom/extend-expect';
@@ -25,9 +26,13 @@ jest.mock(
 	)
 );
 
-function renderBlueprintForm(props) {
+// Prevents "TypeError: Liferay.component is not a function" error on openToast
+
+Utils.openSuccessToast = jest.fn();
+
+function renderEditBlueprint(props) {
 	return render(
-		<EditBlueprintForm
+		<EditBlueprint
 			context={{
 				defaultLocale: 'en_US',
 				locale: 'en_US',
@@ -50,15 +55,15 @@ function renderBlueprintForm(props) {
 	);
 }
 
-describe('BlueprintForm', () => {
+describe('EditBlueprint', () => {
 	it('renders the configuration set form', () => {
-		const {container} = renderBlueprintForm();
+		const {container} = renderEditBlueprint();
 
 		expect(container).not.toBeNull();
 	});
 
 	it('renders the default query fragment', () => {
-		const {container} = renderBlueprintForm();
+		const {container} = renderEditBlueprint();
 
 		const {getByText} = within(container.querySelector('.builder'));
 
@@ -66,7 +71,7 @@ describe('BlueprintForm', () => {
 	});
 
 	it('adds additional query fragment from sidebar', () => {
-		const {container, getByLabelText} = renderBlueprintForm();
+		const {container, getByLabelText} = renderEditBlueprint();
 
 		const fragmentCountBefore = container.querySelectorAll(
 			'.configuration-fragment-sheet'
@@ -88,7 +93,7 @@ describe('BlueprintForm', () => {
 			container,
 			getAllByLabelText,
 			getAllByText,
-		} = renderBlueprintForm({
+		} = renderEditBlueprint({
 			props: {
 				blueprintId: '1',
 				initialSelectedFragmentsString: JSON.stringify({
@@ -103,7 +108,7 @@ describe('BlueprintForm', () => {
 
 		fireEvent.click(getAllByLabelText('dropdown')[0]);
 
-		fireEvent.click(getAllByText('delete')[0]);
+		fireEvent.click(getAllByText('remove')[0]);
 
 		const fragmentCountAfter = container.querySelectorAll(
 			'.configuration-fragment-sheet'

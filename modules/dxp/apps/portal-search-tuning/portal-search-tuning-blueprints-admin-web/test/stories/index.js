@@ -28,7 +28,7 @@ import QueryBuilder from '../../src/main/resources/META-INF/resources/js/edit_bl
 import FragmentForm from '../../src/main/resources/META-INF/resources/js/edit_fragment';
 import ConfigFragment from '../../src/main/resources/META-INF/resources/js/shared/ConfigFragment';
 import ErrorBoundary from '../../src/main/resources/META-INF/resources/js/shared/ErrorBoundary';
-import Fragment from '../../src/main/resources/META-INF/resources/js/shared/Fragment';
+import JSONFragment from '../../src/main/resources/META-INF/resources/js/shared/JSONFragment';
 import PageToolbar from '../../src/main/resources/META-INF/resources/js/shared/PageToolbar';
 import {SELECTED_FRAGMENTS} from '../js/mocks/data';
 
@@ -48,15 +48,17 @@ addDecorator(withKnobs);
 
 addDecorator((storyFn) => {
 	return (
-		<ClayIconSpriteContext.Provider value={CONTEXT.spritemap}>
-			{storyFn()}
-		</ClayIconSpriteContext.Provider>
+		<div className="portlet-blueprints-admin">
+			<ClayIconSpriteContext.Provider value={CONTEXT.spritemap}>
+				{storyFn()}
+			</ClayIconSpriteContext.Provider>
+		</div>
 	);
 });
 
 const withBlueprintsClass = (storyFn) => (
 	<ErrorBoundary>
-		<div className="blueprints-admin-root">{storyFn()}</div>
+		<div className="edit-blueprint-root">{storyFn()}</div>
 	</ErrorBoundary>
 );
 
@@ -65,12 +67,14 @@ const withBuilderClass = (storyFn) => (
 );
 
 const withContainer = (storyFn) => (
-	<ClayLayout.ContainerFluid size="md">{storyFn()}</ClayLayout.ContainerFluid>
+	<ClayLayout.ContainerFluid size="md" view>
+		{storyFn()}
+	</ClayLayout.ContainerFluid>
 );
 
 const withFragmentsClass = (storyFn) => (
 	<ErrorBoundary>
-		<div className="fragment-admin-root">{storyFn()}</div>
+		<div className="edit-fragment-root">{storyFn()}</div>
 	</ErrorBoundary>
 );
 
@@ -190,14 +194,15 @@ storiesOf('Components|Fragment', module)
 	.addDecorator(withBlueprintsClass)
 	.addDecorator(withBuilderClass)
 	.addDecorator(withContainer)
-	.add('Fragment', () => (
-		<Fragment
+	.add('JSONFragment', () => (
+		<JSONFragment
 			deleteFragment={action('deleteFragment')}
 			description={SELECTED_FRAGMENTS[0].inputJSON.description}
 			disabled={false}
 			icon={SELECTED_FRAGMENTS[0].inputJSON.icon}
 			jsonString={SELECTED_FRAGMENTS[0].inputJSON.jsonString}
 			title={SELECTED_FRAGMENTS[0].inputJSON.title}
+			updateJSON={() => {}}
 		/>
 	));
 

@@ -9,7 +9,6 @@
  * distribution rights of the Software.
  */
 
-import ClayButton from '@clayui/button';
 import {fetch, navigate} from 'frontend-js-web';
 import {PropTypes} from 'prop-types';
 import React, {useCallback, useContext, useRef, useState} from 'react';
@@ -308,7 +307,7 @@ React.memo(EditBlueprintForm);
 export default function ({context, props}) {
 	return (
 		<ThemeContext.Provider value={context}>
-			<div className="blueprints-admin-root">
+			<div className="edit-blueprint-root">
 				<ErrorBoundary>
 					<EditBlueprintForm {...props} />
 				</ErrorBoundary>
