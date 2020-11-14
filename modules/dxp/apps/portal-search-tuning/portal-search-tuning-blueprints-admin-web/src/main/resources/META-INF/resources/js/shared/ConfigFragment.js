@@ -381,7 +381,7 @@ function ConfigFragment({
 						!validateConfigJSON(configJSON)) && (
 						<ClayAlert
 							displayType="danger"
-							title={Liferay.Language.get('info')}
+							title={Liferay.Language.get('error')}
 						>
 							{Liferay.Language.get(
 								'an-error-is-preventing-one-or-more-fields-from-displaying'

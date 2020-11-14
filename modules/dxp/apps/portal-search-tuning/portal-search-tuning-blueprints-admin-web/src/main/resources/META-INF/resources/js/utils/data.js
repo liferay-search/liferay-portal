@@ -13,6 +13,16 @@
  * Temporary data. This data should eventually be fetched from the server.
  */
 
+export const CUSTOM_JSON_FRAGMENT = {
+	inputJSON: {
+		clauses: [],
+		conditions: [],
+		description: Liferay.Language.get('editable-json-text-area'),
+		enabled: true,
+		title: Liferay.Language.get('custom-json-fragment'),
+	},
+};
+
 // Not used anywhere yet.
 
 export const DEFAULT_ADVANCED_CONFIGURATION = {

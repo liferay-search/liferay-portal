@@ -12,7 +12,7 @@
 import {fireEvent, render} from '@testing-library/react';
 import React from 'react';
 
-import Fragment from '../../../src/main/resources/META-INF/resources/js/shared/Fragment';
+import JSONFragment from '../../../src/main/resources/META-INF/resources/js/shared/JSONFragment';
 import {SELECTED_FRAGMENTS} from '../mocks/data';
 
 import '@testing-library/jest-dom/extend-expect';
@@ -25,20 +25,18 @@ jest.mock(
 );
 
 const deleteFragment = jest.fn();
-const updateJson = jest.fn();
+const updateFragment = jest.fn();
 
 function renderFragment(props) {
 	return render(
-		<Fragment
+		<JSONFragment
 			collapseAll={false}
 			deleteFragment={deleteFragment}
 			description={SELECTED_FRAGMENTS[0].inputJSON.description}
-			disabled={false}
-			icon={SELECTED_FRAGMENTS[0].inputJSON.icon}
 			id={SELECTED_FRAGMENTS[0].inputJSON.id}
-			jsonString={SELECTED_FRAGMENTS[0].inputJSON.jsonString}
+			inputJSON={SELECTED_FRAGMENTS[0].inputJSON}
 			title={SELECTED_FRAGMENTS[0].inputJSON.title}
-			updateJson={updateJson}
+			updateFragment={updateFragment}
 			{...props}
 		/>
 	);
@@ -63,16 +61,6 @@ describe('Fragment', () => {
 		getByText(SELECTED_FRAGMENTS[0].inputJSON.description['en_US']);
 	});
 
-	it('displays the matching icon', () => {
-		const {container} = renderFragment();
-
-		expect(
-			container.querySelector(
-				`.lexicon-icon-${SELECTED_FRAGMENTS[0].inputJSON.icon}`
-			)
-		).toBeInTheDocument();
-	});
-
 	it('can collapse the query fragments', () => {
 		const {container, getByLabelText} = renderFragment();
 
@@ -81,22 +69,12 @@ describe('Fragment', () => {
 		expect(container.querySelector('.configuration-editor')).toBeNull();
 	});
 
-	it('calls updateJson when typing in the editor', () => {
-		const {getByLabelText} = renderFragment();
-
-		fireEvent.change(getByLabelText('text-area'), {
-			target: {value: 'test'},
-		});
-
-		expect(updateJson).toHaveBeenCalled();
-	});
-
 	it('calls deleteFragment when clicking on delete from dropdown', () => {
 		const {getByLabelText, getByText} = renderFragment();
 
 		fireEvent.click(getByLabelText('dropdown'));
 
-		fireEvent.click(getByText('delete'));
+		fireEvent.click(getByText('remove'));
 
 		expect(deleteFragment).toHaveBeenCalled();
 	});

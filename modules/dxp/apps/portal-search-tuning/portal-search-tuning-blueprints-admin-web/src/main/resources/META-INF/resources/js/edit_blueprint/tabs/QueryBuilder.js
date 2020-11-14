@@ -15,6 +15,7 @@ import {PropTypes} from 'prop-types';
 import React, {useState} from 'react';
 
 import ConfigFragment from '../../shared/ConfigFragment';
+import JSONFragment from '../../shared/JSONFragment';
 
 function QueryBuilder({
 	deleteFragment,
@@ -46,21 +47,35 @@ function QueryBuilder({
 				</ClayLayout.Col>
 			</ClayLayout.Row>
 
-			{selectedFragments.map((item, index) => {
-				return (
+			{selectedFragments.map((fragment, index) => {
+				return fragment.configJSON ? (
 					<ConfigFragment
 						collapseAll={collapseAll}
-						configJSON={item.configJSON}
-						configValues={item.configValues}
-						deleteFragment={() => deleteFragment(item.id)}
+						configJSON={fragment.configJSON}
+						configValues={fragment.configValues}
+						deleteFragment={() => deleteFragment(fragment.id)}
 						entityJSON={entityJSON}
-						inputJSON={item.inputJSON}
-						key={item.id}
-						queryConfig={item.queryConfig}
+						inputJSON={fragment.inputJSON}
+						key={fragment.id}
+						queryConfig={fragment.queryConfig}
 						updateFragment={(configValues, queryConfig) => {
 							updateFragment(index, {
-								...item,
+								...fragment,
 								configValues,
+								queryConfig,
+							});
+						}}
+					/>
+				) : (
+					<JSONFragment
+						collapseAll={collapseAll}
+						deleteFragment={() => deleteFragment(fragment.id)}
+						inputJSON={fragment.inputJSON}
+						key={fragment.id}
+						updateFragment={(queryConfig) => {
+							updateFragment(index, {
+								...fragment,
+								inputJSON: queryConfig,
 								queryConfig,
 							});
 						}}

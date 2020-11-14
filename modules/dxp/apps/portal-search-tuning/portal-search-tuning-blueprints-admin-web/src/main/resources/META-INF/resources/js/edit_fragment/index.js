@@ -88,7 +88,7 @@ function EditFragmentForm({
 		}
 
 		return (
-			<div className="blueprints-admin-root">
+			<div className="portlet-blueprints-admin">
 				<ErrorBoundary>
 					<ConfigFragment
 						collapseAll={false}
@@ -390,7 +390,7 @@ function SidebarPanel({categoryName, handleClick, variables}) {
 export default function ({context, props}) {
 	return (
 		<ThemeContext.Provider value={context}>
-			<div className="fragment-admin-root">
+			<div className="edit-fragment-root">
 				<ErrorBoundary>
 					<EditFragmentForm {...props} />
 				</ErrorBoundary>

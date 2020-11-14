@@ -1,32 +1,38 @@
 @import '_variables';
 
-.blueprints-admin-root {
-	@import '_builder';
-	@import '_config';
-	@import '_sidebar';
-
-	.bold {
-		font-weight: 700;
-	}
-
-	.icon {
-		background-color: $secondaryHover;
-	}
-
-	.italic {
-		font-style: italic;
-	}
-
-	.secondary {
-		color: $secondaryL1;
-	}
-}
-
 .blueprint-edit-title-modal .modal-body .form-group:last-of-type {
 	margin-bottom: 0;
 }
 
+.codemirror-editor-wrapper {
+	border: 1px solid $mainLighten74;
+	border-radius: 4px;
+}
+
 .portlet-blueprints-admin {
+	.edit-blueprint-root {
+		@import '_builder';
+		@import '_config';
+		@import '_page_toolbar';
+		@import '_sidebar';
+
+		.bold {
+			font-weight: 700;
+		}
+
+		.icon {
+			background-color: $secondaryHover;
+		}
+
+		.italic {
+			font-style: italic;
+		}
+
+		.secondary {
+			color: $secondaryL1;
+		}
+	}
+
 	.id-text {
 		color: $secondary;
 		font-size: 11px;
@@ -35,7 +41,7 @@
 	}
 }
 
-.fragment-admin-root {
+.edit-fragment-root {
 	display: flex;
 	flex-direction: column;
 	height: calc(100vh - 96px);
@@ -44,6 +50,6 @@
 }
 
 .blueprints-admin-root,
-.fragment-admin-root {
+.edit-fragment-root {
 	@import '_page_toolbar';
 }

@@ -90,12 +90,12 @@ describe('ConfigFragment', () => {
 		waitForElement(() => expect(updateFragment).toHaveBeenCalled());
 	});
 
-	it('calls deleteFragment when clicking on delete from dropdown', () => {
+	it('calls deleteFragment when clicking on remove from dropdown', () => {
 		const {getByLabelText, getByText} = renderFragment();
 
 		fireEvent.click(getByLabelText('dropdown'));
 
-		fireEvent.click(getByText('delete'));
+		fireEvent.click(getByText('remove'));
 
 		expect(deleteFragment).toHaveBeenCalled();
 	});

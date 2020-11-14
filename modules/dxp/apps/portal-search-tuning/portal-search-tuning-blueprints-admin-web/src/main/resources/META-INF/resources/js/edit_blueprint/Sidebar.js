@@ -20,7 +20,7 @@ import PropTypes from 'prop-types';
 import React, {useContext, useEffect, useRef, useState} from 'react';
 
 import ThemeContext from '../shared/ThemeContext';
-import {QUERY_FRAGMENTS} from '../utils/data';
+import {CUSTOM_JSON_FRAGMENT, QUERY_FRAGMENTS} from '../utils/data';
 
 const EmptyListMessage = () => (
 	<div className="empty-list-message">
@@ -46,22 +46,14 @@ const QueryFragmentList = ({onAddFragment, queryFragments}) => {
 						onMouseEnter={() => setShowAdd(index)}
 						onMouseLeave={() => setShowAdd(-1)}
 					>
-						<ClayList.ItemField>
-							<ClaySticker
-								className="icon"
-								displayType="secondary"
-							>
-								<ClayIcon symbol={inputJSON.icon} />
-							</ClaySticker>
-						</ClayList.ItemField>
-
 						<ClayList.ItemField expand>
 							<ClayList.ItemTitle>
-								{inputJSON.title[locale]}
+								{inputJSON.title[locale] || inputJSON.title}
 							</ClayList.ItemTitle>
 
 							<ClayList.ItemText subtext={true}>
-								{inputJSON.description[locale]}
+								{inputJSON.description[locale] ||
+									inputJSON.description}
 							</ClayList.ItemText>
 						</ClayList.ItemField>
 
@@ -108,13 +100,16 @@ function Sidebar({onAddFragment}) {
 
 		// Fetch query fragments.
 
-		const fetchResponse = QUERY_FRAGMENTS;
+		const fragmentsResponseData = [
+			...QUERY_FRAGMENTS,
+			CUSTOM_JSON_FRAGMENT,
+		];
 
-		setQueryFragments(fetchResponse);
-		originalQueryFragments.current = fetchResponse;
+		setQueryFragments(fragmentsResponseData);
+		originalQueryFragments.current = fragmentsResponseData;
 
 		setLoading(false);
-	}, []);
+	}, [locale]);
 
 	const _handleSearchChange = (event) => {
 		setQueryFragments(
@@ -122,9 +117,13 @@ function Sidebar({onAddFragment}) {
 				const {value} = event.target;
 
 				if (value) {
-					const fragmentTitle = fragment.title[locale].toLowerCase();
+					const fragmentTitle =
+						fragment.inputJSON.title[locale] ||
+						fragment.inputJSON.title;
 
-					return fragmentTitle.includes(value.toLowerCase());
+					return fragmentTitle
+						.toLowerCase()
+						.includes(value.toLowerCase());
 				}
 				else {
 					return true;
