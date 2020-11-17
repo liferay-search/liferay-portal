@@ -105,13 +105,13 @@ public class FragmentEntriesDisplayContext {
 
 		if (Validator.isNull(displayStyle)) {
 			return _portalPreferences.getValue(
-				BlueprintsPortletKeys.BLUEPRINTS_ADMIN, "entries-display-style",
-				"descriptive");
+				BlueprintsPortletKeys.BLUEPRINTS_ADMIN,
+				"fragment-entries-display-style", "descriptive");
 		}
 
 		_portalPreferences.setValue(
-			BlueprintsPortletKeys.BLUEPRINTS_ADMIN, "entries-display-style",
-			displayStyle);
+			BlueprintsPortletKeys.BLUEPRINTS_ADMIN,
+			"fragment-entries-display-style", displayStyle);
 
 		_httpServletRequest.setAttribute(
 			WebKeys.SINGLE_PAGE_APPLICATION_CLEAR_CACHE, Boolean.TRUE);
@@ -130,7 +130,9 @@ public class FragmentEntriesDisplayContext {
 
 		portletURL.setProperty(
 			"mvcRenderCommandName",
-			BlueprintsAdminMVCCommandNames.VIEW_FRAGMENT);
+			BlueprintsAdminMVCCommandNames.VIEW_BLUEPRINT);
+
+		portletURL.setParameter("tabs", "fragments");
 
 		SearchContainer<Blueprint> entriesSearchContainer =
 			new SearchContainer<>(

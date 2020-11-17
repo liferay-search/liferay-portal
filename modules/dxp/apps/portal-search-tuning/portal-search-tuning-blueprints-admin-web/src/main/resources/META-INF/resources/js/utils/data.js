@@ -158,6 +158,58 @@ export const DEFAULT_FRAGMENT = {
 	],
 };
 
+export const DEFAULT_EDIT_FRAGMENT = {
+	fragmentTemplateJSON: {
+		clauses: [
+			{
+				context: 'pre_filter',
+				occur: 'must',
+				query: {
+					query: {
+						bool: {
+							must: [
+								{
+									term: {
+										status: '${config.status}',
+									},
+								},
+							],
+						},
+					},
+				},
+				type: 'wrapper',
+			},
+		],
+		conditions: [],
+		description: {
+			en_US: 'Limit search to published content',
+		},
+		enabled: true,
+		icon: 'filter',
+		title: {
+			en_US: 'Filter Published Content',
+		},
+	},
+	uiConfigurationJSON: [
+		{
+			defaultValue: 0,
+			key: 'config.status',
+			name: 'Status',
+			type: 'single-select',
+			typeOptions: [
+				{
+					label: 'Published',
+					value: 0,
+				},
+				{
+					label: 'Unpublished',
+					value: 1,
+				},
+			],
+		},
+	],
+};
+
 // Not used anywhere yet.
 
 export const DEFAULT_PARAMETER_CONFIGURATION = {

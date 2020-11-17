@@ -33,7 +33,7 @@ FragmentEntriesDisplayContext fragmentEntriesDisplayContext = (FragmentEntriesDi
 		<aui:input name="redirect" type="hidden" value="<%= currentURL %>" />
 
 		<liferay-ui:search-container
-			id="blueprintEntries"
+			id="fragmentEntries"
 			searchContainer="<%= fragmentEntriesDisplayContext.getSearchContainer() %>"
 		>
 			<liferay-ui:search-container-row
@@ -60,7 +60,7 @@ FragmentEntriesDisplayContext fragmentEntriesDisplayContext = (FragmentEntriesDi
 <aui:script sandbox="<%= true %>">
 	var submitForm = function (url) {
 		var searchContainer = document.getElementById(
-			'<portlet:namespace />blueprintEntries'
+			'<portlet:namespace />fragmentEntries'
 		);
 
 		if (searchContainer) {
@@ -82,7 +82,7 @@ FragmentEntriesDisplayContext fragmentEntriesDisplayContext = (FragmentEntriesDi
 				'<liferay-ui:message key="are-you-sure-you-want-to-delete-fragments" />'
 			)
 		) {
-			<portlet:actionURL name="<%= BlueprintsAdminMVCCommandNames.DELETE_FRAGMENT %>" var="deleteFragmentURL">
+			<portlet:actionURL name="<%= BlueprintsAdminMVCCommandNames.DELETE_BLUEPRINT %>" var="deleteFragmentURL">
 				<portlet:param name="redirect" value="<%= currentURL %>" />
 			</portlet:actionURL>
 

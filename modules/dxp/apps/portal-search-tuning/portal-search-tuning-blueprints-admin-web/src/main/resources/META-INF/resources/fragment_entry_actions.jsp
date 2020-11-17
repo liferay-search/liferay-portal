@@ -47,7 +47,7 @@ long companyGroupId = themeDisplay.getCompanyGroupId();
 	</c:if>
 
 	<c:if test="<%= BlueprintPermission.contains(permissionChecker, companyGroupId, blueprintType, ActionKeys.ADD_ENTRY) %>">
-		<portlet:actionURL name="<%= BlueprintsAdminMVCCommandNames.COPY_FRAGMENT %>" var="copyFragmentUrl">
+		<portlet:actionURL name="<%= BlueprintsAdminMVCCommandNames.COPY_BLUEPRINT %>" var="copyFragmentUrl">
 			<portlet:param name="redirect" value="<%= currentURL %>" />
 			<portlet:param name="<%= BlueprintsAdminWebKeys.BLUEPRINT_ID %>" value="<%= String.valueOf(blueprintId) %>" />
 		</portlet:actionURL>
@@ -77,7 +77,7 @@ long companyGroupId = themeDisplay.getCompanyGroupId();
 		/>
 	</c:if>
 
-	<portlet:resourceURL id="<%= BlueprintsAdminMVCCommandNames.EXPORT_FRAGMENT %>" var="exportFragmentURL">
+	<portlet:resourceURL id="<%= BlueprintsAdminMVCCommandNames.EXPORT_BLUEPRINT %>" var="exportFragmentURL">
 		<portlet:param name="redirect" value="<%= currentURL %>" />
 		<portlet:param name="<%= BlueprintsAdminWebKeys.BLUEPRINT_ID %>" value="<%= String.valueOf(blueprintId) %>" />
 	</portlet:resourceURL>
@@ -88,7 +88,7 @@ long companyGroupId = themeDisplay.getCompanyGroupId();
 	/>
 
 	<c:if test="<%= BlueprintEntryPermission.contains(permissionChecker, blueprintId, blueprintType, ActionKeys.DELETE) %>">
-		<portlet:actionURL name="<%= BlueprintsAdminMVCCommandNames.DELETE_FRAGMENT %>" var="deleteFragmentURL">
+		<portlet:actionURL name="<%= BlueprintsAdminMVCCommandNames.DELETE_BLUEPRINT %>" var="deleteFragmentURL">
 			<portlet:param name="redirect" value="<%= currentURL %>" />
 			<portlet:param name="<%= BlueprintsAdminWebKeys.BLUEPRINT_ID %>" value="<%= String.valueOf(blueprintId) %>" />
 		</portlet:actionURL>
