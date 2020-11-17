@@ -25,9 +25,6 @@ final String tabs = ParamUtil.getString(request, "tabs", "blueprints");
 PortletURL configurationsURL = renderResponse.createRenderURL();
 configurationsURL.setParameter(BlueprintsAdminWebKeys.BLUEPRINT_TYPE, String.valueOf(BlueprintTypes.BLUEPRINT));
 
-PortletURL templatesURL = renderResponse.createRenderURL();
-templatesURL.setParameter(BlueprintsAdminWebKeys.BLUEPRINT_TYPE, String.valueOf(BlueprintTypes.TEMPLATE));
-
 PortletURL queryFragmentsURL = renderResponse.createRenderURL();
 queryFragmentsURL.setParameter(BlueprintsAdminWebKeys.BLUEPRINT_TYPE, String.valueOf(BlueprintTypes.QUERY_FRAGMENT));
 %>
@@ -43,12 +40,6 @@ queryFragmentsURL.setParameter(BlueprintsAdminWebKeys.BLUEPRINT_TYPE, String.val
 						navigationItem.setActive(tabs.equals("blueprints"));
 						navigationItem.setHref(configurationsURL, "tabs", "blueprints");
 						navigationItem.setLabel(LanguageUtil.get(request, "blueprints"));
-					});
-				add(
-					navigationItem -> {
-						navigationItem.setActive(tabs.equals("templates"));
-						navigationItem.setHref(templatesURL, "tabs", "templates");
-						navigationItem.setLabel(LanguageUtil.get(request, "templates"));
 					});
 				add(
 					navigationItem -> {
