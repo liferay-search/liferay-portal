@@ -135,12 +135,9 @@ public class FragmentEntriesManagementToolbarDisplayContext
 
 		searchURL.setProperty(
 			"mvcRenderCommandName",
-			BlueprintsAdminMVCCommandNames.VIEW_FRAGMENT);
+			BlueprintsAdminMVCCommandNames.VIEW_BLUEPRINT);
 
-		String tabs = ParamUtil.getString(
-			liferayPortletRequest, "tabs", "fragments");
-
-		searchURL.setProperty("tabs", tabs);
+		searchURL.setParameter("tabs", "fragments");
 
 		searchURL.setProperty("orderByCol", getOrderByCol());
 		searchURL.setProperty("orderByType", getOrderByType());
@@ -154,7 +151,9 @@ public class FragmentEntriesManagementToolbarDisplayContext
 
 		portletURL.setProperty(
 			"mvcRenderCommandName",
-			BlueprintsAdminMVCCommandNames.VIEW_FRAGMENT);
+			BlueprintsAdminMVCCommandNames.VIEW_BLUEPRINT);
+
+		portletURL.setParameter("tabs", "fragments");
 
 		if (searchContainer.getDelta() > 0) {
 			portletURL.setProperty(
@@ -205,7 +204,9 @@ public class FragmentEntriesManagementToolbarDisplayContext
 
 		sortingURL.setProperty(
 			"mvcRenderCommandName",
-			BlueprintsAdminMVCCommandNames.VIEW_FRAGMENT);
+			BlueprintsAdminMVCCommandNames.VIEW_BLUEPRINT);
+
+		sortingURL.setParameter("tabs", "fragments");
 
 		sortingURL.setProperty(SearchContainer.DEFAULT_CUR_PARAM, "0");
 

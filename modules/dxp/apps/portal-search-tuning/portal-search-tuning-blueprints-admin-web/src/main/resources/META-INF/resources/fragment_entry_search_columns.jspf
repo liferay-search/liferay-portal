@@ -51,14 +51,14 @@
 
 	<c:otherwise>
 		<liferay-ui:search-container-column-text
-			cssClass="table-cell-expand table-cell-minw-150 table-title"
+			cssClass="table-cell-expand table-cell-minw-175 table-title"
 			href="<%= editFragmentURL %>"
 			name="title"
 			value="<%= entry.getTitle(locale) %>"
 		/>
 
 		<liferay-ui:search-container-column-text
-			cssClass="table-cell-expand table-cell-minw-150"
+			cssClass="table-cell-expand table-cell-minw-175"
 			name="description"
 			value="<%= entry.getDescription(locale) %>"
 		/>

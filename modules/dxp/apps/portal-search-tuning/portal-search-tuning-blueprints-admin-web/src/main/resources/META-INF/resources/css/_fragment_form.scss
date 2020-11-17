@@ -1,3 +1,8 @@
+.fragment-row {
+	height: 100%;
+	padding-top: 64px;
+}
+
 .fragment-section {
 	border-color: $mainLighten74;
 	border-style: solid;
@@ -75,24 +80,18 @@
 	}
 
 	.codemirror-editor-wrapper {
-		display: flex;
-		flex-direction: column;
 		height: 100%;
 		width: 100%;
 
 		.cm-s-default {
-			flex-grow: 1;
+			height: 100%;
 		}
 	}
 }
 
 .row {
-	flex-grow: 1;
+	height: 100%;
 	margin: 0;
-
-	&.fragment-row {
-		margin-top: 64px;
-	}
 
 	div:first-child {
 		.fragment-section {

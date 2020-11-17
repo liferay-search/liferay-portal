@@ -25,6 +25,7 @@ import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.HashMapBuilder;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -36,6 +37,7 @@ import com.liferay.portal.search.tuning.blueprints.constants.BlueprintTypes;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -141,6 +143,15 @@ public class EditFragmentDisplayBuilder {
 		return descriptionJSONObject;
 	}
 
+	private List<JSONObject> _getPredefinedVariables() {
+
+		// TODO This is a placeholder for LPS-123115 to get predefinedVariables
+
+		JSONObject parameterJSONObject = _jsonFactory.createJSONObject();
+
+		return ListUtil.fromArray(parameterJSONObject);
+	}
+
 	private Map<String, Object> _getProps() {
 		Map<String, Object> props = HashMapBuilder.<String, Object>put(
 			"blueprintId", _blueprintId
@@ -157,6 +168,10 @@ public class EditFragmentDisplayBuilder {
 				"initialConfigurationString", _blueprint.getConfiguration());
 			props.put("initialDescription", _getDescriptionJSONObject());
 			props.put("initialTitle", _getTitleJSONObject());
+
+			// TODO This is a placeholder for LPS-123115 to get predefinedVariables
+			// props.put("predefinedVariables", _getPredefinedVariables());
+
 		}
 
 		return props;
@@ -228,18 +243,7 @@ public class EditFragmentDisplayBuilder {
 
 		sb.append((_blueprint != null) ? "edit-" : "add-");
 
-		if (_blueprintType == BlueprintTypes.BLUEPRINT) {
-			sb.append("blueprint");
-		}
-		else if (_blueprintType == BlueprintTypes.AGGREGATION_FRAGMENT) {
-			sb.append("aggregation-fragment");
-		}
-		else if (_blueprintType == BlueprintTypes.QUERY_FRAGMENT) {
-			sb.append("query-fragment");
-		}
-		else if (_blueprintType == BlueprintTypes.TEMPLATE) {
-			sb.append("template");
-		}
+		sb.append("query-fragment");
 
 		editFragmentDisplayContext.setPageTitle(
 			_language.get(_httpServletRequest, sb.toString()));

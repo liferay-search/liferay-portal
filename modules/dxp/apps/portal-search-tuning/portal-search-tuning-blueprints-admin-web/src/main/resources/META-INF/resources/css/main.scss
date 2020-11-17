@@ -42,10 +42,12 @@
 	}
 
 	.edit-fragment-root {
-		display: flex;
-		flex-direction: column;
 		height: calc(100vh - 96px);
 
 		@import '_fragment_form';
+
+		.cursor-pointer {
+			cursor: pointer;
+		}
 	}
 }

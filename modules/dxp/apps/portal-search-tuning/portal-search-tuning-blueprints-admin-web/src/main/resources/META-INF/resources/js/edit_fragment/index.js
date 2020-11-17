@@ -54,10 +54,10 @@ function EditFragmentForm({
 	const [expand, setExpand] = useState(false);
 
 	const [fragmentTemplateJSON, setFragmentTemplateJSON] = useState(
-		JSON.stringify(initialConfiguration.fragmentTemplate, null, '\t')
+		JSON.stringify(initialConfiguration.fragmentTemplateJSON, null, '\t')
 	);
 	const [uiConfigurationJSON, setUIConfigurationJSON] = useState(
-		JSON.stringify(initialConfiguration.uiConfiguration, null, '\t')
+		JSON.stringify(initialConfiguration.uiConfigurationJSON, null, '\t')
 	);
 
 	function addFragmentTemplateJSONVariable(variable) {
@@ -118,8 +118,8 @@ function EditFragmentForm({
 			formData.append(
 				`${namespace}configuration`,
 				JSON.stringify({
-					fragmentTemplate: JSON.parse(fragmentTemplateJSON),
-					uiConfiguration: JSON.parse(uiConfigurationJSON),
+					fragmentTemplateJSON: JSON.parse(fragmentTemplateJSON),
+					uiConfigurationJSON: JSON.parse(uiConfigurationJSON),
 				})
 			);
 		}
@@ -195,155 +195,163 @@ function EditFragmentForm({
 				/>
 			</form>
 
-			<ClayLayout.Row className="fragment-row">
-				<ClayLayout.Col size={8}>
-					<div className="fragment-section">
-						<div className="fragment-header">
-							<ClayButton
-								className={expand && 'active'}
-								disabled={false}
-								displayType="secondary"
-								monospaced
-								onClick={() => setExpand(!expand)}
-								small
-								title={Liferay.Language.get(
-									'predefined-variables'
-								)}
-								type="submit"
-							>
-								<ClayIcon symbol="list-ul"></ClayIcon>
-							</ClayButton>
+			<div className="fragment-row">
+				<ClayLayout.Row>
+					<ClayLayout.Col size={8}>
+						<div className="fragment-section">
+							<div className="fragment-header">
+								<ClayButton
+									className={expand && 'active'}
+									disabled={false}
+									displayType="secondary"
+									monospaced
+									onClick={() => setExpand(!expand)}
+									small
+									title={Liferay.Language.get(
+										'predefined-variables'
+									)}
+									type="submit"
+								>
+									<ClayIcon symbol="list-ul"></ClayIcon>
+								</ClayButton>
 
-							<div className="expand-header">
-								<div className="header-label">
-									<label>
-										{Liferay.Language.get('json')}
-										<ClayTooltipProvider>
-											<ClaySticker
-												displayType="unstyled"
-												size="sm"
-											>
-												<ClayIcon
-													data-tooltip-align="top"
-													symbol="info-circle"
-													title={Liferay.Language.get(
-														'json'
-													)}
-												/>
-											</ClaySticker>
-										</ClayTooltipProvider>
-									</label>
+								<div className="expand-header">
+									<div className="header-label">
+										<label>
+											{Liferay.Language.get(
+												'fragment-template-json'
+											)}
+											<ClayTooltipProvider>
+												<ClaySticker
+													className="cursor-pointer"
+													displayType="unstyled"
+													size="sm"
+												>
+													<ClayIcon
+														data-tooltip-align="top"
+														symbol="info-circle"
+														title={Liferay.Language.get(
+															'fragment-template-json-helptext'
+														)}
+													/>
+												</ClaySticker>
+											</ClayTooltipProvider>
+										</label>
+									</div>
 								</div>
 							</div>
-						</div>
 
-						<ClayLayout.Row>
-							{expand && (
+							<ClayLayout.Row>
+								{expand && (
+									<ClayLayout.Col
+										className="json-section"
+										size={3}
+									>
+										<div className="sidebar sidebar-light">
+											<div className="sidebar-header">
+												<span className="text-truncate-inline">
+													<span className="text-truncate">
+														{Liferay.Language.get(
+															'predefined-variables'
+														)}
+													</span>
+												</span>
+											</div>
+
+											<div className="container-fluid sidebar-input">
+												<ClayInput
+													aria-label={Liferay.Language.get(
+														'search'
+													)}
+													placeholder={Liferay.Language.get(
+														'search'
+													)}
+													type="text"
+												/>
+											</div>
+
+											<div className="container-fluid">
+												<dl className="sidebar-dl">
+													{predefinedVariables.map(
+														(item) => (
+															<SidebarPanel
+																categoryName={
+																	item.categoryName
+																}
+																handleClick={
+																	addFragmentTemplateJSONVariable
+																}
+																item={item}
+																key={
+																	item.categoryName
+																}
+																variables={
+																	item.variables
+																}
+															/>
+														)
+													)}
+												</dl>
+											</div>
+										</div>
+									</ClayLayout.Col>
+								)}
+
 								<ClayLayout.Col
 									className="json-section"
-									size={3}
+									size={expand ? 9 : 12}
 								>
-									<div className="sidebar sidebar-light">
-										<div className="sidebar-header">
-											<span className="text-truncate-inline">
-												<span className="text-truncate">
-													{Liferay.Language.get(
-														'predefined-variables'
-													)}
-												</span>
-											</span>
-										</div>
-
-										<div className="container-fluid sidebar-input">
-											<ClayInput
-												aria-label={Liferay.Language.get(
-													'search'
-												)}
-												placeholder={Liferay.Language.get(
-													'search'
-												)}
-												type="text"
-											/>
-										</div>
-
-										<div className="container-fluid">
-											<dl className="sidebar-dl">
-												{predefinedVariables.map(
-													(item) => (
-														<SidebarPanel
-															categoryName={
-																item.categoryName
-															}
-															handleClick={
-																addFragmentTemplateJSONVariable
-															}
-															item={item}
-															key={
-																item.categoryName
-															}
-															variables={
-																item.variables
-															}
-														/>
-													)
-												)}
-											</dl>
-										</div>
-									</div>
+									<CodeMirrorEditor
+										onChange={(value) =>
+											setFragmentTemplateJSON(value)
+										}
+										ref={fragmentTemplateJSONRef}
+										value={fragmentTemplateJSON}
+									/>
 								</ClayLayout.Col>
-							)}
+							</ClayLayout.Row>
+						</div>
+					</ClayLayout.Col>
 
-							<ClayLayout.Col
-								className="json-section"
-								size={expand ? 9 : 12}
-							>
-								<CodeMirrorEditor
-									onChange={(value) =>
-										setFragmentTemplateJSON(value)
-									}
-									ref={fragmentTemplateJSONRef}
-									value={fragmentTemplateJSON}
-								/>
-							</ClayLayout.Col>
-						</ClayLayout.Row>
-					</div>
-				</ClayLayout.Col>
-
-				<ClayLayout.Col size={4}>
-					<div className="fragment-section">
-						<div className="fragment-header">
-							<div className="expand-header">
-								<div className="header-label">
-									<label>
-										{Liferay.Language.get(
-											'ui-configuration'
-										)}
-										<ClayTooltipProvider>
-											<ClaySticker
-												displayType="unstyled"
-												size="sm"
-											>
-												<ClayIcon
-													data-tooltip-align="top"
-													symbol="info-circle"
-													title={Liferay.Language.get(
-														'ui-configuration'
-													)}
-												/>
-											</ClaySticker>
-										</ClayTooltipProvider>
-									</label>
+					<ClayLayout.Col size={4}>
+						<div className="fragment-section">
+							<div className="fragment-header">
+								<div className="expand-header">
+									<div className="header-label">
+										<label>
+											{Liferay.Language.get(
+												'ui-configuration-json'
+											)}
+											<ClayTooltipProvider>
+												<ClaySticker
+													className="cursor-pointer"
+													displayType="unstyled"
+													size="sm"
+												>
+													<ClayIcon
+														data-tooltip-align="top"
+														symbol="info-circle"
+														title={Liferay.Language.get(
+															'ui-configuration-json-helptext'
+														)}
+													/>
+												</ClaySticker>
+											</ClayTooltipProvider>
+										</label>
+									</div>
 								</div>
 							</div>
-						</div>
 
-						<CodeMirrorEditor
-							onChange={(value) => setUIConfigurationJSON(value)}
-							value={uiConfigurationJSON}
-						/>
-					</div>
-				</ClayLayout.Col>
-			</ClayLayout.Row>
+							<CodeMirrorEditor
+								onChange={(value) =>
+									setUIConfigurationJSON(value)
+								}
+								value={uiConfigurationJSON}
+							/>
+						</div>
+					</ClayLayout.Col>
+				</ClayLayout.Row>
+			</div>
 		</>
 	);
 }

@@ -30,6 +30,7 @@ import ConfigFragment from '../../src/main/resources/META-INF/resources/js/share
 import ErrorBoundary from '../../src/main/resources/META-INF/resources/js/shared/ErrorBoundary';
 import JSONFragment from '../../src/main/resources/META-INF/resources/js/shared/JSONFragment';
 import PageToolbar from '../../src/main/resources/META-INF/resources/js/shared/PageToolbar';
+import {DEFAULT_EDIT_FRAGMENT} from '../../src/main/resources/META-INF/resources/js/utils/data';
 import {SELECTED_FRAGMENTS} from '../js/mocks/data';
 
 const {addDecorator, storiesOf} = StorybookReact;
@@ -72,31 +73,20 @@ const withContainer = (storyFn) => (
 	</ClayLayout.ContainerFluid>
 );
 
-const withFragmentsClass = (storyFn) => (
-	<ErrorBoundary>
-		<div className="edit-fragment-root">{storyFn()}</div>
-	</ErrorBoundary>
-);
-
-storiesOf('Pages|FragmentForm', module)
-	.addDecorator(withFragmentsClass)
-	.add('default', () => (
-		<FragmentForm
-			context={CONTEXT}
-			props={{
-				initialConfigurationString: JSON.stringify({
-					fragmentTemplate: SELECTED_FRAGMENTS[0].inputJSON,
-					uiConfiguration: SELECTED_FRAGMENTS[0].configJSON,
-				}),
-				initialDescription: {},
-				initialTitle: {
-					'en-US': 'Test Title',
-				},
-				redirectURL: '',
-				submitFormURL: '',
-			}}
-		/>
-	));
+storiesOf('Pages|FragmentForm', module).add('default', () => (
+	<FragmentForm
+		context={CONTEXT}
+		props={{
+			initialConfigurationString: JSON.stringify(DEFAULT_EDIT_FRAGMENT),
+			initialDescription: {},
+			initialTitle: {
+				'en-US': 'Test Title',
+			},
+			redirectURL: '',
+			submitFormURL: '',
+		}}
+	/>
+));
 
 storiesOf('Pages|BlueprintForm', module).add('default', () => (
 	<BlueprintForm

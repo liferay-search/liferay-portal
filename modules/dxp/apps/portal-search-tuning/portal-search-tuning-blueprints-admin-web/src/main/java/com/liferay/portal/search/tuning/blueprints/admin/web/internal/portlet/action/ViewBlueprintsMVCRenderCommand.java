@@ -96,8 +96,8 @@ public class ViewBlueprintsMVCRenderCommand implements MVCRenderCommand {
 				fragmentsManagementToolbarDisplayContext =
 					_getFragmentsManagementToolbar(
 						renderRequest, renderResponse,
-						blueprintEntriesDisplayContext.getSearchContainer(),
-						blueprintEntriesDisplayContext.getDisplayStyle(),
+						fragmentEntriesDisplayContext.getSearchContainer(),
+						fragmentEntriesDisplayContext.getDisplayStyle(),
 						blueprintTypeFragment);
 
 			renderRequest.setAttribute(

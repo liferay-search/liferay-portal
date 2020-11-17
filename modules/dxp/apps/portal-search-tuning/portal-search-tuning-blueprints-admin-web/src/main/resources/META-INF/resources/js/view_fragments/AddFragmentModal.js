@@ -17,10 +17,7 @@ import {useIsMounted} from 'frontend-js-react-web';
 import {fetch, navigate} from 'frontend-js-web';
 import React, {useState} from 'react';
 
-import {DEFAULT_FRAGMENT} from '../utils/data';
-import {convertToSelectedFragment} from '../utils/utils';
-
-const DEFAULT_SELECTED_FRAGMENT = convertToSelectedFragment(DEFAULT_FRAGMENT);
+import {DEFAULT_EDIT_FRAGMENT} from '../utils/data';
 
 /**
  * A slightly modified version of frontend-js-web module's SimpleInputModal
@@ -58,20 +55,7 @@ const AddFragmentModal = ({
 
 		formData.append(
 			`${namespace}configuration`,
-			JSON.stringify({
-				advanced_configuration: {},
-				aggregation_configuration: [],
-				parameter_configuration: {},
-				query_configuration: [DEFAULT_SELECTED_FRAGMENT.queryConfig],
-				suggest_configuration: [],
-			})
-		);
-
-		formData.append(
-			`${namespace}selectedFragments`,
-			JSON.stringify({
-				query_configuration: [DEFAULT_SELECTED_FRAGMENT],
-			})
+			JSON.stringify(DEFAULT_EDIT_FRAGMENT)
 		);
 
 		fetch(formSubmitURL, {

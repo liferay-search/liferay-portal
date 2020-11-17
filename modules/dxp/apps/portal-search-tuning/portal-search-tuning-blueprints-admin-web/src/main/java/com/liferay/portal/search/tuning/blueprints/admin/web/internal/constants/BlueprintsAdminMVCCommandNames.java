@@ -21,11 +21,7 @@ public class BlueprintsAdminMVCCommandNames {
 
 	public static final String COPY_BLUEPRINT = "/blueprint/copy";
 
-	public static final String COPY_FRAGMENT = "/fragment/copy";
-
 	public static final String DELETE_BLUEPRINT = "/blueprint/delete";
-
-	public static final String DELETE_FRAGMENT = "/fragment/delete";
 
 	public static final String EDIT_BLUEPRINT = "/blueprint/edit";
 
@@ -33,14 +29,8 @@ public class BlueprintsAdminMVCCommandNames {
 
 	public static final String EXPORT_BLUEPRINT = "/blueprint/export";
 
-	public static final String EXPORT_FRAGMENT = "/fragment/export";
-
 	public static final String SELECT_BLUEPRINT = "/blueprint/select";
 
-	public static final String SELECT_FRAGMENT = "/fragment/select";
-
 	public static final String VIEW_BLUEPRINT = "/blueprint/view";
-
-	public static final String VIEW_FRAGMENT = "/fragment/view";
 
 }
