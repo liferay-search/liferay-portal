@@ -12,6 +12,8 @@
 import {openToast} from 'frontend-js-web';
 import moment from 'moment';
 
+import {INPUT_TYPES} from './inputTypes';
+
 export const openErrorToast = (config) => {
 	openToast({
 		message: Liferay.Language.get('an-unexpected-error-occurred'),
@@ -67,13 +69,13 @@ export const getDefaultValue = (item) => {
 	const itemValue = item.defaultValue;
 
 	switch (item.type) {
-		case 'single-select':
+		case INPUT_TYPES.SINGLE_SELECT:
 			return isNotNull(itemValue)
 				? itemValue
 				: item.typeOptions && item.typeOptions[0].value
 				? item.typeOptions[0].value
 				: '';
-		case 'date':
+		case INPUT_TYPES.DATE:
 			return isNotNull(itemValue)
 				? typeof itemValue == 'number'
 					? itemValue
@@ -81,7 +83,7 @@ export const getDefaultValue = (item) => {
 					? moment(itemValue).unix()
 					: ''
 				: '';
-		case 'entity':
+		case INPUT_TYPES.ENTITY:
 			return isNotNull(itemValue) &&
 				itemValue.length > 0 &&
 				itemValue.every(
@@ -89,11 +91,11 @@ export const getDefaultValue = (item) => {
 				)
 				? itemValue
 				: [];
-		case 'number':
+		case INPUT_TYPES.NUMBER:
 			return isNotNull(itemValue) && typeof itemValue == 'number'
 				? itemValue
 				: '';
-		case 'slider':
+		case INPUT_TYPES.SLIDER:
 			return isNotNull(itemValue) && typeof itemValue == 'number'
 				? itemValue
 				: '';
@@ -156,19 +158,23 @@ export const replaceUIConfigurationValues = (
 		let flattenJSON = JSON.stringify(fragmentTemplateJSON);
 
 		uiConfigurationJSON.map((config) => {
-			const configValue =
-				config.type === 'entity'
-					? JSON.stringify(
-							uiConfigurationValues[config.key].map(
-								(item) => item.id
-							)
-					  )
-					: uiConfigurationValues[config.key];
+			let configValue = uiConfigurationValues[config.key];
+
+			if (config.type === INPUT_TYPES.ENTITY) {
+				configValue = JSON.stringify(
+					uiConfigurationValues[config.key].map((item) => item.id)
+				);
+			}
+			else if (config.type === INPUT_TYPES.FIELD_SELECT) {
+				configValue = `${uiConfigurationValues[config.key].field}${
+					uiConfigurationValues[config.key].locale
+				}`;
+			}
 
 			if (
 				typeof configValue === 'number' ||
 				typeof configValue === 'boolean' ||
-				config.type === 'entity'
+				config.type === INPUT_TYPES.ENTITY
 			) {
 				flattenJSON = replaceStr(
 					flattenJSON,

@@ -9,11 +9,12 @@
  * distribution rights of the Software.
  */
 
-import React from 'react';
-
-export default React.createContext({
-	availableLanguages: {},
-	defaultLocale: 'en_US',
-	locale: 'en_US',
-	namespace: '',
-});
+export const INPUT_TYPES = {
+	DATE: 'date',
+	ENTITY: 'entity',
+	FIELD_SELECT: 'field-select',
+	NUMBER: 'number',
+	SINGLE_SELECT: 'single-select',
+	SLIDER: 'slider',
+	TEXT: 'text',
+};
