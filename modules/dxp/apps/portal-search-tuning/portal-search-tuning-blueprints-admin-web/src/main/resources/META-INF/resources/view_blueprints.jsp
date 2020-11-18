@@ -41,7 +41,93 @@ BlueprintEntriesDisplayContext blueprintEntriesDisplayContext = (BlueprintEntrie
 				keyProperty="blueprintId"
 				modelVar="entry"
 			>
-				<%@ include file="/entry_search_columns.jspf" %>
+				<portlet:renderURL var="editBlueprintURL">
+					<portlet:param name="mvcRenderCommandName" value="<%= BlueprintsAdminMVCCommandNames.EDIT_BLUEPRINT %>" />
+					<portlet:param name="redirect" value="<%= currentURL %>" />
+					<portlet:param name="<%= BlueprintsAdminWebKeys.BLUEPRINT_ID %>" value="<%= String.valueOf(entry.getBlueprintId()) %>" />
+				</portlet:renderURL>
+
+				<c:choose>
+					<%-- List view --%>
+
+					<c:when test='<%= blueprintEntriesDisplayContext.getDisplayStyle().equals("descriptive") %>'>
+						<liferay-ui:search-container-column-user
+							showDetails="<%= false %>"
+							userId="<%= entry.getUserId() %>"
+						/>
+
+						<liferay-ui:search-container-column-text
+							colspan="<%= 2 %>"
+						>
+							<h4>
+								<aui:a href="<%= editBlueprintURL %>">
+									<%= entry.getTitle(locale) %>
+								</aui:a>
+							</h4>
+
+							<h5 class="text-default text-truncate" title="<%= entry.getDescription(locale) %>">
+								<%= entry.getDescription(locale) %>
+							</h5>
+
+							<%
+							Date modified = entry.getModifiedDate();
+
+							String modifiedDateDescription = LanguageUtil.getTimeDescription(request, System.currentTimeMillis() - modified.getTime(), true);
+							%>
+
+							<h5 class="text-default text-truncate">
+								<span class="id-text">
+									<liferay-ui:message arguments="<%= String.valueOf(entry.getBlueprintId()) %>" key="id-x" />
+								</span>
+
+								<liferay-ui:message arguments="<%= new String[] {entry.getUserName(), modifiedDateDescription} %>" key="modified-by-x-x-ago" />
+							</h5>
+						</liferay-ui:search-container-column-text>
+
+						<liferay-ui:search-container-column-jsp
+							path="/blueprint_entry_actions.jsp"
+						/>
+					</c:when>
+
+					<%-- Table view --%>
+
+					<c:otherwise>
+						<liferay-ui:search-container-column-text
+							cssClass="table-cell-expand table-cell-minw-200 table-title"
+							href="<%= editBlueprintURL %>"
+							name="title"
+							value="<%= entry.getTitle(locale) %>"
+						/>
+
+						<liferay-ui:search-container-column-text
+							cssClass="table-cell-expand table-cell-minw-200"
+							name="description"
+							value="<%= entry.getDescription(locale) %>"
+						/>
+
+						<liferay-ui:search-container-column-text
+							href="<%= editBlueprintURL %>"
+							name="id"
+							value="<%= String.valueOf(entry.getBlueprintId()) %>"
+						/>
+
+						<liferay-ui:search-container-column-user
+							name="author"
+							showDetails="<%= false %>"
+							userId="<%= entry.getUserId() %>"
+						/>
+
+						<liferay-ui:search-container-column-date
+							name="modified-date"
+							property="modifiedDate"
+						/>
+
+						<liferay-ui:search-container-column-jsp
+							name="actions"
+							path="/blueprint_entry_actions.jsp"
+						/>
+					</c:otherwise>
+				</c:choose>
 			</liferay-ui:search-container-row>
 
 			<liferay-ui:search-iterator
