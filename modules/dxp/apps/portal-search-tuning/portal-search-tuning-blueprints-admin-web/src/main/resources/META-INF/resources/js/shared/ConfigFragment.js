@@ -24,6 +24,7 @@ import moment from 'moment';
 import {PropTypes} from 'prop-types';
 import React, {useContext, useEffect, useState} from 'react';
 
+import {INPUT_TYPES} from '../utils/inputTypes';
 import {
 	replaceUIConfigurationValues,
 	validateUIConfigurationJSON,
@@ -90,7 +91,7 @@ function ConfigFragment({
 	fragmentOutput,
 	updateFragment = () => {},
 }) {
-	const {locale} = useContext(ThemeContext);
+	const {availableLanguages, locale} = useContext(ThemeContext);
 	const [collapse, setCollapse] = useState(false);
 	const [active, setActive] = useState(false);
 
@@ -152,7 +153,7 @@ function ConfigFragment({
 
 	function _renderInput(config) {
 		switch (config.type) {
-			case 'date':
+			case INPUT_TYPES.DATE:
 				return (
 					<div className="date-picker-input">
 						<ClayDatePicker
@@ -197,7 +198,7 @@ function ConfigFragment({
 						)}
 					</div>
 				);
-			case 'entity':
+			case INPUT_TYPES.ENTITY:
 				return (
 					<ClayInput.Group small>
 						<ClayInput.GroupItem>
@@ -255,7 +256,75 @@ function ConfigFragment({
 						</ClayInput.GroupItem>
 					</ClayInput.Group>
 				);
-			case 'single-select':
+			case INPUT_TYPES.FIELD_SELECT:
+				return (
+					<ClayInput.Group small>
+						<ClayInput.GroupItem>
+							<ClaySelect
+								aria-label={config.name}
+								className="form-control-sm"
+								id={`${config.key}_field`}
+								onChange={(event) =>
+									_handleChange(config.key, {
+										...uiConfigurationValues[config.key],
+										field: event.target.value,
+									})
+								}
+								value={uiConfigurationValues[config.key].field}
+							>
+								{config.typeOptions.map((option) => (
+									<ClaySelect.Option
+										key={option.field}
+										label={option.label}
+										value={option.field}
+									/>
+								))}
+							</ClaySelect>
+						</ClayInput.GroupItem>
+
+						<ClayInput.GroupItem>
+							<ClaySelect
+								aria-label={config.name}
+								className="form-control-sm"
+								id={`${config.key}_locale`}
+								onChange={(event) =>
+									_handleChange(config.key, {
+										...uiConfigurationValues[config.key],
+										locale: event.target.value,
+									})
+								}
+								value={uiConfigurationValues[config.key].locale}
+							>
+								<ClaySelect.Option
+									key="users-language"
+									label={Liferay.Language.get(
+										'users-language'
+									)}
+									value={'_${context.language_id}'}
+								/>
+
+								<ClaySelect.Option
+									key="no-localization"
+									label={Liferay.Language.get(
+										'no-localization'
+									)}
+									value=""
+								/>
+
+								{Object.keys(availableLanguages).map(
+									(locale) => (
+										<ClaySelect.Option
+											key={locale}
+											label={availableLanguages[locale]}
+											value={`_${locale}`}
+										/>
+									)
+								)}
+							</ClaySelect>
+						</ClayInput.GroupItem>
+					</ClayInput.Group>
+				);
+			case INPUT_TYPES.SINGLE_SELECT:
 				return (
 					<ClaySelect
 						aria-label={name}
@@ -283,7 +352,7 @@ function ConfigFragment({
 							))}
 					</ClaySelect>
 				);
-			case 'slider':
+			case INPUT_TYPES.SLIDER:
 				return (
 					<Slider
 						keyword={config.key}
@@ -292,7 +361,7 @@ function ConfigFragment({
 						value={uiConfigurationValues[`${config.key}`]}
 					/>
 				);
-			case 'number':
+			case INPUT_TYPES.NUMBER:
 				return (
 					<ClayInput.Group small>
 						<ClayInput.GroupItem

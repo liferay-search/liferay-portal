@@ -38,6 +38,13 @@ const {action} = StorybookAddonActions;
 const {withKnobs} = StorybookAddonKnobs;
 
 const CONTEXT = {
+	availableLanguages: {
+		ar_SA: 'Arabic (Saudi Arabia)',
+		ca_ES: 'Catalan (Spain)',
+		en_US: 'English (United States)',
+		nl_NL: 'Dutch (Netherlands)',
+		zh_CN: 'Chinese (China)',
+	},
 	defaultLocale: 'en_US',
 	locale: 'en_US',
 	namespace:

@@ -127,6 +127,8 @@ function JSONFragment({
 
 			{!collapse && (
 				<div className="json-configuration-editor">
+					<label>{Liferay.Language.get('json')}</label>
+
 					<CodeMirrorEditor
 						onChange={handleChange}
 						value={JSON.stringify(fragmentTemplateJSON, null, '\t')}

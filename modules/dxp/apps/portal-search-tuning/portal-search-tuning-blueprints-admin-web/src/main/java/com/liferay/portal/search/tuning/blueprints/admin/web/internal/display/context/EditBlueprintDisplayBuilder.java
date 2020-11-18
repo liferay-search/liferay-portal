@@ -113,6 +113,18 @@ public class EditBlueprintDisplayBuilder {
 		return LanguageUtil.format(locale, "select-x", title);
 	}
 
+	private JSONObject _getAvailableLanguagesJSONObject() {
+		JSONObject jsonObject = _jsonFactory.createJSONObject();
+
+		for (Locale locale : _language.getAvailableLocales()) {
+			jsonObject.put(
+				LocaleUtil.toLanguageId(locale),
+				locale.getDisplayName(_themeDisplay.getLocale()));
+		}
+
+		return jsonObject;
+	}
+
 	private Blueprint _getBlueprint() {
 		Blueprint blueprint = null;
 
@@ -145,6 +157,8 @@ public class EditBlueprintDisplayBuilder {
 
 	private Map<String, Object> _getContext() {
 		return HashMapBuilder.<String, Object>put(
+			"availableLanguages", _getAvailableLanguagesJSONObject()
+		).put(
 			"defaultLocale", LocaleUtil.toLanguageId(LocaleUtil.getDefault())
 		).put(
 			"locale", _themeDisplay.getLanguageId()

@@ -14,12 +14,24 @@
 		margin: 12px 24px;
 	}
 
+	.CodeMirror {
+		background-color: $lightBackground;
+
+		.CodeMirror-gutters {
+			background-color: $lightBackground;
+		}
+	}
+
 	.configuration-header-list {
 		margin: 8px 0;
 
 		.list-group-item {
 			border: 0;
 			padding: 16px 12px;
+		}
+
+		.list-group-title {
+			font-size: 1rem;
 		}
 	}
 

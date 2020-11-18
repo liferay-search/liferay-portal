@@ -1078,10 +1078,10 @@ export const QUERY_FRAGMENTS = [
 					query: {
 						query: {
 							multi_match: {
-								boost: '${context.boost}',
+								boost: '${config.boost}',
 								fields: [
-									'content_${context.language_id}',
-									'title_${context.language_id}^2',
+									'${config.field1}',
+									'${config.field2}',
 								],
 								operator: '${config.default_operator}',
 								query: '${keywords}',
@@ -1105,31 +1105,53 @@ export const QUERY_FRAGMENTS = [
 		uiConfigurationJSON: [
 			{
 				defaultValue: 4,
-				key: 'context.boost',
+				key: 'config.boost',
 				name: 'Boost',
-				type: 'slider',
+				type: 'number',
 			},
 			{
-				defaultValue: 'en_US',
-				key: 'context.language_id',
-				name: 'Context Language ID',
-				type: 'single-select',
+				defaultValue: {
+					field: 'title',
+					locale: '',
+				},
+				key: 'config.field1',
+				name: 'Field',
+				type: 'field-select',
 				typeOptions: [
 					{
-						label: 'English',
-						value: 'en_US',
+						label: 'Title',
+						value: 'title',
 					},
 					{
-						label: 'Spanish',
-						value: 'es_ES',
+						label: 'Description',
+						value: 'description',
 					},
 					{
-						label: 'French',
-						value: 'fr_FR',
+						label: 'Content',
+						value: 'content',
+					},
+				],
+			},
+			{
+				defaultValue: {
+					field: 'content',
+					locale: '',
+				},
+				key: 'config.field2',
+				name: 'Field',
+				type: 'field-select',
+				typeOptions: [
+					{
+						label: 'Title',
+						value: 'title',
 					},
 					{
-						label: 'Japanese',
-						value: 'ja_JP',
+						label: 'Description',
+						value: 'description',
+					},
+					{
+						label: 'Content',
+						value: 'content',
 					},
 				],
 			},
