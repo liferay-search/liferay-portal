@@ -14,6 +14,9 @@
 
 package com.liferay.portal.search.elasticsearch7.internal.connection;
 
+import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.HttpUtil;
+import com.liferay.portal.kernel.util.SystemProperties;
 import com.liferay.portal.search.elasticsearch7.internal.util.ClassLoaderUtil;
 
 import java.io.InputStream;
@@ -172,6 +175,14 @@ public class RestHighLevelClientFactory {
 			httpAsyncClientBuilder.setSSLContext(createSSLContext());
 		}
 
+		if (_applyProxyConfig()) {
+			httpAsyncClientBuilder.setProxy(
+				new HttpHost(
+					SystemProperties.get("http.proxyHost"),
+					GetterUtil.getInteger(
+						SystemProperties.get("http.proxyPort"))));
+		}
+
 		return httpAsyncClientBuilder;
 	}
 
@@ -207,6 +218,18 @@ public class RestHighLevelClientFactory {
 		_truststorePath = restHighLevelClientFactory._truststorePath;
 		_truststoreType = restHighLevelClientFactory._truststoreType;
 		_userName = restHighLevelClientFactory._userName;
+	}
+
+	private boolean _applyProxyConfig() {
+		if (!HttpUtil.hasProxyConfig()) {
+			return false;
+		}
+
+		return Stream.of(
+			_networkHostAddresses
+		).allMatch(
+			host -> !HttpUtil.isNonProxyHost(host)
+		);
 	}
 
 	private boolean _authenticationEnabled;
