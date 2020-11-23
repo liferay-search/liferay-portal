@@ -10,7 +10,9 @@
  */
 
 import ClayButton from '@clayui/button';
+import ClayIcon from '@clayui/icon';
 import ClayLayout from '@clayui/layout';
+import {ClayTooltipProvider} from '@clayui/tooltip';
 import {PropTypes} from 'prop-types';
 import React, {useState} from 'react';
 
@@ -21,6 +23,7 @@ function QueryBuilder({
 	deleteFragment,
 	entityJSON,
 	selectedFragments,
+	toggleSidebar,
 	updateFragment,
 }) {
 	const [collapseAll, setCollapseAll] = useState(false);
@@ -34,16 +37,37 @@ function QueryBuilder({
 				<ClayLayout.Col size={4}>
 					{Liferay.Language.get('query-builder')}
 				</ClayLayout.Col>
-				<ClayLayout.Col size={3}>
-					<ClayButton
-						aria-label={Liferay.Language.get('collapse-all')}
-						displayType="unstyled"
-						onClick={() => setCollapseAll(!collapseAll)}
-					>
-						{collapseAll
-							? Liferay.Language.get('expand-all')
-							: Liferay.Language.get('collapse-all')}
-					</ClayButton>
+
+				<ClayLayout.Col size={4}>
+					<div className="builder-actions">
+						<ClayButton
+							aria-label={Liferay.Language.get('collapse-all')}
+							className="collapse-button"
+							displayType="unstyled"
+							onClick={() => setCollapseAll(!collapseAll)}
+						>
+							{collapseAll
+								? Liferay.Language.get('expand-all')
+								: Liferay.Language.get('collapse-all')}
+						</ClayButton>
+
+						<ClayTooltipProvider>
+							<ClayButton
+								aria-label={Liferay.Language.get(
+									'add-query-fragment'
+								)}
+								displayType="primary"
+								monospaced
+								onClick={toggleSidebar}
+								small
+								title={Liferay.Language.get(
+									'add-query-fragment'
+								)}
+							>
+								<ClayIcon symbol="plus" />
+							</ClayButton>
+						</ClayTooltipProvider>
+					</div>
 				</ClayLayout.Col>
 			</ClayLayout.Row>
 

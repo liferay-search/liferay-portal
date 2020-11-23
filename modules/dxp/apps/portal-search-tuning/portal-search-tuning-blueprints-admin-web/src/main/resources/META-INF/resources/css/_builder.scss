@@ -1,5 +1,5 @@
 .builder {
-	max-width: 624px;
+	max-width: 700px;
 	padding-top: $pageToolbarHeight + 40px;
 
 	.configuration-fragment {
@@ -28,15 +28,14 @@
 	.configuration-header {
 		margin-bottom: 1.25rem;
 
-		button {
-			color: $mainLighten28;
+		.builder-actions {
 			float: right;
-			font-size: 0.875rem;
-			margin: 0.125rem 1rem 0 0;
+
+			.collapse-button {
+				color: $mainLighten28;
+				font-size: 0.875rem;
+				margin: 0.125rem 1rem 0 0;
+			}
 		}
 	}
-}
-
-.shifted {
-	margin-right: 384px;
 }

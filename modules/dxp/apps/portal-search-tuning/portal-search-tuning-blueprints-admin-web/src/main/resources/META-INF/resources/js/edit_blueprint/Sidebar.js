@@ -12,6 +12,7 @@
 import ClayButton from '@clayui/button';
 import ClayEmptyState from '@clayui/empty-state';
 import {ClayInput} from '@clayui/form';
+import ClayIcon from '@clayui/icon';
 import ClayList from '@clayui/list';
 import ClayLoadingIndicator from '@clayui/loading-indicator';
 import PropTypes from 'prop-types';
@@ -28,7 +29,7 @@ const EmptyListMessage = () => (
 	</div>
 );
 
-const QueryFragmentList = ({onAddFragment, queryFragments}) => {
+const QueryFragmentList = ({onAddFragment, queryFragments, toggleSidebar}) => {
 	const {locale} = useContext(ThemeContext);
 
 	const [showAdd, setShowAdd] = useState(-1);
@@ -66,12 +67,13 @@ const QueryFragmentList = ({onAddFragment, queryFragments}) => {
 													'add'
 												)}
 												displayType="secondary"
-												onClick={() =>
+												onClick={() => {
+													toggleSidebar();
 													onAddFragment({
 														fragmentTemplateJSON,
 														uiConfigurationJSON,
-													})
-												}
+													});
+												}}
 												small
 											>
 												{Liferay.Language.get('add')}
@@ -88,7 +90,7 @@ const QueryFragmentList = ({onAddFragment, queryFragments}) => {
 	);
 };
 
-function Sidebar({onAddFragment}) {
+function Sidebar({onAddFragment, showSidebar, toggleSidebar}) {
 	const {locale} = useContext(ThemeContext);
 
 	const [loading, setLoading] = useState(true);
@@ -134,7 +136,7 @@ function Sidebar({onAddFragment}) {
 	};
 
 	return (
-		<div className="sidebar sidebar-light">
+		<div className={`sidebar sidebar-light ${showSidebar && 'open'}`}>
 			<div className="sidebar-header">
 				<h4 className="component-title">
 					<span className="text-truncate-inline">
@@ -143,6 +145,13 @@ function Sidebar({onAddFragment}) {
 						</span>
 					</span>
 				</h4>
+				<ClayButton
+					displayType="unstyled"
+					onClick={toggleSidebar}
+					small
+				>
+					<ClayIcon symbol="times" />
+				</ClayButton>
 			</div>
 
 			<nav className="component-tbar tbar">
@@ -161,6 +170,7 @@ function Sidebar({onAddFragment}) {
 					<QueryFragmentList
 						onAddFragment={onAddFragment}
 						queryFragments={queryFragments}
+						toggleSidebar={toggleSidebar}
 					/>
 				) : (
 					<EmptyListMessage />
@@ -175,6 +185,8 @@ function Sidebar({onAddFragment}) {
 Sidebar.propTypes = {
 	onAddFragment: PropTypes.func,
 	queryFragments: PropTypes.arrayOf(PropTypes.object),
+	showSidebar: PropTypes.bool,
+	toggleSidebar: PropTypes.func,
 };
 
 export default React.memo(Sidebar);
