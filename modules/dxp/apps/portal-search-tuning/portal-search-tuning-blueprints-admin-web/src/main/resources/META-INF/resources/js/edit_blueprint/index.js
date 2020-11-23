@@ -26,6 +26,7 @@ import Sidebar from './Sidebar';
 import Aggregations from './tabs/Aggregations';
 import QueryBuilder from './tabs/QueryBuilder';
 import Settings from './tabs/Settings';
+import Sorts from './tabs/Sorts';
 import Suggesters from './tabs/Suggesters';
 
 // Tabs in display order
@@ -34,6 +35,7 @@ import Suggesters from './tabs/Suggesters';
 const TABS = {
 	'query-builder': Liferay.Language.get('query-builder'),
 	aggregations: Liferay.Language.get('aggregations'),
+	sorts: Liferay.Language.get('sorts'),
 	suggesters: Liferay.Language.get('suggesters'),
 	settings: Liferay.Language.get('settings'),
 };
@@ -84,6 +86,9 @@ function EditBlueprintForm({
 			null,
 			'\t'
 		)
+	);
+	const [sortConfig, setSortConfig] = useState(
+		JSON.stringify(initialConfiguration['sort_configuration'], null, '\t')
 	);
 	const [suggestConfig, setSuggestConfig] = useState(
 		JSON.stringify(
@@ -141,6 +146,7 @@ function EditBlueprintForm({
 						query_configuration: selectedQueryFragments.map(
 							(item) => item.fragmentOutput
 						),
+						sort_configuration: JSON.parse(sortConfig),
 						suggest_configuration: JSON.parse(suggestConfig),
 					})
 				);
@@ -212,6 +218,7 @@ function EditBlueprintForm({
 			redirectURL,
 			selectedQueryFragments,
 			submitFormURL,
+			sortConfig,
 			suggestConfig,
 		]
 	);
@@ -240,6 +247,13 @@ function EditBlueprintForm({
 					<Suggesters
 						onSuggestConfigChange={(val) => setSuggestConfig(val)}
 						suggestConfig={suggestConfig}
+					/>
+				);
+			case 'sorts':
+				return (
+					<Sorts
+						onSortConfigChange={(val) => setSortConfig(val)}
+						sortConfig={sortConfig}
 					/>
 				);
 			case 'settings':
