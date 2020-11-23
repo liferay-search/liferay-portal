@@ -1,15 +1,15 @@
 .sidebar {
-	height: $sidebarHeight;
-	margin-top: $pageToolbarHeight;
-	min-width: 384px;
+	height: 100%;
 	padding-bottom: 45px;
 	position: fixed;
 	right: 0;
-	width: 20%;
-	z-index: 200;
+	transition: width ease 0.2s;
+	width: 0;
+	z-index: 972;
 
-	.component-title {
-		font-size: 1rem;
+	&.open {
+		min-width: 380px;
+		width: 20%;
 	}
 
 	.empty-list-message {
@@ -40,6 +40,19 @@
 				display: table-cell;
 				vertical-align: middle;
 			}
+		}
+	}
+
+	.sidebar-header {
+		display: flex;
+		justify-content: space-between;
+
+		button {
+			color: $mainLighten28;
+		}
+
+		.component-title {
+			font-size: 1rem;
 		}
 	}
 }

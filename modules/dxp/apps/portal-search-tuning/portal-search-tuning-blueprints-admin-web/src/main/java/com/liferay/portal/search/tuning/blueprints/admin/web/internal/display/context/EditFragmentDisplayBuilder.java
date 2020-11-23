@@ -25,7 +25,6 @@ import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.HashMapBuilder;
-import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -37,7 +36,6 @@ import com.liferay.portal.search.tuning.blueprints.constants.BlueprintTypes;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
 
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -143,14 +141,14 @@ public class EditFragmentDisplayBuilder {
 		return descriptionJSONObject;
 	}
 
+	/* TODO This is a placeholder for LPS-123115 to get predefinedVariables
 	private List<JSONObject> _getPredefinedVariables() {
-
-		// TODO This is a placeholder for LPS-123115 to get predefinedVariables
-
 		JSONObject parameterJSONObject = _jsonFactory.createJSONObject();
 
 		return ListUtil.fromArray(parameterJSONObject);
 	}
+
+	*/
 
 	private Map<String, Object> _getProps() {
 		Map<String, Object> props = HashMapBuilder.<String, Object>put(
@@ -169,9 +167,10 @@ public class EditFragmentDisplayBuilder {
 			props.put("initialDescription", _getDescriptionJSONObject());
 			props.put("initialTitle", _getTitleJSONObject());
 
-			// TODO This is a placeholder for LPS-123115 to get predefinedVariables
-			// props.put("predefinedVariables", _getPredefinedVariables());
-
+			/*
+			TODO This is a placeholder for LPS-123115 to get predefinedVariables
+			props.put("predefinedVariables", _getPredefinedVariables());
+ 			*/
 		}
 
 		return props;

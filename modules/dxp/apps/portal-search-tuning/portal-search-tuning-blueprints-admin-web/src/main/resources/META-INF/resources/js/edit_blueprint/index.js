@@ -54,7 +54,7 @@ function EditBlueprintForm({
 }) {
 	const {namespace} = useContext(ThemeContext);
 
-	const [showSidebar] = useState(true);
+	const [showSidebar, setShowSidebar] = useState(false);
 	const [tab, setTab] = useState('query-builder');
 
 	const form = useRef();
@@ -270,18 +270,19 @@ function EditBlueprintForm({
 			default:
 				return (
 					<>
-						{showSidebar && (
-							<Sidebar onAddFragment={onAddFragment} />
-						)}
+						<Sidebar
+							onAddFragment={onAddFragment}
+							showSidebar={showSidebar}
+							toggleSidebar={() => setShowSidebar(!showSidebar)}
+						/>
 
-						<div className={`${showSidebar ? 'shifted' : ''}`}>
-							<QueryBuilder
-								deleteFragment={deleteFragment}
-								entityJSON={entityJSON}
-								selectedFragments={selectedQueryFragments}
-								updateFragment={updateQueryFragment}
-							/>
-						</div>
+						<QueryBuilder
+							deleteFragment={deleteFragment}
+							entityJSON={entityJSON}
+							selectedFragments={selectedQueryFragments}
+							toggleSidebar={() => setShowSidebar(!showSidebar)}
+							updateFragment={updateQueryFragment}
+						/>
 					</>
 				);
 		}
