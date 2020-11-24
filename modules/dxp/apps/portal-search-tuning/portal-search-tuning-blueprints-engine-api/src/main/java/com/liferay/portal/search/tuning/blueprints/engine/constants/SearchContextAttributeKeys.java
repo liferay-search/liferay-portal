@@ -23,6 +23,4 @@ public class SearchContextAttributeKeys {
 
 	public static final String IP_ADDRESS = "ipAddress";
 
-	public static final String LOW_LEVEL = "lowLevel";
-
 }
