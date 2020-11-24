@@ -71,18 +71,38 @@ public class POCMockUtil {
 		JSONObject jsonObject2 =
 				JSONFactoryUtil.createJSONObject();
 
-		jsonObject2.put("field", "assetCategoryIds");
-		jsonObject2.put("filter_mode", "POST");
-		jsonObject2.put("parameter_name", "treeTest");
-		jsonObject2.put("handler", "category_tree");
+		jsonObject2.put("field", "userName");
+		jsonObject2.put("filter_mode", "PRE");
+		jsonObject2.put("parameter_name", "userName");
+
+		facetsConfigurationJsonArray.put(jsonObject2);
 
 		JSONObject jsonObject3 =
 				JSONFactoryUtil.createJSONObject();
-		jsonObject3.put("root_vocabulary_id", "43604");
 
-		jsonObject2.put("handler_parameters", jsonObject3);
+		jsonObject3.put("field", "ddmStructureKey");
+		jsonObject3.put("filter_mode", "PRE");
+		jsonObject3.put("parameter_name", "ddmStructureKey");
+		jsonObject3.put("handler", "ddm_structure_name");
+
+		facetsConfigurationJsonArray.put(jsonObject3);
+
+		JSONObject jsonObject4 =
+				JSONFactoryUtil.createJSONObject();
+
+		jsonObject4.put("field", "assetCategoryIds");
+		jsonObject4.put("filter_mode", "POST");
+		jsonObject4.put("parameter_name", "treeTest");
+		jsonObject4.put("handler", "category_tree");
+
+		JSONObject jsonObject41 =
+				JSONFactoryUtil.createJSONObject();
+		jsonObject41.put("root_vocabulary_id", "43604");
+
+		jsonObject4.put("handler_parameters", jsonObject41);
 		
-		facetsConfigurationJsonArray.put(jsonObject2);		
+		facetsConfigurationJsonArray.put(jsonObject4);		
+
 		
 		bluePrintJsonObject.put(
 				"facets_configuration",
@@ -350,19 +370,21 @@ public class POCMockUtil {
 				JSONFactoryUtil.createJSONObject();
 
 		// Default 
-
-		/*
+	
 		JSONArray defaultSortsJsonArray = 	JSONFactoryUtil.createJSONArray();
 
 		JSONObject defaultsortConfigurationJsonObject =
 				JSONFactoryUtil.createJSONObject();
 		defaultsortConfigurationJsonObject.put(
+				SortConfigurationKeys.FIELD.getJsonKey(), "title_en_US");
 		defaultsortConfigurationJsonObject.put(
-				SortConfigurationKeys.FIELD.getJsonKey(), "");
+				SortConfigurationKeys.ORDER.getJsonKey(), "desc");
 		defaultsortConfigurationJsonObject.put(
-					SortConfigurationKeys.LABEL.getJsonKey(), "score");
-		*/
-
+					SortConfigurationKeys.LABEL.getJsonKey(), "title");
+		
+		defaultSortsJsonArray.put(defaultsortConfigurationJsonObject);
+		
+		sortConfigurationJsonObject.put(SortConfigurationKeys.DEFAULT.getJsonKey(), defaultSortsJsonArray);
 
 		// Parameters
 

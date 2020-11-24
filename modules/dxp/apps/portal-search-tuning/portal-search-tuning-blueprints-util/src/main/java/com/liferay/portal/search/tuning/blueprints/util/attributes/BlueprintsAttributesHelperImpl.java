@@ -172,8 +172,7 @@ public class BlueprintsAttributesHelperImpl
 
 		_addFacetParameters(
 			portletRequest, blueprintsAttributesBuilder,
-			configurationJsonObject.getJSONArray(
-					FacetsBlueprintContributorKeys.CONFIGURATION_SECTION));
+			blueprint);
 
 		return blueprintsAttributesBuilder;
 	}
@@ -209,20 +208,28 @@ public class BlueprintsAttributesHelperImpl
 	private void _addFacetParameters(
 		PortletRequest portletRequest,
 		BlueprintsAttributesBuilder blueprintsAttributesBuilder,
-		JSONArray jsonArray) {
+		Blueprint blueprint) {
 
-		if ((jsonArray == null) || (jsonArray.length() == 0)) {
+		Optional<JSONArray> configurationJsonArrayOptional =
+				_blueprintHelper.getJSONArrayConfigurationOptional(
+					blueprint,
+					"JSONArray/" +
+						FacetsBlueprintContributorKeys.CONFIGURATION_SECTION);
+
+		if (!configurationJsonArrayOptional.isPresent()) {
 			return;
 		}
-
-		for (int i = 0; i < jsonArray.length(); i++) {
-			JSONObject jsonObject = jsonArray.getJSONObject(i);
+		
+		JSONArray configurationJsonArray = configurationJsonArrayOptional.get();
+		
+		for (int i = 0; i < configurationJsonArray.length(); i++) {
+			JSONObject jsonObject = configurationJsonArray.getJSONObject(i);
 
 			String key = jsonObject.getString(
 				FacetConfigurationKeys.PARAMETER_NAME.getJsonKey());
 
 			boolean arrayValue = jsonObject.getBoolean(
-				FacetConfigurationKeys.MULTI_VALUE.getJsonKey());
+				FacetConfigurationKeys.MULTI_VALUE.getJsonKey(), true);
 
 			if (arrayValue) {
 				_addStringValues(
