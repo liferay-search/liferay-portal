@@ -86,11 +86,6 @@ public class BlueprintsSearchRequestContributor
 			getBlueprintsAttributes(searchRequest, blueprintId), messages,
 			getBlueprintId(searchRequest));
 
-		if (isLowLevel(searchRequest)) {
-			searchRequestBuilder.indexes(
-				_indexNameBuilder.getIndexName(getCompanyId(searchRequest)));
-		}
-
 		return searchRequestBuilder.build();
 	}
 
@@ -272,16 +267,6 @@ public class BlueprintsSearchRequestContributor
 			searchRequest
 		).withSearchContextGet(
 			searchContext -> searchContext.getUserId()
-		);
-	}
-
-	protected boolean isLowLevel(SearchRequest searchRequest) {
-		return _searchRequestBuilderFactory.builder(
-			searchRequest
-		).withSearchContextGet(
-			searchContext -> GetterUtil.getBoolean(
-				searchContext.getAttribute(
-					SearchContextAttributeKeys.LOW_LEVEL))
 		);
 	}
 
