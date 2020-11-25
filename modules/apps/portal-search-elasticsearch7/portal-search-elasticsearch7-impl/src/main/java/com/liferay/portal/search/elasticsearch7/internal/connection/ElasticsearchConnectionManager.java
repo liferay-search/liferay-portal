@@ -370,6 +370,14 @@ public class ElasticsearchConnectionManager
 			elasticsearchConfigurationWrapper.networkHostAddresses()
 		).password(
 			elasticsearchConfigurationWrapper.password()
+		).proxyHost(
+			elasticsearchConfigurationWrapper.proxyHost()
+		).proxyPort(
+			elasticsearchConfigurationWrapper.proxyPort()
+		).proxyUserName(
+			elasticsearchConfigurationWrapper.proxyUserName()
+		).proxyPassword(
+			elasticsearchConfigurationWrapper.proxyPassword()
 		).truststorePassword(
 			elasticsearchConfigurationWrapper.truststorePassword()
 		).truststorePath(

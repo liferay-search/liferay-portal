@@ -14,6 +14,10 @@
 
 package com.liferay.portal.search.elasticsearch7.internal.connection;
 
+import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.HttpUtil;
+import com.liferay.portal.kernel.util.SystemProperties;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.elasticsearch7.internal.util.ClassLoaderUtil;
 
 import java.io.InputStream;
@@ -96,6 +100,30 @@ public class RestHighLevelClientFactory {
 			return this;
 		}
 
+		public Builder proxyHost(String proxyHost) {
+			_restHighLevelClientFactory._proxyHost = proxyHost;
+
+			return this;
+		}
+
+		public Builder proxyPassword(String proxyPassword) {
+			_restHighLevelClientFactory._proxyPassword = proxyPassword;
+
+			return this;
+		}
+
+		public Builder proxyPort(int proxyPort) {
+			_restHighLevelClientFactory._proxyPort = proxyPort;
+
+			return this;
+		}
+
+		public Builder proxyUserName(String proxyUserName) {
+			_restHighLevelClientFactory._proxyUserName = proxyUserName;
+
+			return this;
+		}
+
 		public Builder truststorePassword(String truststorePassword) {
 			_restHighLevelClientFactory._truststorePassword =
 				truststorePassword;
@@ -129,6 +157,13 @@ public class RestHighLevelClientFactory {
 	protected CredentialsProvider createCredentialsProvider() {
 		CredentialsProvider credentialsProvider =
 			new BasicCredentialsProvider();
+
+		if (_applyProxyCredentials()) {
+			credentialsProvider.setCredentials(
+				new AuthScope(_proxyHost, _proxyPort),
+				new UsernamePasswordCredentials(
+					_proxyUserName, _proxyPassword));
+		}
 
 		credentialsProvider.setCredentials(
 			AuthScope.ANY,
@@ -172,6 +207,11 @@ public class RestHighLevelClientFactory {
 			httpAsyncClientBuilder.setSSLContext(createSSLContext());
 		}
 
+		if (_applyProxyConfig()) {
+			httpAsyncClientBuilder.setProxy(
+				new HttpHost(_getProxyHost(), _getProxyPort(), "http"));
+		}
+
 		return httpAsyncClientBuilder;
 	}
 
@@ -206,13 +246,64 @@ public class RestHighLevelClientFactory {
 		_truststorePassword = restHighLevelClientFactory._truststorePassword;
 		_truststorePath = restHighLevelClientFactory._truststorePath;
 		_truststoreType = restHighLevelClientFactory._truststoreType;
+		_proxyHost = restHighLevelClientFactory._proxyHost;
+		_proxyPassword = restHighLevelClientFactory._proxyPassword;
+		_proxyPort = restHighLevelClientFactory._proxyPort;
+		_proxyUserName = restHighLevelClientFactory._proxyUserName;
 		_userName = restHighLevelClientFactory._userName;
+	}
+
+	private boolean _applyProxyConfig() {
+		if (Validator.isNotNull(_proxyHost)) {
+			return true;
+		}
+
+		if (!HttpUtil.hasProxyConfig()) {
+			return false;
+		}
+
+		return Stream.of(
+			_networkHostAddresses
+		).allMatch(
+			host -> !HttpUtil.isNonProxyHost(host)
+		);
+	}
+
+	private boolean _applyProxyCredentials() {
+		if (Validator.isNotNull(_proxyHost) &&
+			Validator.isNotNull(_proxyPassword) && (_proxyPort > 0) &&
+			Validator.isNotNull(_proxyUserName)) {
+
+			return true;
+		}
+
+		return false;
+	}
+
+	private String _getProxyHost() {
+		if (Validator.isNotNull(_proxyHost)) {
+			return _proxyHost;
+		}
+
+		return SystemProperties.get("http.proxyHost");
+	}
+
+	private int _getProxyPort() {
+		if (_proxyPort > 0) {
+			return _proxyPort;
+		}
+
+		return GetterUtil.getInteger(SystemProperties.get("http.proxyPort"));
 	}
 
 	private boolean _authenticationEnabled;
 	private boolean _httpSSLEnabled;
 	private String[] _networkHostAddresses;
 	private String _password;
+	private String _proxyHost;
+	private String _proxyPassword;
+	private int _proxyPort;
+	private String _proxyUserName;
 	private String _truststorePassword;
 	private String _truststorePath;
 	private String _truststoreType;

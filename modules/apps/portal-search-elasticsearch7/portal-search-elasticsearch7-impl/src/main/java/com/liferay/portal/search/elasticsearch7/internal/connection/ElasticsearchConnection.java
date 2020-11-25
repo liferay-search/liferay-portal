@@ -120,6 +120,22 @@ public class ElasticsearchConnection {
 			preConnectElasticsearchConnectionConsumer;
 	}
 
+	public void setProxyHost(String proxyHost) {
+		_proxyHost = proxyHost;
+	}
+
+	public void setProxyPassword(String proxyPassword) {
+		_proxyPassword = proxyPassword;
+	}
+
+	public void setProxyPort(int proxyPort) {
+		_proxyPort = proxyPort;
+	}
+
+	public void setProxyUserName(String proxyUserName) {
+		_proxyUserName = proxyUserName;
+	}
+
 	public void setTruststorePassword(String truststorePassword) {
 		_truststorePassword = truststorePassword;
 	}
@@ -148,6 +164,14 @@ public class ElasticsearchConnection {
 			_password
 		).truststorePassword(
 			_truststorePassword
+		).proxyHost(
+			_proxyHost
+		).proxyPassword(
+			_proxyPassword
+		).proxyPort(
+			_proxyPort
+		).proxyUserName(
+			_proxyUserName
 		).truststorePath(
 			_truststorePath
 		).truststoreType(
@@ -170,6 +194,10 @@ public class ElasticsearchConnection {
 	private Runnable _postCloseRunnable;
 	private Consumer<ElasticsearchConnection>
 		_preConnectElasticsearchConnectionConsumer;
+	private String _proxyHost;
+	private String _proxyPassword;
+	private int _proxyPort;
+	private String _proxyUserName;
 	private RestHighLevelClient _restHighLevelClient;
 	private String _truststorePassword;
 	private String _truststorePath;
