@@ -49,6 +49,7 @@ public class ElasticsearchConnectionBuilder {
 		elasticsearchConnection.setPostCloseRunnable(_postCloseRunnable);
 		elasticsearchConnection.setPreConnectElasticsearchConnectionConsumer(
 			_preConnectElasticsearchConnectionConsumer);
+		elasticsearchConnection.setProxyConfig(_proxyConfig);
 		elasticsearchConnection.setTruststorePassword(_truststorePassword);
 		elasticsearchConnection.setTruststorePath(_truststorePath);
 		elasticsearchConnection.setTruststoreType(_truststoreType);
@@ -104,6 +105,12 @@ public class ElasticsearchConnectionBuilder {
 		return this;
 	}
 
+	public ElasticsearchConnectionBuilder proxyConfig(ProxyConfig proxyConfig) {
+		_proxyConfig = proxyConfig;
+
+		return this;
+	}
+
 	public ElasticsearchConnectionBuilder truststorePassword(
 		String truststorePassword) {
 
@@ -143,6 +150,7 @@ public class ElasticsearchConnectionBuilder {
 	private Runnable _postCloseRunnable;
 	private Consumer<ElasticsearchConnection>
 		_preConnectElasticsearchConnectionConsumer;
+	private ProxyConfig _proxyConfig;
 	private String _truststorePassword;
 	private String _truststorePath;
 	private String _truststoreType;
