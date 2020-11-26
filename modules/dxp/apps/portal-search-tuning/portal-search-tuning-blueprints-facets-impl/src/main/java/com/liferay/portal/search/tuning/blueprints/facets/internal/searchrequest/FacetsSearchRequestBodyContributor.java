@@ -256,7 +256,7 @@ public class FacetsSearchRequestBodyContributor
 
 		String operatorString = configurationJsonObject.getString(
 			FacetConfigurationKeys.MULTI_VALUE_OPERATOR.getJsonKey(),
-			Operator.OR.getjsonValue());
+			Operator.AND.getjsonValue());
 
 		try {
 			Operator operator = Operator.valueOf(
