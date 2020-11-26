@@ -25,66 +25,6 @@ export const CUSTOM_JSON_FRAGMENT = {
 	},
 };
 
-// Not used anywhere yet.
-
-export const DEFAULT_ADVANCED_CONFIGURATION = {
-	entry_class_names: [
-		'com.liferay.commerce.product.model.CPDefinition',
-		'com.liferay.wiki.model.WikiPage',
-		'com.liferay.blogs.model.BlogsEntry',
-		'com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecord',
-		'com.liferay.journal.model.JournalArticle',
-		'com.liferay.bookmarks.model.BookmarksEntry',
-		'com.liferay.journal.model.JournalFolder',
-		'com.liferay.calendar.model.CalendarBooking',
-		'com.liferay.document.library.kernel.model.DLFileEntry',
-		'com.liferay.portal.kernel.model.User',
-		'com.liferay.bookmarks.model.BookmarksFolder',
-		'com.liferay.document.library.kernel.model.DLFolder',
-		'com.liferay.portal.kernel.model.Layout',
-		'com.liferay.dynamic.data.lists.model.DDLRecord',
-		'com.liferay.message.boards.model.MBMessage',
-		'com.liferay.knowledge.base.model.KBArticle',
-	],
-	highlighting: {
-		enabled: 'true',
-		fields: [
-			'title_${context.language_id}',
-			'content_${context.language_id}',
-		],
-		fragment_size: '50',
-		require_field_match: 'true',
-		snippet_size: '10',
-	},
-	misspellings_definition_ids: ['1', '2'],
-	page_size: 10,
-	query_indexing: {
-		blacklist: ["don't index me", 'dirty', 'shit', 'fuc*'],
-		enabled: true,
-		hits_threshold: 3,
-		query_index_configuration_id: '1',
-	},
-	query_processing: {
-		exclude_query_contributors: '',
-		exclude_query_post_processors: '',
-	},
-	source: {
-		fetch_source: true,
-		source_excludes: '',
-		source_includes: '',
-	},
-};
-
-export const DEFAULT_AGGREGATION_CONFIGURATION = [
-	{
-		body: {
-			field: 'assetTags',
-		},
-		name: 'tags',
-		type: 'terms',
-	},
-];
-
 export const DEFAULT_FRAGMENT = {
 	fragmentTemplateJSON: {
 		clauses: [
@@ -95,12 +35,7 @@ export const DEFAULT_FRAGMENT = {
 					query: {
 						query_string: {
 							default_operator: '${config.default_operator}',
-							fields: [
-								'content',
-								'content_${context.language_id}',
-								'title',
-								'title_${context.language_id}^2',
-							],
+							fields: '${config.field}',
 							query: '${keywords}',
 						},
 					},
@@ -120,6 +55,37 @@ export const DEFAULT_FRAGMENT = {
 	},
 	uiConfigurationJSON: [
 		{
+			defaultValue: [
+				{
+					boost: '1',
+					field: 'title',
+					locale: '',
+				},
+				{
+					boost: '2',
+					field: 'content',
+					locale: '',
+				},
+			],
+			key: 'config.field',
+			name: 'Field',
+			type: 'field-select',
+			typeOptions: [
+				{
+					label: 'Title',
+					value: 'title',
+				},
+				{
+					label: 'Description',
+					value: 'description',
+				},
+				{
+					label: 'Content',
+					value: 'content',
+				},
+			],
+		},
+		{
 			key: 'config.default_operator',
 			name: 'Default Operator',
 			type: 'single-select',
@@ -131,29 +97,6 @@ export const DEFAULT_FRAGMENT = {
 				{
 					label: 'AND',
 					value: 'and',
-				},
-			],
-		},
-		{
-			key: 'context.language_id',
-			name: 'Context Language ID',
-			type: 'single-select',
-			typeOptions: [
-				{
-					label: 'English',
-					value: 'en_US',
-				},
-				{
-					label: 'Spanish',
-					value: 'es_ES',
-				},
-				{
-					label: 'French',
-					value: 'fr_FR',
-				},
-				{
-					label: 'Japanese',
-					value: 'ja_JP',
 				},
 			],
 		},
@@ -211,121 +154,6 @@ export const DEFAULT_EDIT_FRAGMENT = {
 		},
 	],
 };
-
-// Not used anywhere yet.
-
-export const DEFAULT_PARAMETER_CONFIGURATION = {
-	custom: [
-		{
-			configuration: {
-				date_format: 'yyyy-mm-dd',
-				max: '2020-11-11',
-				min: '1970-11-11',
-			},
-			parameter_name: 'dateFrom',
-			type: 'date',
-		},
-		{
-			parameter_name: 'time',
-			type: 'time_range',
-		},
-	],
-	keywords: {
-		parameter_name: 'q',
-	},
-	page: {
-		parameter_name: 'page',
-	},
-};
-
-// Not used anywhere yet.
-
-export const DEFAULT_FACET_CONFIGURATION = [{}];
-
-export const QUERY_FRAGMENTS_SAMPLE = [
-	{
-		fragmentTemplateJSON: {
-			clauses: [
-				{
-					context: 'query',
-					occur: 'must',
-					query: {
-						query: {
-							match: {
-								'[FIELD_NAME + LOCALIZATION]': {
-									boost: '${boost}',
-									operator: '${config.operator}',
-									query: '${keywords}',
-								},
-							},
-						},
-					},
-					type: 'wrapper',
-				},
-			],
-			conditions: [],
-			description: {
-				en_US: 'Search for a text match',
-			},
-			enabled: true,
-			title: {
-				en_US: 'Text Match',
-			},
-		},
-		meow: {
-			clauses: [
-				{
-					context: 'query',
-					occur: 'must',
-					query: {
-						query: {
-							match: {
-								field: {
-									boost: '${config.boost}',
-									operator: '${config.operator}',
-									query: '${keywords}',
-								},
-							},
-						},
-					},
-					type: 'wrapper',
-				},
-			],
-			conditions: [],
-			description: {
-				en_US: 'Search for a text match',
-			},
-			enabled: true,
-			title: {
-				en_US: 'Text Match',
-			},
-		},
-		uiConfigurationJSON: [
-			{
-				defaultValue: 'or',
-				key: 'config.operator',
-				name: 'Default Operator',
-				type: 'single-select',
-				typeOptions: [
-					{
-						label: 'OR',
-						value: 'or',
-					},
-					{
-						label: 'AND',
-						value: 'and',
-					},
-				],
-			},
-			{
-				defaultValue: 1,
-				key: 'config.boost',
-				name: 'Boost',
-				type: 'slider',
-			},
-		],
-	},
-];
 
 export const QUERY_FRAGMENTS = [
 	{
@@ -836,12 +664,7 @@ export const QUERY_FRAGMENTS = [
 						query: {
 							query_string: {
 								default_operator: '${config.default_operator}',
-								fields: [
-									'content',
-									'content_${context.language_id}',
-									'title',
-									'title_${context.language_id}^2',
-								],
+								fields: '${config.field}',
 								query: '${keywords}',
 							},
 						},
@@ -861,7 +684,37 @@ export const QUERY_FRAGMENTS = [
 		},
 		uiConfigurationJSON: [
 			{
-				defaultValue: 'or',
+				defaultValue: [
+					{
+						boost: '1',
+						field: 'title',
+						locale: '',
+					},
+					{
+						boost: '2',
+						field: 'content',
+						locale: '',
+					},
+				],
+				key: 'config.field',
+				name: 'Field',
+				type: 'field-select',
+				typeOptions: [
+					{
+						label: 'Title',
+						value: 'title',
+					},
+					{
+						label: 'Description',
+						value: 'description',
+					},
+					{
+						label: 'Content',
+						value: 'content',
+					},
+				],
+			},
+			{
 				key: 'config.default_operator',
 				name: 'Default Operator',
 				type: 'single-select',
@@ -873,30 +726,6 @@ export const QUERY_FRAGMENTS = [
 					{
 						label: 'AND',
 						value: 'and',
-					},
-				],
-			},
-			{
-				defaultValue: 'en_US',
-				key: 'context.language_id',
-				name: 'Context Language ID',
-				type: 'single-select',
-				typeOptions: [
-					{
-						label: 'English',
-						value: 'en_US',
-					},
-					{
-						label: 'Spanish',
-						value: 'es_ES',
-					},
-					{
-						label: 'French',
-						value: 'fr_FR',
-					},
-					{
-						label: 'Japanese',
-						value: 'ja_JP',
 					},
 				],
 			},
