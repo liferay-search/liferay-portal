@@ -138,7 +138,7 @@ public class FragmentEntriesDisplayContext {
 			new SearchContainer<>(
 				_liferayPortletRequest,
 				PortletURLUtil.clone(portletURL, _liferayPortletResponse), null,
-				"no-entries-were-found");
+				"there-are-no-fragments");
 
 		String orderByCol = ParamUtil.getString(
 			_httpServletRequest, "orderByCol", "title");
