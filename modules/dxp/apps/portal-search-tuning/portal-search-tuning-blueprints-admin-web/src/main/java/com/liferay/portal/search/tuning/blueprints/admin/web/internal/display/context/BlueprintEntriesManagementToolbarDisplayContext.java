@@ -62,6 +62,7 @@ public class BlueprintEntriesManagementToolbarDisplayContext
 			httpServletRequest, liferayPortletRequest, liferayPortletResponse,
 			searchContainer);
 
+		_httpServletRequest = httpServletRequest;
 		_displayStyle = displayStyle;
 		_blueprintType = blueprintType;
 		_themeDisplay = (ThemeDisplay)httpServletRequest.getAttribute(
@@ -74,7 +75,8 @@ public class BlueprintEntriesManagementToolbarDisplayContext
 			dropdownItem -> {
 				dropdownItem.putData("action", "deleteBlueprintEntries");
 
-				dropdownItem.setLabel(LanguageUtil.get(request, "delete"));
+				dropdownItem.setLabel(
+					LanguageUtil.get(_httpServletRequest, "delete"));
 
 				dropdownItem.setQuickAction(true);
 			}
@@ -119,7 +121,7 @@ public class BlueprintEntriesManagementToolbarDisplayContext
 				dropdownItem.putData(
 					"type", String.valueOf(BlueprintTypes.BLUEPRINT));
 				dropdownItem.setLabel(
-					LanguageUtil.get(request, "add-blueprint"));
+					LanguageUtil.get(_httpServletRequest, "add-blueprint"));
 			}
 		).build();
 	}
@@ -161,7 +163,7 @@ public class BlueprintEntriesManagementToolbarDisplayContext
 				"delta", String.valueOf(searchContainer.getDelta()));
 		}
 
-		portletURL.setProperty("orderBycol", searchContainer.getOrderByCol());
+		portletURL.setProperty("orderByCol", searchContainer.getOrderByCol());
 		portletURL.setProperty("orderByType", searchContainer.getOrderByType());
 
 		if (searchContainer.getCur() > 0) {
@@ -186,7 +188,8 @@ public class BlueprintEntriesManagementToolbarDisplayContext
 					Objects.equals(getOrderByCol(), "title"));
 				dropdownItem.setHref(
 					_getCurrentSortingURL(), "orderByCol", "title");
-				dropdownItem.setLabel(LanguageUtil.get(request, "title"));
+				dropdownItem.setLabel(
+					LanguageUtil.get(_httpServletRequest, "title"));
 			}
 		).add(
 			dropdownItem -> {
@@ -195,7 +198,7 @@ public class BlueprintEntriesManagementToolbarDisplayContext
 				dropdownItem.setHref(
 					_getCurrentSortingURL(), "orderByCol", "modified-date");
 				dropdownItem.setLabel(
-					LanguageUtil.get(request, "modified-date"));
+					LanguageUtil.get(_httpServletRequest, "modified-date"));
 			}
 		).build();
 	}
@@ -221,6 +224,7 @@ public class BlueprintEntriesManagementToolbarDisplayContext
 
 	private final int _blueprintType;
 	private final String _displayStyle;
+	private final HttpServletRequest _httpServletRequest;
 	private final ThemeDisplay _themeDisplay;
 
 }

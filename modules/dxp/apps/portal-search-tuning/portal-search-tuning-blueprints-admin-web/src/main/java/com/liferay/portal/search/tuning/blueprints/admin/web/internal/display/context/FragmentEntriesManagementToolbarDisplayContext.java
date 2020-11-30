@@ -62,6 +62,7 @@ public class FragmentEntriesManagementToolbarDisplayContext
 			httpServletRequest, liferayPortletRequest, liferayPortletResponse,
 			searchContainer);
 
+		_httpServletRequest = httpServletRequest;
 		_displayStyle = displayStyle;
 		_blueprintType = blueprintType;
 		_themeDisplay = (ThemeDisplay)httpServletRequest.getAttribute(
@@ -74,7 +75,8 @@ public class FragmentEntriesManagementToolbarDisplayContext
 			dropdownItem -> {
 				dropdownItem.putData("action", "deleteFragmentEntries");
 
-				dropdownItem.setLabel(LanguageUtil.get(request, "delete"));
+				dropdownItem.setLabel(
+					LanguageUtil.get(_httpServletRequest, "delete"));
 
 				dropdownItem.setQuickAction(true);
 			}
@@ -119,7 +121,7 @@ public class FragmentEntriesManagementToolbarDisplayContext
 				dropdownItem.putData(
 					"type", String.valueOf(BlueprintTypes.QUERY_FRAGMENT));
 				dropdownItem.setLabel(
-					LanguageUtil.get(request, "add-fragment"));
+					LanguageUtil.get(_httpServletRequest, "add-fragment"));
 			}
 		).build();
 	}
@@ -160,7 +162,7 @@ public class FragmentEntriesManagementToolbarDisplayContext
 				"delta", String.valueOf(searchContainer.getDelta()));
 		}
 
-		portletURL.setProperty("orderBycol", searchContainer.getOrderByCol());
+		portletURL.setProperty("orderByCol", searchContainer.getOrderByCol());
 		portletURL.setProperty("orderByType", searchContainer.getOrderByType());
 
 		if (searchContainer.getCur() > 0) {
@@ -185,7 +187,8 @@ public class FragmentEntriesManagementToolbarDisplayContext
 					Objects.equals(getOrderByCol(), "title"));
 				dropdownItem.setHref(
 					_getCurrentSortingURL(), "orderByCol", "title");
-				dropdownItem.setLabel(LanguageUtil.get(request, "title"));
+				dropdownItem.setLabel(
+					LanguageUtil.get(_httpServletRequest, "title"));
 			}
 		).add(
 			dropdownItem -> {
@@ -194,7 +197,7 @@ public class FragmentEntriesManagementToolbarDisplayContext
 				dropdownItem.setHref(
 					_getCurrentSortingURL(), "orderByCol", "modified-date");
 				dropdownItem.setLabel(
-					LanguageUtil.get(request, "modified-date"));
+					LanguageUtil.get(_httpServletRequest, "modified-date"));
 			}
 		).build();
 	}
@@ -222,6 +225,7 @@ public class FragmentEntriesManagementToolbarDisplayContext
 
 	private final int _blueprintType;
 	private final String _displayStyle;
+	private final HttpServletRequest _httpServletRequest;
 	private final ThemeDisplay _themeDisplay;
 
 }

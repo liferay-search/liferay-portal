@@ -136,7 +136,7 @@ public class BlueprintEntriesDisplayContext {
 			new SearchContainer<>(
 				_liferayPortletRequest,
 				PortletURLUtil.clone(portletURL, _liferayPortletResponse), null,
-				"no-entries-were-found");
+				"there-are-no-blueprints");
 
 		String orderByCol = ParamUtil.getString(
 			_httpServletRequest, "orderByCol", "title");
