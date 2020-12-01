@@ -49,6 +49,7 @@ function EditBlueprintForm({
 	initialDescription = {},
 	initialSelectedFragmentsString = '{}',
 	initialTitle = {},
+	queryFragments = [],
 	redirectURL = '',
 	submitFormURL = '',
 }) {
@@ -273,6 +274,7 @@ function EditBlueprintForm({
 				return (
 					<>
 						<Sidebar
+							fragments={queryFragments}
 							onAddFragment={onAddFragment}
 							showSidebar={showSidebar}
 							toggleSidebar={() => setShowSidebar(!showSidebar)}

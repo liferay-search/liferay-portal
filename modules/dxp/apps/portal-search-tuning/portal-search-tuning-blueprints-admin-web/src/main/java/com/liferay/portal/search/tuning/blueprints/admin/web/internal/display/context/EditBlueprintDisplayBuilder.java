@@ -18,6 +18,7 @@ import com.liferay.asset.kernel.model.AssetTag;
 import com.liferay.exportimport.kernel.exception.NoSuchConfigurationException;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -45,6 +46,7 @@ import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminMVCCommandNames;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminWebKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintTypes;
@@ -52,6 +54,7 @@ import com.liferay.portal.search.tuning.blueprints.constants.BlueprintsPortletKe
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -207,6 +210,8 @@ public class EditBlueprintDisplayBuilder {
 		).put(
 			"redirectURL", _getRedirect()
 		).put(
+			"queryFragments", _getQueryFragmentsJSONArray()
+		).put(
 			"submitFormURL", _getSubmitFormURL()
 		).build();
 
@@ -221,6 +226,30 @@ public class EditBlueprintDisplayBuilder {
 		}
 
 		return props;
+	}
+
+	private JSONArray _getQueryFragmentsJSONArray() {
+		int blueprintsTotalCount = _blueprintService.getGroupBlueprintsCount(
+			_themeDisplay.getCompanyGroupId(), WorkflowConstants.STATUS_APPROVED, BlueprintTypes.QUERY_FRAGMENT);
+
+		List<Blueprint> queryFragments = _blueprintService.getGroupBlueprints(
+			_themeDisplay.getCompanyGroupId(), BlueprintTypes.QUERY_FRAGMENT, 0, blueprintsTotalCount);
+
+		JSONArray queryFragmentsJSONArray = _jsonFactory.createJSONArray();
+
+		for (Blueprint fragment : queryFragments) {
+			try {
+				JSONObject jsonObject = _jsonFactory.createJSONObject(
+					fragment.getConfiguration());
+
+				queryFragmentsJSONArray.put(jsonObject);
+			}
+			catch (Exception exception) {
+				_log.error(exception, exception);
+			}
+		}
+
+		return queryFragmentsJSONArray;
 	}
 
 	private String _getRedirect() {
