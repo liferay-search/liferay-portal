@@ -13,7 +13,7 @@ import ClayAlert from '@clayui/alert';
 import ClayButton from '@clayui/button';
 import ClayDatePicker from '@clayui/date-picker';
 import ClayDropDown from '@clayui/drop-down';
-import {ClayInput, ClaySelect} from '@clayui/form';
+import {ClayInput, ClaySelect, ClayToggle} from '@clayui/form';
 import ClayIcon from '@clayui/icon';
 import ClayList from '@clayui/list';
 import ClaySlider from '@clayui/slider';
@@ -33,7 +33,7 @@ import CodeMirrorEditor from './CodeMirrorEditor';
 import PreviewModal from './PreviewModal';
 import ThemeContext from './ThemeContext';
 
-function Slider({keyword, name, onChange, value}) {
+function Slider({disabled, keyword, name, onChange, value}) {
 	const [active, setActive] = useState(false);
 
 	return (
@@ -42,6 +42,7 @@ function Slider({keyword, name, onChange, value}) {
 				<ClayInput.GroupItem className="arrowless-input">
 					<ClayInput
 						aria-label={name}
+						disabled={disabled}
 						insetAfter
 						onChange={(event) => {
 							onChange(keyword, parseInt(event.target.value, 10));
@@ -53,6 +54,7 @@ function Slider({keyword, name, onChange, value}) {
 					<ClayInput.GroupInsetItem after>
 						<ClayButton
 							aria-label={Liferay.Language.get('slider')}
+							disabled={disabled}
 							displayType="unstyled"
 							onClick={() => {
 								setActive(!active);
@@ -90,6 +92,7 @@ function ConfigFragment({
 	fragmentTemplateJSON,
 	fragmentOutput,
 	updateFragment = () => {},
+	updateTemplate,
 }) {
 	const {availableLanguages, locale} = useContext(ThemeContext);
 	const [collapse, setCollapse] = useState(false);
@@ -114,6 +117,21 @@ function ConfigFragment({
 			)
 		);
 	}, 20);
+
+	const _handleToggle = () => {
+		const enabled = !fragmentTemplateJSON.enabled;
+
+		updateTemplate(
+			{
+				...fragmentTemplateJSON,
+				enabled,
+			},
+			{
+				...fragmentOutput,
+				enabled,
+			}
+		);
+	};
 
 	const _handleMultipleSelect = (key, className) => {
 		if (entityJSON[`${className}`].multiple) {
@@ -152,12 +170,15 @@ function ConfigFragment({
 		!!uiConfigurationJSON && uiConfigurationJSON.length > 0;
 
 	function _renderInput(config) {
+		const disabled = !fragmentTemplateJSON.enabled;
+
 		switch (config.type) {
 			case INPUT_TYPES.DATE:
 				return (
 					<div className="date-picker-input">
 						<ClayDatePicker
 							dateFormat="MM/dd/yyyy"
+							disabled={disabled}
 							onValueChange={(value) => {
 								_handleChange(config.key, moment(value).unix());
 							}}
@@ -185,6 +206,7 @@ function ConfigFragment({
 							<ClayInput.GroupItem shrink>
 								<ClayButton
 									aria-label={Liferay.Language.get('delete')}
+									disabled={disabled}
 									displayType="unstyled"
 									monospaced
 									onClick={() =>
@@ -204,6 +226,7 @@ function ConfigFragment({
 						<ClayInput.GroupItem>
 							<ClayInput
 								aria-label={config.name}
+								disabled={disabled}
 								id={config.key}
 								insetAfter={
 									uiConfigurationValues[config.key].length > 0
@@ -225,6 +248,7 @@ function ConfigFragment({
 											'delete'
 										)}
 										className="component-action"
+										disabled={disabled}
 										displayType="unstyled"
 										onClick={() =>
 											_handleChange(config.key, [])
@@ -239,7 +263,7 @@ function ConfigFragment({
 						<ClayInput.GroupItem shrink>
 							<ClayButton
 								aria-label={Liferay.Language.get('select')}
-								disabled={!entityJSON}
+								disabled={disabled || !entityJSON}
 								displayType="secondary"
 								onClick={() => {
 									if (entityJSON) {
@@ -263,6 +287,7 @@ function ConfigFragment({
 							<ClaySelect
 								aria-label={config.name}
 								className="form-control-sm"
+								disabled={disabled}
 								id={`${config.key}_field`}
 								onChange={(event) =>
 									_handleChange(config.key, {
@@ -286,6 +311,7 @@ function ConfigFragment({
 							<ClaySelect
 								aria-label={config.name}
 								className="form-control-sm"
+								disabled={disabled}
 								id={`${config.key}_locale`}
 								onChange={(event) =>
 									_handleChange(config.key, {
@@ -329,6 +355,7 @@ function ConfigFragment({
 					<ClaySelect
 						aria-label={name}
 						className="form-control-sm"
+						disabled={disabled}
 						id={config.key}
 						onChange={(event) => {
 							const value =
@@ -355,6 +382,7 @@ function ConfigFragment({
 			case INPUT_TYPES.SLIDER:
 				return (
 					<Slider
+						disabled={disabled}
 						keyword={config.key}
 						name={config.name}
 						onChange={_handleChange}
@@ -370,6 +398,7 @@ function ConfigFragment({
 						>
 							<ClayInput
 								aria-label={config.name}
+								disabled={disabled}
 								onChange={(event) => {
 									_handleChange(
 										config.key,
@@ -385,7 +414,9 @@ function ConfigFragment({
 
 						{config.unit && (
 							<ClayInput.GroupItem append shrink>
-								<ClayInput.GroupText>
+								<ClayInput.GroupText
+									className={disabled ? 'secondary' : ''}
+								>
 									{config.unit}
 								</ClayInput.GroupText>
 							</ClayInput.GroupItem>
@@ -398,6 +429,7 @@ function ConfigFragment({
 						<ClayInput.GroupItem prepend>
 							<ClayInput
 								aria-label={config.name}
+								disabled={disabled}
 								id={config.key}
 								onChange={(event) =>
 									_handleChange(
@@ -415,7 +447,11 @@ function ConfigFragment({
 	}
 
 	return (
-		<div className="configuration-fragment-sheet sheet">
+		<div
+			className={`configuration-fragment-sheet sheet ${
+				!fragmentTemplateJSON.enabled ? `disabled` : `enabled`
+			}`}
+		>
 			<ClayList className="configuration-header-list">
 				<ClayList.Item flex>
 					<ClayList.ItemField expand>
@@ -433,6 +469,11 @@ function ConfigFragment({
 							</ClayList.ItemText>
 						)}
 					</ClayList.ItemField>
+
+					<ClayToggle
+						onToggle={_handleToggle}
+						toggled={fragmentTemplateJSON.enabled}
+					/>
 
 					{(fragmentOutput || deleteFragment) && (
 						<ClayDropDown

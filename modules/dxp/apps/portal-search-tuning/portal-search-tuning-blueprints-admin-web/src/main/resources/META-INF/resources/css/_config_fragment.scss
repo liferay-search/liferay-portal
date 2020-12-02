@@ -2,6 +2,14 @@
 	margin-bottom: 1rem;
 	padding: 0;
 
+	&.disabled {
+		.list-group-title,
+		.list-group-subtext,
+		label {
+			color: $secondaryL1;
+		}
+	}
+
 	&:hover {
 		border-top: 4px solid $primaryL3;
 
@@ -106,5 +114,42 @@
 
 	.json-configuration-editor {
 		margin: 0 24px 24px;
+	}
+
+	.toggle-switch {
+		.toggle-switch-check {
+			height: 24px;
+			width: 44px;
+
+			&:checked ~ .toggle-switch-bar:after {
+				left: 24px;
+			}
+		}
+
+		.toggle-switch-bar {
+			height: 24px;
+			line-height: 24px;
+			text-indent: 0;
+
+			&:after {
+				bottom: 4px;
+				height: 16px;
+				left: 4px;
+				top: 4px;
+				width: 16px;
+			}
+
+			&:before {
+				width: 44px;
+			}
+
+			.toggle-switch-handle {
+				min-width: 44px;
+
+				&:after {
+					margin-left: 52px;
+				}
+			}
+		}
 	}
 }
