@@ -92,6 +92,16 @@ function QueryBuilder({
 								uiConfigurationValues,
 							});
 						}}
+						updateTemplate={(
+							fragmentTemplateJSON,
+							fragmentOutput
+						) => {
+							updateFragment(index, {
+								...fragment,
+								fragmentOutput,
+								fragmentTemplateJSON,
+							});
+						}}
 					/>
 				) : (
 					<JSONFragment
