@@ -105,8 +105,8 @@ public class InRangeVisitor implements ConditionEvaluationVisitor {
 
 			boolean inRange = false;
 
-			if (!(parameterValue.before(lowerBound) &&
-				  !parameterValue.after(upperBound))) {
+			if ((parameterValue.after(lowerBound) &&
+				  parameterValue.before(upperBound))) {
 
 				inRange = true;
 			}
