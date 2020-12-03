@@ -33,7 +33,7 @@ public enum ReservedParameterNames {
 	EXCLUDED_SEARCH_REQUEST_BODY_CONTRIBUTORS(
 		"excluded_search_request_body_contributors"),
 	EXPLAIN("explain"), INCLUDE_RESPONSE_STRING("include_response_string"),
-	IP_ADDRESS("ip_address"), LANGUAGE_ID("language_id"),
+	IP_ADDRESS("ip_address"), LANGUAGE("language"), LANGUAGE_ID("language_id"),
 	LAYOUT_LOCALE_NAME("layout_locale_name"), PLID("plid"),
 	SCOPE_GROUP_ID("scope_group_id"), TIME_OF_DAY("time_of_day"),
 	TIMEZONE_ID("timezone_id"), TIMEZONE_LOCALE_NAME("timezone_locale_name"),
