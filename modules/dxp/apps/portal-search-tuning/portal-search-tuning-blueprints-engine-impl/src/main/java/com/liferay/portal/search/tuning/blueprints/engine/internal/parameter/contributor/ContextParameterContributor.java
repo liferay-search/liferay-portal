@@ -59,7 +59,7 @@ public class ContextParameterContributor implements ParameterContributor {
 
 		_addScopeGroupId(parameterDataBuilder, blueprintsAttributes);
 
-		_addLanguageId(parameterDataBuilder, blueprintsAttributes);
+		_addLanguage(parameterDataBuilder, blueprintsAttributes);
 
 		_addLayoutNameCurrentValue(
 			parameterDataBuilder, blueprintsAttributes, messages);
@@ -96,6 +96,13 @@ public class ContextParameterContributor implements ParameterContributor {
 				LongParameter.class.getName(), "parameter.context.plid"));
 
 		parameterDefinitions.add(
+				new ParameterDefinition(
+					_getTemplateVariableName(
+						ReservedParameterNames.LANGUAGE.getKey()),
+					StringParameter.class.getName(),
+					"parameter.context.language"));
+
+		parameterDefinitions.add(
 			new ParameterDefinition(
 				_getTemplateVariableName(
 					ReservedParameterNames.LANGUAGE_ID.getKey()),
@@ -117,7 +124,7 @@ public class ContextParameterContributor implements ParameterContributor {
 				blueprintsAttributes.getCompanyId()));
 	}
 
-	private void _addLanguageId(
+	private void _addLanguage(
 		ParameterDataBuilder parameterDataBuilder,
 		BlueprintsAttributes blueprintsAttributes) {
 
@@ -125,8 +132,16 @@ public class ContextParameterContributor implements ParameterContributor {
 			new StringParameter(
 				ReservedParameterNames.LANGUAGE_ID.getKey(),
 				_getTemplateVariableName(
-					ReservedParameterNames.LANGUAGE_ID.getKey()),
+					ReservedParameterNames.LANGUAGE_ID.getKey()), "_" +
 				_language.getLanguageId(blueprintsAttributes.getLocale())));
+
+		parameterDataBuilder.addParameter(
+				new StringParameter(
+					ReservedParameterNames.LANGUAGE.getKey(),
+					_getTemplateVariableName(
+						ReservedParameterNames.LANGUAGE.getKey()),
+					blueprintsAttributes.getLocale().getLanguage()));
+
 	}
 
 	private void _addLayoutNameCurrentValue(
