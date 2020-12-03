@@ -233,14 +233,15 @@ public class TimeParameterContributor implements ParameterContributor {
 
 		return false;
 	}
+	
 
 	private static final LocalTime _AFTER_NOON = LocalTime.of(12, 0, 0);
 
-	private static final LocalTime _EVENING = LocalTime.of(16, 0, 0);
+	private static final LocalTime _EVENING = LocalTime.of(17, 0, 0);
 
-	private static final LocalTime _MORNING = LocalTime.of(0, 0, 0);
+	private static final LocalTime _MORNING = LocalTime.of(4, 0, 0);
 
-	private static final LocalTime _NIGHT = LocalTime.of(21, 0, 0);
+	private static final LocalTime _NIGHT = LocalTime.of(20, 0, 0);
 
 	@Reference
 	private BlueprintsAttributesHelper _blueprintsAttributesHelper;

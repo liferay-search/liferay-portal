@@ -23,6 +23,7 @@ import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.StringBundler;
@@ -32,6 +33,7 @@ import com.liferay.portal.search.tuning.blueprints.engine.parameter.BooleanParam
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.DateParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.IntegerParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.LongArrayParameter;
+import com.liferay.portal.search.tuning.blueprints.engine.parameter.LongParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterDataBuilder;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterDefinition;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringArrayParameter;
@@ -84,6 +86,18 @@ public class UserParameterContributor implements ParameterContributor {
 	@Override
 	public List<ParameterDefinition> getParameterDefinitions() {
 		List<ParameterDefinition> parameterDefinitions = new ArrayList<>();
+
+		parameterDefinitions.add(
+				new ParameterDefinition(
+					_getTemplateVariableName(
+						ReservedParameterNames.USER_ID.getKey()),
+					LongParameter.class.getName(), "parameter.user.id"));
+
+		parameterDefinitions.add(
+				new ParameterDefinition(
+					_getTemplateVariableName(
+						ReservedParameterNames.USER_IS_SIGNED_IN.getKey()),
+					LongParameter.class.getName(), "parameter.user.is-signed-in"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
@@ -217,6 +231,18 @@ public class UserParameterContributor implements ParameterContributor {
 		ParameterDataBuilder parameterDataBuilder, Messages messages,
 		User user) {
 
+		parameterDataBuilder.addParameter(
+			new LongParameter(
+				ReservedParameterNames.USER_ID.getKey(),
+				_getTemplateVariableName(
+					ReservedParameterNames.USER_ID.getKey()),
+				user.getUserId()));
+		parameterDataBuilder.addParameter(
+				new BooleanParameter(
+					ReservedParameterNames.USER_IS_SIGNED_IN.getKey(),
+					_getTemplateVariableName(
+						ReservedParameterNames.USER_IS_SIGNED_IN.getKey()),
+					_isSignedIn(user)));
 		parameterDataBuilder.addParameter(
 			new StringParameter(
 				ReservedParameterNames.USER_FULL_NAME.getKey(),
@@ -473,6 +499,12 @@ public class UserParameterContributor implements ParameterContributor {
 
 		return email.substring(email.indexOf("@") + 1);
 	}
+	
+	private Boolean _isSignedIn(User user) {
+		
+		return !user.isDefaultUser();
+	}
+
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		UserParameterContributor.class);
