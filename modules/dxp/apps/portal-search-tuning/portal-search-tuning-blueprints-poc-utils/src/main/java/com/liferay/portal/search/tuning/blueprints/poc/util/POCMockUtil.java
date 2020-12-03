@@ -63,6 +63,7 @@ public class POCMockUtil {
 			JSONFactoryUtil.createJSONObject();
 
 		jsonObject1.put("field", "assetTagNames.raw");
+		jsonObject1.put("multi_value_operator", "AND");
 		jsonObject1.put("filter_mode", "PRE");
 		jsonObject1.put("parameter_name", "assetTagNames");
 
