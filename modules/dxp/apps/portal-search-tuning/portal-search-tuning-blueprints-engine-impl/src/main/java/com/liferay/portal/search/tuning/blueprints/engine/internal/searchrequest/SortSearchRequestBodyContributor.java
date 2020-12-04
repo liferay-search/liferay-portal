@@ -24,11 +24,11 @@ import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.sort.Sort;
 import com.liferay.portal.search.sort.Sorts;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.sort.SortConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.engine.internal.util.BlueprintTemplateVariableUtil;
 import com.liferay.portal.search.tuning.blueprints.engine.internal.util.BlueprintValueUtil;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.Parameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.searchrequest.SearchRequestBodyContributor;
+import com.liferay.portal.search.tuning.blueprints.engine.util.BlueprintTemplateVariableParser;
 import com.liferay.portal.search.tuning.blueprints.message.Message;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 import com.liferay.portal.search.tuning.blueprints.message.Severity;
@@ -101,7 +101,7 @@ public class SortSearchRequestBodyContributor
 
 			try {
 				JSONObject parsedConfigurationJsonObject =
-					BlueprintTemplateVariableUtil.parseTemplateVariables(
+					_blueprintTemplateVariableParser.parse(
 						parameterData, messages, configurationJsonObject);
 
 				String field = parsedConfigurationJsonObject.getString("field");
@@ -173,7 +173,7 @@ public class SortSearchRequestBodyContributor
 			try {
 			
 				parsedConfigurationJsonObject =
-					BlueprintTemplateVariableUtil.parseTemplateVariables(
+					_blueprintTemplateVariableParser.parse(
 						parameterData, messages, configurationJsonObject);
 
 			} catch (Exception exception) {
@@ -214,6 +214,9 @@ public class SortSearchRequestBodyContributor
 
 	@Reference
 	private BlueprintHelper _blueprintHelper;
+
+	@Reference
+	private BlueprintTemplateVariableParser _blueprintTemplateVariableParser;
 
 	@Reference
 	private Sorts _sorts;

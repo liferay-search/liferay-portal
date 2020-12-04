@@ -30,14 +30,10 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 
-
 /**
  * @author Petteri Karttunen
  */
-@Component(
-	immediate = true, 
-	service = FacetResponseHandlerFactory.class
-)
+@Component(immediate = true, service = FacetResponseHandlerFactory.class)
 public class FacetResponseHandlerFactoryImpl
 	implements FacetResponseHandlerFactory {
 

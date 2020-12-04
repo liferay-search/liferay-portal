@@ -37,13 +37,13 @@ import com.liferay.portal.search.tuning.blueprints.constants.json.values.Operato
 import com.liferay.portal.search.tuning.blueprints.engine.component.ServiceComponentReference;
 import com.liferay.portal.search.tuning.blueprints.engine.internal.clause.ClauseTranslatorFactory;
 import com.liferay.portal.search.tuning.blueprints.engine.internal.condition.ConditionHandlerFactory;
-import com.liferay.portal.search.tuning.blueprints.engine.internal.util.BlueprintTemplateVariableUtil;
 import com.liferay.portal.search.tuning.blueprints.engine.internal.util.BlueprintValueUtil;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.clause.ClauseTranslator;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.clause.ConditionHandler;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.query.QueryContributor;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.searchrequest.SearchRequestBodyContributor;
+import com.liferay.portal.search.tuning.blueprints.engine.util.BlueprintTemplateVariableParser;
 import com.liferay.portal.search.tuning.blueprints.message.Message;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 import com.liferay.portal.search.tuning.blueprints.message.Severity;
@@ -199,7 +199,7 @@ public class QuerySearchRequestBodyContributor
 						_clauseTranslatorFactory.getTranslator(type);
 
 					queryJsonObject =
-						BlueprintTemplateVariableUtil.parseTemplateVariables(
+						_blueprintTemplateVariableParser.parse(
 							parameterData, messages,
 							clauseJsonObject.getJSONObject(
 								ClauseConfigurationKeys.QUERY.getJsonKey()));
@@ -545,6 +545,9 @@ public class QuerySearchRequestBodyContributor
 
 	@Reference
 	private BlueprintHelper _blueprintHelper;
+
+	@Reference
+	private BlueprintTemplateVariableParser _blueprintTemplateVariableParser;
 
 	@Reference
 	private ClauseTranslatorFactory _clauseTranslatorFactory;

@@ -22,9 +22,14 @@ import java.util.stream.Stream;
  */
 public enum FacetConfigurationKeys {
 
-	AGGREGATION_TYPE("aggregation_type"), FIELD("field"), 
-	FILTER_MODE("filter_mode"), HANDLER("handler"),
-	HANDLER_PARAMETERS("handler_parameters"), MULTI_VALUE("multi_value"),
+	AGGREGATION_TYPE("aggregation_type"), 
+	ENABLED("enabled"),
+	FIELD("field"), 
+	FILTER_MODE("filter_mode"), 
+	FREQUENCY_THRESHOLD("frequency_threshold"),
+	HANDLER("handler"),
+	HANDLER_PARAMETERS("handler_parameters"), 
+	LABEL("label"), MULTI_VALUE("multi_value"),
 	MULTI_VALUE_OPERATOR("multi_value_operator"),
 	PARAMETER_NAME("parameter_name"), SIZE("size");
 

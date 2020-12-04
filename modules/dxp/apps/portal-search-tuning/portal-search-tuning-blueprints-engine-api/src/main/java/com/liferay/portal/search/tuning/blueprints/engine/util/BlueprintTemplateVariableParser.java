@@ -12,13 +12,19 @@
  *
  */
 
-package com.liferay.portal.search.tuning.blueprints.facets.constants;
+package com.liferay.portal.search.tuning.blueprints.engine.util;
+
+import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
+import com.liferay.portal.search.tuning.blueprints.message.Messages;
 
 /**
  * @author Petteri Karttunen
  */
-public class FacetsBlueprintContributorKeys {
-
-	public static final String CONFIGURATION_SECTION = "facet_configuration";
-
+public interface BlueprintTemplateVariableParser {
+	
+	public JSONObject parse(
+			ParameterData parameterData, Messages messages,
+			JSONObject queryJsonObject)
+		throws Exception;
 }

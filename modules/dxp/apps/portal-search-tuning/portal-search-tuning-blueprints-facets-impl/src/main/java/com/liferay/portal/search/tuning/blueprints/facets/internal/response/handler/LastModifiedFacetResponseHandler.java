@@ -12,13 +12,19 @@
  *
  */
 
-package com.liferay.portal.search.tuning.blueprints.facets.constants;
+package com.liferay.portal.search.tuning.blueprints.facets.internal.response.handler;
+
+import com.liferay.portal.search.tuning.blueprints.facets.spi.response.FacetResponseHandler;
+
+import org.osgi.service.component.annotations.Component;
 
 /**
  * @author Petteri Karttunen
  */
-public class FacetsBlueprintContributorKeys {
-
-	public static final String CONFIGURATION_SECTION = "facet_configuration";
-
+@Component(
+	immediate = true, property = "name=last_modified",
+	service = FacetResponseHandler.class
+)
+public class LastModifiedFacetResponseHandler
+	extends BaseFacetResponseHandler implements FacetResponseHandler {
 }

@@ -70,6 +70,7 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 			_blueprintHelper.getParameterConfigurationOptional(blueprint);
 
 		if (!parameterConfigurationJsonObjectOptional.isPresent()) {
+			
 			return new ParameterDataImpl(StringPool.BLANK, new ArrayList<>());
 		}
 
@@ -294,15 +295,12 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 		BlueprintsAttributes blueprintsAttributes, Messages messages,
 		JSONObject configurationJsonObject) {
 
-		if ((configurationJsonObject == null) ||
-			configurationJsonObject.isNull(
-				KeywordsConfigurationKeys.PARAMETER_NAME.getJsonKey())) {
+		String parameterName = "q";
 
-			return;
+		if ((configurationJsonObject != null)) {
+			parameterName = configurationJsonObject.getString(
+					KeywordsConfigurationKeys.PARAMETER_NAME.getJsonKey(), "q");
 		}
-
-		String parameterName = configurationJsonObject.getString(
-			KeywordsConfigurationKeys.PARAMETER_NAME.getJsonKey());
 
 		Optional<Object> valueOptional =
 			blueprintsAttributes.getAttributeOptional(parameterName);
@@ -333,16 +331,13 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 		BlueprintsAttributes blueprintsAttributes,
 		JSONObject configurationJsonObject) {
 
-		if ((configurationJsonObject == null) ||
-			configurationJsonObject.isNull(
-				PageConfigurationKeys.PARAMETER_NAME.getJsonKey())) {
-
-			return;
+		String parameterName = "page";
+		
+		if (configurationJsonObject != null) {
+			parameterName = configurationJsonObject.getString(
+					PageConfigurationKeys.PARAMETER_NAME.getJsonKey(), "page");
 		}
-
-		String parameterName = configurationJsonObject.getString(
-			PageConfigurationKeys.PARAMETER_NAME.getJsonKey());
-
+		
 		Optional<Object> valueOptional =
 			blueprintsAttributes.getAttributeOptional(parameterName);
 

@@ -19,13 +19,15 @@ package com.liferay.portal.search.tuning.blueprints.facets.constants;
  */
 public class FacetJSONResponseKeys {
 
-	public static final String ANY_OPTION = "anyOption";
-
 	public static final String FACETS = "facets";
 
 	public static final String FREQUENCY = "frequency";
 
 	public static final String GROUP_NAME = "groupName";
+
+	public static final String HANDER_NAME = "handlerName";
+
+	public static final String LABEL = "facetLabel";
 
 	public static final String NAME = "name";
 

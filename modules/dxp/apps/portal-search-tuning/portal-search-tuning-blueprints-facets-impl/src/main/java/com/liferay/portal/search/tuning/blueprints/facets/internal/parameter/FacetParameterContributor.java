@@ -55,10 +55,10 @@ public class FacetParameterContributor implements ParameterContributor {
 		BlueprintsAttributes blueprintsAttributes, Messages messages) {
 
 		Optional<JSONArray> configurationJsonArrayOptional =
-				_blueprintHelper.getJSONArrayConfigurationOptional(
-					blueprint,
-					"JSONArray/" +
-						FacetsBlueprintContributorKeys.CONFIGURATION_SECTION);
+			_blueprintHelper.getJSONArrayConfigurationOptional(
+				blueprint,
+				"JSONArray/" +
+					FacetsBlueprintContributorKeys.CONFIGURATION_SECTION);
 
 		if (!configurationJsonArrayOptional.isPresent()) {
 			return;
@@ -69,6 +69,13 @@ public class FacetParameterContributor implements ParameterContributor {
 		for (int i = 0; i < configurationJsonArray.length(); i++) {
 			JSONObject configurationJsonObject =
 				configurationJsonArray.getJSONObject(i);
+
+			boolean enabled = configurationJsonObject.getBoolean(
+				FacetConfigurationKeys.ENABLED.getJsonKey(), true);
+
+			if (!enabled) {
+				continue;
+			}
 
 			if (_validateFacetConfiguration(
 					messages, configurationJsonObject)) {
@@ -83,8 +90,6 @@ public class FacetParameterContributor implements ParameterContributor {
 	@Override
 	public List<ParameterDefinition> getParameterDefinitions() {
 		List<ParameterDefinition> parameterDefinitions = new ArrayList<>();
-
-		// TODO: are these to be exposed as template variables?
 
 		return parameterDefinitions;
 	}

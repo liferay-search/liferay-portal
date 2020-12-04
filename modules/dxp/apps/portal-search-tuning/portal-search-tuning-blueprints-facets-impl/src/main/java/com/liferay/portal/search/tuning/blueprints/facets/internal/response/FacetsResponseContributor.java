@@ -41,34 +41,37 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Petteri Karttunen
  */
-@Component(immediate = true, property = "name=facets", service = ResponseContributor.class)
+@Component(
+	immediate = true, property = "name=facets",
+	service = ResponseContributor.class
+)
 public class FacetsResponseContributor implements ResponseContributor {
 
 	@Override
 	public void contribute(
 		JSONObject responseJsonObject, SearchResponse searchResponse,
 		Blueprint blueprint, BlueprintsAttributes blueprintsAttributes,
-		ResourceBundle resourceBundle,
-		Messages messages) {
+		ResourceBundle resourceBundle, Messages messages) {
 
 		responseJsonObject.put(
 			FacetJSONResponseKeys.FACETS,
 			_getFacetsJSONArray(
-				searchResponse, blueprint, blueprintsAttributes, resourceBundle, messages));
+				searchResponse, blueprint, blueprintsAttributes, resourceBundle,
+				messages));
 	}
 
 	private JSONArray _getFacetsJSONArray(
 		SearchResponse searchResponse, Blueprint blueprint,
-		BlueprintsAttributes blueprintsAttributes, ResourceBundle resourceBundle,
-		Messages messages) {
+		BlueprintsAttributes blueprintsAttributes,
+		ResourceBundle resourceBundle, Messages messages) {
 
 		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
 
 		Optional<JSONArray> configurationJsonArrayOptional =
-				_blueprintHelper.getJSONArrayConfigurationOptional(
-					blueprint,
-					"JSONArray/" +
-						FacetsBlueprintContributorKeys.CONFIGURATION_SECTION);
+			_blueprintHelper.getJSONArrayConfigurationOptional(
+				blueprint,
+				"JSONArray/" +
+					FacetsBlueprintContributorKeys.CONFIGURATION_SECTION);
 
 		Map<String, AggregationResult> aggregationResultsMap =
 			searchResponse.getAggregationResultsMap();
@@ -80,9 +83,8 @@ public class FacetsResponseContributor implements ResponseContributor {
 		}
 
 		_processFacets(
-			jsonArray, aggregationResultsMap, blueprintsAttributes, resourceBundle, 
-			messages,
-			configurationJsonArrayOptional.get());
+			jsonArray, aggregationResultsMap, blueprintsAttributes,
+			resourceBundle, messages, configurationJsonArrayOptional.get());
 
 		return jsonArray;
 	}
@@ -90,13 +92,20 @@ public class FacetsResponseContributor implements ResponseContributor {
 	private void _processFacets(
 		JSONArray jsonArray,
 		Map<String, AggregationResult> aggregationResultsMap,
-		BlueprintsAttributes blueprintsAttributes, ResourceBundle resourceBundle, 
-		Messages messages,
+		BlueprintsAttributes blueprintsAttributes,
+		ResourceBundle resourceBundle, Messages messages,
 		JSONArray configurationJsonArray) {
 
 		for (int i = 0; i < configurationJsonArray.length(); i++) {
 			JSONObject configurationJsonObject =
 				configurationJsonArray.getJSONObject(i);
+
+			boolean enabled = configurationJsonObject.getBoolean(
+				FacetConfigurationKeys.ENABLED.getJsonKey(), true);
+
+			if (!enabled) {
+				continue;
+			}
 
 			String responseHandlerName = configurationJsonObject.getString(
 				FacetConfigurationKeys.HANDLER.getJsonKey(), "default");
@@ -122,8 +131,7 @@ public class FacetsResponseContributor implements ResponseContributor {
 				Optional<JSONObject> resultOptional =
 					facetResponseHandler.getResultOptional(
 						entry.getValue(), blueprintsAttributes, resourceBundle,
-						messages,
-						configurationJsonObject);
+						messages, configurationJsonObject);
 
 				if (resultOptional.isPresent()) {
 					jsonArray.put(resultOptional.get());

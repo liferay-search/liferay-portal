@@ -23,10 +23,10 @@ import com.liferay.portal.search.query.Queries;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.aggregation.AggregationConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.AggregationTranslatorFactory;
-import com.liferay.portal.search.tuning.blueprints.engine.internal.util.BlueprintTemplateVariableUtil;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslator;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.searchrequest.SearchRequestBodyContributor;
+import com.liferay.portal.search.tuning.blueprints.engine.util.BlueprintTemplateVariableParser;
 import com.liferay.portal.search.tuning.blueprints.message.Message;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 import com.liferay.portal.search.tuning.blueprints.message.Severity;
@@ -84,7 +84,7 @@ public class AggsSearchRequestBodyContributor
 					_aggregationBuilderFactory.getTranslator(type);
 
 				JSONObject bodyJsonObject =
-					BlueprintTemplateVariableUtil.parseTemplateVariables(
+					_blueprintTemplateVariableParser.parse(
 						parameterData, messages,
 						configurationJsonObject.getJSONObject(
 							AggregationConfigurationKeys.BODY.getJsonKey()));
@@ -194,6 +194,9 @@ public class AggsSearchRequestBodyContributor
 
 	@Reference
 	private AggregationTranslatorFactory _aggregationBuilderFactory;
+
+	@Reference
+	private BlueprintTemplateVariableParser _blueprintTemplateVariableParser;
 
 	@Reference
 	private BlueprintHelper _blueprintHelper;
