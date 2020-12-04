@@ -13,7 +13,7 @@ import ClayAlert from '@clayui/alert';
 import ClayButton from '@clayui/button';
 import ClayDatePicker from '@clayui/date-picker';
 import ClayDropDown from '@clayui/drop-down';
-import {ClayInput, ClaySelect, ClayToggle} from '@clayui/form';
+import ClayForm, {ClayInput, ClaySelect, ClayToggle} from '@clayui/form';
 import ClayIcon from '@clayui/icon';
 import ClayList from '@clayui/list';
 import ClaySlider from '@clayui/slider';
@@ -32,6 +32,104 @@ import {
 import CodeMirrorEditor from './CodeMirrorEditor';
 import PreviewModal from './PreviewModal';
 import ThemeContext from './ThemeContext';
+
+function FieldSelect({config, deleteItem, disabled, idx, item, updateValue}) {
+	const {availableLanguages} = useContext(ThemeContext);
+
+	return (
+		<ClayForm.Group>
+			<ClayInput.Group small>
+				<ClayInput.GroupItem>
+					<ClaySelect
+						aria-label={Liferay.Language.get('field')}
+						className="form-control-sm"
+						disabled={disabled}
+						id={`${config.key}_field`}
+						onChange={(event) => {
+							updateValue('field', event.target.value);
+						}}
+						value={item.field}
+					>
+						{config.typeOptions.map((option) => (
+							<ClaySelect.Option
+								key={option.value}
+								label={option.label}
+								value={option.value}
+							/>
+						))}
+					</ClaySelect>
+				</ClayInput.GroupItem>
+
+				<ClayInput.GroupItem>
+					<ClaySelect
+						aria-label={Liferay.Language.get('locale')}
+						className="form-control-sm"
+						disabled={disabled}
+						id={`${config.key}_locale`}
+						onChange={(event) =>
+							updateValue('locale', event.target.value)
+						}
+						value={item.locale}
+					>
+						<ClaySelect.Option
+							key={`${idx}-users-language`}
+							label={Liferay.Language.get('users-language')}
+							value={'${context.language_id}'}
+						/>
+
+						<ClaySelect.Option
+							key={`${idx}-no-localization`}
+							label={Liferay.Language.get('no-localization')}
+							value=""
+						/>
+
+						{Object.keys(availableLanguages).map((locale) => (
+							<ClaySelect.Option
+								key={`${idx}-${locale}`}
+								label={availableLanguages[locale]}
+								value={`${locale}`}
+							/>
+						))}
+					</ClaySelect>
+				</ClayInput.GroupItem>
+
+				<ClayInput.GroupItem shrink>
+					<ClayInput
+						aria-label={Liferay.Language.get('boost')}
+						className="field-boost-input"
+						disabled={disabled}
+						id={`${config.key}_boost`}
+						onChange={(event) => {
+							updateValue(
+								'boost',
+								event.target.value !== ''
+									? JSON.parse(event.target.value)
+									: event.target.value
+							);
+						}}
+						type={'number'}
+						value={item.boost}
+					/>
+				</ClayInput.GroupItem>
+
+				{deleteItem && (
+					<ClayInput.GroupItem shrink>
+						<ClayButton
+							aria-label={Liferay.Language.get('delete')}
+							disabled={disabled}
+							displayType="unstyled"
+							monospaced
+							onClick={deleteItem}
+							small
+						>
+							<ClayIcon symbol="times-circle" />
+						</ClayButton>
+					</ClayInput.GroupItem>
+				)}
+			</ClayInput.Group>
+		</ClayForm.Group>
+	);
+}
 
 function Slider({disabled, keyword, name, onChange, value}) {
 	const [active, setActive] = useState(false);
@@ -94,7 +192,7 @@ function ConfigFragment({
 	updateFragment = () => {},
 	updateTemplate,
 }) {
-	const {availableLanguages, locale} = useContext(ThemeContext);
+	const {locale} = useContext(ThemeContext);
 	const [collapse, setCollapse] = useState(false);
 	const [active, setActive] = useState(false);
 
@@ -282,78 +380,95 @@ function ConfigFragment({
 				);
 			case INPUT_TYPES.FIELD_SELECT:
 				return (
-					<ClayInput.Group small>
-						<ClayInput.GroupItem>
-							<ClaySelect
-								aria-label={config.name}
-								className="form-control-sm"
-								disabled={disabled}
-								id={`${config.key}_field`}
-								onChange={(event) =>
-									_handleChange(config.key, {
-										...uiConfigurationValues[config.key],
-										field: event.target.value,
-									})
-								}
-								value={uiConfigurationValues[config.key].field}
-							>
-								{config.typeOptions.map((option) => (
-									<ClaySelect.Option
-										key={option.field}
-										label={option.label}
-										value={option.field}
-									/>
-								))}
-							</ClaySelect>
-						</ClayInput.GroupItem>
-
-						<ClayInput.GroupItem>
-							<ClaySelect
-								aria-label={config.name}
-								className="form-control-sm"
-								disabled={disabled}
-								id={`${config.key}_locale`}
-								onChange={(event) =>
-									_handleChange(config.key, {
-										...uiConfigurationValues[config.key],
-										locale: event.target.value,
-									})
-								}
-								value={uiConfigurationValues[config.key].locale}
-							>
-								<ClaySelect.Option
-									key="users-language"
-									label={Liferay.Language.get(
-										'users-language'
-									)}
-									value={'_${context.language_id}'}
-								/>
-
-								<ClaySelect.Option
-									key="no-localization"
-									label={Liferay.Language.get(
-										'no-localization'
-									)}
-									value=""
-								/>
-
-								{Object.keys(availableLanguages).map(
-									(locale) => (
-										<ClaySelect.Option
-											key={locale}
-											label={availableLanguages[locale]}
-											value={`_${locale}`}
-										/>
+					<div className="field-select">
+						{uiConfigurationValues[config.key].map((item, idx) => (
+							<FieldSelect
+								config={config}
+								deleteItem={() =>
+									_handleChange(
+										config.key,
+										uiConfigurationValues[
+											config.key
+										].filter((item, index) => idx !== index)
 									)
-								)}
-							</ClaySelect>
-						</ClayInput.GroupItem>
-					</ClayInput.Group>
+								}
+								disabled={disabled}
+								idx={idx}
+								item={item}
+								key={`${config.key}_${idx}`}
+								updateValue={(label, value) => {
+									const configValue =
+										uiConfigurationValues[config.key];
+									configValue[idx] = {
+										...item,
+										[`${label}`]: value,
+									};
+									_handleChange(config.key, configValue);
+								}}
+							/>
+						))}
+
+						<ClayForm.Group className="add-remove-field">
+							<ClayButton.Group spaced>
+								<ClayButton
+									aria-label={Liferay.Language.get(
+										'add-field'
+									)}
+									disabled={disabled}
+									displayType="secondary"
+									monospaced
+									onClick={() =>
+										_handleChange(config.key, [
+											...uiConfigurationValues[
+												config.key
+											],
+											{
+												boost: 1,
+												field: 'title',
+												locale: '',
+											},
+										])
+									}
+									small
+								>
+									<ClayIcon symbol="plus" />
+								</ClayButton>
+
+								<ClayButton
+									aria-label={Liferay.Language.get(
+										'remove-field'
+									)}
+									disabled={
+										uiConfigurationValues[config.key]
+											.length < 1 || disabled
+									}
+									displayType="secondary"
+									monospaced
+									onClick={() =>
+										_handleChange(
+											config.key,
+											uiConfigurationValues[
+												config.key
+											].slice(
+												0,
+												uiConfigurationValues[
+													config.key
+												].length - 1
+											)
+										)
+									}
+									small
+								>
+									<ClayIcon symbol="hr" />
+								</ClayButton>
+							</ClayButton.Group>
+						</ClayForm.Group>
+					</div>
 				);
 			case INPUT_TYPES.SINGLE_SELECT:
 				return (
 					<ClaySelect
-						aria-label={name}
+						aria-label={config.name}
 						className="form-control-sm"
 						disabled={disabled}
 						id={config.key}

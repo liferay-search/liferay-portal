@@ -15,6 +15,7 @@ import {ClayInput} from '@clayui/form';
 import ClayIcon from '@clayui/icon';
 import ClayList from '@clayui/list';
 import ClayLoadingIndicator from '@clayui/loading-indicator';
+import ClaySticker from '@clayui/sticker';
 import PropTypes from 'prop-types';
 import React, {useContext, useEffect, useRef, useState} from 'react';
 
@@ -46,6 +47,14 @@ const QueryFragmentList = ({onAddFragment, queryFragments, toggleSidebar}) => {
 							onMouseEnter={() => setShowAdd(index)}
 							onMouseLeave={() => setShowAdd(-1)}
 						>
+							<ClayList.ItemField>
+								<ClaySticker size="md">
+									<ClayIcon
+										symbol={fragmentTemplateJSON.icon}
+									/>
+								</ClaySticker>
+							</ClayList.ItemField>
+
 							<ClayList.ItemField expand>
 								<ClayList.ItemTitle>
 									{fragmentTemplateJSON.title[locale] ||
@@ -146,6 +155,7 @@ function Sidebar({onAddFragment, showSidebar, toggleSidebar}) {
 					</span>
 				</h4>
 				<ClayButton
+					aria-label={Liferay.Language.get('close')}
 					displayType="unstyled"
 					onClick={toggleSidebar}
 					small
