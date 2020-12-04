@@ -64,7 +64,7 @@ const AddBlueprintModal = ({
 				parameter_configuration: {},
 				query_configuration: [DEFAULT_SELECTED_FRAGMENT.fragmentOutput],
 				sort_configuration: [],
-				suggest_configuration: [],
+				facet_configuration: [],
 			})
 		);
 

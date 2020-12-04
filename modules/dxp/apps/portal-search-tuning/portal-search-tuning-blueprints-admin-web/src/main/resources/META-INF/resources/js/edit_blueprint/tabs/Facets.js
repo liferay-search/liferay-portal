@@ -15,22 +15,22 @@ import React from 'react';
 
 import CodeMirrorEditor from '../../shared/CodeMirrorEditor';
 
-function Suggesters({onSuggestConfigChange, suggestConfig}) {
+function Facets({onFacetConfigChange, facetConfig}) {
 	return (
 		<ClayLayout.ContainerFluid className="builder" size="md">
 			<div className="sheet">
 				<h2 className="sheet-title">
-					{Liferay.Language.get('suggesters')}
+					{Liferay.Language.get('facets')}
 				</h2>
 
 				<ClayForm.Group>
-					<label htmlFor="suggest-configuration">
-						{Liferay.Language.get('suggest-configuration')}
+					<label htmlFor="facet-configuration">
+						{Liferay.Language.get('facet-configuration')}
 					</label>
 
 					<CodeMirrorEditor
-						onChange={(value) => onSuggestConfigChange(value)}
-						value={suggestConfig}
+						onChange={(value) => onFacetConfigChange(value)}
+						value={facetConfig}
 					/>
 				</ClayForm.Group>
 			</div>
@@ -38,4 +38,4 @@ function Suggesters({onSuggestConfigChange, suggestConfig}) {
 	);
 }
 
-export default React.memo(Suggesters);
+export default React.memo(Facets);

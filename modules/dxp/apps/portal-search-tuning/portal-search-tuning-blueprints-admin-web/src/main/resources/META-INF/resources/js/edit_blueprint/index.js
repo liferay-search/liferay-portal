@@ -24,19 +24,19 @@ import {
 } from '../utils/utils';
 import Sidebar from './Sidebar';
 import Aggregations from './tabs/Aggregations';
+import Facets from './tabs/Facets';
 import QueryBuilder from './tabs/QueryBuilder';
 import Settings from './tabs/Settings';
 import Sorts from './tabs/Sorts';
-import Suggesters from './tabs/Suggesters';
 
 // Tabs in display order
 
 /* eslint-disable sort-keys */
 const TABS = {
 	'query-builder': Liferay.Language.get('query-builder'),
-	aggregations: Liferay.Language.get('aggregations'),
 	sorts: Liferay.Language.get('sorts'),
-	suggesters: Liferay.Language.get('suggesters'),
+	aggregations: Liferay.Language.get('aggregations'),
+	facets: Liferay.Language.get('facets'),
 	settings: Liferay.Language.get('settings'),
 };
 /* eslint-enable sort-keys */
@@ -90,9 +90,9 @@ function EditBlueprintForm({
 	const [sortConfig, setSortConfig] = useState(
 		JSON.stringify(initialConfiguration['sort_configuration'], null, '\t')
 	);
-	const [suggestConfig, setSuggestConfig] = useState(
+	const [facetConfig, setFacetConfig] = useState(
 		JSON.stringify(
-			initialConfiguration['suggest_configuration'],
+			initialConfiguration['facet_configuration'],
 			null,
 			'\t'
 		)
@@ -147,7 +147,7 @@ function EditBlueprintForm({
 							(item) => item.fragmentOutput
 						),
 						sort_configuration: JSON.parse(sortConfig),
-						suggest_configuration: JSON.parse(suggestConfig),
+						facet_configuration: JSON.parse(facetConfig),
 					})
 				);
 
@@ -219,7 +219,7 @@ function EditBlueprintForm({
 			selectedQueryFragments,
 			submitFormURL,
 			sortConfig,
-			suggestConfig,
+			facetConfig,
 		]
 	);
 
@@ -242,11 +242,11 @@ function EditBlueprintForm({
 						}
 					/>
 				);
-			case 'suggesters':
+			case 'facets':
 				return (
-					<Suggesters
-						onSuggestConfigChange={(val) => setSuggestConfig(val)}
-						suggestConfig={suggestConfig}
+					<Facets
+						onFacetConfigChange={(val) => setFacetConfig(val)}
+						facetConfig={facetConfig}
 					/>
 				);
 			case 'sorts':
