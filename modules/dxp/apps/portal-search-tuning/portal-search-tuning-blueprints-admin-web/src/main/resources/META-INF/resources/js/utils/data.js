@@ -19,6 +19,7 @@ export const CUSTOM_JSON_FRAGMENT = {
 		conditions: [],
 		description: Liferay.Language.get('editable-json-text-area'),
 		enabled: true,
+		icon: 'custom-field',
 		title: Liferay.Language.get('custom-json-fragment'),
 	},
 };
@@ -238,8 +239,90 @@ export const DEFAULT_PARAMETER_CONFIGURATION = {
 
 // Not used anywhere yet.
 
-export const DEFAULT_FACET_CONFIGURATION = [
+export const DEFAULT_FACET_CONFIGURATION = [{}];
+
+export const QUERY_FRAGMENTS_SAMPLE = [
 	{
+		fragmentTemplateJSON: {
+			clauses: [
+				{
+					context: 'query',
+					occur: 'must',
+					query: {
+						query: {
+							match: {
+								'[FIELD_NAME + LOCALIZATION]': {
+									boost: '${boost}',
+									operator: '${config.operator}',
+									query: '${keywords}',
+								},
+							},
+						},
+					},
+					type: 'wrapper',
+				},
+			],
+			conditions: [],
+			description: {
+				en_US: 'Search for a text match',
+			},
+			enabled: true,
+			title: {
+				en_US: 'Text Match',
+			},
+		},
+		meow: {
+			clauses: [
+				{
+					context: 'query',
+					occur: 'must',
+					query: {
+						query: {
+							match: {
+								field: {
+									boost: '${config.boost}',
+									operator: '${config.operator}',
+									query: '${keywords}',
+								},
+							},
+						},
+					},
+					type: 'wrapper',
+				},
+			],
+			conditions: [],
+			description: {
+				en_US: 'Search for a text match',
+			},
+			enabled: true,
+			title: {
+				en_US: 'Text Match',
+			},
+		},
+		uiConfigurationJSON: [
+			{
+				defaultValue: 'or',
+				key: 'config.operator',
+				name: 'Default Operator',
+				type: 'single-select',
+				typeOptions: [
+					{
+						label: 'OR',
+						value: 'or',
+					},
+					{
+						label: 'AND',
+						value: 'and',
+					},
+				],
+			},
+			{
+				defaultValue: 1,
+				key: 'config.boost',
+				name: 'Boost',
+				type: 'slider',
+			},
+		],
 	},
 ];
 
@@ -928,7 +1011,7 @@ export const QUERY_FRAGMENTS = [
 			{
 				defaultValue: 30,
 				key: 'config.scale',
-				name: 'Minimum Should Match',
+				name: 'Scale',
 				type: 'number',
 				unit: 'days',
 			},
@@ -1073,10 +1156,7 @@ export const QUERY_FRAGMENTS = [
 						query: {
 							multi_match: {
 								boost: '${config.boost}',
-								fields: [
-									'${config.field1}',
-									'${config.field2}',
-								],
+								fields: '${config.field}',
 								operator: '${config.default_operator}',
 								query: '${keywords}',
 							},
@@ -1104,34 +1184,19 @@ export const QUERY_FRAGMENTS = [
 				type: 'number',
 			},
 			{
-				defaultValue: {
-					field: 'title',
-					locale: '',
-				},
-				key: 'config.field1',
-				name: 'Field',
-				type: 'field-select',
-				typeOptions: [
+				defaultValue: [
 					{
-						label: 'Title',
-						value: 'title',
+						boost: '1',
+						field: 'title',
+						locale: '',
 					},
 					{
-						label: 'Description',
-						value: 'description',
-					},
-					{
-						label: 'Content',
-						value: 'content',
+						boost: '2',
+						field: 'content',
+						locale: '',
 					},
 				],
-			},
-			{
-				defaultValue: {
-					field: 'content',
-					locale: '',
-				},
-				key: 'config.field2',
+				key: 'config.field',
 				name: 'Field',
 				type: 'field-select',
 				typeOptions: [

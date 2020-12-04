@@ -99,6 +99,9 @@ export const getDefaultValue = (item) => {
 			return isNotNull(itemValue) && typeof itemValue == 'number'
 				? itemValue
 				: '';
+
+		case INPUT_TYPES.FIELD_SELECT:
+			return isNotNull(itemValue) ? itemValue : [];
 		default:
 			return isNotNull(itemValue) ? itemValue : '';
 	}
@@ -166,15 +169,27 @@ export const replaceUIConfigurationValues = (
 				);
 			}
 			else if (config.type === INPUT_TYPES.FIELD_SELECT) {
-				configValue = `${uiConfigurationValues[config.key].field}${
-					uiConfigurationValues[config.key].locale
-				}`;
+				configValue = JSON.stringify(
+					uiConfigurationValues[config.key].map(
+						(item) =>
+							`${item.field}${
+								item.locale == '' || item.locale.includes('$')
+									? item.locale
+									: '_' + item.locale
+							}${
+								JSON.parse(item.boost) > 1
+									? '^' + item.boost
+									: ''
+							}`
+					)
+				);
 			}
 
 			if (
 				typeof configValue === 'number' ||
 				typeof configValue === 'boolean' ||
-				config.type === INPUT_TYPES.ENTITY
+				config.type === INPUT_TYPES.ENTITY ||
+				config.type === INPUT_TYPES.FIELD_SELECT
 			) {
 				flattenJSON = replaceStr(
 					flattenJSON,

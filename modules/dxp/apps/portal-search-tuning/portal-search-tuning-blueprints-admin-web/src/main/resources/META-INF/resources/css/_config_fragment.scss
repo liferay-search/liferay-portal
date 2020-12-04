@@ -106,6 +106,21 @@
 				}
 			}
 
+			.field-select {
+				.field-boost-input {
+					width: 58px;
+				}
+
+				.form-group {
+					margin-bottom: 8px;
+
+					&.add-remove-field {
+						margin-bottom: 0;
+						text-align: right;
+					}
+				}
+			}
+
 			.slider-configuration {
 				padding: 10px;
 			}
