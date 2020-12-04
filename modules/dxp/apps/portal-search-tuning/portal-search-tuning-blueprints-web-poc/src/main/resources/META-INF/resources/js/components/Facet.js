@@ -21,7 +21,7 @@ const LOCATOR = {
 };
 
 function FacetInput({
-	anyOption,
+	facetLabel,
 	items,
 	onItemsChange,
 	parameterName,
@@ -31,10 +31,10 @@ function FacetInput({
 
 	return (
 		<ClayForm.Group>
-			<label>{anyOption}</label>
+			<label>{facetLabel}</label>
 
 			<MultiSelect
-				aria-label={anyOption}
+				aria-label={facetLabel}
 				disabledClearAll
 				inputName={parameterName}
 				inputValue={value}
@@ -49,7 +49,7 @@ function FacetInput({
 }
 
 FacetInput.propTypes = {
-	anyOption: PropTypes.string,
+	facetLabel: PropTypes.string,
 	items: PropTypes.arrayOf(PropTypes.object),
 	label: PropTypes.string,
 	onItemsChange: PropTypes.func,
