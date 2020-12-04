@@ -91,11 +91,7 @@ function EditBlueprintForm({
 		JSON.stringify(initialConfiguration['sort_configuration'], null, '\t')
 	);
 	const [facetConfig, setFacetConfig] = useState(
-		JSON.stringify(
-			initialConfiguration['facet_configuration'],
-			null,
-			'\t'
-		)
+		JSON.stringify(initialConfiguration['facet_configuration'], null, '\t')
 	);
 
 	const [selectedQueryFragments, setSelectedQueryFragments] = useState(
@@ -142,12 +138,12 @@ function EditBlueprintForm({
 						aggregation_configuration: JSON.parse(
 							aggregationConfig
 						),
+						facet_configuration: JSON.parse(facetConfig),
 						parameter_configuration: JSON.parse(parameterConfig),
 						query_configuration: selectedQueryFragments.map(
 							(item) => item.fragmentOutput
 						),
 						sort_configuration: JSON.parse(sortConfig),
-						facet_configuration: JSON.parse(facetConfig),
 					})
 				);
 
@@ -245,8 +241,8 @@ function EditBlueprintForm({
 			case 'facets':
 				return (
 					<Facets
-						onFacetConfigChange={(val) => setFacetConfig(val)}
 						facetConfig={facetConfig}
+						onFacetConfigChange={(val) => setFacetConfig(val)}
 					/>
 				);
 			case 'sorts':
