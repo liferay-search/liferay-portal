@@ -40,7 +40,6 @@ import com.liferay.portal.search.tuning.blueprints.message.Message;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 import com.liferay.portal.search.tuning.blueprints.message.Severity;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
-import com.liferay.portal.search.tuning.blueprints.poc.util.POCMockUtil;
 import com.liferay.portal.search.tuning.blueprints.query.index.util.QueryIndexHelper;
 import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
 import com.liferay.portal.search.tuning.blueprints.util.BlueprintHelper;
@@ -222,10 +221,6 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 		try {
 			Blueprint blueprint = _blueprintService.getBlueprint(blueprintId);
 
-			// TODO: REMOVE MOCKUPS WHEN ADMIN UI READY
-
-			_pocMockUtil.mockConfigurations(blueprint);
-
 			return blueprint;
 		}
 		catch (Exception exception) {
@@ -379,9 +374,6 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 
 	@Reference
 	private ParameterDataCreator _parameterDataCreator;
-
-	@Reference
-	private POCMockUtil _pocMockUtil;
 
 	@Reference
 	private QueryIndexHelper _queryIndexHelper;
