@@ -65,7 +65,8 @@ public class POCMockUtil {
 		jsonObject1.put("field", "assetTagNames.raw");
 		jsonObject1.put("multi_value_operator", "AND");
 		jsonObject1.put("filter_mode", "PRE");
-		jsonObject1.put("parameter_name", "assetTagNames");
+		jsonObject1.put("label", "tag");
+		jsonObject1.put("parameter_name", "tag");
 
 		facetsConfigurationJsonArray.put(jsonObject1);
 
@@ -74,6 +75,7 @@ public class POCMockUtil {
 
 		jsonObject2.put("field", "userName");
 		jsonObject2.put("filter_mode", "PRE");
+		jsonObject2.put("label", "user");
 		jsonObject2.put("parameter_name", "userName");
 
 		facetsConfigurationJsonArray.put(jsonObject2);
@@ -95,6 +97,8 @@ public class POCMockUtil {
 		jsonObject4.put("filter_mode", "POST");
 		jsonObject4.put("parameter_name", "treeTest");
 		jsonObject4.put("handler", "category_tree");
+		jsonObject4.put("label", "category-in-a-tree");
+		
 
 		JSONObject jsonObject41 =
 				JSONFactoryUtil.createJSONObject();
@@ -104,9 +108,20 @@ public class POCMockUtil {
 		
 		facetsConfigurationJsonArray.put(jsonObject4);		
 
-		
+		JSONObject jsonObject5 =
+				JSONFactoryUtil.createJSONObject();
+
+		jsonObject5.put("field", "assetCategoryIds");
+		jsonObject5.put("filter_mode", "PRE");
+		jsonObject5.put("parameter_name", "categoryId");
+		jsonObject5.put("handler", "category");
+		jsonObject5.put("label", "category");
+
+
+		facetsConfigurationJsonArray.put(jsonObject5);		
+
 		bluePrintJsonObject.put(
-				"facets_configuration",
+				"facet_configuration",
 				facetsConfigurationJsonArray);
 	}
 

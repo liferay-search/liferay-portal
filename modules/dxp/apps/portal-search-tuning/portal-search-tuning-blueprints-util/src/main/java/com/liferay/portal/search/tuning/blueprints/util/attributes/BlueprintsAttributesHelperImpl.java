@@ -35,7 +35,6 @@ import com.liferay.portal.search.tuning.blueprints.engine.constants.ReservedPara
 import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetsBlueprintContributorKeys;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
-import com.liferay.portal.search.tuning.blueprints.poc.util.POCMockUtil;
 import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
 import com.liferay.portal.search.tuning.blueprints.util.BlueprintHelper;
 
@@ -43,7 +42,6 @@ import java.util.Optional;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.osgi.service.component.annotations.Component;
@@ -125,10 +123,6 @@ public class BlueprintsAttributesHelperImpl
 
 		try {
 			blueprint = _getBlueprint(blueprintId);
-
-			// TODO: remove
-
-			_pocMockUtil.mockConfigurations(blueprint);
 		}
 		catch (PortalException portalException) {
 			_log.error(portalException.getMessage(), portalException);
@@ -336,9 +330,6 @@ public class BlueprintsAttributesHelperImpl
 
 	@Reference
 	private BlueprintService _blueprintService;
-
-	@Reference
-	private POCMockUtil _pocMockUtil;
 
 	@Reference
 	private Portal _portal;
