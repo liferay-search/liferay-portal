@@ -14,6 +14,10 @@
 
 package com.liferay.portal.search.tuning.blueprints.engine.internal.parameter.visitor;
 
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.BooleanParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.DateParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.DoubleParameter;
@@ -28,7 +32,9 @@ import com.liferay.portal.search.tuning.blueprints.engine.parameter.ToStringVisi
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-
+import java.time.DateTimeException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -55,6 +61,10 @@ public class ToTemplateVariableStringVisitor implements ToStringVisitor {
 		if ((options == null) || (options.get("dateFormat") == null)) {
 			return date.toString();
 		}
+		
+		if (options.containsKey("modifier")) {
+			date = _modifyDate(date, options.get("modifier"));
+		}
 
 		String dateFormatString = options.get("dateFormat");
 
@@ -64,7 +74,7 @@ public class ToTemplateVariableStringVisitor implements ToStringVisitor {
 
 		DateFormat dateFormat = new SimpleDateFormat(dateFormatString);
 
-		return dateFormat.format(parameter.getValue());
+		return dateFormat.format(date);
 	}
 
 	public String visit(DoubleParameter parameter, Map<String, String> options)
@@ -115,5 +125,55 @@ public class ToTemplateVariableStringVisitor implements ToStringVisitor {
 
 		return parameter.getValue();
 	}
+	
+	private Date _modifyDate(Date date, String option) {
+		
+		if (Validator.isBlank(option)) {
+			return date;
+		}
+		
+		if (!option.matches("^[\\+|\\-][0-9]+[H|D|W|M|Y]")) {
+		   return date;
+		}
+		
+		char operator = option.charAt(0);
+		
+		char unit = option.charAt(option.length()-1);
+
+		option = option.replaceAll("\\D+","");
+		
+		long amount = GetterUtil.getLong(option);
+		
+		if (operator == '-') {
+			amount *= -1;
+		}
+	
+		try {
+	        LocalDateTime localDateTime = date.toInstant().atZone(
+	        		ZoneId.systemDefault()).toLocalDateTime();
+	
+	        if (unit == 'H') {
+	        	localDateTime = localDateTime.plusHours(amount);
+		    } else if (unit == 'D') {
+	        	localDateTime = localDateTime.plusDays(amount);	    	
+		    } else if (unit == 'W') {
+	        	localDateTime = localDateTime.plusWeeks(amount);	    	
+		    } else if (unit == 'M') {
+	        	localDateTime = localDateTime.plusMonths(amount);	    	
+		    } else if (unit == 'Y') {
+	        	localDateTime = localDateTime.plusYears(amount);	    	
+		    }
+	        return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+	        
+		} catch (DateTimeException dateTimeException) {
+			_log.error(dateTimeException.getMessage(), dateTimeException);
+		}
+		
+		return date;
+			
+	}
+	
+	private static final Log _log = LogFactoryUtil.getLog(
+			ToTemplateVariableStringVisitor.class);
 
 }

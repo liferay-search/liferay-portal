@@ -14,10 +14,8 @@
 
 package com.liferay.portal.search.tuning.blueprints.facets.internal.response.handler;
 
-import com.liferay.dynamic.data.mapping.model.DDMStructure;
-import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
-import com.liferay.portal.kernel.dao.orm.DynamicQuery;
-import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
+import com.liferay.document.library.kernel.model.DLFileEntryType;
+import com.liferay.document.library.kernel.service.DLFileEntryTypeService;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
@@ -27,6 +25,7 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.service.GroupLocalService;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.search.aggregation.AggregationResult;
 import com.liferay.portal.search.aggregation.bucket.Bucket;
 import com.liferay.portal.search.aggregation.bucket.TermsAggregationResult;
@@ -38,7 +37,6 @@ import com.liferay.portal.search.tuning.blueprints.message.Message;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 import com.liferay.portal.search.tuning.blueprints.message.Severity;
 
-import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -50,10 +48,10 @@ import org.osgi.service.component.annotations.Reference;
  * @author Petteri Karttunen
  */
 @Component(
-	immediate = true, property = "name=ddm_structure_name",
+	immediate = true, property = "name=document_type",
 	service = FacetResponseHandler.class
 )
-public class DDMStructureNameFacetHandler
+public class DocumentTypeFacetResponseHandler
 	extends BaseFacetResponseHandler implements FacetResponseHandler {
 
 	@Override
@@ -77,16 +75,18 @@ public class DDMStructureNameFacetHandler
 			}
 
 			try {
-				JSONObject jsonObject = _getDDMStructureJSONObject(
+				JSONObject jsonObject = _getDLFileEntryTypeJSONObject(
 					bucket, resourceBundle, blueprintsAttributes.getLocale());
 
-				jsonArray.put(jsonObject);
+				if (jsonObject != null) {
+					jsonArray.put(jsonObject);
+				}
 			}
 			catch (PortalException portalException) {
 				messages.addMessage(
 					new Message(
 						Severity.ERROR, "core",
-						"core.error.ddm-structure-not-found",
+						"core.error.file-entry-type-not-found",
 						portalException.getMessage(), portalException,
 						configurationJsonObject, null, null));
 
@@ -100,52 +100,48 @@ public class DDMStructureNameFacetHandler
 			jsonArray, configurationJsonObject, resourceBundle);
 	}
 
-	private DDMStructure _getDDMStructure(String ddmStructureKey)
-		throws PortalException {
-
-		DynamicQuery dynamicQuery = _ddmStructureLocalService.dynamicQuery();
-
-		dynamicQuery.add(
-			RestrictionsFactoryUtil.eq("structureKey", ddmStructureKey));
-
-		List<DDMStructure> structures = _ddmStructureLocalService.dynamicQuery(
-			dynamicQuery);
-
-		return structures.get(0);
-	}
-
-	private JSONObject _getDDMStructureJSONObject(
+	private JSONObject _getDLFileEntryTypeJSONObject(
 			Bucket bucket, ResourceBundle resourceBundle, Locale locale)
 		throws PortalException {
 
 		String value = bucket.getKey();
 
-		DDMStructure ddmStructure = _getDDMStructure(value);
+		long fileEntryTypeId = GetterUtil.getLong(value);
 
-		Group group = _groupLocalService.getGroup(ddmStructure.getGroupId());
+		if (fileEntryTypeId == 0) {
+			return null;
+		}
 
 		long frequency = bucket.getDocCount();
 
-		String name = ddmStructure.getName(locale, true);
+		DLFileEntryType type = _dLFileEntryTypeService.getFileEntryType(
+			fileEntryTypeId);
 
-		return JSONUtil.put(
-			FacetJSONResponseKeys.FREQUENCY, bucket.getDocCount()
-		).put(
+		JSONObject jsonObject = JSONUtil.put(
+			FacetJSONResponseKeys.FREQUENCY, frequency);
+
+		Group group = _groupLocalService.getGroup(type.getGroupId());
+
+		String name = type.getName(locale, true);
+
+		jsonObject.put(
 			FacetJSONResponseKeys.GROUP_NAME, group.getName(locale, true)
 		).put(
 			FacetJSONResponseKeys.NAME, name
 		).put(
 			FacetJSONResponseKeys.TEXT, getText(name, frequency, null)
 		).put(
-			FacetJSONResponseKeys.VALUE, value
+			FacetJSONResponseKeys.VALUE, fileEntryTypeId
 		);
+
+		return jsonObject;
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
-		DDMStructureNameFacetHandler.class);
+		DocumentTypeFacetResponseHandler.class);
 
 	@Reference
-	private DDMStructureLocalService _ddmStructureLocalService;
+	private DLFileEntryTypeService _dLFileEntryTypeService;
 
 	@Reference
 	private GroupLocalService _groupLocalService;

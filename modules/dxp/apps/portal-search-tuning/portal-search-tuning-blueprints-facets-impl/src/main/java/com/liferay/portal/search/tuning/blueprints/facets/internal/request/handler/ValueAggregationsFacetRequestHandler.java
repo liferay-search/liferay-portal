@@ -103,8 +103,7 @@ public class ValueAggregationsFacetRequestHandler
 				FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey());
 
 		JSONArray valueAggregationsJsonArray =
-			handlerParametersJsonObject.getJSONArray(
-				"aggregations");
+			handlerParametersJsonObject.getJSONArray("aggregations");
 
 		for (String requestValue : valueArray) {
 			JSONArray translatedValuesJsonArray = null;
@@ -121,8 +120,7 @@ public class ValueAggregationsFacetRequestHandler
 						)) {
 
 						translatedValuesJsonArray = jsonObject.getJSONArray(
-							"values"
-						);
+							"values");
 
 						break;
 					}
@@ -132,8 +130,11 @@ public class ValueAggregationsFacetRequestHandler
 				}
 			}
 
-			if (translatedValuesJsonArray != null && translatedValuesJsonArray.length() > 0) {
-				Collections.addAll(values, JSONUtil.toStringArray(translatedValuesJsonArray));
+			if ((translatedValuesJsonArray != null) &&
+				(translatedValuesJsonArray.length() > 0)) {
+
+				Collections.addAll(
+					values, JSONUtil.toStringArray(translatedValuesJsonArray));
 			}
 			else {
 				values.add(requestValue);
@@ -166,8 +167,7 @@ public class ValueAggregationsFacetRequestHandler
 		}
 
 		if ((handlerParametersJsonObject == null) ||
-			!handlerParametersJsonObject.has(
-				"aggregations")) {
+			!handlerParametersJsonObject.has("aggregations")) {
 
 			messages.addMessage(
 				new Message(
@@ -175,9 +175,7 @@ public class ValueAggregationsFacetRequestHandler
 					"core.error.undefined-facet-handler-aggregations",
 					"Value aggregator facet handler's value mappings are not " +
 						"defined",
-					null, configurationJsonObject,
-					"aggregations",
-					null));
+					null, configurationJsonObject, "aggregations", null));
 
 			valid = false;
 		}

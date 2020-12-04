@@ -46,14 +46,13 @@ public class FacetRequestHandlerFactoryImpl
 			serviceComponentReference = _facetRequestHandlers.get(name);
 
 		if (serviceComponentReference == null) {
-			
-			StringBundler sb = new StringBundler();
-			
+			StringBundler sb = new StringBundler(3);
+
 			sb.append("No registered facet request handler for ");
 			sb.append(name);
 			sb.append(". Falling back to default");
 			_log.info(sb.toString());
-			
+
 			serviceComponentReference = _facetRequestHandlers.get("default");
 		}
 

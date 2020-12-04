@@ -14,10 +14,10 @@
 
 package com.liferay.portal.search.tuning.blueprints.facets.internal.response.handler;
 
-import com.liferay.dynamic.data.mapping.model.DDMStructure;
-import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
-import com.liferay.portal.kernel.dao.orm.DynamicQuery;
-import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
+import com.liferay.bookmarks.model.BookmarksFolder;
+import com.liferay.document.library.kernel.model.DLFolder;
+import com.liferay.document.library.kernel.service.DLFolderLocalService;
+import com.liferay.journal.model.JournalFolder;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
@@ -26,10 +26,21 @@ import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.service.GroupLocalService;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.search.aggregation.AggregationResult;
 import com.liferay.portal.search.aggregation.bucket.Bucket;
 import com.liferay.portal.search.aggregation.bucket.TermsAggregationResult;
+import com.liferay.portal.search.document.Document;
+import com.liferay.portal.search.filter.ComplexQueryPartBuilderFactory;
+import com.liferay.portal.search.hits.SearchHit;
+import com.liferay.portal.search.hits.SearchHits;
+import com.liferay.portal.search.query.Queries;
+import com.liferay.portal.search.searcher.SearchRequestBuilder;
+import com.liferay.portal.search.searcher.SearchRequestBuilderFactory;
+import com.liferay.portal.search.searcher.SearchResponse;
+import com.liferay.portal.search.searcher.Searcher;
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
 import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetJSONResponseKeys;
@@ -50,10 +61,10 @@ import org.osgi.service.component.annotations.Reference;
  * @author Petteri Karttunen
  */
 @Component(
-	immediate = true, property = "name=ddm_structure_name",
+	immediate = true, property = "name=folder",
 	service = FacetResponseHandler.class
 )
-public class DDMStructureNameFacetHandler
+public class FolderFacetResponseHandler
 	extends BaseFacetResponseHandler implements FacetResponseHandler {
 
 	@Override
@@ -66,27 +77,36 @@ public class DDMStructureNameFacetHandler
 		TermsAggregationResult termsAggregationResult =
 			(TermsAggregationResult)aggregationResult;
 
+		if (termsAggregationResult.getBuckets(
+			).size() == 0) {
+
+			return Optional.empty();
+		}
+
 		long frequencyThreshold = configurationJsonObject.getLong(
 			FacetConfigurationKeys.FREQUENCY_THRESHOLD.getJsonKey(), 1);
 
 		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
 
 		for (Bucket bucket : termsAggregationResult.getBuckets()) {
-			if (bucket.getDocCount() < frequencyThreshold) {
+			long frequency = bucket.getDocCount();
+
+			if (frequency < frequencyThreshold) {
 				continue;
 			}
 
 			try {
-				JSONObject jsonObject = _getDDMStructureJSONObject(
-					bucket, resourceBundle, blueprintsAttributes.getLocale());
+				JSONObject jsonObject = _getFolderJSONObject(
+					bucket, resourceBundle, blueprintsAttributes);
 
-				jsonArray.put(jsonObject);
+				if (jsonObject != null) {
+					jsonArray.put(jsonObject);
+				}
 			}
 			catch (PortalException portalException) {
 				messages.addMessage(
 					new Message(
-						Severity.ERROR, "core",
-						"core.error.ddm-structure-not-found",
+						Severity.ERROR, "core", "core.error.folder-not-found",
 						portalException.getMessage(), portalException,
 						configurationJsonObject, null, null));
 
@@ -100,54 +120,115 @@ public class DDMStructureNameFacetHandler
 			jsonArray, configurationJsonObject, resourceBundle);
 	}
 
-	private DDMStructure _getDDMStructure(String ddmStructureKey)
-		throws PortalException {
+	private Document _getDocument(
+		long folderId, BlueprintsAttributes blueprintsAttributes) {
 
-		DynamicQuery dynamicQuery = _ddmStructureLocalService.dynamicQuery();
+		SearchRequestBuilder searchRequestBuilder =
+			_searchRequestBuilderFactory.builder(
+			).addComplexQueryPart(
+				_complexQueryPartBuilderFactory.builder(
+				).query(
+					_queries.term(Field.ENTRY_CLASS_PK, folderId)
+				).occur(
+					"filter"
+				).build()
+			).companyId(
+				blueprintsAttributes.getCompanyId()
+			).modelIndexerClasses(
+				BookmarksFolder.class, DLFolder.class, JournalFolder.class
+			).emptySearchEnabled(
+				true
+			).highlightEnabled(
+				false
+			).locale(
+				blueprintsAttributes.getLocale()
+			).size(
+				1
+			).from(
+				0
+			);
 
-		dynamicQuery.add(
-			RestrictionsFactoryUtil.eq("structureKey", ddmStructureKey));
+		SearchResponse searchResponse = _searcher.search(
+			searchRequestBuilder.build());
 
-		List<DDMStructure> structures = _ddmStructureLocalService.dynamicQuery(
-			dynamicQuery);
+		SearchHits searchHits = searchResponse.getSearchHits();
 
-		return structures.get(0);
+		List<SearchHit> hits = searchHits.getSearchHits();
+
+		if (hits.size() == 1) {
+			return hits.get(
+				0
+			).getDocument();
+		}
+
+		return null;
 	}
 
-	private JSONObject _getDDMStructureJSONObject(
-			Bucket bucket, ResourceBundle resourceBundle, Locale locale)
+	private JSONObject _getFolderJSONObject(
+			Bucket bucket, ResourceBundle resourceBundle,
+			BlueprintsAttributes blueprintsAttributes)
 		throws PortalException {
 
 		String value = bucket.getKey();
 
-		DDMStructure ddmStructure = _getDDMStructure(value);
+		long folderId = GetterUtil.getLong(value);
 
-		Group group = _groupLocalService.getGroup(ddmStructure.getGroupId());
+		if (folderId == 0) {
+			return null;
+		}
+
+		Document document = _getDocument(folderId, blueprintsAttributes);
+
+		if (document == null) {
+			return null;
+		}
+
+		long groupId = document.getLong(Field.GROUP_ID);
+
+		Group group = _groupLocalService.getGroup(groupId);
 
 		long frequency = bucket.getDocCount();
 
-		String name = ddmStructure.getName(locale, true);
+		JSONObject jsonObject = JSONUtil.put(
+			FacetJSONResponseKeys.FREQUENCY, frequency);
 
-		return JSONUtil.put(
-			FacetJSONResponseKeys.FREQUENCY, bucket.getDocCount()
-		).put(
+		Locale locale = blueprintsAttributes.getLocale();
+
+		String name = document.getString(
+			"localized_title_" + locale.toString());
+
+		jsonObject.put(
 			FacetJSONResponseKeys.GROUP_NAME, group.getName(locale, true)
 		).put(
 			FacetJSONResponseKeys.NAME, name
 		).put(
 			FacetJSONResponseKeys.TEXT, getText(name, frequency, null)
 		).put(
-			FacetJSONResponseKeys.VALUE, value
+			FacetJSONResponseKeys.VALUE, folderId
 		);
+
+		return jsonObject;
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
-		DDMStructureNameFacetHandler.class);
+		FolderFacetResponseHandler.class);
 
 	@Reference
-	private DDMStructureLocalService _ddmStructureLocalService;
+	ComplexQueryPartBuilderFactory _complexQueryPartBuilderFactory;
+
+	@Reference
+	private DLFolderLocalService _dlFolderLocalService;
 
 	@Reference
 	private GroupLocalService _groupLocalService;
+
+	@Reference
+	private Queries _queries;
+
+	@Reference
+	private Searcher _searcher;
+
+	@Reference
+	private SearchRequestBuilderFactory _searchRequestBuilderFactory;
 
 }

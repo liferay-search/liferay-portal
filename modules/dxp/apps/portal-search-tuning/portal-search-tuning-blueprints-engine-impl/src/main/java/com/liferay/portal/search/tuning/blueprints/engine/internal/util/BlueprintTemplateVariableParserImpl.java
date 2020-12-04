@@ -26,18 +26,23 @@ import com.liferay.portal.search.tuning.blueprints.engine.internal.parameter.vis
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.DateParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.Parameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
+import com.liferay.portal.search.tuning.blueprints.engine.util.BlueprintTemplateVariableParser;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.osgi.service.component.annotations.Component;
+
 /**
  * @author Petteri Karttunen
  */
-public class BlueprintTemplateVariableUtil {
+@Component(immediate = true, service = BlueprintTemplateVariableParser.class)
+public class BlueprintTemplateVariableParserImpl implements BlueprintTemplateVariableParser {
 
-	public static JSONObject parseTemplateVariables(
+	@Override
+	public JSONObject parse(
 			ParameterData parameterData, Messages messages,
 			JSONObject queryJsonObject)
 		throws Exception {
@@ -100,7 +105,7 @@ public class BlueprintTemplateVariableUtil {
 		return queryJsonObject;
 	}
 
-	private static Map<String, String> _getParameterOptions(
+	private Map<String, String> _getParameterOptions(
 			String optionsString)
 		throws Exception {
 
@@ -126,7 +131,7 @@ public class BlueprintTemplateVariableUtil {
 		return map;
 	}
 
-	private static String _getParametrizedVariableStem(String s) {
+	private String _getParametrizedVariableStem(String s) {
 		StringBundler sb = new StringBundler(2);
 
 		sb.append(s.substring(0, s.length() - 1));
@@ -135,7 +140,7 @@ public class BlueprintTemplateVariableUtil {
 		return sb.toString();
 	}
 
-	private static boolean _hasTemplateVariables(String queryString) {
+	private boolean _hasTemplateVariables(String queryString) {
 		if (queryString.indexOf("${") > 0) {
 			return true;
 		}
@@ -143,7 +148,7 @@ public class BlueprintTemplateVariableUtil {
 		return false;
 	}
 
-	private static String _processParametrizedTemplateVariable(
+	private String _processParametrizedTemplateVariable(
 			String queryString, Parameter parameter,
 			ToTemplateVariableStringVisitor toStringVisitor,
 			String templateVariable, int from)
@@ -172,7 +177,7 @@ public class BlueprintTemplateVariableUtil {
 		return StringUtil.replace(queryString, sb.toString(), substitution);
 	}
 
-	private static String _processParametrizedTemplateVariables(
+	private String _processParametrizedTemplateVariables(
 			String queryString, Parameter parameter,
 			ToTemplateVariableStringVisitor toStringVisitor,
 			String templateVariable)
@@ -195,7 +200,7 @@ public class BlueprintTemplateVariableUtil {
 		return queryString;
 	}
 
-	private static String _processTemplateVariables(
+	private String _processTemplateVariables(
 			String queryString, Parameter parameter,
 			ToTemplateVariableStringVisitor toStringVisitor)
 		throws Exception {
@@ -214,7 +219,7 @@ public class BlueprintTemplateVariableUtil {
 		return StringUtil.replace(queryString, templateVariable, substitution);
 	}
 
-	private static String _replaceArrayValue(
+	private String _replaceArrayValue(
 		String queryString, String templateVariable, String substitution) {
 
 		StringBundler sb = new StringBundler(3);
@@ -226,7 +231,7 @@ public class BlueprintTemplateVariableUtil {
 		return StringUtil.replace(queryString, sb.toString(), substitution);
 	}
 
-	private static final Log _log = LogFactoryUtil.getLog(
-		BlueprintTemplateVariableUtil.class);
+	private final static Log _log = LogFactoryUtil.getLog(
+		BlueprintTemplateVariableParserImpl.class);
 
 }

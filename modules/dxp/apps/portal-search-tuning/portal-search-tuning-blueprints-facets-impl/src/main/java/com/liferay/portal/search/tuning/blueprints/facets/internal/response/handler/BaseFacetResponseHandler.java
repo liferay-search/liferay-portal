@@ -44,8 +44,8 @@ public abstract class BaseFacetResponseHandler implements FacetResponseHandler {
 	@Override
 	public Optional<JSONObject> getResultOptional(
 		AggregationResult aggregationResult,
-		BlueprintsAttributes blueprintsAttributes, ResourceBundle resourceBundle,
-		Messages messages,
+		BlueprintsAttributes blueprintsAttributes,
+		ResourceBundle resourceBundle, Messages messages,
 		JSONObject configurationJsonObject) {
 
 		TermsAggregationResult termsAggregationResult =
@@ -53,18 +53,26 @@ public abstract class BaseFacetResponseHandler implements FacetResponseHandler {
 
 		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
 
+		long frequencyThreshold = configurationJsonObject.getLong(
+			FacetConfigurationKeys.FREQUENCY_THRESHOLD.getJsonKey(), 1);
+
 		for (Bucket bucket : termsAggregationResult.getBuckets()) {
-			
 			long frequency = bucket.getDocCount();
-			
+
+			if (frequency < frequencyThreshold) {
+				continue;
+			}
+
 			JSONObject jsonObject = JSONUtil.put(
 				FacetJSONResponseKeys.FREQUENCY, frequency);
 
 			String value = bucket.getKey();
-			
+
 			jsonObject.put(FacetJSONResponseKeys.VALUE, value);
 
-			jsonObject.put(FacetJSONResponseKeys.TEXT, getText(value, frequency, resourceBundle));
+			jsonObject.put(
+				FacetJSONResponseKeys.TEXT,
+				getText(value, frequency, resourceBundle));
 
 			jsonArray.put(jsonObject);
 		}
@@ -73,32 +81,38 @@ public abstract class BaseFacetResponseHandler implements FacetResponseHandler {
 			return Optional.empty();
 		}
 
-		return createResultObject(jsonArray, configurationJsonObject, resourceBundle);
+		return createResultObject(
+			jsonArray, configurationJsonObject, resourceBundle);
 	}
 
 	protected Optional<JSONObject> createResultObject(
-		JSONArray jsonArray, JSONObject configurationJsonObject, 
+		JSONArray jsonArray, JSONObject configurationJsonObject,
 		ResourceBundle resourceBundle) {
 
+		if (jsonArray.length() == 0) {
+			return Optional.empty();
+		}
+
+		String handlerName = configurationJsonObject.getString(
+			FacetConfigurationKeys.HANDLER.getJsonKey(), "default");
+
 		String parameterName = configurationJsonObject.getString(
-				FacetConfigurationKeys.PARAMETER_NAME.getJsonKey());
-		
+			FacetConfigurationKeys.PARAMETER_NAME.getJsonKey());
+
+		String label = configurationJsonObject.getString(
+			FacetConfigurationKeys.LABEL.getJsonKey(), parameterName);
+
 		return Optional.of(
 			JSONUtil.put(
-				FacetJSONResponseKeys.PARAMETER_NAME,
-				parameterName
+				FacetJSONResponseKeys.HANDER_NAME, handlerName
 			).put(
-				FacetJSONResponseKeys.ANY_OPTION, 
-				getAnyOption(parameterName, resourceBundle)
+				FacetJSONResponseKeys.LABEL,
+				LanguageUtil.get(resourceBundle, label)
+			).put(
+				FacetJSONResponseKeys.PARAMETER_NAME, parameterName
 			).put(
 				FacetJSONResponseKeys.VALUES, jsonArray
 			));
-	}
-	
-	protected String getAnyOption(
-			String parameterName, ResourceBundle resourceBundle) {
-
-		return LanguageUtil.get(resourceBundle, "any-" + StringUtil.toLowerCase(parameterName));
 	}
 
 	protected FacetCollector getFacetCollector(
@@ -118,23 +132,26 @@ public abstract class BaseFacetResponseHandler implements FacetResponseHandler {
 
 		return null;
 	}
-		
-	protected String getText( 
-			String value, long frequency, ResourceBundle resourceBundle) {
 
-			value = StringUtil.toLowerCase(value);
+	protected String getText(
+		String value, long frequency, ResourceBundle resourceBundle) {
 
-			StringBundler sb = new StringBundler(4);
+		value = StringUtil.toLowerCase(value);
 
-			if (resourceBundle == null) {
-				sb.append(value);
-			} else {
-				sb.append(LanguageUtil.get(resourceBundle, value));
-			}
-			sb.append(" (");
-			sb.append(String.valueOf(frequency));
-			sb.append(")");
+		StringBundler sb = new StringBundler(4);
 
-			return sb.toString();
+		if (resourceBundle == null) {
+			sb.append(value);
+		}
+		else {
+			sb.append(LanguageUtil.get(resourceBundle, value));
+		}
+
+		sb.append(" (");
+		sb.append(String.valueOf(frequency));
+		sb.append(")");
+
+		return sb.toString();
 	}
+
 }

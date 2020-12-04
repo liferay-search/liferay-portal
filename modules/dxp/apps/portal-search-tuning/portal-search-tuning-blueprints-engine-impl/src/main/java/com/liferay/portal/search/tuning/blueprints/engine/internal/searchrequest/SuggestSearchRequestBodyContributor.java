@@ -23,10 +23,10 @@ import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.aggregation.AggregationConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.suggester.SuggesterConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.internal.suggester.SuggesterTranslatorFactory;
-import com.liferay.portal.search.tuning.blueprints.engine.internal.util.BlueprintTemplateVariableUtil;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.searchrequest.SearchRequestBodyContributor;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.suggester.SuggesterTranslator;
+import com.liferay.portal.search.tuning.blueprints.engine.util.BlueprintTemplateVariableParser;
 import com.liferay.portal.search.tuning.blueprints.message.Message;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 import com.liferay.portal.search.tuning.blueprints.message.Severity;
@@ -83,7 +83,7 @@ public class SuggestSearchRequestBodyContributor
 					_suggesterTranslatorFactory.getTranslator(type);
 
 				JSONObject suggestConfigurationJsonObject =
-					BlueprintTemplateVariableUtil.parseTemplateVariables(
+					_blueprintTemplateVariableParser.parse(
 						parameterData, messages,
 						configurationJsonObject.getJSONObject(
 							SuggesterConfigurationKeys.CONFIGURATION.
@@ -133,6 +133,9 @@ public class SuggestSearchRequestBodyContributor
 
 	@Reference
 	private BlueprintHelper _blueprintHelper;
+
+	@Reference
+	private BlueprintTemplateVariableParser _blueprintTemplateVariableParser;
 
 	@Reference
 	private SuggesterTranslatorFactory _suggesterTranslatorFactory;

@@ -58,9 +58,8 @@ public class ValueAggregationsFacetResponseHandler
 	@Override
 	public Optional<JSONObject> getResultOptional(
 		AggregationResult aggregationResult,
-		BlueprintsAttributes blueprintsAttributes, 
-		ResourceBundle resourceBundle,
-		Messages messages,
+		BlueprintsAttributes blueprintsAttributes,
+		ResourceBundle resourceBundle, Messages messages,
 		JSONObject configurationJsonObject) {
 
 		TermsAggregationResult termsAggregationResult =
@@ -84,20 +83,18 @@ public class ValueAggregationsFacetResponseHandler
 				}
 
 				boolean mappingFound = false;
-				
+
 				for (int i = 0; i < aggregationsJsonArray.length(); i++) {
 					JSONObject aggregationJsonObject =
 						aggregationsJsonArray.getJSONObject(i);
 
 					String key = aggregationJsonObject.getString("key");
-					JSONArray valuesJsonArray = aggregationJsonObject.getJSONArray(
-							"values"
-					);
+					JSONArray valuesJsonArray =
+						aggregationJsonObject.getJSONArray("values");
 
 					for (int j = 0; j < valuesJsonArray.length(); j++) {
-
 						String val = valuesJsonArray.getString(j);
-						
+
 						if (StringUtil.equals(val, bucket.getKey())) {
 							if (termsMap.get(key) != null) {
 								int newValue =
@@ -122,7 +119,11 @@ public class ValueAggregationsFacetResponseHandler
 
 			Map<String, Integer> termMapOrdered = _sort(termsMap);
 
-			jsonArray = _getTermsJSONArray(termMapOrdered, resourceBundle);
+			long frequencyThreshold = configurationJsonObject.getLong(
+				FacetConfigurationKeys.FREQUENCY_THRESHOLD.getJsonKey(), 1);
+
+			jsonArray = _getTermsJSONArray(
+				termMapOrdered, frequencyThreshold, resourceBundle);
 		}
 		catch (Exception exception) {
 			messages.addMessage(
@@ -134,25 +135,33 @@ public class ValueAggregationsFacetResponseHandler
 			_log.error(exception.getMessage(), exception);
 		}
 
-		return createResultObject(jsonArray, configurationJsonObject, resourceBundle);
+		return createResultObject(
+			jsonArray, configurationJsonObject, resourceBundle);
 	}
 
-	private JSONArray _getTermsJSONArray(Map<String, Integer> termsMap, ResourceBundle resourceBundle) {
+	private JSONArray _getTermsJSONArray(
+		Map<String, Integer> termsMap, long frequencyThreshold,
+		ResourceBundle resourceBundle) {
+
 		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
 
 		for (Map.Entry<String, Integer> entry : termsMap.entrySet()) {
-			
 			long frequency = entry.getValue();
 
-			String value =  entry.getKey();
-			
+			if (frequency < frequencyThreshold) {
+				continue;
+			}
+
+			String value = entry.getKey();
+
 			jsonArray.put(
 				JSONUtil.put(
 					FacetJSONResponseKeys.FREQUENCY, frequency
 				).put(
 					FacetJSONResponseKeys.NAME, value
 				).put(
-					FacetJSONResponseKeys.TEXT, getText(value, frequency, resourceBundle)
+					FacetJSONResponseKeys.TEXT,
+					getText(value, frequency, resourceBundle)
 				).put(
 					FacetJSONResponseKeys.VALUE, value
 				));

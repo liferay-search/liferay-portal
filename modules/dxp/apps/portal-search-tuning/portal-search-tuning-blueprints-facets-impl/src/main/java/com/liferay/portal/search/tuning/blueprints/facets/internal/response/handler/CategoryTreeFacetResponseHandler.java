@@ -60,8 +60,7 @@ public class CategoryTreeFacetResponseHandler
 	public Optional<JSONObject> getResultOptional(
 		AggregationResult aggregationResult,
 		BlueprintsAttributes blueprintsAttributes,
-		ResourceBundle resourceBundle,
-		Messages messages,
+		ResourceBundle resourceBundle, Messages messages,
 		JSONObject configurationJsonObject) {
 
 		JSONObject handlerParametersJsonObject =
@@ -96,17 +95,22 @@ public class CategoryTreeFacetResponseHandler
 		}
 
 		TermsAggregationResult termsAggregationResult =
-				(TermsAggregationResult)aggregationResult;
+			(TermsAggregationResult)aggregationResult;
 
-		if (termsAggregationResult.getBuckets().size() == 0) {
+		if (termsAggregationResult.getBuckets(
+			).size() == 0) {
+
 			return Optional.empty();
 		}
-		
+
+		long frequencyThreshold = configurationJsonObject.getLong(
+			FacetConfigurationKeys.FREQUENCY_THRESHOLD.getJsonKey(), 1);
+
 		JSONArray jsonArray = null;
-		
+
 		try {
 			jsonArray = _getCategoriesJSONArray(
-				termsAggregationResult, vocabularyId,
+				termsAggregationResult, vocabularyId, frequencyThreshold,
 				blueprintsAttributes.getLocale(), messages);
 		}
 		catch (PortalException portalException) {
@@ -125,98 +129,101 @@ public class CategoryTreeFacetResponseHandler
 			return Optional.empty();
 		}
 
-		return createResultObject(jsonArray, configurationJsonObject, resourceBundle);
+		return createResultObject(
+			jsonArray, configurationJsonObject, resourceBundle);
 	}
 
-	private void _addChildNode(JSONArray jsonArray, List<AssetCategory> assetCategories,
-			AssetCategory assetCategory, long frequency, Locale locale, Messages messages) {
+	private void _addChildNode(
+		JSONArray jsonArray, List<AssetCategory> assetCategories,
+		AssetCategory assetCategory, long frequency, Locale locale,
+		Messages messages) {
 
 		long categoryId = assetCategory.getCategoryId();
-		
+
 		JSONObject parentJsonObject = _getParentNodeJsonObject(
-				jsonArray, assetCategories, assetCategory, frequency, locale);
-	
+			jsonArray, assetCategories, assetCategory, frequency, locale);
+
 		if (parentJsonObject == null) {
-
 			messages.addMessage(
-					new Message(
-						Severity.ERROR, "facets",
-						"facets.error.asset-category-not-found",
-						"Asset category not found", null,
-						null, null, String.valueOf(categoryId)));
+				new Message(
+					Severity.ERROR, "facets",
+					"facets.error.asset-category-not-found",
+					"Asset category not found", null, null, null,
+					String.valueOf(categoryId)));
 
-				if (_log.isWarnEnabled()) {
-					_log.warn("Asset category " + categoryId + " not found");
-				}
-		
+			if (_log.isWarnEnabled()) {
+				_log.warn("Asset category " + categoryId + " not found");
+			}
+
 			return;
 		}
-		
-		JSONObject childJsonObject = _createNode(
-				categoryId, frequency, assetCategory.getTitle(locale));
-	
-		_addToChildren(parentJsonObject, childJsonObject);
-	}		
 
-	private JSONObject _addRootNodeJsonObject(JSONArray jsonArray, AssetCategory assetCategory, 
-			long frequency, Locale locale) {
-		
+		JSONObject childJsonObject = _createNode(
+			categoryId, frequency, assetCategory.getTitle(locale));
+
+		_addToChildren(parentJsonObject, childJsonObject);
+	}
+
+	private JSONObject _addRootNodeJsonObject(
+		JSONArray jsonArray, AssetCategory assetCategory, long frequency,
+		Locale locale) {
+
 		long categoryId = assetCategory.getCategoryId();
-		
-		JSONObject rootNodeJsonObject = 
-				_findCategoryJsonObject(jsonArray, categoryId, true);
-		
+
+		JSONObject rootNodeJsonObject = _findCategoryJsonObject(
+			jsonArray, categoryId, true);
+
 		if (rootNodeJsonObject != null) {
 			_updateFrequency(rootNodeJsonObject, frequency);
+
 			return rootNodeJsonObject;
 		}
-		
-		rootNodeJsonObject = 
-				_createNode(categoryId, frequency, assetCategory.getTitle(locale));
+
+		rootNodeJsonObject = _createNode(
+			categoryId, frequency, assetCategory.getTitle(locale));
 		jsonArray.put(rootNodeJsonObject);
-		
+
 		return rootNodeJsonObject;
 	}
-	
-	private void _addToChildren(JSONObject parentJsonObject, JSONObject childJsonObject) {
-		
+
+	private void _addToChildren(
+		JSONObject parentJsonObject, JSONObject childJsonObject) {
+
 		JSONArray jsonArray = null;
-		
+
 		if (parentJsonObject.has("children")) {
 			jsonArray = parentJsonObject.getJSONArray("children");
-		} else {
+		}
+		else {
 			jsonArray = JSONFactoryUtil.createJSONArray();
 			parentJsonObject.put("children", jsonArray);
 		}
+
 		jsonArray.put(childJsonObject);
 	}
-	
 
-	private JSONObject _createNode(long value, 
-			long frequency, String name) {
-		
+	private JSONObject _createNode(long value, long frequency, String name) {
 		return JSONUtil.put(
-				FacetJSONResponseKeys.FREQUENCY,
-				frequency
-			).put(
-				FacetJSONResponseKeys.NAME,
-				name
-			).put(
-				FacetJSONResponseKeys.TEXT, getText(name, frequency, null)
-			).put(
-				FacetJSONResponseKeys.VALUE, value
-			);
+			FacetJSONResponseKeys.FREQUENCY, frequency
+		).put(
+			FacetJSONResponseKeys.NAME, name
+		).put(
+			FacetJSONResponseKeys.TEXT, getText(name, frequency, null)
+		).put(
+			FacetJSONResponseKeys.VALUE, value
+		);
 	}
-				
-	private void _createTree(JSONArray jsonArray,
-			List<AssetCategory> assetCategories, long categoryId, long frequency, 
-			Locale locale, Messages messages) {
+
+	private void _createTree(
+		JSONArray jsonArray, List<AssetCategory> assetCategories,
+		long categoryId, long frequency, Locale locale, Messages messages) {
 
 		Stream<AssetCategory> stream = assetCategories.stream();
-		
-		Optional<AssetCategory> optional = 
-				stream.filter(a -> a.getCategoryId() == categoryId).findAny();
-		
+
+		Optional<AssetCategory> optional = stream.filter(
+			a -> a.getCategoryId() == categoryId
+		).findAny();
+
 		if (!optional.isPresent()) {
 			return;
 		}
@@ -225,133 +232,146 @@ public class CategoryTreeFacetResponseHandler
 
 		if (assetCategory.getParentCategoryId() == 0) {
 			_addRootNodeJsonObject(jsonArray, assetCategory, frequency, locale);
+
 			return;
 		}
 
-		_addChildNode(jsonArray, assetCategories, assetCategory, frequency, locale, messages);
-	}	
+		_addChildNode(
+			jsonArray, assetCategories, assetCategory, frequency, locale,
+			messages);
+	}
 
-	
-	private JSONObject _findCategoryJsonObject(JSONArray jsonArray, long categoryId, boolean root) {
-		
+	private JSONObject _findCategoryJsonObject(
+		JSONArray jsonArray, long categoryId, boolean root) {
+
 		for (int i = 0; i < jsonArray.length(); i++) {
 			JSONObject jsonObject1 = jsonArray.getJSONObject(i);
-			
-			if (jsonObject1.getLong(FacetJSONResponseKeys.VALUE) == categoryId) {
+
+			if (jsonObject1.getLong(FacetJSONResponseKeys.VALUE) ==
+					categoryId) {
+
 				return jsonObject1;
 			}
-			
+
 			if (!root && jsonObject1.has("children")) {
-				JSONObject jsonObject2 = 
-						_findCategoryJsonObject(
-								jsonObject1.getJSONArray("children"), categoryId, false);
+				JSONObject jsonObject2 = _findCategoryJsonObject(
+					jsonObject1.getJSONArray("children"), categoryId, false);
+
 				if (jsonObject2 != null) {
 					return jsonObject2;
 				}
 			}
-		}	
-		
+		}
+
 		return null;
 	}
-	
 
-	
 	private JSONArray _getCategoriesJSONArray(
 			TermsAggregationResult termsAggregationResult, long vocabularyId,
-			Locale locale, Messages messages)
+			long frequencyThreshold, Locale locale, Messages messages)
 		throws PortalException {
 
-		AssetVocabulary assetVocabulary =  _assetVocabularyLocalService.getVocabulary(vocabularyId);
+		AssetVocabulary assetVocabulary =
+			_assetVocabularyLocalService.getVocabulary(vocabularyId);
 
 		List<AssetCategory> assetCategories = assetVocabulary.getCategories();
 
 		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
 
 		for (Bucket bucket : termsAggregationResult.getBuckets()) {
-
 			long frequency = bucket.getDocCount();
-			
+
+			if (frequency < frequencyThreshold) {
+				continue;
+			}
+
 			long categoryId = Long.valueOf(bucket.getKey());
 
-			_createTree(jsonArray, assetCategories, categoryId, frequency, locale, messages);
+			_createTree(
+				jsonArray, assetCategories, categoryId, frequency, locale,
+				messages);
 		}
+
 		return jsonArray;
 	}
 
-	private JSONObject  _getParentNodeJsonObject(JSONArray jsonArray, 
-			List<AssetCategory> assetCategories, AssetCategory assetCategory, long frequency, 
-			Locale locale) {
+	private JSONObject _getParentNodeJsonObject(
+		JSONArray jsonArray, List<AssetCategory> assetCategories,
+		AssetCategory assetCategory, long frequency, Locale locale) {
 
 		String treePath = assetCategory.getTreePath();
-		
+
 		String[] ids = StringUtil.split(treePath, "/");
-		
+
 		JSONObject parentJsonObject = null;
-		
-		for (int i = 1; i < ids.length - 1; i++) {
 
+		for (int i = 1; i < (ids.length - 1); i++) {
 			Stream<AssetCategory> stream = assetCategories.stream();
-			
-			long categoryId =  Long.valueOf(ids[i]);
 
-			Optional<AssetCategory> optional = 
-					stream.filter(a -> a.getCategoryId() == categoryId).findAny();
+			long categoryId = Long.valueOf(ids[i]);
+
+			Optional<AssetCategory> optional = stream.filter(
+				a -> a.getCategoryId() == categoryId
+			).findAny();
 
 			if (!optional.isPresent()) {
 				continue;
 			}
-				
+
 			parentJsonObject = _getTreeNodeJsonObject(
 				jsonArray, optional.get(), frequency, locale);
 		}
-		
-		return parentJsonObject;		
-		
+
+		return parentJsonObject;
 	}
-	
-	private JSONObject _getTreeNodeJsonObject(JSONArray jsonArray,
-			AssetCategory assetCategory, long frequency, Locale locale) {
+
+	private JSONObject _getTreeNodeJsonObject(
+		JSONArray jsonArray, AssetCategory assetCategory, long frequency,
+		Locale locale) {
 
 		long categoryId = assetCategory.getCategoryId();
 
 		long parentCategoryId = assetCategory.getParentCategoryId();
-		
+
 		String title = assetCategory.getTitle(locale);
-		
+
 		if (parentCategoryId == 0) {
-			
-			return _addRootNodeJsonObject(jsonArray, assetCategory, frequency, locale);
+			return _addRootNodeJsonObject(
+				jsonArray, assetCategory, frequency, locale);
 		}
 
-		JSONObject childNodeJsonObject = _findCategoryJsonObject(jsonArray, categoryId, false);
-		
+		JSONObject childNodeJsonObject = _findCategoryJsonObject(
+			jsonArray, categoryId, false);
+
 		if (childNodeJsonObject != null) {
 			_updateFrequency(childNodeJsonObject, frequency);
+
 			return childNodeJsonObject;
 		}
-		
-		JSONObject parentJsonObject = _findCategoryJsonObject(jsonArray, parentCategoryId, false);
-		
+
+		JSONObject parentJsonObject = _findCategoryJsonObject(
+			jsonArray, parentCategoryId, false);
+
 		childNodeJsonObject = _createNode(categoryId, frequency, title);
-		
+
 		_addToChildren(parentJsonObject, childNodeJsonObject);
 
 		return childNodeJsonObject;
 	}
-	
-	private void _updateFrequency(JSONObject jsonObject, long count) {
 
+	private void _updateFrequency(JSONObject jsonObject, long count) {
 		long frequency = jsonObject.getLong(FacetJSONResponseKeys.FREQUENCY);
 
 		frequency += count;
-		
+
 		jsonObject.put(FacetJSONResponseKeys.FREQUENCY, frequency);
 
 		String name = jsonObject.getString(FacetJSONResponseKeys.NAME);
 
-		jsonObject.put(FacetJSONResponseKeys.TEXT,  getText(name, frequency, null));
+		jsonObject.put(
+			FacetJSONResponseKeys.TEXT, getText(name, frequency, null));
 	}
-	
+
 	private static final Log _log = LogFactoryUtil.getLog(
 		CategoryTreeFacetResponseHandler.class);
 
