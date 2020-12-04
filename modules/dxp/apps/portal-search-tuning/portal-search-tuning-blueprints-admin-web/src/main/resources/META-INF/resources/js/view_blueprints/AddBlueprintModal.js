@@ -61,10 +61,10 @@ const AddBlueprintModal = ({
 			JSON.stringify({
 				advanced_configuration: {},
 				aggregation_configuration: [],
+				facet_configuration: [],
 				parameter_configuration: {},
 				query_configuration: [DEFAULT_SELECTED_FRAGMENT.fragmentOutput],
 				sort_configuration: [],
-				facet_configuration: [],
 			})
 		);
 

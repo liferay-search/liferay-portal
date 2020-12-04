@@ -15,7 +15,7 @@ import React from 'react';
 
 import CodeMirrorEditor from '../../shared/CodeMirrorEditor';
 
-function Facets({onFacetConfigChange, facetConfig}) {
+function Facets({facetConfig, onFacetConfigChange}) {
 	return (
 		<ClayLayout.ContainerFluid className="builder" size="md">
 			<div className="sheet">
