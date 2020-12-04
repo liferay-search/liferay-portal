@@ -238,14 +238,8 @@ export const DEFAULT_PARAMETER_CONFIGURATION = {
 
 // Not used anywhere yet.
 
-export const DEFAULT_SUGGEST_CONFIGURATION = [
+export const DEFAULT_FACET_CONFIGURATION = [
 	{
-		configuration: {
-			field: 'keywordSearch_${context.language_id}.suggest',
-		},
-		description: 'A completion suggester example',
-		enabled: true,
-		type: 'completion',
 	},
 ];
 
