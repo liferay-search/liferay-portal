@@ -26,7 +26,6 @@ import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttribut
 import com.liferay.portal.search.tuning.blueprints.engine.component.ServiceComponentReference;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
-import com.liferay.portal.search.tuning.blueprints.poc.util.POCMockUtil;
 import com.liferay.portal.search.tuning.blueprints.response.BlueprintsJSONResponseBuilder;
 import com.liferay.portal.search.tuning.blueprints.response.spi.contributor.ResponseContributor;
 import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
@@ -59,14 +58,6 @@ public class BlueprintsJSONResponseBuilderImpl
 		long startTime = System.currentTimeMillis();
 
 		Blueprint blueprint = _blueprintService.getBlueprint(blueprintId);
-
-		// TODO: remove when config ui available.
-		
-		try {
-			_pocMockUtil.mockConfigurations(blueprint);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 		
 		JSONObject responseJsonObject = JSONFactoryUtil.createJSONObject();
 
@@ -154,9 +145,6 @@ public class BlueprintsJSONResponseBuilderImpl
 	@Reference
 	private BlueprintService _blueprintService;
 	
-	@Reference
-	private POCMockUtil _pocMockUtil;
-
 	private volatile Map<String, ServiceComponentReference<ResponseContributor>>
 		_responseContributors = new ConcurrentHashMap<>();
 
