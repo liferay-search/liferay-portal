@@ -22,10 +22,8 @@ import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.util.Portal;
-import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.document.Document;
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
-import com.liferay.portal.search.tuning.blueprints.poc.util.POCMockLinkUtil;
 import com.liferay.portal.search.tuning.blueprints.response.internal.util.ResponseUtil;
 import com.liferay.portal.search.tuning.blueprints.response.spi.result.ResultBuilder;
 import com.liferay.wiki.model.WikiPage;
@@ -120,16 +118,6 @@ public class MBMessageResultBuilder
 		if (viewResultsInContext) {
 			link = assetRenderer.getURLViewInContext(
 				liferayPortletRequest, liferayPortletResponse, null);
-		}
-
-		if (Validator.isNull(link)) {
-			JournalArticle journalArticle =
-				_journalArticleService.getLatestArticle(classPK);
-
-			// TODO: https://issues.liferay.com/browse/LPS-119744
-
-			link = POCMockLinkUtil.getNotLayoutBoundJournalArticleUrl(
-				liferayPortletRequest, journalArticle);
 		}
 
 		return link;
