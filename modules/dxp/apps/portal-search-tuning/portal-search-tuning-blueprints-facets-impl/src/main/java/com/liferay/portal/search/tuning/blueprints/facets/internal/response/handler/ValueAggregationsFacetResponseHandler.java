@@ -53,7 +53,7 @@ import org.osgi.service.component.annotations.Component;
 	service = FacetResponseHandler.class
 )
 public class ValueAggregationsFacetResponseHandler
-	extends BaseFacetResponseHandler implements FacetResponseHandler {
+	extends BaseTermsFacetResponseHandler implements FacetResponseHandler {
 
 	@Override
 	public Optional<JSONObject> getResultOptional(

@@ -154,10 +154,12 @@ public class FacetsSearchRequestBodyContributor
 		String dateFormat = handlerParametersJsonObject.getString(
 			"date_format");
 
+		String aggregationName = _getAggregationName(configurationJsonObject);
+
 		String field = _getFieldName(configurationJsonObject);
 
 		DateRangeAggregation dateRangeAggregation = _aggregations.dateRange(
-			field, field);
+				aggregationName, field);
 
 		for (int i = 0; i < rangesJsonArray.length(); i++) {
 			JSONObject rangeJsonObject = rangesJsonArray.getJSONObject(i);
@@ -264,12 +266,14 @@ public class FacetsSearchRequestBodyContributor
 		SearchRequestBuilder searchRequestBuilder,
 		JSONObject configurationJsonObject) {
 
+		String aggregationName = _getAggregationName(configurationJsonObject);
+
 		String field = _getFieldName(configurationJsonObject);
 
 		int size = configurationJsonObject.getInt(
 			FacetConfigurationKeys.SIZE.getJsonKey(), 50);
 
-		TermsAggregation aggregation = _aggregations.terms(field, field);
+		TermsAggregation aggregation = _aggregations.terms(aggregationName, field);
 
 		aggregation.setSize(size);
 
@@ -320,6 +324,20 @@ public class FacetsSearchRequestBodyContributor
 			}
 		}
 	}
+	
+	private String _getAggregationName(JSONObject configurationJsonObject) {
+
+		String aggregationName = configurationJsonObject.getString(
+				FacetConfigurationKeys.AGGREGATION_NAME.getJsonKey());
+
+		if (Validator.isBlank(aggregationName)) {
+			aggregationName = _getFieldName(configurationJsonObject);
+		}
+
+		return aggregationName;
+	}
+
+
 
 	private BooleanQuery _getDateRangeFilterQuery(
 		Operator operator, JSONObject configurationJsonObject, String value) {

@@ -16,29 +16,17 @@ package com.liferay.portal.search.tuning.blueprints.facets.internal.response.han
 
 import com.liferay.document.library.kernel.model.DLFileEntryType;
 import com.liferay.document.library.kernel.service.DLFileEntryTypeService;
-import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.json.JSONArray;
-import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.util.GetterUtil;
-import com.liferay.portal.search.aggregation.AggregationResult;
 import com.liferay.portal.search.aggregation.bucket.Bucket;
-import com.liferay.portal.search.aggregation.bucket.TermsAggregationResult;
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
-import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetJSONResponseKeys;
 import com.liferay.portal.search.tuning.blueprints.facets.spi.response.FacetResponseHandler;
-import com.liferay.portal.search.tuning.blueprints.message.Message;
-import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.message.Severity;
 
 import java.util.Locale;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 import org.osgi.service.component.annotations.Component;
@@ -52,79 +40,31 @@ import org.osgi.service.component.annotations.Reference;
 	service = FacetResponseHandler.class
 )
 public class DocumentTypeFacetResponseHandler
-	extends BaseFacetResponseHandler implements FacetResponseHandler {
+	extends BaseTermsFacetResponseHandler implements FacetResponseHandler {
 
 	@Override
-	public Optional<JSONObject> getResultOptional(
-		AggregationResult aggregationResult,
-		BlueprintsAttributes blueprintsAttributes,
-		ResourceBundle resourceBundle, Messages messages,
-		JSONObject configurationJsonObject) {
+	protected JSONObject createBucketJSONObject(
+			Bucket bucket, BlueprintsAttributes blueprintsAttributes,
+			ResourceBundle resourceBundle) throws Exception {
 
-		TermsAggregationResult termsAggregationResult =
-			(TermsAggregationResult)aggregationResult;
-
-		long frequencyThreshold = configurationJsonObject.getLong(
-			FacetConfigurationKeys.FREQUENCY_THRESHOLD.getJsonKey(), 1);
-
-		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
-
-		for (Bucket bucket : termsAggregationResult.getBuckets()) {
-			if (bucket.getDocCount() < frequencyThreshold) {
-				continue;
-			}
-
-			try {
-				JSONObject jsonObject = _getDLFileEntryTypeJSONObject(
-					bucket, resourceBundle, blueprintsAttributes.getLocale());
-
-				if (jsonObject != null) {
-					jsonArray.put(jsonObject);
-				}
-			}
-			catch (PortalException portalException) {
-				messages.addMessage(
-					new Message(
-						Severity.ERROR, "core",
-						"core.error.file-entry-type-not-found",
-						portalException.getMessage(), portalException,
-						configurationJsonObject, null, null));
-
-				if (_log.isWarnEnabled()) {
-					_log.warn(portalException.getMessage(), portalException);
-				}
-			}
-		}
-
-		return createResultObject(
-			jsonArray, configurationJsonObject, resourceBundle);
-	}
-
-	private JSONObject _getDLFileEntryTypeJSONObject(
-			Bucket bucket, ResourceBundle resourceBundle, Locale locale)
-		throws PortalException {
-
-		String value = bucket.getKey();
-
-		long fileEntryTypeId = GetterUtil.getLong(value);
-
-		if (fileEntryTypeId == 0) {
-			return null;
-		}
-
+		Locale locale = blueprintsAttributes.getLocale();
+		
 		long frequency = bucket.getDocCount();
 
-		DLFileEntryType type = _dLFileEntryTypeService.getFileEntryType(
+		String value = bucket.getKey();
+		
+		long fileEntryTypeId = GetterUtil.getLong(value);
+		
+		DLFileEntryType dlFileEntryType = _dLFileEntryTypeService.getFileEntryType(
 			fileEntryTypeId);
 
+		String name = dlFileEntryType.getName(locale, true);
+
+		Group group = _groupLocalService.getGroup(dlFileEntryType.getGroupId());
+
 		JSONObject jsonObject = JSONUtil.put(
-			FacetJSONResponseKeys.FREQUENCY, frequency);
-
-		Group group = _groupLocalService.getGroup(type.getGroupId());
-
-		String name = type.getName(locale, true);
-
-		jsonObject.put(
+			FacetJSONResponseKeys.FREQUENCY, frequency
+		).put(
 			FacetJSONResponseKeys.GROUP_NAME, group.getName(locale, true)
 		).put(
 			FacetJSONResponseKeys.NAME, name
@@ -136,9 +76,6 @@ public class DocumentTypeFacetResponseHandler
 
 		return jsonObject;
 	}
-
-	private static final Log _log = LogFactoryUtil.getLog(
-		DocumentTypeFacetResponseHandler.class);
 
 	@Reference
 	private DLFileEntryTypeService _dLFileEntryTypeService;

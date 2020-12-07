@@ -26,7 +26,7 @@ import org.osgi.service.component.annotations.Component;
 	service = FacetResponseHandler.class
 )
 public class DateRangeFacetResponseHandler
-	extends BaseFacetResponseHandler implements FacetResponseHandler {
+	extends BaseTermsFacetResponseHandler implements FacetResponseHandler {
 
 	@Override
 	public Optional<JSONObject> getResultOptional(
@@ -50,28 +50,35 @@ public class DateRangeFacetResponseHandler
 		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
 
 		for (Bucket bucket : rangeAggregationResult.getBuckets()) {
+
 			if (bucket.getDocCount() < frequencyThreshold) {
 				continue;
 			}
 
-			long frequency = bucket.getDocCount();
-
-			JSONObject jsonObject = JSONUtil.put(
-				FacetJSONResponseKeys.FREQUENCY, frequency);
-
-			String value = bucket.getKey();
-
-			jsonObject.put(FacetJSONResponseKeys.VALUE, value);
-
-			jsonObject.put(
-				FacetJSONResponseKeys.TEXT,
-				getText(value, frequency, resourceBundle));
-
-			jsonArray.put(jsonObject);
+			jsonArray.put(_createBucketJSONObject(bucket, resourceBundle));
 		}
 
 		return createResultObject(
 			jsonArray, configurationJsonObject, resourceBundle);
 	}
 
+	private JSONObject _createBucketJSONObject(Bucket bucket, ResourceBundle resourceBundle) {
+		
+		long frequency = bucket.getDocCount();
+
+		String value = bucket.getKey();
+
+		JSONObject jsonObject = JSONUtil.put(
+			FacetJSONResponseKeys.FREQUENCY, frequency
+		).put(
+			FacetJSONResponseKeys.NAME,
+				value
+		).put(
+			FacetJSONResponseKeys.TEXT,
+				getText(value, frequency, resourceBundle)
+		).put(FacetJSONResponseKeys.VALUE, value);
+
+
+		return jsonObject;
+	}
 }

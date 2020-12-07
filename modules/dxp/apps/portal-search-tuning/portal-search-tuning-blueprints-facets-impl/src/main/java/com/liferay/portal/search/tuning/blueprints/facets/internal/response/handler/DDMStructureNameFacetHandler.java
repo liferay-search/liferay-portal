@@ -54,52 +54,38 @@ import org.osgi.service.component.annotations.Reference;
 	service = FacetResponseHandler.class
 )
 public class DDMStructureNameFacetHandler
-	extends BaseFacetResponseHandler implements FacetResponseHandler {
+	extends BaseTermsFacetResponseHandler implements FacetResponseHandler {
 
 	@Override
-	public Optional<JSONObject> getResultOptional(
-		AggregationResult aggregationResult,
-		BlueprintsAttributes blueprintsAttributes,
-		ResourceBundle resourceBundle, Messages messages,
-		JSONObject configurationJsonObject) {
+	protected JSONObject createBucketJSONObject(
+			Bucket bucket, BlueprintsAttributes blueprintsAttributes,
+			ResourceBundle resourceBundle) throws Exception {
 
-		TermsAggregationResult termsAggregationResult =
-			(TermsAggregationResult)aggregationResult;
+		Locale locale = blueprintsAttributes.getLocale();
+		
+		long frequency = bucket.getDocCount();
 
-		long frequencyThreshold = configurationJsonObject.getLong(
-			FacetConfigurationKeys.FREQUENCY_THRESHOLD.getJsonKey(), 1);
+		String value = bucket.getKey();
+		
+		DDMStructure ddmStructure = _getDDMStructure(value);
 
-		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
+		String name = ddmStructure.getName(locale, true);
 
-		for (Bucket bucket : termsAggregationResult.getBuckets()) {
-			if (bucket.getDocCount() < frequencyThreshold) {
-				continue;
-			}
+		Group group = _groupLocalService.getGroup(ddmStructure.getGroupId());
 
-			try {
-				JSONObject jsonObject = _getDDMStructureJSONObject(
-					bucket, resourceBundle, blueprintsAttributes.getLocale());
-
-				jsonArray.put(jsonObject);
-			}
-			catch (PortalException portalException) {
-				messages.addMessage(
-					new Message(
-						Severity.ERROR, "core",
-						"core.error.ddm-structure-not-found",
-						portalException.getMessage(), portalException,
-						configurationJsonObject, null, null));
-
-				if (_log.isWarnEnabled()) {
-					_log.warn(portalException.getMessage(), portalException);
-				}
-			}
-		}
-
-		return createResultObject(
-			jsonArray, configurationJsonObject, resourceBundle);
+		return JSONUtil.put(
+			FacetJSONResponseKeys.FREQUENCY, bucket.getDocCount()
+		).put(
+			FacetJSONResponseKeys.GROUP_NAME, group.getName(locale, true)
+		).put(
+			FacetJSONResponseKeys.NAME, name
+		).put(
+			FacetJSONResponseKeys.TEXT, getText(name, frequency, null)
+		).put(
+			FacetJSONResponseKeys.VALUE, value
+		);
 	}
-
+	
 	private DDMStructure _getDDMStructure(String ddmStructureKey)
 		throws PortalException {
 
@@ -114,35 +100,6 @@ public class DDMStructureNameFacetHandler
 		return structures.get(0);
 	}
 
-	private JSONObject _getDDMStructureJSONObject(
-			Bucket bucket, ResourceBundle resourceBundle, Locale locale)
-		throws PortalException {
-
-		String value = bucket.getKey();
-
-		DDMStructure ddmStructure = _getDDMStructure(value);
-
-		Group group = _groupLocalService.getGroup(ddmStructure.getGroupId());
-
-		long frequency = bucket.getDocCount();
-
-		String name = ddmStructure.getName(locale, true);
-
-		return JSONUtil.put(
-			FacetJSONResponseKeys.FREQUENCY, bucket.getDocCount()
-		).put(
-			FacetJSONResponseKeys.GROUP_NAME, group.getName(locale, true)
-		).put(
-			FacetJSONResponseKeys.NAME, name
-		).put(
-			FacetJSONResponseKeys.TEXT, getText(name, frequency, null)
-		).put(
-			FacetJSONResponseKeys.VALUE, value
-		);
-	}
-
-	private static final Log _log = LogFactoryUtil.getLog(
-		DDMStructureNameFacetHandler.class);
 
 	@Reference
 	private DDMStructureLocalService _ddmStructureLocalService;

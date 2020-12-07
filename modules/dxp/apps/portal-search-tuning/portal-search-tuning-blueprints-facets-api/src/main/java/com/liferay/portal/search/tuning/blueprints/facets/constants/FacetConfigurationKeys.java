@@ -22,6 +22,7 @@ import java.util.stream.Stream;
  */
 public enum FacetConfigurationKeys {
 
+	AGGREGATION_NAME("aggregation_name"), 
 	AGGREGATION_TYPE("aggregation_type"), 
 	ENABLED("enabled"),
 	FIELD("field"), 

@@ -18,6 +18,7 @@ import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.aggregation.AggregationResult;
 import com.liferay.portal.search.searcher.SearchResponse;
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
@@ -58,6 +59,31 @@ public class FacetsResponseContributor implements ResponseContributor {
 			_getFacetsJSONArray(
 				searchResponse, blueprint, blueprintsAttributes, resourceBundle,
 				messages));
+	}
+	
+	
+	private String _getAggregationName(JSONObject configurationJsonObject) {
+
+		String aggregationName = configurationJsonObject.getString(
+				FacetConfigurationKeys.AGGREGATION_NAME.getJsonKey());
+
+		if (Validator.isBlank(aggregationName)) {
+			aggregationName = _getFieldName(configurationJsonObject);
+		}
+
+		return aggregationName;
+	}
+	
+	private String _getFieldName(JSONObject configurationJsonObject) {
+		String field = configurationJsonObject.getString(
+			FacetConfigurationKeys.FIELD.getJsonKey());
+
+		if (Validator.isBlank(field)) {
+			field = configurationJsonObject.getString(
+				FacetConfigurationKeys.PARAMETER_NAME.getJsonKey());
+		}
+
+		return field;
 	}
 
 	private JSONArray _getFacetsJSONArray(
@@ -110,8 +136,7 @@ public class FacetsResponseContributor implements ResponseContributor {
 			String responseHandlerName = configurationJsonObject.getString(
 				FacetConfigurationKeys.HANDLER.getJsonKey(), "default");
 
-			String aggregationName = configurationJsonObject.getString(
-				FacetConfigurationKeys.FIELD.getJsonKey());
+			String aggregationName = _getAggregationName(configurationJsonObject);
 
 			for (Map.Entry<String, AggregationResult> entry :
 					aggregationResultsMap.entrySet()) {

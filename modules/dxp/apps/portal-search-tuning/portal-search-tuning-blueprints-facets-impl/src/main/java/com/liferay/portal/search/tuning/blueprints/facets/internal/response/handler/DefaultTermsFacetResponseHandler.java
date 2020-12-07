@@ -25,6 +25,6 @@ import org.osgi.service.component.annotations.Component;
 	immediate = true, property = "name=default",
 	service = FacetResponseHandler.class
 )
-public class DefaultFacetResponseHandler
-	extends BaseFacetResponseHandler implements FacetResponseHandler {
+public class DefaultTermsFacetResponseHandler
+	extends BaseTermsFacetResponseHandler implements FacetResponseHandler {
 }
