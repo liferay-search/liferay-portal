@@ -15,7 +15,7 @@ export const SUGGEST_URL = 'https://suggestURL';
 export const RESOURCE = {
 	facets: [
 		{
-			anyOption: 'Any Asset Type',
+			facetLabel: 'Asset Type',
 			parameterName: 'entryClassName',
 			values: [
 				{
@@ -35,7 +35,7 @@ export const RESOURCE = {
 			],
 		},
 		{
-			anyOption: 'Any Format',
+			facetLabel: 'Format',
 			parameterName: 'extension',
 			values: [
 				{
@@ -53,7 +53,7 @@ export const RESOURCE = {
 			],
 		},
 		{
-			anyOption: 'Any Tag',
+			facetLabel: 'Tag',
 			parameterName: 'assetTagNames',
 			values: [
 				{
@@ -79,7 +79,7 @@ export const RESOURCE = {
 			],
 		},
 		{
-			anyOption: 'Any User',
+			facetLabel: 'User',
 			parameterName: 'userName',
 			values: [
 				{

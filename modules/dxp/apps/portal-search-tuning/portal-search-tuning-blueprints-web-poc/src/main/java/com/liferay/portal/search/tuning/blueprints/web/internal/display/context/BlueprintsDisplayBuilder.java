@@ -14,20 +14,27 @@
 
 package com.liferay.portal.search.tuning.blueprints.web.internal.display.context;
 
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.search.tuning.blueprints.constants.json.keys.sort.SortConfigurationKeys;
+import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
+import com.liferay.portal.search.tuning.blueprints.util.BlueprintHelper;
 import com.liferay.portal.search.tuning.blueprints.web.internal.constants.ResourceRequestKeys;
 import com.liferay.portal.search.tuning.blueprints.web.internal.portlet.preferences.BlueprintsWebPortletPreferences;
 import com.liferay.portal.search.tuning.blueprints.web.internal.portlet.preferences.BlueprintsWebPortletPreferencesImpl;
+import com.liferay.portal.search.tuning.blueprints.web.internal.util.BlueprintPortletHelper;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.portlet.PortletPreferences;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.ResourceURL;
-
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -37,11 +44,16 @@ public class BlueprintsDisplayBuilder {
 
 	public BlueprintsDisplayBuilder(
 		HttpServletRequest httpServletRequest, RenderRequest renderRequest,
-		RenderResponse renderResponse) {
+		RenderResponse renderResponse, 
+		BlueprintHelper blueprintHelper,
+		BlueprintPortletHelper blueprintPortletHelper) {
 
+		
 		_httpServletRequest = httpServletRequest;
 		_renderRequest = renderRequest;
 		_renderResponse = renderResponse;
+		_blueprintHelper = blueprintHelper;
+		_blueprintPortletHelper = blueprintPortletHelper;
 
 		_themeDisplay = (ThemeDisplay)_httpServletRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
@@ -81,12 +93,50 @@ public class BlueprintsDisplayBuilder {
 		return HashMapBuilder.<String, Object>put(
 			"fetchResultsURL", _getFetchResultsURL()
 		).put(
+				"sortOptions", _getSortOptions()
+		).put(
 			"suggestionsURL", _getSuggestionsURL()
 		).put(
 			"suggestMode", _getSuggestMode()
 		).build();
 	}
 
+	private Map<String, String> _getSortOptions() {
+		
+		Map<String, String> optionsMap = new HashMap<String, String>();
+		
+		Optional<Blueprint> blueprintOptional = 
+				_blueprintPortletHelper.getSearchBlueprint(_renderRequest);
+		
+		if (!blueprintOptional.isPresent()) {
+			return optionsMap;
+		}
+		
+		Blueprint blueprint = blueprintOptional.get();
+		
+		Optional<JSONArray> configurationJsonArrayOptional =
+				_blueprintHelper.getSortParameterConfigurationOptional(blueprint);
+
+		if (!configurationJsonArrayOptional.isPresent()) {
+			return optionsMap;
+		}
+
+		JSONArray configurationJsonArray =
+				configurationJsonArrayOptional.get();
+
+		for (int i = 0; i < configurationJsonArray.length(); i++) {
+			JSONObject configurationJsonObject = configurationJsonArray.getJSONObject(i); 
+			
+			optionsMap.put(
+					configurationJsonObject.getString(
+							SortConfigurationKeys.LABEL.getJsonKey()), 
+					configurationJsonObject.getString(
+							SortConfigurationKeys.PARAMETER_NAME.getJsonKey()));
+		}
+		
+		return optionsMap;
+	}
+	
 	private String _getSuggestionsURL() {
 		ResourceURL resourceURL = _renderResponse.createResourceURL();
 
@@ -116,7 +166,9 @@ public class BlueprintsDisplayBuilder {
 		return false;
 	}
 
+	private final BlueprintHelper _blueprintHelper;
 	private final HttpServletRequest _httpServletRequest;
+	private final BlueprintPortletHelper _blueprintPortletHelper;
 	private final RenderRequest _renderRequest;
 	private final RenderResponse _renderResponse;
 	private final ThemeDisplay _themeDisplay;
