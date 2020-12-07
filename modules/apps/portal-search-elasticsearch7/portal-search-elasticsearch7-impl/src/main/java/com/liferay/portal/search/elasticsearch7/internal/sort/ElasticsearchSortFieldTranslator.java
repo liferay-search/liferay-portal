@@ -133,7 +133,7 @@ public class ElasticsearchSortFieldTranslator
 
 	@Override
 	public SortBuilder<?> visit(ScoreSort scoreSort) {
-		return SortBuilders.scoreSort();
+		return SortBuilders.scoreSort().order(translate(scoreSort.getSortOrder()));
 	}
 
 	@Override
