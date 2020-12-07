@@ -66,7 +66,7 @@ public class AggsSearchRequestBodyContributor
 			JSONObject configurationJsonObject =
 				configurationJsonArray.getJSONObject(i);
 
-			if (!_validateConfiguration(messages, configurationJsonObject) ||
+			if (!_validateConfiguration(configurationJsonObject, messages) ||
 				!configurationJsonObject.getBoolean(
 					AggregationConfigurationKeys.ENABLED.getJsonKey(), true)) {
 
@@ -124,8 +124,8 @@ public class AggsSearchRequestBodyContributor
 		}
 	}
 
-	private boolean _validateConfiguration(
-		Messages messages, JSONObject configurationJsonObject) {
+	private boolean _validateConfiguration(JSONObject configurationJsonObject,
+		Messages messages) {
 
 		boolean valid = true;
 
@@ -188,7 +188,7 @@ public class AggsSearchRequestBodyContributor
 
 		return valid;
 	}
-
+	
 	private static final Log _log = LogFactoryUtil.getLog(
 		AggsSearchRequestBodyContributor.class);
 

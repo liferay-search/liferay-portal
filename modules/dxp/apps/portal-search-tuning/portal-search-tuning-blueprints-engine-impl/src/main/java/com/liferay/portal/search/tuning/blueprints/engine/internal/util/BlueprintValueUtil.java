@@ -26,6 +26,7 @@ import com.liferay.portal.search.tuning.blueprints.constants.json.values.FilterM
 import com.liferay.portal.search.tuning.blueprints.constants.json.values.Operator;
 import com.liferay.portal.search.tuning.blueprints.engine.exception.ParameterEvaluationException;
 import com.liferay.portal.search.tuning.blueprints.message.Message;
+import com.liferay.portal.search.tuning.blueprints.message.Messages;
 import com.liferay.portal.search.tuning.blueprints.message.Severity;
 
 import java.util.Map;
@@ -74,14 +75,6 @@ public class BlueprintValueUtil {
 		operator = StringUtil.toUpperCase(operator);
 
 		return Operator.valueOf(operator);
-	}
-
-	public static SortOrder getSortOrder(String sortOrder)
-		throws IllegalArgumentException {
-
-		sortOrder = StringUtil.toUpperCase(sortOrder);
-
-		return SortOrder.valueOf(sortOrder);
 	}
 
 	public static String mapToString(Map<?, ?> map) {

@@ -19,15 +19,17 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.sort.Sort;
-import com.liferay.portal.search.sort.Sorts;
+import com.liferay.portal.search.sort.SortOrder;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.sort.SortConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.engine.internal.util.BlueprintValueUtil;
+import com.liferay.portal.search.tuning.blueprints.engine.internal.sort.SortTranslatorFactory;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.Parameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.searchrequest.SearchRequestBodyContributor;
+import com.liferay.portal.search.tuning.blueprints.engine.spi.sort.SortTranslator;
 import com.liferay.portal.search.tuning.blueprints.engine.util.BlueprintTemplateVariableParser;
 import com.liferay.portal.search.tuning.blueprints.message.Message;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
@@ -57,27 +59,14 @@ public class SortSearchRequestBodyContributor
 		SearchRequestBuilder searchRequestBuilder, ParameterData parameterData,
 		Blueprint blueprint, Messages messages) {
 
-		Optional<JSONArray> configurationJsonArrayOptional =
-			_blueprintHelper.getSortParameterConfigurationOptional(blueprint);
-
-		List<Sort> sorts = new ArrayList<>();
-
-		if (configurationJsonArrayOptional.isPresent()) {
-			JSONArray configurationJsonArray =
-				configurationJsonArrayOptional.get();
-
-			sorts = _getSortsFromParameters(
-				parameterData, messages, configurationJsonArray);
-		}
-
+		List<Sort> sorts = _getSortsFromParameters(parameterData, blueprint, messages);
+	
 		if (sorts.isEmpty()) {
 			sorts = _getDefaultSorts(parameterData, blueprint, messages);
 		}
 
 		if (!sorts.isEmpty()) {
-			for (Sort sort : sorts) {
-				searchRequestBuilder.addSort(sort);
-			}
+			sorts.stream().forEach(sort->searchRequestBuilder.addSort(sort));
 		}
 	}
 
@@ -99,117 +88,208 @@ public class SortSearchRequestBodyContributor
 			JSONObject configurationJsonObject =
 				configurationJsonArray.getJSONObject(i);
 
-			try {
-				JSONObject parsedConfigurationJsonObject =
-					_blueprintTemplateVariableParser.parse(
-						parameterData, messages, configurationJsonObject);
-
-				String field = parsedConfigurationJsonObject.getString("field");
-				String orderString = parsedConfigurationJsonObject.getString(
-					"order");
-
-				if (Validator.isBlank(field) ||
-					Validator.isBlank(orderString)) {
-
-					continue;
-				}
-
-				Sort sort = _getSort(messages, field, orderString);
-
-				if (sort != null) {
-					sorts.add(sort);
-				}
+			if (!_validateConfiguration(configurationJsonObject, messages)) {
+				continue;
 			}
-			catch (Exception exception) {
-				messages.addMessage(
-					new Message(
-						Severity.ERROR, "core",
-						"core.error.unknown-default-sort-configuration-error",
-						exception.getMessage(), exception,
-						configurationJsonObject, null, null));
 
-				_log.error(exception.getMessage(), exception);
+			JSONObject parsedConfigurationJsonObject = 
+					_getParsedConfigurationJsonObject(
+							parameterData, messages, configurationJsonObject);
+				
+			if (parsedConfigurationJsonObject == null) {
+				continue;
+			}
+
+			SortOrder sortOrder = _getSortOrder(
+					parsedConfigurationJsonObject.getString(
+							SortConfigurationKeys.ORDER.getJsonKey()), messages);
+
+			if (sortOrder == null) {
+				continue;
+			}
+			
+			Optional<Sort> sortOptional = _getSort(
+					parsedConfigurationJsonObject, sortOrder, messages);
+			
+			if (sortOptional.isPresent()) {
+				sorts.add(sortOptional.get());
 			}
 		}
 
 		return sorts;
 	}
-
-	private Sort _getSort(Messages messages, String field, String orderString) {
-		if (Validator.isBlank(field)) {
-			return _sorts.score();
-		}
+			
+	private JSONObject _getParsedConfigurationJsonObject(ParameterData parameterData, Messages messages, JSONObject configurationJsonObject) {
 
 		try {
-			return _sorts.field(
-				field, BlueprintValueUtil.getSortOrder(orderString));
+			return 
+					_blueprintTemplateVariableParser.parse(
+						parameterData, messages, configurationJsonObject);
+		}
+		catch (Exception exception) {
+			messages.addMessage(
+				new Message(
+					Severity.ERROR, "core",
+					"core.error.unknown-sort-configuration-error",
+					exception.getMessage(), exception,
+					configurationJsonObject, null, null));
+
+			_log.error(exception.getMessage(), exception);
+		}
+		
+		return null;
+	}
+	
+	private Optional<Sort> _getSort(JSONObject configurationJsonObject, SortOrder sortOrder, Messages messages) {
+		
+		String type = configurationJsonObject.getString("type", "field");
+
+		try {
+			SortTranslator sortTranslator =
+					_sortTranslatorFactory.getTranslator(type);
+			
+			return 	sortTranslator.translate(
+					configurationJsonObject, sortOrder, messages);
+
+		}
+		catch (IllegalArgumentException illegalArgumentException) {
+			messages.addMessage(
+				new Message(
+					Severity.ERROR, "core",
+					"core.error.unknown-sort-type",
+					illegalArgumentException.getMessage(),
+					illegalArgumentException, configurationJsonObject,
+					SortConfigurationKeys.TYPE.getJsonKey(), type));
+
+			_log.error(
+				illegalArgumentException.getMessage(),
+				illegalArgumentException);
+		}
+		
+		return Optional.empty();
+	}
+	
+	private SortOrder _getSortOrder(
+			String sortOrderString,  Messages messages) {
+
+		try {
+			sortOrderString = StringUtil.toUpperCase(sortOrderString);
+
+			return SortOrder.valueOf(sortOrderString);
 		}
 		catch (IllegalArgumentException illegalArgumentException) {
 			messages.addMessage(
 				new Message(
 					Severity.ERROR, "core", "core.error.unknown-sort-order",
 					illegalArgumentException.getMessage(),
-					illegalArgumentException, null, null, orderString));
+					illegalArgumentException, null, null, sortOrderString));
 			_log.error(
 				illegalArgumentException.getMessage(),
 				illegalArgumentException);
 
-			return null;
 		}
+		return null;
 	}
-
-	private List<Sort> _getSortsFromParameters(
-		ParameterData parameterData, Messages messages,
-		JSONArray configurationJsonArray) {
-
-		List<Sort> sorts = new ArrayList<>();
-
-		for (int i = 0; i < configurationJsonArray.length(); i++) {
-			JSONObject configurationJsonObject =
-				configurationJsonArray.getJSONObject(i);
-
-			JSONObject parsedConfigurationJsonObject = null;
-
-			try {
-			
-				parsedConfigurationJsonObject =
-					_blueprintTemplateVariableParser.parse(
-						parameterData, messages, configurationJsonObject);
-
-			} catch (Exception exception) {
-				_log.error(exception.getMessage(), exception);
-				continue;
-			}
-			String parameterName = parsedConfigurationJsonObject.getString(
+	
+	private SortOrder _getSortOrderFromParameter(ParameterData parameterData, 
+			JSONObject configurationJsonObject, Messages messages) {
+		
+		String parameterName = configurationJsonObject.getString(
 				SortConfigurationKeys.PARAMETER_NAME.getJsonKey());
 
-			if (Validator.isBlank(parameterName)) {
-				continue;
-			}
-
-			Optional<Parameter> sortParameterOptional =
-				parameterData.getByNameOptional(parameterName);
-
-			if (sortParameterOptional.isPresent()) {
-				Parameter parameter = sortParameterOptional.get();
-
-				String field = parsedConfigurationJsonObject.getString(
-					SortConfigurationKeys.FIELD.getJsonKey());
-
-				String orderString = GetterUtil.getString(parameter.getValue());
-
-				Sort sort = _getSort(messages, field, orderString);
-
-				if (sort != null) {
-					sorts.add(sort);
-				}
-			}
+		if (Validator.isBlank(parameterName)) {
+			return null;
 		}
 
-		return sorts;
-	}
+		Optional<Parameter> sortParameterOptional =
+			parameterData.getByNameOptional(parameterName);
 
-	private static final Log _log = LogFactoryUtil.getLog(
+		if (!sortParameterOptional.isPresent()) {
+			return null;
+		}
+		
+		Parameter parameter = sortParameterOptional.get();
+
+		String sortOrderString = GetterUtil.getString(parameter.getValue());
+
+		return _getSortOrder(sortOrderString, messages);
+	}		
+
+	private List<Sort> _getSortsFromParameters(
+			ParameterData parameterData, Blueprint blueprint, Messages messages) {
+
+			List<Sort> sorts = new ArrayList<>();
+
+			Optional<JSONArray> configurationJsonArrayOptional =
+					_blueprintHelper.getSortParameterConfigurationOptional(blueprint);
+
+			if (!configurationJsonArrayOptional.isPresent()) {
+				return sorts;
+			}
+
+			JSONArray configurationJsonArray =
+					configurationJsonArrayOptional.get();
+
+			for (int i = 0; i < configurationJsonArray.length(); i++) {
+				JSONObject configurationJsonObject =
+					configurationJsonArray.getJSONObject(i);
+
+				if (!_validateConfiguration(configurationJsonObject, messages)) {
+					continue;
+				}
+
+				JSONObject parsedConfigurationJsonObject = 
+						_getParsedConfigurationJsonObject(
+								parameterData, messages, configurationJsonObject);
+
+				if (parsedConfigurationJsonObject == null) {
+					continue;
+				}
+
+				SortOrder sortOrder = _getSortOrderFromParameter(
+							parameterData, parsedConfigurationJsonObject, messages);
+					
+				if (sortOrder == null) {
+					continue;
+				}
+
+				Optional<Sort> sort = _getSort(parsedConfigurationJsonObject, sortOrder, messages);
+
+				if (sort.isPresent()) {
+					sorts.add(sort.get());
+				}
+			}
+
+			return sorts;
+		}
+	
+	private boolean _validateConfiguration(JSONObject configurationJsonObject, Messages messages) {
+
+		boolean valid = true;
+
+		if (configurationJsonObject.isNull(
+				SortConfigurationKeys.FIELD.getJsonKey())) {
+
+			messages.addMessage(
+				new Message(
+					Severity.ERROR, "core",
+					"core.error.undefined-sort-field",
+					"Sort field is not defined", null,
+					configurationJsonObject,
+					SortConfigurationKeys.FIELD.getJsonKey(), null));
+			valid = false;
+
+			if (_log.isWarnEnabled()) {
+				_log.warn(
+					"Sort field is not defined [ " +
+						configurationJsonObject + "]");
+			}
+		}
+		
+		return valid;
+	}
+	
+		private static final Log _log = LogFactoryUtil.getLog(
 		SortSearchRequestBodyContributor.class);
 
 	@Reference
@@ -219,6 +299,5 @@ public class SortSearchRequestBodyContributor
 	private BlueprintTemplateVariableParser _blueprintTemplateVariableParser;
 
 	@Reference
-	private Sorts _sorts;
-
+	private SortTranslatorFactory _sortTranslatorFactory;		
 }
