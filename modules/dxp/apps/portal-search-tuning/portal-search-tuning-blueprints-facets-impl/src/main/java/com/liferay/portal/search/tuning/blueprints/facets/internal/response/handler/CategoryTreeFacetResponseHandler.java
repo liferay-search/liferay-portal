@@ -54,7 +54,7 @@ import org.osgi.service.component.annotations.Reference;
 	service = FacetResponseHandler.class
 )
 public class CategoryTreeFacetResponseHandler
-	extends BaseFacetResponseHandler implements FacetResponseHandler {
+	extends BaseTermsFacetResponseHandler implements FacetResponseHandler {
 
 	@Override
 	public Optional<JSONObject> getResultOptional(

@@ -20,6 +20,8 @@ import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.search.facet.Facet;
 import com.liferay.portal.kernel.search.facet.collector.FacetCollector;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -30,7 +32,9 @@ import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttribut
 import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetJSONResponseKeys;
 import com.liferay.portal.search.tuning.blueprints.facets.spi.response.FacetResponseHandler;
+import com.liferay.portal.search.tuning.blueprints.message.Message;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
+import com.liferay.portal.search.tuning.blueprints.message.Severity;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -39,7 +43,7 @@ import java.util.ResourceBundle;
 /**
  * @author Petteri Karttunen
  */
-public abstract class BaseFacetResponseHandler implements FacetResponseHandler {
+public abstract class BaseTermsFacetResponseHandler implements FacetResponseHandler {
 
 	@Override
 	public Optional<JSONObject> getResultOptional(
@@ -50,6 +54,11 @@ public abstract class BaseFacetResponseHandler implements FacetResponseHandler {
 
 		TermsAggregationResult termsAggregationResult =
 			(TermsAggregationResult)aggregationResult;
+		
+		if (termsAggregationResult.getBuckets().size() == 0) {
+
+			return Optional.empty();
+		}
 
 		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
 
@@ -57,24 +66,33 @@ public abstract class BaseFacetResponseHandler implements FacetResponseHandler {
 			FacetConfigurationKeys.FREQUENCY_THRESHOLD.getJsonKey(), 1);
 
 		for (Bucket bucket : termsAggregationResult.getBuckets()) {
-			long frequency = bucket.getDocCount();
 
-			if (frequency < frequencyThreshold) {
+			if (bucket.getDocCount() < frequencyThreshold) {
 				continue;
 			}
+			
+			try {
+				JSONObject jsonObject = 
+						createBucketJSONObject(bucket, blueprintsAttributes, resourceBundle);
+				
+				if (jsonObject != null) {
+					jsonArray.put(
+							createBucketJSONObject(
+									bucket, blueprintsAttributes, resourceBundle));
+				}
+			}
+			catch (Exception exception) {
+				messages.addMessage(
+					new Message(
+						Severity.ERROR, "core",
+						"facets.error.could-not-create-bucket-object",
+						exception.getMessage(), exception,
+						configurationJsonObject, null, null));
 
-			JSONObject jsonObject = JSONUtil.put(
-				FacetJSONResponseKeys.FREQUENCY, frequency);
-
-			String value = bucket.getKey();
-
-			jsonObject.put(FacetJSONResponseKeys.VALUE, value);
-
-			jsonObject.put(
-				FacetJSONResponseKeys.TEXT,
-				getText(value, frequency, resourceBundle));
-
-			jsonArray.put(jsonObject);
+				if (_log.isWarnEnabled()) {
+					_log.warn(exception.getMessage(), exception);
+				}
+			}
 		}
 
 		if (jsonArray.length() == 0) {
@@ -83,6 +101,27 @@ public abstract class BaseFacetResponseHandler implements FacetResponseHandler {
 
 		return createResultObject(
 			jsonArray, configurationJsonObject, resourceBundle);
+	}
+	
+	protected JSONObject createBucketJSONObject(
+			Bucket bucket, BlueprintsAttributes blueprintsAttributes,
+			ResourceBundle resourceBundle) throws Exception {
+
+		String value = bucket.getKey();
+		
+		long frequency = bucket.getDocCount();
+		
+		JSONObject jsonObject = JSONUtil.put(
+				FacetJSONResponseKeys.FREQUENCY, frequency);
+
+		jsonObject.put(
+				FacetJSONResponseKeys.TEXT,
+				getText(value, frequency, resourceBundle));
+
+		jsonObject.put(FacetJSONResponseKeys.VALUE, value);
+		
+		return jsonObject;
+
 	}
 
 	protected Optional<JSONObject> createResultObject(
@@ -153,5 +192,8 @@ public abstract class BaseFacetResponseHandler implements FacetResponseHandler {
 
 		return sb.toString();
 	}
+	
+	private static final Log _log = LogFactoryUtil.getLog(
+			BaseTermsFacetResponseHandler.class);
 
 }
