@@ -60,17 +60,20 @@ public class MetaResponseContributor implements ResponseContributor {
 		JSONObject jsonObject = JSONUtil.put(
 			JSONResponseKeys.KEYWORDS, searchRequest.getQueryString());
 
-		try {
-			float executionTime = searchHits.getSearchTime() / 1000F;
+		searchResponse.withHits(
+				hits -> {
+					
+					try {
+						jsonObject.put(
+							JSONResponseKeys.EXECUTION_TIME,
+							String.format("%.3f", hits.getSearchTime()));
+					} catch (IllegalFormatException illegalFormatException) {
+						_log.error(
+							illegalFormatException.getMessage(), illegalFormatException);
+					}
 
-			jsonObject.put(
-				JSONResponseKeys.EXECUTION_TIME,
-				String.format("%.3f", executionTime));
-		}
-		catch (IllegalFormatException illegalFormatException) {
-			_log.error(
-				illegalFormatException.getMessage(), illegalFormatException);
-		}
+				}
+		);
 
 		jsonObject.put(JSONResponseKeys.TOTAL_HITS, searchHits.getTotalHits());
 
