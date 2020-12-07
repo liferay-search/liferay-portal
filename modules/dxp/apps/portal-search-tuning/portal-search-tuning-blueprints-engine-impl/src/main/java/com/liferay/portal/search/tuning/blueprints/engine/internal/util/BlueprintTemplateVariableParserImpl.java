@@ -44,7 +44,7 @@ public class BlueprintTemplateVariableParserImpl implements BlueprintTemplateVar
 	@Override
 	public JSONObject parse(
 			ParameterData parameterData, Messages messages,
-			JSONObject queryJsonObject)
+			JSONObject jsonObject)
 		throws Exception {
 
 		List<Parameter> parameters = parameterData.getParameters();
@@ -54,13 +54,13 @@ public class BlueprintTemplateVariableParserImpl implements BlueprintTemplateVar
 				_log.debug("No parameters available");
 			}
 
-			return queryJsonObject;
+			return jsonObject;
 		}
 
-		String queryString = queryJsonObject.toString();
+		String queryString = jsonObject.toString();
 
 		if (!_hasTemplateVariables(queryString)) {
-			return queryJsonObject;
+			return jsonObject;
 		}
 
 		boolean changed = false;
@@ -90,11 +90,9 @@ public class BlueprintTemplateVariableParserImpl implements BlueprintTemplateVar
 			}
 		}
 
-		// Fail if there were untranslated (not present variables)
-
 		if (queryString.contains("${")) {
 			throw new JSONException(
-				"Some template variables were not be parsed [ " + queryString +
+				"Some template variables could not be parsed [ " + queryString +
 					" ]");
 		}
 
@@ -102,7 +100,7 @@ public class BlueprintTemplateVariableParserImpl implements BlueprintTemplateVar
 			return JSONFactoryUtil.createJSONObject(queryString);
 		}
 
-		return queryJsonObject;
+		return jsonObject;
 	}
 
 	private Map<String, String> _getParameterOptions(
