@@ -22,8 +22,8 @@ import java.util.stream.Stream;
  */
 public enum SortConfigurationKeys {
 
-	DEFAULT("default"), FIELD("field"), LABEL("label"), ORDER("order"),
-	PARAMETER_NAME("parameter_name"), PARAMETERS("parameters");
+	CONFIGURATION("configuration"), DEFAULT("default"), FIELD("field"), LABEL("label"), ORDER("order"),
+	PARAMETER_NAME("parameter_name"), PARAMETERS("parameters"), TYPE("type");
 
 	public static final SortConfigurationKeys findByJsonKey(String jsonKey) {
 		Stream<SortConfigurationKeys> sortConfigurationKeysStream =
