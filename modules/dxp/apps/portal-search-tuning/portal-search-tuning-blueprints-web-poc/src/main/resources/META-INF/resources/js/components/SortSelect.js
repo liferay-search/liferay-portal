@@ -37,6 +37,10 @@ export default function SortSelect({setFilters}) {
 			label: Liferay.Language.get('modified'),
 			value: 'sort3',
 		},
+		{
+			label: Liferay.Language.get('geodistance'),
+			value: 'sort4',
+		}
 	];
 
 	function updateSortField(event) {

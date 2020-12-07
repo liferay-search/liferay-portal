@@ -32,7 +32,7 @@ describe('BlueprintsSearch', () => {
 	it('renders the facet labels', () => {
 		const {getByText} = renderFacets();
 
-		RESOURCE.facets.map((item) => getByText(item.anyOption));
+		RESOURCE.facets.map((item) => getByText(item.facetLabel));
 	});
 
 	it('renders the facets populated', () => {
@@ -50,7 +50,7 @@ describe('BlueprintsSearch', () => {
 
 		const firstFacet = RESOURCE.facets[0];
 
-		fireEvent.click(getByLabelText(firstFacet['anyOption']));
+		fireEvent.click(getByLabelText(firstFacet['facetLabel']));
 
 		firstFacet['values'].map((item) =>
 			expect(getByText(item.value)).toBeVisible()
