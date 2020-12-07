@@ -9,4 +9,5 @@ Export-Package:\
 	com.liferay.portal.search.tuning.blueprints.engine.spi.parameter,\
 	com.liferay.portal.search.tuning.blueprints.engine.spi.query,\
 	com.liferay.portal.search.tuning.blueprints.engine.spi.searchrequest,\
+	com.liferay.portal.search.tuning.blueprints.engine.spi.sort,\
 	com.liferay.portal.search.tuning.blueprints.engine.spi.suggester
