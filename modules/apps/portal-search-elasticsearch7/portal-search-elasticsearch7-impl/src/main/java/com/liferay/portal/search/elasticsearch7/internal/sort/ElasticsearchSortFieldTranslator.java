@@ -102,6 +102,8 @@ public class ElasticsearchSortFieldTranslator
 				).toArray(
 					GeoPoint[]::new
 				));
+		
+		geoDistanceSortBuilder.order(translate(geoDistanceSort.getSortOrder()));
 
 		geoDistanceSortBuilder.order(translate(geoDistanceSort.getSortOrder()));
 
