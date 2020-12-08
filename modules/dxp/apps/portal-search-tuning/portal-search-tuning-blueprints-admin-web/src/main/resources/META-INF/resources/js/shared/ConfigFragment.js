@@ -33,7 +33,7 @@ import CodeMirrorEditor from './CodeMirrorEditor';
 import PreviewModal from './PreviewModal';
 import ThemeContext from './ThemeContext';
 
-function FieldSelect({config, deleteItem, disabled, idx, item, updateValue}) {
+function FieldSelect({config, deleteItem, disabled, index, item, updateValue}) {
 	const {availableLanguages} = useContext(ThemeContext);
 
 	return (
@@ -72,20 +72,20 @@ function FieldSelect({config, deleteItem, disabled, idx, item, updateValue}) {
 						value={item.locale}
 					>
 						<ClaySelect.Option
-							key={`${idx}-users-language`}
+							key={`${index}-users-language`}
 							label={Liferay.Language.get('users-language')}
 							value={'${context.language_id}'}
 						/>
 
 						<ClaySelect.Option
-							key={`${idx}-no-localization`}
+							key={`${index}-no-localization`}
 							label={Liferay.Language.get('no-localization')}
 							value=""
 						/>
 
 						{Object.keys(availableLanguages).map((locale) => (
 							<ClaySelect.Option
-								key={`${idx}-${locale}`}
+								key={`${index}-${locale}`}
 								label={availableLanguages[locale]}
 								value={`${locale}`}
 							/>
@@ -381,7 +381,7 @@ function ConfigFragment({
 			case INPUT_TYPES.FIELD_SELECT:
 				return (
 					<div className="field-select">
-						{uiConfigurationValues[config.key].map((item, idx) => (
+						{uiConfigurationValues[config.key].map((item, index) => (
 							<FieldSelect
 								config={config}
 								deleteItem={() =>
@@ -389,17 +389,17 @@ function ConfigFragment({
 										config.key,
 										uiConfigurationValues[
 											config.key
-										].filter((item, index) => idx !== index)
+										].filter((item, index) => index !== index)
 									)
 								}
 								disabled={disabled}
-								idx={idx}
+								index={index}
 								item={item}
-								key={`${config.key}_${idx}`}
+								key={`${config.key}_${index}`}
 								updateValue={(label, value) => {
 									const configValue =
 										uiConfigurationValues[config.key];
-									configValue[idx] = {
+									configValue[index] = {
 										...item,
 										[`${label}`]: value,
 									};
