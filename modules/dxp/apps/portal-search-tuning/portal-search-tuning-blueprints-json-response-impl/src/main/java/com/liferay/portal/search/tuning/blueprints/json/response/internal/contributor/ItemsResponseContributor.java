@@ -41,11 +41,11 @@ import com.liferay.portal.search.tuning.blueprints.json.response.constants.JSONR
 import com.liferay.portal.search.tuning.blueprints.json.response.constants.ResponseAttributeKeys;
 import com.liferay.portal.search.tuning.blueprints.json.response.internal.result.ResultBuilderFactory;
 import com.liferay.portal.search.tuning.blueprints.json.response.internal.util.ResponseUtil;
+import com.liferay.portal.search.tuning.blueprints.json.response.spi.contributor.ResponseContributor;
+import com.liferay.portal.search.tuning.blueprints.json.response.spi.result.ResultBuilder;
+import com.liferay.portal.search.tuning.blueprints.json.response.spi.result.ResultContributor;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
-import com.liferay.portal.search.tuning.blueprints.response.spi.contributor.ResponseContributor;
-import com.liferay.portal.search.tuning.blueprints.response.spi.result.ResultBuilder;
-import com.liferay.portal.search.tuning.blueprints.response.spi.result.ResultContributor;
 
 import java.util.List;
 import java.util.Map;

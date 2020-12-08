@@ -14,14 +14,14 @@
 
 package com.liferay.portal.search.tuning.blueprints.json.response.internal.aggregation;
 
-import com.liferay.portal.search.tuning.blueprints.response.spi.aggregation.AggregationResponseBuilder;
+import com.liferay.portal.search.tuning.blueprints.json.response.spi.aggregation.AggregationBuilder;
 
 /**
  * @author Petteri Karttunen
  */
 public interface AggregationResponseBuilderFactory {
 
-	public AggregationResponseBuilder getBuilder(String type)
+	public AggregationBuilder getBuilder(String type)
 		throws IllegalArgumentException;
 
 	public String[] getBuilderTypes();

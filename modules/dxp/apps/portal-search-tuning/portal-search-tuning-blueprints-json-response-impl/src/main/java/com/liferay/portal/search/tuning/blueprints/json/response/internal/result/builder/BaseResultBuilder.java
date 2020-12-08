@@ -31,7 +31,7 @@ import com.liferay.portal.search.document.Document;
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
 import com.liferay.portal.search.tuning.blueprints.json.response.constants.ResponseAttributeKeys;
 import com.liferay.portal.search.tuning.blueprints.json.response.internal.util.ResponseUtil;
-import com.liferay.portal.search.tuning.blueprints.response.spi.result.ResultBuilder;
+import com.liferay.portal.search.tuning.blueprints.json.response.spi.result.ResultBuilder;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

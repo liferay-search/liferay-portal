@@ -12,7 +12,7 @@
  *
  */
 
-package com.liferay.portal.search.tuning.blueprints.response.spi.result;
+package com.liferay.portal.search.tuning.blueprints.json.response.spi.result;
 
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.document.Document;

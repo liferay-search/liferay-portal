@@ -19,7 +19,7 @@ import com.liferay.blogs.service.BlogsEntryService;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.search.document.Document;
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
-import com.liferay.portal.search.tuning.blueprints.response.spi.result.ResultBuilder;
+import com.liferay.portal.search.tuning.blueprints.json.response.spi.result.ResultBuilder;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;

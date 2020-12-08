@@ -27,9 +27,9 @@ import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetJSONRes
 import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetsBlueprintContributorKeys;
 import com.liferay.portal.search.tuning.blueprints.facets.internal.response.handler.FacetResponseHandlerFactory;
 import com.liferay.portal.search.tuning.blueprints.facets.spi.response.FacetResponseHandler;
+import com.liferay.portal.search.tuning.blueprints.json.response.spi.contributor.ResponseContributor;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
-import com.liferay.portal.search.tuning.blueprints.response.spi.contributor.ResponseContributor;
 import com.liferay.portal.search.tuning.blueprints.util.BlueprintHelper;
 
 import java.util.Map;

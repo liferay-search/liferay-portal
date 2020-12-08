@@ -26,12 +26,12 @@ import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttribut
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.aggregation.AggregationConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.json.response.constants.JSONResponseKeys;
 import com.liferay.portal.search.tuning.blueprints.json.response.internal.aggregation.AggregationResponseBuilderFactory;
+import com.liferay.portal.search.tuning.blueprints.json.response.spi.aggregation.AggregationBuilder;
+import com.liferay.portal.search.tuning.blueprints.json.response.spi.contributor.ResponseContributor;
 import com.liferay.portal.search.tuning.blueprints.message.Message;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 import com.liferay.portal.search.tuning.blueprints.message.Severity;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
-import com.liferay.portal.search.tuning.blueprints.response.spi.aggregation.AggregationResponseBuilder;
-import com.liferay.portal.search.tuning.blueprints.response.spi.contributor.ResponseContributor;
 import com.liferay.portal.search.tuning.blueprints.util.BlueprintHelper;
 
 import java.util.Map;
@@ -103,7 +103,7 @@ public class AggregationsResponseContributor implements ResponseContributor {
 				}
 
 				try {
-					AggregationResponseBuilder aggregationResponseBuilder =
+					AggregationBuilder aggregationResponseBuilder =
 						_aggregationResponseBuilderFactory.getBuilder(type);
 
 					Optional<JSONObject> aggregationJsonOptional =
