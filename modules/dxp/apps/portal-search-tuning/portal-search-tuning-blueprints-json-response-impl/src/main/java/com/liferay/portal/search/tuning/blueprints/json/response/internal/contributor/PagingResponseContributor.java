@@ -47,8 +47,7 @@ public class PagingResponseContributor implements ResponseContributor {
 	public void contribute(
 		JSONObject responseJsonObject, SearchResponse searchResponse,
 		Blueprint blueprint, BlueprintsAttributes blueprintsAttributes,
-		ResourceBundle resourceBundle,	
-		Messages messages) {
+		ResourceBundle resourceBundle, Messages messages) {
 
 		responseJsonObject.put(
 			JSONResponseKeys.PAGINATION,

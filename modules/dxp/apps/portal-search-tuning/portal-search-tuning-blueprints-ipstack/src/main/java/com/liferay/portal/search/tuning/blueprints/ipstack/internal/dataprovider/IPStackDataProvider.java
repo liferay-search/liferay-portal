@@ -181,7 +181,7 @@ public class IPStackDataProvider implements GeoLocationDataProvider {
 				new Message.Builder().className(
 					getClass().getName()
 				).localizationKey(
-					"ipstack.error.ipstack.error.invalid-response-format"
+					"ipstack.error.invalid-response-format"
 				).msg(
 					jsonException.getMessage()
 				).severity(

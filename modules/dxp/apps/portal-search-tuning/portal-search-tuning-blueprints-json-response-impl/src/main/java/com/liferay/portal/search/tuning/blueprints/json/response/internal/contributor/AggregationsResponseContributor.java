@@ -54,8 +54,7 @@ public class AggregationsResponseContributor implements ResponseContributor {
 	public void contribute(
 		JSONObject responseJsonObject, SearchResponse searchResponse,
 		Blueprint blueprint, BlueprintsAttributes blueprintsAttributes,
-		ResourceBundle resourceBundle,
-		Messages messages) {
+		ResourceBundle resourceBundle, Messages messages) {
 
 		responseJsonObject.put(
 			JSONResponseKeys.AGGREGATIONS,
@@ -118,13 +117,23 @@ public class AggregationsResponseContributor implements ResponseContributor {
 				}
 				catch (IllegalArgumentException illegalArgumentException) {
 					messages.addMessage(
-						new Message(
-							Severity.ERROR, "core",
-							"core.error.unknown-aggregation-type",
-							illegalArgumentException.getMessage(),
-							illegalArgumentException, aggregationJsonObject,
-							AggregationConfigurationKeys.TYPE.getJsonKey(),
-							type));
+						new Message.Builder().className(
+							getClass().getName()
+						).localizationKey(
+							"json-response.error.unknown-aggregation-type"
+						).msg(
+							illegalArgumentException.getMessage()
+						).rootObject(
+							aggregationJsonObject
+						).rootProperty(
+							AggregationConfigurationKeys.TYPE.getJsonKey()
+						).rootValue(
+							type
+						).severity(
+							Severity.ERROR
+						).throwable(
+							illegalArgumentException
+						).build());
 
 					_log.error(
 						illegalArgumentException.getMessage(),
