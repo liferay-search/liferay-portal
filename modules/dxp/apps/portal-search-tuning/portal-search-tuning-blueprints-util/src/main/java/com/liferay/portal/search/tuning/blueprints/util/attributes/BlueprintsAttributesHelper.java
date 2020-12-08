@@ -46,7 +46,7 @@ public interface BlueprintsAttributesHelper {
 	 * @param blueprintId
 	 * @return
 	 */
-	public BlueprintsAttributesBuilder getBlueprintsResponsetAttributesBuilder(
+	public BlueprintsAttributesBuilder getBlueprintsResponseAttributesBuilder(
 		PortletRequest portletRequest, PortletResponse portletResponse,
 		long blueprintId);
 

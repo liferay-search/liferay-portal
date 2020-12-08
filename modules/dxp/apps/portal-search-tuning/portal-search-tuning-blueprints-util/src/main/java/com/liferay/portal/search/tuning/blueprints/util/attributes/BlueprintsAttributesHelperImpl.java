@@ -42,6 +42,7 @@ import java.util.Optional;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.osgi.service.component.annotations.Component;
@@ -86,12 +87,12 @@ public class BlueprintsAttributesHelperImpl
 			themeDisplay.getScopeGroupId()
 		);
 
-		return _addConfiguredParameters(
+		return _addParameters(
 			portletRequest, blueprintsAttributesBuilder, blueprintId);
 	}
 
 	@Override
-	public BlueprintsAttributesBuilder getBlueprintsResponsetAttributesBuilder(
+	public BlueprintsAttributesBuilder getBlueprintsResponseAttributesBuilder(
 		PortletRequest portletRequest, PortletResponse portletResponse,
 		long blueprintId) {
 
@@ -114,67 +115,13 @@ public class BlueprintsAttributesHelperImpl
 		);
 	}
 
-	private BlueprintsAttributesBuilder _addConfiguredParameters(
-		PortletRequest portletRequest,
-		BlueprintsAttributesBuilder blueprintsAttributesBuilder,
-		long blueprintId) {
-
-		Blueprint blueprint = null;
-
-		try {
-			blueprint = _getBlueprint(blueprintId);
-		}
-		catch (PortalException portalException) {
-			_log.error(portalException.getMessage(), portalException);
-
-			return blueprintsAttributesBuilder;
-		}
-		catch (Exception exception) {
-			_log.error(exception.getMessage(), exception);
-
-			return blueprintsAttributesBuilder;
-		}
-
-		Optional<JSONObject> configurationJsonObjectOptional =
-			_blueprintHelper.getParameterConfigurationOptional(blueprint);
-
-		if (!configurationJsonObjectOptional.isPresent()) {
-			return blueprintsAttributesBuilder;
-		}
-
-		JSONObject configurationJsonObject =
-			configurationJsonObjectOptional.get();
-
-		_addKeywordParameter(
-			portletRequest, blueprintsAttributesBuilder,
-			configurationJsonObject.getJSONObject(
-				ParameterConfigurationKeys.KEYWORDS.getJsonKey()));
-
-		_addPagingParameters(
-			portletRequest, blueprintsAttributesBuilder,
-			configurationJsonObject.getJSONObject(
-				ParameterConfigurationKeys.PAGE.getJsonKey()));
-
-		_addSortParameters(
-			portletRequest, blueprintsAttributesBuilder,
-			blueprint);
-
-		_addCustomParameters(
-			portletRequest, blueprintsAttributesBuilder,
-			configurationJsonObject.getJSONArray(
-				ParameterConfigurationKeys.CUSTOM.getJsonKey()));
-
-		_addFacetParameters(
-			portletRequest, blueprintsAttributesBuilder,
-			blueprint);
-
-		return blueprintsAttributesBuilder;
-	}
-
 	private void _addCustomParameters(
 		PortletRequest portletRequest,
 		BlueprintsAttributesBuilder blueprintsAttributesBuilder,
-		JSONArray jsonArray) {
+		JSONObject configurationJSONObject) {
+
+		JSONArray jsonArray = configurationJSONObject.getJSONArray(
+			ParameterConfigurationKeys.CUSTOM.getJsonKey());
 
 		if ((jsonArray == null) || (jsonArray.length() == 0)) {
 			return;
@@ -204,20 +151,20 @@ public class BlueprintsAttributesHelperImpl
 		BlueprintsAttributesBuilder blueprintsAttributesBuilder,
 		Blueprint blueprint) {
 
-		Optional<JSONArray> configurationJsonArrayOptional =
-				_blueprintHelper.getJSONArrayConfigurationOptional(
-					blueprint,
-					"JSONArray/" +
-						FacetsBlueprintContributorKeys.CONFIGURATION_SECTION);
+		Optional<JSONArray> configurationJSONArrayOptional =
+			_blueprintHelper.getJSONArrayConfigurationOptional(
+				blueprint,
+				"JSONArray/" +
+					FacetsBlueprintContributorKeys.CONFIGURATION_SECTION);
 
-		if (!configurationJsonArrayOptional.isPresent()) {
+		if (!configurationJSONArrayOptional.isPresent()) {
 			return;
 		}
-		
-		JSONArray configurationJsonArray = configurationJsonArrayOptional.get();
-		
-		for (int i = 0; i < configurationJsonArray.length(); i++) {
-			JSONObject jsonObject = configurationJsonArray.getJSONObject(i);
+
+		JSONArray configurationJSONArray = configurationJSONArrayOptional.get();
+
+		for (int i = 0; i < configurationJSONArray.length(); i++) {
+			JSONObject jsonObject = configurationJSONArray.getJSONObject(i);
 
 			String key = jsonObject.getString(
 				FacetConfigurationKeys.PARAMETER_NAME.getJsonKey());
@@ -239,38 +186,107 @@ public class BlueprintsAttributesHelperImpl
 	private void _addKeywordParameter(
 		PortletRequest portletRequest,
 		BlueprintsAttributesBuilder blueprintsAttributesBuilder,
-		JSONObject jsonObject) {
+		JSONObject configurationJSONObject) {
+
+		JSONObject keywordconfigurationJSONObject =
+			configurationJSONObject.getJSONObject(
+				ParameterConfigurationKeys.KEYWORDS.getJsonKey());
+
+		if (keywordconfigurationJSONObject == null) {
+			return;
+		}
 
 		_addStringValue(
 			portletRequest, blueprintsAttributesBuilder,
-			jsonObject.getString(
+			keywordconfigurationJSONObject.getString(
 				KeywordsConfigurationKeys.PARAMETER_NAME.getJsonKey()));
 	}
 
 	private void _addPagingParameters(
 		PortletRequest portletRequest,
 		BlueprintsAttributesBuilder blueprintsAttributesBuilder,
-		JSONObject jsonObject) {
+		JSONObject configurationJSONObject) {
+
+		JSONObject pagingconfigurationJSONObject =
+			configurationJSONObject.getJSONObject(
+				ParameterConfigurationKeys.PAGE.getJsonKey());
+
+		if (pagingconfigurationJSONObject == null) {
+			return;
+		}
 
 		_addStringValue(
 			portletRequest, blueprintsAttributesBuilder,
-			jsonObject.getString(
+			pagingconfigurationJSONObject.getString(
 				PageConfigurationKeys.PARAMETER_NAME.getJsonKey()));
+	}
+
+	private BlueprintsAttributesBuilder _addParameters(
+		PortletRequest portletRequest,
+		BlueprintsAttributesBuilder blueprintsAttributesBuilder,
+		long blueprintId) {
+
+		Blueprint blueprint = null;
+
+		try {
+			blueprint = _getBlueprint(blueprintId);
+		}
+		catch (PortalException portalException) {
+			_log.error(portalException.getMessage(), portalException);
+
+			return blueprintsAttributesBuilder;
+		}
+		catch (Exception exception) {
+			_log.error(exception.getMessage(), exception);
+
+			return blueprintsAttributesBuilder;
+		}
+
+		Optional<JSONObject> configurationJSONObjectOptional =
+			_blueprintHelper.getParameterConfigurationOptional(blueprint);
+
+		if (!configurationJSONObjectOptional.isPresent()) {
+			return blueprintsAttributesBuilder;
+		}
+
+		JSONObject configurationJSONObject =
+			configurationJSONObjectOptional.get();
+
+		_addKeywordParameter(
+			portletRequest, blueprintsAttributesBuilder,
+			configurationJSONObject);
+
+		_addPagingParameters(
+			portletRequest, blueprintsAttributesBuilder,
+			configurationJSONObject);
+
+		_addSortParameters(
+			portletRequest, blueprintsAttributesBuilder, blueprint);
+
+		_addCustomParameters(
+			portletRequest, blueprintsAttributesBuilder,
+			configurationJSONObject);
+
+		_addFacetParameters(
+			portletRequest, blueprintsAttributesBuilder, blueprint);
+
+		return blueprintsAttributesBuilder;
 	}
 
 	private void _addSortParameters(
 		PortletRequest portletRequest,
 		BlueprintsAttributesBuilder blueprintsAttributesBuilder,
 		Blueprint blueprint) {
-		
-		Optional<JSONArray> jsonArrayOptional = _blueprintHelper.getSortParameterConfigurationOptional(blueprint);
+
+		Optional<JSONArray> jsonArrayOptional =
+			_blueprintHelper.getSortParameterConfigurationOptional(blueprint);
 
 		if (!jsonArrayOptional.isPresent()) {
 			return;
 		}
-		
+
 		JSONArray jsonArray = jsonArrayOptional.get();
-		
+
 		for (int i = 0; i < jsonArray.length(); i++) {
 			JSONObject jsonObject = jsonArray.getJSONObject(i);
 
