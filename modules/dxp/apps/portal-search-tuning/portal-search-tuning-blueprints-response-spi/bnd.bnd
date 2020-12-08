@@ -1,7 +1,0 @@
-Bundle-Name: Liferay Portal Search Tuning Blueprints Response SPI
-Bundle-SymbolicName: com.liferay.portal.search.tuning.blueprints.response.spi
-Bundle-Version: 1.0.0
-Export-Package:\
-	com.liferay.portal.search.tuning.blueprints.response.spi.aggregation,\
-	com.liferay.portal.search.tuning.blueprints.response.spi.contributor,\
-	com.liferay.portal.search.tuning.blueprints.response.spi.result
