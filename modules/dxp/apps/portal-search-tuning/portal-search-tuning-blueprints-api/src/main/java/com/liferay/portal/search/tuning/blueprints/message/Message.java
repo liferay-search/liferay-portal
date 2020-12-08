@@ -31,7 +31,7 @@ public class Message implements Serializable {
 		_rootValue = message._rootValue;
 		_severity = message._severity;
 	}
-	
+
 	public Message(
 		Severity severity, String sourceModule, String localizationKey,
 		String msg) {
@@ -100,16 +100,14 @@ public class Message implements Serializable {
 	public Throwable getThrowable() {
 		return _throwable;
 	}
-	
+
 	public static class Builder {
 
 		public Builder() {
 			_message = new Message();
 		}
 
-		public Builder(
-				Message message) {
-
+		public Builder(Message message) {
 			_message = message;
 		}
 
@@ -122,7 +120,7 @@ public class Message implements Serializable {
 
 			return this;
 		}
-		
+
 		public Builder localizationKey(String localizationKey) {
 			_message._localizationKey = localizationKey;
 
@@ -135,8 +133,8 @@ public class Message implements Serializable {
 			return this;
 		}
 
-		public Builder rootObject(Object obj) {
-			_message._rootObject = obj;
+		public Builder rootObject(Object object) {
+			_message._rootObject = object;
 
 			return this;
 		}
