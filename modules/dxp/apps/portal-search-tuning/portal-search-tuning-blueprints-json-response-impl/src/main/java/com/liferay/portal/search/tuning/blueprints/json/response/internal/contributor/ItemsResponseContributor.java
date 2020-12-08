@@ -71,12 +71,12 @@ public class ItemsResponseContributor implements ResponseContributor {
 	public void contribute(
 		JSONObject responseJsonObject, SearchResponse searchResponse,
 		Blueprint blueprint, BlueprintsAttributes blueprintsAttributes,
-		ResourceBundle resourceBundle,
-		Messages messages) {
+		ResourceBundle resourceBundle, Messages messages) {
 
 		responseJsonObject.put(
 			JSONResponseKeys.ITEMS,
-			_getItemsJSONArray(searchResponse, blueprintsAttributes, resourceBundle));
+			_getItemsJSONArray(
+				searchResponse, blueprintsAttributes, resourceBundle));
 	}
 
 	@Reference(
@@ -133,8 +133,8 @@ public class ItemsResponseContributor implements ResponseContributor {
 
 	private void _executeResultContributors(
 		JSONObject resultJsonObject, Document document,
-		ResultBuilder resultBuilder,
-		BlueprintsAttributes blueprintsAttributes, ResourceBundle resourceBundle) {
+		ResultBuilder resultBuilder, BlueprintsAttributes blueprintsAttributes,
+		ResourceBundle resourceBundle) {
 
 		for (Map.Entry<String, ServiceComponentReference<ResultContributor>>
 				entry : _resultContributors.entrySet()) {
@@ -145,14 +145,14 @@ public class ItemsResponseContributor implements ResponseContributor {
 			ResultContributor resultContributor = value.getServiceComponent();
 
 			resultContributor.contribute(
-				resultJsonObject, document, resultBuilder,
-				blueprintsAttributes, resourceBundle);
+				resultJsonObject, document, resultBuilder, blueprintsAttributes,
+				resourceBundle);
 		}
 	}
 
 	private JSONArray _getItemsJSONArray(
 		SearchResponse searchResponse,
-		BlueprintsAttributes blueprintsAttributes, 
+		BlueprintsAttributes blueprintsAttributes,
 		ResourceBundle resourceBundle) {
 
 		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
@@ -204,8 +204,10 @@ public class ItemsResponseContributor implements ResponseContributor {
 					resultBuilder.getViewURL(document, blueprintsAttributes)
 				);
 
-				_setType(resultJsonObject, resultBuilder.getType(document), resourceBundle);
-				
+				_setType(
+					resultJsonObject, resultBuilder.getType(document),
+					resourceBundle);
+
 				_setThumbnail(
 					resultJsonObject, resultBuilder, document,
 					blueprintsAttributes);
@@ -415,16 +417,15 @@ public class ItemsResponseContributor implements ResponseContributor {
 			"imageSrc",
 			resultBuilder.getThumbnail(document, blueprintsAttributes));
 	}
-	
+
 	private void _setType(
-			JSONObject resultJsonObject,  String type, 
-			ResourceBundle resourceBundle) {
-	
+		JSONObject resultJsonObject, String type,
+		ResourceBundle resourceBundle) {
+
 		resultJsonObject.put(
-				"type",
-				_language.get(resourceBundle, StringUtil.toLowerCase(type)));				
+			"type",
+			_language.get(resourceBundle, StringUtil.toLowerCase(type)));
 	}
-	
 
 	private void _setUserPortrait(
 			JSONObject resultJsonObject, Document document,
@@ -502,7 +503,7 @@ public class ItemsResponseContributor implements ResponseContributor {
 
 	@Reference
 	private Language _language;
-	
+
 	@Reference
 	private ResultBuilderFactory _resultBuilderFactory;
 

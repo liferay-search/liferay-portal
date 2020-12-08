@@ -40,8 +40,7 @@ public class SuggestionsResponseContributor implements ResponseContributor {
 	public void contribute(
 		JSONObject responseJsonObject, SearchResponse searchResponse,
 		Blueprint blueprint, BlueprintsAttributes blueprintsAttributes,
-		ResourceBundle resourceBundle,	
-		Messages messages) {
+		ResourceBundle resourceBundle, Messages messages) {
 
 		// TODO: Waiting for suggest support in SearchRequest & SearchResponse
 

@@ -17,7 +17,7 @@ package com.liferay.portal.search.tuning.blueprints.engine.internal.cache;
 import com.liferay.portal.kernel.cache.PortalCache;
 import com.liferay.portal.kernel.cache.SingleVMPool;
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.search.tuning.blueprints.engine.cache.JsonDataProviderCache;
+import com.liferay.portal.search.tuning.blueprints.engine.cache.JSONDataProviderCache;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -25,11 +25,11 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Petteri Karttunen
  */
-@Component(immediate = true, service = JsonDataProviderCache.class)
-public class JsonDataProviderCacheImpl implements JsonDataProviderCache {
+@Component(immediate = true, service = JSONDataProviderCache.class)
+public class JsonDataProviderCacheImpl implements JSONDataProviderCache {
 
 	@Override
-	public JSONObject get(String cacheKey) {
+	public JSONObject getJSONObject(String cacheKey) {
 		return _portalCache.get(cacheKey);
 	}
 

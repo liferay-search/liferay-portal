@@ -45,8 +45,7 @@ public class MetaResponseContributor implements ResponseContributor {
 	public void contribute(
 		JSONObject responseJsonObject, SearchResponse searchResponse,
 		Blueprint blueprint, BlueprintsAttributes blueprintsAttributes,
-		ResourceBundle resourceBundle,
-		Messages messages) {
+		ResourceBundle resourceBundle, Messages messages) {
 
 		responseJsonObject.put(
 			JSONResponseKeys.META, _getMetaJSONObject(searchResponse));
@@ -61,19 +60,18 @@ public class MetaResponseContributor implements ResponseContributor {
 			JSONResponseKeys.KEYWORDS, searchRequest.getQueryString());
 
 		searchResponse.withHits(
-				hits -> {
-					
-					try {
-						jsonObject.put(
-							JSONResponseKeys.EXECUTION_TIME,
-							String.format("%.3f", hits.getSearchTime()));
-					} catch (IllegalFormatException illegalFormatException) {
-						_log.error(
-							illegalFormatException.getMessage(), illegalFormatException);
-					}
-
+			hits -> {
+				try {
+					jsonObject.put(
+						JSONResponseKeys.EXECUTION_TIME,
+						String.format("%.3f", hits.getSearchTime()));
 				}
-		);
+				catch (IllegalFormatException illegalFormatException) {
+					_log.error(
+						illegalFormatException.getMessage(),
+						illegalFormatException);
+				}
+			});
 
 		jsonObject.put(JSONResponseKeys.TOTAL_HITS, searchHits.getTotalHits());
 

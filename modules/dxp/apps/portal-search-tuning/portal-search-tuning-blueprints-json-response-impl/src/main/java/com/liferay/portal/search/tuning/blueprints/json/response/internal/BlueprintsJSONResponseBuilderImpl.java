@@ -49,16 +49,14 @@ public class BlueprintsJSONResponseBuilderImpl
 	@Override
 	public JSONObject buildJSONObject(
 			SearchResponse searchResponse,
-			BlueprintsAttributes blueprintsAttributes, 
-			ResourceBundle resourceBundle,
-			Messages messages,
-			long blueprintId)
+			BlueprintsAttributes blueprintsAttributes,
+			ResourceBundle resourceBundle, Messages messages, long blueprintId)
 		throws PortalException {
 
 		long startTime = System.currentTimeMillis();
 
 		Blueprint blueprint = _blueprintService.getBlueprint(blueprintId);
-		
+
 		JSONObject responseJsonObject = JSONFactoryUtil.createJSONObject();
 
 		for (Map.Entry<String, ServiceComponentReference<ResponseContributor>>
@@ -144,7 +142,7 @@ public class BlueprintsJSONResponseBuilderImpl
 
 	@Reference
 	private BlueprintService _blueprintService;
-	
+
 	private volatile Map<String, ServiceComponentReference<ResponseContributor>>
 		_responseContributors = new ConcurrentHashMap<>();
 
