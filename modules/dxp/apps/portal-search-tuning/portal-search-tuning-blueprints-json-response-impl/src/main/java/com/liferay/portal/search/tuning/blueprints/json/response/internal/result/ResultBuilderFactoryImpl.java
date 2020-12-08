@@ -20,7 +20,7 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.tuning.blueprints.engine.component.ServiceComponentReference;
 import com.liferay.portal.search.tuning.blueprints.json.response.internal.result.builder.DefaultResultBuilder;
-import com.liferay.portal.search.tuning.blueprints.response.spi.result.ResultBuilder;
+import com.liferay.portal.search.tuning.blueprints.json.response.spi.result.ResultBuilder;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

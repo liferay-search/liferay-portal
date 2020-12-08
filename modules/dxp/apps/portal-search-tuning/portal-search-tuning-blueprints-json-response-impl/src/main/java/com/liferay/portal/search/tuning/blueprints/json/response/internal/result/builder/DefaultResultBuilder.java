@@ -14,7 +14,7 @@
 
 package com.liferay.portal.search.tuning.blueprints.json.response.internal.result.builder;
 
-import com.liferay.portal.search.tuning.blueprints.response.spi.result.ResultBuilder;
+import com.liferay.portal.search.tuning.blueprints.json.response.spi.result.ResultBuilder;
 
 /**
  * @author Petteri Karttunen

@@ -22,7 +22,7 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.search.aggregation.AggregationResult;
 import com.liferay.portal.search.aggregation.bucket.Bucket;
 import com.liferay.portal.search.aggregation.bucket.TermsAggregationResult;
-import com.liferay.portal.search.tuning.blueprints.response.spi.aggregation.AggregationResponseBuilder;
+import com.liferay.portal.search.tuning.blueprints.json.response.spi.aggregation.AggregationBuilder;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -34,10 +34,10 @@ import org.osgi.service.component.annotations.Component;
  */
 @Component(
 	immediate = true, property = "type=terms",
-	service = AggregationResponseBuilder.class
+	service = AggregationBuilder.class
 )
 public class TermsAggregationResponseBuilder
-	implements AggregationResponseBuilder {
+	implements AggregationBuilder {
 
 	@Override
 	public Optional<JSONObject> buildJSONObjectOptional(

@@ -12,7 +12,7 @@
  *
  */
 
-package com.liferay.portal.search.tuning.blueprints.response.spi.aggregation;
+package com.liferay.portal.search.tuning.blueprints.json.response.spi.aggregation;
 
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.aggregation.AggregationResult;
@@ -22,7 +22,7 @@ import java.util.Optional;
 /**
  * @author Petteri Karttunen
  */
-public interface AggregationResponseBuilder {
+public interface AggregationBuilder {
 
 	public Optional<JSONObject> buildJSONObjectOptional(
 		AggregationResult aggregationResult);

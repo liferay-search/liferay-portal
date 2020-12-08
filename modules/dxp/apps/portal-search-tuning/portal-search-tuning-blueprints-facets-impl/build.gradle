@@ -15,6 +15,6 @@ dependencies {
 	compileOnly project(":dxp:apps:portal-search-tuning:portal-search-tuning-blueprints-engine-spi")
 	compileOnly project(":dxp:apps:portal-search-tuning:portal-search-tuning-blueprints-facets-api")
 	compileOnly project(":dxp:apps:portal-search-tuning:portal-search-tuning-blueprints-facets-spi")
-	compileOnly project(":dxp:apps:portal-search-tuning:portal-search-tuning-blueprints-response-spi")
+	compileOnly project(":dxp:apps:portal-search-tuning:portal-search-tuning-blueprints-json-response-spi")
 	compileOnly project(":dxp:apps:portal-search-tuning:portal-search-tuning-blueprints-spi")
 }

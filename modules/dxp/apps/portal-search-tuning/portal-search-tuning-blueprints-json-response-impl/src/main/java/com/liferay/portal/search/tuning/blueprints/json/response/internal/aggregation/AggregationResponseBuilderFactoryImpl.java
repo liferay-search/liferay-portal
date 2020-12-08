@@ -19,7 +19,7 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.tuning.blueprints.engine.component.ServiceComponentReference;
-import com.liferay.portal.search.tuning.blueprints.response.spi.aggregation.AggregationResponseBuilder;
+import com.liferay.portal.search.tuning.blueprints.json.response.spi.aggregation.AggregationBuilder;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -37,10 +37,10 @@ public class AggregationResponseBuilderFactoryImpl
 	implements AggregationResponseBuilderFactory {
 
 	@Override
-	public AggregationResponseBuilder getBuilder(String type)
+	public AggregationBuilder getBuilder(String type)
 		throws IllegalArgumentException {
 
-		ServiceComponentReference<AggregationResponseBuilder>
+		ServiceComponentReference<AggregationBuilder>
 			serviceComponentReference = _aggregationResponseBuilders.get(type);
 
 		if (serviceComponentReference == null) {
@@ -64,7 +64,7 @@ public class AggregationResponseBuilderFactoryImpl
 		policy = ReferencePolicy.DYNAMIC
 	)
 	protected void registerAggregationResponseBuilder(
-		AggregationResponseBuilder aggregationResponseBuilder,
+		AggregationBuilder aggregationResponseBuilder,
 		Map<String, Object> properties) {
 
 		String type = (String)properties.get("type");
@@ -84,12 +84,12 @@ public class AggregationResponseBuilderFactoryImpl
 		int serviceRanking = GetterUtil.get(
 			properties.get("service.ranking"), 0);
 
-		ServiceComponentReference<AggregationResponseBuilder>
+		ServiceComponentReference<AggregationBuilder>
 			serviceComponentReference = new ServiceComponentReference<>(
 				aggregationResponseBuilder, serviceRanking);
 
 		if (_aggregationResponseBuilders.containsKey(type)) {
-			ServiceComponentReference<AggregationResponseBuilder>
+			ServiceComponentReference<AggregationBuilder>
 				previousReference = _aggregationResponseBuilders.get(type);
 
 			if (previousReference.compareTo(serviceComponentReference) < 0) {
@@ -103,7 +103,7 @@ public class AggregationResponseBuilderFactoryImpl
 	}
 
 	protected void unregisterAggregationResponseBuilder(
-		AggregationResponseBuilder aggregationResponseBuilder,
+		AggregationBuilder aggregationResponseBuilder,
 		Map<String, Object> properties) {
 
 		String type = (String)properties.get("type");
@@ -119,7 +119,7 @@ public class AggregationResponseBuilderFactoryImpl
 		AggregationResponseBuilderFactoryImpl.class);
 
 	private volatile Map
-		<String, ServiceComponentReference<AggregationResponseBuilder>>
+		<String, ServiceComponentReference<AggregationBuilder>>
 			_aggregationResponseBuilders = new ConcurrentHashMap<>();
 
 }
