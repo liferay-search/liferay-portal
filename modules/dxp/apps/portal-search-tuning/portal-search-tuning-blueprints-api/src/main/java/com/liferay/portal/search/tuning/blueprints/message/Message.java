@@ -21,6 +21,17 @@ import java.io.Serializable;
  */
 public class Message implements Serializable {
 
+	public Message(Message message) {
+		_className = message._className;
+		_localizationKey = message._localizationKey;
+		_msg = message._msg;
+		_throwable = message._throwable;
+		_rootObject = message._rootObject;
+		_rootProperty = message._rootProperty;
+		_rootValue = message._rootValue;
+		_severity = message._severity;
+	}
+	
 	public Message(
 		Severity severity, String sourceModule, String localizationKey,
 		String msg) {
@@ -54,6 +65,10 @@ public class Message implements Serializable {
 		_rootValue = rootValue;
 	}
 
+	public String getClassName() {
+		return _className;
+	}
+
 	public String getLocalizationKey() {
 		return _localizationKey;
 	}
@@ -85,9 +100,87 @@ public class Message implements Serializable {
 	public Throwable getThrowable() {
 		return _throwable;
 	}
+	
+	public static class Builder {
+
+		public Builder() {
+			_message = new Message();
+		}
+
+		public Builder(
+				Message message) {
+
+			_message = message;
+		}
+
+		public Message build() {
+			return new Message(_message);
+		}
+
+		public Builder className(String className) {
+			_message._className = className;
+
+			return this;
+		}
+		
+		public Builder localizationKey(String localizationKey) {
+			_message._localizationKey = localizationKey;
+
+			return this;
+		}
+
+		public Builder msg(String msg) {
+			_message._msg = msg;
+
+			return this;
+		}
+
+		public Builder rootObject(Object obj) {
+			_message._rootObject = obj;
+
+			return this;
+		}
+
+		public Builder rootProperty(String rootProperty) {
+			_message._rootValue = rootProperty;
+
+			return this;
+		}
+
+		public Builder rootValue(String rootValue) {
+			_message._rootValue = rootValue;
+
+			return this;
+		}
+
+		public Builder severity(Severity severity) {
+			_message._severity = severity;
+
+			return this;
+		}
+
+		public Builder sourceModule(String sourceModule) {
+			_message._sourceModule = sourceModule;
+
+			return this;
+		}
+
+		public Builder throwable(Throwable throwable) {
+			_message._throwable = throwable;
+
+			return this;
+		}
+
+		private final Message _message;
+
+	}
+
+	private Message() {
+	}
 
 	private static final long serialVersionUID = 1L;
 
+	private String _className;
 	private String _localizationKey;
 	private String _msg;
 	private Object _rootObject;
