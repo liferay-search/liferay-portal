@@ -25,7 +25,7 @@ import com.liferay.portal.kernel.util.Http;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.search.tuning.blueprints.engine.cache.JsonDataProviderCache;
+import com.liferay.portal.search.tuning.blueprints.engine.cache.JSONDataProviderCache;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.dataprovider.GeoLocationDataProvider;
 import com.liferay.portal.search.tuning.blueprints.ipstack.internal.configuration.IPStackConfiguration;
 import com.liferay.portal.search.tuning.blueprints.message.Message;
@@ -113,7 +113,7 @@ public class IPStackDataProvider implements GeoLocationDataProvider {
 
 		if (!_ipStackConfiguration.isEnabled() ||
 			!_validateConfiguration(messages) ||
-			_validateIPAddress(ipAddress2, messages)) {
+			!_validateIPAddress(ipAddress2, messages)) {
 
 			return null;
 		}
@@ -226,7 +226,7 @@ public class IPStackDataProvider implements GeoLocationDataProvider {
 	}
 
 	private JSONObject _getCachedIPStackDataJSONObject(String ipAddress) {
-		return _jsonDataProviderCache.get(ipAddress);
+		return _jsonDataProviderCache.getJSONObject(ipAddress);
 	}
 
 	private boolean _validateConfiguration(Messages messages) {
@@ -382,6 +382,6 @@ public class IPStackDataProvider implements GeoLocationDataProvider {
 	private volatile IPStackConfiguration _ipStackConfiguration;
 
 	@Reference
-	private JsonDataProviderCache _jsonDataProviderCache;
+	private JSONDataProviderCache _jsonDataProviderCache;
 
 }
