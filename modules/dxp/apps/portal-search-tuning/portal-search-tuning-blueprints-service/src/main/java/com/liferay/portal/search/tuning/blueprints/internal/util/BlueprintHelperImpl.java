@@ -47,16 +47,16 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 	public Optional<JSONArray> getAggsConfigurationOptional(
 		Blueprint blueprint) {
 
-		Optional<JSONObject> configurationJsonObjectOptional =
+		Optional<JSONObject> configurationJSONObjectOptional =
 			_getConfiguration(blueprint);
 
-		if (!configurationJsonObjectOptional.isPresent()) {
+		if (!configurationJSONObjectOptional.isPresent()) {
 			return Optional.empty();
 		}
 
 		Optional<JSONArray> jsonArrayOptional =
 			BlueprintJSONUtil.getValueAsJSONArrayOptional(
-				configurationJsonObjectOptional.get(),
+				configurationJSONObjectOptional.get(),
 				"JSONArray/" +
 					BlueprintKeys.AGGREGATION_CONFIGURATION.getJsonKey());
 
@@ -67,16 +67,16 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 	public Optional<JSONArray> getCustomParameterConfigurationOptional(
 		Blueprint blueprint) {
 
-		Optional<JSONObject> configurationJsonObjectOptional =
+		Optional<JSONObject> configurationJSONObjectOptional =
 			_getConfiguration(blueprint);
 
-		if (!configurationJsonObjectOptional.isPresent()) {
+		if (!configurationJSONObjectOptional.isPresent()) {
 			return Optional.empty();
 		}
 
 		Optional<JSONArray> jsonArrayOptional =
 			BlueprintJSONUtil.getValueAsJSONArrayOptional(
-				configurationJsonObjectOptional.get(),
+				configurationJSONObjectOptional.get(),
 				"JSONObject/" +
 					BlueprintKeys.ADVANCED_CONFIGURATION.getJsonKey(),
 				"JSONArray/" + ParameterConfigurationKeys.CUSTOM.getJsonKey());
@@ -88,30 +88,30 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 	public Optional<JSONArray> getDefaultSortConfigurationOptional(
 		Blueprint blueprint) {
 
-		Optional<JSONObject> configurationJsonObjectOptional =
+		Optional<JSONObject> configurationJSONObjectOptional =
 			_getConfiguration(blueprint);
 
-		if (!configurationJsonObjectOptional.isPresent()) {
+		if (!configurationJSONObjectOptional.isPresent()) {
 			return Optional.empty();
 		}
 
 		return BlueprintJSONUtil.getValueAsJSONArrayOptional(
-			configurationJsonObjectOptional.get(),
+			configurationJSONObjectOptional.get(),
 			"JSONObject/" + BlueprintKeys.SORT_CONFIGURATION.getJsonKey(),
 			"JSONArray/" + SortConfigurationKeys.DEFAULT.getJsonKey());
 	}
 
 	@Override
 	public Optional<JSONArray> getEntryClassNamesOptional(Blueprint blueprint) {
-		Optional<JSONObject> configurationJsonObjectOptional =
+		Optional<JSONObject> configurationJSONObjectOptional =
 			_getConfiguration(blueprint);
 
-		if (!configurationJsonObjectOptional.isPresent()) {
+		if (!configurationJSONObjectOptional.isPresent()) {
 			return Optional.empty();
 		}
 
 		return BlueprintJSONUtil.getValueAsJSONArrayOptional(
-			configurationJsonObjectOptional.get(),
+			configurationJSONObjectOptional.get(),
 			"JSONObject/" + BlueprintKeys.ADVANCED_CONFIGURATION.getJsonKey(),
 			"JSONArray/" +
 				AdvancedConfigurationKeys.ENTRY_CLASS_NAMES.getJsonKey());
@@ -121,10 +121,10 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 	public Optional<List<String>> getExcludedQueryContributorsOptional(
 		Blueprint blueprint) {
 
-		Optional<JSONObject> configurationJsonObjectOptional =
+		Optional<JSONObject> configurationJSONObjectOptional =
 			_getConfiguration(blueprint);
 
-		if (!configurationJsonObjectOptional.isPresent()) {
+		if (!configurationJSONObjectOptional.isPresent()) {
 			return Optional.empty();
 		}
 
@@ -134,7 +134,7 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 
 		Optional<JSONArray> jsonArrayOptional =
 			BlueprintJSONUtil.getValueAsJSONArrayOptional(
-				configurationJsonObjectOptional.get(),
+				configurationJSONObjectOptional.get(),
 				"JSONObject/" +
 					BlueprintKeys.ADVANCED_CONFIGURATION.getJsonKey(),
 				"JSONObject/" +
@@ -155,16 +155,16 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 	public Optional<List<String>> getExcludedQueryPostProcessorsOptional(
 		Blueprint blueprint) {
 
-		Optional<JSONObject> configurationJsonObjectOptional =
+		Optional<JSONObject> configurationJSONObjectOptional =
 			_getConfiguration(blueprint);
 
-		if (!configurationJsonObjectOptional.isPresent()) {
+		if (!configurationJSONObjectOptional.isPresent()) {
 			return Optional.empty();
 		}
 
 		Optional<JSONArray> jsonArrayOptional =
 			BlueprintJSONUtil.getValueAsJSONArrayOptional(
-				configurationJsonObjectOptional.get(),
+				configurationJSONObjectOptional.get(),
 				"JSONObject/" +
 					BlueprintKeys.ADVANCED_CONFIGURATION.getJsonKey(),
 				"JSONObject/" +
@@ -187,15 +187,15 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 	public Optional<JSONObject> getHighlightConfigurationOptional(
 		Blueprint blueprint) {
 
-		Optional<JSONObject> configurationJsonObjectOptional =
+		Optional<JSONObject> configurationJSONObjectOptional =
 			_getConfiguration(blueprint);
 
-		if (!configurationJsonObjectOptional.isPresent()) {
+		if (!configurationJSONObjectOptional.isPresent()) {
 			return Optional.empty();
 		}
 
 		return BlueprintJSONUtil.getValueAsJSONObjectOptional(
-			configurationJsonObjectOptional.get(),
+			configurationJSONObjectOptional.get(),
 			"JSONObject/" + BlueprintKeys.ADVANCED_CONFIGURATION.getJsonKey(),
 			"JSONObject/" +
 				AdvancedConfigurationKeys.HIGHLIGHTING.getJsonKey());
@@ -205,16 +205,16 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 	public Optional<JSONArray> getJSONArrayConfigurationOptional(
 		Blueprint blueprint, String... paths) {
 
-		Optional<JSONObject> configurationJsonObjectOptional =
+		Optional<JSONObject> configurationJSONObjectOptional =
 			_getConfiguration(blueprint);
 
-		if (!configurationJsonObjectOptional.isPresent()) {
+		if (!configurationJSONObjectOptional.isPresent()) {
 			return Optional.empty();
 		}
 
 		Optional<JSONArray> jsonArrayOptional =
 			BlueprintJSONUtil.getValueAsJSONArrayOptional(
-				configurationJsonObjectOptional.get(), paths);
+				configurationJSONObjectOptional.get(), paths);
 
 		return _maybeJsonArrayOptional(jsonArrayOptional);
 	}
@@ -223,26 +223,26 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 	public Optional<JSONObject> getJSONObjectConfigurationOptional(
 		Blueprint blueprint, String... paths) {
 
-		Optional<JSONObject> configurationJsonObjectOptional =
+		Optional<JSONObject> configurationJSONObjectOptional =
 			_getConfiguration(blueprint);
 
-		if (!configurationJsonObjectOptional.isPresent()) {
+		if (!configurationJSONObjectOptional.isPresent()) {
 			return Optional.empty();
 		}
 
 		return BlueprintJSONUtil.getValueAsJSONObjectOptional(
-			configurationJsonObjectOptional.get(), paths);
+			configurationJSONObjectOptional.get(), paths);
 	}
 
 	@Override
 	public Optional<String> getKeywordsParameterNameOptional(
 		Blueprint blueprint) {
 
-		Optional<JSONObject> configurationJsonObjectOptional =
-				getParameterConfigurationOptional(blueprint);
+		Optional<JSONObject> configurationJSONObjectOptional =
+			getParameterConfigurationOptional(blueprint);
 
 		return BlueprintJSONUtil.getValueAsStringOptional(
-			configurationJsonObjectOptional.get(),
+			configurationJSONObjectOptional.get(),
 			"JSONObject/" + ParameterConfigurationKeys.KEYWORDS.getJsonKey(),
 			"Object/" + KeywordsConfigurationKeys.PARAMETER_NAME.getJsonKey());
 	}
@@ -251,10 +251,10 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 	public Optional<JSONArray> getMisspellingsConfigurationOptional(
 		Blueprint blueprint) {
 
-		Optional<JSONObject> configurationJsonObjectOptional =
+		Optional<JSONObject> configurationJSONObjectOptional =
 			_getConfiguration(blueprint);
 
-		if (!configurationJsonObjectOptional.isPresent()) {
+		if (!configurationJSONObjectOptional.isPresent()) {
 			return Optional.empty();
 		}
 
@@ -262,19 +262,18 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 			AdvancedConfigurationKeys.MISSPELLINGS_DEFINITION_IDS.getJsonKey();
 
 		return BlueprintJSONUtil.getValueAsJSONArrayOptional(
-			configurationJsonObjectOptional.get(),
+			configurationJSONObjectOptional.get(),
 			"JSONObject/" + BlueprintKeys.ADVANCED_CONFIGURATION.getJsonKey(),
 			"JSONArray/" + key);
 	}
 
 	@Override
 	public Optional<String> getPageParameterNameOptional(Blueprint blueprint) {
-
-		Optional<JSONObject> configurationJsonObjectOptional =
+		Optional<JSONObject> configurationJSONObjectOptional =
 			getParameterConfigurationOptional(blueprint);
 
 		return BlueprintJSONUtil.getValueAsStringOptional(
-			configurationJsonObjectOptional.get(),
+			configurationJSONObjectOptional.get(),
 			"JSONObject/" + ParameterConfigurationKeys.PAGE.getJsonKey(),
 			"Object/" + PageConfigurationKeys.PARAMETER_NAME.getJsonKey());
 	}
@@ -283,46 +282,47 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 	public Optional<JSONObject> getParameterConfigurationOptional(
 		Blueprint blueprint) {
 
-		Optional<JSONObject> configurationJsonObjectOptional =
+		Optional<JSONObject> configurationJSONObjectOptional =
 			_getConfiguration(blueprint);
 
-		if (!configurationJsonObjectOptional.isPresent()) {
+		if (!configurationJSONObjectOptional.isPresent()) {
 			return Optional.empty();
 		}
-		
-		JSONObject configurationJsonObject = 
-				configurationJsonObjectOptional.get();
-		
-		if (!configurationJsonObject.has(
+
+		JSONObject configurationJSONObject =
+			configurationJSONObjectOptional.get();
+
+		if (!configurationJSONObject.has(
 				BlueprintKeys.PARAMETER_CONFIGURATION.getJsonKey())) {
-			return Optional.of(getDefaultParameterConfiguration());
-		}
-		
-		JSONObject parameterConfigurationJsonObject =
-				configurationJsonObject.getJSONObject(
-						BlueprintKeys.PARAMETER_CONFIGURATION.getJsonKey());
-		
-		if (parameterConfigurationJsonObject.length() > 0) {
-			return Optional.of(parameterConfigurationJsonObject);
+
+			return Optional.of(getDefaultParameterConfigurationJSONObject());
 		}
 
-		return Optional.of(getDefaultParameterConfiguration());
+		JSONObject parameterConfigurationJSONObject =
+			configurationJSONObject.getJSONObject(
+				BlueprintKeys.PARAMETER_CONFIGURATION.getJsonKey());
+
+		if (parameterConfigurationJSONObject.length() > 0) {
+			return Optional.of(parameterConfigurationJSONObject);
+		}
+
+		return Optional.of(getDefaultParameterConfigurationJSONObject());
 	}
 
 	@Override
 	public Optional<JSONArray> getQueryConfigurationOptional(
 		Blueprint blueprint) {
 
-		Optional<JSONObject> configurationJsonObjectOptional =
+		Optional<JSONObject> configurationJSONObjectOptional =
 			_getConfiguration(blueprint);
 
-		if (!configurationJsonObjectOptional.isPresent()) {
+		if (!configurationJSONObjectOptional.isPresent()) {
 			return Optional.empty();
 		}
 
 		Optional<JSONArray> jsonArrayOptional =
 			BlueprintJSONUtil.getValueAsJSONArrayOptional(
-				configurationJsonObjectOptional.get(),
+				configurationJSONObjectOptional.get(),
 				"JSONArray/" + BlueprintKeys.QUERY_CONFIGURATION.getJsonKey());
 
 		return _maybeJsonArrayOptional(jsonArrayOptional);
@@ -332,10 +332,10 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 	public Optional<String> getQueryIndexConfigurationIdOptional(
 		Blueprint blueprint) {
 
-		Optional<JSONObject> configurationJsonObjectOptional =
+		Optional<JSONObject> configurationJSONObjectOptional =
 			_getConfiguration(blueprint);
 
-		if (!configurationJsonObjectOptional.isPresent()) {
+		if (!configurationJSONObjectOptional.isPresent()) {
 			return Optional.empty();
 		}
 
@@ -344,7 +344,7 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 				getJsonKey();
 
 		return BlueprintJSONUtil.getValueAsStringOptional(
-			configurationJsonObjectOptional.get(),
+			configurationJSONObjectOptional.get(),
 			"JSONObject/" + BlueprintKeys.ADVANCED_CONFIGURATION.getJsonKey(),
 			"JSONObject/" +
 				AdvancedConfigurationKeys.QUERY_INDEXING.getJsonKey(),
@@ -355,15 +355,15 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 	public Optional<JSONObject> getQueryIndexingConfigurationOptional(
 		Blueprint blueprint) {
 
-		Optional<JSONObject> configurationJsonObjectOptional =
+		Optional<JSONObject> configurationJSONObjectOptional =
 			_getConfiguration(blueprint);
 
-		if (!configurationJsonObjectOptional.isPresent()) {
+		if (!configurationJSONObjectOptional.isPresent()) {
 			return Optional.empty();
 		}
 
 		return BlueprintJSONUtil.getValueAsJSONObjectOptional(
-			configurationJsonObjectOptional.get(),
+			configurationJSONObjectOptional.get(),
 			"JSONObject/" + BlueprintKeys.ADVANCED_CONFIGURATION.getJsonKey(),
 			"JSONObject/" +
 				AdvancedConfigurationKeys.QUERY_INDEXING.getJsonKey());
@@ -371,16 +371,16 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 
 	@Override
 	public int getSize(Blueprint blueprint) {
-		Optional<JSONObject> configurationJsonObjectOptional =
+		Optional<JSONObject> configurationJSONObjectOptional =
 			_getConfiguration(blueprint);
 
-		if (!configurationJsonObjectOptional.isPresent()) {
+		if (!configurationJSONObjectOptional.isPresent()) {
 			return _DEFAULT_PAGE_SIZE;
 		}
 
 		Optional<Integer> sizeOptional =
 			BlueprintJSONUtil.getValueAsIntegerOptional(
-				configurationJsonObjectOptional.get(),
+				configurationJSONObjectOptional.get(),
 				"JSONObject/" +
 					BlueprintKeys.ADVANCED_CONFIGURATION.getJsonKey(),
 				"Object/" + AdvancedConfigurationKeys.PAGE_SIZE.getJsonKey());
@@ -392,15 +392,15 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 	public Optional<JSONObject> getSortConfigurationOptional(
 		Blueprint blueprint) {
 
-		Optional<JSONObject> configurationJsonObjectOptional =
+		Optional<JSONObject> configurationJSONObjectOptional =
 			_getConfiguration(blueprint);
 
-		if (!configurationJsonObjectOptional.isPresent()) {
+		if (!configurationJSONObjectOptional.isPresent()) {
 			return Optional.empty();
 		}
 
 		return BlueprintJSONUtil.getValueAsJSONObjectOptional(
-			configurationJsonObjectOptional.get(),
+			configurationJSONObjectOptional.get(),
 			"JSONObject/" + BlueprintKeys.SORT_CONFIGURATION.getJsonKey());
 	}
 
@@ -408,15 +408,15 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 	public Optional<JSONArray> getSortParameterConfigurationOptional(
 		Blueprint blueprint) {
 
-		Optional<JSONObject> configurationJsonObjectOptional =
+		Optional<JSONObject> configurationJSONObjectOptional =
 			_getConfiguration(blueprint);
 
-		if (!configurationJsonObjectOptional.isPresent()) {
+		if (!configurationJSONObjectOptional.isPresent()) {
 			return Optional.empty();
 		}
 
 		return BlueprintJSONUtil.getValueAsJSONArrayOptional(
-			configurationJsonObjectOptional.get(),
+			configurationJSONObjectOptional.get(),
 			"JSONObject/" + BlueprintKeys.SORT_CONFIGURATION.getJsonKey(),
 			"JSONArray/" + SortConfigurationKeys.PARAMETERS.getJsonKey());
 	}
@@ -425,55 +425,46 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 	public Optional<JSONArray> getSuggestConfigurationOptional(
 		Blueprint blueprint) {
 
-		Optional<JSONObject> configurationJsonObjectOptional =
+		Optional<JSONObject> configurationJSONObjectOptional =
 			_getConfiguration(blueprint);
 
-		if (!configurationJsonObjectOptional.isPresent()) {
+		if (!configurationJSONObjectOptional.isPresent()) {
 			return Optional.empty();
 		}
 
 		Optional<JSONArray> jsonArrayOptional =
 			BlueprintJSONUtil.getValueAsJSONArrayOptional(
-				configurationJsonObjectOptional.get(),
+				configurationJSONObjectOptional.get(),
 				"JSONObject/" +
 					BlueprintKeys.SUGGEST_CONFIGURATION.getJsonKey());
 
 		return _maybeJsonArrayOptional(jsonArrayOptional);
 	}
 
-	protected JSONObject getDefaultParameterConfiguration() {
-		
-		JSONObject parameterConfigurationJsonObject =
-				JSONFactoryUtil.createJSONObject();
+	protected JSONObject getDefaultParameterConfigurationJSONObject() {
+		JSONObject keywordsConfigurationJSONObject = JSONUtil.put(
+			KeywordsConfigurationKeys.PARAMETER_NAME.getJsonKey(), "q");
 
-		JSONObject keywordsConfigurationJsonObject = JSONFactoryUtil.createJSONObject();
-		
-		keywordsConfigurationJsonObject.put(
-				KeywordsConfigurationKeys.PARAMETER_NAME.getJsonKey(), "q");
+		JSONObject parameterConfigurationJSONObject = JSONUtil.put(
+			ParameterConfigurationKeys.KEYWORDS.getJsonKey(),
+			keywordsConfigurationJSONObject);
 
-		parameterConfigurationJsonObject.put(
-				ParameterConfigurationKeys.KEYWORDS.getJsonKey(),
-				keywordsConfigurationJsonObject);
-
-		JSONObject pagingConfigurationJsonObject =
-				JSONFactoryUtil.createJSONObject();
-
-		pagingConfigurationJsonObject.put(
+		JSONObject pagingConfigurationJSONObject = JSONUtil.put(
 			KeywordsConfigurationKeys.PARAMETER_NAME.getJsonKey(), "page");
 
-		parameterConfigurationJsonObject.put(
+		parameterConfigurationJSONObject.put(
 			ParameterConfigurationKeys.PAGE.getJsonKey(),
-			pagingConfigurationJsonObject);
-		
-		return parameterConfigurationJsonObject;
+			pagingConfigurationJSONObject);
+
+		return parameterConfigurationJSONObject;
 	}
-	
+
 	private Optional<JSONObject> _getConfiguration(Blueprint blueprint) {
 		try {
-			JSONObject configurationJsonObject =
+			JSONObject configurationJSONObject =
 				JSONFactoryUtil.createJSONObject(blueprint.getConfiguration());
 
-			return Optional.of(configurationJsonObject);
+			return Optional.of(configurationJSONObject);
 		}
 		catch (JSONException jsonException) {
 			_log.error(
