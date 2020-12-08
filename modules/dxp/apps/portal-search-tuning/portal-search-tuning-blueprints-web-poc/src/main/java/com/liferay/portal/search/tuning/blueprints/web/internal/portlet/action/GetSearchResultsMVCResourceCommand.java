@@ -141,7 +141,7 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 		long blueprintId) {
 
 		BlueprintsAttributesBuilder blueprintsAttributesBuilder =
-			_blueprintsAttributesHelper.getBlueprintsResponsetAttributesBuilder(
+			_blueprintsAttributesHelper.getBlueprintsResponseAttributesBuilder(
 				resourceRequest, resourceResponse, blueprintId);
 
 		// Add here any other attributes

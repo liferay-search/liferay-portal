@@ -144,7 +144,7 @@ public class GetTypeaheadMVCResourceCommand extends BaseMVCResourceCommand {
 		long blueprintId) {
 
 		BlueprintsAttributesBuilder blueprintsAttributesBuilder =
-			_blueprintsAttributesHelper.getBlueprintsResponsetAttributesBuilder(
+			_blueprintsAttributesHelper.getBlueprintsResponseAttributesBuilder(
 				resourceRequest, resourceResponse, blueprintId);
 
 		return blueprintsAttributesBuilder.build();
