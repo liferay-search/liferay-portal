@@ -16,7 +16,6 @@ package com.liferay.portal.search.tuning.blueprints.ipstack.internal.parameter;
 
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.GetterUtil;
-import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
 import com.liferay.portal.search.tuning.blueprints.engine.constants.ReservedParameterNames;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.DoubleParameter;
@@ -25,9 +24,7 @@ import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterDef
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.dataprovider.GeoLocationDataProvider;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.parameter.ParameterContributor;
-import com.liferay.portal.search.tuning.blueprints.message.Message;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.message.Severity;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 
 import java.util.ArrayList;
@@ -51,19 +48,9 @@ public class IPStackParameterContributor implements ParameterContributor {
 		ParameterDataBuilder parameterDataBuilder, Blueprint blueprint,
 		BlueprintsAttributes blueprintsAttributes, Messages messages) {
 
-		String ipAddress = _getIpAddress(blueprintsAttributes);
-
-		if (Validator.isBlank(ipAddress)) {
-			messages.addMessage(
-				new Message(
-					Severity.INFO, "ipstack",
-					"core.error.ip-parameter-not-found",
-					"IP address not found in parameter data"));
-
-			return;
-		}
-
-		_contribute(parameterDataBuilder, messages, ipAddress);
+		_contribute(
+			parameterDataBuilder, _getIpAddress(blueprintsAttributes),
+			messages);
 	}
 
 	@Override
@@ -73,57 +60,59 @@ public class IPStackParameterContributor implements ParameterContributor {
 		parameterDefinitions.add(
 			new ParameterDefinition(
 				"${ipstack.city}", StringParameter.class.getName(),
-				"parameter.ipstack.city"));
+				"ipstack.parameter.city"));
 		parameterDefinitions.add(
 			new ParameterDefinition(
 				"${ipstack.continent_code}", StringParameter.class.getName(),
-				"parameter.ipstack.continent-code"));
+				"ipstack.parameter.continent-code"));
 		parameterDefinitions.add(
 			new ParameterDefinition(
 				"${ipstack.continent_name}", StringParameter.class.getName(),
-				"parameter.ipstack.continent-name"));
+				"ipstack.parameter.continent-name"));
 		parameterDefinitions.add(
 			new ParameterDefinition(
 				"${ipstack.country_code}", StringParameter.class.getName(),
-				"parameter.ipstack.country-code"));
+				"ipstack.parameter.country-code"));
 		parameterDefinitions.add(
 			new ParameterDefinition(
 				"${ipstack.country_name}", StringParameter.class.getName(),
-				"parameter.ipstack.country-name"));
+				"ipstack.parameter.country-name"));
 		parameterDefinitions.add(
 			new ParameterDefinition(
 				"${ipstack.latitude}", DoubleParameter.class.getName(),
-				"parameter.ipstack.latitude"));
+				"ipstack.parameter.latitude"));
 		parameterDefinitions.add(
 			new ParameterDefinition(
 				"${ipstack.longitude}", DoubleParameter.class.getName(),
-				"parameter.ipstack.longitude"));
+				"ipstack.parameter.longitude"));
 		parameterDefinitions.add(
 			new ParameterDefinition(
 				"${ipstack.region_code}", StringParameter.class.getName(),
-				"parameter.ipstack.region-code"));
+				"ipstack.parameter.region-code"));
 		parameterDefinitions.add(
 			new ParameterDefinition(
 				"${ipstack.region_name}", StringParameter.class.getName(),
-				"parameter.ipstack.region-name"));
+				"ipstack.parameter.region-name"));
 		parameterDefinitions.add(
 			new ParameterDefinition(
 				"${ipstack.zip}", StringParameter.class.getName(),
-				"parameter.ipstack.zip"));
+				"ipstack.parameter.zip"));
 
 		return parameterDefinitions;
 	}
 
 	private void _contribute(
-		ParameterDataBuilder parameterDataBuilder, Messages messages,
-		String ipAddress) {
+		ParameterDataBuilder parameterDataBuilder, String ipAddress,
+		Messages messages) {
 
-		JSONObject geoLocationJSONObject =
-			_geoLocationDataProvider.getGeoLocationDataJSONObject(messages, ipAddress);
+		Optional<JSONObject> geoLocationJSONObjectOptional =
+			_geoLocationDataProvider.getGeoLocationData(ipAddress, messages);
 
-		if (geoLocationJSONObject == null) {
+		if (!geoLocationJSONObjectOptional.isPresent()) {
 			return;
 		}
+
+		JSONObject geoLocationJSONObject = geoLocationJSONObjectOptional.get();
 
 		parameterDataBuilder.addParameter(
 			new StringParameter(
