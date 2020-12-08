@@ -18,14 +18,17 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.search.geolocation.GeoLocationPoint;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 
+import java.util.Optional;
+
 /**
  * @author Petteri Karttunen
  */
 public interface GeoLocationDataProvider {
 
-	public JSONObject getGeoLocationDataJSONObject(Messages messages, String ipAddress);
+	public Optional<JSONObject> getGeoLocationData(
+			String ipAddress, Messages messages);
 
-	public GeoLocationPoint getGeoLocationPoint(
-		Messages messages, String ipAddress);
+	public  Optional<GeoLocationPoint> getGeoLocationPoint(
+		String ipAddress, Messages messages);
 
 }
