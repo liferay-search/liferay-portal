@@ -18,7 +18,6 @@ import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.search.geolocation.GeoLocationPoint;
 import com.liferay.portal.kernel.util.GetterUtil;
-import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
 import com.liferay.portal.search.tuning.blueprints.engine.constants.ReservedParameterNames;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.DoubleParameter;
@@ -28,9 +27,7 @@ import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterDef
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.dataprovider.GeoLocationDataProvider;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.parameter.ParameterContributor;
-import com.liferay.portal.search.tuning.blueprints.message.Message;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.message.Severity;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.openweathermap.internal.dataprovider.OpenWeatherMapDataProvider;
 
@@ -56,19 +53,9 @@ public class OpenWeatherMapParameterContributor
 		ParameterDataBuilder parameterDataBuilder, Blueprint blueprint,
 		BlueprintsAttributes blueprintsAttributes, Messages messages) {
 
-		String ipAddress = _getIpAddress(blueprintsAttributes);
-
-		if (Validator.isBlank(ipAddress)) {
-			messages.addMessage(
-				new Message(
-					Severity.INFO, "ipstack",
-					"core.error.ip-parameter-not-found",
-					"IP address wat not found in parameter data"));
-
-			return;
-		}
-
-		_contribute(parameterDataBuilder, messages, ipAddress);
+		_contribute(
+			parameterDataBuilder, _getIpAddress(blueprintsAttributes),
+			messages);
 	}
 
 	@Override
@@ -79,33 +66,35 @@ public class OpenWeatherMapParameterContributor
 			new ParameterDefinition(
 				"${openweathermap.weather_id}",
 				IntegerParameter.class.getName(),
-				"parameter.openweathermap.weather-id"));
+				"openweathermap.parameter.weather-id"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
 				"${openweathermap.weather_name}",
 				StringParameter.class.getName(),
-				"parameter.openweathermap.weather-name"));
+				"openweathermap.parameter.weather-name"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
 				"${openweathermap.temperature}",
 				DoubleParameter.class.getName(),
-				"parameter.openweathermap.temperature"));
+				"openweathermap.parameter.temperature"));
 
 		return parameterDefinitions;
 	}
 
 	private void _contribute(
-		ParameterDataBuilder parameterDataBuilder, Messages messages,
-		String ipAddress) {
+		ParameterDataBuilder parameterDataBuilder, String ipAddress,
+		Messages messages) {
 
-		GeoLocationPoint geoLocationPoint =
-			_geoLocationDataProvider.getGeoLocationPoint(messages, ipAddress);
+		Optional<GeoLocationPoint> geoLocationPointOptional =
+			_geoLocationDataProvider.getGeoLocationPoint(ipAddress, messages);
 
-		if (geoLocationPoint == null) {
+		if (!geoLocationPointOptional.isPresent()) {
 			return;
 		}
+
+		GeoLocationPoint geoLocationPoint = geoLocationPointOptional.get();
 
 		JSONObject weatherDataJSONObject =
 			_openWeatherMapDataProvider.getWeatherDataJSONObject(
@@ -115,29 +104,29 @@ public class OpenWeatherMapParameterContributor
 			return;
 		}
 
-		JSONArray weatherJsonArray = weatherDataJSONObject.getJSONArray(
+		JSONArray weatherJSONArray = weatherDataJSONObject.getJSONArray(
 			"weather");
 
-		JSONObject weatherJsonObject = weatherJsonArray.getJSONObject(0);
+		JSONObject weatherJSONObject = weatherJSONArray.getJSONObject(0);
 
-		if (weatherJsonObject == null) {
+		if (weatherJSONObject == null) {
 			return;
 		}
 
 		parameterDataBuilder.addParameter(
 			new IntegerParameter(
 				"openweathermap.weather_id", "${openweathermap.weather_id}",
-				weatherJsonObject.getInt("id")));
+				weatherJSONObject.getInt("id")));
 
 		parameterDataBuilder.addParameter(
 			new StringParameter(
 				"openweathermap.weather_name", "${openweathermap.weather_name}",
-				weatherJsonObject.getString("main")));
+				weatherJSONObject.getString("main")));
 
 		parameterDataBuilder.addParameter(
 			new DoubleParameter(
 				"openweathermap.temperature", "${openweathermap.temperature}",
-				weatherJsonObject.getDouble("temp")));
+				weatherJSONObject.getDouble("temp")));
 	}
 
 	private String _getIpAddress(BlueprintsAttributes blueprintsAttributes) {
