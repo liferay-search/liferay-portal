@@ -61,14 +61,14 @@ public class CommerceParameterContributor implements ParameterContributor {
 				_getTemplateVariableName(
 					ReservedParameterNames.COMMERCE_ACCOUNT_GROUP_IDS.getKey()),
 				LongParameter.class.getName(),
-				"parameter.commerce.account-group-ids"));
+				"commerce.parameter.account-group-ids"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
 				_getTemplateVariableName(
 					ReservedParameterNames.COMMERCE_CHANNEL_GROUP_ID.getKey()),
 				LongParameter.class.getName(),
-				"parameter.commerce.channel-group-id"));
+				"commerce.parameter.channel-group-id"));
 
 		return parameterDefinitions;
 	}
