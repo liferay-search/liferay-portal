@@ -22,9 +22,10 @@ import com.liferay.portal.search.tuning.blueprints.message.Messages;
  * @author Petteri Karttunen
  */
 public interface BlueprintTemplateVariableParser {
-	
+
 	public JSONObject parse(
 			ParameterData parameterData, Messages messages,
-			JSONObject queryJsonObject)
+			JSONObject jsonObject)
 		throws Exception;
+
 }
