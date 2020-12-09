@@ -43,51 +43,60 @@ import java.util.ResourceBundle;
 /**
  * @author Petteri Karttunen
  */
-public abstract class BaseTermsFacetResponseHandler implements FacetResponseHandler {
+public abstract class BaseTermsFacetResponseHandler
+	implements FacetResponseHandler {
 
 	@Override
 	public Optional<JSONObject> getResultOptional(
 		AggregationResult aggregationResult,
 		BlueprintsAttributes blueprintsAttributes,
 		ResourceBundle resourceBundle, Messages messages,
-		JSONObject configurationJsonObject) {
+		JSONObject configurationJSONObject) {
 
 		TermsAggregationResult termsAggregationResult =
 			(TermsAggregationResult)aggregationResult;
-		
-		if (termsAggregationResult.getBuckets().size() == 0) {
 
+		Collection<Bucket> buckets = termsAggregationResult.getBuckets();
+
+		if (buckets.isEmpty()) {
 			return Optional.empty();
 		}
 
 		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
 
-		long frequencyThreshold = configurationJsonObject.getLong(
+		long frequencyThreshold = configurationJSONObject.getLong(
 			FacetConfigurationKeys.FREQUENCY_THRESHOLD.getJsonKey(), 1);
 
-		for (Bucket bucket : termsAggregationResult.getBuckets()) {
-
+		for (Bucket bucket : buckets) {
 			if (bucket.getDocCount() < frequencyThreshold) {
 				continue;
 			}
-			
+
 			try {
-				JSONObject jsonObject = 
-						createBucketJSONObject(bucket, blueprintsAttributes, resourceBundle);
-				
+				JSONObject jsonObject = createBucketJSONObject(
+					bucket, blueprintsAttributes, resourceBundle);
+
 				if (jsonObject != null) {
 					jsonArray.put(
-							createBucketJSONObject(
-									bucket, blueprintsAttributes, resourceBundle));
+						createBucketJSONObject(
+							bucket, blueprintsAttributes, resourceBundle));
 				}
 			}
 			catch (Exception exception) {
 				messages.addMessage(
-					new Message(
-						Severity.ERROR, "core",
-						"facets.error.could-not-create-bucket-object",
-						exception.getMessage(), exception,
-						configurationJsonObject, null, null));
+					new Message.Builder().className(
+						getClass().getName()
+					).localizationKey(
+						"facets.error.could-not-create-bucket-object"
+					).msg(
+						exception.getMessage()
+					).rootObject(
+						configurationJSONObject
+					).severity(
+						Severity.ERROR
+					).throwable(
+						exception
+					).build());
 
 				if (_log.isWarnEnabled()) {
 					_log.warn(exception.getMessage(), exception);
@@ -100,45 +109,43 @@ public abstract class BaseTermsFacetResponseHandler implements FacetResponseHand
 		}
 
 		return createResultObject(
-			jsonArray, configurationJsonObject, resourceBundle);
+			jsonArray, configurationJSONObject, resourceBundle);
 	}
-	
+
 	protected JSONObject createBucketJSONObject(
 			Bucket bucket, BlueprintsAttributes blueprintsAttributes,
-			ResourceBundle resourceBundle) throws Exception {
+			ResourceBundle resourceBundle)
+		throws Exception {
 
 		String value = bucket.getKey();
-		
+
 		long frequency = bucket.getDocCount();
-		
-		JSONObject jsonObject = JSONUtil.put(
-				FacetJSONResponseKeys.FREQUENCY, frequency);
 
-		jsonObject.put(
-				FacetJSONResponseKeys.TEXT,
-				getText(value, frequency, resourceBundle));
-
-		jsonObject.put(FacetJSONResponseKeys.VALUE, value);
-		
-		return jsonObject;
-
+		return JSONUtil.put(
+			FacetJSONResponseKeys.FREQUENCY, frequency
+		).put(
+			FacetJSONResponseKeys.TEXT,
+			getText(value, frequency, resourceBundle)
+		).put(
+			FacetJSONResponseKeys.VALUE, value
+		);
 	}
 
 	protected Optional<JSONObject> createResultObject(
-		JSONArray jsonArray, JSONObject configurationJsonObject,
+		JSONArray jsonArray, JSONObject configurationJSONObject,
 		ResourceBundle resourceBundle) {
 
 		if (jsonArray.length() == 0) {
 			return Optional.empty();
 		}
 
-		String handlerName = configurationJsonObject.getString(
+		String handlerName = configurationJSONObject.getString(
 			FacetConfigurationKeys.HANDLER.getJsonKey(), "default");
 
-		String parameterName = configurationJsonObject.getString(
+		String parameterName = configurationJSONObject.getString(
 			FacetConfigurationKeys.PARAMETER_NAME.getJsonKey());
 
-		String label = configurationJsonObject.getString(
+		String label = configurationJSONObject.getString(
 			FacetConfigurationKeys.LABEL.getJsonKey(), parameterName);
 
 		return Optional.of(
@@ -192,8 +199,8 @@ public abstract class BaseTermsFacetResponseHandler implements FacetResponseHand
 
 		return sb.toString();
 	}
-	
+
 	private static final Log _log = LogFactoryUtil.getLog(
-			BaseTermsFacetResponseHandler.class);
+		BaseTermsFacetResponseHandler.class);
 
 }

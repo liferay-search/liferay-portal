@@ -70,14 +70,22 @@ public class DefaultConditionHandler implements ConditionHandler {
 			evaluationType = _getEvaluationType(evaluationTypeString);
 		}
 		catch (IllegalArgumentException illegalArgumentException) {
-			messages.addMessage(
-				new Message(
-					Severity.ERROR, "core",
-					"core.error.unknown-clause-condition-evaluation-type",
-					illegalArgumentException.getMessage(),
-					illegalArgumentException, configurationJsonObject,
-					ConditionConfigurationKeys.EVALUATION_TYPE.getJsonKey(),
-					evaluationTypeString));
+
+ 			messages.addMessage(
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+						"core.error.unknown-clause-condition-evaluation-type"
+				).msg(
+					illegalArgumentException.getMessage()
+				).rootObject(configurationJsonObject
+				).rootProperty(
+						ConditionConfigurationKeys.EVALUATION_TYPE.getJsonKey()
+				).rootValue(evaluationTypeString
+				).severity(
+					Severity.ERROR
+				).throwable(illegalArgumentException
+				).build());
 
 			if (_log.isWarnEnabled()) {
 				_log.warn(
@@ -123,14 +131,21 @@ public class DefaultConditionHandler implements ConditionHandler {
 			parameter, configurationJsonObject, evaluationType);
 
 		if (visitor == null) {
-			messages.addMessage(
-				new Message(
-					Severity.ERROR, "core",
-					"core.error.unknown-clause-condition-evaluation-type",
-					"Unknown clause condition evaluation type", null,
-					configurationJsonObject,
-					ConditionConfigurationKeys.EVALUATION_TYPE.getJsonKey(),
-					evaluationType.name()));
+
+ 			messages.addMessage(
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"core.error.unknown-clause-condition-evaluation-type"
+				).msg(
+						"Unknown clause condition evaluation type"
+				).rootObject(configurationJsonObject
+				).rootProperty(
+						ConditionConfigurationKeys.EVALUATION_TYPE.getJsonKey()
+				).rootValue(evaluationType.name()
+				).severity(
+					Severity.ERROR
+				).build());
 
 			if (_log.isWarnEnabled()) {
 				_log.warn(
@@ -255,14 +270,20 @@ public class DefaultConditionHandler implements ConditionHandler {
 		if (!configurationJsonObject.has(
 				ConditionConfigurationKeys.PARAMETER_NAME.getJsonKey())) {
 
-			messages.addMessage(
-				new Message(
-					Severity.ERROR, "core",
-					"core.error.undefined-clause-condition-parameter",
-					"Clause condition parameter is not defined",
-					configurationJsonObject,
-					ConditionConfigurationKeys.PARAMETER_NAME.getJsonKey(),
-					null));
+
+ 			messages.addMessage(
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"core.error.undefined-clause-condition-parameter"
+				).msg(
+						"Clause condition parameter is not defined"
+				).rootObject(configurationJsonObject
+				).rootProperty(
+						ConditionConfigurationKeys.PARAMETER_NAME.getJsonKey()
+				).severity(
+					Severity.ERROR
+				).build());
 
 			if (_log.isWarnEnabled()) {
 				_log.warn(
@@ -276,14 +297,20 @@ public class DefaultConditionHandler implements ConditionHandler {
 		if (!configurationJsonObject.has(
 				ConditionConfigurationKeys.EVALUATION_TYPE.getJsonKey())) {
 
-			messages.addMessage(
-				new Message(
-					Severity.ERROR, "core",
-					"core.error.undefined-clause-condition-evaluation-type",
-					"Clause condition evaluation type is not defined", null,
-					configurationJsonObject,
-					ConditionConfigurationKeys.EVALUATION_TYPE.getJsonKey(),
-					null));
+
+ 			messages.addMessage(
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"core.error.undefined-clause-condition-evaluation-type"
+				).msg(
+						"Clause condition evaluation type is not defined"
+				).rootObject(configurationJsonObject
+				).rootProperty(
+						ConditionConfigurationKeys.EVALUATION_TYPE.getJsonKey()
+				).severity(
+					Severity.ERROR
+				).build());
 
 			if (_log.isWarnEnabled()) {
 				_log.warn(

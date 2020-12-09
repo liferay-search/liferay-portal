@@ -60,7 +60,7 @@ public class ValueAggregationsFacetResponseHandler
 		AggregationResult aggregationResult,
 		BlueprintsAttributes blueprintsAttributes,
 		ResourceBundle resourceBundle, Messages messages,
-		JSONObject configurationJsonObject) {
+		JSONObject configurationJSONObject) {
 
 		TermsAggregationResult termsAggregationResult =
 			(TermsAggregationResult)aggregationResult;
@@ -68,12 +68,12 @@ public class ValueAggregationsFacetResponseHandler
 		JSONArray jsonArray = null;
 
 		try {
-			JSONObject handlerParametersJsonObject =
-				configurationJsonObject.getJSONObject(
+			JSONObject handlerParametersJSONObject =
+				configurationJSONObject.getJSONObject(
 					FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey());
 
-			JSONArray aggregationsJsonArray =
-				handlerParametersJsonObject.getJSONArray("aggregations");
+			JSONArray aggregationsJSONArray =
+				handlerParametersJSONObject.getJSONArray("aggregations");
 
 			Map<String, Integer> termsMap = new HashMap<>();
 
@@ -84,16 +84,16 @@ public class ValueAggregationsFacetResponseHandler
 
 				boolean mappingFound = false;
 
-				for (int i = 0; i < aggregationsJsonArray.length(); i++) {
-					JSONObject aggregationJsonObject =
-						aggregationsJsonArray.getJSONObject(i);
+				for (int i = 0; i < aggregationsJSONArray.length(); i++) {
+					JSONObject aggregationJSONObject =
+						aggregationsJSONArray.getJSONObject(i);
 
-					String key = aggregationJsonObject.getString("key");
-					JSONArray valuesJsonArray =
-						aggregationJsonObject.getJSONArray("values");
+					String key = aggregationJSONObject.getString("key");
+					JSONArray valuesJSONArray =
+						aggregationJSONObject.getJSONArray("values");
 
-					for (int j = 0; j < valuesJsonArray.length(); j++) {
-						String val = valuesJsonArray.getString(j);
+					for (int j = 0; j < valuesJSONArray.length(); j++) {
+						String val = valuesJSONArray.getString(j);
 
 						if (StringUtil.equals(val, bucket.getKey())) {
 							if (termsMap.get(key) != null) {
@@ -119,7 +119,7 @@ public class ValueAggregationsFacetResponseHandler
 
 			Map<String, Integer> termMapOrdered = _sort(termsMap);
 
-			long frequencyThreshold = configurationJsonObject.getLong(
+			long frequencyThreshold = configurationJSONObject.getLong(
 				FacetConfigurationKeys.FREQUENCY_THRESHOLD.getJsonKey(), 1);
 
 			jsonArray = _getTermsJSONArray(
@@ -127,16 +127,25 @@ public class ValueAggregationsFacetResponseHandler
 		}
 		catch (Exception exception) {
 			messages.addMessage(
-				new Message(
-					Severity.ERROR, "core", "core.error.unknown-exception",
-					exception.getMessage(), exception, configurationJsonObject,
-					null, null));
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"facets.error.unknown-error"
+				).msg(
+					exception.getMessage()
+				).rootObject(
+					configurationJSONObject
+				).severity(
+					Severity.ERROR
+				).throwable(
+					exception
+				).build());
 
 			_log.error(exception.getMessage(), exception);
 		}
 
 		return createResultObject(
-			jsonArray, configurationJsonObject, resourceBundle);
+			jsonArray, configurationJSONObject, resourceBundle);
 	}
 
 	private JSONArray _getTermsJSONArray(

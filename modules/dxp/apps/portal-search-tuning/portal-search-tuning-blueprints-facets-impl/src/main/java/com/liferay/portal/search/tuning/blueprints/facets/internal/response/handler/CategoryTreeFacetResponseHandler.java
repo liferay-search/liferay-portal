@@ -37,6 +37,7 @@ import com.liferay.portal.search.tuning.blueprints.message.Message;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 import com.liferay.portal.search.tuning.blueprints.message.Severity;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -61,35 +62,51 @@ public class CategoryTreeFacetResponseHandler
 		AggregationResult aggregationResult,
 		BlueprintsAttributes blueprintsAttributes,
 		ResourceBundle resourceBundle, Messages messages,
-		JSONObject configurationJsonObject) {
+		JSONObject configurationJSONObject) {
 
-		JSONObject handlerParametersJsonObject =
-			configurationJsonObject.getJSONObject(
+		JSONObject handlerParametersJSONObject =
+			configurationJSONObject.getJSONObject(
 				FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey());
 
-		if (handlerParametersJsonObject == null) {
+		if (handlerParametersJSONObject == null) {
 			messages.addMessage(
-				new Message(
-					Severity.ERROR, "core",
-					"core.error.facet-handler-parameters-missing",
-					"Facet handler parameters are missing", new Throwable(),
-					handlerParametersJsonObject,
-					FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey(),
-					null));
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"facets.error.undefined-handler-parameters"
+				).msg(
+					"Facet handler parameters are not defined"
+				).rootObject(
+					handlerParametersJSONObject
+				).rootProperty(
+					FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey()
+				).severity(
+					Severity.ERROR
+				).build());
 
 			return Optional.empty();
 		}
 
-		Long vocabularyId = handlerParametersJsonObject.getLong(
+		Long vocabularyId = handlerParametersJSONObject.getLong(
 			"root_vocabulary_id", -1);
 
 		if (vocabularyId < 0) {
 			messages.addMessage(
-				new Message(
-					Severity.ERROR, "core",
-					"core.error.facet-asset-vocabulary-id-parameter-missing",
-					"Root vocabulary id is not defined", new Throwable(),
-					handlerParametersJsonObject, "vocabulary_id", null));
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"facets.error.root-vocabulary-id-missing"
+				).msg(
+					"Root vocabulary id is not defined"
+				).rootObject(
+					handlerParametersJSONObject
+				).rootProperty(
+					"vocabulary_id"
+				).rootValue(
+					String.valueOf(vocabularyId)
+				).severity(
+					Severity.ERROR
+				).build());
 
 			return Optional.empty();
 		}
@@ -97,30 +114,41 @@ public class CategoryTreeFacetResponseHandler
 		TermsAggregationResult termsAggregationResult =
 			(TermsAggregationResult)aggregationResult;
 
-		if (termsAggregationResult.getBuckets(
-			).size() == 0) {
+		Collection<Bucket> buckets = termsAggregationResult.getBuckets();
 
+		if (buckets.isEmpty()) {
 			return Optional.empty();
 		}
 
-		long frequencyThreshold = configurationJsonObject.getLong(
+		long frequencyThreshold = configurationJSONObject.getLong(
 			FacetConfigurationKeys.FREQUENCY_THRESHOLD.getJsonKey(), 1);
 
 		JSONArray jsonArray = null;
 
 		try {
 			jsonArray = _getCategoriesJSONArray(
-				termsAggregationResult, vocabularyId, frequencyThreshold,
+				buckets, vocabularyId, frequencyThreshold,
 				blueprintsAttributes.getLocale(), messages);
 		}
 		catch (PortalException portalException) {
 			messages.addMessage(
-				new Message(
-					Severity.ERROR, "core",
-					"core.error.asset-vocabulary-not-found",
-					portalException.getMessage(), portalException,
-					handlerParametersJsonObject, "vocabulary_id",
-					String.valueOf(vocabularyId)));
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"facets.error.asset-vocabulary-not-found"
+				).msg(
+					portalException.getMessage()
+				).rootObject(
+					handlerParametersJSONObject
+				).rootProperty(
+					"vocabulary_id"
+				).rootValue(
+					String.valueOf(vocabularyId)
+				).severity(
+					Severity.ERROR
+				).throwable(
+					portalException
+				).build());
 
 			if (_log.isWarnEnabled()) {
 				_log.warn("Asset vocabulary " + vocabularyId + " not found.");
@@ -130,7 +158,7 @@ public class CategoryTreeFacetResponseHandler
 		}
 
 		return createResultObject(
-			jsonArray, configurationJsonObject, resourceBundle);
+			jsonArray, configurationJSONObject, resourceBundle);
 	}
 
 	private void _addChildNode(
@@ -140,16 +168,22 @@ public class CategoryTreeFacetResponseHandler
 
 		long categoryId = assetCategory.getCategoryId();
 
-		JSONObject parentJsonObject = _getParentNodeJsonObject(
+		JSONObject parentJSONObject = _getParentNodeJSONObject(
 			jsonArray, assetCategories, assetCategory, frequency, locale);
 
-		if (parentJsonObject == null) {
+		if (parentJSONObject == null) {
 			messages.addMessage(
-				new Message(
-					Severity.ERROR, "facets",
-					"facets.error.asset-category-not-found",
-					"Asset category not found", null, null, null,
-					String.valueOf(categoryId)));
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"facets.error.asset-category-not-found"
+				).msg(
+					"Asset category not found"
+				).rootValue(
+					String.valueOf(categoryId)
+				).severity(
+					Severity.ERROR
+				).build());
 
 			if (_log.isWarnEnabled()) {
 				_log.warn("Asset category " + categoryId + " not found");
@@ -158,48 +192,50 @@ public class CategoryTreeFacetResponseHandler
 			return;
 		}
 
-		JSONObject childJsonObject = _createNode(
+		JSONObject childJSONObject = _createNode(
 			categoryId, frequency, assetCategory.getTitle(locale));
 
-		_addToChildren(parentJsonObject, childJsonObject);
+		_addToChildren(parentJSONObject, childJSONObject);
 	}
 
-	private JSONObject _addRootNodeJsonObject(
+	private JSONObject _addRootNodeJSONObject(
 		JSONArray jsonArray, AssetCategory assetCategory, long frequency,
 		Locale locale) {
 
 		long categoryId = assetCategory.getCategoryId();
 
-		JSONObject rootNodeJsonObject = _findCategoryJsonObject(
+		JSONObject rootNodeJSONObject = _findCategoryJSONObject(
 			jsonArray, categoryId, true);
 
-		if (rootNodeJsonObject != null) {
-			_updateFrequency(rootNodeJsonObject, frequency);
+		if (rootNodeJSONObject != null) {
+			_updateFrequency(rootNodeJSONObject, frequency);
 
-			return rootNodeJsonObject;
+			return rootNodeJSONObject;
 		}
 
-		rootNodeJsonObject = _createNode(
+		rootNodeJSONObject = _createNode(
 			categoryId, frequency, assetCategory.getTitle(locale));
-		jsonArray.put(rootNodeJsonObject);
 
-		return rootNodeJsonObject;
+		jsonArray.put(rootNodeJSONObject);
+
+		return rootNodeJSONObject;
 	}
 
 	private void _addToChildren(
-		JSONObject parentJsonObject, JSONObject childJsonObject) {
+		JSONObject parentJSONObject, JSONObject childJSONObject) {
 
 		JSONArray jsonArray = null;
 
-		if (parentJsonObject.has("children")) {
-			jsonArray = parentJsonObject.getJSONArray("children");
+		if (parentJSONObject.has("children")) {
+			jsonArray = parentJSONObject.getJSONArray("children");
 		}
 		else {
 			jsonArray = JSONFactoryUtil.createJSONArray();
-			parentJsonObject.put("children", jsonArray);
+
+			parentJSONObject.put("children", jsonArray);
 		}
 
-		jsonArray.put(childJsonObject);
+		jsonArray.put(childJSONObject);
 	}
 
 	private JSONObject _createNode(long value, long frequency, String name) {
@@ -231,7 +267,7 @@ public class CategoryTreeFacetResponseHandler
 		AssetCategory assetCategory = optional.get();
 
 		if (assetCategory.getParentCategoryId() == 0) {
-			_addRootNodeJsonObject(jsonArray, assetCategory, frequency, locale);
+			_addRootNodeJSONObject(jsonArray, assetCategory, frequency, locale);
 
 			return;
 		}
@@ -241,7 +277,7 @@ public class CategoryTreeFacetResponseHandler
 			messages);
 	}
 
-	private JSONObject _findCategoryJsonObject(
+	private JSONObject _findCategoryJSONObject(
 		JSONArray jsonArray, long categoryId, boolean root) {
 
 		for (int i = 0; i < jsonArray.length(); i++) {
@@ -254,7 +290,7 @@ public class CategoryTreeFacetResponseHandler
 			}
 
 			if (!root && jsonObject1.has("children")) {
-				JSONObject jsonObject2 = _findCategoryJsonObject(
+				JSONObject jsonObject2 = _findCategoryJSONObject(
 					jsonObject1.getJSONArray("children"), categoryId, false);
 
 				if (jsonObject2 != null) {
@@ -267,7 +303,7 @@ public class CategoryTreeFacetResponseHandler
 	}
 
 	private JSONArray _getCategoriesJSONArray(
-			TermsAggregationResult termsAggregationResult, long vocabularyId,
+			Collection<Bucket> buckets, long vocabularyId,
 			long frequencyThreshold, Locale locale, Messages messages)
 		throws PortalException {
 
@@ -278,7 +314,7 @@ public class CategoryTreeFacetResponseHandler
 
 		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
 
-		for (Bucket bucket : termsAggregationResult.getBuckets()) {
+		for (Bucket bucket : buckets) {
 			long frequency = bucket.getDocCount();
 
 			if (frequency < frequencyThreshold) {
@@ -295,15 +331,13 @@ public class CategoryTreeFacetResponseHandler
 		return jsonArray;
 	}
 
-	private JSONObject _getParentNodeJsonObject(
+	private JSONObject _getParentNodeJSONObject(
 		JSONArray jsonArray, List<AssetCategory> assetCategories,
 		AssetCategory assetCategory, long frequency, Locale locale) {
 
-		String treePath = assetCategory.getTreePath();
+		String[] ids = StringUtil.split(assetCategory.getTreePath(), "/");
 
-		String[] ids = StringUtil.split(treePath, "/");
-
-		JSONObject parentJsonObject = null;
+		JSONObject parentJSONObject = null;
 
 		for (int i = 1; i < (ids.length - 1); i++) {
 			Stream<AssetCategory> stream = assetCategories.stream();
@@ -318,14 +352,14 @@ public class CategoryTreeFacetResponseHandler
 				continue;
 			}
 
-			parentJsonObject = _getTreeNodeJsonObject(
+			parentJSONObject = _getTreeNodeJSONObject(
 				jsonArray, optional.get(), frequency, locale);
 		}
 
-		return parentJsonObject;
+		return parentJSONObject;
 	}
 
-	private JSONObject _getTreeNodeJsonObject(
+	private JSONObject _getTreeNodeJSONObject(
 		JSONArray jsonArray, AssetCategory assetCategory, long frequency,
 		Locale locale) {
 
@@ -336,27 +370,27 @@ public class CategoryTreeFacetResponseHandler
 		String title = assetCategory.getTitle(locale);
 
 		if (parentCategoryId == 0) {
-			return _addRootNodeJsonObject(
+			return _addRootNodeJSONObject(
 				jsonArray, assetCategory, frequency, locale);
 		}
 
-		JSONObject childNodeJsonObject = _findCategoryJsonObject(
+		JSONObject childNodeJSONObject = _findCategoryJSONObject(
 			jsonArray, categoryId, false);
 
-		if (childNodeJsonObject != null) {
-			_updateFrequency(childNodeJsonObject, frequency);
+		if (childNodeJSONObject != null) {
+			_updateFrequency(childNodeJSONObject, frequency);
 
-			return childNodeJsonObject;
+			return childNodeJSONObject;
 		}
 
-		JSONObject parentJsonObject = _findCategoryJsonObject(
+		JSONObject parentJSONObject = _findCategoryJSONObject(
 			jsonArray, parentCategoryId, false);
 
-		childNodeJsonObject = _createNode(categoryId, frequency, title);
+		childNodeJSONObject = _createNode(categoryId, frequency, title);
 
-		_addToChildren(parentJsonObject, childNodeJsonObject);
+		_addToChildren(parentJSONObject, childNodeJSONObject);
 
-		return childNodeJsonObject;
+		return childNodeJSONObject;
 	}
 
 	private void _updateFrequency(JSONObject jsonObject, long count) {

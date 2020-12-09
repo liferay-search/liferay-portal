@@ -314,20 +314,37 @@ public class UserParameterContributor implements ParameterContributor {
 					!user.isFemale() && !user.isMale()));
 		}
 		catch (NumberFormatException numberFormatException) {
-			messages.addMessage(
-				new Message(
-					Severity.ERROR, "core", "core.error.unknown-exception",
-					numberFormatException.getMessage(), numberFormatException,
-					null, null, String.valueOf(user.getUserId())));
+
+ 			messages.addMessage(
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"core.error.unknown-exception"
+				).msg(
+						numberFormatException.getMessage()
+				).rootValue(String.valueOf(user.getUserId())
+				).severity(
+					Severity.ERROR
+				).throwable(numberFormatException
+				).build());
+
 			_log.error(
 				numberFormatException.getMessage(), numberFormatException);
 		}
 		catch (PortalException portalException) {
-			messages.addMessage(
-				new Message(
-					Severity.ERROR, "core", "core.error.unknown-exception",
-					portalException.getMessage(), portalException, null, null,
-					String.valueOf(user.getUserId())));
+ 			messages.addMessage(
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"core.error.unknown-exception"
+				).msg(
+						portalException.getMessage()
+				).rootValue(String.valueOf(user.getUserId())
+				).severity(
+					Severity.ERROR
+				).throwable(portalException
+				).build());
+ 			
 			_log.error(portalException.getMessage(), portalException);
 		}
 
@@ -429,11 +446,19 @@ public class UserParameterContributor implements ParameterContributor {
 			return _userLocalService.getUser(userId);
 		}
 		catch (PortalException portalException) {
-			messages.addMessage(
-				new Message(
-					Severity.ERROR, "core", "core.error.user-not-found",
-					portalException.getMessage(), portalException, null, null,
-					String.valueOf(userId)));
+ 			messages.addMessage(
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+						"core.error.user-not-found"
+				).msg(
+						portalException.getMessage()
+				).rootValue(String.valueOf(userId)
+				).severity(
+					Severity.ERROR
+				).throwable(portalException
+				).build());
+ 			
 
 			_log.error(portalException.getMessage(), portalException);
 		}

@@ -54,23 +54,23 @@ public class FacetParameterContributor implements ParameterContributor {
 		ParameterDataBuilder parameterDataBuilder, Blueprint blueprint,
 		BlueprintsAttributes blueprintsAttributes, Messages messages) {
 
-		Optional<JSONArray> configurationJsonArrayOptional =
+		Optional<JSONArray> configurationJSONArrayOptional =
 			_blueprintHelper.getJSONArrayConfigurationOptional(
 				blueprint,
 				"JSONArray/" +
 					FacetsBlueprintContributorKeys.CONFIGURATION_SECTION);
 
-		if (!configurationJsonArrayOptional.isPresent()) {
+		if (!configurationJSONArrayOptional.isPresent()) {
 			return;
 		}
 
-		JSONArray configurationJsonArray = configurationJsonArrayOptional.get();
+		JSONArray configurationJSONArray = configurationJSONArrayOptional.get();
 
-		for (int i = 0; i < configurationJsonArray.length(); i++) {
-			JSONObject configurationJsonObject =
-				configurationJsonArray.getJSONObject(i);
+		for (int i = 0; i < configurationJSONArray.length(); i++) {
+			JSONObject configurationJSONObject =
+				configurationJSONArray.getJSONObject(i);
 
-			boolean enabled = configurationJsonObject.getBoolean(
+			boolean enabled = configurationJSONObject.getBoolean(
 				FacetConfigurationKeys.ENABLED.getJsonKey(), true);
 
 			if (!enabled) {
@@ -78,28 +78,26 @@ public class FacetParameterContributor implements ParameterContributor {
 			}
 
 			if (_validateFacetConfiguration(
-					messages, configurationJsonObject)) {
+					messages, configurationJSONObject)) {
 
 				_parseFacetParameter(
 					parameterDataBuilder, blueprintsAttributes, messages,
-					configurationJsonObject);
+					configurationJSONObject);
 			}
 		}
 	}
 
 	@Override
 	public List<ParameterDefinition> getParameterDefinitions() {
-		List<ParameterDefinition> parameterDefinitions = new ArrayList<>();
-
-		return parameterDefinitions;
+		return new ArrayList<>();
 	}
 
 	private void _parseFacetParameter(
 		ParameterDataBuilder parameterDataBuilder,
 		BlueprintsAttributes blueprintsAttributes, Messages messages,
-		JSONObject configurationJsonObject) {
+		JSONObject configurationJSONObject) {
 
-		String handler = configurationJsonObject.getString(
+		String handler = configurationJSONObject.getString(
 			FacetConfigurationKeys.HANDLER.getJsonKey(), "default");
 
 		try {
@@ -108,7 +106,7 @@ public class FacetParameterContributor implements ParameterContributor {
 
 			Optional<Parameter> parameter =
 				facetRequestHandler.getParameterOptional(
-					blueprintsAttributes, messages, configurationJsonObject);
+					blueprintsAttributes, messages, configurationJSONObject);
 
 			if (parameter.isPresent()) {
 				parameterDataBuilder.addParameter(parameter.get());
@@ -116,11 +114,24 @@ public class FacetParameterContributor implements ParameterContributor {
 		}
 		catch (IllegalArgumentException illegalArgumentException) {
 			messages.addMessage(
-				new Message(
-					Severity.ERROR, "core", "core.error.unknown-facet-handler",
-					illegalArgumentException.getMessage(),
-					illegalArgumentException, configurationJsonObject,
-					FacetConfigurationKeys.HANDLER.getJsonKey(), handler));
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"facets.error.unknown-handler"
+				).msg(
+					illegalArgumentException.getMessage()
+				).rootObject(
+					configurationJSONObject
+				).rootProperty(
+					FacetConfigurationKeys.HANDLER.getJsonKey()
+				).rootValue(
+					handler
+				).severity(
+					Severity.ERROR
+				).throwable(
+					illegalArgumentException
+				).build());
+
 			_log.error(
 				illegalArgumentException.getMessage(),
 				illegalArgumentException);
@@ -128,20 +139,30 @@ public class FacetParameterContributor implements ParameterContributor {
 	}
 
 	private boolean _validateFacetConfiguration(
-		Messages messages, JSONObject configurationJsonObject) {
+		Messages messages, JSONObject configurationJSONObject) {
 
 		boolean valid = true;
 
-		if (configurationJsonObject.isNull(
+		if (configurationJSONObject.isNull(
 				FacetConfigurationKeys.PARAMETER_NAME.getJsonKey())) {
 
 			messages.addMessage(
-				new Message(
-					Severity.ERROR, "core",
-					"core.error.undefined-parameter-name",
-					"Facet parameter name is not defined", null,
-					configurationJsonObject,
-					FacetConfigurationKeys.PARAMETER_NAME.getJsonKey(), null));
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"facets.error.undefined-parameter-name"
+				).msg(
+					"Facet parameter name is not defined"
+				).rootObject(
+					configurationJSONObject
+				).rootProperty(
+					FacetConfigurationKeys.PARAMETER_NAME.getJsonKey()
+				).rootValue(
+					null
+				).severity(
+					Severity.ERROR
+				).build());
+
 			valid = false;
 		}
 

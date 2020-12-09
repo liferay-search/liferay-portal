@@ -79,13 +79,20 @@ public class GreaterThanVisitor implements ConditionEvaluationVisitor {
 			}
 
 			throw new ParameterEvaluationException(
-				new Message(
-					Severity.ERROR, "core",
-					"core.error.clause-condition-date-format-missing",
-					"Clause condition date parameter format is missing",
-					_conditionJsonObject,
-					ConditionConfigurationKeys.DATE_FORMAT.getJsonKey(),
-					dateFormatString));
+					new Message.Builder().className(
+							getClass().getName()
+						).localizationKey(
+							"core.error.clause-condition-date-format-missing"
+						).msg(
+							"Clause condition date format is missing"		
+						).rootObject(_conditionJsonObject
+						).rootProperty(
+								ConditionConfigurationKeys.DATE_FORMAT.getJsonKey()
+						).rootValue(dateFormatString
+						).severity(
+							Severity.ERROR
+						).build());
+			
 		}
 
 		try {
@@ -109,12 +116,21 @@ public class GreaterThanVisitor implements ConditionEvaluationVisitor {
 				exception);
 
 			throw new ParameterEvaluationException(
-				new Message(
-					Severity.ERROR, "core",
-					"core.error.clause-condition-date-parsing-error",
-					exception.getMessage(), exception, _conditionJsonObject,
-					ConditionConfigurationKeys.MATCH_VALUE.getJsonKey(),
-					dateString));
+					new Message.Builder().className(
+							getClass().getName()
+						).localizationKey(
+							"core.error.clause-condition-date-parsing-error"
+						).msg(
+								exception.getMessage()		
+						).rootObject(_conditionJsonObject
+						).rootProperty(
+								ConditionConfigurationKeys.MATCH_VALUE.getJsonKey()
+						).rootValue(dateString
+						).severity(
+							Severity.ERROR
+							).throwable(exception
+						).build());
+			
 		}
 	}
 

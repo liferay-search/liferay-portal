@@ -49,13 +49,19 @@ public class BlueprintValueUtil {
 
 		if (!(object instanceof JSONArray)) {
 			throw new ParameterEvaluationException(
-				new Message(
-					Severity.ERROR, "core",
-					"core.error.expected-array-clause-condition-match-value",
-					"Excepted an array clause condition match value", null,
-					conditionJsonObject,
-					ConditionConfigurationKeys.MATCH_VALUE.getJsonKey(),
-					object.toString()));
+							new Message.Builder().className(
+									BlueprintValueUtil.class.getName()
+							).localizationKey(
+								"core.error.expected-array-clause-condition-match-value"
+							).msg(
+								"Excepted an array clause condition match value"
+							).rootObject(conditionJsonObject
+							).rootProperty(
+									ConditionConfigurationKeys.MATCH_VALUE.getJsonKey()
+							).rootValue(object.toString()
+							).severity(
+								Severity.ERROR
+							).build());
 		}
 
 		return (JSONArray)object;

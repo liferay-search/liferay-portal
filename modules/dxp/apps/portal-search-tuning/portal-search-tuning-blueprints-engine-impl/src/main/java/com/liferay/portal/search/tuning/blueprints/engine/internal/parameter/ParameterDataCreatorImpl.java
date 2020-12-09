@@ -254,11 +254,21 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 			}
 		}
 		catch (IllegalArgumentException illegalArgumentException) {
-			messages.addMessage(
-				new Message(
-					Severity.ERROR, "core", "core.error.unknown-parameter-type",
-					"Unknown parameter type", null, configurationJsonObject,
-					CustomParameterConfigurationKeys.TYPE.getJsonKey(), null));
+ 			messages.addMessage(
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"core.error.unknown-parameter-type"
+				).msg(
+						illegalArgumentException.getMessage()
+				).rootObject(configurationJsonObject
+				).rootProperty(
+						CustomParameterConfigurationKeys.TYPE.getJsonKey()
+				).severity(
+					Severity.ERROR
+				).throwable(illegalArgumentException
+				).build());
+ 			
 			_log.error(
 				illegalArgumentException.getMessage(),
 				illegalArgumentException);
@@ -445,15 +455,20 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 		if (configurationJsonObject.isNull(
 				CustomParameterConfigurationKeys.PARAMETER_NAME.getJsonKey())) {
 
-			messages.addMessage(
-				new Message(
-					Severity.ERROR, "core",
-					"core.error.undefined-parameter-name",
-					"Parameter name is not defined", null,
-					configurationJsonObject,
-					CustomParameterConfigurationKeys.PARAMETER_NAME.
-						getJsonKey(),
-					null));
+ 			messages.addMessage(
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"core.error.undefined-parameter-name"
+				).msg(
+						"Parameter name is not defined"
+				).rootObject(configurationJsonObject
+				).rootProperty(
+						CustomParameterConfigurationKeys.PARAMETER_NAME.getJsonKey()
+				).severity(
+					Severity.ERROR
+				).build());
+ 			
 			valid = false;
 
 			if (_log.isWarnEnabled()) {
@@ -466,14 +481,21 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 		if (configurationJsonObject.isNull(
 				CustomParameterConfigurationKeys.TYPE.getJsonKey())) {
 
-			messages.addMessage(
-				new Message(
-					Severity.ERROR, "core",
-					"core.error.undefined-parameter-type",
-					"Parameter type is not defined", null,
-					configurationJsonObject,
-					CustomParameterConfigurationKeys.TYPE.getJsonKey(), null));
-			valid = false;
+ 			messages.addMessage(
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"core.error.undefined-parameter-type"
+				).msg(
+						"Parameter type is not defined"
+				).rootObject(configurationJsonObject
+				).rootProperty(
+						CustomParameterConfigurationKeys.TYPE.getJsonKey()
+				).severity(
+					Severity.ERROR
+				).build());
+
+ 			valid = false;
 
 			if (_log.isWarnEnabled()) {
 				_log.warn(
@@ -493,13 +515,21 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 		if (configurationJsonObject.isNull(
 				SortConfigurationKeys.PARAMETER_NAME.getJsonKey())) {
 
-			messages.addMessage(
-				new Message(
-					Severity.ERROR, "core",
-					"core.error.undefined-parameter-name",
-					"Parameter name is not defined", null,
-					configurationJsonObject,
-					SortConfigurationKeys.PARAMETER_NAME.getJsonKey(), null));
+
+ 			messages.addMessage(
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"core.error.undefined-parameter-name"
+				).msg(
+						"Parameter name is not defined"
+				).rootObject(configurationJsonObject
+				).rootProperty(
+						SortConfigurationKeys.PARAMETER_NAME.getJsonKey()
+				).severity(
+					Severity.ERROR
+				).build());
+ 			
 			valid = false;
 
 			if (_log.isWarnEnabled()) {
@@ -512,11 +542,20 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 		if (configurationJsonObject.isNull(
 				SortConfigurationKeys.FIELD.getJsonKey())) {
 
-			messages.addMessage(
-				new Message(
-					Severity.ERROR, "core", "core.error.undefined-field",
-					"Field is not defined", null, configurationJsonObject,
-					SortConfigurationKeys.FIELD.getJsonKey(), null));
+ 			messages.addMessage(
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"core.error.undefined-field"
+				).msg(
+						"Field is not defined"
+				).rootObject(configurationJsonObject
+				).rootProperty(
+						SortConfigurationKeys.FIELD.getJsonKey()
+				).severity(
+					Severity.ERROR
+				).build());
+ 			
 			valid = false;
 
 			if (_log.isWarnEnabled()) {

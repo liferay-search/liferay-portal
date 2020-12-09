@@ -35,9 +35,9 @@ public abstract class BaseFacetRequestHandler implements FacetRequestHandler {
 	@Override
 	public Optional<Parameter> getParameterOptional(
 		BlueprintsAttributes blueprintsAttributes, Messages messages,
-		JSONObject configurationJsonObject) {
+		JSONObject configurationJSONObject) {
 
-		String parameterName = configurationJsonObject.getString(
+		String parameterName = configurationJSONObject.getString(
 			FacetConfigurationKeys.PARAMETER_NAME.getJsonKey());
 
 		Optional<Object> valueOptional =
@@ -47,7 +47,7 @@ public abstract class BaseFacetRequestHandler implements FacetRequestHandler {
 			return Optional.empty();
 		}
 
-		boolean multiValue = configurationJsonObject.getBoolean(
+		boolean multiValue = configurationJSONObject.getBoolean(
 			FacetConfigurationKeys.MULTI_VALUE.getJsonKey(), true);
 
 		if (multiValue) {

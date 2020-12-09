@@ -71,11 +71,18 @@ public abstract class BaseSuggesterTranslator implements SuggesterTranslator {
 
 		if (configurationJsonObject.isNull("field")) {
 			messages.addMessage(
-				new Message(
-					Severity.ERROR, "core",
-					"core.error.undefined-suggester-field",
-					"Suggester field is not defined.", null,
-					configurationJsonObject, "field", null));
+					new Message.Builder().className(
+						getClass().getName()
+					).localizationKey(
+						"core.error.undefined-suggester-field"
+					).msg(
+						"Suggester field is not defined"
+							).rootObject(configurationJsonObject
+									).rootProperty("field"
+					).severity(
+						Severity.ERROR
+					).build());
+			
 
 			if (_log.isWarnEnabled()) {
 				StringBundler sb = new StringBundler(3);
@@ -96,10 +103,16 @@ public abstract class BaseSuggesterTranslator implements SuggesterTranslator {
 	private boolean _validateName(Messages messages, String suggesterName) {
 		if (Validator.isBlank(suggesterName)) {
 			messages.addMessage(
-				new Message(
-					Severity.ERROR, "core",
-					"core.error.undefined-suggester-name",
-					"Suggester name is not defined."));
+					new Message.Builder().className(
+						getClass().getName()
+					).localizationKey(
+						"core.error.undefined-suggester-name"
+					).msg(
+						"Suggester name is not defined"
+					).severity(
+						Severity.ERROR
+					).build());
+
 
 			if (_log.isWarnEnabled()) {
 				_log.warn("Suggester name is not defined");

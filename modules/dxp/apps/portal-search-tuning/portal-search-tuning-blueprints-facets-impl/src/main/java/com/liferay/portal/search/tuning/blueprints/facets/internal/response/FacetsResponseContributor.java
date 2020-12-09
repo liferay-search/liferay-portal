@@ -50,40 +50,26 @@ public class FacetsResponseContributor implements ResponseContributor {
 
 	@Override
 	public void contribute(
-		JSONObject responseJsonObject, SearchResponse searchResponse,
+		JSONObject responseJSONObject, SearchResponse searchResponse,
 		Blueprint blueprint, BlueprintsAttributes blueprintsAttributes,
 		ResourceBundle resourceBundle, Messages messages) {
 
-		responseJsonObject.put(
+		responseJSONObject.put(
 			FacetJSONResponseKeys.FACETS,
 			_getFacetsJSONArray(
 				searchResponse, blueprint, blueprintsAttributes, resourceBundle,
 				messages));
 	}
-	
-	
-	private String _getAggregationName(JSONObject configurationJsonObject) {
 
-		String aggregationName = configurationJsonObject.getString(
-				FacetConfigurationKeys.AGGREGATION_NAME.getJsonKey());
+	private String _getAggregationName(JSONObject configurationJSONObject) {
+		String aggregationName = configurationJSONObject.getString(
+			FacetConfigurationKeys.AGGREGATION_NAME.getJsonKey());
 
 		if (Validator.isBlank(aggregationName)) {
-			aggregationName = _getFieldName(configurationJsonObject);
+			aggregationName = _getFieldName(configurationJSONObject);
 		}
 
 		return aggregationName;
-	}
-	
-	private String _getFieldName(JSONObject configurationJsonObject) {
-		String field = configurationJsonObject.getString(
-			FacetConfigurationKeys.FIELD.getJsonKey());
-
-		if (Validator.isBlank(field)) {
-			field = configurationJsonObject.getString(
-				FacetConfigurationKeys.PARAMETER_NAME.getJsonKey());
-		}
-
-		return field;
 	}
 
 	private JSONArray _getFacetsJSONArray(
@@ -93,7 +79,7 @@ public class FacetsResponseContributor implements ResponseContributor {
 
 		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
 
-		Optional<JSONArray> configurationJsonArrayOptional =
+		Optional<JSONArray> configurationJSONArrayOptional =
 			_blueprintHelper.getJSONArrayConfigurationOptional(
 				blueprint,
 				"JSONArray/" +
@@ -103,16 +89,28 @@ public class FacetsResponseContributor implements ResponseContributor {
 			searchResponse.getAggregationResultsMap();
 
 		if (aggregationResultsMap.isEmpty() ||
-			!configurationJsonArrayOptional.isPresent()) {
+			!configurationJSONArrayOptional.isPresent()) {
 
 			return jsonArray;
 		}
 
 		_processFacets(
 			jsonArray, aggregationResultsMap, blueprintsAttributes,
-			resourceBundle, messages, configurationJsonArrayOptional.get());
+			resourceBundle, messages, configurationJSONArrayOptional.get());
 
 		return jsonArray;
+	}
+
+	private String _getFieldName(JSONObject configurationJSONObject) {
+		String field = configurationJSONObject.getString(
+			FacetConfigurationKeys.FIELD.getJsonKey());
+
+		if (Validator.isBlank(field)) {
+			field = configurationJSONObject.getString(
+				FacetConfigurationKeys.PARAMETER_NAME.getJsonKey());
+		}
+
+		return field;
 	}
 
 	private void _processFacets(
@@ -120,23 +118,24 @@ public class FacetsResponseContributor implements ResponseContributor {
 		Map<String, AggregationResult> aggregationResultsMap,
 		BlueprintsAttributes blueprintsAttributes,
 		ResourceBundle resourceBundle, Messages messages,
-		JSONArray configurationJsonArray) {
+		JSONArray configurationJSONArray) {
 
-		for (int i = 0; i < configurationJsonArray.length(); i++) {
-			JSONObject configurationJsonObject =
-				configurationJsonArray.getJSONObject(i);
+		for (int i = 0; i < configurationJSONArray.length(); i++) {
+			JSONObject configurationJSONObject =
+				configurationJSONArray.getJSONObject(i);
 
-			boolean enabled = configurationJsonObject.getBoolean(
+			boolean enabled = configurationJSONObject.getBoolean(
 				FacetConfigurationKeys.ENABLED.getJsonKey(), true);
 
 			if (!enabled) {
 				continue;
 			}
 
-			String responseHandlerName = configurationJsonObject.getString(
+			String responseHandlerName = configurationJSONObject.getString(
 				FacetConfigurationKeys.HANDLER.getJsonKey(), "default");
 
-			String aggregationName = _getAggregationName(configurationJsonObject);
+			String aggregationName = _getAggregationName(
+				configurationJSONObject);
 
 			for (Map.Entry<String, AggregationResult> entry :
 					aggregationResultsMap.entrySet()) {
@@ -156,7 +155,7 @@ public class FacetsResponseContributor implements ResponseContributor {
 				Optional<JSONObject> resultOptional =
 					facetResponseHandler.getResultOptional(
 						entry.getValue(), blueprintsAttributes, resourceBundle,
-						messages, configurationJsonObject);
+						messages, configurationJSONObject);
 
 				if (resultOptional.isPresent()) {
 					jsonArray.put(resultOptional.get());

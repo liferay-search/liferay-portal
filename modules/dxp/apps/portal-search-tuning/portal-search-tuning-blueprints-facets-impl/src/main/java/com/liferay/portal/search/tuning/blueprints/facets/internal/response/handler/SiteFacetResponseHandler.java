@@ -45,21 +45,22 @@ public class SiteFacetResponseHandler
 	@Override
 	protected JSONObject createBucketJSONObject(
 			Bucket bucket, BlueprintsAttributes blueprintsAttributes,
-			ResourceBundle resourceBundle) throws Exception {
+			ResourceBundle resourceBundle)
+		throws Exception {
 
 		Locale locale = blueprintsAttributes.getLocale();
-		
+
 		long frequency = bucket.getDocCount();
 
 		String value = bucket.getKey();
-		
+
 		long groupId = GetterUtil.getLong(value);
 
 		Group group = _groupLocalService.getGroup(groupId);
 
 		String name = group.getName(locale, true);
 
-		JSONObject jsonObject = JSONUtil.put(
+		return JSONUtil.put(
 			FacetJSONResponseKeys.FREQUENCY, frequency
 		).put(
 			FacetJSONResponseKeys.NAME, name
@@ -68,8 +69,6 @@ public class SiteFacetResponseHandler
 		).put(
 			FacetJSONResponseKeys.VALUE, groupId
 		);
-
-		return jsonObject;
 	}
 
 	@Reference

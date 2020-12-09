@@ -67,108 +67,116 @@ public class FacetsSearchRequestBodyContributor
 		SearchRequestBuilder searchRequestBuilder, ParameterData parameterData,
 		Blueprint blueprint, Messages messages) {
 
-		Optional<JSONArray> configurationJsonArrayOptional =
+		Optional<JSONArray> configurationJSONArrayOptional =
 			_blueprintHelper.getJSONArrayConfigurationOptional(
 				blueprint,
 				"JSONArray/" +
 					FacetsBlueprintContributorKeys.CONFIGURATION_SECTION);
 
-		if (!configurationJsonArrayOptional.isPresent()) {
+		if (!configurationJSONArrayOptional.isPresent()) {
 			return;
 		}
 
-		JSONArray configurationJsonArray = configurationJsonArrayOptional.get();
+		JSONArray configurationJSONArray = configurationJSONArrayOptional.get();
 
-		for (int i = 0; i < configurationJsonArray.length(); i++) {
-			JSONObject rawConfigurationJsonObject =
-				configurationJsonArray.getJSONObject(i);
+		for (int i = 0; i < configurationJSONArray.length(); i++) {
+			JSONObject rawConfigurationJSONObject =
+				configurationJSONArray.getJSONObject(i);
 
-			JSONObject configurationJsonObject = null;
+			JSONObject configurationJSONObject = null;
 
 			try {
-				configurationJsonObject =
+				configurationJSONObject =
 					_blueprintTemplateVariableParser.parse(
-						parameterData, messages, rawConfigurationJsonObject);
+						parameterData, messages, rawConfigurationJSONObject);
 			}
 			catch (Exception exception) {
 				messages.addMessage(
-					new Message(
-						Severity.ERROR, "core",
-						"core.error.unknown-facet-configuration-error",
-						exception.getMessage(), exception,
-						configurationJsonObject, null, null));
+					new Message.Builder().className(
+						getClass().getName()
+					).localizationKey(
+						"facets.error.unknown-configuration-error"
+					).msg(
+						exception.getMessage()
+					).rootObject(
+						configurationJSONObject
+					).severity(
+						Severity.ERROR
+					).throwable(
+						exception
+					).build());
 
 				_log.error(exception.getMessage(), exception);
 
 				continue;
 			}
 
-			boolean enabled = configurationJsonObject.getBoolean(
+			boolean enabled = configurationJSONObject.getBoolean(
 				FacetConfigurationKeys.ENABLED.getJsonKey(), true);
 
 			if (!enabled) {
 				continue;
 			}
 
-			_addAggregation(searchRequestBuilder, configurationJsonObject);
+			_addAggregation(searchRequestBuilder, configurationJSONObject);
 
 			_addFilter(
 				searchRequestBuilder, parameterData, messages,
-				configurationJsonObject);
+				configurationJSONObject);
 		}
 	}
 
 	private void _addAggregation(
 		SearchRequestBuilder searchRequestBuilder,
-		JSONObject configurationJsonObject) {
+		JSONObject configurationJSONObject) {
 
-		String aggregationType = configurationJsonObject.getString(
+		String aggregationType = configurationJSONObject.getString(
 			FacetConfigurationKeys.AGGREGATION_TYPE.getJsonKey(), "terms");
 
 		if (aggregationType.contentEquals("terms")) {
-			_addTermsAggregation(searchRequestBuilder, configurationJsonObject);
+			_addTermsAggregation(searchRequestBuilder, configurationJSONObject);
 		}
 		else if (aggregationType.contentEquals("date_range")) {
 			_addDateRangeAggregation(
-				searchRequestBuilder, configurationJsonObject);
+				searchRequestBuilder, configurationJSONObject);
 		}
 	}
 
 	private void _addDateRangeAggregation(
 		SearchRequestBuilder searchRequestBuilder,
-		JSONObject configurationJsonObject) {
+		JSONObject configurationJSONObject) {
 
-		JSONObject handlerParametersJsonObject =
-			configurationJsonObject.getJSONObject(
+		JSONObject handlerParametersJSONObject =
+			configurationJSONObject.getJSONObject(
 				FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey());
 
-		if ((handlerParametersJsonObject == null) ||
-			!handlerParametersJsonObject.has("ranges")) {
+		if ((handlerParametersJSONObject == null) ||
+			!handlerParametersJSONObject.has("ranges")) {
 
 			return;
 		}
 
-		JSONArray rangesJsonArray = handlerParametersJsonObject.getJSONArray(
+		JSONArray rangesJSONArray = handlerParametersJSONObject.getJSONArray(
 			"ranges");
 
-		String dateFormat = handlerParametersJsonObject.getString(
+		String dateFormat = handlerParametersJSONObject.getString(
 			"date_format");
 
-		String aggregationName = _getAggregationName(configurationJsonObject);
+		String aggregationName = _getAggregationName(configurationJSONObject);
 
-		String field = _getFieldName(configurationJsonObject);
+		String field = _getFieldName(configurationJSONObject);
 
 		DateRangeAggregation dateRangeAggregation = _aggregations.dateRange(
-				aggregationName, field);
+			aggregationName, field);
 
-		for (int i = 0; i < rangesJsonArray.length(); i++) {
-			JSONObject rangeJsonObject = rangesJsonArray.getJSONObject(i);
+		for (int i = 0; i < rangesJSONArray.length(); i++) {
+			JSONObject rangeJSONObject = rangesJSONArray.getJSONObject(i);
 
 			String from = _getDateRangeString(
-				rangeJsonObject.getString("from"), dateFormat, true);
-			String label = rangeJsonObject.getString("label", "label");
+				rangeJSONObject.getString("from"), dateFormat, true);
+			String label = rangeJSONObject.getString("label", "label");
 			String to = _getDateRangeString(
-				rangeJsonObject.getString("to"), dateFormat, false);
+				rangeJSONObject.getString("to"), dateFormat, false);
 
 			dateRangeAggregation.addRange(label, from, to);
 		}
@@ -178,26 +186,17 @@ public class FacetsSearchRequestBodyContributor
 
 	private void _addDateRangeFacetFilter(
 		SearchRequestBuilder searchRequestBuilder, Messages messages,
-		JSONObject configurationJsonObject, Object value) {
-
-		String range = GetterUtil.getString(value);
+		JSONObject configurationJSONObject, Object value) {
 
 		Optional<FilterMode> filterModeOptional = _getFilterMode(
-			configurationJsonObject, messages);
+			configurationJSONObject, messages);
 
 		if (!filterModeOptional.isPresent()) {
 			return;
 		}
 
-		Optional<Operator> operatorOptional = _getOperator(
-			configurationJsonObject, messages);
-
-		if (!operatorOptional.isPresent()) {
-			return;
-		}
-
 		BooleanQuery query = _getDateRangeFilterQuery(
-			operatorOptional.get(), configurationJsonObject, range);
+			configurationJSONObject, GetterUtil.getString(value));
 
 		if (query.hasClauses()) {
 			if (FilterMode.PRE.equals(filterModeOptional.get())) {
@@ -223,10 +222,10 @@ public class FacetsSearchRequestBodyContributor
 
 	private void _addFilter(
 		SearchRequestBuilder searchRequestBuilder, ParameterData parameterData,
-		Messages messages, JSONObject configurationJsonObject) {
+		Messages messages, JSONObject configurationJSONObject) {
 
 		Optional<Parameter> parameterOptional = parameterData.getByNameOptional(
-			configurationJsonObject.getString(
+			configurationJSONObject.getString(
 				FacetConfigurationKeys.PARAMETER_NAME.getJsonKey()));
 
 		if (!parameterOptional.isPresent()) {
@@ -235,28 +234,36 @@ public class FacetsSearchRequestBodyContributor
 
 		Parameter parameter = parameterOptional.get();
 
-		String handlerName = configurationJsonObject.getString(
+		String handlerName = configurationJSONObject.getString(
 			FacetConfigurationKeys.HANDLER.getJsonKey());
 
 		try {
 			if (handlerName.equals("date_range")) {
 				_addDateRangeFacetFilter(
-					searchRequestBuilder, messages, configurationJsonObject,
+					searchRequestBuilder, messages, configurationJSONObject,
 					parameter.getValue());
 			}
 			else {
 				_addTermsFacetFilter(
-					searchRequestBuilder, messages, configurationJsonObject,
+					searchRequestBuilder, messages, configurationJSONObject,
 					parameter.getValue());
 			}
 		}
 		catch (Exception exception) {
 			messages.addMessage(
-				new Message(
-					Severity.ERROR, "core",
-					"core.error.unknown-error-in-creating-facet-filter",
-					exception.getMessage(), exception, configurationJsonObject,
-					null, null));
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"facets.error.unknown-error-in-creating-filter"
+				).msg(
+					exception.getMessage()
+				).rootObject(
+					configurationJSONObject
+				).severity(
+					Severity.ERROR
+				).throwable(
+					exception
+				).build());
 
 			_log.error(exception.getMessage(), exception);
 		}
@@ -264,16 +271,17 @@ public class FacetsSearchRequestBodyContributor
 
 	private void _addTermsAggregation(
 		SearchRequestBuilder searchRequestBuilder,
-		JSONObject configurationJsonObject) {
+		JSONObject configurationJSONObject) {
 
-		String aggregationName = _getAggregationName(configurationJsonObject);
+		String aggregationName = _getAggregationName(configurationJSONObject);
 
-		String field = _getFieldName(configurationJsonObject);
+		String field = _getFieldName(configurationJSONObject);
 
-		int size = configurationJsonObject.getInt(
+		int size = configurationJSONObject.getInt(
 			FacetConfigurationKeys.SIZE.getJsonKey(), 50);
 
-		TermsAggregation aggregation = _aggregations.terms(aggregationName, field);
+		TermsAggregation aggregation = _aggregations.terms(
+			aggregationName, field);
 
 		aggregation.setSize(size);
 
@@ -282,19 +290,19 @@ public class FacetsSearchRequestBodyContributor
 
 	private void _addTermsFacetFilter(
 		SearchRequestBuilder searchRequestBuilder, Messages messages,
-		JSONObject configurationJsonObject, Object value) {
+		JSONObject configurationJSONObject, Object value) {
 
-		String field = _getFieldName(configurationJsonObject);
+		String field = _getFieldName(configurationJSONObject);
 
 		Optional<FilterMode> filterModeOptional = _getFilterMode(
-			configurationJsonObject, messages);
+			configurationJSONObject, messages);
 
 		if (!filterModeOptional.isPresent()) {
 			return;
 		}
 
 		Optional<Operator> operatorOptional = _getOperator(
-			configurationJsonObject, messages);
+			configurationJSONObject, messages);
 
 		if (!operatorOptional.isPresent()) {
 			return;
@@ -324,46 +332,43 @@ public class FacetsSearchRequestBodyContributor
 			}
 		}
 	}
-	
-	private String _getAggregationName(JSONObject configurationJsonObject) {
 
-		String aggregationName = configurationJsonObject.getString(
-				FacetConfigurationKeys.AGGREGATION_NAME.getJsonKey());
+	private String _getAggregationName(JSONObject configurationJSONObject) {
+		String aggregationName = configurationJSONObject.getString(
+			FacetConfigurationKeys.AGGREGATION_NAME.getJsonKey());
 
 		if (Validator.isBlank(aggregationName)) {
-			aggregationName = _getFieldName(configurationJsonObject);
+			aggregationName = _getFieldName(configurationJSONObject);
 		}
 
 		return aggregationName;
 	}
 
-
-
 	private BooleanQuery _getDateRangeFilterQuery(
-		Operator operator, JSONObject configurationJsonObject, String value) {
+		JSONObject configurationJSONObject, String value) {
 
 		BooleanQuery booleanQuery = _queries.booleanQuery();
 
-		String field = _getFieldName(configurationJsonObject);
+		String field = _getFieldName(configurationJSONObject);
 
-		JSONObject handlerParametersJsonObject =
-			configurationJsonObject.getJSONObject(
+		JSONObject handlerParametersJSONObject =
+			configurationJSONObject.getJSONObject(
 				FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey());
 
-		if ((handlerParametersJsonObject == null) ||
-			!handlerParametersJsonObject.has("ranges")) {
+		if ((handlerParametersJSONObject == null) ||
+			!handlerParametersJSONObject.has("ranges")) {
 
 			return booleanQuery;
 		}
 
-		JSONArray rangesJsonArray = handlerParametersJsonObject.getJSONArray(
+		JSONArray rangesJSONArray = handlerParametersJSONObject.getJSONArray(
 			"ranges");
 
-		String dateFormatString = handlerParametersJsonObject.getString(
+		String dateFormatString = handlerParametersJSONObject.getString(
 			"date_format");
 
-		for (int i = 0; i < rangesJsonArray.length(); i++) {
-			JSONObject jsonObject = rangesJsonArray.getJSONObject(i);
+		for (int i = 0; i < rangesJSONArray.length(); i++) {
+			JSONObject jsonObject = rangesJSONArray.getJSONObject(i);
 
 			String label = jsonObject.getString("label");
 
@@ -389,8 +394,6 @@ public class FacetsSearchRequestBodyContributor
 		String str, String dateFormatString, boolean future) {
 
 		try {
-			DateFormat dateFormat = new SimpleDateFormat(dateFormatString);
-
 			Date date = null;
 
 			if (str.equals("*")) {
@@ -406,6 +409,8 @@ public class FacetsSearchRequestBodyContributor
 			}
 
 			if (date != null) {
+				DateFormat dateFormat = new SimpleDateFormat(dateFormatString);
+
 				return dateFormat.format(date);
 			}
 		}
@@ -416,12 +421,12 @@ public class FacetsSearchRequestBodyContributor
 		return str;
 	}
 
-	private String _getFieldName(JSONObject configurationJsonObject) {
-		String field = configurationJsonObject.getString(
+	private String _getFieldName(JSONObject configurationJSONObject) {
+		String field = configurationJSONObject.getString(
 			FacetConfigurationKeys.FIELD.getJsonKey());
 
 		if (Validator.isBlank(field)) {
-			field = configurationJsonObject.getString(
+			field = configurationJSONObject.getString(
 				FacetConfigurationKeys.PARAMETER_NAME.getJsonKey());
 		}
 
@@ -429,9 +434,9 @@ public class FacetsSearchRequestBodyContributor
 	}
 
 	private Optional<FilterMode> _getFilterMode(
-		JSONObject configurationJsonObject, Messages messages) {
+		JSONObject configurationJSONObject, Messages messages) {
 
-		String filterModeString = configurationJsonObject.getString(
+		String filterModeString = configurationJSONObject.getString(
 			FacetConfigurationKeys.FILTER_MODE.getJsonKey(),
 			FilterMode.PRE.getjsonValue());
 
@@ -443,13 +448,23 @@ public class FacetsSearchRequestBodyContributor
 		}
 		catch (IllegalArgumentException illegalArgumentException) {
 			messages.addMessage(
-				new Message(
-					Severity.ERROR, "core",
-					"core.error.unknown-facet-filter-mode",
-					illegalArgumentException.getMessage(),
-					illegalArgumentException, configurationJsonObject,
-					FacetConfigurationKeys.FILTER_MODE.getJsonKey(),
-					filterModeString));
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"facets.error.unknown-filter-mode"
+				).msg(
+					illegalArgumentException.getMessage()
+				).rootObject(
+					configurationJSONObject
+				).rootProperty(
+					FacetConfigurationKeys.FILTER_MODE.getJsonKey()
+				).rootValue(
+					filterModeString
+				).severity(
+					Severity.ERROR
+				).throwable(
+					illegalArgumentException
+				).build());
 
 			_log.error(
 				illegalArgumentException.getMessage(),
@@ -460,9 +475,9 @@ public class FacetsSearchRequestBodyContributor
 	}
 
 	private Optional<Operator> _getOperator(
-		JSONObject configurationJsonObject, Messages messages) {
+		JSONObject configurationJSONObject, Messages messages) {
 
-		String operatorString = configurationJsonObject.getString(
+		String operatorString = configurationJSONObject.getString(
 			FacetConfigurationKeys.MULTI_VALUE_OPERATOR.getJsonKey(),
 			Operator.AND.getjsonValue());
 
@@ -474,13 +489,23 @@ public class FacetsSearchRequestBodyContributor
 		}
 		catch (IllegalArgumentException illegalArgumentException) {
 			messages.addMessage(
-				new Message(
-					Severity.ERROR, "core",
-					"core.error.unknown-facet-multi-value-operator",
-					illegalArgumentException.getMessage(),
-					illegalArgumentException, configurationJsonObject,
-					FacetConfigurationKeys.MULTI_VALUE_OPERATOR.getJsonKey(),
-					operatorString));
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"facets.error.unknown-multi-value-operator"
+				).msg(
+					illegalArgumentException.getMessage()
+				).rootObject(
+					configurationJSONObject
+				).rootProperty(
+					FacetConfigurationKeys.MULTI_VALUE_OPERATOR.getJsonKey()
+				).rootValue(
+					operatorString
+				).severity(
+					Severity.ERROR
+				).throwable(
+					illegalArgumentException
+				).build());
 
 			_log.error(
 				illegalArgumentException.getMessage(),

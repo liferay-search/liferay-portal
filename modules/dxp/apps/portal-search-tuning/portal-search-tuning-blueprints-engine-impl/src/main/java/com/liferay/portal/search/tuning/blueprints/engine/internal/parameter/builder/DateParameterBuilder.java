@@ -148,12 +148,20 @@ public class DateParameterBuilder implements ParameterBuilder {
 					CustomParameterConfigurationKeys.DATE_FORMAT.
 						getJsonKey()))) {
 
-			messages.addMessage(
-				new Message(
-					Severity.ERROR, "core", "core.error.undefined-date-format",
-					"Date format is not defined", null, configurationJsonObject,
-					CustomParameterConfigurationKeys.DATE_FORMAT.getJsonKey(),
-					null));
+ 			messages.addMessage(
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"core.error.undefined-date-format"
+				).msg(
+						"Date format is not defined"
+				).rootObject(configurationJsonObject
+				).rootProperty(
+						CustomParameterConfigurationKeys.DATE_FORMAT.getJsonKey()
+				).severity(
+					Severity.ERROR
+				).build());
+ 			
 			valid = false;
 
 			if (_log.isWarnEnabled()) {

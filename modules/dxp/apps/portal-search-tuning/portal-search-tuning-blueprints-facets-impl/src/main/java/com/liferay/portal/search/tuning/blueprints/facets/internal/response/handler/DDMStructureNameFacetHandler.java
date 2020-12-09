@@ -18,29 +18,17 @@ import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
-import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.json.JSONArray;
-import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.service.GroupLocalService;
-import com.liferay.portal.search.aggregation.AggregationResult;
 import com.liferay.portal.search.aggregation.bucket.Bucket;
-import com.liferay.portal.search.aggregation.bucket.TermsAggregationResult;
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
-import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetJSONResponseKeys;
 import com.liferay.portal.search.tuning.blueprints.facets.spi.response.FacetResponseHandler;
-import com.liferay.portal.search.tuning.blueprints.message.Message;
-import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.message.Severity;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 import org.osgi.service.component.annotations.Component;
@@ -59,14 +47,15 @@ public class DDMStructureNameFacetHandler
 	@Override
 	protected JSONObject createBucketJSONObject(
 			Bucket bucket, BlueprintsAttributes blueprintsAttributes,
-			ResourceBundle resourceBundle) throws Exception {
+			ResourceBundle resourceBundle)
+		throws Exception {
 
 		Locale locale = blueprintsAttributes.getLocale();
-		
+
 		long frequency = bucket.getDocCount();
 
 		String value = bucket.getKey();
-		
+
 		DDMStructure ddmStructure = _getDDMStructure(value);
 
 		String name = ddmStructure.getName(locale, true);
@@ -85,10 +74,8 @@ public class DDMStructureNameFacetHandler
 			FacetJSONResponseKeys.VALUE, value
 		);
 	}
-	
-	private DDMStructure _getDDMStructure(String ddmStructureKey)
-		throws PortalException {
 
+	private DDMStructure _getDDMStructure(String ddmStructureKey) {
 		DynamicQuery dynamicQuery = _ddmStructureLocalService.dynamicQuery();
 
 		dynamicQuery.add(
@@ -99,7 +86,6 @@ public class DDMStructureNameFacetHandler
 
 		return structures.get(0);
 	}
-
 
 	@Reference
 	private DDMStructureLocalService _ddmStructureLocalService;

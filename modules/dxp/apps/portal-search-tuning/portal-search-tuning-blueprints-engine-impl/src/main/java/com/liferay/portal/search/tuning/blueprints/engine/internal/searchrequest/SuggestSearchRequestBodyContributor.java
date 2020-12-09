@@ -103,25 +103,40 @@ public class SuggestSearchRequestBodyContributor
 				}
 			}
 			catch (IllegalArgumentException illegalArgumentException) {
-				messages.addMessage(
-					new Message(
-						Severity.ERROR, "core",
-						"core.error.unknown-suggester-type",
-						illegalArgumentException.getMessage(),
-						illegalArgumentException, configurationJsonObject,
-						AggregationConfigurationKeys.TYPE.getJsonKey(), type));
+
+	 			messages.addMessage(
+					new Message.Builder().className(
+						getClass().getName()
+					).localizationKey(
+						"core.error.unknown-suggester-type"
+					).msg(
+						illegalArgumentException.getMessage()
+					).rootObject(configurationJsonObject
+					).rootProperty(
+							SuggesterConfigurationKeys.TYPE.getJsonKey()
+					).rootValue(type
+					).severity(
+						Severity.ERROR
+					).throwable(illegalArgumentException
+					).build());
 
 				_log.error(
 					illegalArgumentException.getMessage(),
 					illegalArgumentException);
 			}
 			catch (Exception exception) {
-				messages.addMessage(
-					new Message(
-						Severity.ERROR, "core",
-						"core.error.unknown-suggester-configuration-error",
-						exception.getMessage(), exception,
-						configurationJsonObject, null, null));
+	 			messages.addMessage(
+						new Message.Builder().className(
+							getClass().getName()
+						).localizationKey(
+							"core.error.unknown-suggester-configuration-error"
+						).msg(
+								exception.getMessage()
+						).rootObject(configurationJsonObject
+						).severity(
+							Severity.ERROR
+						).throwable(exception
+						).build());				
 
 				_log.error(exception.getMessage(), exception);
 			}

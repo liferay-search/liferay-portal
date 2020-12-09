@@ -167,12 +167,19 @@ public class ContextParameterContributor implements ParameterContributor {
 					layout.getName(blueprintsAttributes.getLocale(), true)));
 		}
 		catch (PortalException portalException) {
-			messages.addMessage(
-				new Message(
-					Severity.ERROR, "core", "core.error.layout-not-found",
-					portalException.getMessage(), portalException, null, null,
-					(String)optional.get()));
-
+ 			messages.addMessage(
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+						"core.error.layout-not-found"
+				).msg(
+						portalException.getMessage()
+				).rootValue((String)optional.get()
+				).severity(
+					Severity.ERROR
+				).throwable(portalException
+				).build());
+ 			
 			_log.error(portalException.getMessage(), portalException);
 		}
 	}

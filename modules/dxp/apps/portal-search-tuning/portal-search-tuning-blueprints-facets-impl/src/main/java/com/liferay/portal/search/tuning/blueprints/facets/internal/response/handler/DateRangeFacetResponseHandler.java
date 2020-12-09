@@ -1,3 +1,17 @@
+/**
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of the Liferay Enterprise
+ * Subscription License ("License"). You may not use this file except in
+ * compliance with the License. You can obtain a copy of the License by
+ * contacting Liferay, Inc. See the License for the specific language governing
+ * permissions and limitations under the License, including but not limited to
+ * distribution rights of the Software.
+ *
+ *
+ *
+ */
+
 package com.liferay.portal.search.tuning.blueprints.facets.internal.response.handler;
 
 import com.liferay.portal.kernel.json.JSONArray;
@@ -13,6 +27,7 @@ import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetJSONRes
 import com.liferay.portal.search.tuning.blueprints.facets.spi.response.FacetResponseHandler;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -33,24 +48,23 @@ public class DateRangeFacetResponseHandler
 		AggregationResult aggregationResult,
 		BlueprintsAttributes blueprintsAttributes,
 		ResourceBundle resourceBundle, Messages messages,
-		JSONObject configurationJsonObject) {
+		JSONObject configurationJSONObject) {
 
 		RangeAggregationResult rangeAggregationResult =
 			(RangeAggregationResult)aggregationResult;
 
-		if (rangeAggregationResult.getBuckets(
-			).size() == 0) {
+		Collection<Bucket> buckets = rangeAggregationResult.getBuckets();
 
+		if (buckets.isEmpty()) {
 			return Optional.empty();
 		}
 
-		long frequencyThreshold = configurationJsonObject.getLong(
+		long frequencyThreshold = configurationJSONObject.getLong(
 			FacetConfigurationKeys.FREQUENCY_THRESHOLD.getJsonKey(), 1);
 
 		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
 
-		for (Bucket bucket : rangeAggregationResult.getBuckets()) {
-
+		for (Bucket bucket : buckets) {
 			if (bucket.getDocCount() < frequencyThreshold) {
 				continue;
 			}
@@ -59,26 +73,26 @@ public class DateRangeFacetResponseHandler
 		}
 
 		return createResultObject(
-			jsonArray, configurationJsonObject, resourceBundle);
+			jsonArray, configurationJSONObject, resourceBundle);
 	}
 
-	private JSONObject _createBucketJSONObject(Bucket bucket, ResourceBundle resourceBundle) {
-		
+	private JSONObject _createBucketJSONObject(
+		Bucket bucket, ResourceBundle resourceBundle) {
+
 		long frequency = bucket.getDocCount();
 
 		String value = bucket.getKey();
 
-		JSONObject jsonObject = JSONUtil.put(
+		return JSONUtil.put(
 			FacetJSONResponseKeys.FREQUENCY, frequency
 		).put(
-			FacetJSONResponseKeys.NAME,
-				value
+			FacetJSONResponseKeys.NAME, value
 		).put(
 			FacetJSONResponseKeys.TEXT,
-				getText(value, frequency, resourceBundle)
-		).put(FacetJSONResponseKeys.VALUE, value);
-
-
-		return jsonObject;
+			getText(value, frequency, resourceBundle)
+		).put(
+			FacetJSONResponseKeys.VALUE, value
+		);
 	}
+
 }

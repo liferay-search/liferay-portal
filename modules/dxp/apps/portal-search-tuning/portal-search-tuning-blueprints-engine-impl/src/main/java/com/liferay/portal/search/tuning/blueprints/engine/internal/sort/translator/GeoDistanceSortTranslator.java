@@ -83,11 +83,17 @@ public class GeoDistanceSortTranslator implements SortTranslator {
 
 		} catch (IllegalArgumentException illegalArgumentException) {
 			messages.addMessage(
-				new Message(
-					Severity.ERROR, "core",
-					"core.error.unknown-sort-configuration-error",
-					illegalArgumentException.getMessage(), illegalArgumentException,
-					configurationJsonObject, null, null));
+					new Message.Builder().className(
+						getClass().getName()
+					).localizationKey(
+						"core.error.unknown-sort-configuration-error"
+					).msg(
+						illegalArgumentException.getMessage()
+					).rootObject(configurationJsonObject
+					).severity(
+						Severity.ERROR
+					).throwable(illegalArgumentException
+					).build());
 
 			_log.error(illegalArgumentException.getMessage(), illegalArgumentException);
 		}

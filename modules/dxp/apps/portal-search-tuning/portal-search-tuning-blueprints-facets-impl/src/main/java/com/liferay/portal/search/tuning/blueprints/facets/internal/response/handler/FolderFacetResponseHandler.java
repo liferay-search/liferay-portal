@@ -55,15 +55,13 @@ import org.osgi.service.component.annotations.Reference;
 public class FolderFacetResponseHandler
 	extends BaseTermsFacetResponseHandler implements FacetResponseHandler {
 
-
 	@Override
 	protected JSONObject createBucketJSONObject(
 			Bucket bucket, BlueprintsAttributes blueprintsAttributes,
-			ResourceBundle resourceBundle) throws Exception {
+			ResourceBundle resourceBundle)
+		throws Exception {
 
 		Locale locale = blueprintsAttributes.getLocale();
-
-		long frequency = bucket.getDocCount();
 
 		String value = bucket.getKey();
 
@@ -75,14 +73,16 @@ public class FolderFacetResponseHandler
 			return null;
 		}
 
+		long frequency = bucket.getDocCount();
+
 		String name = document.getString(
-				"localized_title_" + locale.toString());
+			"localized_title_" + locale.toString());
 
 		long groupId = document.getLong(Field.GROUP_ID);
 
 		Group group = _groupLocalService.getGroup(groupId);
 
-		JSONObject jsonObject = JSONUtil.put(
+		return JSONUtil.put(
 			FacetJSONResponseKeys.FREQUENCY, frequency
 		).put(
 			FacetJSONResponseKeys.GROUP_NAME, group.getName(locale, true)
@@ -93,56 +93,54 @@ public class FolderFacetResponseHandler
 		).put(
 			FacetJSONResponseKeys.VALUE, folderId
 		);
-
-		return jsonObject;
 	}
 
 	private Document _getDocument(
-			long folderId, BlueprintsAttributes blueprintsAttributes) {
+		long folderId, BlueprintsAttributes blueprintsAttributes) {
 
-			SearchRequestBuilder searchRequestBuilder =
-				_searchRequestBuilderFactory.builder(
-				).addComplexQueryPart(
-					_complexQueryPartBuilderFactory.builder(
-					).query(
-						_queries.term(Field.ENTRY_CLASS_PK, folderId)
-					).occur(
-						"filter"
-					).build()
-				).companyId(
-					blueprintsAttributes.getCompanyId()
-				).modelIndexerClasses(
-					BookmarksFolder.class, DLFolder.class, JournalFolder.class
-				).emptySearchEnabled(
-					true
-				).highlightEnabled(
-					false
-				).locale(
-					blueprintsAttributes.getLocale()
-				).size(
-					1
-				).from(
-					0
-				);
+		SearchRequestBuilder searchRequestBuilder =
+			_searchRequestBuilderFactory.builder(
+			).addComplexQueryPart(
+				_complexQueryPartBuilderFactory.builder(
+				).query(
+					_queries.term(Field.ENTRY_CLASS_PK, folderId)
+				).occur(
+					"filter"
+				).build()
+			).companyId(
+				blueprintsAttributes.getCompanyId()
+			).modelIndexerClasses(
+				BookmarksFolder.class, DLFolder.class, JournalFolder.class
+			).emptySearchEnabled(
+				true
+			).highlightEnabled(
+				false
+			).locale(
+				blueprintsAttributes.getLocale()
+			).size(
+				1
+			).from(
+				0
+			);
 
-			SearchResponse searchResponse = _searcher.search(
-				searchRequestBuilder.build());
+		SearchResponse searchResponse = _searcher.search(
+			searchRequestBuilder.build());
 
-			SearchHits searchHits = searchResponse.getSearchHits();
+		SearchHits searchHits = searchResponse.getSearchHits();
 
-			List<SearchHit> hits = searchHits.getSearchHits();
+		List<SearchHit> hits = searchHits.getSearchHits();
 
-			if (hits.size() == 1) {
-				return hits.get(
-					0
-				).getDocument();
-			}
+		if (hits.size() == 1) {
+			SearchHit hit = hits.get(0);
 
-			return null;
+			return hit.getDocument();
 		}
-	
+
+		return null;
+	}
+
 	@Reference
-	ComplexQueryPartBuilderFactory _complexQueryPartBuilderFactory;
+	private ComplexQueryPartBuilderFactory _complexQueryPartBuilderFactory;
 
 	@Reference
 	private DLFolderLocalService _dlFolderLocalService;

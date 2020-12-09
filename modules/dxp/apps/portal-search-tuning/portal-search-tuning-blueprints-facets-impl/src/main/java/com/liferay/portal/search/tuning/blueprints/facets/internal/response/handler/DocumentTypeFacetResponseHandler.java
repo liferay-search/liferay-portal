@@ -45,24 +45,25 @@ public class DocumentTypeFacetResponseHandler
 	@Override
 	protected JSONObject createBucketJSONObject(
 			Bucket bucket, BlueprintsAttributes blueprintsAttributes,
-			ResourceBundle resourceBundle) throws Exception {
+			ResourceBundle resourceBundle)
+		throws Exception {
 
 		Locale locale = blueprintsAttributes.getLocale();
-		
+
 		long frequency = bucket.getDocCount();
 
 		String value = bucket.getKey();
-		
+
 		long fileEntryTypeId = GetterUtil.getLong(value);
-		
-		DLFileEntryType dlFileEntryType = _dLFileEntryTypeService.getFileEntryType(
-			fileEntryTypeId);
+
+		DLFileEntryType dlFileEntryType =
+			_dLFileEntryTypeService.getFileEntryType(fileEntryTypeId);
 
 		String name = dlFileEntryType.getName(locale, true);
 
 		Group group = _groupLocalService.getGroup(dlFileEntryType.getGroupId());
 
-		JSONObject jsonObject = JSONUtil.put(
+		return JSONUtil.put(
 			FacetJSONResponseKeys.FREQUENCY, frequency
 		).put(
 			FacetJSONResponseKeys.GROUP_NAME, group.getName(locale, true)
@@ -73,8 +74,6 @@ public class DocumentTypeFacetResponseHandler
 		).put(
 			FacetJSONResponseKeys.VALUE, fileEntryTypeId
 		);
-
-		return jsonObject;
 	}
 
 	@Reference

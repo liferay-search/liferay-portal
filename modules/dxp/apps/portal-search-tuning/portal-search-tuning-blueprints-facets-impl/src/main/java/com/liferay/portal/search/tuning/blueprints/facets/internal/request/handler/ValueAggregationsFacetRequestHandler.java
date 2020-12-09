@@ -49,13 +49,13 @@ public class ValueAggregationsFacetRequestHandler
 
 	public Optional<Parameter> getParameterOptional(
 		BlueprintsAttributes blueprintsAttributes, Messages messages,
-		JSONObject configurationJsonObject) {
+		JSONObject configurationJSONObject) {
 
-		if (!_validateConfiguration(configurationJsonObject, messages)) {
+		if (!_validateConfiguration(configurationJSONObject, messages)) {
 			Optional.empty();
 		}
 
-		String parameterName = configurationJsonObject.getString(
+		String parameterName = configurationJSONObject.getString(
 			FacetConfigurationKeys.PARAMETER_NAME.getJsonKey());
 
 		Optional<Object> valueOptional =
@@ -67,7 +67,7 @@ public class ValueAggregationsFacetRequestHandler
 
 		String[] valueArray;
 
-		boolean multiValue = configurationJsonObject.getBoolean(
+		boolean multiValue = configurationJSONObject.getBoolean(
 			FacetConfigurationKeys.MULTI_VALUE.getJsonKey(), true);
 
 		if (multiValue) {
@@ -79,7 +79,7 @@ public class ValueAggregationsFacetRequestHandler
 			};
 		}
 
-		List<String> values = _getValues(valueArray, configurationJsonObject);
+		List<String> values = _getValues(valueArray, configurationJSONObject);
 
 		if (values.isEmpty()) {
 			return Optional.empty();
@@ -94,24 +94,24 @@ public class ValueAggregationsFacetRequestHandler
 	}
 
 	private List<String> _getValues(
-		String[] valueArray, JSONObject configurationJsonObject) {
+		String[] valueArray, JSONObject configurationJSONObject) {
 
 		List<String> values = new ArrayList<>();
 
-		JSONObject handlerParametersJsonObject =
-			configurationJsonObject.getJSONObject(
+		JSONObject handlerParametersJSONObject =
+			configurationJSONObject.getJSONObject(
 				FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey());
 
-		JSONArray valueAggregationsJsonArray =
-			handlerParametersJsonObject.getJSONArray("aggregations");
+		JSONArray valueAggregationsJSONArray =
+			handlerParametersJSONObject.getJSONArray("aggregations");
 
 		for (String requestValue : valueArray) {
-			JSONArray translatedValuesJsonArray = null;
+			JSONArray translatedValuesJSONArray = null;
 
-			for (int i = 0; i < valueAggregationsJsonArray.length(); i++) {
+			for (int i = 0; i < valueAggregationsJSONArray.length(); i++) {
 				try {
 					JSONObject jsonObject =
-						valueAggregationsJsonArray.getJSONObject(i);
+						valueAggregationsJSONArray.getJSONObject(i);
 
 					if (jsonObject.getString(
 							"key"
@@ -119,7 +119,7 @@ public class ValueAggregationsFacetRequestHandler
 							requestValue
 						)) {
 
-						translatedValuesJsonArray = jsonObject.getJSONArray(
+						translatedValuesJSONArray = jsonObject.getJSONArray(
 							"values");
 
 						break;
@@ -130,11 +130,11 @@ public class ValueAggregationsFacetRequestHandler
 				}
 			}
 
-			if ((translatedValuesJsonArray != null) &&
-				(translatedValuesJsonArray.length() > 0)) {
+			if ((translatedValuesJSONArray != null) &&
+				(translatedValuesJSONArray.length() > 0)) {
 
 				Collections.addAll(
-					values, JSONUtil.toStringArray(translatedValuesJsonArray));
+					values, JSONUtil.toStringArray(translatedValuesJSONArray));
 			}
 			else {
 				values.add(requestValue);
@@ -145,37 +145,54 @@ public class ValueAggregationsFacetRequestHandler
 	}
 
 	private boolean _validateConfiguration(
-		JSONObject configurationJsonObject, Messages messages) {
+		JSONObject configurationJSONObject, Messages messages) {
 
 		boolean valid = true;
 
-		JSONObject handlerParametersJsonObject =
-			configurationJsonObject.getJSONObject(
+		JSONObject handlerParametersJSONObject =
+			configurationJSONObject.getJSONObject(
 				FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey());
 
-		if (handlerParametersJsonObject == null) {
+		if (handlerParametersJSONObject == null) {
 			messages.addMessage(
-				new Message(
-					Severity.ERROR, "core",
-					"core.error.undefined-facet-handler-parameters",
-					"Facet handler parameters are not defined", null,
-					configurationJsonObject,
-					FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey(),
-					null));
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"facets.error.undefined-handler-parameters"
+				).msg(
+					"Facet handler parameters are not defined"
+				).rootObject(
+					configurationJSONObject
+				).rootProperty(
+					FacetConfigurationKeys.HANDLER_PARAMETERS.getJsonKey()
+				).rootValue(
+					null
+				).severity(
+					Severity.ERROR
+				).build());
 
 			valid = false;
 		}
 
-		if ((handlerParametersJsonObject == null) ||
-			!handlerParametersJsonObject.has("aggregations")) {
+		if ((handlerParametersJSONObject == null) ||
+			!handlerParametersJSONObject.has("aggregations")) {
 
 			messages.addMessage(
-				new Message(
-					Severity.ERROR, "core",
-					"core.error.undefined-facet-handler-aggregations",
-					"Value aggregator facet handler's value mappings are not " +
-						"defined",
-					null, configurationJsonObject, "aggregations", null));
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"facets.error.undefined-handler-mappings"
+				).msg(
+					"Facet handler mappings are not defined"
+				).rootObject(
+					configurationJSONObject
+				).rootProperty(
+					"mappings"
+				).rootValue(
+					null
+				).severity(
+					Severity.ERROR
+				).build());
 
 			valid = false;
 		}

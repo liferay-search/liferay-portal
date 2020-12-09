@@ -230,12 +230,20 @@ public class QuerySearchRequestBodyContributor
 				}
 				catch (IllegalArgumentException illegalArgumentException) {
 					messages.addMessage(
-						new Message(
-							Severity.ERROR, "core",
-							"core.error.unknown-query-type",
-							illegalArgumentException.getMessage(),
-							illegalArgumentException, clauseJsonObject,
-							ClauseConfigurationKeys.TYPE.getJsonKey(), type));
+							new Message.Builder().className(
+								getClass().getName()
+							).localizationKey(
+								"core.error.unknown-query-type"
+							).msg(
+								illegalArgumentException.getMessage()
+							).rootObject(clauseJsonObject
+							).rootProperty(
+									ClauseConfigurationKeys.TYPE.getJsonKey()
+							).rootValue(type
+							).severity(
+								Severity.ERROR
+							).throwable(illegalArgumentException
+							).build());
 
 					_log.error(
 						illegalArgumentException.getMessage(),
@@ -243,12 +251,18 @@ public class QuerySearchRequestBodyContributor
 				}
 				catch (JSONException jsonException) {
 					messages.addMessage(
-						new Message(
-							Severity.WARN, "core",
-							"core.error.error-in-parsing-configuration-" +
-								"parameters",
-							jsonException.getMessage(), jsonException,
-							queryJsonObject, null, null));
+							new Message.Builder().className(
+								getClass().getName()
+							).localizationKey(
+									"core.error.error-in-parsing-configuration-" +
+											"parameters"
+											).msg(
+													jsonException.getMessage()
+							).rootObject(queryJsonObject
+							).severity(
+								Severity.ERROR
+							).throwable(jsonException
+							).build());
 
 					if (_log.isWarnEnabled()) {
 						_log.warn(jsonException.getMessage(), jsonException);
@@ -256,11 +270,17 @@ public class QuerySearchRequestBodyContributor
 				}
 				catch (Exception exception) {
 					messages.addMessage(
-						new Message(
-							Severity.WARN, "core",
-							"core.error.unknown-clause-building-error",
-							exception.getMessage(), exception, clauseJsonObject,
-							null, null));
+							new Message.Builder().className(
+								getClass().getName()
+							).localizationKey(
+								"core.error.unknown-clause-building-error"
+							).msg(
+									exception.getMessage()
+							).rootObject(clauseJsonObject
+							).severity(
+								Severity.ERROR
+							).throwable(exception
+							).build());
 
 					if (_log.isWarnEnabled()) {
 						_log.warn(exception.getMessage(), exception);
@@ -364,11 +384,17 @@ public class QuerySearchRequestBodyContributor
 					queryContributor.getOccur(), queryOptional.get(), null);
 			}
 			catch (Exception exception) {
-				messages.addMessage(
-					new Message(
-						Severity.ERROR, "core",
-						"core.error.unknown-error-query-contributor",
-						exception.getMessage(), exception, null, null, null));
+	 			messages.addMessage(
+	 					new Message.Builder().className(
+	 						getClass().getName()
+	 					).localizationKey(
+	 						"core.error.unknown-error-query-contributor"
+	 					).msg(
+	 							exception.getMessage()
+	 					).severity(
+	 						Severity.ERROR
+	 					).throwable(exception
+	 					).build());				
 
 				_log.error(exception.getMessage(), exception);
 			}
@@ -387,13 +413,22 @@ public class QuerySearchRequestBodyContributor
 			return ClauseContext.valueOf(clauseContextString);
 		}
 		catch (IllegalArgumentException illegalArgumentException) {
-			messages.addMessage(
-				new Message(
-					Severity.ERROR, "core", "core.error.unknown-clause-context",
-					illegalArgumentException.getMessage(),
-					illegalArgumentException, queryJsonObject,
-					ClauseConfigurationKeys.CONTEXT.getJsonKey(),
-					clauseContextString));
+
+ 			messages.addMessage(
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"core.error.unknown-clause-context"
+				).msg(
+					illegalArgumentException.getMessage()
+				).rootObject(queryJsonObject
+				).rootProperty(
+						ClauseConfigurationKeys.CONTEXT.getJsonKey()
+				).rootValue(clauseContextString
+				).severity(
+					Severity.ERROR
+				).throwable(illegalArgumentException
+				).build());
 
 			if (_log.isWarnEnabled()) {
 				_log.warn(
@@ -415,12 +450,23 @@ public class QuerySearchRequestBodyContributor
 			return Occur.valueOf(occurString);
 		}
 		catch (IllegalArgumentException illegalArgumentException) {
-			messages.addMessage(
-				new Message(
-					Severity.ERROR, "core", "core.error.unknown-occur-value",
-					illegalArgumentException.getMessage(),
-					illegalArgumentException, queryJsonObject,
-					ClauseConfigurationKeys.OCCUR.getJsonKey(), occurString));
+
+ 			messages.addMessage(
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"core.error.unknown-occur-value"
+				).msg(
+					illegalArgumentException.getMessage()
+				).rootObject(queryJsonObject
+				).rootProperty(
+						ClauseConfigurationKeys.OCCUR.getJsonKey()
+				).rootValue(occurString
+				).severity(
+					Severity.ERROR
+				).throwable(illegalArgumentException
+				).build());
+
 		}
 
 		return null;
@@ -488,14 +534,22 @@ public class QuerySearchRequestBodyContributor
 				}
 			}
 			catch (IllegalArgumentException illegalArgumentException) {
-				messages.addMessage(
-					new Message(
-						Severity.ERROR, "core",
-						"core.error.unknown-clause-condition-handler",
-						illegalArgumentException.getMessage(),
-						illegalArgumentException, conditionJsonObject,
-						ConditionConfigurationKeys.HANDLER.getJsonKey(),
-						handler));
+
+	 			messages.addMessage(
+					new Message.Builder().className(
+						getClass().getName()
+					).localizationKey(
+						"core.error.unknown-clause-condition-handler"
+					).msg(
+						illegalArgumentException.getMessage()
+					).rootObject(conditionJsonObject
+					).rootProperty(
+							ConditionConfigurationKeys.HANDLER.getJsonKey()
+					).rootValue(handler
+					).severity(
+						Severity.ERROR
+					).throwable(illegalArgumentException
+					).build());
 
 				if (_log.isWarnEnabled()) {
 					_log.warn(
@@ -504,12 +558,20 @@ public class QuerySearchRequestBodyContributor
 				}
 			}
 			catch (Exception exception) {
-				messages.addMessage(
-					new Message(
-						Severity.ERROR, "core",
-						"core.error.unknown-clause-condition-error",
-						exception.getMessage(), exception, conditionJsonObject,
-						null, null));
+
+	 			messages.addMessage(
+					new Message.Builder().className(
+						getClass().getName()
+					).localizationKey(
+						"core.error.unknown-clause-condition-error"
+					).msg(
+							exception.getMessage()
+					).rootObject(conditionJsonObject
+					).severity(
+						Severity.ERROR
+					).throwable(exception
+					).build());
+
 
 				_log.error(exception.getMessage(), exception);
 			}

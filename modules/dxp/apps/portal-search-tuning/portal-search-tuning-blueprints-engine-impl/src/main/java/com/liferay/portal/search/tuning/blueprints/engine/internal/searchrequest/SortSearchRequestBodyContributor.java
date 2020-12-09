@@ -127,12 +127,20 @@ public class SortSearchRequestBodyContributor
 						parameterData, messages, configurationJsonObject);
 		}
 		catch (Exception exception) {
-			messages.addMessage(
-				new Message(
-					Severity.ERROR, "core",
-					"core.error.unknown-sort-configuration-error",
-					exception.getMessage(), exception,
-					configurationJsonObject, null, null));
+
+ 			messages.addMessage(
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"core.error.unknown-sort-configuration-error"
+				).msg(
+						exception.getMessage()
+				).rootObject(configurationJsonObject
+				).severity(
+					Severity.ERROR
+				).throwable(exception
+				).build());
+
 
 			_log.error(exception.getMessage(), exception);
 		}
@@ -153,13 +161,21 @@ public class SortSearchRequestBodyContributor
 
 		}
 		catch (IllegalArgumentException illegalArgumentException) {
-			messages.addMessage(
-				new Message(
-					Severity.ERROR, "core",
-					"core.error.unknown-sort-type",
-					illegalArgumentException.getMessage(),
-					illegalArgumentException, configurationJsonObject,
-					SortConfigurationKeys.TYPE.getJsonKey(), type));
+ 			messages.addMessage(
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"core.error.unknown-sort-type"
+				).msg(
+					illegalArgumentException.getMessage()
+				).rootObject(configurationJsonObject
+				).rootProperty(
+						SortConfigurationKeys.TYPE.getJsonKey()
+				).rootValue(type
+				).severity(
+					Severity.ERROR
+				).throwable(illegalArgumentException
+				).build());
 
 			_log.error(
 				illegalArgumentException.getMessage(),
@@ -178,11 +194,20 @@ public class SortSearchRequestBodyContributor
 			return SortOrder.valueOf(sortOrderString);
 		}
 		catch (IllegalArgumentException illegalArgumentException) {
-			messages.addMessage(
-				new Message(
-					Severity.ERROR, "core", "core.error.unknown-sort-order",
-					illegalArgumentException.getMessage(),
-					illegalArgumentException, null, null, sortOrderString));
+
+ 			messages.addMessage(
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"core.error.unknown-sort-order"
+				).msg(
+					illegalArgumentException.getMessage()
+				).rootValue(sortOrderString
+				).severity(
+					Severity.ERROR
+				).throwable(illegalArgumentException
+				).build());
+ 			
 			_log.error(
 				illegalArgumentException.getMessage(),
 				illegalArgumentException);
@@ -270,14 +295,21 @@ public class SortSearchRequestBodyContributor
 		if (configurationJsonObject.isNull(
 				SortConfigurationKeys.FIELD.getJsonKey())) {
 
-			messages.addMessage(
-				new Message(
-					Severity.ERROR, "core",
-					"core.error.undefined-sort-field",
-					"Sort field is not defined", null,
-					configurationJsonObject,
-					SortConfigurationKeys.FIELD.getJsonKey(), null));
-			valid = false;
+ 			messages.addMessage(
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"core.error.undefined-sort-field"
+				).msg(
+						"Sort field is not defined"
+				).rootObject(configurationJsonObject
+				).rootProperty(
+						SortConfigurationKeys.FIELD.getJsonKey()
+				).severity(
+					Severity.ERROR
+				).build());
+
+ 			valid = false;
 
 			if (_log.isWarnEnabled()) {
 				_log.warn(

@@ -46,10 +46,11 @@ public class CategoryFacetResponseHandler
 	@Override
 	protected JSONObject createBucketJSONObject(
 			Bucket bucket, BlueprintsAttributes blueprintsAttributes,
-			ResourceBundle resourceBundle) throws Exception {
-	
+			ResourceBundle resourceBundle)
+		throws Exception {
+
 		Locale locale = blueprintsAttributes.getLocale();
-		
+
 		long frequency = bucket.getDocCount();
 
 		String value = bucket.getKey();
@@ -63,7 +64,7 @@ public class CategoryFacetResponseHandler
 
 		Group group = _groupLocalService.getGroup(assetCategory.getGroupId());
 
-		JSONObject jsonObject = JSONUtil.put(
+		return JSONUtil.put(
 			FacetJSONResponseKeys.FREQUENCY, frequency
 		).put(
 			FacetJSONResponseKeys.GROUP_NAME, group.getName(locale, true)
@@ -74,8 +75,6 @@ public class CategoryFacetResponseHandler
 		).put(
 			FacetJSONResponseKeys.VALUE, assetCategoryId
 		);
-
-		return jsonObject;
 	}
 
 	@Reference
