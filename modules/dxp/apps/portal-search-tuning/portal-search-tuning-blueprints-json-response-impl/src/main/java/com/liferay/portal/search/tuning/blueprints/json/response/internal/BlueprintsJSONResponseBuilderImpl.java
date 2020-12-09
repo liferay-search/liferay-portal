@@ -57,7 +57,7 @@ public class BlueprintsJSONResponseBuilderImpl
 
 		Blueprint blueprint = _blueprintService.getBlueprint(blueprintId);
 
-		JSONObject responseJsonObject = JSONFactoryUtil.createJSONObject();
+		JSONObject responseJSONObject = JSONFactoryUtil.createJSONObject();
 
 		for (Map.Entry<String, ServiceComponentReference<ResponseContributor>>
 				entry : _responseContributors.entrySet()) {
@@ -69,7 +69,7 @@ public class BlueprintsJSONResponseBuilderImpl
 				value.getServiceComponent();
 
 			responseContributor.contribute(
-				responseJsonObject, searchResponse, blueprint,
+				responseJSONObject, searchResponse, blueprint,
 				blueprintsAttributes, resourceBundle, messages);
 		}
 
@@ -79,7 +79,7 @@ public class BlueprintsJSONResponseBuilderImpl
 					(System.currentTimeMillis() - startTime));
 		}
 
-		return responseJsonObject;
+		return responseJSONObject;
 	}
 
 	@Reference(

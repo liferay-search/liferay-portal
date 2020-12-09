@@ -69,11 +69,11 @@ public class ItemsResponseContributor implements ResponseContributor {
 
 	@Override
 	public void contribute(
-		JSONObject responseJsonObject, SearchResponse searchResponse,
+		JSONObject responseJSONObject, SearchResponse searchResponse,
 		Blueprint blueprint, BlueprintsAttributes blueprintsAttributes,
 		ResourceBundle resourceBundle, Messages messages) {
 
-		responseJsonObject.put(
+		responseJSONObject.put(
 			JSONResponseKeys.ITEMS,
 			_getItemsJSONArray(
 				searchResponse, blueprintsAttributes, resourceBundle));
@@ -132,7 +132,7 @@ public class ItemsResponseContributor implements ResponseContributor {
 	}
 
 	private void _executeResultContributors(
-		JSONObject resultJsonObject, Document document,
+		JSONObject resultJSONObject, Document document,
 		ResultBuilder resultBuilder, BlueprintsAttributes blueprintsAttributes,
 		ResourceBundle resourceBundle) {
 
@@ -145,7 +145,7 @@ public class ItemsResponseContributor implements ResponseContributor {
 			ResultContributor resultContributor = value.getServiceComponent();
 
 			resultContributor.contribute(
-				resultJsonObject, document, resultBuilder, blueprintsAttributes,
+				resultJSONObject, document, resultBuilder, blueprintsAttributes,
 				resourceBundle);
 		}
 	}
@@ -172,7 +172,7 @@ public class ItemsResponseContributor implements ResponseContributor {
 				ResultBuilder resultBuilder = _resultBuilderFactory.getBuilder(
 					document.getString("entryClassName"));
 
-				JSONObject resultJsonObject = JSONUtil.put(
+				JSONObject resultJSONObject = JSONUtil.put(
 					"date",
 					resultBuilder.getDate(document, blueprintsAttributes)
 				).put(
@@ -190,32 +190,32 @@ public class ItemsResponseContributor implements ResponseContributor {
 				);
 
 				_setType(
-					resultJsonObject, resultBuilder.getType(document),
+					resultJSONObject, resultBuilder.getType(document),
 					resourceBundle);
 
 				_setThumbnail(
-					resultJsonObject, resultBuilder, document,
+					resultJSONObject, resultBuilder, document,
 					blueprintsAttributes);
 
 				_setUserPortrait(
-					resultJsonObject, document, blueprintsAttributes);
+					resultJSONObject, document, blueprintsAttributes);
 
 				_setRawDocument(
-					resultJsonObject, document, blueprintsAttributes);
+					resultJSONObject, document, blueprintsAttributes);
 
 				_setAdditionalFields(
-					resultJsonObject, document, blueprintsAttributes);
+					resultJSONObject, document, blueprintsAttributes);
 
-				_setExplain(resultJsonObject, searchHit, blueprintsAttributes);
+				_setExplain(resultJSONObject, searchHit, blueprintsAttributes);
 
 				_setHightlightFields(
-					resultJsonObject, searchHit, blueprintsAttributes);
+					resultJSONObject, searchHit, blueprintsAttributes);
 
 				_executeResultContributors(
-					resultJsonObject, document, resultBuilder,
+					resultJSONObject, document, resultBuilder,
 					blueprintsAttributes, resourceBundle);
 
-				jsonArray.put(resultJsonObject);
+				jsonArray.put(resultJSONObject);
 			}
 			catch (Exception exception) {
 				_log.error(exception.getMessage(), exception);
@@ -226,7 +226,7 @@ public class ItemsResponseContributor implements ResponseContributor {
 	}
 
 	private void _setAdditionalFields(
-			JSONObject resultJsonObject, Document document,
+			JSONObject resultJSONObject, Document document,
 			BlueprintsAttributes blueprintsAttributes)
 		throws Exception {
 
@@ -248,21 +248,21 @@ public class ItemsResponseContributor implements ResponseContributor {
 				List<Object> values = document.getValues(entry.getKey());
 
 				if (values.isEmpty()) {
-					resultJsonObject.put(entry.getKey(), values);
+					resultJSONObject.put(entry.getKey(), values);
 				}
 			}
 			else {
 				String value = document.getString(entry.getKey());
 
 				if (!Validator.isBlank(value)) {
-					resultJsonObject.put(entry.getKey(), value);
+					resultJSONObject.put(entry.getKey(), value);
 				}
 			}
 		}
 	}
 
 	private void _setExplain(
-		JSONObject resultJsonObject, SearchHit searchHit,
+		JSONObject resultJSONObject, SearchHit searchHit,
 		BlueprintsAttributes blueprintsAttributes) {
 
 		Optional<Object> includeExplainOptional =
@@ -280,11 +280,11 @@ public class ItemsResponseContributor implements ResponseContributor {
 			return;
 		}
 
-		resultJsonObject.put("explain", searchHit.getExplanation());
+		resultJSONObject.put("explain", searchHit.getExplanation());
 	}
 
 	private void _setHightlightFields(
-		JSONObject resultJsonObject, SearchHit searchHit,
+		JSONObject resultJSONObject, SearchHit searchHit,
 		BlueprintsAttributes blueprintsAttributes) {
 
 		if (searchHit.getHighlightFieldsMap() == null) {
@@ -328,7 +328,7 @@ public class ItemsResponseContributor implements ResponseContributor {
 				String cleanedText = ResponseUtil.stripHTML(
 					sb.toString(), descriptionMaxLength);
 
-				resultJsonObject.put(key + "_highlight", cleanedText);
+				resultJSONObject.put(key + "_highlight", cleanedText);
 			}
 			catch (IllegalStateException illegalStateException) {
 				_log.error(
@@ -346,7 +346,7 @@ public class ItemsResponseContributor implements ResponseContributor {
 	}
 
 	private void _setRawDocument(
-			JSONObject resultJsonObject, Document document,
+			JSONObject resultJSONObject, Document document,
 			BlueprintsAttributes blueprintsAttributes)
 		throws Exception {
 
@@ -375,11 +375,11 @@ public class ItemsResponseContributor implements ResponseContributor {
 			jsonObject.put(e.getKey(), field.getValue());
 		}
 
-		resultJsonObject.put("document", jsonObject);
+		resultJSONObject.put("document", jsonObject);
 	}
 
 	private void _setThumbnail(
-			JSONObject resultJsonObject, ResultBuilder resultBuilder,
+			JSONObject resultJSONObject, ResultBuilder resultBuilder,
 			Document document, BlueprintsAttributes blueprintsAttributes)
 		throws Exception {
 
@@ -391,29 +391,26 @@ public class ItemsResponseContributor implements ResponseContributor {
 			return;
 		}
 
-		boolean includeThumbnail = GetterUtil.getBoolean(
-			includeThumbnailOptional.get());
-
-		if (!includeThumbnail) {
+		if (!GetterUtil.getBoolean(includeThumbnailOptional.get())) {
 			return;
 		}
 
-		resultJsonObject.put(
+		resultJSONObject.put(
 			"imageSrc",
 			resultBuilder.getThumbnail(document, blueprintsAttributes));
 	}
 
 	private void _setType(
-		JSONObject resultJsonObject, String type,
+		JSONObject resultJSONObject, String type,
 		ResourceBundle resourceBundle) {
 
-		resultJsonObject.put(
+		resultJSONObject.put(
 			"type",
 			_language.get(resourceBundle, StringUtil.toLowerCase(type)));
 	}
 
 	private void _setUserPortrait(
-			JSONObject resultJsonObject, Document document,
+			JSONObject resultJSONObject, Document document,
 			BlueprintsAttributes blueprintsAttributes)
 		throws Exception {
 
@@ -444,7 +441,7 @@ public class ItemsResponseContributor implements ResponseContributor {
 					user.getUserUuid());
 
 				if (userPortraitUrl != null) {
-					resultJsonObject.put("userPortraitUrl", userPortraitUrl);
+					resultJSONObject.put("userPortraitUrl", userPortraitUrl);
 				}
 			}
 
@@ -456,7 +453,7 @@ public class ItemsResponseContributor implements ResponseContributor {
 
 			String lastNameInitials = lastName.substring(0, 1);
 
-			resultJsonObject.put(
+			resultJSONObject.put(
 				"userInitials",
 				StringUtil.toUpperCase(firstNameInitials + lastNameInitials)
 			).put(
@@ -473,7 +470,7 @@ public class ItemsResponseContributor implements ResponseContributor {
 
 			String lastNameInitials = nameParts[1].substring(0, 1);
 
-			resultJsonObject.put(
+			resultJSONObject.put(
 				"userInitials",
 				StringUtil.toUpperCase(firstNameInitials + lastNameInitials));
 

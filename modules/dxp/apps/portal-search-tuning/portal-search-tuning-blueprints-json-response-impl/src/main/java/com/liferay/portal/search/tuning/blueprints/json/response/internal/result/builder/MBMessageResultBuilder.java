@@ -110,17 +110,15 @@ public class MBMessageResultBuilder
 			boolean viewResultsInContext)
 		throws Exception {
 
-		AssetRenderer<?> assetRenderer = getAssetRenderer(
-			JournalArticle.class.getName(), classPK);
-
-		String link = null;
-
 		if (viewResultsInContext) {
-			link = assetRenderer.getURLViewInContext(
+			AssetRenderer<?> assetRenderer = getAssetRenderer(
+				JournalArticle.class.getName(), classPK);
+
+			return assetRenderer.getURLViewInContext(
 				liferayPortletRequest, liferayPortletResponse, null);
 		}
 
-		return link;
+		return null;
 	}
 
 	private String _getWikiPageCommentLink(

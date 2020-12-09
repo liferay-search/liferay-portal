@@ -43,11 +43,11 @@ public class MetaResponseContributor implements ResponseContributor {
 
 	@Override
 	public void contribute(
-		JSONObject responseJsonObject, SearchResponse searchResponse,
+		JSONObject responseJSONObject, SearchResponse searchResponse,
 		Blueprint blueprint, BlueprintsAttributes blueprintsAttributes,
 		ResourceBundle resourceBundle, Messages messages) {
 
-		responseJsonObject.put(
+		responseJSONObject.put(
 			JSONResponseKeys.META, _getMetaJSONObject(searchResponse));
 	}
 

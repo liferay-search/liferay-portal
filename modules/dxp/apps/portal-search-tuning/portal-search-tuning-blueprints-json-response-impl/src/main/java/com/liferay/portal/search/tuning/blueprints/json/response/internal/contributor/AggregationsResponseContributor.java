@@ -52,11 +52,11 @@ public class AggregationsResponseContributor implements ResponseContributor {
 
 	@Override
 	public void contribute(
-		JSONObject responseJsonObject, SearchResponse searchResponse,
+		JSONObject responseJSONObject, SearchResponse searchResponse,
 		Blueprint blueprint, BlueprintsAttributes blueprintsAttributes,
 		ResourceBundle resourceBundle, Messages messages) {
 
-		responseJsonObject.put(
+		responseJSONObject.put(
 			JSONResponseKeys.AGGREGATIONS,
 			_getAggregationsJSONObject(searchResponse, blueprint, messages));
 	}
@@ -64,7 +64,7 @@ public class AggregationsResponseContributor implements ResponseContributor {
 	private JSONObject _getAggregationsJSONObject(
 		SearchResponse searchResponse, Blueprint blueprint, Messages messages) {
 
-		JSONObject aggregationsJsonObject = JSONFactoryUtil.createJSONObject();
+		JSONObject aggregationsJSONObject = JSONFactoryUtil.createJSONObject();
 
 		Optional<JSONArray> aggregationsConfigurationOptional =
 			_blueprintHelper.getAggsConfigurationOptional(blueprint);
@@ -75,20 +75,20 @@ public class AggregationsResponseContributor implements ResponseContributor {
 		if (aggregations.isEmpty() ||
 			!aggregationsConfigurationOptional.isPresent()) {
 
-			return aggregationsJsonObject;
+			return aggregationsJSONObject;
 		}
 
-		JSONArray aggregationsConfigurationJsonArray =
+		JSONArray aggregationsConfigurationJSONArray =
 			aggregationsConfigurationOptional.get();
 
-		for (int i = 0; i < aggregationsConfigurationJsonArray.length(); i++) {
-			JSONObject aggregationJsonObject =
-				aggregationsConfigurationJsonArray.getJSONObject(i);
+		for (int i = 0; i < aggregationsConfigurationJSONArray.length(); i++) {
+			JSONObject aggregationJSONObject =
+				aggregationsConfigurationJSONArray.getJSONObject(i);
 
-			String aggregationName = aggregationJsonObject.getString(
+			String aggregationName = aggregationJSONObject.getString(
 				AggregationConfigurationKeys.NAME.getJsonKey());
 
-			String type = aggregationJsonObject.getString(
+			String type = aggregationJSONObject.getString(
 				AggregationConfigurationKeys.TYPE.getJsonKey());
 
 			for (Map.Entry<String, AggregationResult> entry :
@@ -111,7 +111,7 @@ public class AggregationsResponseContributor implements ResponseContributor {
 							entry.getValue());
 
 					if (aggregationJsonOptional.isPresent()) {
-						aggregationsJsonObject.put(
+						aggregationsJSONObject.put(
 							aggregationName, aggregationJsonOptional.get());
 					}
 				}
@@ -124,7 +124,7 @@ public class AggregationsResponseContributor implements ResponseContributor {
 						).msg(
 							illegalArgumentException.getMessage()
 						).rootObject(
-							aggregationJsonObject
+							aggregationJSONObject
 						).rootProperty(
 							AggregationConfigurationKeys.TYPE.getJsonKey()
 						).rootValue(
@@ -142,7 +142,7 @@ public class AggregationsResponseContributor implements ResponseContributor {
 			}
 		}
 
-		return aggregationsJsonObject;
+		return aggregationsJSONObject;
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

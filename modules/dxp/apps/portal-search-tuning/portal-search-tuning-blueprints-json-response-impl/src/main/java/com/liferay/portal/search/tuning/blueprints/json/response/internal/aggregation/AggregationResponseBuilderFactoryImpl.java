@@ -89,8 +89,8 @@ public class AggregationResponseBuilderFactoryImpl
 				aggregationResponseBuilder, serviceRanking);
 
 		if (_aggregationResponseBuilders.containsKey(type)) {
-			ServiceComponentReference<AggregationBuilder>
-				previousReference = _aggregationResponseBuilders.get(type);
+			ServiceComponentReference<AggregationBuilder> previousReference =
+				_aggregationResponseBuilders.get(type);
 
 			if (previousReference.compareTo(serviceComponentReference) < 0) {
 				_aggregationResponseBuilders.put(
@@ -118,8 +118,7 @@ public class AggregationResponseBuilderFactoryImpl
 	private static final Log _log = LogFactoryUtil.getLog(
 		AggregationResponseBuilderFactoryImpl.class);
 
-	private volatile Map
-		<String, ServiceComponentReference<AggregationBuilder>>
-			_aggregationResponseBuilders = new ConcurrentHashMap<>();
+	private volatile Map<String, ServiceComponentReference<AggregationBuilder>>
+		_aggregationResponseBuilders = new ConcurrentHashMap<>();
 
 }

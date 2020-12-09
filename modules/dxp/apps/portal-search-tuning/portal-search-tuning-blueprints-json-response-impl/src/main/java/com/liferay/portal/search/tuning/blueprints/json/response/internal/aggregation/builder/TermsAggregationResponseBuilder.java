@@ -36,8 +36,7 @@ import org.osgi.service.component.annotations.Component;
 	immediate = true, property = "type=terms",
 	service = AggregationBuilder.class
 )
-public class TermsAggregationResponseBuilder
-	implements AggregationBuilder {
+public class TermsAggregationResponseBuilder implements AggregationBuilder {
 
 	@Override
 	public Optional<JSONObject> buildJSONObjectOptional(

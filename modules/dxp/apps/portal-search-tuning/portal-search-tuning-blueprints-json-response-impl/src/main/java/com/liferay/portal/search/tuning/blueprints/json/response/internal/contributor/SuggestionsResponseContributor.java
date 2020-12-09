@@ -38,13 +38,13 @@ public class SuggestionsResponseContributor implements ResponseContributor {
 
 	@Override
 	public void contribute(
-		JSONObject responseJsonObject, SearchResponse searchResponse,
+		JSONObject responseJSONObject, SearchResponse searchResponse,
 		Blueprint blueprint, BlueprintsAttributes blueprintsAttributes,
 		ResourceBundle resourceBundle, Messages messages) {
 
 		// TODO: Waiting for suggest support in SearchRequest & SearchResponse
 
-		responseJsonObject.put(
+		responseJSONObject.put(
 			JSONResponseKeys.SUGGESTIONS, JSONFactoryUtil.createJSONObject());
 	}
 
