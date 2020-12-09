@@ -24,6 +24,7 @@
 
 	.CodeMirror {
 		background-color: $lightBackground;
+		font-size: 13px;
 
 		.CodeMirror-gutters {
 			background-color: $lightBackground;
@@ -61,6 +62,15 @@
 			border-top-right-radius: 0;
 			padding: 8px 0;
 
+			&.json {
+				border-top: 0;
+
+				.autofit-col {
+					padding-left: 0;
+					padding-right: 0;
+				}
+			}
+
 			&:hover {
 				.list-item-label {
 					.sticker {
@@ -95,6 +105,19 @@
 
 				input[type='number'] {
 					-moz-appearance: textfield;
+				}
+			}
+
+			.custom-json {
+				&.disabled {
+					.codemirror-editor-wrapper {
+						border-color: $lightBackground;
+
+						.CodeMirror-line,
+						.cm-string {
+							color: #a7a9bc;
+						}
+					}
 				}
 			}
 

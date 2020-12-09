@@ -13,6 +13,7 @@ export const INPUT_TYPES = {
 	DATE: 'date',
 	ENTITY: 'entity',
 	FIELD_SELECT: 'field-select',
+	JSON: 'json',
 	NUMBER: 'number',
 	SINGLE_SELECT: 'single-select',
 	SLIDER: 'slider',

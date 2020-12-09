@@ -99,9 +99,10 @@ export const getDefaultValue = (item) => {
 			return isNotNull(itemValue) && typeof itemValue == 'number'
 				? itemValue
 				: '';
-
 		case INPUT_TYPES.FIELD_SELECT:
 			return isNotNull(itemValue) ? itemValue : [];
+		case INPUT_TYPES.JSON:
+			return isNotNull(itemValue) ? itemValue : {};
 		default:
 			return isNotNull(itemValue) ? itemValue : '';
 	}
@@ -184,12 +185,16 @@ export const replaceUIConfigurationValues = (
 					)
 				);
 			}
+			else if (config.type === INPUT_TYPES.JSON) {
+				configValue = JSON.stringify(uiConfigurationValues[config.key]);
+			}
 
 			if (
 				typeof configValue === 'number' ||
 				typeof configValue === 'boolean' ||
 				config.type === INPUT_TYPES.ENTITY ||
-				config.type === INPUT_TYPES.FIELD_SELECT
+				config.type === INPUT_TYPES.FIELD_SELECT ||
+				config.type === INPUT_TYPES.JSON
 			) {
 				flattenJSON = replaceStr(
 					flattenJSON,
@@ -285,7 +290,7 @@ export const validateUIConfigurationJSON = (uiConfigurationJSON) => {
 			isNotNull(item.name)
 		) {
 			switch (item.type) {
-				case 'single-select':
+				case INPUT_TYPES.SINGLE_SELECT:
 					return (
 						!!item.typeOptions &&
 						item.typeOptions.length > 0 &&
@@ -295,7 +300,7 @@ export const validateUIConfigurationJSON = (uiConfigurationJSON) => {
 								isNotNull(option.value)
 						)
 					);
-				case 'entity':
+				case INPUT_TYPES.ENTITY:
 					return (
 						item.className && ENTITY_KEYS.includes(item.className)
 					);
@@ -304,7 +309,11 @@ export const validateUIConfigurationJSON = (uiConfigurationJSON) => {
 			}
 		}
 		else {
-			return false;
+			return (
+				isNotNull(item.type) &&
+				item.type === INPUT_TYPES.JSON &&
+				isNotNull(item.key)
+			);
 		}
 	});
 };

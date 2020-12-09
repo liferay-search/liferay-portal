@@ -1481,6 +1481,48 @@ export const QUERY_FRAGMENTS = [
 			},
 		],
 	},
+	{
+		fragmentTemplateJSON: {
+			clauses: [
+				{
+					context: 'query',
+					occur: 'must',
+					query: {
+						query: '${config.query}',
+					},
+					type: 'wrapper',
+				},
+			],
+			conditions: [],
+			description: {
+				en_US:
+					'Paste any Elasticsearch query body in the fragment as is',
+			},
+			enabled: true,
+			icon: 'custom-field',
+			title: {
+				en_US: 'Paste any Elasticsearch query',
+			},
+		},
+		uiConfigurationJSON: [
+			{
+				defaultValue: {
+					query_string: {
+						default_operator: 'or',
+						fields: [
+							'content',
+							'content_en_US',
+							'title',
+							'title_en_US^2',
+						],
+						query: '${keywords}',
+					},
+				},
+				key: 'config.query',
+				type: 'json',
+			},
+		],
+	},
 ];
 
 export const PREDEFINED_VARIABLES = [

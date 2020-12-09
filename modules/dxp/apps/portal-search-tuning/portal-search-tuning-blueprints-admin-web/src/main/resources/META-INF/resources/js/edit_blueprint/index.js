@@ -219,12 +219,18 @@ function EditBlueprintForm({
 		]
 	);
 
-	const updateQueryFragment = useCallback((index, configs) => {
-		setSelectedQueryFragments((selectedQueryFragments) => [
-			...selectedQueryFragments.slice(0, index),
-			configs,
-			...selectedQueryFragments.slice(index + 1),
-		]);
+	const updateQueryFragment = useCallback((id, configs) => {
+		setSelectedQueryFragments((selectedQueryFragments) => {
+			const index = selectedQueryFragments.findIndex(
+				(item) => id == item.id
+			);
+
+			return [
+				...selectedQueryFragments.slice(0, index),
+				configs,
+				...selectedQueryFragments.slice(index + 1),
+			];
+		});
 	}, []);
 
 	const _renderTabContent = () => {
