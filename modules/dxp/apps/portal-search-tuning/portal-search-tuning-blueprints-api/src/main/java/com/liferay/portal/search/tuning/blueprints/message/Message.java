@@ -32,39 +32,6 @@ public class Message implements Serializable {
 		_severity = message._severity;
 	}
 
-	public Message(
-		Severity severity, String sourceModule, String localizationKey,
-		String msg) {
-
-		this(
-			severity, sourceModule, localizationKey, msg, null, null, null,
-			null);
-	}
-
-	public Message(
-		Severity severity, String sourceModule, String localizationKey,
-		String msg, Object rootObject, String rootProperty, String rootValue) {
-
-		this(
-			severity, sourceModule, localizationKey, msg, null, rootObject,
-			rootProperty, rootValue);
-	}
-
-	public Message(
-		Severity severity, String sourceModule, String localizationKey,
-		String msg, Throwable throwable, Object rootObject, String rootProperty,
-		String rootValue) {
-
-		_severity = severity;
-		_sourceModule = sourceModule;
-		_localizationKey = localizationKey;
-		_msg = msg;
-		_throwable = throwable;
-		_rootObject = rootObject;
-		_rootProperty = rootProperty;
-		_rootValue = rootValue;
-	}
-
 	public String getClassName() {
 		return _className;
 	}
@@ -91,10 +58,6 @@ public class Message implements Serializable {
 
 	public Severity getSeverity() {
 		return _severity;
-	}
-
-	public String getSourceModule() {
-		return _sourceModule;
 	}
 
 	public Throwable getThrowable() {
@@ -157,12 +120,6 @@ public class Message implements Serializable {
 			return this;
 		}
 
-		public Builder sourceModule(String sourceModule) {
-			_message._sourceModule = sourceModule;
-
-			return this;
-		}
-
 		public Builder throwable(Throwable throwable) {
 			_message._throwable = throwable;
 
@@ -185,7 +142,6 @@ public class Message implements Serializable {
 	private String _rootProperty;
 	private String _rootValue;
 	private Severity _severity;
-	private String _sourceModule;
 	private Throwable _throwable;
 
 }
