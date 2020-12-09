@@ -169,21 +169,6 @@ public class ItemsResponseContributor implements ResponseContributor {
 			Document document = searchHit.getDocument();
 
 			try {
-				if (_log.isDebugEnabled()) {
-					_log.debug(
-						"##############################################");
-
-					_log.debug("Score: " + searchHit.getScore());
-
-					Map<String, Field> map = document.getFields();
-
-					for (Map.Entry<String, Field> entry : map.entrySet()) {
-						Field field = entry.getValue();
-
-						_log.debug(entry.getKey() + ":" + field.getValue());
-					}
-				}
-
 				ResultBuilder resultBuilder = _resultBuilderFactory.getBuilder(
 					document.getString("entryClassName"));
 

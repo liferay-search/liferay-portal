@@ -28,6 +28,6 @@ public interface FacetRequestHandler {
 
 	public Optional<Parameter> getParameterOptional(
 		BlueprintsAttributes blueprintsAttributes, Messages messages,
-		JSONObject configurationJsonObject);
+		JSONObject configurationJSONObject);
 
 }

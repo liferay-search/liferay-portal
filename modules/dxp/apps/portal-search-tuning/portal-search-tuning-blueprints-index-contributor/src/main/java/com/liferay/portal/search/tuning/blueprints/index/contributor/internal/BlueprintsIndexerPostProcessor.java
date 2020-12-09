@@ -18,12 +18,11 @@ import com.liferay.document.library.kernel.model.DLFileEntry;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.language.Language;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.search.BaseIndexerPostProcessor;
 import com.liferay.portal.kernel.search.Document;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.IndexerPostProcessor;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.tuning.blueprints.index.contributor.internal.constants.FieldNames;
@@ -54,9 +53,9 @@ public class BlueprintsIndexerPostProcessor extends BaseIndexerPostProcessor {
 	public void postProcessDocument(Document document, Object object)
 		throws Exception {
 
-		_addVersionCount(object, document);
-
 		_addContentLength(document);
+
+		_addVersionCount(object, document);
 
 		_addLocalizedContentLengths(document);
 	}
@@ -70,34 +69,27 @@ public class BlueprintsIndexerPostProcessor extends BaseIndexerPostProcessor {
 	}
 
 	private void _addLocalizedContentLengths(Document document) {
-		try {
-			long groupId = Long.valueOf(document.get(Field.GROUP_ID));
+		long groupId = GetterUtil.getLong(document.get(Field.GROUP_ID));
 
-			for (Locale locale : _language.getAvailableLocales(groupId)) {
-				StringBundler sb1 = new StringBundler(3);
+		for (Locale locale : _language.getAvailableLocales(groupId)) {
+			StringBundler sb = new StringBundler(3);
 
-				sb1.append(Field.CONTENT);
-				sb1.append(StringPool.UNDERLINE);
-				sb1.append(locale.toString());
+			sb.append(Field.CONTENT);
+			sb.append(StringPool.UNDERLINE);
+			sb.append(locale.toString());
 
-				String content = document.get(sb1.toString());
+			String content = document.get(sb.toString());
 
-				if (Validator.isBlank(content)) {
-					continue;
-				}
-
-				document.addNumber(
-					_getLengthFieldName(locale), content.length());
+			if (Validator.isBlank(content)) {
+				continue;
 			}
-		}
-		catch (NumberFormatException numberFormatException) {
-			_log.error(
-				numberFormatException.getMessage(), numberFormatException);
+
+			document.addNumber(
+				_getLengthFieldName(locale), content.length());
 		}
 	}
 
 	private void _addVersionCount(Object object, Document document) {
-		try {
 			Class<?> clazz = object.getClass();
 
 			String className = clazz.getSimpleName();
@@ -107,7 +99,7 @@ public class BlueprintsIndexerPostProcessor extends BaseIndexerPostProcessor {
 			if (className.startsWith(DLFileEntry.class.getSimpleName())) {
 				DLFileEntry dlFileEntry = (DLFileEntry)object;
 
-				version = Double.valueOf(dlFileEntry.getVersion());
+				version = GetterUtil.getDouble(dlFileEntry.getVersion());
 			}
 			else if (className.startsWith(
 						JournalArticle.class.getSimpleName())) {
@@ -125,10 +117,6 @@ public class BlueprintsIndexerPostProcessor extends BaseIndexerPostProcessor {
 			if (version != null) {
 				document.addNumber(FieldNames.VERSION_COUNT, version);
 			}
-		}
-		catch (Exception exception) {
-			_log.error(exception.getMessage(), exception);
-		}
 	}
 
 	private String _getLengthFieldName(Locale locale) {
@@ -146,9 +134,6 @@ public class BlueprintsIndexerPostProcessor extends BaseIndexerPostProcessor {
 
 		return sb.toString();
 	}
-
-	private static final Log _log = LogFactoryUtil.getLog(
-		BlueprintsIndexerPostProcessor.class);
 
 	@Reference
 	private Language _language;

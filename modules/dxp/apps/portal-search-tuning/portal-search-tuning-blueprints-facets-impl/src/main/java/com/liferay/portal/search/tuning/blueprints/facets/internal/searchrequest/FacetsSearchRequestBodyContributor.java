@@ -64,8 +64,8 @@ public class FacetsSearchRequestBodyContributor
 
 	@Override
 	public void contribute(
-		SearchRequestBuilder searchRequestBuilder, Blueprint blueprint, ParameterData parameterData,
-		 Messages messages) {
+		SearchRequestBuilder searchRequestBuilder, Blueprint blueprint,
+		ParameterData parameterData, Messages messages) {
 
 		Optional<JSONArray> configurationJSONArrayOptional =
 			_blueprintHelper.getJSONArrayConfigurationOptional(

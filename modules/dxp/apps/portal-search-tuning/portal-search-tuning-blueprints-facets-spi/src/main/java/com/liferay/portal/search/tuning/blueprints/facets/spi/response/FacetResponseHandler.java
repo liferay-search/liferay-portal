@@ -30,8 +30,7 @@ public interface FacetResponseHandler {
 	public Optional<JSONObject> getResultOptional(
 		AggregationResult aggregationResult,
 		BlueprintsAttributes blueprintsAttributes,
-		ResourceBundle resourceBundle,
-		Messages messages,
-		JSONObject configurationJsonObject);
+		ResourceBundle resourceBundle, Messages messages,
+		JSONObject configurationJSONObject);
 
 }
