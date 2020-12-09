@@ -91,7 +91,7 @@ public class AggsSearchRequestBodyContributor
 
 				Optional<Aggregation> aggregationOptional =
 					aggregationTranslator.translate(
-						parameterData, messages, bodyJsonObject, name);
+						name, bodyJsonObject, parameterData, messages);
 
 				if (aggregationOptional.isPresent()) {
 					searchRequestBuilder.addAggregation(

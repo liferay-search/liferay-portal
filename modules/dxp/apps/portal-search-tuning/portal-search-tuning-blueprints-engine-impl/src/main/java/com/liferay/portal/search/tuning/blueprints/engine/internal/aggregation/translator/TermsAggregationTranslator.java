@@ -59,8 +59,7 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 
 	@Override
 	public Optional<Aggregation> translate(
-		ParameterData parameterData, Messages messages,
-		JSONObject configurationJsonObject, String aggregationName) {
+			String aggregationName, JSONObject configurationJsonObject, ParameterData parameterData, Messages messages ) {
 
 		if (_log.isDebugEnabled()) {
 			_log.debug(
@@ -204,8 +203,8 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 
 				Optional<Aggregation> aggregationOptional =
 					aggregationBuilder.translate(
-						parameterData, messages, childAggregationJsonObject,
-						name);
+							name, childAggregationJsonObject, parameterData, messages
+						);
 
 				if (aggregationOptional.isPresent()) {
 					aggregation.addChildAggregation(aggregationOptional.get());
