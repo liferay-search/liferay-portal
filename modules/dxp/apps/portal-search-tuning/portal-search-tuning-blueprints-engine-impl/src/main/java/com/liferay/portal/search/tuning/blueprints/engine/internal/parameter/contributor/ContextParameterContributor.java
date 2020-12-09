@@ -74,7 +74,8 @@ public class ContextParameterContributor implements ParameterContributor {
 			new ParameterDefinition(
 				_getTemplateVariableName(
 					ReservedParameterNames.COMPANY_ID.getKey()),
-				LongParameter.class.getName(), "core.parameter.context.company-id"));
+				LongParameter.class.getName(),
+				"core.parameter.context.company-id"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
@@ -96,11 +97,11 @@ public class ContextParameterContributor implements ParameterContributor {
 				LongParameter.class.getName(), "core.parameter.context.plid"));
 
 		parameterDefinitions.add(
-				new ParameterDefinition(
-					_getTemplateVariableName(
-						ReservedParameterNames.LANGUAGE.getKey()),
-					StringParameter.class.getName(),
-					"core.parameter.context.language"));
+			new ParameterDefinition(
+				_getTemplateVariableName(
+					ReservedParameterNames.LANGUAGE.getKey()),
+				StringParameter.class.getName(),
+				"core.parameter.context.language"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
@@ -132,16 +133,17 @@ public class ContextParameterContributor implements ParameterContributor {
 			new StringParameter(
 				ReservedParameterNames.LANGUAGE_ID.getKey(),
 				_getTemplateVariableName(
-					ReservedParameterNames.LANGUAGE_ID.getKey()), "_" +
-				_language.getLanguageId(blueprintsAttributes.getLocale())));
+					ReservedParameterNames.LANGUAGE_ID.getKey()),
+				"_" +
+					_language.getLanguageId(blueprintsAttributes.getLocale())));
 
 		parameterDataBuilder.addParameter(
-				new StringParameter(
-					ReservedParameterNames.LANGUAGE.getKey(),
-					_getTemplateVariableName(
-						ReservedParameterNames.LANGUAGE.getKey()),
-					blueprintsAttributes.getLocale().getLanguage()));
-
+			new StringParameter(
+				ReservedParameterNames.LANGUAGE.getKey(),
+				_getTemplateVariableName(
+					ReservedParameterNames.LANGUAGE.getKey()),
+				blueprintsAttributes.getLocale(
+				).getLanguage()));
 	}
 
 	private void _addLayoutNameCurrentValue(
@@ -167,19 +169,21 @@ public class ContextParameterContributor implements ParameterContributor {
 					layout.getName(blueprintsAttributes.getLocale(), true)));
 		}
 		catch (PortalException portalException) {
- 			messages.addMessage(
+			messages.addMessage(
 				new Message.Builder().className(
 					getClass().getName()
 				).localizationKey(
-						"core.error.layout-not-found"
+					"core.error.layout-not-found"
 				).msg(
-						portalException.getMessage()
-				).rootValue((String)optional.get()
+					portalException.getMessage()
+				).rootValue(
+					(String)optional.get()
 				).severity(
 					Severity.ERROR
-				).throwable(portalException
+				).throwable(
+					portalException
 				).build());
- 			
+
 			_log.error(portalException.getMessage(), portalException);
 		}
 	}

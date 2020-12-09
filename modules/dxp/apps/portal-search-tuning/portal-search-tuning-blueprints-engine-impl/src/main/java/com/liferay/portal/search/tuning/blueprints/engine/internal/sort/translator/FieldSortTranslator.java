@@ -28,28 +28,30 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 @Component(
-	immediate = true, property = "type=field",
-	service = SortTranslator.class
+	immediate = true, property = "type=field", service = SortTranslator.class
 )
 public class FieldSortTranslator implements SortTranslator {
 
 	@Override
 	public Optional<Sort> translate(
-			JSONObject configurationJsonObject, SortOrder sortOrder, Messages messages) {
+		JSONObject configurationJsonObject, SortOrder sortOrder,
+		Messages messages) {
 
 		String field = configurationJsonObject.getString(
-				SortConfigurationKeys.FIELD.getJsonKey());
+			SortConfigurationKeys.FIELD.getJsonKey());
 
 		if (field.equals("_score")) {
 			Sort sort = _sorts.score();
+
 			sort.setSortOrder(sortOrder);
+
 			return Optional.of(sort);
 		}
-		
-		return Optional.of(_sorts.field(
-				field, sortOrder));
+
+		return Optional.of(_sorts.field(field, sortOrder));
 	}
 
 	@Reference
 	private Sorts _sorts;
+
 }

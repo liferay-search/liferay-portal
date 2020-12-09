@@ -90,19 +90,21 @@ public class EqualsVisitor implements ConditionEvaluationVisitor {
 			}
 
 			throw new ParameterEvaluationException(
-					new Message.Builder().className(
-							getClass().getName()
-						).localizationKey(
-							"core.error.clause-condition-date-format-missing"
-						).msg(
-								"Date format is not defined"
-						).rootObject(_conditionJsonObject
-						).rootProperty(
-								ConditionConfigurationKeys.DATE_FORMAT.getJsonKey()
-						).rootValue(dateFormatString
-						).severity(
-							Severity.ERROR
-						).build());
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"core.error.clause-condition-date-format-missing"
+				).msg(
+					"Date format is not defined"
+				).rootObject(
+					_conditionJsonObject
+				).rootProperty(
+					ConditionConfigurationKeys.DATE_FORMAT.getJsonKey()
+				).rootValue(
+					dateFormatString
+				).severity(
+					Severity.ERROR
+				).build());
 		}
 
 		try {
@@ -124,21 +126,23 @@ public class EqualsVisitor implements ConditionEvaluationVisitor {
 				exception);
 
 			throw new ParameterEvaluationException(
-					new Message.Builder().className(
-							getClass().getName()
-						).localizationKey(
-							"core.error.clause-condition-date-parsing-error"
-						).msg(
-								exception.getMessage()
-						).rootObject(_conditionJsonObject
-						).rootProperty(
-								ConditionConfigurationKeys.MATCH_VALUE.getJsonKey()
-						).rootValue(dateString
-						).severity(
-							Severity.ERROR
-							).throwable(exception
-						).build());
-			
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"core.error.clause-condition-date-parsing-error"
+				).msg(
+					exception.getMessage()
+				).rootObject(
+					_conditionJsonObject
+				).rootProperty(
+					ConditionConfigurationKeys.MATCH_VALUE.getJsonKey()
+				).rootValue(
+					dateString
+				).severity(
+					Severity.ERROR
+				).throwable(
+					exception
+				).build());
 		}
 	}
 

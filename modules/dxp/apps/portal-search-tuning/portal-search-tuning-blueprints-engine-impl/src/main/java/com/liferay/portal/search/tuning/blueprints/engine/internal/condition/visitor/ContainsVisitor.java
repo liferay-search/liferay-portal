@@ -126,22 +126,23 @@ public class ContainsVisitor implements ConditionEvaluationVisitor {
 				numberFormatException);
 
 			throw new ParameterEvaluationException(
-
-						new Message.Builder().className(
-							getClass().getName()
-						).localizationKey(
-							"core.error.illegal-clause-condition-match-value"
-						).msg(
-								numberFormatException.getMessage()
-						).rootObject(_conditionJsonObject
-						).rootProperty(
-								ConditionConfigurationKeys.MATCH_VALUE.getJsonKey()
-						).rootValue(object.toString()
-						).severity(
-							Severity.ERROR
-						).throwable(numberFormatException
-						).build());
-					
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"core.error.illegal-clause-condition-match-value"
+				).msg(
+					numberFormatException.getMessage()
+				).rootObject(
+					_conditionJsonObject
+				).rootProperty(
+					ConditionConfigurationKeys.MATCH_VALUE.getJsonKey()
+				).rootValue(
+					object.toString()
+				).severity(
+					Severity.ERROR
+				).throwable(
+					numberFormatException
+				).build());
 		}
 	}
 
@@ -205,21 +206,24 @@ public class ContainsVisitor implements ConditionEvaluationVisitor {
 				numberFormatException);
 
 			throw new ParameterEvaluationException(
-					new Message.Builder().className(
-							getClass().getName()
-						).localizationKey(
-							"core.error.illegal-clause-condition-match-value"
-						).msg(
-								numberFormatException.getMessage()
-						).rootObject(_conditionJsonObject
-						).rootProperty(
-								ConditionConfigurationKeys.MATCH_VALUE.getJsonKey()
-						).rootValue(object.toString()
-						).severity(
-							Severity.ERROR
-						).throwable(numberFormatException
-						).build());
-			}
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"core.error.illegal-clause-condition-match-value"
+				).msg(
+					numberFormatException.getMessage()
+				).rootObject(
+					_conditionJsonObject
+				).rootProperty(
+					ConditionConfigurationKeys.MATCH_VALUE.getJsonKey()
+				).rootValue(
+					object.toString()
+				).severity(
+					Severity.ERROR
+				).throwable(
+					numberFormatException
+				).build());
+		}
 	}
 
 	@Override

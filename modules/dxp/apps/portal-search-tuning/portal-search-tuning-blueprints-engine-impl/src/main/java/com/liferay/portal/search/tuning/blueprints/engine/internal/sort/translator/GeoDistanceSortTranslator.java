@@ -50,16 +50,20 @@ public class GeoDistanceSortTranslator implements SortTranslator {
 
 	@Override
 	public Optional<Sort> translate(
-			JSONObject configurationJsonObject, SortOrder sortOrder, Messages messages) {
-		
-		String field = configurationJsonObject.getString(
-				SortConfigurationKeys.FIELD.getJsonKey());
+		JSONObject configurationJsonObject, SortOrder sortOrder,
+		Messages messages) {
 
-		if (!configurationJsonObject.has(SortConfigurationKeys.CONFIGURATION.getJsonKey())) {
+		String field = configurationJsonObject.getString(
+			SortConfigurationKeys.FIELD.getJsonKey());
+
+		if (!configurationJsonObject.has(
+				SortConfigurationKeys.CONFIGURATION.getJsonKey())) {
+
 			return Optional.empty();
 		}
 
-		JSONObject sortConfigurationJsonObject = configurationJsonObject.getJSONObject(
+		JSONObject sortConfigurationJsonObject =
+			configurationJsonObject.getJSONObject(
 				SortConfigurationKeys.CONFIGURATION.getJsonKey());
 
 		if (!sortConfigurationJsonObject.has("locations")) {
@@ -67,105 +71,115 @@ public class GeoDistanceSortTranslator implements SortTranslator {
 		}
 
 		GeoDistanceSort geoDistanceSort = _sorts.geoDistance(field);
-		
+
 		geoDistanceSort.setSortOrder(sortOrder);
 
 		try {
 			_setLocations(geoDistanceSort, sortConfigurationJsonObject);
 
 			_setDistanceUnit(geoDistanceSort, sortConfigurationJsonObject);
-			
+
 			_setGeoDistanceType(geoDistanceSort, sortConfigurationJsonObject);
 
 			_setSortMode(geoDistanceSort, sortConfigurationJsonObject);
-			
+
 			return Optional.of(geoDistanceSort);
-
-		} catch (IllegalArgumentException illegalArgumentException) {
-			messages.addMessage(
-					new Message.Builder().className(
-						getClass().getName()
-					).localizationKey(
-						"core.error.unknown-sort-configuration-error"
-					).msg(
-						illegalArgumentException.getMessage()
-					).rootObject(configurationJsonObject
-					).severity(
-						Severity.ERROR
-					).throwable(illegalArgumentException
-					).build());
-
-			_log.error(illegalArgumentException.getMessage(), illegalArgumentException);
 		}
-		
+		catch (IllegalArgumentException illegalArgumentException) {
+			messages.addMessage(
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"core.error.unknown-sort-configuration-error"
+				).msg(
+					illegalArgumentException.getMessage()
+				).rootObject(
+					configurationJsonObject
+				).severity(
+					Severity.ERROR
+				).throwable(
+					illegalArgumentException
+				).build());
+
+			_log.error(
+				illegalArgumentException.getMessage(),
+				illegalArgumentException);
+		}
+
 		return Optional.empty();
 	}
 
-	private void _setGeoDistanceType(GeoDistanceSort geoDistanceSort, JSONObject configurationJsonObject) {
-
-		String geoDistanceTypeString = configurationJsonObject.getString(
-				"distance_type", GeoDistanceType.ARC.name());
-	
-		if (!Validator.isBlank(geoDistanceTypeString)) {
-	
-			geoDistanceSort.setGeoDistanceType(
-					GeoDistanceType.valueOf(StringUtil.toUpperCase(geoDistanceTypeString)));
-		}
-	}
-	
-	private void _setDistanceUnit(GeoDistanceSort geoDistanceSort, JSONObject configurationJsonObject) {
+	private void _setDistanceUnit(
+		GeoDistanceSort geoDistanceSort, JSONObject configurationJsonObject) {
 
 		String geoDistanceUnitString = configurationJsonObject.getString(
-				"unit");
+			"unit");
 
 		if (!Validator.isBlank(geoDistanceUnitString)) {
+			geoDistanceUnitString = StringUtil.toLowerCase(
+				geoDistanceUnitString);
 
-			geoDistanceUnitString = StringUtil.toLowerCase(geoDistanceUnitString);
-			
 			for (DistanceUnit distanceUnit : DistanceUnit.values()) {
-				
-				if (distanceUnit.getUnit().equals(geoDistanceUnitString)) {
+				if (distanceUnit.getUnit(
+					).equals(
+						geoDistanceUnitString
+					)) {
+
 					geoDistanceSort.setDistanceUnit(distanceUnit);
 				}
 			}
-		}		
+		}
 	}
-	
-	private void _setLocations(GeoDistanceSort geoDistanceSort, JSONObject configurationJsonObject) {
+
+	private void _setGeoDistanceType(
+		GeoDistanceSort geoDistanceSort, JSONObject configurationJsonObject) {
+
+		String geoDistanceTypeString = configurationJsonObject.getString(
+			"distance_type", GeoDistanceType.ARC.name());
+
+		if (!Validator.isBlank(geoDistanceTypeString)) {
+			geoDistanceSort.setGeoDistanceType(
+				GeoDistanceType.valueOf(
+					StringUtil.toUpperCase(geoDistanceTypeString)));
+		}
+	}
+
+	private void _setLocations(
+		GeoDistanceSort geoDistanceSort, JSONObject configurationJsonObject) {
 
 		JSONArray locationsJsonArray = configurationJsonObject.getJSONArray(
-				"locations");
-		
+			"locations");
+
 		for (int i = 0; i < locationsJsonArray.length(); i++) {
-		
 			JSONArray locationJsonArray = locationsJsonArray.getJSONArray(i);
-			
+
 			if (locationJsonArray.length() != 2) {
 				continue;
 			}
-			
+
 			Double latitude = locationJsonArray.getDouble(0);
-			
+
 			Double longitude = locationJsonArray.getDouble(1);
-	
+
 			geoDistanceSort.addGeoLocationPoints(
-					_geoBuilders.geoLocationPoint(latitude, longitude));
+				_geoBuilders.geoLocationPoint(latitude, longitude));
 		}
 	}
-	
-	private void _setSortMode(GeoDistanceSort geoDistanceSort, JSONObject configurationJsonObject) {
+
+	private void _setSortMode(
+		GeoDistanceSort geoDistanceSort, JSONObject configurationJsonObject) {
+
 		String sortModeString = configurationJsonObject.getString("mode");
-		
+
 		if (!Validator.isBlank(sortModeString)) {
-	
 			geoDistanceSort.setSortMode(
-					SortMode.valueOf(StringUtil.toUpperCase(sortModeString)));
+				SortMode.valueOf(StringUtil.toUpperCase(sortModeString)));
 		}
 	}
-	
+
 	private static final Log _log = LogFactoryUtil.getLog(
-			GeoDistanceSortTranslator.class);
-	
+		GeoDistanceSortTranslator.class);
+
 	@Reference
 	private GeoBuilders _geoBuilders;
 

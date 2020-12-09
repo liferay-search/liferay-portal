@@ -20,7 +20,6 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.search.suggest.Suggester;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.aggregation.AggregationConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.suggester.SuggesterConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.internal.suggester.SuggesterTranslatorFactory;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
@@ -84,10 +83,10 @@ public class SuggestSearchRequestBodyContributor
 
 				JSONObject suggestConfigurationJsonObject =
 					_blueprintTemplateVariableParser.parse(
-						parameterData, messages,
 						configurationJsonObject.getJSONObject(
 							SuggesterConfigurationKeys.CONFIGURATION.
-								getJsonKey()));
+								getJsonKey()),
+						parameterData, messages);
 
 				Optional<Suggester> suggesterOptional =
 					suggesterTranslator.translate(
@@ -103,21 +102,23 @@ public class SuggestSearchRequestBodyContributor
 				}
 			}
 			catch (IllegalArgumentException illegalArgumentException) {
-
-	 			messages.addMessage(
+				messages.addMessage(
 					new Message.Builder().className(
 						getClass().getName()
 					).localizationKey(
 						"core.error.unknown-suggester-type"
 					).msg(
 						illegalArgumentException.getMessage()
-					).rootObject(configurationJsonObject
+					).rootObject(
+						configurationJsonObject
 					).rootProperty(
-							SuggesterConfigurationKeys.TYPE.getJsonKey()
-					).rootValue(type
+						SuggesterConfigurationKeys.TYPE.getJsonKey()
+					).rootValue(
+						type
 					).severity(
 						Severity.ERROR
-					).throwable(illegalArgumentException
+					).throwable(
+						illegalArgumentException
 					).build());
 
 				_log.error(
@@ -125,18 +126,20 @@ public class SuggestSearchRequestBodyContributor
 					illegalArgumentException);
 			}
 			catch (Exception exception) {
-	 			messages.addMessage(
-						new Message.Builder().className(
-							getClass().getName()
-						).localizationKey(
-							"core.error.unknown-suggester-configuration-error"
-						).msg(
-								exception.getMessage()
-						).rootObject(configurationJsonObject
-						).severity(
-							Severity.ERROR
-						).throwable(exception
-						).build());				
+				messages.addMessage(
+					new Message.Builder().className(
+						getClass().getName()
+					).localizationKey(
+						"core.error.unknown-suggester-configuration-error"
+					).msg(
+						exception.getMessage()
+					).rootObject(
+						configurationJsonObject
+					).severity(
+						Severity.ERROR
+					).throwable(
+						exception
+					).build());
 
 				_log.error(exception.getMessage(), exception);
 			}

@@ -88,7 +88,7 @@ public class FacetsSearchRequestBodyContributor
 			try {
 				configurationJSONObject =
 					_blueprintTemplateVariableParser.parse(
-						parameterData, messages, rawConfigurationJSONObject);
+						rawConfigurationJSONObject, parameterData, messages);
 			}
 			catch (Exception exception) {
 				messages.addMessage(

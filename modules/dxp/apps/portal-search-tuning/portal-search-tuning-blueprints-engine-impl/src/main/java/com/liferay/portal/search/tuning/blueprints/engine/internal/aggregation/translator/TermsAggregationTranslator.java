@@ -212,21 +212,24 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 				}
 			}
 			catch (IllegalArgumentException illegalArgumentException) {
-
-	 			messages.addMessage(
+				messages.addMessage(
 					new Message.Builder().className(
 						getClass().getName()
 					).localizationKey(
 						"core.error.invalid-aggregation-builder-type"
 					).msg(
 						illegalArgumentException.getMessage()
-					).rootObject(childAggregationJsonObject
+					).rootObject(
+						childAggregationJsonObject
 					).rootProperty(
-							TermsAggregationBodyConfigurationKeys.AGGREGATIONS.getJsonKey()
-					).rootValue(type
+						TermsAggregationBodyConfigurationKeys.AGGREGATIONS.
+							getJsonKey()
+					).rootValue(
+						type
 					).severity(
 						Severity.ERROR
-					).throwable(illegalArgumentException
+					).throwable(
+						illegalArgumentException
 					).build());
 
 				if (_log.isWarnEnabled()) {
@@ -246,20 +249,21 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 			).next();
 		}
 		catch (NoSuchElementException noSuchElementException) {
-
- 			messages.addMessage(
+			messages.addMessage(
 				new Message.Builder().className(
 					getClass().getName()
 				).localizationKey(
 					"core.error.invalid-aggregation-order-syntax"
 				).msg(
-						noSuchElementException.getMessage()
-				).rootObject(orderJsonObject
+					noSuchElementException.getMessage()
+				).rootObject(
+					orderJsonObject
 				).rootProperty(
-						TermsAggregationBodyConfigurationKeys.ORDER.getJsonKey()
+					TermsAggregationBodyConfigurationKeys.ORDER.getJsonKey()
 				).severity(
 					Severity.ERROR
-				).throwable(noSuchElementException
+				).throwable(
+					noSuchElementException
 				).build());
 
 			if (_log.isWarnEnabled()) {
@@ -287,20 +291,22 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 
 			if (arr.length != 2) {
 				messages.addMessage(
-						new Message.Builder().className(
-							getClass().getName()
-						).localizationKey(
-							"core.error.invalid-aggregation-order-syntax"
-						).msg(
-							"Invalid aggregation order syntax"
-						).rootObject(orderJsonObject
-						).rootProperty(
-								TermsAggregationBodyConfigurationKeys.ORDER.getJsonKey()
-						).rootValue(orderMetric
-						).severity(
-							Severity.ERROR
-						).build());
-				
+					new Message.Builder().className(
+						getClass().getName()
+					).localizationKey(
+						"core.error.invalid-aggregation-order-syntax"
+					).msg(
+						"Invalid aggregation order syntax"
+					).rootObject(
+						orderJsonObject
+					).rootProperty(
+						TermsAggregationBodyConfigurationKeys.ORDER.getJsonKey()
+					).rootValue(
+						orderMetric
+					).severity(
+						Severity.ERROR
+					).build());
+
 				return null;
 			}
 
@@ -332,20 +338,24 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 		}
 		catch (IllegalArgumentException illegalArgumentException) {
 			messages.addMessage(
-					new Message.Builder().className(
-						getClass().getName()
-					).localizationKey(
-						"core.error.invalid-aggregation-collect-mode"
-					).msg(
-						illegalArgumentException.getMessage()
-					).rootObject(configurationJsonObject
-					).rootProperty(
-							TermsAggregationBodyConfigurationKeys.COLLECT_MODE.getJsonKey()
-					).rootValue(collectModeString
-					).severity(
-						Severity.ERROR
-					).throwable(illegalArgumentException
-					).build());
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"core.error.invalid-aggregation-collect-mode"
+				).msg(
+					illegalArgumentException.getMessage()
+				).rootObject(
+					configurationJsonObject
+				).rootProperty(
+					TermsAggregationBodyConfigurationKeys.COLLECT_MODE.
+						getJsonKey()
+				).rootValue(
+					collectModeString
+				).severity(
+					Severity.ERROR
+				).throwable(
+					illegalArgumentException
+				).build());
 
 			if (_log.isWarnEnabled()) {
 				_log.warn(
@@ -502,20 +512,20 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 		}
 		else {
 			messages.addMessage(
-					new Message.Builder().className(
-						getClass().getName()
-					).localizationKey(
-						"core.error.aggregation-script-id-or-source-missing"
-					).msg(
-						"Aggregation script id or source has to be set"
-							).rootObject(scriptJsonObject
-									).rootProperty(
-											TermsAggregationBodyConfigurationKeys.SCRIPT.getJsonKey()
-							
-					).severity(
-						Severity.ERROR
-					).build());
-			
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"core.error.aggregation-script-id-or-source-missing"
+				).msg(
+					"Aggregation script id or source has to be set"
+				).rootObject(
+					scriptJsonObject
+				).rootProperty(
+					TermsAggregationBodyConfigurationKeys.SCRIPT.getJsonKey()
+				).severity(
+					Severity.ERROR
+				).build());
+
 			if (_log.isWarnEnabled()) {
 				_log.warn(
 					"Aggregation script id or source has to be set [ " +
@@ -570,22 +580,22 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 		boolean valid = true;
 
 		if (Validator.isBlank(name)) {
-
- 			messages.addMessage(
+			messages.addMessage(
 				new Message.Builder().className(
 					getClass().getName()
 				).localizationKey(
 					"core.error.undefined-aggregation-name"
 				).msg(
-						"Aggregation name is not defined"
-				).rootObject(configurationJsonObject
+					"Aggregation name is not defined"
+				).rootObject(
+					configurationJsonObject
 				).rootProperty(
-						AggregationConfigurationKeys.NAME.getJsonKey()
+					AggregationConfigurationKeys.NAME.getJsonKey()
 				).severity(
 					Severity.ERROR
 				).build());
 
- 			valid = false;
+			valid = false;
 
 			if (_log.isWarnEnabled()) {
 				_log.warn(
@@ -597,16 +607,17 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 		if (!configurationJsonObject.has(
 				TermsAggregationBodyConfigurationKeys.FIELD.getJsonKey())) {
 
- 			messages.addMessage(
+			messages.addMessage(
 				new Message.Builder().className(
 					getClass().getName()
 				).localizationKey(
 					"core.error.undefined-aggregation-field"
 				).msg(
 					"Aggregation field is not defined"
-				).rootObject(configurationJsonObject
+				).rootObject(
+					configurationJsonObject
 				).rootProperty(
-						TermsAggregationBodyConfigurationKeys.FIELD.getJsonKey()
+					TermsAggregationBodyConfigurationKeys.FIELD.getJsonKey()
 				).severity(
 					Severity.ERROR
 				).build());

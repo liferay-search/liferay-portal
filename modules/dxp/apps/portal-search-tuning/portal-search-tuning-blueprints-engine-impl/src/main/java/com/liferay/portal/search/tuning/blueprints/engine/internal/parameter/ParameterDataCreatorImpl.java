@@ -70,7 +70,6 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 			_blueprintHelper.getParameterConfigurationOptional(blueprint);
 
 		if (!parameterConfigurationJsonObjectOptional.isPresent()) {
-			
 			return new ParameterDataImpl(StringPool.BLANK, new ArrayList<>());
 		}
 
@@ -254,21 +253,23 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 			}
 		}
 		catch (IllegalArgumentException illegalArgumentException) {
- 			messages.addMessage(
+			messages.addMessage(
 				new Message.Builder().className(
 					getClass().getName()
 				).localizationKey(
 					"core.error.unknown-parameter-type"
 				).msg(
-						illegalArgumentException.getMessage()
-				).rootObject(configurationJsonObject
+					illegalArgumentException.getMessage()
+				).rootObject(
+					configurationJsonObject
 				).rootProperty(
-						CustomParameterConfigurationKeys.TYPE.getJsonKey()
+					CustomParameterConfigurationKeys.TYPE.getJsonKey()
 				).severity(
 					Severity.ERROR
-				).throwable(illegalArgumentException
+				).throwable(
+					illegalArgumentException
 				).build());
- 			
+
 			_log.error(
 				illegalArgumentException.getMessage(),
 				illegalArgumentException);
@@ -307,9 +308,9 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 
 		String parameterName = "q";
 
-		if ((configurationJsonObject != null)) {
+		if (configurationJsonObject != null) {
 			parameterName = configurationJsonObject.getString(
-					KeywordsConfigurationKeys.PARAMETER_NAME.getJsonKey(), "q");
+				KeywordsConfigurationKeys.PARAMETER_NAME.getJsonKey(), "q");
 		}
 
 		Optional<Object> valueOptional =
@@ -342,12 +343,12 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 		JSONObject configurationJsonObject) {
 
 		String parameterName = "page";
-		
+
 		if (configurationJsonObject != null) {
 			parameterName = configurationJsonObject.getString(
-					PageConfigurationKeys.PARAMETER_NAME.getJsonKey(), "page");
+				PageConfigurationKeys.PARAMETER_NAME.getJsonKey(), "page");
 		}
-		
+
 		Optional<Object> valueOptional =
 			blueprintsAttributes.getAttributeOptional(parameterName);
 
@@ -455,20 +456,21 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 		if (configurationJsonObject.isNull(
 				CustomParameterConfigurationKeys.PARAMETER_NAME.getJsonKey())) {
 
- 			messages.addMessage(
+			messages.addMessage(
 				new Message.Builder().className(
 					getClass().getName()
 				).localizationKey(
 					"core.error.undefined-parameter-name"
 				).msg(
-						"Parameter name is not defined"
-				).rootObject(configurationJsonObject
+					"Parameter name is not defined"
+				).rootObject(
+					configurationJsonObject
 				).rootProperty(
-						CustomParameterConfigurationKeys.PARAMETER_NAME.getJsonKey()
+					CustomParameterConfigurationKeys.PARAMETER_NAME.getJsonKey()
 				).severity(
 					Severity.ERROR
 				).build());
- 			
+
 			valid = false;
 
 			if (_log.isWarnEnabled()) {
@@ -481,21 +483,22 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 		if (configurationJsonObject.isNull(
 				CustomParameterConfigurationKeys.TYPE.getJsonKey())) {
 
- 			messages.addMessage(
+			messages.addMessage(
 				new Message.Builder().className(
 					getClass().getName()
 				).localizationKey(
 					"core.error.undefined-parameter-type"
 				).msg(
-						"Parameter type is not defined"
-				).rootObject(configurationJsonObject
+					"Parameter type is not defined"
+				).rootObject(
+					configurationJsonObject
 				).rootProperty(
-						CustomParameterConfigurationKeys.TYPE.getJsonKey()
+					CustomParameterConfigurationKeys.TYPE.getJsonKey()
 				).severity(
 					Severity.ERROR
 				).build());
 
- 			valid = false;
+			valid = false;
 
 			if (_log.isWarnEnabled()) {
 				_log.warn(
@@ -515,21 +518,21 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 		if (configurationJsonObject.isNull(
 				SortConfigurationKeys.PARAMETER_NAME.getJsonKey())) {
 
-
- 			messages.addMessage(
+			messages.addMessage(
 				new Message.Builder().className(
 					getClass().getName()
 				).localizationKey(
 					"core.error.undefined-parameter-name"
 				).msg(
-						"Parameter name is not defined"
-				).rootObject(configurationJsonObject
+					"Parameter name is not defined"
+				).rootObject(
+					configurationJsonObject
 				).rootProperty(
-						SortConfigurationKeys.PARAMETER_NAME.getJsonKey()
+					SortConfigurationKeys.PARAMETER_NAME.getJsonKey()
 				).severity(
 					Severity.ERROR
 				).build());
- 			
+
 			valid = false;
 
 			if (_log.isWarnEnabled()) {
@@ -542,20 +545,21 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 		if (configurationJsonObject.isNull(
 				SortConfigurationKeys.FIELD.getJsonKey())) {
 
- 			messages.addMessage(
+			messages.addMessage(
 				new Message.Builder().className(
 					getClass().getName()
 				).localizationKey(
 					"core.error.undefined-field"
 				).msg(
-						"Field is not defined"
-				).rootObject(configurationJsonObject
+					"Field is not defined"
+				).rootObject(
+					configurationJsonObject
 				).rootProperty(
-						SortConfigurationKeys.FIELD.getJsonKey()
+					SortConfigurationKeys.FIELD.getJsonKey()
 				).severity(
 					Severity.ERROR
 				).build());
- 			
+
 			valid = false;
 
 			if (_log.isWarnEnabled()) {

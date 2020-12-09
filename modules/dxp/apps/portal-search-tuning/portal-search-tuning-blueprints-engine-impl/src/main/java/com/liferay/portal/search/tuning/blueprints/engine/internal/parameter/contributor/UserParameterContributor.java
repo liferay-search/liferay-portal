@@ -23,7 +23,6 @@ import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
-import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.StringBundler;
@@ -88,52 +87,59 @@ public class UserParameterContributor implements ParameterContributor {
 		List<ParameterDefinition> parameterDefinitions = new ArrayList<>();
 
 		parameterDefinitions.add(
-				new ParameterDefinition(
-					_getTemplateVariableName(
-						ReservedParameterNames.USER_ID.getKey()),
-					LongParameter.class.getName(), "core.parameter.user.id"));
+			new ParameterDefinition(
+				_getTemplateVariableName(
+					ReservedParameterNames.USER_ID.getKey()),
+				LongParameter.class.getName(), "core.parameter.user.id"));
 
 		parameterDefinitions.add(
-				new ParameterDefinition(
-					_getTemplateVariableName(
-						ReservedParameterNames.USER_IS_SIGNED_IN.getKey()),
-					LongParameter.class.getName(), "core.parameter.user.is-signed-in"));
+			new ParameterDefinition(
+				_getTemplateVariableName(
+					ReservedParameterNames.USER_IS_SIGNED_IN.getKey()),
+				LongParameter.class.getName(),
+				"core.parameter.user.is-signed-in"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
 				_getTemplateVariableName(
 					ReservedParameterNames.USER_FULL_NAME.getKey()),
-				StringParameter.class.getName(), "core.parameter.user.full-name"));
+				StringParameter.class.getName(),
+				"core.parameter.user.full-name"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
 				_getTemplateVariableName(
 					ReservedParameterNames.USER_FIRST_NAME.getKey()),
-				StringParameter.class.getName(), "core.parameter.user.first-name"));
+				StringParameter.class.getName(),
+				"core.parameter.user.first-name"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
 				_getTemplateVariableName(
 					ReservedParameterNames.USER_LAST_NAME.getKey()),
-				StringParameter.class.getName(), "core.parameter.user.last-name"));
+				StringParameter.class.getName(),
+				"core.parameter.user.last-name"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
 				_getTemplateVariableName(
 					ReservedParameterNames.USER_LANGUAGE_ID.getKey()),
-				StringParameter.class.getName(), "core.parameter.user.language-id"));
+				StringParameter.class.getName(),
+				"core.parameter.user.language-id"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
 				_getTemplateVariableName(
 					ReservedParameterNames.USER_JOB_TITLE.getKey()),
-				StringParameter.class.getName(), "core.parameter.user.job-title"));
+				StringParameter.class.getName(),
+				"core.parameter.user.job-title"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
 				_getTemplateVariableName(
 					ReservedParameterNames.USER_CREATE_DATE.getKey()),
-				DateParameter.class.getName(), "core.parameter.user.create-date"));
+				DateParameter.class.getName(),
+				"core.parameter.user.create-date"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
@@ -151,13 +157,15 @@ public class UserParameterContributor implements ParameterContributor {
 			new ParameterDefinition(
 				_getTemplateVariableName(
 					ReservedParameterNames.USER_IS_MALE.getKey()),
-				BooleanParameter.class.getName(), "core.parameter.user.is-male"));
+				BooleanParameter.class.getName(),
+				"core.parameter.user.is-male"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
 				_getTemplateVariableName(
 					ReservedParameterNames.USER_IS_FEMALE.getKey()),
-				BooleanParameter.class.getName(), "core.parameter.user.is-female"));
+				BooleanParameter.class.getName(),
+				"core.parameter.user.is-female"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
@@ -184,7 +192,8 @@ public class UserParameterContributor implements ParameterContributor {
 			new ParameterDefinition(
 				_getTemplateVariableName(
 					ReservedParameterNames.USER_ROLE_IDS.getKey()),
-				LongArrayParameter.class.getName(), "core.parameter.user.role-ids"));
+				LongArrayParameter.class.getName(),
+				"core.parameter.user.role-ids"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
@@ -238,11 +247,11 @@ public class UserParameterContributor implements ParameterContributor {
 					ReservedParameterNames.USER_ID.getKey()),
 				user.getUserId()));
 		parameterDataBuilder.addParameter(
-				new BooleanParameter(
-					ReservedParameterNames.USER_IS_SIGNED_IN.getKey(),
-					_getTemplateVariableName(
-						ReservedParameterNames.USER_IS_SIGNED_IN.getKey()),
-					_isSignedIn(user)));
+			new BooleanParameter(
+				ReservedParameterNames.USER_IS_SIGNED_IN.getKey(),
+				_getTemplateVariableName(
+					ReservedParameterNames.USER_IS_SIGNED_IN.getKey()),
+				_isSignedIn(user)));
 		parameterDataBuilder.addParameter(
 			new StringParameter(
 				ReservedParameterNames.USER_FULL_NAME.getKey(),
@@ -314,37 +323,40 @@ public class UserParameterContributor implements ParameterContributor {
 					!user.isFemale() && !user.isMale()));
 		}
 		catch (NumberFormatException numberFormatException) {
-
- 			messages.addMessage(
+			messages.addMessage(
 				new Message.Builder().className(
 					getClass().getName()
 				).localizationKey(
 					"core.error.unknown-exception"
 				).msg(
-						numberFormatException.getMessage()
-				).rootValue(String.valueOf(user.getUserId())
+					numberFormatException.getMessage()
+				).rootValue(
+					String.valueOf(user.getUserId())
 				).severity(
 					Severity.ERROR
-				).throwable(numberFormatException
+				).throwable(
+					numberFormatException
 				).build());
 
 			_log.error(
 				numberFormatException.getMessage(), numberFormatException);
 		}
 		catch (PortalException portalException) {
- 			messages.addMessage(
+			messages.addMessage(
 				new Message.Builder().className(
 					getClass().getName()
 				).localizationKey(
 					"core.error.unknown-exception"
 				).msg(
-						portalException.getMessage()
-				).rootValue(String.valueOf(user.getUserId())
+					portalException.getMessage()
+				).rootValue(
+					String.valueOf(user.getUserId())
 				).severity(
 					Severity.ERROR
-				).throwable(portalException
+				).throwable(
+					portalException
 				).build());
- 			
+
 			_log.error(portalException.getMessage(), portalException);
 		}
 
@@ -446,19 +458,20 @@ public class UserParameterContributor implements ParameterContributor {
 			return _userLocalService.getUser(userId);
 		}
 		catch (PortalException portalException) {
- 			messages.addMessage(
+			messages.addMessage(
 				new Message.Builder().className(
 					getClass().getName()
 				).localizationKey(
-						"core.error.user-not-found"
+					"core.error.user-not-found"
 				).msg(
-						portalException.getMessage()
-				).rootValue(String.valueOf(userId)
+					portalException.getMessage()
+				).rootValue(
+					String.valueOf(userId)
 				).severity(
 					Severity.ERROR
-				).throwable(portalException
+				).throwable(
+					portalException
 				).build());
- 			
 
 			_log.error(portalException.getMessage(), portalException);
 		}
@@ -524,12 +537,10 @@ public class UserParameterContributor implements ParameterContributor {
 
 		return email.substring(email.indexOf("@") + 1);
 	}
-	
+
 	private Boolean _isSignedIn(User user) {
-		
 		return !user.isDefaultUser();
 	}
-
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		UserParameterContributor.class);

@@ -39,12 +39,13 @@ import org.osgi.service.component.annotations.Component;
  * @author Petteri Karttunen
  */
 @Component(immediate = true, service = BlueprintTemplateVariableParser.class)
-public class BlueprintTemplateVariableParserImpl implements BlueprintTemplateVariableParser {
+public class BlueprintTemplateVariableParserImpl
+	implements BlueprintTemplateVariableParser {
 
 	@Override
 	public JSONObject parse(
-			ParameterData parameterData, Messages messages,
-			JSONObject jsonObject)
+			JSONObject jsonObject, ParameterData parameterData,
+			Messages messages)
 		throws Exception {
 
 		List<Parameter> parameters = parameterData.getParameters();
@@ -103,8 +104,7 @@ public class BlueprintTemplateVariableParserImpl implements BlueprintTemplateVar
 		return jsonObject;
 	}
 
-	private Map<String, String> _getParameterOptions(
-			String optionsString)
+	private Map<String, String> _getParameterOptions(String optionsString)
 		throws Exception {
 
 		Map<String, String> map = new HashMap<>();
@@ -229,7 +229,7 @@ public class BlueprintTemplateVariableParserImpl implements BlueprintTemplateVar
 		return StringUtil.replace(queryString, sb.toString(), substitution);
 	}
 
-	private final static Log _log = LogFactoryUtil.getLog(
+	private static final Log _log = LogFactoryUtil.getLog(
 		BlueprintTemplateVariableParserImpl.class);
 
 }

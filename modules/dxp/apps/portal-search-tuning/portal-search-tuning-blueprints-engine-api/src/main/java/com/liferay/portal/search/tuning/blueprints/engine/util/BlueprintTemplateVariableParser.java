@@ -24,8 +24,8 @@ import com.liferay.portal.search.tuning.blueprints.message.Messages;
 public interface BlueprintTemplateVariableParser {
 
 	public JSONObject parse(
-			ParameterData parameterData, Messages messages,
-			JSONObject jsonObject)
+			JSONObject jsonObject, ParameterData parameterData,
+			Messages messages)
 		throws Exception;
 
 }

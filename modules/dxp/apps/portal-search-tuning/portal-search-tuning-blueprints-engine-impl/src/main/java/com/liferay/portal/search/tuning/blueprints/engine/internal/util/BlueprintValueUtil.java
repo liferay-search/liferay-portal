@@ -20,13 +20,11 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.search.sort.SortOrder;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.query.ConditionConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.values.FilterMode;
 import com.liferay.portal.search.tuning.blueprints.constants.json.values.Operator;
 import com.liferay.portal.search.tuning.blueprints.engine.exception.ParameterEvaluationException;
 import com.liferay.portal.search.tuning.blueprints.message.Message;
-import com.liferay.portal.search.tuning.blueprints.message.Messages;
 import com.liferay.portal.search.tuning.blueprints.message.Severity;
 
 import java.util.Map;
@@ -49,19 +47,21 @@ public class BlueprintValueUtil {
 
 		if (!(object instanceof JSONArray)) {
 			throw new ParameterEvaluationException(
-							new Message.Builder().className(
-									BlueprintValueUtil.class.getName()
-							).localizationKey(
-								"core.error.expected-array-clause-condition-match-value"
-							).msg(
-								"Excepted an array clause condition match value"
-							).rootObject(conditionJsonObject
-							).rootProperty(
-									ConditionConfigurationKeys.MATCH_VALUE.getJsonKey()
-							).rootValue(object.toString()
-							).severity(
-								Severity.ERROR
-							).build());
+				new Message.Builder().className(
+					BlueprintValueUtil.class.getName()
+				).localizationKey(
+					"core.error.expected-array-clause-condition-match-value"
+				).msg(
+					"Excepted an array clause condition match value"
+				).rootObject(
+					conditionJsonObject
+				).rootProperty(
+					ConditionConfigurationKeys.MATCH_VALUE.getJsonKey()
+				).rootValue(
+					object.toString()
+				).severity(
+					Severity.ERROR
+				).build());
 		}
 
 		return (JSONArray)object;

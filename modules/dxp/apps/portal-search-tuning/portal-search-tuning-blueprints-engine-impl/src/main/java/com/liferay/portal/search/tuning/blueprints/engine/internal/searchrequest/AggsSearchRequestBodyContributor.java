@@ -85,9 +85,9 @@ public class AggsSearchRequestBodyContributor
 
 				JSONObject bodyJsonObject =
 					_blueprintTemplateVariableParser.parse(
-						parameterData, messages,
 						configurationJsonObject.getJSONObject(
-							AggregationConfigurationKeys.BODY.getJsonKey()));
+							AggregationConfigurationKeys.BODY.getJsonKey()),
+						parameterData, messages);
 
 				Optional<Aggregation> aggregationOptional =
 					aggregationTranslator.translate(
@@ -100,20 +100,23 @@ public class AggsSearchRequestBodyContributor
 			}
 			catch (IllegalArgumentException illegalArgumentException) {
 				messages.addMessage(
-						new Message.Builder().className(
-							getClass().getName()
-						).localizationKey(
-							"core.error.unknown-aggregation-type"
-						).msg(
-							illegalArgumentException.getMessage()
-						).rootObject(configurationJsonObject
-						).rootProperty(
-								AggregationConfigurationKeys.TYPE.getJsonKey()
-						).rootValue(type
-						).severity(
-							Severity.ERROR
-						).throwable(illegalArgumentException
-						).build());
+					new Message.Builder().className(
+						getClass().getName()
+					).localizationKey(
+						"core.error.unknown-aggregation-type"
+					).msg(
+						illegalArgumentException.getMessage()
+					).rootObject(
+						configurationJsonObject
+					).rootProperty(
+						AggregationConfigurationKeys.TYPE.getJsonKey()
+					).rootValue(
+						type
+					).severity(
+						Severity.ERROR
+					).throwable(
+						illegalArgumentException
+					).build());
 
 				_log.error(
 					illegalArgumentException.getMessage(),
@@ -121,45 +124,48 @@ public class AggsSearchRequestBodyContributor
 			}
 			catch (Exception exception) {
 				messages.addMessage(
-						new Message.Builder().className(
-							getClass().getName()
-						).localizationKey(
-							"core.error.unknown-aggregation-configuration-error"
-						).msg(
-								exception.getMessage()
-						).rootObject(configurationJsonObject
-						).severity(
-							Severity.ERROR
-						).throwable(exception
-						).build());
+					new Message.Builder().className(
+						getClass().getName()
+					).localizationKey(
+						"core.error.unknown-aggregation-configuration-error"
+					).msg(
+						exception.getMessage()
+					).rootObject(
+						configurationJsonObject
+					).severity(
+						Severity.ERROR
+					).throwable(
+						exception
+					).build());
 
 				_log.error(exception.getMessage(), exception);
 			}
 		}
 	}
 
-	private boolean _validateConfiguration(JSONObject configurationJsonObject,
-		Messages messages) {
+	private boolean _validateConfiguration(
+		JSONObject configurationJsonObject, Messages messages) {
 
 		boolean valid = true;
 
 		if (configurationJsonObject.isNull(
 				AggregationConfigurationKeys.NAME.getJsonKey())) {
 
- 			messages.addMessage(
+			messages.addMessage(
 				new Message.Builder().className(
 					getClass().getName()
 				).localizationKey(
 					"core.error.undefined-aggregation-name"
 				).msg(
-						"Aggregation name is not defined"
-				).rootObject(configurationJsonObject
+					"Aggregation name is not defined"
+				).rootObject(
+					configurationJsonObject
 				).rootProperty(
-						AggregationConfigurationKeys.NAME.getJsonKey()
+					AggregationConfigurationKeys.NAME.getJsonKey()
 				).severity(
 					Severity.ERROR
 				).build());
- 			
+
 			valid = false;
 
 			if (_log.isWarnEnabled()) {
@@ -172,20 +178,21 @@ public class AggsSearchRequestBodyContributor
 		if (configurationJsonObject.isNull(
 				AggregationConfigurationKeys.TYPE.getJsonKey())) {
 
- 			messages.addMessage(
+			messages.addMessage(
 				new Message.Builder().className(
 					getClass().getName()
 				).localizationKey(
 					"core.error.undefined-aggregation-type"
 				).msg(
-						"Aggregation type is not defined"
-				).rootObject(configurationJsonObject
+					"Aggregation type is not defined"
+				).rootObject(
+					configurationJsonObject
 				).rootProperty(
-						AggregationConfigurationKeys.TYPE.getJsonKey()
+					AggregationConfigurationKeys.TYPE.getJsonKey()
 				).severity(
 					Severity.ERROR
 				).build());
- 			
+
 			valid = false;
 
 			if (_log.isWarnEnabled()) {
@@ -197,22 +204,23 @@ public class AggsSearchRequestBodyContributor
 
 		if (configurationJsonObject.isNull(
 				AggregationConfigurationKeys.BODY.getJsonKey())) {
-			
- 			messages.addMessage(
+
+			messages.addMessage(
 				new Message.Builder().className(
 					getClass().getName()
 				).localizationKey(
 					"core.error.undefined-aggregation-body"
 				).msg(
-						"Aggregation body is not defined"
-				).rootObject(configurationJsonObject
+					"Aggregation body is not defined"
+				).rootObject(
+					configurationJsonObject
 				).rootProperty(
-						AggregationConfigurationKeys.BODY.getJsonKey()
+					AggregationConfigurationKeys.BODY.getJsonKey()
 				).severity(
 					Severity.ERROR
 				).build());
 
- 			valid = false;
+			valid = false;
 
 			if (_log.isWarnEnabled()) {
 				_log.warn(
@@ -223,7 +231,7 @@ public class AggsSearchRequestBodyContributor
 
 		return valid;
 	}
-	
+
 	private static final Log _log = LogFactoryUtil.getLog(
 		AggsSearchRequestBodyContributor.class);
 
@@ -231,10 +239,10 @@ public class AggsSearchRequestBodyContributor
 	private AggregationTranslatorFactory _aggregationBuilderFactory;
 
 	@Reference
-	private BlueprintTemplateVariableParser _blueprintTemplateVariableParser;
+	private BlueprintHelper _blueprintHelper;
 
 	@Reference
-	private BlueprintHelper _blueprintHelper;
+	private BlueprintTemplateVariableParser _blueprintTemplateVariableParser;
 
 	@Reference
 	private Queries _queries;

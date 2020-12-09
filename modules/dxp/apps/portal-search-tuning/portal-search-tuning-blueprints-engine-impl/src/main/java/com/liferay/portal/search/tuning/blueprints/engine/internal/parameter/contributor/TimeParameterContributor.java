@@ -71,7 +71,8 @@ public class TimeParameterContributor implements ParameterContributor {
 			new ParameterDefinition(
 				_getTemplateVariableName(
 					ReservedParameterNames.CURRENT_DATE.getKey()),
-				DateParameter.class.getName(), "core.parameter.time.current-date"));
+				DateParameter.class.getName(),
+				"core.parameter.time.current-date"));
 		parameterDefinitions.add(
 			new ParameterDefinition(
 				_getTemplateVariableName(
@@ -106,7 +107,8 @@ public class TimeParameterContributor implements ParameterContributor {
 			new ParameterDefinition(
 				_getTemplateVariableName(
 					ReservedParameterNames.TIME_OF_DAY.getKey()),
-				StringParameter.class.getName(), "core.parameter.time.time-of-day"));
+				StringParameter.class.getName(),
+				"core.parameter.time.time-of-day"));
 		parameterDefinitions.add(
 			new ParameterDefinition(
 				_getTemplateVariableName(
@@ -233,7 +235,6 @@ public class TimeParameterContributor implements ParameterContributor {
 
 		return false;
 	}
-	
 
 	private static final LocalTime _AFTER_NOON = LocalTime.of(12, 0, 0);
 

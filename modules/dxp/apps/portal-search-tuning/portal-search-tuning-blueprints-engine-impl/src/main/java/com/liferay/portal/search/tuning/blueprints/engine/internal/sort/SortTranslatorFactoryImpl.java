@@ -34,15 +34,14 @@ import org.osgi.service.component.annotations.ReferencePolicy;
  * @author Petteri Karttunen
  */
 @Component(immediate = true, service = SortTranslatorFactory.class)
-public class SortTranslatorFactoryImpl
-	implements SortTranslatorFactory {
+public class SortTranslatorFactoryImpl implements SortTranslatorFactory {
 
 	@Override
 	public SortTranslator getTranslator(String type)
 		throws IllegalArgumentException {
 
-		ServiceComponentReference<SortTranslator>
-			serviceComponentReference = _sortTranslators.get(type);
+		ServiceComponentReference<SortTranslator> serviceComponentReference =
+			_sortTranslators.get(type);
 
 		if (serviceComponentReference == null) {
 			throw new IllegalArgumentException(
@@ -64,8 +63,7 @@ public class SortTranslatorFactoryImpl
 		policy = ReferencePolicy.DYNAMIC
 	)
 	protected void registerSortTranslator(
-		SortTranslator sortTranslator,
-		Map<String, Object> properties) {
+		SortTranslator sortTranslator, Map<String, Object> properties) {
 
 		String type = (String)properties.get("type");
 
@@ -84,9 +82,8 @@ public class SortTranslatorFactoryImpl
 		int serviceRanking = GetterUtil.get(
 			properties.get("service.ranking"), 0);
 
-		ServiceComponentReference<SortTranslator>
-			serviceComponentReference = new ServiceComponentReference<>(
-				sortTranslator, serviceRanking);
+		ServiceComponentReference<SortTranslator> serviceComponentReference =
+			new ServiceComponentReference<>(sortTranslator, serviceRanking);
 
 		if (_sortTranslators.containsKey(type)) {
 			ServiceComponentReference<SortTranslator> previousReference =
@@ -102,8 +99,7 @@ public class SortTranslatorFactoryImpl
 	}
 
 	protected void unregisterSortTranslator(
-		SortTranslator sortTranslator,
-		Map<String, Object> properties) {
+		SortTranslator sortTranslator, Map<String, Object> properties) {
 
 		String type = (String)properties.get("type");
 
@@ -117,8 +113,7 @@ public class SortTranslatorFactoryImpl
 	private static final Log _log = LogFactoryUtil.getLog(
 		SortTranslatorFactoryImpl.class);
 
-	private volatile Map
-		<String, ServiceComponentReference<SortTranslator>>
-			_sortTranslators = new ConcurrentHashMap<>();
+	private volatile Map<String, ServiceComponentReference<SortTranslator>>
+		_sortTranslators = new ConcurrentHashMap<>();
 
 }

@@ -204,17 +204,18 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 			}
 			catch (IllegalStateException illegalStateException) {
 				messages.addMessage(
-						new Message.Builder().className(
-							getClass().getName()
-						).localizationKey(
-								"core.error.error-in-executing-search-request-body-" +
-										"contributors"
-						).msg(
-								illegalStateException.getMessage()
-						).severity(
-							Severity.ERROR
-						).throwable(illegalStateException
-						).build());
+					new Message.Builder().className(
+						getClass().getName()
+					).localizationKey(
+						"core.error.error-in-executing-search-request-body-" +
+							"contributors"
+					).msg(
+						illegalStateException.getMessage()
+					).severity(
+						Severity.ERROR
+					).throwable(
+						illegalStateException
+					).build());
 
 				_log.error(
 					illegalStateException.getMessage(), illegalStateException);

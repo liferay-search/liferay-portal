@@ -175,19 +175,20 @@ public class QueryIndexerPostProcessor implements QueryPostProcessor {
 				parameterData, filteredKeyWords, configurationJsonObject);
 		}
 		catch (Exception exception) {
- 			messages.addMessage(
+			messages.addMessage(
 				new Message.Builder().className(
 					getClass().getName()
 				).localizationKey(
 					"core.error.error-in-indexing-search-query"
 				).msg(
-						exception.getMessage()
+					exception.getMessage()
 				).severity(
 					Severity.ERROR
-				).throwable(exception
+				).throwable(
+					exception
 				).build());
 
- 			_log.error(exception.getMessage(), exception);
+			_log.error(exception.getMessage(), exception);
 		}
 	}
 
