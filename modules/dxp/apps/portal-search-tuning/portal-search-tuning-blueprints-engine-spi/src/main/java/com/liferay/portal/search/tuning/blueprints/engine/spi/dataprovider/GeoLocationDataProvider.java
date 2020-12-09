@@ -26,9 +26,9 @@ import java.util.Optional;
 public interface GeoLocationDataProvider {
 
 	public Optional<JSONObject> getGeoLocationData(
-			String ipAddress, Messages messages);
+		String ipAddress, Messages messages);
 
-	public  Optional<GeoLocationPoint> getGeoLocationPoint(
+	public Optional<GeoLocationPoint> getGeoLocationPoint(
 		String ipAddress, Messages messages);
 
 }
