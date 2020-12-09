@@ -26,7 +26,7 @@ import java.util.ResourceBundle;
 public interface ResultContributor {
 
 	public void contribute(
-		JSONObject responseJsonObject, Document document,
+		JSONObject responseJSONObject, Document document,
 		ResultBuilder resultBuilder, BlueprintsAttributes blueprintsAttributes,
 		ResourceBundle resourceBundle);
 

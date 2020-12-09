@@ -28,9 +28,8 @@ import java.util.ResourceBundle;
 public interface ResponseContributor {
 
 	public void contribute(
-		JSONObject responseJsonObject, SearchResponse searchResponse,
+		JSONObject responseJSONObject, SearchResponse searchResponse,
 		Blueprint blueprint, BlueprintsAttributes blueprintsAttributes,
-		ResourceBundle resourceBundle,
-		Messages messages);
+		ResourceBundle resourceBundle, Messages messages);
 
 }
