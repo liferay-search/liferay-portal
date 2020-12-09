@@ -29,10 +29,8 @@ public interface BlueprintsJSONResponseBuilder {
 
 	public JSONObject buildJSONObject(
 			SearchResponse searchResponse,
-			BlueprintsAttributes blueprintsAttributes, 
-			ResourceBundle resourceBundle,
-			Messages messages,
-			long blueprintId)
+			BlueprintsAttributes blueprintsAttributes,
+			ResourceBundle resourceBundle, Messages messages, long blueprintId)
 		throws PortalException;
 
 }
