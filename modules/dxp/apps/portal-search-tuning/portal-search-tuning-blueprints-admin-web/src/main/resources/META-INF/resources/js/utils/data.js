@@ -35,7 +35,7 @@ export const DEFAULT_FRAGMENT = {
 					query: {
 						query_string: {
 							default_operator: '${config.default_operator}',
-							fields: '${config.field}',
+							fields: '${config.fields}',
 							query: '${keywords}',
 						},
 					},
@@ -67,8 +67,8 @@ export const DEFAULT_FRAGMENT = {
 					locale: '',
 				},
 			],
-			key: 'config.field',
-			name: 'Field',
+			key: 'config.fields',
+			name: 'Fields',
 			type: 'field-select',
 			typeOptions: [
 				{
@@ -664,7 +664,7 @@ export const QUERY_FRAGMENTS = [
 						query: {
 							query_string: {
 								default_operator: '${config.default_operator}',
-								fields: '${config.field}',
+								fields: '${config.fields}',
 								query: '${keywords}',
 							},
 						},
@@ -696,8 +696,8 @@ export const QUERY_FRAGMENTS = [
 						locale: '',
 					},
 				],
-				key: 'config.field',
-				name: 'Field',
+				key: 'config.fields',
+				name: 'Fields',
 				type: 'field-select',
 				typeOptions: [
 					{
@@ -997,7 +997,7 @@ export const QUERY_FRAGMENTS = [
 						query: {
 							multi_match: {
 								boost: '${config.boost}',
-								fields: '${config.field}',
+								fields: '${config.fields}',
 								operator: '${config.default_operator}',
 								query: '${keywords}',
 							},
@@ -1037,8 +1037,8 @@ export const QUERY_FRAGMENTS = [
 						locale: '',
 					},
 				],
-				key: 'config.field',
-				name: 'Field',
+				key: 'config.fields',
+				name: 'Fields',
 				type: 'field-select',
 				typeOptions: [
 					{

@@ -33,7 +33,14 @@ import CodeMirrorEditor from './CodeMirrorEditor';
 import PreviewModal from './PreviewModal';
 import ThemeContext from './ThemeContext';
 
-function FieldSelect({config, deleteItem, disabled, index, item, updateValue}) {
+function FieldSelectRow({
+	config,
+	deleteItem,
+	disabled,
+	index,
+	item,
+	updateValue,
+}) {
 	const {availableLanguages} = useContext(ThemeContext);
 
 	return (
@@ -44,7 +51,7 @@ function FieldSelect({config, deleteItem, disabled, index, item, updateValue}) {
 						aria-label={Liferay.Language.get('field')}
 						className="form-control-sm"
 						disabled={disabled}
-						id={`${config.key}_field`}
+						id={`field-${index}`}
 						onChange={(event) => {
 							updateValue('field', event.target.value);
 						}}
@@ -65,22 +72,22 @@ function FieldSelect({config, deleteItem, disabled, index, item, updateValue}) {
 						aria-label={Liferay.Language.get('locale')}
 						className="form-control-sm"
 						disabled={disabled}
-						id={`${config.key}_locale`}
+						id={`locale-${index}`}
 						onChange={(event) =>
 							updateValue('locale', event.target.value)
 						}
 						value={item.locale}
 					>
 						<ClaySelect.Option
-							key={`${index}-users-language`}
-							label={Liferay.Language.get('users-language')}
-							value={'${context.language_id}'}
+							key={`no-localization-${index}`}
+							label={Liferay.Language.get('no-localization')}
+							value=""
 						/>
 
 						<ClaySelect.Option
-							key={`${index}-no-localization`}
-							label={Liferay.Language.get('no-localization')}
-							value=""
+							key={`users-language-${index}`}
+							label={Liferay.Language.get('users-language')}
+							value={'_${context.language_id}'}
 						/>
 
 						{Object.keys(availableLanguages).map((locale) => (
@@ -381,32 +388,36 @@ function ConfigFragment({
 			case INPUT_TYPES.FIELD_SELECT:
 				return (
 					<div className="field-select">
-						{uiConfigurationValues[config.key].map((item, index) => (
-							<FieldSelect
-								config={config}
-								deleteItem={() =>
-									_handleChange(
-										config.key,
-										uiConfigurationValues[
-											config.key
-										].filter((item, index) => index !== index)
-									)
-								}
-								disabled={disabled}
-								index={index}
-								item={item}
-								key={`${config.key}_${index}`}
-								updateValue={(label, value) => {
-									const configValue =
-										uiConfigurationValues[config.key];
-									configValue[index] = {
-										...item,
-										[`${label}`]: value,
-									};
-									_handleChange(config.key, configValue);
-								}}
-							/>
-						))}
+						{uiConfigurationValues[config.key].map(
+							(item, index) => (
+								<FieldSelectRow
+									config={config}
+									deleteItem={() =>
+										_handleChange(
+											config.key,
+											uiConfigurationValues[
+												config.key
+											].filter((_, i) => index !== i)
+										)
+									}
+									disabled={disabled}
+									index={index}
+									item={item}
+									key={`${config.key}_${index}`}
+									updateValue={(label, value) => {
+										const configValue =
+											uiConfigurationValues[config.key];
+
+										configValue[index] = {
+											...item,
+											[`${label}`]: value,
+										};
+
+										_handleChange(config.key, configValue);
+									}}
+								/>
+							)
+						)}
 
 						<ClayForm.Group className="add-remove-field">
 							<ClayButton.Group spaced>
@@ -424,7 +435,8 @@ function ConfigFragment({
 											],
 											{
 												boost: 1,
-												field: 'title',
+												field:
+													config.typeOptions[0].value,
 												locale: '',
 											},
 										])
@@ -432,34 +444,6 @@ function ConfigFragment({
 									small
 								>
 									<ClayIcon symbol="plus" />
-								</ClayButton>
-
-								<ClayButton
-									aria-label={Liferay.Language.get(
-										'remove-field'
-									)}
-									disabled={
-										uiConfigurationValues[config.key]
-											.length < 1 || disabled
-									}
-									displayType="secondary"
-									monospaced
-									onClick={() =>
-										_handleChange(
-											config.key,
-											uiConfigurationValues[
-												config.key
-											].slice(
-												0,
-												uiConfigurationValues[
-													config.key
-												].length - 1
-											)
-										)
-									}
-									small
-								>
-									<ClayIcon symbol="hr" />
 								</ClayButton>
 							</ClayButton.Group>
 						</ClayForm.Group>
