@@ -89,8 +89,6 @@ public interface SearchRequest {
 
 	public Query getPostFilterQuery();
 
-	public List<ComplexQueryPart> getPostFilterQueryParts();
-
 	public Query getQuery();
 
 	public String getQueryString();
