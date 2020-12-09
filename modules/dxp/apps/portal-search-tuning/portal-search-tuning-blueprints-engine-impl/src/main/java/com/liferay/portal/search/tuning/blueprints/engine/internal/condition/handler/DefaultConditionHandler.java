@@ -58,63 +58,23 @@ public class DefaultConditionHandler implements ConditionHandler {
 			return false;
 		}
 
-		String parameterName = configurationJSONObject.getString(
-			ConditionConfigurationKeys.PARAMETER_NAME.getJsonKey());
+		EvaluationType evaluationType = _resolveEvaluationType(
+			configurationJSONObject, messages);
 
-		String evaluationTypeString = configurationJSONObject.getString(
-			ConditionConfigurationKeys.EVALUATION_TYPE.getJsonKey());
-
-		EvaluationType evaluationType;
-
-		try {
-			evaluationType = _getEvaluationType(evaluationTypeString);
-		}
-		catch (IllegalArgumentException illegalArgumentException) {
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"core.error.unknown-clause-condition-evaluation-type"
-				).msg(
-					illegalArgumentException.getMessage()
-				).rootObject(
-					configurationJSONObject
-				).rootProperty(
-					ConditionConfigurationKeys.EVALUATION_TYPE.getJsonKey()
-				).rootValue(
-					evaluationTypeString
-				).severity(
-					Severity.ERROR
-				).throwable(
-					illegalArgumentException
-				).build());
-
-			if (_log.isWarnEnabled()) {
-				_log.warn(
-					"Unknown clause condition evaluation type " +
-						evaluationTypeString + ".",
-					illegalArgumentException);
-			}
-
+		if (evaluationType == null) {
 			return false;
 		}
+
+		String parameterName = configurationJSONObject.getString(
+			ConditionConfigurationKeys.PARAMETER_NAME.getJsonKey());
 
 		Optional<Parameter> parameterOptional =
 			parameterData.getByTemplateVariableNameOptional(parameterName);
 
-		if (EvaluationType.EXISTS.equals(evaluationType)) {
-			if (parameterOptional.isPresent()) {
-				return true;
-			}
+		if (EvaluationType.EXISTS.equals(evaluationType) ||
+			EvaluationType.NOT_EXISTS.equals(evaluationType)) {
 
-			return false;
-		}
-		else if (EvaluationType.NOT_EXISTS.equals(evaluationType)) {
-			if (!parameterOptional.isPresent()) {
-				return true;
-			}
-
-			return false;
+			return _evaluateExistsCondition(evaluationType, parameterOptional);
 		}
 
 		if (!parameterOptional.isPresent()) {
@@ -129,35 +89,19 @@ public class DefaultConditionHandler implements ConditionHandler {
 
 		Parameter parameter = parameterOptional.get();
 
-		ConditionEvaluationVisitor visitor = _getEvaluationVisitor(
-			parameter, configurationJSONObject, evaluationType);
+		ConditionEvaluationVisitor conditionEvaluationVisitor = _resolveVisitor(
+			parameter, configurationJSONObject, evaluationType, messages);
 
-		if (visitor == null) {
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"core.error.unknown-clause-condition-evaluation-type"
-				).msg(
-					"Unknown clause condition evaluation type"
-				).rootObject(
-					configurationJSONObject
-				).rootProperty(
-					ConditionConfigurationKeys.EVALUATION_TYPE.getJsonKey()
-				).rootValue(
-					evaluationType.name()
-				).severity(
-					Severity.ERROR
-				).build());
-
-			if (_log.isWarnEnabled()) {
-				_log.warn(
-					"Unknown clause condition evaluation type " +
-						evaluationType.name() + ".");
-			}
-
+		if (conditionEvaluationVisitor == null) {
 			return false;
 		}
+
+		return _evaluate(parameter, conditionEvaluationVisitor, messages);
+	}
+
+	private boolean _evaluate(
+		Parameter parameter, ConditionEvaluationVisitor visitor,
+		Messages messages) {
 
 		try {
 			return parameter.accept(visitor);
@@ -168,6 +112,24 @@ public class DefaultConditionHandler implements ConditionHandler {
 
 			return false;
 		}
+	}
+
+	private boolean _evaluateExistsCondition(
+		EvaluationType evaluationType, Optional<Parameter> parameterOptional) {
+
+		if (EvaluationType.EXISTS.equals(evaluationType)) {
+			if (parameterOptional.isPresent()) {
+				return true;
+			}
+
+			return false;
+		}
+
+		if (!parameterOptional.isPresent()) {
+			return true;
+		}
+
+		return false;
 	}
 
 	private EvaluationType _getEvaluationType(String s)
@@ -263,6 +225,83 @@ public class DefaultConditionHandler implements ConditionHandler {
 		}
 
 		return visitor;
+	}
+
+	private EvaluationType _resolveEvaluationType(
+		JSONObject configurationJSONObject, Messages messages) {
+
+		String evaluationTypeString = configurationJSONObject.getString(
+			ConditionConfigurationKeys.EVALUATION_TYPE.getJsonKey());
+
+		try {
+			return _getEvaluationType(evaluationTypeString);
+		}
+		catch (IllegalArgumentException illegalArgumentException) {
+			messages.addMessage(
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"core.error.unknown-clause-condition-evaluation-type"
+				).msg(
+					illegalArgumentException.getMessage()
+				).rootObject(
+					configurationJSONObject
+				).rootProperty(
+					ConditionConfigurationKeys.EVALUATION_TYPE.getJsonKey()
+				).rootValue(
+					evaluationTypeString
+				).severity(
+					Severity.ERROR
+				).throwable(
+					illegalArgumentException
+				).build());
+
+			if (_log.isWarnEnabled()) {
+				_log.warn(
+					"Unknown clause condition evaluation type " +
+						evaluationTypeString + ".",
+					illegalArgumentException);
+			}
+		}
+
+		return null;
+	}
+
+	private ConditionEvaluationVisitor _resolveVisitor(
+		Parameter parameter, JSONObject configurationJSONObject,
+		EvaluationType evaluationType, Messages messages) {
+
+		ConditionEvaluationVisitor visitor = _getEvaluationVisitor(
+			parameter, configurationJSONObject, evaluationType);
+
+		if (visitor != null) {
+			return visitor;
+		}
+
+		messages.addMessage(
+			new Message.Builder().className(
+				getClass().getName()
+			).localizationKey(
+				"core.error.unknown-clause-condition-evaluation-type"
+			).msg(
+				"Unknown clause condition evaluation type"
+			).rootObject(
+				configurationJSONObject
+			).rootProperty(
+				ConditionConfigurationKeys.EVALUATION_TYPE.getJsonKey()
+			).rootValue(
+				evaluationType.name()
+			).severity(
+				Severity.ERROR
+			).build());
+
+		if (_log.isWarnEnabled()) {
+			_log.warn(
+				"Unknown clause condition evaluation type " +
+					evaluationType.name() + ".");
+		}
+
+		return null;
 	}
 
 	private boolean _validateCondition(
