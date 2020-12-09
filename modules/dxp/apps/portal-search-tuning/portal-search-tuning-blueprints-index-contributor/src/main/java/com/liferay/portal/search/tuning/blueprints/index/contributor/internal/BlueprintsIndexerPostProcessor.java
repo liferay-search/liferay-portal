@@ -84,39 +84,36 @@ public class BlueprintsIndexerPostProcessor extends BaseIndexerPostProcessor {
 				continue;
 			}
 
-			document.addNumber(
-				_getLengthFieldName(locale), content.length());
+			document.addNumber(_getLengthFieldName(locale), content.length());
 		}
 	}
 
 	private void _addVersionCount(Object object, Document document) {
-			Class<?> clazz = object.getClass();
+		Class<?> clazz = object.getClass();
 
-			String className = clazz.getSimpleName();
+		String className = clazz.getSimpleName();
 
-			Double version = null;
+		Double version = null;
 
-			if (className.startsWith(DLFileEntry.class.getSimpleName())) {
-				DLFileEntry dlFileEntry = (DLFileEntry)object;
+		if (className.startsWith(DLFileEntry.class.getSimpleName())) {
+			DLFileEntry dlFileEntry = (DLFileEntry)object;
 
-				version = GetterUtil.getDouble(dlFileEntry.getVersion());
-			}
-			else if (className.startsWith(
-						JournalArticle.class.getSimpleName())) {
+			version = GetterUtil.getDouble(dlFileEntry.getVersion());
+		}
+		else if (className.startsWith(JournalArticle.class.getSimpleName())) {
+			JournalArticle journalArticle = (JournalArticle)object;
 
-				JournalArticle journalArticle = (JournalArticle)object;
+			version = journalArticle.getVersion();
+		}
+		else if (className.startsWith(WikiPage.class.getSimpleName())) {
+			WikiPage wikiPage = (WikiPage)object;
 
-				version = journalArticle.getVersion();
-			}
-			else if (className.startsWith(WikiPage.class.getSimpleName())) {
-				WikiPage wikiPage = (WikiPage)object;
+			version = wikiPage.getVersion();
+		}
 
-				version = wikiPage.getVersion();
-			}
-
-			if (version != null) {
-				document.addNumber(FieldNames.VERSION_COUNT, version);
-			}
+		if (version != null) {
+			document.addNumber(FieldNames.VERSION_COUNT, version);
+		}
 	}
 
 	private String _getLengthFieldName(Locale locale) {
