@@ -465,6 +465,33 @@ function ConfigFragment({
 						</ClayForm.Group>
 					</div>
 				);
+			case INPUT_TYPES.JSON:
+				return (
+					<div
+						className={`custom-json ${
+							disabled ? 'disabled' : 'enabled'
+						}`}
+					>
+						<label>{Liferay.Language.get('json')}</label>
+
+						<CodeMirrorEditor
+							onChange={(value) => {
+								try {
+									_handleChange(
+										config.key,
+										JSON.parse(value)
+									);
+								}
+								catch {}
+							}}
+							value={JSON.stringify(
+								uiConfigurationValues[config.key],
+								null,
+								'\t'
+							)}
+						/>
+					</div>
+				);
 			case INPUT_TYPES.SINGLE_SELECT:
 				return (
 					<ClaySelect
@@ -687,28 +714,34 @@ function ConfigFragment({
 					{_hasConfigurationValues && (
 						<ClayList className="configuration-form-list">
 							{uiConfigurationJSON.map((config) => (
-								<ClayList.Item flex key={config.key}>
-									<ClayList.ItemField className="list-item-label">
-										<label htmlFor={config.key}>
-											{config.name}
-											{config.helpText && (
-												<ClayTooltipProvider>
-													<ClaySticker
-														displayType="unstyled"
-														size="sm"
-													>
-														<ClayIcon
-															data-tooltip-align="top"
-															symbol="info-circle"
-															title={
-																config.helpText
-															}
-														/>
-													</ClaySticker>
-												</ClayTooltipProvider>
-											)}
-										</label>
-									</ClayList.ItemField>
+								<ClayList.Item
+									className={config.type}
+									flex
+									key={config.key}
+								>
+									{config.type !== INPUT_TYPES.JSON && (
+										<ClayList.ItemField className="list-item-label">
+											<label htmlFor={config.key}>
+												{config.name}
+												{config.helpText && (
+													<ClayTooltipProvider>
+														<ClaySticker
+															displayType="unstyled"
+															size="sm"
+														>
+															<ClayIcon
+																data-tooltip-align="top"
+																symbol="info-circle"
+																title={
+																	config.helpText
+																}
+															/>
+														</ClaySticker>
+													</ClayTooltipProvider>
+												)}
+											</label>
+										</ClayList.ItemField>
+									)}
 
 									<ClayList.ItemField expand>
 										{_renderInput(config)}

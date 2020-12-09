@@ -71,7 +71,7 @@ function QueryBuilder({
 				</ClayLayout.Col>
 			</ClayLayout.Row>
 
-			{selectedFragments.map((fragment, index) => {
+			{selectedFragments.map((fragment) => {
 				return fragment.uiConfigurationJSON ? (
 					<ConfigFragment
 						collapseAll={collapseAll}
@@ -86,7 +86,7 @@ function QueryBuilder({
 							uiConfigurationValues,
 							fragmentOutput
 						) => {
-							updateFragment(index, {
+							updateFragment(fragment.id, {
 								...fragment,
 								fragmentOutput,
 								uiConfigurationValues,
@@ -96,7 +96,7 @@ function QueryBuilder({
 							fragmentTemplateJSON,
 							fragmentOutput
 						) => {
-							updateFragment(index, {
+							updateFragment(fragment.id, {
 								...fragment,
 								fragmentOutput,
 								fragmentTemplateJSON,
@@ -110,7 +110,7 @@ function QueryBuilder({
 						fragmentTemplateJSON={fragment.fragmentTemplateJSON}
 						key={fragment.id}
 						updateFragment={(fragmentOutput) => {
-							updateFragment(index, {
+							updateFragment(fragment.id, {
 								...fragment,
 								fragmentOutput,
 								fragmentTemplateJSON: fragmentOutput,
