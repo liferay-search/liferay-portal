@@ -66,27 +66,27 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 		Blueprint blueprint, BlueprintsAttributes blueprintsAttributes,
 		Messages messages) {
 
-		Optional<JSONObject> parameterConfigurationJsonObjectOptional =
+		Optional<JSONObject> parameterConfigurationJSONObjectOptional =
 			_blueprintHelper.getParameterConfigurationOptional(blueprint);
 
-		if (!parameterConfigurationJsonObjectOptional.isPresent()) {
+		if (!parameterConfigurationJSONObjectOptional.isPresent()) {
 			return new ParameterDataImpl(StringPool.BLANK, new ArrayList<>());
 		}
 
 		ParameterDataBuilder parameterDataBuilder =
 			new ParameterDataBuilderImpl();
 
-		JSONObject parameterConfigurationJsonObject =
-			parameterConfigurationJsonObjectOptional.get();
+		JSONObject parameterConfigurationJSONObject =
+			parameterConfigurationJSONObjectOptional.get();
 
 		_addKeywordParameter(
 			parameterDataBuilder, blueprint, blueprintsAttributes, messages,
-			parameterConfigurationJsonObject.getJSONObject(
+			parameterConfigurationJSONObject.getJSONObject(
 				ParameterConfigurationKeys.KEYWORDS.getJsonKey()));
 
 		_addPagingParameters(
 			parameterDataBuilder, blueprintsAttributes,
-			parameterConfigurationJsonObject.getJSONObject(
+			parameterConfigurationJSONObject.getJSONObject(
 				ParameterConfigurationKeys.PAGE.getJsonKey()));
 
 		_addSortParameters(
@@ -94,7 +94,7 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 
 		_addCustomParameters(
 			parameterDataBuilder, blueprintsAttributes, messages,
-			parameterConfigurationJsonObject.getJSONArray(
+			parameterConfigurationJSONObject.getJSONArray(
 				ParameterConfigurationKeys.CUSTOM.getJsonKey()));
 
 		_executeParameterContributors(
@@ -236,9 +236,9 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 	private void _addCustomParameter(
 		ParameterDataBuilder parameterDataBuilder,
 		BlueprintsAttributes blueprintsAttributes, Messages messages,
-		JSONObject configurationJsonObject) {
+		JSONObject configurationJSONObject) {
 
-		String type = configurationJsonObject.getString(
+		String type = configurationJSONObject.getString(
 			CustomParameterConfigurationKeys.TYPE.getJsonKey());
 
 		try {
@@ -246,7 +246,7 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 				_parameterBuilderFactory.getBuilder(type);
 
 			Optional<Parameter> optional = parameterBuilder.build(
-				blueprintsAttributes, messages, configurationJsonObject);
+				blueprintsAttributes, messages, configurationJSONObject);
 
 			if (optional.isPresent()) {
 				parameterDataBuilder.addParameter(optional.get());
@@ -261,7 +261,7 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 				).msg(
 					illegalArgumentException.getMessage()
 				).rootObject(
-					configurationJsonObject
+					configurationJSONObject
 				).rootProperty(
 					CustomParameterConfigurationKeys.TYPE.getJsonKey()
 				).severity(
@@ -279,24 +279,24 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 	private void _addCustomParameters(
 		ParameterDataBuilder parameterDataBuilder,
 		BlueprintsAttributes blueprintsAttributes, Messages messages,
-		JSONArray configurationJsonArray) {
+		JSONArray configurationJSONArray) {
 
-		if ((configurationJsonArray == null) ||
-			(configurationJsonArray.length() == 0)) {
+		if ((configurationJSONArray == null) ||
+			(configurationJSONArray.length() == 0)) {
 
 			return;
 		}
 
-		for (int i = 0; i < configurationJsonArray.length(); i++) {
-			JSONObject configurationJsonObject =
-				configurationJsonArray.getJSONObject(i);
+		for (int i = 0; i < configurationJSONArray.length(); i++) {
+			JSONObject configurationJSONObject =
+				configurationJSONArray.getJSONObject(i);
 
 			if (_validateCustomParameterConfiguration(
-					messages, configurationJsonObject)) {
+					messages, configurationJSONObject)) {
 
 				_addCustomParameter(
 					parameterDataBuilder, blueprintsAttributes, messages,
-					configurationJsonObject);
+					configurationJSONObject);
 			}
 		}
 	}
@@ -304,12 +304,12 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 	private void _addKeywordParameter(
 		ParameterDataBuilder parameterDataBuilder, Blueprint blueprint,
 		BlueprintsAttributes blueprintsAttributes, Messages messages,
-		JSONObject configurationJsonObject) {
+		JSONObject configurationJSONObject) {
 
 		String parameterName = "q";
 
-		if (configurationJsonObject != null) {
-			parameterName = configurationJsonObject.getString(
+		if (configurationJSONObject != null) {
+			parameterName = configurationJSONObject.getString(
 				KeywordsConfigurationKeys.PARAMETER_NAME.getJsonKey(), "q");
 		}
 
@@ -340,12 +340,12 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 	private void _addPagingParameters(
 		ParameterDataBuilder parameterDataBuilder,
 		BlueprintsAttributes blueprintsAttributes,
-		JSONObject configurationJsonObject) {
+		JSONObject configurationJSONObject) {
 
 		String parameterName = "page";
 
-		if (configurationJsonObject != null) {
-			parameterName = configurationJsonObject.getString(
+		if (configurationJSONObject != null) {
+			parameterName = configurationJSONObject.getString(
 				PageConfigurationKeys.PARAMETER_NAME.getJsonKey(), "page");
 		}
 
@@ -408,7 +408,7 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 			KeywordsProcessor keywordsProcessor = value.getServiceComponent();
 
 			keywords = keywordsProcessor.process(
-				blueprint, blueprintsAttributes, keywords, messages);
+				keywords, blueprint, blueprintsAttributes, messages);
 		}
 
 		return keywords;
@@ -449,11 +449,11 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 	}
 
 	private boolean _validateCustomParameterConfiguration(
-		Messages messages, JSONObject configurationJsonObject) {
+		Messages messages, JSONObject configurationJSONObject) {
 
 		boolean valid = true;
 
-		if (configurationJsonObject.isNull(
+		if (configurationJSONObject.isNull(
 				CustomParameterConfigurationKeys.PARAMETER_NAME.getJsonKey())) {
 
 			messages.addMessage(
@@ -464,7 +464,7 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 				).msg(
 					"Parameter name is not defined"
 				).rootObject(
-					configurationJsonObject
+					configurationJSONObject
 				).rootProperty(
 					CustomParameterConfigurationKeys.PARAMETER_NAME.getJsonKey()
 				).severity(
@@ -476,11 +476,11 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 			if (_log.isWarnEnabled()) {
 				_log.warn(
 					"Parameter name is not defined [ " +
-						configurationJsonObject + " ].");
+						configurationJSONObject + " ].");
 			}
 		}
 
-		if (configurationJsonObject.isNull(
+		if (configurationJSONObject.isNull(
 				CustomParameterConfigurationKeys.TYPE.getJsonKey())) {
 
 			messages.addMessage(
@@ -491,7 +491,7 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 				).msg(
 					"Parameter type is not defined"
 				).rootObject(
-					configurationJsonObject
+					configurationJSONObject
 				).rootProperty(
 					CustomParameterConfigurationKeys.TYPE.getJsonKey()
 				).severity(
@@ -503,7 +503,7 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 			if (_log.isWarnEnabled()) {
 				_log.warn(
 					"Parameter type is not defined [ " +
-						configurationJsonObject + " ].");
+						configurationJSONObject + " ].");
 			}
 		}
 
@@ -511,11 +511,11 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 	}
 
 	private boolean _validateSortParameterConfiguration(
-		Messages messages, JSONObject configurationJsonObject) {
+		Messages messages, JSONObject configurationJSONObject) {
 
 		boolean valid = true;
 
-		if (configurationJsonObject.isNull(
+		if (configurationJSONObject.isNull(
 				SortConfigurationKeys.PARAMETER_NAME.getJsonKey())) {
 
 			messages.addMessage(
@@ -526,7 +526,7 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 				).msg(
 					"Parameter name is not defined"
 				).rootObject(
-					configurationJsonObject
+					configurationJSONObject
 				).rootProperty(
 					SortConfigurationKeys.PARAMETER_NAME.getJsonKey()
 				).severity(
@@ -538,11 +538,11 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 			if (_log.isWarnEnabled()) {
 				_log.warn(
 					"Parameter name is not defined [ " +
-						configurationJsonObject + " ].");
+						configurationJSONObject + " ].");
 			}
 		}
 
-		if (configurationJsonObject.isNull(
+		if (configurationJSONObject.isNull(
 				SortConfigurationKeys.FIELD.getJsonKey())) {
 
 			messages.addMessage(
@@ -553,7 +553,7 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 				).msg(
 					"Field is not defined"
 				).rootObject(
-					configurationJsonObject
+					configurationJSONObject
 				).rootProperty(
 					SortConfigurationKeys.FIELD.getJsonKey()
 				).severity(
@@ -564,7 +564,7 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 
 			if (_log.isWarnEnabled()) {
 				_log.warn(
-					"Field is not defined [ " + configurationJsonObject +
+					"Field is not defined [ " + configurationJSONObject +
 						" ].");
 			}
 		}

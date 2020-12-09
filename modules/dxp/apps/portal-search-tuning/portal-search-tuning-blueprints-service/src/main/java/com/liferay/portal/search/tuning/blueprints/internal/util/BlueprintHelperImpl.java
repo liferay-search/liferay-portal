@@ -329,47 +329,6 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 	}
 
 	@Override
-	public Optional<String> getQueryIndexConfigurationIdOptional(
-		Blueprint blueprint) {
-
-		Optional<JSONObject> configurationJSONObjectOptional =
-			_getConfiguration(blueprint);
-
-		if (!configurationJSONObjectOptional.isPresent()) {
-			return Optional.empty();
-		}
-
-		String key =
-			QueryIndexingConfigurationKeys.QUERY_INDEX_CONFIGURATION_ID.
-				getJsonKey();
-
-		return BlueprintJSONUtil.getValueAsStringOptional(
-			configurationJSONObjectOptional.get(),
-			"JSONObject/" + BlueprintKeys.ADVANCED_CONFIGURATION.getJsonKey(),
-			"JSONObject/" +
-				AdvancedConfigurationKeys.QUERY_INDEXING.getJsonKey(),
-			"Object/" + key);
-	}
-
-	@Override
-	public Optional<JSONObject> getQueryIndexingConfigurationOptional(
-		Blueprint blueprint) {
-
-		Optional<JSONObject> configurationJSONObjectOptional =
-			_getConfiguration(blueprint);
-
-		if (!configurationJSONObjectOptional.isPresent()) {
-			return Optional.empty();
-		}
-
-		return BlueprintJSONUtil.getValueAsJSONObjectOptional(
-			configurationJSONObjectOptional.get(),
-			"JSONObject/" + BlueprintKeys.ADVANCED_CONFIGURATION.getJsonKey(),
-			"JSONObject/" +
-				AdvancedConfigurationKeys.QUERY_INDEXING.getJsonKey());
-	}
-
-	@Override
 	public int getSize(Blueprint blueprint) {
 		Optional<JSONObject> configurationJSONObjectOptional =
 			_getConfiguration(blueprint);

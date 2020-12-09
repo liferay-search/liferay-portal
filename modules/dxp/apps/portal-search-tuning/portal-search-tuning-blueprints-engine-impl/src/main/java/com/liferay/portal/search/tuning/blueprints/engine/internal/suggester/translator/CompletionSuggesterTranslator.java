@@ -38,45 +38,45 @@ public class CompletionSuggesterTranslator
 
 	@Override
 	public Optional<Suggester> translate(
-		ParameterData parameterData, Messages messages,
-		JSONObject configurationJsonObject, String suggesterName) {
+		String suggesterName, JSONObject configurationJSONObject,
+		ParameterData parameterData, Messages messages) {
 
 		if (!validateSuggesterConfiguration(
-				messages, configurationJsonObject, suggesterName)) {
+				messages, configurationJSONObject, suggesterName)) {
 
 			return Optional.empty();
 		}
 
-		String field = configurationJsonObject.getString(
+		String field = configurationJSONObject.getString(
 			CompletionSuggesterConfigurationKeys.FIELD.getJsonKey());
 
 		CompletionSuggester completionSuggester = new CompletionSuggester(
 			suggesterName, field,
-			getText(parameterData, configurationJsonObject));
+			getText(parameterData, configurationJSONObject));
 
-		if (!configurationJsonObject.isNull(
+		if (!configurationJSONObject.isNull(
 				CompletionSuggesterConfigurationKeys.ANALYZER.getJsonKey())) {
 
 			completionSuggester.setAnalyzer(
-				configurationJsonObject.getString(
+				configurationJSONObject.getString(
 					CompletionSuggesterConfigurationKeys.ANALYZER.
 						getJsonKey()));
 		}
 
-		if (!configurationJsonObject.isNull(
+		if (!configurationJSONObject.isNull(
 				CompletionSuggesterConfigurationKeys.SHARD_SIZE.getJsonKey())) {
 
 			completionSuggester.setShardSize(
-				configurationJsonObject.getInt(
+				configurationJSONObject.getInt(
 					CompletionSuggesterConfigurationKeys.SHARD_SIZE.
 						getJsonKey()));
 		}
 
-		if (!configurationJsonObject.isNull(
+		if (!configurationJSONObject.isNull(
 				CompletionSuggesterConfigurationKeys.SIZE.getJsonKey())) {
 
 			completionSuggester.setSize(
-				configurationJsonObject.getInt(
+				configurationJSONObject.getInt(
 					CompletionSuggesterConfigurationKeys.SIZE.getJsonKey()));
 		}
 

@@ -40,131 +40,131 @@ public class PhraseSuggesterTranslator
 
 	@Override
 	public Optional<Suggester> translate(
-		ParameterData parameterData, Messages messages,
-		JSONObject configurationJsonObject, String suggesterName) {
+		String suggesterName, JSONObject configurationJSONObject,
+		ParameterData parameterData, Messages messages) {
 
 		if (!validateSuggesterConfiguration(
-				messages, configurationJsonObject, suggesterName)) {
+				messages, configurationJSONObject, suggesterName)) {
 
 			return Optional.empty();
 		}
 
-		String field = configurationJsonObject.getString(
+		String field = configurationJSONObject.getString(
 			PhraseSuggesterConfigurationKeys.FIELD.getJsonKey());
 
 		PhraseSuggester phraseSuggester = new PhraseSuggester(
 			suggesterName, field,
-			getText(parameterData, configurationJsonObject));
+			getText(parameterData, configurationJSONObject));
 
-		if (!configurationJsonObject.isNull(
+		if (!configurationJSONObject.isNull(
 				PhraseSuggesterConfigurationKeys.ANALYZER.getJsonKey())) {
 
 			phraseSuggester.setAnalyzer(
-				configurationJsonObject.getString(
+				configurationJSONObject.getString(
 					PhraseSuggesterConfigurationKeys.ANALYZER.getJsonKey()));
 		}
 
-		if (!configurationJsonObject.isNull(
+		if (!configurationJSONObject.isNull(
 				PhraseSuggesterConfigurationKeys.COLLATE.getJsonKey())) {
 
-			_setCollate(phraseSuggester, configurationJsonObject);
+			_setCollate(phraseSuggester, configurationJSONObject);
 		}
 
-		if (!configurationJsonObject.isNull(
+		if (!configurationJSONObject.isNull(
 				PhraseSuggesterConfigurationKeys.CONFIDENCE.getJsonKey())) {
 
 			phraseSuggester.setConfidence(
 				GetterUtil.getFloat(
-					configurationJsonObject.get(
+					configurationJSONObject.get(
 						PhraseSuggesterConfigurationKeys.CONFIDENCE.
 							getJsonKey())));
 		}
 
-		if (!configurationJsonObject.isNull(
+		if (!configurationJSONObject.isNull(
 				PhraseSuggesterConfigurationKeys.DIRECT_GENERATOR.
 					getJsonKey())) {
 
-			_setCandidateGenerator(phraseSuggester, configurationJsonObject);
+			_setCandidateGenerator(phraseSuggester, configurationJSONObject);
 		}
 
-		if (!configurationJsonObject.isNull(
+		if (!configurationJSONObject.isNull(
 				PhraseSuggesterConfigurationKeys.FORCE_UNIGRAMS.getJsonKey())) {
 
 			phraseSuggester.setForceUnigrams(
-				configurationJsonObject.getBoolean(
+				configurationJSONObject.getBoolean(
 					PhraseSuggesterConfigurationKeys.FORCE_UNIGRAMS.
 						getJsonKey()));
 		}
 
-		if (!configurationJsonObject.isNull(
+		if (!configurationJSONObject.isNull(
 				PhraseSuggesterConfigurationKeys.GRAM_SIZE.getJsonKey())) {
 
 			phraseSuggester.setGramSize(
-				configurationJsonObject.getInt(
+				configurationJSONObject.getInt(
 					PhraseSuggesterConfigurationKeys.GRAM_SIZE.getJsonKey()));
 		}
 
-		if (!configurationJsonObject.isNull(
+		if (!configurationJSONObject.isNull(
 				PhraseSuggesterConfigurationKeys.MAX_ERRORS.getJsonKey())) {
 
 			phraseSuggester.setMaxErrors(
 				GetterUtil.getFloat(
-					configurationJsonObject.get(
+					configurationJSONObject.get(
 						PhraseSuggesterConfigurationKeys.MAX_ERRORS.
 							getJsonKey())));
 		}
 
-		if (!configurationJsonObject.isNull(
+		if (!configurationJSONObject.isNull(
 				PhraseSuggesterConfigurationKeys.REAL_WORLD_ERROR_LIKELIHOOD.
 					getJsonKey())) {
 
 			phraseSuggester.setRealWordErrorLikelihood(
 				GetterUtil.getFloat(
-					configurationJsonObject.get(
+					configurationJSONObject.get(
 						PhraseSuggesterConfigurationKeys.
 							REAL_WORLD_ERROR_LIKELIHOOD.getJsonKey())));
 		}
 
-		if (!configurationJsonObject.isNull(
+		if (!configurationJSONObject.isNull(
 				PhraseSuggesterConfigurationKeys.SEPARATOR.getJsonKey())) {
 
 			phraseSuggester.setSeparator(
-				configurationJsonObject.getString(
+				configurationJSONObject.getString(
 					PhraseSuggesterConfigurationKeys.SEPARATOR.getJsonKey()));
 		}
 
-		if (!configurationJsonObject.isNull(
+		if (!configurationJSONObject.isNull(
 				PhraseSuggesterConfigurationKeys.SHARD_SIZE.getJsonKey())) {
 
 			phraseSuggester.setShardSize(
-				configurationJsonObject.getInt(
+				configurationJSONObject.getInt(
 					PhraseSuggesterConfigurationKeys.SHARD_SIZE.getJsonKey()));
 		}
 
-		if (!configurationJsonObject.isNull(
+		if (!configurationJSONObject.isNull(
 				PhraseSuggesterConfigurationKeys.SIZE.getJsonKey())) {
 
 			phraseSuggester.setSize(
-				configurationJsonObject.getInt(
+				configurationJSONObject.getInt(
 					PhraseSuggesterConfigurationKeys.SIZE.getJsonKey()));
 		}
 
-		if (!configurationJsonObject.isNull(
+		if (!configurationJSONObject.isNull(
 				PhraseSuggesterConfigurationKeys.PRE_HIGHLIGHT_TAG.
 					getJsonKey())) {
 
 			phraseSuggester.setPreHighlightFilter(
-				configurationJsonObject.getString(
+				configurationJSONObject.getString(
 					PhraseSuggesterConfigurationKeys.PRE_HIGHLIGHT_TAG.
 						getJsonKey()));
 		}
 
-		if (!configurationJsonObject.isNull(
+		if (!configurationJSONObject.isNull(
 				PhraseSuggesterConfigurationKeys.POST_HIGHLIGHT_TAG.
 					getJsonKey())) {
 
 			phraseSuggester.setPostHighlightFilter(
-				configurationJsonObject.getString(
+				configurationJSONObject.getString(
 					PhraseSuggesterConfigurationKeys.POST_HIGHLIGHT_TAG.
 						getJsonKey()));
 		}
@@ -173,19 +173,19 @@ public class PhraseSuggesterTranslator
 	}
 
 	private void _setCandidateGenerator(
-		PhraseSuggester phraseSuggester, JSONObject configurationJsonObject) {
+		PhraseSuggester phraseSuggester, JSONObject configurationJSONObject) {
 
-		JSONArray directGeneratorJsonArray =
-			configurationJsonObject.getJSONArray(
+		JSONArray directGeneratorJSONArray =
+			configurationJSONObject.getJSONArray(
 				PhraseSuggesterConfigurationKeys.DIRECT_GENERATOR.getJsonKey());
 
-		if ((directGeneratorJsonArray == null) ||
-			(directGeneratorJsonArray.length() == 0)) {
+		if ((directGeneratorJSONArray == null) ||
+			(directGeneratorJSONArray.length() == 0)) {
 
 			return;
 		}
 
-		String field = configurationJsonObject.getString(
+		String field = configurationJSONObject.getString(
 			PhraseSuggesterConfigurationKeys.FIELD.getJsonKey());
 
 		PhraseSuggester.CandidateGenerator candidateGenerator =
@@ -199,12 +199,12 @@ public class PhraseSuggesterTranslator
 	}
 
 	private void _setCollate(
-		PhraseSuggester phraseSuggester, JSONObject configurationJsonObject) {
+		PhraseSuggester phraseSuggester, JSONObject configurationJSONObject) {
 
-		JSONObject collateJsonObject = configurationJsonObject.getJSONObject(
+		JSONObject collateJSONObject = configurationJSONObject.getJSONObject(
 			PhraseSuggesterConfigurationKeys.COLLATE.getJsonKey());
 
-		if ((collateJsonObject == null) || (collateJsonObject.length() == 0)) {
+		if ((collateJSONObject == null) || (collateJSONObject.length() == 0)) {
 		}
 
 		// TODO: implement (using clause translators)

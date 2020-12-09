@@ -39,37 +39,37 @@ public class TermSuggesterTranslator
 
 	@Override
 	public Optional<Suggester> translate(
-		ParameterData parameterData, Messages messages,
-		JSONObject configurationJsonObject, String suggesterName) {
+		String suggesterName, JSONObject configurationJSONObject,
+		ParameterData parameterData, Messages messages) {
 
 		if (!validateSuggesterConfiguration(
-				messages, configurationJsonObject, suggesterName)) {
+				messages, configurationJSONObject, suggesterName)) {
 
 			return Optional.empty();
 		}
 
-		String field = configurationJsonObject.getString(
+		String field = configurationJSONObject.getString(
 			TermSuggesterConfigurationKeys.FIELD.getJsonKey());
 
 		TermSuggester termSuggester = new TermSuggester(
 			suggesterName, field,
-			getText(parameterData, configurationJsonObject));
+			getText(parameterData, configurationJSONObject));
 
-		if (!configurationJsonObject.isNull(
+		if (!configurationJSONObject.isNull(
 				TermSuggesterConfigurationKeys.ACCURACY.getJsonKey())) {
 
 			termSuggester.setAccuracy(
 				GetterUtil.getFloat(
-					configurationJsonObject.get(
+					configurationJSONObject.get(
 						TermSuggesterConfigurationKeys.ACCURACY.getJsonKey())));
 		}
 
-		if (!configurationJsonObject.isNull(
+		if (!configurationJSONObject.isNull(
 				TermSuggesterConfigurationKeys.ANALYZER.getJsonKey())) {
 
 			termSuggester.setAccuracy(
 				GetterUtil.getFloat(
-					configurationJsonObject.get(
+					configurationJSONObject.get(
 						TermSuggesterConfigurationKeys.ANALYZER.getJsonKey())));
 		}
 

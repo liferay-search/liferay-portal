@@ -28,7 +28,7 @@ import java.util.Optional;
 public interface ClauseTranslator {
 
 	public Optional<Query> translate(
-		Blueprint blueprint, ParameterData parameterData, Messages messages,
-		JSONObject configurationJsonObject);
+		JSONObject configurationJSONObject, Blueprint blueprint,
+		ParameterData parameterData, Messages messages);
 
 }

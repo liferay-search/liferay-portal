@@ -42,8 +42,8 @@ import java.util.stream.Stream;
  */
 public class ContainsVisitor implements ConditionEvaluationVisitor {
 
-	public ContainsVisitor(JSONObject conditionJsonObject, boolean not) {
-		_conditionJsonObject = conditionJsonObject;
+	public ContainsVisitor(JSONObject conditionJSONObject, boolean not) {
+		_conditionJSONObject = conditionJSONObject;
 		_not = not;
 	}
 
@@ -79,7 +79,7 @@ public class ContainsVisitor implements ConditionEvaluationVisitor {
 	public boolean visit(IntegerArrayParameter parameter)
 		throws ParameterEvaluationException {
 
-		Object object = _conditionJsonObject.get(
+		Object object = _conditionJSONObject.get(
 			ConditionConfigurationKeys.MATCH_VALUE.getJsonKey());
 
 		Integer[] parameterValue = parameter.getValue();
@@ -133,7 +133,7 @@ public class ContainsVisitor implements ConditionEvaluationVisitor {
 				).msg(
 					numberFormatException.getMessage()
 				).rootObject(
-					_conditionJsonObject
+					_conditionJSONObject
 				).rootProperty(
 					ConditionConfigurationKeys.MATCH_VALUE.getJsonKey()
 				).rootValue(
@@ -157,7 +157,7 @@ public class ContainsVisitor implements ConditionEvaluationVisitor {
 	public boolean visit(LongArrayParameter parameter)
 		throws ParameterEvaluationException {
 
-		Object object = _conditionJsonObject.get(
+		Object object = _conditionJSONObject.get(
 			ConditionConfigurationKeys.MATCH_VALUE.getJsonKey());
 
 		Long[] parameterValue = parameter.getValue();
@@ -213,7 +213,7 @@ public class ContainsVisitor implements ConditionEvaluationVisitor {
 				).msg(
 					numberFormatException.getMessage()
 				).rootObject(
-					_conditionJsonObject
+					_conditionJSONObject
 				).rootProperty(
 					ConditionConfigurationKeys.MATCH_VALUE.getJsonKey()
 				).rootValue(
@@ -237,7 +237,7 @@ public class ContainsVisitor implements ConditionEvaluationVisitor {
 	public boolean visit(StringArrayParameter parameter)
 		throws ParameterEvaluationException {
 
-		Object object = _conditionJsonObject.get(
+		Object object = _conditionJSONObject.get(
 			ConditionConfigurationKeys.MATCH_VALUE.getJsonKey());
 
 		String[] parameterValue = parameter.getValue();
@@ -284,7 +284,7 @@ public class ContainsVisitor implements ConditionEvaluationVisitor {
 	private static final Log _log = LogFactoryUtil.getLog(
 		ContainsVisitor.class);
 
-	private final JSONObject _conditionJsonObject;
+	private final JSONObject _conditionJSONObject;
 	private final boolean _not;
 
 }

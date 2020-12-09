@@ -38,8 +38,8 @@ import java.util.stream.Stream;
  */
 public class AnyWordInVisitor implements ConditionEvaluationVisitor {
 
-	public AnyWordInVisitor(JSONObject conditionJsonObject, boolean not) {
-		_conditionJsonObject = conditionJsonObject;
+	public AnyWordInVisitor(JSONObject conditionJSONObject, boolean not) {
+		_conditionJSONObject = conditionJSONObject;
 		_not = not;
 	}
 
@@ -111,7 +111,7 @@ public class AnyWordInVisitor implements ConditionEvaluationVisitor {
 		throws ParameterEvaluationException {
 
 		JSONArray jsonArray = BlueprintValueUtil.getConditionValueJSONArray(
-			_conditionJsonObject);
+			_conditionJSONObject);
 
 		String parameterValue = parameter.getValue();
 
@@ -138,7 +138,7 @@ public class AnyWordInVisitor implements ConditionEvaluationVisitor {
 		return match;
 	}
 
-	private final JSONObject _conditionJsonObject;
+	private final JSONObject _conditionJSONObject;
 	private final boolean _not;
 
 }

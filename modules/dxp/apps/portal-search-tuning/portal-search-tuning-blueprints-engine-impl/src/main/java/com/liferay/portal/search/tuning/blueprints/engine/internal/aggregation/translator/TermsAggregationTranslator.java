@@ -59,120 +59,121 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 
 	@Override
 	public Optional<Aggregation> translate(
-			String aggregationName, JSONObject configurationJsonObject, ParameterData parameterData, Messages messages ) {
+		String aggregationName, JSONObject configurationJSONObject,
+		ParameterData parameterData, Messages messages) {
 
 		if (_log.isDebugEnabled()) {
 			_log.debug(
 				"Translating terms aggregation from [ " +
-					configurationJsonObject + " ]");
+					configurationJSONObject + " ]");
 		}
 
-		if (!_validate(configurationJsonObject, aggregationName, messages)) {
+		if (!_validate(configurationJSONObject, aggregationName, messages)) {
 			return Optional.empty();
 		}
 
-		String field = configurationJsonObject.getString(
+		String field = configurationJSONObject.getString(
 			TermsAggregationBodyConfigurationKeys.FIELD.getJsonKey());
 
 		TermsAggregation aggregation = _aggregations.terms(
 			aggregationName, field);
 
-		if (configurationJsonObject.has(
+		if (configurationJSONObject.has(
 				TermsAggregationBodyConfigurationKeys.AGGREGATIONS.
 					getJsonKey())) {
 
 			_addChildAggregations(
 				aggregation, parameterData, messages,
-				configurationJsonObject.getJSONArray(
+				configurationJSONObject.getJSONArray(
 					TermsAggregationBodyConfigurationKeys.AGGREGATIONS.
 						getJsonKey()));
 		}
 
-		if (configurationJsonObject.has(
+		if (configurationJSONObject.has(
 				TermsAggregationBodyConfigurationKeys.COLLECT_MODE.
 					getJsonKey())) {
 
-			_setCollectMode(aggregation, messages, configurationJsonObject);
+			_setCollectMode(aggregation, messages, configurationJSONObject);
 		}
 
-		if (configurationJsonObject.has(
+		if (configurationJSONObject.has(
 				TermsAggregationBodyConfigurationKeys.EXECUTION_HINT.
 					getJsonKey())) {
 
 			aggregation.setExecutionHint(
-				configurationJsonObject.getString(
+				configurationJSONObject.getString(
 					TermsAggregationBodyConfigurationKeys.EXECUTION_HINT.
 						getJsonKey()));
 		}
 
-		_setIncludeExcludeClause(aggregation, configurationJsonObject);
+		_setIncludeExcludeClause(aggregation, configurationJSONObject);
 
-		if (configurationJsonObject.has(
+		if (configurationJSONObject.has(
 				TermsAggregationBodyConfigurationKeys.MIN_DOC_COUNT.
 					getJsonKey())) {
 
 			aggregation.setMinDocCount(
-				configurationJsonObject.getInt(
+				configurationJSONObject.getInt(
 					TermsAggregationBodyConfigurationKeys.MIN_DOC_COUNT.
 						getJsonKey()));
 		}
 
-		if (configurationJsonObject.has(
+		if (configurationJSONObject.has(
 				TermsAggregationBodyConfigurationKeys.MISSING.getJsonKey())) {
 
 			aggregation.setMissing(
-				configurationJsonObject.getString(
+				configurationJSONObject.getString(
 					TermsAggregationBodyConfigurationKeys.MISSING.
 						getJsonKey()));
 		}
 
-		if (configurationJsonObject.has(
+		if (configurationJSONObject.has(
 				TermsAggregationBodyConfigurationKeys.ORDER.getJsonKey())) {
 
-			_setOrders(aggregation, messages, configurationJsonObject);
+			_setOrders(aggregation, messages, configurationJSONObject);
 		}
 
-		if (configurationJsonObject.has(
+		if (configurationJSONObject.has(
 				TermsAggregationBodyConfigurationKeys.SCRIPT.getJsonKey())) {
 
-			_setScript(aggregation, messages, configurationJsonObject);
+			_setScript(aggregation, messages, configurationJSONObject);
 		}
 
-		if (configurationJsonObject.has(
+		if (configurationJSONObject.has(
 				TermsAggregationBodyConfigurationKeys.SHARD_MIN_DOC_COUNT.
 					getJsonKey())) {
 
 			aggregation.setShardMinDocCount(
-				configurationJsonObject.getInt(
+				configurationJSONObject.getInt(
 					TermsAggregationBodyConfigurationKeys.SHARD_MIN_DOC_COUNT.
 						getJsonKey()));
 		}
 
-		if (configurationJsonObject.has(
+		if (configurationJSONObject.has(
 				TermsAggregationBodyConfigurationKeys.SHARD_SIZE.
 					getJsonKey())) {
 
 			aggregation.setShardSize(
-				configurationJsonObject.getInt(
+				configurationJSONObject.getInt(
 					TermsAggregationBodyConfigurationKeys.SHARD_SIZE.
 						getJsonKey()));
 		}
 
-		if (configurationJsonObject.has(
+		if (configurationJSONObject.has(
 				TermsAggregationBodyConfigurationKeys.SHOW_TERM_DOC_COUNT_ERROR.
 					getJsonKey())) {
 
 			aggregation.setShowTermDocCountError(
-				configurationJsonObject.getBoolean(
+				configurationJSONObject.getBoolean(
 					TermsAggregationBodyConfigurationKeys.
 						SHOW_TERM_DOC_COUNT_ERROR.getJsonKey()));
 		}
 
-		if (configurationJsonObject.has(
+		if (configurationJSONObject.has(
 				TermsAggregationBodyConfigurationKeys.SIZE.getJsonKey())) {
 
 			aggregation.setSize(
-				configurationJsonObject.getInt(
+				configurationJSONObject.getInt(
 					TermsAggregationBodyConfigurationKeys.SIZE.getJsonKey()));
 		}
 
@@ -181,19 +182,19 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 
 	private void _addChildAggregations(
 		TermsAggregation aggregation, ParameterData parameterData,
-		Messages messages, JSONArray childAggregationJsonArray) {
+		Messages messages, JSONArray childAggregationJSONArray) {
 
-		for (int i = 0; i < childAggregationJsonArray.length(); i++) {
-			JSONObject childAggregationJsonObject =
-				childAggregationJsonArray.getJSONObject(i);
+		for (int i = 0; i < childAggregationJSONArray.length(); i++) {
+			JSONObject childAggregationJSONObject =
+				childAggregationJSONArray.getJSONObject(i);
 
-			String type = childAggregationJsonObject.getString(
+			String type = childAggregationJSONObject.getString(
 				AggregationConfigurationKeys.TYPE.getJsonKey());
 
-			String name = childAggregationJsonObject.getString(
+			String name = childAggregationJSONObject.getString(
 				AggregationConfigurationKeys.NAME.getJsonKey());
 
-			if (!_validate(childAggregationJsonObject, name, messages)) {
+			if (!_validate(childAggregationJSONObject, name, messages)) {
 				continue;
 			}
 
@@ -203,8 +204,8 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 
 				Optional<Aggregation> aggregationOptional =
 					aggregationBuilder.translate(
-							name, childAggregationJsonObject, parameterData, messages
-						);
+						name, childAggregationJSONObject, parameterData,
+						messages);
 
 				if (aggregationOptional.isPresent()) {
 					aggregation.addChildAggregation(aggregationOptional.get());
@@ -219,7 +220,7 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 					).msg(
 						illegalArgumentException.getMessage()
 					).rootObject(
-						childAggregationJsonObject
+						childAggregationJSONObject
 					).rootProperty(
 						TermsAggregationBodyConfigurationKeys.AGGREGATIONS.
 							getJsonKey()
@@ -240,11 +241,11 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 		}
 	}
 
-	private Order _getOrder(JSONObject orderJsonObject, Messages messages) {
+	private Order _getOrder(JSONObject orderJSONObject, Messages messages) {
 		String orderMetric;
 
 		try {
-			orderMetric = orderJsonObject.keys(
+			orderMetric = orderJSONObject.keys(
 			).next();
 		}
 		catch (NoSuchElementException noSuchElementException) {
@@ -256,7 +257,7 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 				).msg(
 					noSuchElementException.getMessage()
 				).rootObject(
-					orderJsonObject
+					orderJSONObject
 				).rootProperty(
 					TermsAggregationBodyConfigurationKeys.ORDER.getJsonKey()
 				).severity(
@@ -274,7 +275,7 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 			return null;
 		}
 
-		String orderDirection = orderJsonObject.getString(orderMetric);
+		String orderDirection = orderJSONObject.getString(orderMetric);
 
 		Order order;
 
@@ -297,7 +298,7 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 					).msg(
 						"Invalid aggregation order syntax"
 					).rootObject(
-						orderJsonObject
+						orderJSONObject
 					).rootProperty(
 						TermsAggregationBodyConfigurationKeys.ORDER.getJsonKey()
 					).rootValue(
@@ -324,9 +325,9 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 
 	private void _setCollectMode(
 		TermsAggregation aggregation, Messages messages,
-		JSONObject configurationJsonObject) {
+		JSONObject configurationJSONObject) {
 
-		String collectModeString = configurationJsonObject.getString(
+		String collectModeString = configurationJSONObject.getString(
 			TermsAggregationBodyConfigurationKeys.COLLECT_MODE.getJsonKey());
 
 		try {
@@ -344,7 +345,7 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 				).msg(
 					illegalArgumentException.getMessage()
 				).rootObject(
-					configurationJsonObject
+					configurationJSONObject
 				).rootProperty(
 					TermsAggregationBodyConfigurationKeys.COLLECT_MODE.
 						getJsonKey()
@@ -365,11 +366,11 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 	}
 
 	private void _setIncludeExcludeClause(
-		TermsAggregation aggregation, JSONObject configurationJsonObject) {
+		TermsAggregation aggregation, JSONObject configurationJSONObject) {
 
-		Object excludeObject = configurationJsonObject.get(
+		Object excludeObject = configurationJSONObject.get(
 			TermsAggregationBodyConfigurationKeys.EXCLUDE.getJsonKey());
-		Object includeObject = configurationJsonObject.get(
+		Object includeObject = configurationJSONObject.get(
 			TermsAggregationBodyConfigurationKeys.INCLUDE.getJsonKey());
 
 		if (Validator.isNotNull(excludeObject) ||
@@ -443,9 +444,9 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 
 	private void _setOrders(
 		TermsAggregation aggregation, Messages messages,
-		JSONObject configurationJsonObject) {
+		JSONObject configurationJSONObject) {
 
-		Object orderObject = configurationJsonObject.get(
+		Object orderObject = configurationJSONObject.get(
 			TermsAggregationBodyConfigurationKeys.ORDER.getJsonKey());
 
 		List<Order> orders = new ArrayList<>();
@@ -455,17 +456,17 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 
 			jsonArray.forEach(
 				object -> {
-					JSONObject orderJsonObject = (JSONObject)object;
+					JSONObject orderJSONObject = (JSONObject)object;
 
-					Order order = _getOrder(orderJsonObject, messages);
+					Order order = _getOrder(orderJSONObject, messages);
 
 					orders.add(order);
 				});
 		}
 		else if (orderObject instanceof JSONObject) {
-			JSONObject orderJsonObject = (JSONObject)orderObject;
+			JSONObject orderJSONObject = (JSONObject)orderObject;
 
-			Order order = _getOrder(orderJsonObject, messages);
+			Order order = _getOrder(orderJSONObject, messages);
 
 			orders.add(order);
 		}
@@ -477,17 +478,17 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 
 	private void _setScript(
 		TermsAggregation aggregation, Messages messages,
-		JSONObject configurationJsonObject) {
+		JSONObject configurationJSONObject) {
 
-		JSONObject scriptJsonObject = configurationJsonObject.getJSONObject(
+		JSONObject scriptJSONObject = configurationJSONObject.getJSONObject(
 			TermsAggregationBodyConfigurationKeys.SCRIPT.getJsonKey());
 
 		ScriptBuilder scriptBuilder = _scripts.builder();
 
-		if (scriptJsonObject.has(
+		if (scriptJSONObject.has(
 				TermsAggregationBodyConfigurationKeys.ID.getJsonKey())) {
 
-			String id = scriptJsonObject.getString(
+			String id = scriptJSONObject.getString(
 				TermsAggregationBodyConfigurationKeys.ID.getJsonKey());
 
 			scriptBuilder.idOrCode(
@@ -496,11 +497,11 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 				ScriptType.STORED
 			);
 		}
-		else if (scriptJsonObject.has(
+		else if (scriptJSONObject.has(
 					TermsAggregationBodyConfigurationKeys.SOURCE.
 						getJsonKey())) {
 
-			String source = scriptJsonObject.getString(
+			String source = scriptJSONObject.getString(
 				TermsAggregationBodyConfigurationKeys.SOURCE.getJsonKey());
 
 			scriptBuilder.idOrCode(
@@ -518,7 +519,7 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 				).msg(
 					"Aggregation script id or source has to be set"
 				).rootObject(
-					scriptJsonObject
+					scriptJSONObject
 				).rootProperty(
 					TermsAggregationBodyConfigurationKeys.SCRIPT.getJsonKey()
 				).severity(
@@ -528,45 +529,45 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 			if (_log.isWarnEnabled()) {
 				_log.warn(
 					"Aggregation script id or source has to be set [ " +
-						scriptJsonObject + "]");
+						scriptJSONObject + "]");
 			}
 
 			return;
 		}
 
-		if (scriptJsonObject.has(
+		if (scriptJSONObject.has(
 				TermsAggregationBodyConfigurationKeys.LANG.getJsonKey())) {
 
 			scriptBuilder.language(
-				scriptJsonObject.getString(
+				scriptJSONObject.getString(
 					TermsAggregationBodyConfigurationKeys.LANG.getJsonKey()));
 		}
 
-		if (scriptJsonObject.has(
+		if (scriptJSONObject.has(
 				TermsAggregationBodyConfigurationKeys.PARAMS.getJsonKey())) {
 
-			JSONObject paramsJsonObject = scriptJsonObject.getJSONObject(
+			JSONObject paramsJSONObject = scriptJSONObject.getJSONObject(
 				TermsAggregationBodyConfigurationKeys.PARAMS.getJsonKey());
 
-			paramsJsonObject.keySet(
+			paramsJSONObject.keySet(
 			).stream(
 			).forEach(
 				key -> scriptBuilder.putParameter(
-					key, paramsJsonObject.get(key))
+					key, paramsJSONObject.get(key))
 			);
 		}
 
-		if (scriptJsonObject.has(
+		if (scriptJSONObject.has(
 				TermsAggregationBodyConfigurationKeys.OPTIONS.getJsonKey())) {
 
-			JSONObject optionsJsonObject = scriptJsonObject.getJSONObject(
+			JSONObject optionsJSONObject = scriptJSONObject.getJSONObject(
 				TermsAggregationBodyConfigurationKeys.OPTIONS.getJsonKey());
 
-			optionsJsonObject.keySet(
+			optionsJSONObject.keySet(
 			).stream(
 			).forEach(
 				key -> scriptBuilder.putParameter(
-					key, optionsJsonObject.get(key))
+					key, optionsJSONObject.get(key))
 			);
 		}
 
@@ -574,7 +575,7 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 	}
 
 	private boolean _validate(
-		JSONObject configurationJsonObject, String name, Messages messages) {
+		JSONObject configurationJSONObject, String name, Messages messages) {
 
 		boolean valid = true;
 
@@ -587,7 +588,7 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 				).msg(
 					"Aggregation name is not defined"
 				).rootObject(
-					configurationJsonObject
+					configurationJSONObject
 				).rootProperty(
 					AggregationConfigurationKeys.NAME.getJsonKey()
 				).severity(
@@ -599,11 +600,11 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 			if (_log.isWarnEnabled()) {
 				_log.warn(
 					"Aggregation name is not defined [ " +
-						configurationJsonObject + "]");
+						configurationJSONObject + "]");
 			}
 		}
 
-		if (!configurationJsonObject.has(
+		if (!configurationJSONObject.has(
 				TermsAggregationBodyConfigurationKeys.FIELD.getJsonKey())) {
 
 			messages.addMessage(
@@ -614,7 +615,7 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 				).msg(
 					"Aggregation field is not defined"
 				).rootObject(
-					configurationJsonObject
+					configurationJSONObject
 				).rootProperty(
 					TermsAggregationBodyConfigurationKeys.FIELD.getJsonKey()
 				).severity(
@@ -626,7 +627,7 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 			if (_log.isWarnEnabled()) {
 				_log.warn(
 					"Aggregation field is not defined [ " +
-						configurationJsonObject + "]");
+						configurationJSONObject + "]");
 			}
 		}
 

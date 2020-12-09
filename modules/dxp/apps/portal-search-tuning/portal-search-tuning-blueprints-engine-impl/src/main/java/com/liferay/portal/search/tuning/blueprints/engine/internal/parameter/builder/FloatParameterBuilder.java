@@ -41,13 +41,13 @@ public class FloatParameterBuilder implements ParameterBuilder {
 	@Override
 	public Optional<Parameter> build(
 		BlueprintsAttributes blueprintsAttributes, Messages messages,
-		JSONObject configurationJsonObject) {
+		JSONObject configurationJSONObject) {
 
-		String parameterName = configurationJsonObject.getString(
+		String parameterName = configurationJSONObject.getString(
 			CustomParameterConfigurationKeys.PARAMETER_NAME.getJsonKey());
 
 		Optional<Float> valueOptional = _getValueOptional(
-			blueprintsAttributes, configurationJsonObject, parameterName);
+			blueprintsAttributes, configurationJSONObject, parameterName);
 
 		if (!valueOptional.isPresent()) {
 			return Optional.empty();
@@ -57,14 +57,14 @@ public class FloatParameterBuilder implements ParameterBuilder {
 			new FloatParameter(
 				parameterName, "${parameter." + parameterName + "}",
 				_getAdjustedValue(
-					valueOptional.get(), configurationJsonObject)));
+					valueOptional.get(), configurationJSONObject)));
 	}
 
 	private float _getAdjustedValue(
-		float value, JSONObject configurationJsonObject) {
+		float value, JSONObject configurationJSONObject) {
 
 		Optional<Float> minValue = BlueprintValueUtil.stringToFloatOptional(
-			configurationJsonObject.getString(
+			configurationJSONObject.getString(
 				CustomParameterConfigurationKeys.MIN_VALUE.getJsonKey()));
 
 		if (minValue.isPresent() &&
@@ -78,7 +78,7 @@ public class FloatParameterBuilder implements ParameterBuilder {
 		}
 
 		Optional<Float> maxValue = BlueprintValueUtil.stringToFloatOptional(
-			configurationJsonObject.getString(
+			configurationJSONObject.getString(
 				CustomParameterConfigurationKeys.MAX_VALUE.getJsonKey()));
 
 		if (maxValue.isPresent() &&
@@ -96,7 +96,7 @@ public class FloatParameterBuilder implements ParameterBuilder {
 
 	private Optional<Float> _getValueOptional(
 		BlueprintsAttributes blueprintsAttributes,
-		JSONObject configurationJsonObject, String parameterName) {
+		JSONObject configurationJSONObject, String parameterName) {
 
 		Optional<String> valueStringOptional =
 			_blueprintsAttributesHelper.getStringOptional(
@@ -104,7 +104,7 @@ public class FloatParameterBuilder implements ParameterBuilder {
 
 		if (!valueStringOptional.isPresent()) {
 			valueStringOptional = BlueprintValueUtil.toStringOptional(
-				configurationJsonObject.getString(
+				configurationJSONObject.getString(
 					CustomParameterConfigurationKeys.DEFAULT.getJsonKey()));
 		}
 

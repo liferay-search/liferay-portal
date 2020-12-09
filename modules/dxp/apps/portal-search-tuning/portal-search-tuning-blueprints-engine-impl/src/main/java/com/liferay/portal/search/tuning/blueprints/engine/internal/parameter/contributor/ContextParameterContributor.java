@@ -36,6 +36,7 @@ import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 import org.osgi.service.component.annotations.Component;
@@ -129,21 +130,21 @@ public class ContextParameterContributor implements ParameterContributor {
 		ParameterDataBuilder parameterDataBuilder,
 		BlueprintsAttributes blueprintsAttributes) {
 
+		Locale locale = blueprintsAttributes.getLocale();
+
 		parameterDataBuilder.addParameter(
 			new StringParameter(
 				ReservedParameterNames.LANGUAGE_ID.getKey(),
 				_getTemplateVariableName(
 					ReservedParameterNames.LANGUAGE_ID.getKey()),
-				"_" +
-					_language.getLanguageId(blueprintsAttributes.getLocale())));
+				"_" + _language.getLanguageId(locale)));
 
 		parameterDataBuilder.addParameter(
 			new StringParameter(
 				ReservedParameterNames.LANGUAGE.getKey(),
 				_getTemplateVariableName(
 					ReservedParameterNames.LANGUAGE.getKey()),
-				blueprintsAttributes.getLocale(
-				).getLanguage()));
+				locale.getLanguage()));
 	}
 
 	private void _addLayoutNameCurrentValue(

@@ -50,23 +50,23 @@ public class GeoDistanceSortTranslator implements SortTranslator {
 
 	@Override
 	public Optional<Sort> translate(
-		JSONObject configurationJsonObject, SortOrder sortOrder,
+		JSONObject configurationJSONObject, SortOrder sortOrder,
 		Messages messages) {
 
-		String field = configurationJsonObject.getString(
+		String field = configurationJSONObject.getString(
 			SortConfigurationKeys.FIELD.getJsonKey());
 
-		if (!configurationJsonObject.has(
+		if (!configurationJSONObject.has(
 				SortConfigurationKeys.CONFIGURATION.getJsonKey())) {
 
 			return Optional.empty();
 		}
 
-		JSONObject sortConfigurationJsonObject =
-			configurationJsonObject.getJSONObject(
+		JSONObject sortConfigurationJSONObject =
+			configurationJSONObject.getJSONObject(
 				SortConfigurationKeys.CONFIGURATION.getJsonKey());
 
-		if (!sortConfigurationJsonObject.has("locations")) {
+		if (!sortConfigurationJSONObject.has("locations")) {
 			return Optional.empty();
 		}
 
@@ -75,13 +75,13 @@ public class GeoDistanceSortTranslator implements SortTranslator {
 		geoDistanceSort.setSortOrder(sortOrder);
 
 		try {
-			_setLocations(geoDistanceSort, sortConfigurationJsonObject);
+			_setLocations(geoDistanceSort, sortConfigurationJSONObject);
 
-			_setDistanceUnit(geoDistanceSort, sortConfigurationJsonObject);
+			_setDistanceUnit(geoDistanceSort, sortConfigurationJSONObject);
 
-			_setGeoDistanceType(geoDistanceSort, sortConfigurationJsonObject);
+			_setGeoDistanceType(geoDistanceSort, sortConfigurationJSONObject);
 
-			_setSortMode(geoDistanceSort, sortConfigurationJsonObject);
+			_setSortMode(geoDistanceSort, sortConfigurationJSONObject);
 
 			return Optional.of(geoDistanceSort);
 		}
@@ -94,7 +94,7 @@ public class GeoDistanceSortTranslator implements SortTranslator {
 				).msg(
 					illegalArgumentException.getMessage()
 				).rootObject(
-					configurationJsonObject
+					configurationJSONObject
 				).severity(
 					Severity.ERROR
 				).throwable(
@@ -110,9 +110,9 @@ public class GeoDistanceSortTranslator implements SortTranslator {
 	}
 
 	private void _setDistanceUnit(
-		GeoDistanceSort geoDistanceSort, JSONObject configurationJsonObject) {
+		GeoDistanceSort geoDistanceSort, JSONObject configurationJSONObject) {
 
-		String geoDistanceUnitString = configurationJsonObject.getString(
+		String geoDistanceUnitString = configurationJSONObject.getString(
 			"unit");
 
 		if (!Validator.isBlank(geoDistanceUnitString)) {
@@ -120,11 +120,9 @@ public class GeoDistanceSortTranslator implements SortTranslator {
 				geoDistanceUnitString);
 
 			for (DistanceUnit distanceUnit : DistanceUnit.values()) {
-				if (distanceUnit.getUnit(
-					).equals(
-						geoDistanceUnitString
-					)) {
+				String unit = distanceUnit.getUnit();
 
+				if (unit.equals(geoDistanceUnitString)) {
 					geoDistanceSort.setDistanceUnit(distanceUnit);
 				}
 			}
@@ -132,9 +130,9 @@ public class GeoDistanceSortTranslator implements SortTranslator {
 	}
 
 	private void _setGeoDistanceType(
-		GeoDistanceSort geoDistanceSort, JSONObject configurationJsonObject) {
+		GeoDistanceSort geoDistanceSort, JSONObject configurationJSONObject) {
 
-		String geoDistanceTypeString = configurationJsonObject.getString(
+		String geoDistanceTypeString = configurationJSONObject.getString(
 			"distance_type", GeoDistanceType.ARC.name());
 
 		if (!Validator.isBlank(geoDistanceTypeString)) {
@@ -145,21 +143,21 @@ public class GeoDistanceSortTranslator implements SortTranslator {
 	}
 
 	private void _setLocations(
-		GeoDistanceSort geoDistanceSort, JSONObject configurationJsonObject) {
+		GeoDistanceSort geoDistanceSort, JSONObject configurationJSONObject) {
 
-		JSONArray locationsJsonArray = configurationJsonObject.getJSONArray(
+		JSONArray locationsJSONArray = configurationJSONObject.getJSONArray(
 			"locations");
 
-		for (int i = 0; i < locationsJsonArray.length(); i++) {
-			JSONArray locationJsonArray = locationsJsonArray.getJSONArray(i);
+		for (int i = 0; i < locationsJSONArray.length(); i++) {
+			JSONArray locationJSONArray = locationsJSONArray.getJSONArray(i);
 
-			if (locationJsonArray.length() != 2) {
+			if (locationJSONArray.length() != 2) {
 				continue;
 			}
 
-			Double latitude = locationJsonArray.getDouble(0);
+			Double latitude = locationJSONArray.getDouble(0);
 
-			Double longitude = locationJsonArray.getDouble(1);
+			Double longitude = locationJSONArray.getDouble(1);
 
 			geoDistanceSort.addGeoLocationPoints(
 				_geoBuilders.geoLocationPoint(latitude, longitude));
@@ -167,9 +165,9 @@ public class GeoDistanceSortTranslator implements SortTranslator {
 	}
 
 	private void _setSortMode(
-		GeoDistanceSort geoDistanceSort, JSONObject configurationJsonObject) {
+		GeoDistanceSort geoDistanceSort, JSONObject configurationJSONObject) {
 
-		String sortModeString = configurationJsonObject.getString("mode");
+		String sortModeString = configurationJSONObject.getString("mode");
 
 		if (!Validator.isBlank(sortModeString)) {
 			geoDistanceSort.setSortMode(

@@ -40,7 +40,6 @@ import com.liferay.portal.search.tuning.blueprints.message.Message;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 import com.liferay.portal.search.tuning.blueprints.message.Severity;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
-import com.liferay.portal.search.tuning.blueprints.query.index.util.QueryIndexHelper;
 import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
 import com.liferay.portal.search.tuning.blueprints.util.BlueprintHelper;
 
@@ -200,7 +199,7 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 					value.getServiceComponent();
 
 				searchRequestBodyContributor.contribute(
-					searchRequestBuilder, parameterData, blueprint, messages);
+					searchRequestBuilder, blueprint, parameterData, messages);
 			}
 			catch (IllegalStateException illegalStateException) {
 				messages.addMessage(
@@ -225,9 +224,7 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 
 	private Blueprint _getBlueprint(long blueprintId) {
 		try {
-			Blueprint blueprint = _blueprintService.getBlueprint(blueprintId);
-
-			return blueprint;
+			return _blueprintService.getBlueprint(blueprintId);
 		}
 		catch (Exception exception) {
 			throw new RuntimeException(exception);
@@ -296,24 +293,6 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 		return (page - 1) * size;
 	}
 
-	private String[] _getIndexNames(Blueprint blueprint) {
-		Optional<String> queryIndexConfigurationIdOptional =
-			_blueprintHelper.getQueryIndexConfigurationIdOptional(blueprint);
-
-		if (!queryIndexConfigurationIdOptional.isPresent()) {
-			return null;
-		}
-
-		String indexName = _queryIndexHelper.getIndexName(
-			queryIndexConfigurationIdOptional.get());
-
-		if (!Validator.isBlank(indexName)) {
-			return new String[] {indexName};
-		}
-
-		return null;
-	}
-
 	private SearchRequestBuilder _getSearchRequestBuilder(
 		ParameterData parameterData, Blueprint blueprint, Messages messages,
 		long companyId, Locale locale) {
@@ -335,12 +314,6 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 			).from(
 				_getFrom(parameterData, blueprint)
 			);
-
-		String[] indexNames = _getIndexNames(blueprint);
-
-		if (indexNames != null) {
-			searchRequestBuilder.indexes(indexNames);
-		}
 
 		// TODO: remove.
 		// we have to be able to support custom assets without
@@ -380,9 +353,6 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 
 	@Reference
 	private ParameterDataCreator _parameterDataCreator;
-
-	@Reference
-	private QueryIndexHelper _queryIndexHelper;
 
 	@Reference
 	private SearchExecutor _searchExecutor;

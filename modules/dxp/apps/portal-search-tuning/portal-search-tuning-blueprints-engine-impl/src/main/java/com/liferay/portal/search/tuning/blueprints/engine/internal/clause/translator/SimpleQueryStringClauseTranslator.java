@@ -44,90 +44,90 @@ public class SimpleQueryStringClauseTranslator implements ClauseTranslator {
 
 	@Override
 	public Optional<Query> translate(
-		Blueprint blueprint, ParameterData parameterData, Messages messages,
-		JSONObject configurationJsonObject) {
+		JSONObject configurationJSONObject, Blueprint blueprint,
+		ParameterData parameterData, Messages messages) {
 
-		String keywords = configurationJsonObject.getString(
+		String keywords = configurationJSONObject.getString(
 			SimpleQueryStringConfigurationKeys.QUERY.getJsonKey(),
 			parameterData.getKeywords());
 
 		SimpleStringQuery simpleStringQuery = _queries.simpleString(keywords);
 
-		if (configurationJsonObject.has(
+		if (configurationJSONObject.has(
 				SimpleQueryStringConfigurationKeys.ANALYZE_WILDCARD.
 					getJsonKey())) {
 
 			simpleStringQuery.setAnalyzeWildcard(
-				configurationJsonObject.getBoolean(
+				configurationJSONObject.getBoolean(
 					SimpleQueryStringConfigurationKeys.ANALYZE_WILDCARD.
 						getJsonKey()));
 		}
 
-		if (configurationJsonObject.has(
+		if (configurationJSONObject.has(
 				SimpleQueryStringConfigurationKeys.ANALYZER.getJsonKey())) {
 
 			simpleStringQuery.setAnalyzer(
 				SimpleQueryStringConfigurationKeys.ANALYZER.getJsonKey());
 		}
 
-		if (configurationJsonObject.has(
+		if (configurationJSONObject.has(
 				SimpleQueryStringConfigurationKeys.
 					AUTO_GENERATE_SYNONYMS_PHRASE_QUERY.getJsonKey())) {
 
 			simpleStringQuery.setAutoGenerateSynonymsPhraseQuery(
-				configurationJsonObject.getBoolean(
+				configurationJSONObject.getBoolean(
 					SimpleQueryStringConfigurationKeys.
 						AUTO_GENERATE_SYNONYMS_PHRASE_QUERY.getJsonKey()));
 		}
 
-		_setOperator(simpleStringQuery, configurationJsonObject);
+		_setOperator(simpleStringQuery, configurationJSONObject);
 
-		_setFields(simpleStringQuery, configurationJsonObject);
+		_setFields(simpleStringQuery, configurationJSONObject);
 
-		if (configurationJsonObject.has(
+		if (configurationJSONObject.has(
 				SimpleQueryStringConfigurationKeys.FUZZY_MAX_EXPANSIONS.
 					getJsonKey())) {
 
 			simpleStringQuery.setFuzzyMaxExpansions(
-				configurationJsonObject.getInt(
+				configurationJSONObject.getInt(
 					SimpleQueryStringConfigurationKeys.FUZZY_MAX_EXPANSIONS.
 						getJsonKey()));
 		}
 
-		if (configurationJsonObject.has(
+		if (configurationJSONObject.has(
 				SimpleQueryStringConfigurationKeys.FUZZY_PREFIX_LENGTH.
 					getJsonKey())) {
 
 			simpleStringQuery.setFuzzyPrefixLength(
-				configurationJsonObject.getInt(
+				configurationJSONObject.getInt(
 					SimpleQueryStringConfigurationKeys.FUZZY_PREFIX_LENGTH.
 						getJsonKey()));
 		}
 
-		if (configurationJsonObject.has(
+		if (configurationJSONObject.has(
 				SimpleQueryStringConfigurationKeys.FUZZY_TRANSPOSITIONS.
 					getJsonKey())) {
 
 			simpleStringQuery.setFuzzyTranspositions(
-				configurationJsonObject.getBoolean(
+				configurationJSONObject.getBoolean(
 					SimpleQueryStringConfigurationKeys.FUZZY_TRANSPOSITIONS.
 						getJsonKey()));
 		}
 
-		if (configurationJsonObject.has(
+		if (configurationJSONObject.has(
 				SimpleQueryStringConfigurationKeys.LENIENT.getJsonKey())) {
 
 			simpleStringQuery.setLenient(
-				configurationJsonObject.getBoolean(
+				configurationJSONObject.getBoolean(
 					SimpleQueryStringConfigurationKeys.LENIENT.getJsonKey()));
 		}
 
-		if (configurationJsonObject.has(
+		if (configurationJSONObject.has(
 				SimpleQueryStringConfigurationKeys.QUOTE_FIELD_SUFFIX.
 					getJsonKey())) {
 
 			simpleStringQuery.setQuoteFieldSuffix(
-				configurationJsonObject.getString(
+				configurationJSONObject.getString(
 					SimpleQueryStringConfigurationKeys.QUOTE_FIELD_SUFFIX.
 						getJsonKey()));
 		}
@@ -137,22 +137,22 @@ public class SimpleQueryStringClauseTranslator implements ClauseTranslator {
 
 	private void _setFields(
 		SimpleStringQuery simpleStringQuery,
-		JSONObject configurationJsonObject) {
+		JSONObject configurationJSONObject) {
 
-		if (configurationJsonObject.has(
+		if (configurationJSONObject.has(
 				SimpleQueryStringConfigurationKeys.FIELDS.getJsonKey())) {
 
-			JSONArray fieldsJsonArray = configurationJsonObject.getJSONArray(
+			JSONArray fieldsJSONArray = configurationJSONObject.getJSONArray(
 				SimpleQueryStringConfigurationKeys.FIELDS.getJsonKey());
 
-			for (int i = 0; i < fieldsJsonArray.length(); i++) {
-				JSONObject fieldJsonObject = fieldsJsonArray.getJSONObject(i);
+			for (int i = 0; i < fieldsJSONArray.length(); i++) {
+				JSONObject fieldJSONObject = fieldsJSONArray.getJSONObject(i);
 
-				String fieldName = fieldJsonObject.getString(
+				String fieldName = fieldJSONObject.getString(
 					SimpleQueryStringConfigurationKeys.FIELD.getJsonKey());
 
 				float boost = GetterUtil.getFloat(
-					fieldJsonObject.getString(
+					fieldJSONObject.getString(
 						SimpleQueryStringConfigurationKeys.BOOST.getJsonKey()),
 					1.0F);
 
@@ -163,13 +163,13 @@ public class SimpleQueryStringClauseTranslator implements ClauseTranslator {
 
 	private void _setOperator(
 		SimpleStringQuery simpleStringQuery,
-		JSONObject configurationJsonObject) {
+		JSONObject configurationJSONObject) {
 
-		if (configurationJsonObject.has(
+		if (configurationJSONObject.has(
 				SimpleQueryStringConfigurationKeys.DEFAULT_OPERATOR.
 					getJsonKey())) {
 
-			String operator = configurationJsonObject.getString(
+			String operator = configurationJSONObject.getString(
 				SimpleQueryStringConfigurationKeys.DEFAULT_OPERATOR.
 					getJsonKey(),
 				Operator.AND.name());

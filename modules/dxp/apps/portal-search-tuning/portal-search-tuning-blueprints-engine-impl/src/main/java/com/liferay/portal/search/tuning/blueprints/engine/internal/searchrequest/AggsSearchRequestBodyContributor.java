@@ -50,48 +50,48 @@ public class AggsSearchRequestBodyContributor
 
 	@Override
 	public void contribute(
-		SearchRequestBuilder searchRequestBuilder, ParameterData parameterData,
-		Blueprint blueprint, Messages messages) {
+		SearchRequestBuilder searchRequestBuilder, Blueprint blueprint,
+		ParameterData parameterData, Messages messages) {
 
-		Optional<JSONArray> configurationJsonArrayOptional =
+		Optional<JSONArray> configurationJSONArrayOptional =
 			_blueprintHelper.getAggsConfigurationOptional(blueprint);
 
-		if (!configurationJsonArrayOptional.isPresent()) {
+		if (!configurationJSONArrayOptional.isPresent()) {
 			return;
 		}
 
-		JSONArray configurationJsonArray = configurationJsonArrayOptional.get();
+		JSONArray configurationJSONArray = configurationJSONArrayOptional.get();
 
-		for (int i = 0; i < configurationJsonArray.length(); i++) {
-			JSONObject configurationJsonObject =
-				configurationJsonArray.getJSONObject(i);
+		for (int i = 0; i < configurationJSONArray.length(); i++) {
+			JSONObject configurationJSONObject =
+				configurationJSONArray.getJSONObject(i);
 
-			if (!_validateConfiguration(configurationJsonObject, messages) ||
-				!configurationJsonObject.getBoolean(
+			if (!_validateConfiguration(configurationJSONObject, messages) ||
+				!configurationJSONObject.getBoolean(
 					AggregationConfigurationKeys.ENABLED.getJsonKey(), true)) {
 
 				continue;
 			}
 
-			String type = configurationJsonObject.getString(
+			String type = configurationJSONObject.getString(
 				AggregationConfigurationKeys.TYPE.getJsonKey());
 
-			String name = configurationJsonObject.getString(
+			String name = configurationJSONObject.getString(
 				AggregationConfigurationKeys.NAME.getJsonKey());
 
 			try {
 				AggregationTranslator aggregationTranslator =
 					_aggregationBuilderFactory.getTranslator(type);
 
-				JSONObject bodyJsonObject =
+				JSONObject bodyJSONObject =
 					_blueprintTemplateVariableParser.parse(
-						configurationJsonObject.getJSONObject(
+						configurationJSONObject.getJSONObject(
 							AggregationConfigurationKeys.BODY.getJsonKey()),
 						parameterData, messages);
 
 				Optional<Aggregation> aggregationOptional =
 					aggregationTranslator.translate(
-						name, bodyJsonObject, parameterData, messages);
+						name, bodyJSONObject, parameterData, messages);
 
 				if (aggregationOptional.isPresent()) {
 					searchRequestBuilder.addAggregation(
@@ -107,7 +107,7 @@ public class AggsSearchRequestBodyContributor
 					).msg(
 						illegalArgumentException.getMessage()
 					).rootObject(
-						configurationJsonObject
+						configurationJSONObject
 					).rootProperty(
 						AggregationConfigurationKeys.TYPE.getJsonKey()
 					).rootValue(
@@ -131,7 +131,7 @@ public class AggsSearchRequestBodyContributor
 					).msg(
 						exception.getMessage()
 					).rootObject(
-						configurationJsonObject
+						configurationJSONObject
 					).severity(
 						Severity.ERROR
 					).throwable(
@@ -144,11 +144,11 @@ public class AggsSearchRequestBodyContributor
 	}
 
 	private boolean _validateConfiguration(
-		JSONObject configurationJsonObject, Messages messages) {
+		JSONObject configurationJSONObject, Messages messages) {
 
 		boolean valid = true;
 
-		if (configurationJsonObject.isNull(
+		if (configurationJSONObject.isNull(
 				AggregationConfigurationKeys.NAME.getJsonKey())) {
 
 			messages.addMessage(
@@ -159,7 +159,7 @@ public class AggsSearchRequestBodyContributor
 				).msg(
 					"Aggregation name is not defined"
 				).rootObject(
-					configurationJsonObject
+					configurationJSONObject
 				).rootProperty(
 					AggregationConfigurationKeys.NAME.getJsonKey()
 				).severity(
@@ -171,11 +171,11 @@ public class AggsSearchRequestBodyContributor
 			if (_log.isWarnEnabled()) {
 				_log.warn(
 					"Aggregation name is not defined [ " +
-						configurationJsonObject + "]");
+						configurationJSONObject + "]");
 			}
 		}
 
-		if (configurationJsonObject.isNull(
+		if (configurationJSONObject.isNull(
 				AggregationConfigurationKeys.TYPE.getJsonKey())) {
 
 			messages.addMessage(
@@ -186,7 +186,7 @@ public class AggsSearchRequestBodyContributor
 				).msg(
 					"Aggregation type is not defined"
 				).rootObject(
-					configurationJsonObject
+					configurationJSONObject
 				).rootProperty(
 					AggregationConfigurationKeys.TYPE.getJsonKey()
 				).severity(
@@ -198,11 +198,11 @@ public class AggsSearchRequestBodyContributor
 			if (_log.isWarnEnabled()) {
 				_log.warn(
 					"Aggregation type is not defined [ " +
-						configurationJsonObject + "]");
+						configurationJSONObject + "]");
 			}
 		}
 
-		if (configurationJsonObject.isNull(
+		if (configurationJSONObject.isNull(
 				AggregationConfigurationKeys.BODY.getJsonKey())) {
 
 			messages.addMessage(
@@ -213,7 +213,7 @@ public class AggsSearchRequestBodyContributor
 				).msg(
 					"Aggregation body is not defined"
 				).rootObject(
-					configurationJsonObject
+					configurationJSONObject
 				).rootProperty(
 					AggregationConfigurationKeys.BODY.getJsonKey()
 				).severity(
@@ -225,7 +225,7 @@ public class AggsSearchRequestBodyContributor
 			if (_log.isWarnEnabled()) {
 				_log.warn(
 					"Aggregation body is not defined [ " +
-						configurationJsonObject + "]");
+						configurationJSONObject + "]");
 			}
 		}
 

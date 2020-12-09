@@ -24,7 +24,7 @@ import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 public interface KeywordsProcessor {
 
 	public String process(
-		Blueprint blueprint, BlueprintsAttributes blueprintsAttributes,
-		String keywords, Messages messages);
+		String keywords, Blueprint blueprint,
+		BlueprintsAttributes blueprintsAttributes, Messages messages);
 
 }

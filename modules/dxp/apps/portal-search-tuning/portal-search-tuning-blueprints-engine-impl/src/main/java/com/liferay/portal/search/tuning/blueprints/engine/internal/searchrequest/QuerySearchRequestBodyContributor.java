@@ -73,8 +73,8 @@ public class QuerySearchRequestBodyContributor
 
 	@Override
 	public void contribute(
-		SearchRequestBuilder searchRequestBuilder, ParameterData parameterData,
-		Blueprint blueprint, Messages messages) {
+		SearchRequestBuilder searchRequestBuilder, Blueprint blueprint,
+		ParameterData parameterData, Messages messages) {
 
 		_addClauses(searchRequestBuilder, parameterData, blueprint, messages);
 
@@ -136,7 +136,7 @@ public class QuerySearchRequestBodyContributor
 
 	private void _addClause(
 		SearchRequestBuilder searchRequestBuilder, ClauseContext clauseContext,
-		Occur occur, Query subquery, JSONObject queryJsonObject) {
+		Occur occur, Query subquery, JSONObject queryJSONObject) {
 
 		if (clauseContext.equals(ClauseContext.POST_FILTER)) {
 			_addPostFilterClause(searchRequestBuilder, subquery, occur);
@@ -149,7 +149,7 @@ public class QuerySearchRequestBodyContributor
 		}
 		else if (clauseContext.equals(ClauseContext.RESCORE)) {
 			_addRescoreClause(
-				searchRequestBuilder, subquery, _getWindoSize(queryJsonObject));
+				searchRequestBuilder, subquery, _getWindoSize(queryJSONObject));
 		}
 	}
 
@@ -157,67 +157,67 @@ public class QuerySearchRequestBodyContributor
 		SearchRequestBuilder searchRequestBuilder, ParameterData parameterData,
 		Blueprint blueprint, Messages messages) {
 
-		Optional<JSONArray> configurationJsonArrayOptional =
+		Optional<JSONArray> configurationJSONArrayOptional =
 			_blueprintHelper.getQueryConfigurationOptional(blueprint);
 
-		if (!configurationJsonArrayOptional.isPresent()) {
+		if (!configurationJSONArrayOptional.isPresent()) {
 			return;
 		}
 
-		JSONArray configurationJsonArray = configurationJsonArrayOptional.get();
+		JSONArray configurationJSONArray = configurationJSONArrayOptional.get();
 
-		for (int i = 0; i < configurationJsonArray.length(); i++) {
-			JSONObject configurationJsonObject =
-				configurationJsonArray.getJSONObject(i);
+		for (int i = 0; i < configurationJSONArray.length(); i++) {
+			JSONObject configurationJSONObject =
+				configurationJSONArray.getJSONObject(i);
 
-			if (!configurationJsonObject.getBoolean(
+			if (!configurationJSONObject.getBoolean(
 					QueryConfigurationKeys.ENABLED.getJsonKey(), true)) {
 
 				continue;
 			}
 
 			if (!_isConditionsTrue(
-					parameterData, messages, configurationJsonObject)) {
+					parameterData, messages, configurationJSONObject)) {
 
 				continue;
 			}
 
-			JSONArray clausesJsonArray = configurationJsonObject.getJSONArray(
+			JSONArray clausesJSONArray = configurationJSONObject.getJSONArray(
 				QueryConfigurationKeys.CLAUSES.getJsonKey());
 
-			JSONObject clauseJsonObject = null;
-			JSONObject queryJsonObject = null;
+			JSONObject clauseJSONObject = null;
+			JSONObject queryJSONObject = null;
 
-			for (int j = 0; j < clausesJsonArray.length(); j++) {
-				clauseJsonObject = clausesJsonArray.getJSONObject(j);
+			for (int j = 0; j < clausesJSONArray.length(); j++) {
+				clauseJSONObject = clausesJSONArray.getJSONObject(j);
 
-				String type = clauseJsonObject.getString(
+				String type = clauseJSONObject.getString(
 					ClauseConfigurationKeys.TYPE.getJsonKey());
 
 				try {
 					ClauseTranslator clauseTranslator =
 						_clauseTranslatorFactory.getTranslator(type);
 
-					queryJsonObject = _blueprintTemplateVariableParser.parse(
-						clauseJsonObject.getJSONObject(
+					queryJSONObject = _blueprintTemplateVariableParser.parse(
+						clauseJSONObject.getJSONObject(
 							ClauseConfigurationKeys.QUERY.getJsonKey()),
 						parameterData, messages);
 
 					Optional<Query> clauseOptional = clauseTranslator.translate(
-						blueprint, parameterData, messages, queryJsonObject);
+						queryJSONObject, blueprint, parameterData, messages);
 
 					if (!clauseOptional.isPresent()) {
 						continue;
 					}
 
 					ClauseContext clauseContext = _getClauseContext(
-						messages, clauseJsonObject);
+						messages, clauseJSONObject);
 
 					if (clauseContext == null) {
 						continue;
 					}
 
-					Occur occur = _getOccur(messages, clauseJsonObject);
+					Occur occur = _getOccur(messages, clauseJSONObject);
 
 					if (occur == null) {
 						continue;
@@ -225,7 +225,7 @@ public class QuerySearchRequestBodyContributor
 
 					_addClause(
 						searchRequestBuilder, clauseContext, occur,
-						clauseOptional.get(), queryJsonObject);
+						clauseOptional.get(), queryJSONObject);
 				}
 				catch (IllegalArgumentException illegalArgumentException) {
 					messages.addMessage(
@@ -236,7 +236,7 @@ public class QuerySearchRequestBodyContributor
 						).msg(
 							illegalArgumentException.getMessage()
 						).rootObject(
-							clauseJsonObject
+							clauseJSONObject
 						).rootProperty(
 							ClauseConfigurationKeys.TYPE.getJsonKey()
 						).rootValue(
@@ -261,7 +261,7 @@ public class QuerySearchRequestBodyContributor
 						).msg(
 							jsonException.getMessage()
 						).rootObject(
-							queryJsonObject
+							queryJSONObject
 						).severity(
 							Severity.ERROR
 						).throwable(
@@ -281,7 +281,7 @@ public class QuerySearchRequestBodyContributor
 						).msg(
 							exception.getMessage()
 						).rootObject(
-							clauseJsonObject
+							clauseJSONObject
 						).severity(
 							Severity.ERROR
 						).throwable(
@@ -409,9 +409,9 @@ public class QuerySearchRequestBodyContributor
 	}
 
 	private ClauseContext _getClauseContext(
-		Messages messages, JSONObject queryJsonObject) {
+		Messages messages, JSONObject queryJSONObject) {
 
-		String clauseContextString = queryJsonObject.getString(
+		String clauseContextString = queryJSONObject.getString(
 			ClauseConfigurationKeys.CONTEXT.getJsonKey());
 
 		try {
@@ -428,7 +428,7 @@ public class QuerySearchRequestBodyContributor
 				).msg(
 					illegalArgumentException.getMessage()
 				).rootObject(
-					queryJsonObject
+					queryJSONObject
 				).rootProperty(
 					ClauseConfigurationKeys.CONTEXT.getJsonKey()
 				).rootValue(
@@ -449,8 +449,8 @@ public class QuerySearchRequestBodyContributor
 		return null;
 	}
 
-	private Occur _getOccur(Messages messages, JSONObject queryJsonObject) {
-		String occurString = queryJsonObject.getString(
+	private Occur _getOccur(Messages messages, JSONObject queryJSONObject) {
+		String occurString = queryJSONObject.getString(
 			ClauseConfigurationKeys.OCCUR.getJsonKey(), "must");
 
 		try {
@@ -467,7 +467,7 @@ public class QuerySearchRequestBodyContributor
 				).msg(
 					illegalArgumentException.getMessage()
 				).rootObject(
-					queryJsonObject
+					queryJSONObject
 				).rootProperty(
 					ClauseConfigurationKeys.OCCUR.getJsonKey()
 				).rootValue(
@@ -482,11 +482,11 @@ public class QuerySearchRequestBodyContributor
 		return null;
 	}
 
-	private Integer _getWindoSize(JSONObject queryJsonObject) {
-		if (queryJsonObject.has(
+	private Integer _getWindoSize(JSONObject queryJSONObject) {
+		if (queryJSONObject.has(
 				ClauseConfigurationKeys.WINDOW_SIZE.getJsonKey())) {
 
-			return queryJsonObject.getInt(
+			return queryJSONObject.getInt(
 				ClauseConfigurationKeys.WINDOW_SIZE.getJsonKey());
 		}
 
@@ -495,43 +495,43 @@ public class QuerySearchRequestBodyContributor
 
 	private boolean _isConditionsTrue(
 		ParameterData parameterData, Messages messages,
-		JSONObject configurationJsonObject) {
+		JSONObject configurationJSONObject) {
 
-		JSONArray conditionsJsonArray = configurationJsonObject.getJSONArray(
+		JSONArray conditionsJSONArray = configurationJSONObject.getJSONArray(
 			QueryConfigurationKeys.CONDITIONS.getJsonKey());
 
-		if ((conditionsJsonArray == null) ||
-			(conditionsJsonArray.length() == 0)) {
+		if ((conditionsJSONArray == null) ||
+			(conditionsJSONArray.length() == 0)) {
 
 			return true;
 		}
 
 		boolean valid = false;
 
-		for (int i = 0; i < conditionsJsonArray.length(); i++) {
-			JSONObject conditionJsonObject = conditionsJsonArray.getJSONObject(
+		for (int i = 0; i < conditionsJSONArray.length(); i++) {
+			JSONObject conditionJSONObject = conditionsJSONArray.getJSONObject(
 				i);
 
-			String handler = conditionJsonObject.getString(
+			String handler = conditionJSONObject.getString(
 				ConditionConfigurationKeys.HANDLER.getJsonKey());
 
 			try {
 				ConditionHandler conditionHandler =
 					_conditionHandlerFactory.getHandler(handler);
 
-				String operatorString = conditionJsonObject.getString(
+				String operatorString = conditionJSONObject.getString(
 					ConditionConfigurationKeys.OPERATOR.getJsonKey(),
 					Operator.AND.name());
 
 				Operator operator = BlueprintValueUtil.getOperator(
 					operatorString);
 
-				JSONObject handlerParametersJsonObject =
-					conditionJsonObject.getJSONObject(
+				JSONObject handlerParametersJSONObject =
+					conditionJSONObject.getJSONObject(
 						ConditionConfigurationKeys.CONFIGURATION.getJsonKey());
 
 				boolean conditionTrue = conditionHandler.isTrue(
-					parameterData, messages, handlerParametersJsonObject);
+					handlerParametersJSONObject, parameterData, messages);
 
 				if (operator.equals(Operator.AND) && !conditionTrue) {
 					return false;
@@ -552,7 +552,7 @@ public class QuerySearchRequestBodyContributor
 					).msg(
 						illegalArgumentException.getMessage()
 					).rootObject(
-						conditionJsonObject
+						conditionJSONObject
 					).rootProperty(
 						ConditionConfigurationKeys.HANDLER.getJsonKey()
 					).rootValue(
@@ -578,7 +578,7 @@ public class QuerySearchRequestBodyContributor
 					).msg(
 						exception.getMessage()
 					).rootObject(
-						conditionJsonObject
+						conditionJSONObject
 					).severity(
 						Severity.ERROR
 					).throwable(

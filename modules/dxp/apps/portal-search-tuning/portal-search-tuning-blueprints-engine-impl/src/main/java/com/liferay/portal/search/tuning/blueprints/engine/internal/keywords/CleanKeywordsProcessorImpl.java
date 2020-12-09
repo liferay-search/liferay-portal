@@ -35,8 +35,8 @@ public class CleanKeywordsProcessorImpl implements KeywordsProcessor {
 
 	@Override
 	public String process(
-		Blueprint blueprint, BlueprintsAttributes blueprintsAttributes,
-		String keywords, Messages messages) {
+		String keywords, Blueprint blueprint,
+		BlueprintsAttributes blueprintsAttributes, Messages messages) {
 
 		return _clean(keywords);
 	}

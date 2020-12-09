@@ -36,8 +36,8 @@ import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringParame
  */
 public class InVisitor implements ConditionEvaluationVisitor {
 
-	public InVisitor(JSONObject conditionJsonObject, boolean not) {
-		_conditionJsonObject = conditionJsonObject;
+	public InVisitor(JSONObject conditionJSONObject, boolean not) {
+		_conditionJSONObject = conditionJSONObject;
 		_not = not;
 	}
 
@@ -60,7 +60,7 @@ public class InVisitor implements ConditionEvaluationVisitor {
 		throws ParameterEvaluationException {
 
 		JSONArray jsonArray = BlueprintValueUtil.getConditionValueJSONArray(
-			_conditionJsonObject);
+			_conditionJSONObject);
 
 		boolean match = false;
 
@@ -86,7 +86,7 @@ public class InVisitor implements ConditionEvaluationVisitor {
 		throws ParameterEvaluationException {
 
 		JSONArray jsonArray = BlueprintValueUtil.getConditionValueJSONArray(
-			_conditionJsonObject);
+			_conditionJSONObject);
 
 		boolean match = false;
 
@@ -119,7 +119,7 @@ public class InVisitor implements ConditionEvaluationVisitor {
 		throws ParameterEvaluationException {
 
 		JSONArray jsonArray = BlueprintValueUtil.getConditionValueJSONArray(
-			_conditionJsonObject);
+			_conditionJSONObject);
 
 		boolean match = false;
 
@@ -152,7 +152,7 @@ public class InVisitor implements ConditionEvaluationVisitor {
 		throws ParameterEvaluationException {
 
 		JSONArray jsonArray = BlueprintValueUtil.getConditionValueJSONArray(
-			_conditionJsonObject);
+			_conditionJSONObject);
 
 		boolean match = false;
 
@@ -185,7 +185,7 @@ public class InVisitor implements ConditionEvaluationVisitor {
 		throws ParameterEvaluationException {
 
 		JSONArray jsonArray = BlueprintValueUtil.getConditionValueJSONArray(
-			_conditionJsonObject);
+			_conditionJSONObject);
 
 		String parameterValue = parameter.getValue();
 
@@ -208,7 +208,7 @@ public class InVisitor implements ConditionEvaluationVisitor {
 		return match;
 	}
 
-	private final JSONObject _conditionJsonObject;
+	private final JSONObject _conditionJSONObject;
 	private final boolean _not;
 
 }

@@ -45,8 +45,8 @@ import java.util.Date;
  */
 public class EqualsVisitor implements ConditionEvaluationVisitor {
 
-	public EqualsVisitor(JSONObject conditionJsonObject, boolean not) {
-		_conditionJsonObject = conditionJsonObject;
+	public EqualsVisitor(JSONObject conditionJSONObject, boolean not) {
+		_conditionJSONObject = conditionJSONObject;
 		_not = not;
 	}
 
@@ -54,7 +54,7 @@ public class EqualsVisitor implements ConditionEvaluationVisitor {
 	public boolean visit(BooleanParameter parameter)
 		throws ParameterEvaluationException {
 
-		Boolean value = _conditionJsonObject.getBoolean(
+		Boolean value = _conditionJSONObject.getBoolean(
 			ConditionConfigurationKeys.MATCH_VALUE.getJsonKey());
 
 		Boolean parameterValue = parameter.getValue();
@@ -76,17 +76,17 @@ public class EqualsVisitor implements ConditionEvaluationVisitor {
 	public boolean visit(DateParameter parameter)
 		throws ParameterEvaluationException {
 
-		String dateString = _conditionJsonObject.getString(
+		String dateString = _conditionJSONObject.getString(
 			ConditionConfigurationKeys.MATCH_VALUE.getJsonKey());
 
-		String dateFormatString = _conditionJsonObject.getString(
+		String dateFormatString = _conditionJSONObject.getString(
 			ConditionConfigurationKeys.DATE_FORMAT.getJsonKey());
 
 		if (Validator.isNull(dateFormatString)) {
 			if (_log.isWarnEnabled()) {
 				_log.warn(
 					"Clause condition date format missing [ " +
-						_conditionJsonObject + " ].");
+						_conditionJSONObject + " ].");
 			}
 
 			throw new ParameterEvaluationException(
@@ -97,7 +97,7 @@ public class EqualsVisitor implements ConditionEvaluationVisitor {
 				).msg(
 					"Date format is not defined"
 				).rootObject(
-					_conditionJsonObject
+					_conditionJSONObject
 				).rootProperty(
 					ConditionConfigurationKeys.DATE_FORMAT.getJsonKey()
 				).rootValue(
@@ -133,7 +133,7 @@ public class EqualsVisitor implements ConditionEvaluationVisitor {
 				).msg(
 					exception.getMessage()
 				).rootObject(
-					_conditionJsonObject
+					_conditionJSONObject
 				).rootProperty(
 					ConditionConfigurationKeys.MATCH_VALUE.getJsonKey()
 				).rootValue(
@@ -150,7 +150,7 @@ public class EqualsVisitor implements ConditionEvaluationVisitor {
 	public boolean visit(DoubleParameter parameter)
 		throws ParameterEvaluationException {
 
-		Double value = _conditionJsonObject.getDouble(
+		Double value = _conditionJSONObject.getDouble(
 			ConditionConfigurationKeys.MATCH_VALUE.getJsonKey());
 
 		if (_not) {
@@ -165,7 +165,7 @@ public class EqualsVisitor implements ConditionEvaluationVisitor {
 		throws ParameterEvaluationException {
 
 		Float value = GetterUtil.getFloat(
-			_conditionJsonObject.get(
+			_conditionJSONObject.get(
 				ConditionConfigurationKeys.MATCH_VALUE.getJsonKey()));
 
 		if (_not) {
@@ -186,7 +186,7 @@ public class EqualsVisitor implements ConditionEvaluationVisitor {
 	public boolean visit(IntegerParameter parameter)
 		throws ParameterEvaluationException {
 
-		Integer value = _conditionJsonObject.getInt(
+		Integer value = _conditionJSONObject.getInt(
 			ConditionConfigurationKeys.MATCH_VALUE.getJsonKey());
 
 		if (_not) {
@@ -207,7 +207,7 @@ public class EqualsVisitor implements ConditionEvaluationVisitor {
 	public boolean visit(LongParameter parameter)
 		throws ParameterEvaluationException {
 
-		Long value = _conditionJsonObject.getLong(
+		Long value = _conditionJSONObject.getLong(
 			ConditionConfigurationKeys.MATCH_VALUE.getJsonKey());
 
 		if (_not) {
@@ -228,7 +228,7 @@ public class EqualsVisitor implements ConditionEvaluationVisitor {
 	public boolean visit(StringParameter parameter)
 		throws ParameterEvaluationException {
 
-		String value = _conditionJsonObject.getString(
+		String value = _conditionJSONObject.getString(
 			ConditionConfigurationKeys.MATCH_VALUE.getJsonKey());
 
 		String parameterValue = parameter.getValue();
@@ -242,7 +242,7 @@ public class EqualsVisitor implements ConditionEvaluationVisitor {
 
 	private static final Log _log = LogFactoryUtil.getLog(EqualsVisitor.class);
 
-	private final JSONObject _conditionJsonObject;
+	private final JSONObject _conditionJSONObject;
 	private final boolean _not;
 
 }

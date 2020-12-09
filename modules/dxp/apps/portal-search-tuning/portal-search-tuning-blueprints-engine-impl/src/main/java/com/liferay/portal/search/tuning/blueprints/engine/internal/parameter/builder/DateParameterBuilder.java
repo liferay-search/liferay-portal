@@ -52,13 +52,13 @@ public class DateParameterBuilder implements ParameterBuilder {
 	@Override
 	public Optional<Parameter> build(
 		BlueprintsAttributes blueprintsAttributes, Messages messages,
-		JSONObject configurationJsonObject) {
+		JSONObject configurationJSONObject) {
 
-		if (!_validateConfiguration(messages, configurationJsonObject)) {
+		if (!_validateConfiguration(messages, configurationJSONObject)) {
 			return Optional.empty();
 		}
 
-		String parameterName = configurationJsonObject.getString(
+		String parameterName = configurationJSONObject.getString(
 			CustomParameterConfigurationKeys.PARAMETER_NAME.getJsonKey());
 
 		String dateString = _getDateString(blueprintsAttributes, parameterName);
@@ -74,7 +74,7 @@ public class DateParameterBuilder implements ParameterBuilder {
 			return Optional.empty();
 		}
 
-		Date date = _getDate(configurationJsonObject, dateString, timeZoneId);
+		Date date = _getDate(configurationJSONObject, dateString, timeZoneId);
 
 		if (date == null) {
 			return Optional.empty();
@@ -86,10 +86,10 @@ public class DateParameterBuilder implements ParameterBuilder {
 	}
 
 	private Date _getDate(
-		JSONObject configurationJsonObject, String dateString,
+		JSONObject configurationJSONObject, String dateString,
 		String timeZoneId) {
 
-		String dateFormat = configurationJsonObject.getString(
+		String dateFormat = configurationJSONObject.getString(
 			CustomParameterConfigurationKeys.DATE_FORMAT.getJsonKey());
 
 		try {
@@ -139,12 +139,12 @@ public class DateParameterBuilder implements ParameterBuilder {
 	}
 
 	private boolean _validateConfiguration(
-		Messages messages, JSONObject configurationJsonObject) {
+		Messages messages, JSONObject configurationJSONObject) {
 
 		boolean valid = true;
 
 		if (Validator.isNull(
-				configurationJsonObject.getString(
+				configurationJSONObject.getString(
 					CustomParameterConfigurationKeys.DATE_FORMAT.
 						getJsonKey()))) {
 
@@ -156,7 +156,7 @@ public class DateParameterBuilder implements ParameterBuilder {
 				).msg(
 					"Date format is not defined"
 				).rootObject(
-					configurationJsonObject
+					configurationJSONObject
 				).rootProperty(
 					CustomParameterConfigurationKeys.DATE_FORMAT.getJsonKey()
 				).severity(
@@ -167,7 +167,7 @@ public class DateParameterBuilder implements ParameterBuilder {
 
 			if (_log.isWarnEnabled()) {
 				_log.warn(
-					"Date format is not defined [ " + configurationJsonObject +
+					"Date format is not defined [ " + configurationJSONObject +
 						" ].");
 			}
 		}

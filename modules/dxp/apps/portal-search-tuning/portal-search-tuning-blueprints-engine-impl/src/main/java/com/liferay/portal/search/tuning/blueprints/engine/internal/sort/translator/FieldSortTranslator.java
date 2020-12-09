@@ -27,6 +27,9 @@ import java.util.Optional;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
+/**
+ * @author Petteri Karttunen
+ */
 @Component(
 	immediate = true, property = "type=field", service = SortTranslator.class
 )
@@ -34,10 +37,10 @@ public class FieldSortTranslator implements SortTranslator {
 
 	@Override
 	public Optional<Sort> translate(
-		JSONObject configurationJsonObject, SortOrder sortOrder,
+		JSONObject configurationJSONObject, SortOrder sortOrder,
 		Messages messages) {
 
-		String field = configurationJsonObject.getString(
+		String field = configurationJSONObject.getString(
 			SortConfigurationKeys.FIELD.getJsonKey());
 
 		if (field.equals("_score")) {

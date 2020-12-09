@@ -51,17 +51,17 @@ public class DefaultConditionHandler implements ConditionHandler {
 
 	@Override
 	public boolean isTrue(
-		ParameterData parameterData, Messages messages,
-		JSONObject configurationJsonObject) {
+		JSONObject configurationJSONObject, ParameterData parameterData,
+		Messages messages) {
 
-		if (!_validateCondition(messages, configurationJsonObject)) {
+		if (!_validateCondition(messages, configurationJSONObject)) {
 			return false;
 		}
 
-		String parameterName = configurationJsonObject.getString(
+		String parameterName = configurationJSONObject.getString(
 			ConditionConfigurationKeys.PARAMETER_NAME.getJsonKey());
 
-		String evaluationTypeString = configurationJsonObject.getString(
+		String evaluationTypeString = configurationJSONObject.getString(
 			ConditionConfigurationKeys.EVALUATION_TYPE.getJsonKey());
 
 		EvaluationType evaluationType;
@@ -78,7 +78,7 @@ public class DefaultConditionHandler implements ConditionHandler {
 				).msg(
 					illegalArgumentException.getMessage()
 				).rootObject(
-					configurationJsonObject
+					configurationJSONObject
 				).rootProperty(
 					ConditionConfigurationKeys.EVALUATION_TYPE.getJsonKey()
 				).rootValue(
@@ -121,7 +121,7 @@ public class DefaultConditionHandler implements ConditionHandler {
 			if (_log.isDebugEnabled()) {
 				_log.debug(
 					"Clause condition parameter is not present [ " +
-						configurationJsonObject + " ].");
+						configurationJSONObject + " ].");
 			}
 
 			return false;
@@ -130,7 +130,7 @@ public class DefaultConditionHandler implements ConditionHandler {
 		Parameter parameter = parameterOptional.get();
 
 		ConditionEvaluationVisitor visitor = _getEvaluationVisitor(
-			parameter, configurationJsonObject, evaluationType);
+			parameter, configurationJSONObject, evaluationType);
 
 		if (visitor == null) {
 			messages.addMessage(
@@ -141,7 +141,7 @@ public class DefaultConditionHandler implements ConditionHandler {
 				).msg(
 					"Unknown clause condition evaluation type"
 				).rootObject(
-					configurationJsonObject
+					configurationJSONObject
 				).rootProperty(
 					ConditionConfigurationKeys.EVALUATION_TYPE.getJsonKey()
 				).rootValue(
@@ -179,7 +179,7 @@ public class DefaultConditionHandler implements ConditionHandler {
 	}
 
 	private ConditionEvaluationVisitor _getEvaluationVisitor(
-		Parameter parameter, JSONObject configurationJsonObject,
+		Parameter parameter, JSONObject configurationJSONObject,
 		EvaluationType evaluationType) {
 
 		ConditionEvaluationVisitor visitor = null;
@@ -190,87 +190,87 @@ public class DefaultConditionHandler implements ConditionHandler {
 		if (EvaluationType.ANY_WORD_IN.equals(evaluationType) &&
 			supportedEvaluationTypes.contains(evaluationType)) {
 
-			visitor = new AnyWordInVisitor(configurationJsonObject, false);
+			visitor = new AnyWordInVisitor(configurationJSONObject, false);
 		}
 		else if (EvaluationType.CONTAINS.equals(evaluationType) &&
 				 supportedEvaluationTypes.contains(evaluationType)) {
 
-			visitor = new ContainsVisitor(configurationJsonObject, false);
+			visitor = new ContainsVisitor(configurationJSONObject, false);
 		}
 		else if (EvaluationType.EQ.equals(evaluationType) &&
 				 supportedEvaluationTypes.contains(evaluationType)) {
 
-			visitor = new EqualsVisitor(configurationJsonObject, false);
+			visitor = new EqualsVisitor(configurationJSONObject, false);
 		}
 		else if (EvaluationType.GT.equals(evaluationType) &&
 				 supportedEvaluationTypes.contains(evaluationType)) {
 
 			visitor = new GreaterThanVisitor(
-				configurationJsonObject, false, false);
+				configurationJSONObject, false, false);
 		}
 		else if (EvaluationType.GTE.equals(evaluationType) &&
 				 supportedEvaluationTypes.contains(evaluationType)) {
 
 			visitor = new GreaterThanVisitor(
-				configurationJsonObject, false, true);
+				configurationJSONObject, false, true);
 		}
 		else if (EvaluationType.IN.equals(evaluationType) &&
 				 supportedEvaluationTypes.contains(evaluationType)) {
 
-			visitor = new InVisitor(configurationJsonObject, false);
+			visitor = new InVisitor(configurationJSONObject, false);
 		}
 		else if (EvaluationType.IN_RANGE.equals(evaluationType) &&
 				 supportedEvaluationTypes.contains(evaluationType)) {
 
-			visitor = new InRangeVisitor(configurationJsonObject, false);
+			visitor = new InRangeVisitor(configurationJSONObject, false);
 		}
 		else if (EvaluationType.LT.equals(evaluationType) &&
 				 supportedEvaluationTypes.contains(evaluationType)) {
 
 			visitor = new GreaterThanVisitor(
-				configurationJsonObject, true, false);
+				configurationJSONObject, true, false);
 		}
 		else if (EvaluationType.LTE.equals(evaluationType) &&
 				 supportedEvaluationTypes.contains(evaluationType)) {
 
 			visitor = new GreaterThanVisitor(
-				configurationJsonObject, true, true);
+				configurationJSONObject, true, true);
 		}
 		else if (EvaluationType.NE.equals(evaluationType) &&
 				 supportedEvaluationTypes.contains(evaluationType)) {
 
-			visitor = new EqualsVisitor(configurationJsonObject, true);
+			visitor = new EqualsVisitor(configurationJSONObject, true);
 		}
 		else if (EvaluationType.NO_WORD_IN.equals(evaluationType) &&
 				 supportedEvaluationTypes.contains(evaluationType)) {
 
-			visitor = new AnyWordInVisitor(configurationJsonObject, true);
+			visitor = new AnyWordInVisitor(configurationJSONObject, true);
 		}
 		else if (EvaluationType.NOT_CONTAINS.equals(evaluationType) &&
 				 supportedEvaluationTypes.contains(evaluationType)) {
 
-			visitor = new ContainsVisitor(configurationJsonObject, true);
+			visitor = new ContainsVisitor(configurationJSONObject, true);
 		}
 		else if (EvaluationType.NOT_IN.equals(evaluationType) &&
 				 supportedEvaluationTypes.contains(evaluationType)) {
 
-			visitor = new InRangeVisitor(configurationJsonObject, true);
+			visitor = new InRangeVisitor(configurationJSONObject, true);
 		}
 		else if (EvaluationType.NOT_IN_RANGE.equals(evaluationType) &&
 				 supportedEvaluationTypes.contains(evaluationType)) {
 
-			visitor = new InRangeVisitor(configurationJsonObject, true);
+			visitor = new InRangeVisitor(configurationJSONObject, true);
 		}
 
 		return visitor;
 	}
 
 	private boolean _validateCondition(
-		Messages messages, JSONObject configurationJsonObject) {
+		Messages messages, JSONObject configurationJSONObject) {
 
 		boolean valid = true;
 
-		if (!configurationJsonObject.has(
+		if (!configurationJSONObject.has(
 				ConditionConfigurationKeys.PARAMETER_NAME.getJsonKey())) {
 
 			messages.addMessage(
@@ -281,7 +281,7 @@ public class DefaultConditionHandler implements ConditionHandler {
 				).msg(
 					"Clause condition parameter is not defined"
 				).rootObject(
-					configurationJsonObject
+					configurationJSONObject
 				).rootProperty(
 					ConditionConfigurationKeys.PARAMETER_NAME.getJsonKey()
 				).severity(
@@ -291,13 +291,13 @@ public class DefaultConditionHandler implements ConditionHandler {
 			if (_log.isWarnEnabled()) {
 				_log.warn(
 					"Clause condition parameter is undefined [ " +
-						configurationJsonObject + " ].");
+						configurationJSONObject + " ].");
 			}
 
 			valid = false;
 		}
 
-		if (!configurationJsonObject.has(
+		if (!configurationJSONObject.has(
 				ConditionConfigurationKeys.EVALUATION_TYPE.getJsonKey())) {
 
 			messages.addMessage(
@@ -308,7 +308,7 @@ public class DefaultConditionHandler implements ConditionHandler {
 				).msg(
 					"Clause condition evaluation type is not defined"
 				).rootObject(
-					configurationJsonObject
+					configurationJSONObject
 				).rootProperty(
 					ConditionConfigurationKeys.EVALUATION_TYPE.getJsonKey()
 				).severity(
@@ -318,7 +318,7 @@ public class DefaultConditionHandler implements ConditionHandler {
 			if (_log.isWarnEnabled()) {
 				_log.warn(
 					"Clause condition evaluation type is undefined [ " +
-						configurationJsonObject + " ].");
+						configurationJSONObject + " ].");
 			}
 
 			valid = false;

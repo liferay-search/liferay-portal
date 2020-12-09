@@ -40,10 +40,10 @@ public class WrapperClauseTranslator implements ClauseTranslator {
 
 	@Override
 	public Optional<Query> translate(
-		Blueprint blueprint, ParameterData parameterData, Messages messages,
-		JSONObject configurationJsonObject) {
+		JSONObject configurationJSONObject, Blueprint blueprint,
+		ParameterData parameterData, Messages messages) {
 
-		String query = configurationJsonObject.getString(
+		String query = configurationJSONObject.getString(
 			SimpleQueryStringConfigurationKeys.QUERY.getJsonKey());
 
 		WrapperQuery wrapperQuery = _queries.wrapper(query);

@@ -47,9 +47,9 @@ import java.util.Date;
 public class GreaterThanVisitor implements ConditionEvaluationVisitor {
 
 	public GreaterThanVisitor(
-		JSONObject configurationJsonObject, boolean not, boolean equal) {
+		JSONObject configurationJSONObject, boolean not, boolean equal) {
 
-		_conditionJsonObject = configurationJsonObject;
+		_conditionJSONObject = configurationJSONObject;
 		_not = not;
 		_equal = equal;
 	}
@@ -65,17 +65,17 @@ public class GreaterThanVisitor implements ConditionEvaluationVisitor {
 	public boolean visit(DateParameter parameter)
 		throws ParameterEvaluationException {
 
-		String dateString = _conditionJsonObject.getString(
+		String dateString = _conditionJSONObject.getString(
 			ConditionConfigurationKeys.MATCH_VALUE.getJsonKey());
 
-		String dateFormatString = _conditionJsonObject.getString(
+		String dateFormatString = _conditionJSONObject.getString(
 			ConditionConfigurationKeys.DATE_FORMAT.getJsonKey());
 
 		if (Validator.isNull(dateFormatString)) {
 			if (_log.isWarnEnabled()) {
 				_log.warn(
 					"Clause condition date parameter format is missing [ " +
-						_conditionJsonObject + " ].");
+						_conditionJSONObject + " ].");
 			}
 
 			throw new ParameterEvaluationException(
@@ -86,7 +86,7 @@ public class GreaterThanVisitor implements ConditionEvaluationVisitor {
 				).msg(
 					"Clause condition date format is missing"
 				).rootObject(
-					_conditionJsonObject
+					_conditionJSONObject
 				).rootProperty(
 					ConditionConfigurationKeys.DATE_FORMAT.getJsonKey()
 				).rootValue(
@@ -124,7 +124,7 @@ public class GreaterThanVisitor implements ConditionEvaluationVisitor {
 				).msg(
 					exception.getMessage()
 				).rootObject(
-					_conditionJsonObject
+					_conditionJSONObject
 				).rootProperty(
 					ConditionConfigurationKeys.MATCH_VALUE.getJsonKey()
 				).rootValue(
@@ -141,7 +141,7 @@ public class GreaterThanVisitor implements ConditionEvaluationVisitor {
 	public boolean visit(DoubleParameter parameter)
 		throws ParameterEvaluationException {
 
-		Double value = _conditionJsonObject.getDouble(
+		Double value = _conditionJSONObject.getDouble(
 			ConditionConfigurationKeys.MATCH_VALUE.getJsonKey());
 
 		Double parameterValue = parameter.getValue();
@@ -169,7 +169,7 @@ public class GreaterThanVisitor implements ConditionEvaluationVisitor {
 		throws ParameterEvaluationException {
 
 		Float value = GetterUtil.getFloat(
-			_conditionJsonObject.get(
+			_conditionJSONObject.get(
 				ConditionConfigurationKeys.MATCH_VALUE.getJsonKey()));
 
 		Float parameterValue = parameter.getValue();
@@ -203,7 +203,7 @@ public class GreaterThanVisitor implements ConditionEvaluationVisitor {
 	public boolean visit(IntegerParameter parameter)
 		throws ParameterEvaluationException {
 
-		Integer value = _conditionJsonObject.getInt(
+		Integer value = _conditionJSONObject.getInt(
 			ConditionConfigurationKeys.MATCH_VALUE.getJsonKey());
 
 		Integer parameterValue = parameter.getValue();
@@ -237,7 +237,7 @@ public class GreaterThanVisitor implements ConditionEvaluationVisitor {
 	public boolean visit(LongParameter parameter)
 		throws ParameterEvaluationException {
 
-		Long value = _conditionJsonObject.getLong(
+		Long value = _conditionJSONObject.getLong(
 			ConditionConfigurationKeys.MATCH_VALUE.getJsonKey());
 
 		Long parameterValue = parameter.getValue();
@@ -277,7 +277,7 @@ public class GreaterThanVisitor implements ConditionEvaluationVisitor {
 	private static final Log _log = LogFactoryUtil.getLog(
 		GreaterThanVisitor.class);
 
-	private final JSONObject _conditionJsonObject;
+	private final JSONObject _conditionJSONObject;
 	private final boolean _equal;
 	private final boolean _not;
 

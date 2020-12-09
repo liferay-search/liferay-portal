@@ -28,6 +28,6 @@ public interface ParameterBuilder {
 
 	public Optional<Parameter> build(
 		BlueprintsAttributes blueprintsAttributes, Messages messages,
-		JSONObject configurationJsonObject);
+		JSONObject configurationJSONObject);
 
 }

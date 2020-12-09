@@ -25,7 +25,7 @@ import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 public interface SearchRequestBodyContributor {
 
 	public void contribute(
-		SearchRequestBuilder searchRequestBuilder, ParameterData parameterData,
-		Blueprint blueprint, Messages messages);
+		SearchRequestBuilder searchRequestBuilder, Blueprint blueprint,
+		ParameterData parameterData, Messages messages);
 
 }

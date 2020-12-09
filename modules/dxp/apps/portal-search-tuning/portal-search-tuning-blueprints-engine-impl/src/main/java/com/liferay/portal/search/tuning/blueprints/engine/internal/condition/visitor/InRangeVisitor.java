@@ -48,8 +48,8 @@ import java.util.Date;
  */
 public class InRangeVisitor implements ConditionEvaluationVisitor {
 
-	public InRangeVisitor(JSONObject conditionJsonObject, boolean not) {
-		_conditionJsonObject = conditionJsonObject;
+	public InRangeVisitor(JSONObject conditionJSONObject, boolean not) {
+		_conditionJSONObject = conditionJSONObject;
 		_not = not;
 	}
 
@@ -65,21 +65,21 @@ public class InRangeVisitor implements ConditionEvaluationVisitor {
 		throws ParameterEvaluationException {
 
 		JSONArray jsonArray = BlueprintValueUtil.getConditionValueJSONArray(
-			_conditionJsonObject);
+			_conditionJSONObject);
 
 		_checkRangeValue(jsonArray);
 
-		String dateFormatString = _conditionJsonObject.getString(
+		String dateFormatString = _conditionJSONObject.getString(
 			ConditionConfigurationKeys.DATE_FORMAT.getJsonKey());
 
-		String dateString = _conditionJsonObject.getString(
+		String dateString = _conditionJSONObject.getString(
 			ConditionConfigurationKeys.MATCH_VALUE.getJsonKey());
 
 		if (Validator.isNull(dateFormatString)) {
 			if (_log.isWarnEnabled()) {
 				_log.warn(
 					"Clause condition date parameter format is missing [ " +
-						_conditionJsonObject + " ].");
+						_conditionJSONObject + " ].");
 			}
 
 			throw new ParameterEvaluationException(
@@ -90,7 +90,7 @@ public class InRangeVisitor implements ConditionEvaluationVisitor {
 				).msg(
 					"Clause condition date format is missing"
 				).rootObject(
-					_conditionJsonObject
+					_conditionJSONObject
 				).rootProperty(
 					ConditionConfigurationKeys.DATE_FORMAT.getJsonKey()
 				).rootValue(
@@ -140,7 +140,7 @@ public class InRangeVisitor implements ConditionEvaluationVisitor {
 				).msg(
 					exception.getMessage()
 				).rootObject(
-					_conditionJsonObject
+					_conditionJSONObject
 				).rootProperty(
 					ConditionConfigurationKeys.MATCH_VALUE.getJsonKey()
 				).rootValue(
@@ -158,7 +158,7 @@ public class InRangeVisitor implements ConditionEvaluationVisitor {
 		throws ParameterEvaluationException {
 
 		JSONArray jsonArray = BlueprintValueUtil.getConditionValueJSONArray(
-			_conditionJsonObject);
+			_conditionJSONObject);
 
 		_checkRangeValue(jsonArray);
 
@@ -187,7 +187,7 @@ public class InRangeVisitor implements ConditionEvaluationVisitor {
 		throws ParameterEvaluationException {
 
 		JSONArray jsonArray = BlueprintValueUtil.getConditionValueJSONArray(
-			_conditionJsonObject);
+			_conditionJSONObject);
 
 		_checkRangeValue(jsonArray);
 
@@ -223,7 +223,7 @@ public class InRangeVisitor implements ConditionEvaluationVisitor {
 		throws ParameterEvaluationException {
 
 		JSONArray jsonArray = BlueprintValueUtil.getConditionValueJSONArray(
-			_conditionJsonObject);
+			_conditionJSONObject);
 
 		_checkRangeValue(jsonArray);
 
@@ -259,7 +259,7 @@ public class InRangeVisitor implements ConditionEvaluationVisitor {
 		throws ParameterEvaluationException {
 
 		JSONArray jsonArray = BlueprintValueUtil.getConditionValueJSONArray(
-			_conditionJsonObject);
+			_conditionJSONObject);
 
 		_checkRangeValue(jsonArray);
 
@@ -315,7 +315,7 @@ public class InRangeVisitor implements ConditionEvaluationVisitor {
 				).msg(
 					"Invalid clause condition range value"
 				).rootObject(
-					_conditionJsonObject
+					_conditionJSONObject
 				).rootProperty(
 					ConditionConfigurationKeys.MATCH_VALUE.getJsonKey()
 				).rootValue(
@@ -328,7 +328,7 @@ public class InRangeVisitor implements ConditionEvaluationVisitor {
 
 	private static final Log _log = LogFactoryUtil.getLog(InRangeVisitor.class);
 
-	private final JSONObject _conditionJsonObject;
+	private final JSONObject _conditionJSONObject;
 	private final boolean _not;
 
 }

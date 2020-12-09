@@ -66,12 +66,6 @@ public interface BlueprintHelper {
 	public Optional<JSONArray> getQueryConfigurationOptional(
 		Blueprint blueprint);
 
-	public Optional<String> getQueryIndexConfigurationIdOptional(
-		Blueprint blueprint);
-
-	public Optional<JSONObject> getQueryIndexingConfigurationOptional(
-		Blueprint blueprint);
-
 	public int getSize(Blueprint blueprint);
 
 	public Optional<JSONObject> getSortConfigurationOptional(

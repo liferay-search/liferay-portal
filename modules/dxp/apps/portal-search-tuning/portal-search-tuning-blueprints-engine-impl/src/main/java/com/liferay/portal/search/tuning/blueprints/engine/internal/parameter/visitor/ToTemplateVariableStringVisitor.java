@@ -34,8 +34,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 import java.time.DateTimeException;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -150,10 +152,12 @@ public class ToTemplateVariableStringVisitor implements ToStringVisitor {
 		}
 
 		try {
-			LocalDateTime localDateTime = date.toInstant(
-			).atZone(
-				ZoneId.systemDefault()
-			).toLocalDateTime();
+			Instant instant = date.toInstant();
+
+			ZonedDateTime zonedDateTime1 = instant.atZone(
+				ZoneId.systemDefault());
+
+			LocalDateTime localDateTime = zonedDateTime1.toLocalDateTime();
 
 			if (unit == 'H') {
 				localDateTime = localDateTime.plusHours(amount);
@@ -171,10 +175,10 @@ public class ToTemplateVariableStringVisitor implements ToStringVisitor {
 				localDateTime = localDateTime.plusYears(amount);
 			}
 
-			return Date.from(
-				localDateTime.atZone(
-					ZoneId.systemDefault()
-				).toInstant());
+			ZonedDateTime zonedDateTime2 = localDateTime.atZone(
+				ZoneId.systemDefault());
+
+			return Date.from(zonedDateTime2.toInstant());
 		}
 		catch (DateTimeException dateTimeException) {
 			_log.error(dateTimeException.getMessage(), dateTimeException);

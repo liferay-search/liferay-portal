@@ -49,49 +49,49 @@ public class SuggestSearchRequestBodyContributor
 
 	@Override
 	public void contribute(
-		SearchRequestBuilder searchRequestBuilder, ParameterData parameterData,
-		Blueprint blueprint, Messages messages) {
+		SearchRequestBuilder searchRequestBuilder, Blueprint blueprint,
+		ParameterData parameterData, Messages messages) {
 
-		Optional<JSONArray> configurationJsonArrayOptional =
+		Optional<JSONArray> configurationJSONArrayOptional =
 			_blueprintHelper.getSuggestConfigurationOptional(blueprint);
 
-		if (!configurationJsonArrayOptional.isPresent()) {
+		if (!configurationJSONArrayOptional.isPresent()) {
 			return;
 		}
 
-		JSONArray configurationJsonArray = configurationJsonArrayOptional.get();
+		JSONArray configurationJSONArray = configurationJSONArrayOptional.get();
 
-		for (int i = 0; i < configurationJsonArray.length(); i++) {
-			JSONObject configurationJsonObject =
-				configurationJsonArray.getJSONObject(i);
+		for (int i = 0; i < configurationJSONArray.length(); i++) {
+			JSONObject configurationJSONObject =
+				configurationJSONArray.getJSONObject(i);
 
-			if (!configurationJsonObject.getBoolean(
+			if (!configurationJSONObject.getBoolean(
 					SuggesterConfigurationKeys.ENABLED.getJsonKey(), false)) {
 
 				continue;
 			}
 
-			String type = configurationJsonObject.getString(
+			String type = configurationJSONObject.getString(
 				SuggesterConfigurationKeys.TYPE.getJsonKey());
 
-			String name = configurationJsonObject.getString(
+			String name = configurationJSONObject.getString(
 				SuggesterConfigurationKeys.NAME.getJsonKey());
 
 			try {
 				SuggesterTranslator suggesterTranslator =
 					_suggesterTranslatorFactory.getTranslator(type);
 
-				JSONObject suggestConfigurationJsonObject =
+				JSONObject suggestConfigurationJSONObject =
 					_blueprintTemplateVariableParser.parse(
-						configurationJsonObject.getJSONObject(
+						configurationJSONObject.getJSONObject(
 							SuggesterConfigurationKeys.CONFIGURATION.
 								getJsonKey()),
 						parameterData, messages);
 
 				Optional<Suggester> suggesterOptional =
 					suggesterTranslator.translate(
-						parameterData, messages, suggestConfigurationJsonObject,
-						name);
+						name, suggestConfigurationJSONObject, parameterData,
+						messages);
 
 				if (suggesterOptional.isPresent()) {
 
@@ -110,7 +110,7 @@ public class SuggestSearchRequestBodyContributor
 					).msg(
 						illegalArgumentException.getMessage()
 					).rootObject(
-						configurationJsonObject
+						configurationJSONObject
 					).rootProperty(
 						SuggesterConfigurationKeys.TYPE.getJsonKey()
 					).rootValue(
@@ -134,7 +134,7 @@ public class SuggestSearchRequestBodyContributor
 					).msg(
 						exception.getMessage()
 					).rootObject(
-						configurationJsonObject
+						configurationJSONObject
 					).severity(
 						Severity.ERROR
 					).throwable(

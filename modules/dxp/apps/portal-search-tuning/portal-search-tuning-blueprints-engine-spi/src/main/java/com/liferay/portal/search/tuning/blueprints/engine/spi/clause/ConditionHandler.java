@@ -24,7 +24,7 @@ import com.liferay.portal.search.tuning.blueprints.message.Messages;
 public interface ConditionHandler {
 
 	public boolean isTrue(
-		ParameterData parameterData, Messages messages,
-		JSONObject configurationJsonObject);
+		JSONObject configurationJSONObject, ParameterData parameterData,
+		Messages messages);
 
 }

@@ -41,13 +41,13 @@ public class LongParameterBuilder implements ParameterBuilder {
 	@Override
 	public Optional<Parameter> build(
 		BlueprintsAttributes blueprintsAttributes, Messages messages,
-		JSONObject configurationJsonObject) {
+		JSONObject configurationJSONObject) {
 
-		String parameterName = configurationJsonObject.getString(
+		String parameterName = configurationJSONObject.getString(
 			CustomParameterConfigurationKeys.PARAMETER_NAME.getJsonKey());
 
 		Optional<Long> valueOptional = _getValueOptional(
-			blueprintsAttributes, configurationJsonObject, parameterName);
+			blueprintsAttributes, configurationJSONObject, parameterName);
 
 		if (!valueOptional.isPresent()) {
 			return Optional.empty();
@@ -57,14 +57,14 @@ public class LongParameterBuilder implements ParameterBuilder {
 			new LongParameter(
 				parameterName, "${parameter." + parameterName + "}",
 				_getAdjustedValue(
-					valueOptional.get(), configurationJsonObject)));
+					valueOptional.get(), configurationJSONObject)));
 	}
 
 	private long _getAdjustedValue(
-		long value, JSONObject configurationJsonObject) {
+		long value, JSONObject configurationJSONObject) {
 
 		Optional<Long> minValue = BlueprintValueUtil.stringToLongOptional(
-			configurationJsonObject.getString(
+			configurationJSONObject.getString(
 				CustomParameterConfigurationKeys.MIN_VALUE.getJsonKey()));
 
 		if (minValue.isPresent() && (Long.compare(value, minValue.get()) < 0)) {
@@ -76,7 +76,7 @@ public class LongParameterBuilder implements ParameterBuilder {
 		}
 
 		Optional<Long> maxValue = BlueprintValueUtil.stringToLongOptional(
-			configurationJsonObject.getString(
+			configurationJSONObject.getString(
 				CustomParameterConfigurationKeys.MAX_VALUE.getJsonKey()));
 
 		if (maxValue.isPresent() && (Long.compare(value, maxValue.get()) > 0)) {
@@ -92,7 +92,7 @@ public class LongParameterBuilder implements ParameterBuilder {
 
 	private Optional<Long> _getValueOptional(
 		BlueprintsAttributes blueprintsAttributes,
-		JSONObject configurationJsonObject, String parameterName) {
+		JSONObject configurationJSONObject, String parameterName) {
 
 		Optional<String> valueStringOptional =
 			_blueprintsAttributesHelper.getStringOptional(
@@ -100,7 +100,7 @@ public class LongParameterBuilder implements ParameterBuilder {
 
 		if (!valueStringOptional.isPresent()) {
 			valueStringOptional = BlueprintValueUtil.toStringOptional(
-				configurationJsonObject.getString(
+				configurationJSONObject.getString(
 					CustomParameterConfigurationKeys.DEFAULT.getJsonKey()));
 		}
 

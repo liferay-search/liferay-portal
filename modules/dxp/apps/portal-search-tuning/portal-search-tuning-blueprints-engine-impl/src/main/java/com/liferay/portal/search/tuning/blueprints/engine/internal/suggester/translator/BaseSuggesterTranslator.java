@@ -37,13 +37,13 @@ public abstract class BaseSuggesterTranslator implements SuggesterTranslator {
 
 	@Override
 	public abstract Optional<Suggester> translate(
-		ParameterData parameterData, Messages messages,
-		JSONObject configurationJsonObject, String suggesterName);
+		String suggesterName, JSONObject configurationJSONObject,
+		ParameterData parameterData, Messages messages);
 
 	protected String getText(
-		ParameterData parameterData, JSONObject configurationJsonObject) {
+		ParameterData parameterData, JSONObject configurationJSONObject) {
 
-		String text = configurationJsonObject.getString(
+		String text = configurationJSONObject.getString(
 			CompletionSuggesterConfigurationKeys.TEXT.getJsonKey());
 
 		if (Validator.isBlank(text)) {
@@ -54,10 +54,10 @@ public abstract class BaseSuggesterTranslator implements SuggesterTranslator {
 	}
 
 	protected boolean validateSuggesterConfiguration(
-		Messages messages, JSONObject configurationJsonObject,
+		Messages messages, JSONObject configurationJSONObject,
 		String suggesterName) {
 
-		if (_validateField(messages, configurationJsonObject) &&
+		if (_validateField(messages, configurationJSONObject) &&
 			_validateName(messages, suggesterName)) {
 
 			return true;
@@ -67,9 +67,9 @@ public abstract class BaseSuggesterTranslator implements SuggesterTranslator {
 	}
 
 	private boolean _validateField(
-		Messages messages, JSONObject configurationJsonObject) {
+		Messages messages, JSONObject configurationJSONObject) {
 
-		if (configurationJsonObject.isNull("field")) {
+		if (configurationJSONObject.isNull("field")) {
 			messages.addMessage(
 				new Message.Builder().className(
 					getClass().getName()
@@ -78,7 +78,7 @@ public abstract class BaseSuggesterTranslator implements SuggesterTranslator {
 				).msg(
 					"Suggester field is not defined"
 				).rootObject(
-					configurationJsonObject
+					configurationJSONObject
 				).rootProperty(
 					"field"
 				).severity(
@@ -89,7 +89,7 @@ public abstract class BaseSuggesterTranslator implements SuggesterTranslator {
 				StringBundler sb = new StringBundler(3);
 
 				sb.append("Suggester field is not defined [ ");
-				sb.append(configurationJsonObject);
+				sb.append(configurationJSONObject);
 				sb.append(" ]");
 
 				_log.warn(sb.toString());

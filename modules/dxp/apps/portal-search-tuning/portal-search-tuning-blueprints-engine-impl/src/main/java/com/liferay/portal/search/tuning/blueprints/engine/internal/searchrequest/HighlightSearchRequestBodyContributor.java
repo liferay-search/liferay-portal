@@ -44,20 +44,20 @@ public class HighlightSearchRequestBodyContributor
 
 	@Override
 	public void contribute(
-		SearchRequestBuilder searchRequestBuilder, ParameterData parameterData,
-		Blueprint blueprint, Messages messages) {
+		SearchRequestBuilder searchRequestBuilder, Blueprint blueprint,
+		ParameterData parameterData, Messages messages) {
 
-		Optional<JSONObject> configurationJsonObjectOptional =
+		Optional<JSONObject> configurationJSONObjectOptional =
 			_blueprintHelper.getHighlightConfigurationOptional(blueprint);
 
-		if (!configurationJsonObjectOptional.isPresent()) {
+		if (!configurationJSONObjectOptional.isPresent()) {
 			return;
 		}
 
-		JSONObject configurationJsonObject =
-			configurationJsonObjectOptional.get();
+		JSONObject configurationJSONObject =
+			configurationJSONObjectOptional.get();
 
-		boolean enabled = configurationJsonObject.getBoolean(
+		boolean enabled = configurationJSONObject.getBoolean(
 			HighlightingConfigurationKeys.ENABLED.getJsonKey());
 
 		if (!enabled) {
@@ -68,39 +68,39 @@ public class HighlightSearchRequestBodyContributor
 
 		HighlightBuilder highlightBuilder = _highlights.builder();
 
-		if (configurationJsonObject.has(
+		if (configurationJSONObject.has(
 				HighlightingConfigurationKeys.FRAGMENT_SIZE.getJsonKey())) {
 
 			highlightBuilder.fragmentSize(
-				configurationJsonObject.getInt(
+				configurationJSONObject.getInt(
 					HighlightingConfigurationKeys.FRAGMENT_SIZE.getJsonKey()));
 		}
 
-		if (configurationJsonObject.has(
+		if (configurationJSONObject.has(
 				HighlightingConfigurationKeys.SNIPPET_SIZE.getJsonKey())) {
 
 			highlightBuilder.numOfFragments(
-				configurationJsonObject.getInt(
+				configurationJSONObject.getInt(
 					HighlightingConfigurationKeys.SNIPPET_SIZE.getJsonKey()));
 		}
 
-		if (configurationJsonObject.has(
+		if (configurationJSONObject.has(
 				HighlightingConfigurationKeys.REQUIRE_FIELD_MATCH.
 					getJsonKey())) {
 
 			highlightBuilder.requireFieldMatch(
-				configurationJsonObject.getBoolean(
+				configurationJSONObject.getBoolean(
 					HighlightingConfigurationKeys.REQUIRE_FIELD_MATCH.
 						getJsonKey()));
 		}
 
-		if (configurationJsonObject.has(
+		if (configurationJSONObject.has(
 				HighlightingConfigurationKeys.FIELDS.getJsonKey())) {
 
-			JSONArray fieldsJsonArray = configurationJsonObject.getJSONArray(
+			JSONArray fieldsJSONArray = configurationJSONObject.getJSONArray(
 				HighlightingConfigurationKeys.FIELDS.getJsonKey());
 
-			_addFieldConfigs(highlightBuilder, fieldsJsonArray);
+			_addFieldConfigs(highlightBuilder, fieldsJSONArray);
 		}
 
 		// TODO: waiting for support in SearchRequestBuilder
@@ -110,13 +110,13 @@ public class HighlightSearchRequestBodyContributor
 	}
 
 	private void _addFieldConfigs(
-		HighlightBuilder highlightBuilder, JSONArray fieldsJsonArray) {
+		HighlightBuilder highlightBuilder, JSONArray fieldsJSONArray) {
 
-		for (int i = 0; i < fieldsJsonArray.length(); i++) {
+		for (int i = 0; i < fieldsJSONArray.length(); i++) {
 			FieldConfigBuilder fieldConfigBuilder =
 				_highlights.fieldConfigBuilder();
 
-			fieldConfigBuilder.field(fieldsJsonArray.getString(i));
+			fieldConfigBuilder.field(fieldsJSONArray.getString(i));
 
 			highlightBuilder.addFieldConfig(fieldConfigBuilder.build());
 		}

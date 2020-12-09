@@ -40,13 +40,13 @@ public class StringArrayParameterBuilder implements ParameterBuilder {
 	@Override
 	public Optional<Parameter> build(
 		BlueprintsAttributes blueprintsAttributes, Messages messages,
-		JSONObject configurationJsonObject) {
+		JSONObject configurationJSONObject) {
 
-		String parameterName = configurationJsonObject.getString(
+		String parameterName = configurationJSONObject.getString(
 			CustomParameterConfigurationKeys.PARAMETER_NAME.getJsonKey());
 
 		Optional<String[]> valueOptional = _getValueOptional(
-			blueprintsAttributes, configurationJsonObject, parameterName);
+			blueprintsAttributes, configurationJSONObject, parameterName);
 
 		if (!valueOptional.isPresent()) {
 			return Optional.empty();
@@ -60,7 +60,7 @@ public class StringArrayParameterBuilder implements ParameterBuilder {
 
 	private Optional<String[]> _getValueOptional(
 		BlueprintsAttributes blueprintsAttributes,
-		JSONObject configurationJsonObject, String parameterName) {
+		JSONObject configurationJSONObject, String parameterName) {
 
 		Optional<String[]> valueOptional =
 			_blueprintsAttributesHelper.getStringArrayOptional(
@@ -68,7 +68,7 @@ public class StringArrayParameterBuilder implements ParameterBuilder {
 
 		if (!valueOptional.isPresent()) {
 			valueOptional = BlueprintJSONUtil.getStringArrayOptional(
-				configurationJsonObject,
+				configurationJSONObject,
 				CustomParameterConfigurationKeys.DEFAULT.getJsonKey());
 		}
 

@@ -39,10 +39,10 @@ import java.util.stream.Stream;
 public class BlueprintValueUtil {
 
 	public static JSONArray getConditionValueJSONArray(
-			JSONObject conditionJsonObject)
+			JSONObject conditionJSONObject)
 		throws ParameterEvaluationException {
 
-		Object object = conditionJsonObject.get(
+		Object object = conditionJSONObject.get(
 			ConditionConfigurationKeys.MATCH_VALUE.getJsonKey());
 
 		if (!(object instanceof JSONArray)) {
@@ -54,7 +54,7 @@ public class BlueprintValueUtil {
 				).msg(
 					"Excepted an array clause condition match value"
 				).rootObject(
-					conditionJsonObject
+					conditionJSONObject
 				).rootProperty(
 					ConditionConfigurationKeys.MATCH_VALUE.getJsonKey()
 				).rootValue(

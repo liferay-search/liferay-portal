@@ -27,7 +27,7 @@ import java.util.Optional;
 public interface AggregationTranslator {
 
 	public Optional<Aggregation> translate(
-		String aggregationName, JSONObject configurationJsonObject,
+		String aggregationName, JSONObject configurationJSONObject,
 		ParameterData parameterData, Messages messages);
 
 }
