@@ -74,40 +74,40 @@ public class ContextParameterContributor implements ParameterContributor {
 			new ParameterDefinition(
 				_getTemplateVariableName(
 					ReservedParameterNames.COMPANY_ID.getKey()),
-				LongParameter.class.getName(), "parameter.context.company-id"));
+				LongParameter.class.getName(), "core.parameter.context.company-id"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
 				_getTemplateVariableName(
 					ReservedParameterNames.SCOPE_GROUP_ID.getKey()),
 				LongParameter.class.getName(),
-				"parameter.context.scope-group-id"));
+				"core.parameter.context.scope-group-id"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
 				_getTemplateVariableName(
 					ReservedParameterNames.LAYOUT_LOCALE_NAME.getKey()),
 				StringParameter.class.getName(),
-				"parameter.context.layout-locale-name"));
+				"core.parameter.context.layout-locale-name"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
 				_getTemplateVariableName(ReservedParameterNames.PLID.getKey()),
-				LongParameter.class.getName(), "parameter.context.plid"));
+				LongParameter.class.getName(), "core.parameter.context.plid"));
 
 		parameterDefinitions.add(
 				new ParameterDefinition(
 					_getTemplateVariableName(
 						ReservedParameterNames.LANGUAGE.getKey()),
 					StringParameter.class.getName(),
-					"parameter.context.language"));
+					"core.parameter.context.language"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
 				_getTemplateVariableName(
 					ReservedParameterNames.LANGUAGE_ID.getKey()),
 				StringParameter.class.getName(),
-				"parameter.context.language-id"));
+				"core.parameter.context.language-id"));
 
 		return parameterDefinitions;
 	}

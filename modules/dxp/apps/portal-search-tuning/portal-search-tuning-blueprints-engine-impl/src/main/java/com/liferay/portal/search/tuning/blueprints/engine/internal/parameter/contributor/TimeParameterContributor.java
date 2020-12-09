@@ -71,48 +71,48 @@ public class TimeParameterContributor implements ParameterContributor {
 			new ParameterDefinition(
 				_getTemplateVariableName(
 					ReservedParameterNames.CURRENT_DATE.getKey()),
-				DateParameter.class.getName(), "parameter.time.current-date"));
+				DateParameter.class.getName(), "core.parameter.time.current-date"));
 		parameterDefinitions.add(
 			new ParameterDefinition(
 				_getTemplateVariableName(
 					ReservedParameterNames.CURRENT_DAY_OF_MONTH.getKey()),
 				IntegerParameter.class.getName(),
-				"parameter.time.current-day-of-month"));
+				"core.parameter.time.current-day-of-month"));
 		parameterDefinitions.add(
 			new ParameterDefinition(
 				_getTemplateVariableName(
 					ReservedParameterNames.CURRENT_DAY_OF_WEEK.getKey()),
 				IntegerParameter.class.getName(),
-				"parameter.time.current-day-of-week"));
+				"core.parameter.time.current-day-of-week"));
 		parameterDefinitions.add(
 			new ParameterDefinition(
 				_getTemplateVariableName(
 					ReservedParameterNames.CURRENT_DAY_OF_YEAR.getKey()),
 				IntegerParameter.class.getName(),
-				"parameter.time.current-day-of-year"));
+				"core.parameter.time.current-day-of-year"));
 		parameterDefinitions.add(
 			new ParameterDefinition(
 				_getTemplateVariableName(
 					ReservedParameterNames.CURRENT_HOUR.getKey()),
 				IntegerParameter.class.getName(),
-				"parameter.time.current-hour"));
+				"core.parameter.time.current-hour"));
 		parameterDefinitions.add(
 			new ParameterDefinition(
 				_getTemplateVariableName(
 					ReservedParameterNames.CURRENT_YEAR.getKey()),
 				IntegerParameter.class.getName(),
-				"parameter.time.current-year"));
+				"core.parameter.time.current-year"));
 		parameterDefinitions.add(
 			new ParameterDefinition(
 				_getTemplateVariableName(
 					ReservedParameterNames.TIME_OF_DAY.getKey()),
-				StringParameter.class.getName(), "parameter.time.time-of-day"));
+				StringParameter.class.getName(), "core.parameter.time.time-of-day"));
 		parameterDefinitions.add(
 			new ParameterDefinition(
 				_getTemplateVariableName(
 					ReservedParameterNames.TIMEZONE_LOCALE_NAME.getKey()),
 				StringParameter.class.getName(),
-				"parameter.time.timezone-locale-name"));
+				"core.parameter.time.timezone-locale-name"));
 
 		return parameterDefinitions;
 	}
