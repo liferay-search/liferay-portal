@@ -54,8 +54,26 @@ public class HighlightSearchRequestBodyContributor
 			return;
 		}
 
-		JSONObject configurationJSONObject =
-			configurationJSONObjectOptional.get();
+		_contribute(
+			searchRequestBuilder, configurationJSONObjectOptional.get());
+	}
+
+	private void _addFieldConfigs(
+		HighlightBuilder highlightBuilder, JSONArray fieldsJSONArray) {
+
+		for (int i = 0; i < fieldsJSONArray.length(); i++) {
+			FieldConfigBuilder fieldConfigBuilder =
+				_highlights.fieldConfigBuilder();
+
+			fieldConfigBuilder.field(fieldsJSONArray.getString(i));
+
+			highlightBuilder.addFieldConfig(fieldConfigBuilder.build());
+		}
+	}
+
+	private void _contribute(
+		SearchRequestBuilder searchRequestBuilder,
+		JSONObject configurationJSONObject) {
 
 		boolean enabled = configurationJSONObject.getBoolean(
 			HighlightingConfigurationKeys.ENABLED.getJsonKey());
@@ -107,19 +125,6 @@ public class HighlightSearchRequestBodyContributor
 
 		// searchRequestBuilder.setHighlight(highlightBuilder.build());
 
-	}
-
-	private void _addFieldConfigs(
-		HighlightBuilder highlightBuilder, JSONArray fieldsJSONArray) {
-
-		for (int i = 0; i < fieldsJSONArray.length(); i++) {
-			FieldConfigBuilder fieldConfigBuilder =
-				_highlights.fieldConfigBuilder();
-
-			fieldConfigBuilder.field(fieldsJSONArray.getString(i));
-
-			highlightBuilder.addFieldConfig(fieldConfigBuilder.build());
-		}
 	}
 
 	@Reference

@@ -15,7 +15,6 @@
 package com.liferay.portal.search.tuning.blueprints.engine.internal.util;
 
 import com.liferay.petra.string.StringBundler;
-import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
@@ -27,11 +26,14 @@ import com.liferay.portal.search.tuning.blueprints.engine.parameter.DateParamete
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.Parameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.util.BlueprintTemplateVariableParser;
+import com.liferay.portal.search.tuning.blueprints.message.Message;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
+import com.liferay.portal.search.tuning.blueprints.message.Severity;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.osgi.service.component.annotations.Component;
 
@@ -43,10 +45,8 @@ public class BlueprintTemplateVariableParserImpl
 	implements BlueprintTemplateVariableParser {
 
 	@Override
-	public JSONObject parse(
-			JSONObject jsonObject, ParameterData parameterData,
-			Messages messages)
-		throws Exception {
+	public Optional<JSONObject> parse(
+		JSONObject jsonObject, ParameterData parameterData, Messages messages) {
 
 		List<Parameter> parameters = parameterData.getParameters();
 
@@ -55,53 +55,11 @@ public class BlueprintTemplateVariableParserImpl
 				_log.debug("No parameters available");
 			}
 
-			return jsonObject;
+			return Optional.of(jsonObject);
 		}
 
-		String queryString = jsonObject.toString();
-
-		if (!_hasTemplateVariables(queryString)) {
-			return jsonObject;
-		}
-
-		boolean changed = false;
-
-		ToTemplateVariableStringVisitor toStringVisitor =
-			new ToTemplateVariableStringVisitor();
-
-		for (Parameter parameter : parameterData.getParameters()) {
-			String str1 = parameter.getTemplateVariable();
-
-			String str2 = _getParametrizedVariableStem(str1);
-
-			if (queryString.contains(str2)) {
-				queryString = _processParametrizedTemplateVariables(
-					queryString, parameter, toStringVisitor, str2);
-				changed = true;
-			}
-
-			if (queryString.contains(str1)) {
-				queryString = _processTemplateVariables(
-					queryString, parameter, toStringVisitor);
-				changed = true;
-			}
-
-			if (!_hasTemplateVariables(queryString)) {
-				break;
-			}
-		}
-
-		if (queryString.contains("${")) {
-			throw new JSONException(
-				"Some template variables could not be parsed [ " + queryString +
-					" ]");
-		}
-
-		if (changed) {
-			return JSONFactoryUtil.createJSONObject(queryString);
-		}
-
-		return jsonObject;
+		return Optional.ofNullable(
+			_parseJSONObject(jsonObject, parameterData, messages));
 	}
 
 	private Map<String, String> _getParameterOptions(String optionsString)
@@ -129,32 +87,140 @@ public class BlueprintTemplateVariableParserImpl
 		return map;
 	}
 
-	private String _getParametrizedVariableStem(String s) {
+	private String _getParametrizedVariableStem(String str) {
 		StringBundler sb = new StringBundler(2);
 
-		sb.append(s.substring(0, s.length() - 1));
+		sb.append(str.substring(0, str.length() - 1));
 		sb.append("|");
 
 		return sb.toString();
 	}
 
-	private boolean _hasTemplateVariables(String queryString) {
-		if (queryString.indexOf("${") > 0) {
+	private boolean _hasTemplateVariables(String str) {
+		if (str.indexOf("${") > 0) {
 			return true;
 		}
 
 		return false;
 	}
 
+	private boolean isSuccess(
+		JSONObject jsonObject, String str, Messages messages) {
+
+		if (str.contains("${")) {
+			messages.addMessage(
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"core.error.unable-to-parse-template-variables"
+				).msg(
+					"Some template variables could not be parsed"
+				).rootObject(
+					jsonObject
+				).severity(
+					Severity.WARN
+				).build());
+
+			if (_log.isErrorEnabled()) {
+				StringBundler sb = new StringBundler(5);
+
+				sb.append("Some template variables could not be parsed. This ");
+				sb.append("could happen because of a configuration error or ");
+				sb.append("values being not available runtime  [ ");
+				sb.append(str);
+				sb.append(" ]");
+
+				_log.error(sb.toString());
+			}
+
+			return false;
+		}
+
+		return true;
+	}
+
+	private JSONObject _parseJSONObject(
+		JSONObject jsonObject, ParameterData parameterData, Messages messages) {
+
+		String str = jsonObject.toString();
+
+		if (!_hasTemplateVariables(str)) {
+			return jsonObject;
+		}
+
+		try {
+			boolean changed = false;
+
+			ToTemplateVariableStringVisitor toStringVisitor =
+				new ToTemplateVariableStringVisitor();
+
+			for (Parameter parameter : parameterData.getParameters()) {
+				String templateVariable = parameter.getTemplateVariable();
+
+				if (Validator.isNull(templateVariable)) {
+					continue;
+				}
+				
+				String stem = _getParametrizedVariableStem(templateVariable);
+
+				if (str.contains(stem)) {
+					str = _processParametrizedTemplateVariables(
+						str, parameter, toStringVisitor, stem);
+					changed = true;
+				}
+
+				if (str.contains(templateVariable)) {
+					str = _processTemplateVariables(
+						str, parameter, toStringVisitor);
+					changed = true;
+				}
+
+				if (!_hasTemplateVariables(str)) {
+					break;
+				}
+			}
+
+			if (!isSuccess(jsonObject, str, messages)) {
+				return null;
+			}
+
+			if (!changed) {
+				return jsonObject;
+			}
+
+			return JSONFactoryUtil.createJSONObject(str);
+		}
+		catch (Exception exception) {
+			messages.addMessage(
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"core.error.unknown-template-variable-parsing-error"
+				).msg(
+					exception.getMessage()
+				).rootObject(
+					jsonObject
+				).severity(
+					Severity.ERROR
+				).throwable(
+					exception
+				).build());
+
+			_log.error(exception.getMessage(), exception);
+		}
+
+		return null;
+	}
+
 	private String _processParametrizedTemplateVariable(
-			String queryString, Parameter parameter,
+			String str, Parameter parameter,
 			ToTemplateVariableStringVisitor toStringVisitor,
 			String templateVariable, int from)
 		throws Exception {
 
-		int end = queryString.indexOf("}", from);
+		int end = str.indexOf("}", from);
 
-		String optionsString = queryString.substring(
+		String optionsString = str.substring(
 			from + templateVariable.length(), end);
 
 		StringBuilder sb = new StringBuilder();
@@ -169,37 +235,36 @@ public class BlueprintTemplateVariableParserImpl
 		// Remove quotes from array values
 
 		if (substitution.startsWith("[")) {
-			return _replaceArrayValue(queryString, sb.toString(), substitution);
+			return _replaceArrayValue(str, sb.toString(), substitution);
 		}
 
-		return StringUtil.replace(queryString, sb.toString(), substitution);
+		return StringUtil.replace(str, sb.toString(), substitution);
 	}
 
 	private String _processParametrizedTemplateVariables(
-			String queryString, Parameter parameter,
+			String str, Parameter parameter,
 			ToTemplateVariableStringVisitor toStringVisitor,
 			String templateVariable)
 		throws Exception {
 
 		if (!DateParameter.class.isAssignableFrom(parameter.getClass())) {
-			return queryString;
+			return str;
 		}
 
-		int from = queryString.indexOf(templateVariable);
+		int from = str.indexOf(templateVariable);
 
 		while (from >= 0) {
-			queryString = _processParametrizedTemplateVariable(
-				queryString, parameter, toStringVisitor, templateVariable,
-				from);
+			str = _processParametrizedTemplateVariable(
+				str, parameter, toStringVisitor, templateVariable, from);
 
-			from = queryString.indexOf(templateVariable, from);
+			from = str.indexOf(templateVariable, from);
 		}
 
-		return queryString;
+		return str;
 	}
 
 	private String _processTemplateVariables(
-			String queryString, Parameter parameter,
+			String str, Parameter parameter,
 			ToTemplateVariableStringVisitor toStringVisitor)
 		throws Exception {
 
@@ -210,15 +275,14 @@ public class BlueprintTemplateVariableParserImpl
 		// Remove quotes if array values
 
 		if (substitution.startsWith("[")) {
-			return _replaceArrayValue(
-				queryString, templateVariable, substitution);
+			return _replaceArrayValue(str, templateVariable, substitution);
 		}
 
-		return StringUtil.replace(queryString, templateVariable, substitution);
+		return StringUtil.replace(str, templateVariable, substitution);
 	}
 
 	private String _replaceArrayValue(
-		String queryString, String templateVariable, String substitution) {
+		String str, String templateVariable, String substitution) {
 
 		StringBundler sb = new StringBundler(3);
 
@@ -226,7 +290,7 @@ public class BlueprintTemplateVariableParserImpl
 		sb.append(templateVariable);
 		sb.append("\"");
 
-		return StringUtil.replace(queryString, sb.toString(), substitution);
+		return StringUtil.replace(str, sb.toString(), substitution);
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

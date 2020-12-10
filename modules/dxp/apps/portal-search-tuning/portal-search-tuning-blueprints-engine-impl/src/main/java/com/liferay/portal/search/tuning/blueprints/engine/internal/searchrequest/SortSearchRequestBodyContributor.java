@@ -74,6 +74,37 @@ public class SortSearchRequestBodyContributor
 		}
 	}
 
+	private Optional<Sort> _getDefaulSort(
+		ParameterData parameterData, JSONObject configurationJSONObject,
+		Messages messages) {
+
+		if (!_validateConfiguration(configurationJSONObject, messages)) {
+			return Optional.empty();
+		}
+
+		Optional<JSONObject> parsedConfigurationJSONObjectOptional =
+			_blueprintTemplateVariableParser.parse(
+				configurationJSONObject, parameterData, messages);
+
+		if (!parsedConfigurationJSONObjectOptional.isPresent()) {
+			return Optional.empty();
+		}
+
+		JSONObject parsedConfigurationJSONObject =
+			parsedConfigurationJSONObjectOptional.get();
+
+		SortOrder sortOrder = _getSortOrder(
+			parsedConfigurationJSONObject.getString(
+				SortConfigurationKeys.ORDER.getJsonKey()),
+			messages);
+
+		if (sortOrder == null) {
+			return Optional.empty();
+		}
+
+		return _getSort(parsedConfigurationJSONObject, sortOrder, messages);
+	}
+
 	private List<Sort> _getDefaultSorts(
 		ParameterData parameterData, Blueprint blueprint, Messages messages) {
 
@@ -92,29 +123,8 @@ public class SortSearchRequestBodyContributor
 			JSONObject configurationJSONObject =
 				configurationJSONArray.getJSONObject(i);
 
-			if (!_validateConfiguration(configurationJSONObject, messages)) {
-				continue;
-			}
-
-			JSONObject parsedConfigurationJSONObject =
-				_getParsedConfigurationJSONObject(
-					parameterData, messages, configurationJSONObject);
-
-			if (parsedConfigurationJSONObject == null) {
-				continue;
-			}
-
-			SortOrder sortOrder = _getSortOrder(
-				parsedConfigurationJSONObject.getString(
-					SortConfigurationKeys.ORDER.getJsonKey()),
-				messages);
-
-			if (sortOrder == null) {
-				continue;
-			}
-
-			Optional<Sort> sortOptional = _getSort(
-				parsedConfigurationJSONObject, sortOrder, messages);
+			Optional<Sort> sortOptional = _getDefaulSort(
+				parameterData, configurationJSONObject, messages);
 
 			if (sortOptional.isPresent()) {
 				sorts.add(sortOptional.get());
@@ -124,41 +134,12 @@ public class SortSearchRequestBodyContributor
 		return sorts;
 	}
 
-	private JSONObject _getParsedConfigurationJSONObject(
-		ParameterData parameterData, Messages messages,
-		JSONObject configurationJSONObject) {
-
-		try {
-			return _blueprintTemplateVariableParser.parse(
-				configurationJSONObject, parameterData, messages);
-		}
-		catch (Exception exception) {
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"core.error.unknown-sort-configuration-error"
-				).msg(
-					exception.getMessage()
-				).rootObject(
-					configurationJSONObject
-				).severity(
-					Severity.ERROR
-				).throwable(
-					exception
-				).build());
-
-			_log.error(exception.getMessage(), exception);
-		}
-
-		return null;
-	}
-
 	private Optional<Sort> _getSort(
 		JSONObject configurationJSONObject, SortOrder sortOrder,
 		Messages messages) {
 
-		String type = configurationJSONObject.getString("type", "field");
+		String type = configurationJSONObject.getString(
+			SortConfigurationKeys.TYPE.getJsonKey(), "field");
 
 		try {
 			SortTranslator sortTranslator =
@@ -193,6 +174,35 @@ public class SortSearchRequestBodyContributor
 		}
 
 		return Optional.empty();
+	}
+
+	private Optional<Sort> _getSortFromParameter(
+		ParameterData parameterData, JSONObject configurationJSONObject,
+		Messages messages) {
+
+		if (!_validateConfiguration(configurationJSONObject, messages)) {
+			return Optional.empty();
+		}
+
+		Optional<JSONObject> parsedConfigurationJSONObjectOptional =
+			_blueprintTemplateVariableParser.parse(
+				configurationJSONObject, parameterData, messages);
+
+		if (!parsedConfigurationJSONObjectOptional.isPresent()) {
+			return Optional.empty();
+		}
+
+		JSONObject parsedConfigurationJSONObject =
+			parsedConfigurationJSONObjectOptional.get();
+
+		SortOrder sortOrder = _getSortOrderFromParameter(
+			parameterData, parsedConfigurationJSONObject, messages);
+
+		if (sortOrder == null) {
+			return Optional.empty();
+		}
+
+		return _getSort(parsedConfigurationJSONObject, sortOrder, messages);
 	}
 
 	private SortOrder _getSortOrder(String sortOrderString, Messages messages) {
@@ -268,30 +278,11 @@ public class SortSearchRequestBodyContributor
 			JSONObject configurationJSONObject =
 				configurationJSONArray.getJSONObject(i);
 
-			if (!_validateConfiguration(configurationJSONObject, messages)) {
-				continue;
-			}
+			Optional<Sort> sortOptional = _getSortFromParameter(
+				parameterData, configurationJSONObject, messages);
 
-			JSONObject parsedConfigurationJSONObject =
-				_getParsedConfigurationJSONObject(
-					parameterData, messages, configurationJSONObject);
-
-			if (parsedConfigurationJSONObject == null) {
-				continue;
-			}
-
-			SortOrder sortOrder = _getSortOrderFromParameter(
-				parameterData, parsedConfigurationJSONObject, messages);
-
-			if (sortOrder == null) {
-				continue;
-			}
-
-			Optional<Sort> sort = _getSort(
-				parsedConfigurationJSONObject, sortOrder, messages);
-
-			if (sort.isPresent()) {
-				sorts.add(sort.get());
+			if (sortOptional.isPresent()) {
+				sorts.add(sortOptional.get());
 			}
 		}
 
