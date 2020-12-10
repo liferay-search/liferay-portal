@@ -77,53 +77,9 @@ public class FacetsSearchRequestBodyContributor
 			return;
 		}
 
-		JSONArray configurationJSONArray = configurationJSONArrayOptional.get();
-
-		for (int i = 0; i < configurationJSONArray.length(); i++) {
-			JSONObject rawConfigurationJSONObject =
-				configurationJSONArray.getJSONObject(i);
-
-			JSONObject configurationJSONObject = null;
-
-			try {
-				configurationJSONObject =
-					_blueprintTemplateVariableParser.parse(
-						rawConfigurationJSONObject, parameterData, messages);
-			}
-			catch (Exception exception) {
-				messages.addMessage(
-					new Message.Builder().className(
-						getClass().getName()
-					).localizationKey(
-						"facets.error.unknown-configuration-error"
-					).msg(
-						exception.getMessage()
-					).rootObject(
-						configurationJSONObject
-					).severity(
-						Severity.ERROR
-					).throwable(
-						exception
-					).build());
-
-				_log.error(exception.getMessage(), exception);
-
-				continue;
-			}
-
-			boolean enabled = configurationJSONObject.getBoolean(
-				FacetConfigurationKeys.ENABLED.getJsonKey(), true);
-
-			if (!enabled) {
-				continue;
-			}
-
-			_addAggregation(searchRequestBuilder, configurationJSONObject);
-
-			_addFilter(
-				searchRequestBuilder, parameterData, messages,
-				configurationJSONObject);
-		}
+		_contribute(
+			searchRequestBuilder, configurationJSONArrayOptional.get(),
+			parameterData, messages);
 	}
 
 	private void _addAggregation(
@@ -330,6 +286,42 @@ public class FacetsSearchRequestBodyContributor
 						"must"
 					).build());
 			}
+		}
+	}
+
+	private void _contribute(
+		SearchRequestBuilder searchRequestBuilder,
+		JSONArray configurationJSONArray, ParameterData parameterData,
+		Messages messages) {
+
+		for (int i = 0; i < configurationJSONArray.length(); i++) {
+			JSONObject configurationJSONObject =
+				configurationJSONArray.getJSONObject(i);
+
+			Optional<JSONObject> parsedConfigurationJSONObjectOptional =
+				_blueprintTemplateVariableParser.parse(
+					configurationJSONObject, parameterData, messages);
+
+			if (!parsedConfigurationJSONObjectOptional.isPresent()) {
+				continue;
+			}
+
+			JSONObject parsedConfigurationJSONObject =
+				parsedConfigurationJSONObjectOptional.get();
+
+			boolean enabled = parsedConfigurationJSONObject.getBoolean(
+				FacetConfigurationKeys.ENABLED.getJsonKey(), true);
+
+			if (!enabled) {
+				continue;
+			}
+
+			_addAggregation(
+				searchRequestBuilder, parsedConfigurationJSONObject);
+
+			_addFilter(
+				searchRequestBuilder, parameterData, messages,
+				parsedConfigurationJSONObject);
 		}
 	}
 
