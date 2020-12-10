@@ -21,6 +21,7 @@ import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterDat
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -30,6 +31,8 @@ public interface QueryContributor {
 
 	public Optional<Query> build(
 		Blueprint blueprint, ParameterData parameterData, Messages messages);
+
+	public Map<String, Object> getAttributes();
 
 	public ClauseContext getClauseContext();
 
