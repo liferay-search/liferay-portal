@@ -18,14 +18,14 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 
+import java.util.Optional;
+
 /**
  * @author Petteri Karttunen
  */
 public interface BlueprintTemplateVariableParser {
 
-	public JSONObject parse(
-			JSONObject jsonObject, ParameterData parameterData,
-			Messages messages)
-		throws Exception;
+	public Optional<JSONObject> parse(
+		JSONObject jsonObject, ParameterData parameterData, Messages messages);
 
 }
