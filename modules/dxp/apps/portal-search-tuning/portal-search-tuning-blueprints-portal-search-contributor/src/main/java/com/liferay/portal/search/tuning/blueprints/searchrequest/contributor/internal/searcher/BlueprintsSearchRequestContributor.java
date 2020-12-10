@@ -206,13 +206,6 @@ public class BlueprintsSearchRequestContributor
 	}
 
 	protected String getKeywordsParameterName(long blueprintId) {
-
-		// TODO: REMOVE WHEN CONFIG AVAILABLE
-
-		if (true) {
-			return "q";
-		}
-
 		try {
 			Optional<String> optional =
 				_blueprintHelper.getKeywordsParameterNameOptional(
@@ -224,7 +217,7 @@ public class BlueprintsSearchRequestContributor
 			_log.error(portalException.getMessage(), portalException);
 		}
 
-		return StringPool.BLANK;
+		return "q";
 	}
 
 	protected Locale getLocale(SearchRequest searchRequest) {
