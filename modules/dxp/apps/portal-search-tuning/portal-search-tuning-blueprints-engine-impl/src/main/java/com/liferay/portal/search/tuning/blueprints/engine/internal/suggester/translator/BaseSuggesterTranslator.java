@@ -57,9 +57,7 @@ public abstract class BaseSuggesterTranslator implements SuggesterTranslator {
 		Messages messages, JSONObject configurationJSONObject,
 		String suggesterName) {
 
-		if (_validateField(messages, configurationJSONObject) &&
-			_validateName(messages, suggesterName)) {
-
+		if (_validateField(messages, configurationJSONObject)) {
 			return true;
 		}
 
@@ -93,29 +91,6 @@ public abstract class BaseSuggesterTranslator implements SuggesterTranslator {
 				sb.append(" ]");
 
 				_log.warn(sb.toString());
-			}
-
-			return false;
-		}
-
-		return true;
-	}
-
-	private boolean _validateName(Messages messages, String suggesterName) {
-		if (Validator.isBlank(suggesterName)) {
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"core.error.undefined-suggester-name"
-				).msg(
-					"Suggester name is not defined"
-				).severity(
-					Severity.ERROR
-				).build());
-
-			if (_log.isWarnEnabled()) {
-				_log.warn("Suggester name is not defined");
 			}
 
 			return false;

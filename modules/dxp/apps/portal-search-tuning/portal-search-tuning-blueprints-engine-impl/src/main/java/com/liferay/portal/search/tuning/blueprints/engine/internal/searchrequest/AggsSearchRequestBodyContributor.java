@@ -60,7 +60,15 @@ public class AggsSearchRequestBodyContributor
 			return;
 		}
 
-		JSONArray configurationJSONArray = configurationJSONArrayOptional.get();
+		_contribute(
+			searchRequestBuilder, configurationJSONArrayOptional.get(),
+			parameterData, messages);
+	}
+
+	private void _contribute(
+		SearchRequestBuilder searchRequestBuilder,
+		JSONArray configurationJSONArray, ParameterData parameterData,
+		Messages messages) {
 
 		for (int i = 0; i < configurationJSONArray.length(); i++) {
 			JSONObject configurationJSONObject =
@@ -73,74 +81,68 @@ public class AggsSearchRequestBodyContributor
 				continue;
 			}
 
-			String type = configurationJSONObject.getString(
-				AggregationConfigurationKeys.TYPE.getJsonKey());
+			Optional<Aggregation> aggregationOptional = _getAggregationOptional(
+				configurationJSONObject, parameterData, messages);
 
-			String name = configurationJSONObject.getString(
-				AggregationConfigurationKeys.NAME.getJsonKey());
-
-			try {
-				AggregationTranslator aggregationTranslator =
-					_aggregationBuilderFactory.getTranslator(type);
-
-				JSONObject bodyJSONObject =
-					_blueprintTemplateVariableParser.parse(
-						configurationJSONObject.getJSONObject(
-							AggregationConfigurationKeys.BODY.getJsonKey()),
-						parameterData, messages);
-
-				Optional<Aggregation> aggregationOptional =
-					aggregationTranslator.translate(
-						name, bodyJSONObject, parameterData, messages);
-
-				if (aggregationOptional.isPresent()) {
-					searchRequestBuilder.addAggregation(
-						aggregationOptional.get());
-				}
-			}
-			catch (IllegalArgumentException illegalArgumentException) {
-				messages.addMessage(
-					new Message.Builder().className(
-						getClass().getName()
-					).localizationKey(
-						"core.error.unknown-aggregation-type"
-					).msg(
-						illegalArgumentException.getMessage()
-					).rootObject(
-						configurationJSONObject
-					).rootProperty(
-						AggregationConfigurationKeys.TYPE.getJsonKey()
-					).rootValue(
-						type
-					).severity(
-						Severity.ERROR
-					).throwable(
-						illegalArgumentException
-					).build());
-
-				_log.error(
-					illegalArgumentException.getMessage(),
-					illegalArgumentException);
-			}
-			catch (Exception exception) {
-				messages.addMessage(
-					new Message.Builder().className(
-						getClass().getName()
-					).localizationKey(
-						"core.error.unknown-aggregation-configuration-error"
-					).msg(
-						exception.getMessage()
-					).rootObject(
-						configurationJSONObject
-					).severity(
-						Severity.ERROR
-					).throwable(
-						exception
-					).build());
-
-				_log.error(exception.getMessage(), exception);
+			if (aggregationOptional.isPresent()) {
+				searchRequestBuilder.addAggregation(aggregationOptional.get());
 			}
 		}
+	}
+
+	private Optional<Aggregation> _getAggregationOptional(
+		JSONObject configurationJSONObject, ParameterData parameterData,
+		Messages messages) {
+
+		String name = configurationJSONObject.getString(
+			AggregationConfigurationKeys.NAME.getJsonKey());
+
+		String type = configurationJSONObject.getString(
+			AggregationConfigurationKeys.TYPE.getJsonKey());
+
+		try {
+			Optional<JSONObject> bodyJSONObjectOptional =
+				_blueprintTemplateVariableParser.parse(
+					configurationJSONObject.getJSONObject(
+						AggregationConfigurationKeys.BODY.getJsonKey()),
+					parameterData, messages);
+
+			if (!bodyJSONObjectOptional.isPresent()) {
+				return Optional.empty();
+			}
+
+			AggregationTranslator aggregationTranslator =
+				_aggregationBuilderFactory.getTranslator(type);
+
+			return aggregationTranslator.translate(
+				name, bodyJSONObjectOptional.get(), parameterData, messages);
+		}
+		catch (IllegalArgumentException illegalArgumentException) {
+			messages.addMessage(
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"core.error.unknown-aggregation-type"
+				).msg(
+					illegalArgumentException.getMessage()
+				).rootObject(
+					configurationJSONObject
+				).rootProperty(
+					AggregationConfigurationKeys.TYPE.getJsonKey()
+				).rootValue(
+					type
+				).severity(
+					Severity.ERROR
+				).throwable(
+					illegalArgumentException
+				).build());
+
+			_log.error(
+				illegalArgumentException.getMessage(),
+				illegalArgumentException);
+		}
+
+		return Optional.empty();
 	}
 
 	private boolean _validateConfiguration(

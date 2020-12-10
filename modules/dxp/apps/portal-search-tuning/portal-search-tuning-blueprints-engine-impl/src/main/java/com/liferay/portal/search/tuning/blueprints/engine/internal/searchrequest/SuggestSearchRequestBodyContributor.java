@@ -59,91 +59,157 @@ public class SuggestSearchRequestBodyContributor
 			return;
 		}
 
-		JSONArray configurationJSONArray = configurationJSONArrayOptional.get();
+		_contribute(
+			searchRequestBuilder, configurationJSONArrayOptional.get(),
+			parameterData, messages);
+	}
+
+	private void _contribute(
+		SearchRequestBuilder searchRequestBuilder,
+		JSONArray configurationJSONArray, ParameterData parameterData,
+		Messages messages) {
 
 		for (int i = 0; i < configurationJSONArray.length(); i++) {
 			JSONObject configurationJSONObject =
 				configurationJSONArray.getJSONObject(i);
 
-			if (!configurationJSONObject.getBoolean(
-					SuggesterConfigurationKeys.ENABLED.getJsonKey(), false)) {
+			Optional<Suggester> suggesterOptional = _getSuggesterOptional(
+				configurationJSONObject, parameterData, messages);
 
-				continue;
-			}
+			if (suggesterOptional.isPresent()) {
 
-			String type = configurationJSONObject.getString(
-				SuggesterConfigurationKeys.TYPE.getJsonKey());
+				// TODO: waiting for suggest support in SearchRequestBuilder
 
-			String name = configurationJSONObject.getString(
-				SuggesterConfigurationKeys.NAME.getJsonKey());
+				// Make SF happy for now
 
-			try {
-				SuggesterTranslator suggesterTranslator =
-					_suggesterTranslatorFactory.getTranslator(type);
-
-				JSONObject suggestConfigurationJSONObject =
-					_blueprintTemplateVariableParser.parse(
-						configurationJSONObject.getJSONObject(
-							SuggesterConfigurationKeys.CONFIGURATION.
-								getJsonKey()),
-						parameterData, messages);
-
-				Optional<Suggester> suggesterOptional =
-					suggesterTranslator.translate(
-						name, suggestConfigurationJSONObject, parameterData,
-						messages);
-
-				if (suggesterOptional.isPresent()) {
-
-					// TODO: waiting for support in SearchRequestBuilder
-
-					// searchRequestBuilder.addSuggester();
-
-				}
-			}
-			catch (IllegalArgumentException illegalArgumentException) {
-				messages.addMessage(
-					new Message.Builder().className(
-						getClass().getName()
-					).localizationKey(
-						"core.error.unknown-suggester-type"
-					).msg(
-						illegalArgumentException.getMessage()
-					).rootObject(
-						configurationJSONObject
-					).rootProperty(
-						SuggesterConfigurationKeys.TYPE.getJsonKey()
-					).rootValue(
-						type
-					).severity(
-						Severity.ERROR
-					).throwable(
-						illegalArgumentException
-					).build());
-
-				_log.error(
-					illegalArgumentException.getMessage(),
-					illegalArgumentException);
-			}
-			catch (Exception exception) {
-				messages.addMessage(
-					new Message.Builder().className(
-						getClass().getName()
-					).localizationKey(
-						"core.error.unknown-suggester-configuration-error"
-					).msg(
-						exception.getMessage()
-					).rootObject(
-						configurationJSONObject
-					).severity(
-						Severity.ERROR
-					).throwable(
-						exception
-					).build());
-
-				_log.error(exception.getMessage(), exception);
+				searchRequestBuilder.getClass();
 			}
 		}
+	}
+
+	private Optional<Suggester> _getSuggesterOptional(
+		JSONObject configurationJSONObject, ParameterData parameterData,
+		Messages messages) {
+
+		if (!_validateConfiguration(configurationJSONObject, messages) ||
+			!configurationJSONObject.getBoolean(
+				SuggesterConfigurationKeys.ENABLED.getJsonKey(), true)) {
+
+			return Optional.empty();
+		}
+
+		String name = configurationJSONObject.getString(
+			SuggesterConfigurationKeys.NAME.getJsonKey());
+
+		String type = configurationJSONObject.getString(
+			SuggesterConfigurationKeys.TYPE.getJsonKey());
+
+		try {
+			Optional<JSONObject> suggestConfigurationJSONObjectOptional =
+				_blueprintTemplateVariableParser.parse(
+					configurationJSONObject.getJSONObject(
+						SuggesterConfigurationKeys.CONFIGURATION.getJsonKey()),
+					parameterData, messages);
+
+			if (!suggestConfigurationJSONObjectOptional.isPresent()) {
+				return Optional.empty();
+			}
+
+			SuggesterTranslator suggesterTranslator =
+				_suggesterTranslatorFactory.getTranslator(type);
+
+			return suggesterTranslator.translate(
+				name, suggestConfigurationJSONObjectOptional.get(),
+				parameterData, messages);
+		}
+		catch (IllegalArgumentException illegalArgumentException) {
+			messages.addMessage(
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"core.error.unknown-suggester-type"
+				).msg(
+					illegalArgumentException.getMessage()
+				).rootObject(
+					configurationJSONObject
+				).rootProperty(
+					SuggesterConfigurationKeys.TYPE.getJsonKey()
+				).rootValue(
+					type
+				).severity(
+					Severity.ERROR
+				).throwable(
+					illegalArgumentException
+				).build());
+
+			_log.error(
+				illegalArgumentException.getMessage(),
+				illegalArgumentException);
+		}
+
+		return Optional.empty();
+	}
+
+	private boolean _validateConfiguration(
+		JSONObject configurationJSONObject, Messages messages) {
+
+		boolean valid = true;
+
+		if (configurationJSONObject.isNull(
+				SuggesterConfigurationKeys.NAME.getJsonKey())) {
+
+			messages.addMessage(
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"core.error.undefined-suggester-name"
+				).msg(
+					"Suggester name is not defined"
+				).rootObject(
+					configurationJSONObject
+				).rootProperty(
+					SuggesterConfigurationKeys.NAME.getJsonKey()
+				).severity(
+					Severity.ERROR
+				).build());
+
+			valid = false;
+
+			if (_log.isWarnEnabled()) {
+				_log.warn(
+					"Suggester name is not defined [ " +
+						configurationJSONObject + "]");
+			}
+		}
+
+		if (configurationJSONObject.isNull(
+				SuggesterConfigurationKeys.TYPE.getJsonKey())) {
+
+			messages.addMessage(
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"core.error.undefined-suggester-type"
+				).msg(
+					"Suggester type is not defined"
+				).rootObject(
+					configurationJSONObject
+				).rootProperty(
+					SuggesterConfigurationKeys.TYPE.getJsonKey()
+				).severity(
+					Severity.ERROR
+				).build());
+
+			valid = false;
+
+			if (_log.isWarnEnabled()) {
+				_log.warn(
+					"Suggester type is not defined [ " +
+						configurationJSONObject + "]");
+			}
+		}
+
+		return valid;
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
