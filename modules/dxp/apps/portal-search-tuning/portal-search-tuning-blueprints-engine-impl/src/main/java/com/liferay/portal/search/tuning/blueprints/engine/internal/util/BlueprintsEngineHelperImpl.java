@@ -322,7 +322,9 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 
 		// TODO: https://issues.liferay.com/browse/LPS-123611
 
-		// searchRequestBuilder.applyIndexerClauses(_isApplyIndexerClauses(blueprint));
+		// searchRequestBuilder.applyIndexerClauses(
+
+		//_isApplyIndexerClauses(blueprint));
 
 		// Make SF happy:
 
