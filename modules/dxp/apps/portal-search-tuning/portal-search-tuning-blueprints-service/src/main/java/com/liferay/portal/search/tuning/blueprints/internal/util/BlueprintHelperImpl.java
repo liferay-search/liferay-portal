@@ -24,6 +24,7 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.BlueprintKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.advanced.AdvancedConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.advanced.QueryProcessingConfigurationKeys;
+import com.liferay.portal.search.tuning.blueprints.constants.json.keys.framework.FrameworkConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.parameter.KeywordsConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.parameter.PageConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.parameter.ParameterConfigurationKeys;
@@ -41,6 +42,19 @@ import org.osgi.service.component.annotations.Component;
  */
 @Component(immediate = true, service = BlueprintHelper.class)
 public class BlueprintHelperImpl implements BlueprintHelper {
+
+	@Override
+	public boolean applyIndexerClauses(Blueprint blueprint) {
+		Optional<JSONObject> configurationJSONObjectOptional =
+			getFrameworkConfigurationOptional(blueprint);
+
+		JSONObject configurationJSONObject =
+			configurationJSONObjectOptional.get();
+
+		return configurationJSONObject.getBoolean(
+			FrameworkConfigurationKeys.APPLY_INDEXER_CLAUSES.getJsonKey(),
+			true);
+	}
 
 	@Override
 	public Optional<JSONArray> getAggsConfigurationOptional(
@@ -98,22 +112,6 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 			configurationJSONObjectOptional.get(),
 			"JSONObject/" + BlueprintKeys.SORT_CONFIGURATION.getJsonKey(),
 			"JSONArray/" + SortConfigurationKeys.DEFAULT.getJsonKey());
-	}
-
-	@Override
-	public Optional<JSONArray> getEntryClassNamesOptional(Blueprint blueprint) {
-		Optional<JSONObject> configurationJSONObjectOptional =
-			_getConfiguration(blueprint);
-
-		if (!configurationJSONObjectOptional.isPresent()) {
-			return Optional.empty();
-		}
-
-		return BlueprintJSONUtil.getValueAsJSONArrayOptional(
-			configurationJSONObjectOptional.get(),
-			"JSONObject/" + BlueprintKeys.ADVANCED_CONFIGURATION.getJsonKey(),
-			"JSONArray/" +
-				AdvancedConfigurationKeys.ENTRY_CLASS_NAMES.getJsonKey());
 	}
 
 	@Override
@@ -180,6 +178,35 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 		}
 
 		return Optional.empty();
+	}
+
+	@Override
+	public Optional<JSONObject> getFrameworkConfigurationOptional(
+		Blueprint blueprint) {
+
+		Optional<JSONObject> configurationJSONObjectOptional =
+			_getConfiguration(blueprint);
+
+		if (!configurationJSONObjectOptional.isPresent()) {
+			return Optional.empty();
+		}
+
+		JSONObject configurationJSONObject =
+			configurationJSONObjectOptional.get();
+
+		JSONObject frameworkConfigurationJSONObject =
+			configurationJSONObject.getJSONObject(
+				BlueprintKeys.FRAMEWORK_CONFIGURATION.getJsonKey());
+
+		if ((frameworkConfigurationJSONObject != null) &&
+			frameworkConfigurationJSONObject.has(
+				FrameworkConfigurationKeys.SEARCHABLE_ASSET_TYPES.
+					getJsonKey())) {
+
+			return Optional.of(frameworkConfigurationJSONObject);
+		}
+
+		return Optional.of(getDefaultFrameworkConfigurationJSONObject());
 	}
 
 	@Override
@@ -291,17 +318,13 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 		JSONObject configurationJSONObject =
 			configurationJSONObjectOptional.get();
 
-		if (!configurationJSONObject.has(
-				BlueprintKeys.PARAMETER_CONFIGURATION.getJsonKey())) {
-
-			return Optional.of(getDefaultParameterConfigurationJSONObject());
-		}
-
 		JSONObject parameterConfigurationJSONObject =
 			configurationJSONObject.getJSONObject(
 				BlueprintKeys.PARAMETER_CONFIGURATION.getJsonKey());
 
-		if (parameterConfigurationJSONObject.length() > 0) {
+		if ((parameterConfigurationJSONObject != null) &&
+			(parameterConfigurationJSONObject.length() > 0)) {
+
 			return Optional.of(parameterConfigurationJSONObject);
 		}
 
@@ -325,6 +348,19 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 				"JSONArray/" + BlueprintKeys.QUERY_CONFIGURATION.getJsonKey());
 
 		return _maybeJsonArrayOptional(jsonArrayOptional);
+	}
+
+	@Override
+	public Optional<JSONArray> getSearchableAssetTypesOptional(
+		Blueprint blueprint) {
+
+		Optional<JSONObject> configurationJSONObjectOptional =
+			getFrameworkConfigurationOptional(blueprint);
+
+		return BlueprintJSONUtil.getValueAsJSONArrayOptional(
+			configurationJSONObjectOptional.get(),
+			"JSONArray/" +
+				FrameworkConfigurationKeys.SEARCHABLE_ASSET_TYPES.getJsonKey());
 	}
 
 	@Override
@@ -399,22 +435,31 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 		return _maybeJsonArrayOptional(jsonArrayOptional);
 	}
 
+	protected JSONObject getDefaultFrameworkConfigurationJSONObject() {
+		return JSONUtil.put(
+			FrameworkConfigurationKeys.APPLY_INDEXER_CLAUSES.getJsonKey(), true
+		).put(
+			FrameworkConfigurationKeys.SEARCHABLE_ASSET_TYPES.getJsonKey(),
+			JSONUtil.putAll(
+				"com.liferay.journal.model.JournalArticle",
+				"com.liferay.document.library.kernel.model.DLFileEntry")
+		);
+	}
+
 	protected JSONObject getDefaultParameterConfigurationJSONObject() {
 		JSONObject keywordsConfigurationJSONObject = JSONUtil.put(
 			KeywordsConfigurationKeys.PARAMETER_NAME.getJsonKey(), "q");
 
-		JSONObject parameterConfigurationJSONObject = JSONUtil.put(
-			ParameterConfigurationKeys.KEYWORDS.getJsonKey(),
-			keywordsConfigurationJSONObject);
-
 		JSONObject pagingConfigurationJSONObject = JSONUtil.put(
 			KeywordsConfigurationKeys.PARAMETER_NAME.getJsonKey(), "page");
 
-		parameterConfigurationJSONObject.put(
+		return JSONUtil.put(
+			ParameterConfigurationKeys.KEYWORDS.getJsonKey(),
+			keywordsConfigurationJSONObject
+		).put(
 			ParameterConfigurationKeys.PAGE.getJsonKey(),
-			pagingConfigurationJSONObject);
-
-		return parameterConfigurationJSONObject;
+			pagingConfigurationJSONObject
+		);
 	}
 
 	private Optional<JSONObject> _getConfiguration(Blueprint blueprint) {
