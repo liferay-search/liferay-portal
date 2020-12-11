@@ -15,6 +15,7 @@
 
 export const CUSTOM_JSON_FRAGMENT = {
 	fragmentTemplateJSON: {
+		category: 'custom',
 		clauses: [],
 		conditions: [],
 		description: Liferay.Language.get('editable-json-text-area'),
@@ -329,6 +330,7 @@ export const QUERY_FRAGMENTS_SAMPLE = [
 export const QUERY_FRAGMENTS = [
 	{
 		fragmentTemplateJSON: {
+			category: 'filter',
 			clauses: [
 				{
 					context: 'pre_filter',
@@ -380,6 +382,7 @@ export const QUERY_FRAGMENTS = [
 	},
 	{
 		fragmentTemplateJSON: {
+			category: 'filter',
 			clauses: [
 				{
 					context: 'pre_filter',
@@ -583,6 +586,7 @@ export const QUERY_FRAGMENTS = [
 	},
 	{
 		fragmentTemplateJSON: {
+			category: 'filter',
 			clauses: [
 				{
 					context: 'pre_filter',
@@ -681,6 +685,7 @@ export const QUERY_FRAGMENTS = [
 	},
 	{
 		fragmentTemplateJSON: {
+			category: 'filter',
 			clauses: [
 				{
 					context: 'pre_filter',
@@ -761,6 +766,7 @@ export const QUERY_FRAGMENTS = [
 	},
 	{
 		fragmentTemplateJSON: {
+			category: 'filter',
 			clauses: [
 				{
 					context: 'pre_filter',
@@ -821,6 +827,7 @@ export const QUERY_FRAGMENTS = [
 	},
 	{
 		fragmentTemplateJSON: {
+			category: 'match',
 			clauses: [
 				{
 					context: 'query',
@@ -897,6 +904,7 @@ export const QUERY_FRAGMENTS = [
 	},
 	{
 		fragmentTemplateJSON: {
+			category: 'boost',
 			clauses: [
 				{
 					context: 'query',
@@ -955,6 +963,7 @@ export const QUERY_FRAGMENTS = [
 	},
 	{
 		fragmentTemplateJSON: {
+			category: 'boost',
 			clauses: [
 				{
 					context: 'query',
@@ -1019,6 +1028,7 @@ export const QUERY_FRAGMENTS = [
 	},
 	{
 		fragmentTemplateJSON: {
+			category: 'boost',
 			clauses: [
 				{
 					context: 'query',
@@ -1073,6 +1083,7 @@ export const QUERY_FRAGMENTS = [
 	},
 	{
 		fragmentTemplateJSON: {
+			category: 'boost',
 			clauses: [
 				{
 					context: 'query',
@@ -1148,6 +1159,7 @@ export const QUERY_FRAGMENTS = [
 	},
 	{
 		fragmentTemplateJSON: {
+			category: 'boost',
 			clauses: [
 				{
 					context: 'query',
@@ -1233,6 +1245,7 @@ export const QUERY_FRAGMENTS = [
 	},
 	{
 		fragmentTemplateJSON: {
+			category: 'boost',
 			clauses: [
 				{
 					context: 'query',
@@ -1298,6 +1311,7 @@ export const QUERY_FRAGMENTS = [
 	},
 	{
 		fragmentTemplateJSON: {
+			category: 'boost',
 			clauses: [
 				{
 					context: 'query',
@@ -1364,6 +1378,7 @@ export const QUERY_FRAGMENTS = [
 	},
 	{
 		fragmentTemplateJSON: {
+			category: 'boost',
 			clauses: [
 				{
 					context: 'query',
@@ -1449,6 +1464,7 @@ export const QUERY_FRAGMENTS = [
 	},
 	{
 		fragmentTemplateJSON: {
+			category: 'boost',
 			clauses: [
 				{
 					context: 'query',
@@ -1483,6 +1499,7 @@ export const QUERY_FRAGMENTS = [
 	},
 	{
 		fragmentTemplateJSON: {
+			category: 'custom',
 			clauses: [
 				{
 					context: 'query',
