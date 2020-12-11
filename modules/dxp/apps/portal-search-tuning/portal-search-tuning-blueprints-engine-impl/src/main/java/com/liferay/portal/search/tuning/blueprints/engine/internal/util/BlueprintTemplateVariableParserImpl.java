@@ -104,41 +104,6 @@ public class BlueprintTemplateVariableParserImpl
 		return false;
 	}
 
-	private boolean isSuccess(
-		JSONObject jsonObject, String str, Messages messages) {
-
-		if (str.contains("${")) {
-			messages.addMessage(
-				new Message.Builder().className(
-					getClass().getName()
-				).localizationKey(
-					"core.error.unable-to-parse-template-variables"
-				).msg(
-					"Some template variables could not be parsed"
-				).rootObject(
-					jsonObject
-				).severity(
-					Severity.WARN
-				).build());
-
-			if (_log.isErrorEnabled()) {
-				StringBundler sb = new StringBundler(5);
-
-				sb.append("Some template variables could not be parsed. This ");
-				sb.append("could happen because of a configuration error or ");
-				sb.append("values being not available runtime  [ ");
-				sb.append(str);
-				sb.append(" ]");
-
-				_log.error(sb.toString());
-			}
-
-			return false;
-		}
-
-		return true;
-	}
-
 	private JSONObject _parseJSONObject(
 		JSONObject jsonObject, ParameterData parameterData, Messages messages) {
 
@@ -160,7 +125,7 @@ public class BlueprintTemplateVariableParserImpl
 				if (Validator.isNull(templateVariable)) {
 					continue;
 				}
-				
+
 				String stem = _getParametrizedVariableStem(templateVariable);
 
 				if (str.contains(stem)) {
@@ -180,7 +145,7 @@ public class BlueprintTemplateVariableParserImpl
 				}
 			}
 
-			if (!isSuccess(jsonObject, str, messages)) {
+			if (!_validateParsing(jsonObject, str, messages)) {
 				return null;
 			}
 
@@ -291,6 +256,41 @@ public class BlueprintTemplateVariableParserImpl
 		sb.append("\"");
 
 		return StringUtil.replace(str, sb.toString(), substitution);
+	}
+
+	private boolean _validateParsing(
+		JSONObject jsonObject, String str, Messages messages) {
+
+		if (str.contains("${")) {
+			messages.addMessage(
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"core.error.unable-to-parse-template-variables"
+				).msg(
+					"Some template variables could not be parsed"
+				).rootObject(
+					jsonObject
+				).severity(
+					Severity.WARN
+				).build());
+
+			if (_log.isWarnEnabled()) {
+				StringBundler sb = new StringBundler(5);
+
+				sb.append("Some template variables could not be parsed. This ");
+				sb.append("could happen because of a configuration error or ");
+				sb.append("values being not available runtime  [ ");
+				sb.append(str);
+				sb.append(" ]");
+
+				_log.warn(sb.toString());
+			}
+
+			return false;
+		}
+
+		return true;
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
