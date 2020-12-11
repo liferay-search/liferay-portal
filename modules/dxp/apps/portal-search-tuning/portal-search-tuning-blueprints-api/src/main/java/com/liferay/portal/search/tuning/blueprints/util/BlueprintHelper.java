@@ -26,6 +26,8 @@ import java.util.Optional;
  */
 public interface BlueprintHelper {
 
+	public boolean applyIndexerClauses(Blueprint blueprint);
+
 	public Optional<JSONArray> getAggsConfigurationOptional(
 		Blueprint blueprint);
 
@@ -35,12 +37,13 @@ public interface BlueprintHelper {
 	public Optional<JSONArray> getDefaultSortConfigurationOptional(
 		Blueprint blueprint);
 
-	public Optional<JSONArray> getEntryClassNamesOptional(Blueprint blueprint);
-
 	public Optional<List<String>> getExcludedQueryContributorsOptional(
 		Blueprint blueprint);
 
 	public Optional<List<String>> getExcludedQueryPostProcessorsOptional(
+		Blueprint blueprint);
+
+	public Optional<JSONObject> getFrameworkConfigurationOptional(
 		Blueprint blueprint);
 
 	public Optional<JSONObject> getHighlightConfigurationOptional(
@@ -64,6 +67,9 @@ public interface BlueprintHelper {
 		Blueprint blueprint);
 
 	public Optional<JSONArray> getQueryConfigurationOptional(
+		Blueprint blueprint);
+
+	public Optional<JSONArray> getSearchableAssetTypesOptional(
 		Blueprint blueprint);
 
 	public int getSize(Blueprint blueprint);

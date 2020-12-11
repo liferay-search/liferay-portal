@@ -233,11 +233,7 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 
 	private String[] _getEntryClassNames(Blueprint blueprint) {
 		Optional<JSONArray> optional =
-			_blueprintHelper.getEntryClassNamesOptional(blueprint);
-
-		if (!optional.isPresent()) {
-			return new String[0];
-		}
+			_blueprintHelper.getSearchableAssetTypesOptional(blueprint);
 
 		return JSONUtil.toStringArray(optional.get());
 	}
@@ -315,7 +311,7 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 				_getFrom(parameterData, blueprint)
 			);
 
-		// TODO: remove.
+		// TODO: https://issues.liferay.com/browse/LPS-123613
 		// we have to be able to support custom assets without
 		// having a related module dependency (model indexer class)
 		// in the engine
@@ -324,10 +320,22 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 
 		searchRequestBuilder.entryClassNames(_getEntryClassNames(blueprint));
 
+		// TODO: https://issues.liferay.com/browse/LPS-123611
+
+		// searchRequestBuilder.applyIndexerClauses(_isApplyIndexerClauses(blueprint));
+
+		// Make SF happy:
+
+		_isApplyIndexerClauses(blueprint);
+
 		_executeSearchRequestBodyContributors(
 			searchRequestBuilder, parameterData, blueprint, messages);
 
 		return searchRequestBuilder;
+	}
+
+	private boolean _isApplyIndexerClauses(Blueprint blueprint) {
+		return _blueprintHelper.applyIndexerClauses(blueprint);
 	}
 
 	private boolean _isExplain(ParameterData parameterData) {

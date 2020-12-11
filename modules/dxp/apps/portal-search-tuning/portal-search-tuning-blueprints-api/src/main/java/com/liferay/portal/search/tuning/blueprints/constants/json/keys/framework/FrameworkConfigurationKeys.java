@@ -12,7 +12,7 @@
  *
  */
 
-package com.liferay.portal.search.tuning.blueprints.constants.json.keys;
+package com.liferay.portal.search.tuning.blueprints.constants.json.keys.framework;
 
 import java.util.Arrays;
 import java.util.stream.Stream;
@@ -20,21 +20,18 @@ import java.util.stream.Stream;
 /**
  * @author Petteri Karttunen
  */
-public enum BlueprintKeys {
+public enum FrameworkConfigurationKeys {
 
-	ADVANCED_CONFIGURATION("advanced_configuration"),
-	AGGREGATION_CONFIGURATION("aggregation_configuration"),
-	FRAMEWORK_CONFIGURATION("framework_configuration"),
-	PARAMETER_CONFIGURATION("parameter_configuration"),
-	QUERY_CONFIGURATION("query_configuration"),
-	SORT_CONFIGURATION("sort_configuration"),
-	SUGGEST_CONFIGURATION("suggest_configuration");
+	APPLY_INDEXER_CLAUSES("apply_indexer_clauses"),
+	SEARCHABLE_ASSET_TYPES("searchable_asset_types");
 
-	public static final BlueprintKeys findByJsonKey(String jsonKey) {
-		Stream<BlueprintKeys> blueprintKeysStream = Arrays.stream(
-			BlueprintKeys.values());
+	public static final FrameworkConfigurationKeys findByJsonKey(
+		String jsonKey) {
 
-		return blueprintKeysStream.filter(
+		Stream<FrameworkConfigurationKeys> frameworkConfigurationKeysStream =
+			Arrays.stream(FrameworkConfigurationKeys.values());
+
+		return frameworkConfigurationKeysStream.filter(
 			value -> value._jsonKey.equals(jsonKey)
 		).findFirst(
 		).orElse(
@@ -46,7 +43,7 @@ public enum BlueprintKeys {
 		return _jsonKey;
 	}
 
-	private BlueprintKeys(String jsonKey) {
+	private FrameworkConfigurationKeys(String jsonKey) {
 		_jsonKey = jsonKey;
 	}
 
