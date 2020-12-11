@@ -1,4 +1,5 @@
 .sidebar {
+	background-color: $white;
 	height: 100%;
 	padding-bottom: 45px;
 	position: fixed;
@@ -17,33 +18,37 @@
 		text-align: center;
 	}
 
-	.list-group-item {
-		border: 0;
+	.list-group {
+		margin-bottom: 0;
 
-		&.hover {
-			background-color: $primaryL4;
-		}
+		.list-group-item {
+			border: 0;
 
-		.sticker {
-			background-color: $lightBackground;
-			color: $mainLighten28;
-		}
+			&.hover {
+				background-color: $primaryL4;
+			}
 
-		.autofit-col:first-of-type {
-			padding-right: 0.5rem;
-		}
+			.sticker {
+				background-color: $lightBackground;
+				color: $mainLighten28;
+			}
 
-		.button-wrapper {
-			background-color: $primaryL4;
-			display: table;
-			height: 100%;
-			padding-left: 1rem;
-			position: absolute;
-			right: 0.5rem;
+			.autofit-col:first-of-type {
+				padding-right: 0.5rem;
+			}
 
-			.add-fragment-button {
-				display: table-cell;
-				vertical-align: middle;
+			.button-wrapper {
+				background-color: $primaryL4;
+				display: table;
+				height: 100%;
+				padding-left: 1rem;
+				position: absolute;
+				right: 0.5rem;
+
+				.add-fragment-button {
+					display: table-cell;
+					vertical-align: middle;
+				}
 			}
 		}
 	}
@@ -58,6 +63,19 @@
 
 		.component-title {
 			font-size: 1rem;
+		}
+	}
+
+	.sidebar-dt {
+		margin: 0;
+
+		&.btn:focus {
+			box-shadow: 0 0;
+		}
+
+		.sidebar-arrow {
+			position: absolute;
+			right: 12px;
 		}
 	}
 }

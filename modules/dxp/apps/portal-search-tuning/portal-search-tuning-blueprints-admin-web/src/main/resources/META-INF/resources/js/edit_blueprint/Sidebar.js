@@ -30,72 +30,110 @@ const EmptyListMessage = () => (
 	</div>
 );
 
-const QueryFragmentList = ({onAddFragment, queryFragments, toggleSidebar}) => {
+const QueryFragmentList = ({
+	category,
+	onAddFragment,
+	queryFragments,
+	toggleSidebar,
+}) => {
 	const {locale} = useContext(ThemeContext);
 
 	const [showAdd, setShowAdd] = useState(-1);
+	const [showList, setShowList] = useState(true);
 
 	return (
-		<ClayList>
-			{queryFragments.map(
-				({fragmentTemplateJSON, uiConfigurationJSON}, index) => {
-					return (
-						<ClayList.Item
-							className={`${showAdd === index ? 'hover' : ''}`}
-							flex
-							key={index}
-							onMouseEnter={() => setShowAdd(index)}
-							onMouseLeave={() => setShowAdd(-1)}
-						>
-							<ClayList.ItemField>
-								<ClaySticker size="md">
-									<ClayIcon
-										symbol={fragmentTemplateJSON.icon}
-									/>
-								</ClaySticker>
-							</ClayList.ItemField>
+		<>
+			{!!category && (
+				<ClayButton
+					className="panel-header sidebar-dt"
+					displayType="unstyled"
+					onClick={() => setShowList(!showList)}
+				>
+					<span>{category}</span>
 
-							<ClayList.ItemField expand>
-								<ClayList.ItemTitle>
-									{fragmentTemplateJSON.title[locale] ||
-										fragmentTemplateJSON.title}
-								</ClayList.ItemTitle>
-
-								<ClayList.ItemText subtext={true}>
-									{fragmentTemplateJSON.description[locale] ||
-										fragmentTemplateJSON.description}
-								</ClayList.ItemText>
-							</ClayList.ItemField>
-
-							<ClayList.ItemField>
-								{showAdd === index && (
-									<div className="button-wrapper">
-										<div className="add-fragment-button">
-											<ClayButton
-												aria-label={Liferay.Language.get(
-													'add'
-												)}
-												displayType="secondary"
-												onClick={() => {
-													toggleSidebar();
-													onAddFragment({
-														fragmentTemplateJSON,
-														uiConfigurationJSON,
-													});
-												}}
-												small
-											>
-												{Liferay.Language.get('add')}
-											</ClayButton>
-										</div>
-									</div>
-								)}
-							</ClayList.ItemField>
-						</ClayList.Item>
-					);
-				}
+					<span className="sidebar-arrow">
+						<ClayIcon
+							symbol={showList ? 'angle-down' : 'angle-right'}
+						/>
+					</span>
+				</ClayButton>
 			)}
-		</ClayList>
+
+			{showList && (
+				<ClayList>
+					{queryFragments.map(
+						(
+							{fragmentTemplateJSON, uiConfigurationJSON},
+							index
+						) => {
+							return (
+								<ClayList.Item
+									className={`${
+										showAdd === index ? 'hover' : ''
+									}`}
+									flex
+									key={index}
+									onMouseEnter={() => setShowAdd(index)}
+									onMouseLeave={() => setShowAdd(-1)}
+								>
+									<ClayList.ItemField>
+										<ClaySticker size="md">
+											<ClayIcon
+												symbol={
+													fragmentTemplateJSON.icon
+												}
+											/>
+										</ClaySticker>
+									</ClayList.ItemField>
+
+									<ClayList.ItemField expand>
+										<ClayList.ItemTitle>
+											{fragmentTemplateJSON.title[
+												locale
+											] || fragmentTemplateJSON.title}
+										</ClayList.ItemTitle>
+
+										<ClayList.ItemText subtext={true}>
+											{fragmentTemplateJSON.description[
+												locale
+											] ||
+												fragmentTemplateJSON.description}
+										</ClayList.ItemText>
+									</ClayList.ItemField>
+
+									<ClayList.ItemField>
+										{showAdd === index && (
+											<div className="button-wrapper">
+												<div className="add-fragment-button">
+													<ClayButton
+														aria-label={Liferay.Language.get(
+															'add'
+														)}
+														displayType="secondary"
+														onClick={() => {
+															toggleSidebar();
+															onAddFragment({
+																fragmentTemplateJSON,
+																uiConfigurationJSON,
+															});
+														}}
+														small
+													>
+														{Liferay.Language.get(
+															'add'
+														)}
+													</ClayButton>
+												</div>
+											</div>
+										)}
+									</ClayList.ItemField>
+								</ClayList.Item>
+							);
+						}
+					)}
+				</ClayList>
+			)}
+		</>
 	);
 };
 
@@ -106,7 +144,35 @@ function Sidebar({onAddFragment, showSidebar, toggleSidebar}) {
 
 	const [queryFragments, setQueryFragments] = useState([]);
 
+	const [categories, setCategories] = useState([]);
+	const [categorizedFragments, setCategorizedFragments] = useState({});
+
 	const originalQueryFragments = useRef();
+
+	const categorizeFragments = (fragmentsResponseData) => {
+		const newCategories = [];
+		const newCategorizedFragments = {};
+
+		fragmentsResponseData.map((fragment) => {
+			const category = fragment.fragmentTemplateJSON.category
+				? fragment.fragmentTemplateJSON.category
+				: Liferay.Language.get('other');
+
+			if (newCategorizedFragments[category]) {
+				newCategorizedFragments[category] = [
+					...newCategorizedFragments[category],
+					fragment,
+				];
+			}
+			else {
+				newCategories.push(category);
+				newCategorizedFragments[category] = [fragment];
+			}
+		});
+
+		setCategories(newCategories);
+		setCategorizedFragments(newCategorizedFragments);
+	};
 
 	useEffect(() => {
 
@@ -117,6 +183,7 @@ function Sidebar({onAddFragment, showSidebar, toggleSidebar}) {
 			CUSTOM_JSON_FRAGMENT,
 		];
 
+		categorizeFragments(fragmentsResponseData);
 		setQueryFragments(fragmentsResponseData);
 		originalQueryFragments.current = fragmentsResponseData;
 
@@ -124,8 +191,8 @@ function Sidebar({onAddFragment, showSidebar, toggleSidebar}) {
 	}, [locale]);
 
 	const _handleSearchChange = (event) => {
-		setQueryFragments(
-			originalQueryFragments.current.filter((fragment) => {
+		const newQueryFragments = originalQueryFragments.current.filter(
+			(fragment) => {
 				const {value} = event.target;
 
 				if (value) {
@@ -140,8 +207,11 @@ function Sidebar({onAddFragment, showSidebar, toggleSidebar}) {
 				else {
 					return true;
 				}
-			})
+			}
 		);
+
+		categorizeFragments(newQueryFragments);
+		setQueryFragments(newQueryFragments);
 	};
 
 	return (
@@ -177,11 +247,15 @@ function Sidebar({onAddFragment, showSidebar, toggleSidebar}) {
 
 			{!loading ? (
 				queryFragments.length ? (
-					<QueryFragmentList
-						onAddFragment={onAddFragment}
-						queryFragments={queryFragments}
-						toggleSidebar={toggleSidebar}
-					/>
+					categories.map((category) => (
+						<QueryFragmentList
+							category={category}
+							key={category}
+							onAddFragment={onAddFragment}
+							queryFragments={categorizedFragments[category]}
+							toggleSidebar={toggleSidebar}
+						/>
+					))
 				) : (
 					<EmptyListMessage />
 				)
