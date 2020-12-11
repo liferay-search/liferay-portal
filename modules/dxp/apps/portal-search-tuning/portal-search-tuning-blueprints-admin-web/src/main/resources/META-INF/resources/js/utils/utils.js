@@ -33,6 +33,40 @@ export const openSuccessToast = (config) => {
 };
 
 /**
+ * Function to validate the UI configuration, used to identify whether
+ * a required value is missing
+ *
+ * Examples:
+ * isNotNull([])
+ * => true
+ * isNotNull('')
+ * => false
+ * isNotNull(null)
+ * => false
+ *
+ * @param {String|object|Array} item Item to check existence
+ * @return {boolean}
+ */
+const isNotNull = (item) =>
+	item !== null && item !== '' && typeof item !== 'undefined';
+
+/**
+ * Function to replace all instances of a string.
+ *
+ * Example:
+ * replaceStr('title_${context.language}','${context.language}','en_US')
+ * => 'title_en_US'
+ *
+ * @param {String} str Original string
+ * @param {String} search Snippet to look for
+ * @param {String} replace Snippet to replace with
+ * @return {String}
+ */
+export const replaceStr = (str, search, replace) => {
+	return str.split(search).join(replace);
+};
+
+/**
  * Function for retrieving a valid default value from one fragment
  * configuration entry.
  *
@@ -217,22 +251,6 @@ export const replaceUIConfigurationValues = (
 };
 
 /**
- * Function to replace all instances of a string.
- *
- * Example:
- * replaceStr('title_${context.language}','${context.language}','en_US')
- * => 'title_en_US'
- *
- * @param {String} str Original string
- * @param {String} search Snippet to look for
- * @param {String} replace Snippet to replace with
- * @return {String}
- */
-export const replaceStr = (str, search, replace) => {
-	return str.split(search).join(replace);
-};
-
-/**
  * Function to package the initial data into a state that the blueprints
  * form will use, by including the id, configuration values, and
  * fragment for submission.
@@ -257,6 +275,16 @@ export const convertToSelectedFragment = (
 		uiConfigurationValues: getUIConfigurationValues(uiConfigurationJSON),
 	};
 };
+
+const ENTITY_KEYS = [
+	'com.liferay.asset.kernel.model.AssetTag',
+	'com.liferay.portal.kernel.model.Group',
+	'com.liferay.portal.kernel.model.Organization',
+	'com.liferay.portal.kernel.model.Role',
+	'com.liferay.portal.kernel.model.Team',
+	'com.liferay.portal.kernel.model.User',
+	'com.liferay.portal.kernel.model.UserGroup',
+];
 
 /**
  * Function to validate the UI configuration, used to identify whether
@@ -317,31 +345,3 @@ export const validateUIConfigurationJSON = (uiConfigurationJSON) => {
 		}
 	});
 };
-
-const ENTITY_KEYS = [
-	'com.liferay.asset.kernel.model.AssetTag',
-	'com.liferay.portal.kernel.model.Group',
-	'com.liferay.portal.kernel.model.Organization',
-	'com.liferay.portal.kernel.model.Role',
-	'com.liferay.portal.kernel.model.Team',
-	'com.liferay.portal.kernel.model.User',
-	'com.liferay.portal.kernel.model.UserGroup',
-];
-
-/**
- * Function to validate the UI configuration, used to identify whether
- * a required value is missing
- *
- * Examples:
- * isNotNull([])
- * => true
- * isNotNull('')
- * => false
- * isNotNull(null)
- * => false
- *
- * @param {String|object|Array} item Item to check existence
- * @return {boolean}
- */
-const isNotNull = (item) =>
-	item !== null && item !== '' && typeof item !== 'undefined';
