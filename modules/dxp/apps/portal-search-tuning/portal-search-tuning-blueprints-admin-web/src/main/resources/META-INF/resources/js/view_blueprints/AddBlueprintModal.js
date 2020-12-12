@@ -11,16 +11,64 @@
 
 import ClayAlert from '@clayui/alert';
 import ClayButton from '@clayui/button';
+import ClayCard from '@clayui/card';
+import {ClayRadio} from '@clayui/form';
 import ClayIcon from '@clayui/icon';
+import ClayLayout from '@clayui/layout';
 import ClayModal, {useModal} from '@clayui/modal';
 import {useIsMounted} from 'frontend-js-react-web';
 import {fetch, navigate} from 'frontend-js-web';
 import React, {useState} from 'react';
 
 import {DEFAULT_FRAGMENT} from '../utils/data';
+import {FRAMEWORK_TYPES} from '../utils/frameworkTypes';
 import {convertToSelectedFragment} from '../utils/utils';
 
 const DEFAULT_SELECTED_FRAGMENT = convertToSelectedFragment(DEFAULT_FRAGMENT);
+
+const FrameworkCard = ({
+	checked,
+	description,
+	imagePath,
+	onChange,
+	title,
+	value,
+}) => {
+	return (
+		<ClayCard
+			className={checked ? 'selected' : ''}
+			displayType="file"
+			selectable
+		>
+			<ClayRadio checked={checked} onChange={onChange} value={value}>
+				<ClayCard.AspectRatio className="card-item-first">
+					<div className="aspect-ratio-item aspect-ratio-item-center-middle aspect-ratio-item-fluid">
+						<img alt={title} src={imagePath} />
+					</div>
+				</ClayCard.AspectRatio>
+
+				<ClayCard.Body>
+					<ClayCard.Row>
+						<div className="autofit-col autofit-col-expand">
+							<section className="autofit-section">
+								<ClayCard.Description displayType="title">
+									{title}
+								</ClayCard.Description>
+
+								<ClayCard.Description
+									displayType="subtitle"
+									truncate={false}
+								>
+									{description}
+								</ClayCard.Description>
+							</section>
+						</div>
+					</ClayCard.Row>
+				</ClayCard.Body>
+			</ClayRadio>
+		</ClayCard>
+	);
+};
 
 /**
  * A slightly modified version of frontend-js-web module's SimpleInputModal
@@ -28,6 +76,7 @@ const DEFAULT_SELECTED_FRAGMENT = convertToSelectedFragment(DEFAULT_FRAGMENT);
  */
 const AddBlueprintModal = ({
 	alert,
+	contextPath,
 	closeModal,
 	defaultLocale,
 	dialogTitle,
@@ -40,6 +89,7 @@ const AddBlueprintModal = ({
 }) => {
 	const isMounted = useIsMounted();
 	const [errorMessage, setErrorMessage] = useState();
+	const [framework, setFramework] = useState(FRAMEWORK_TYPES.DEFAULT);
 	const [loadingResponse, setLoadingResponse] = useState(false);
 	const [visible, setVisible] = useState(initialVisible);
 	const [inputValue, setInputValue] = useState('');
@@ -62,8 +112,15 @@ const AddBlueprintModal = ({
 				advanced_configuration: {},
 				aggregation_configuration: [],
 				facet_configuration: [],
+				framework_configuration: {
+					apply_indexer_clauses:
+						framework === FRAMEWORK_TYPES.DEFAULT,
+				},
 				parameter_configuration: {},
-				query_configuration: [DEFAULT_SELECTED_FRAGMENT.fragmentOutput],
+				query_configuration:
+					framework === FRAMEWORK_TYPES.DEFAULT
+						? []
+						: [DEFAULT_SELECTED_FRAGMENT.fragmentOutput],
 				sort_configuration: [],
 			})
 		);
@@ -71,7 +128,10 @@ const AddBlueprintModal = ({
 		formData.append(
 			`${namespace}selectedFragments`,
 			JSON.stringify({
-				query_configuration: [DEFAULT_SELECTED_FRAGMENT],
+				query_configuration:
+					framework === FRAMEWORK_TYPES.DEFAULT
+						? []
+						: [DEFAULT_SELECTED_FRAGMENT],
 			})
 		);
 
@@ -124,7 +184,11 @@ const AddBlueprintModal = ({
 
 	return (
 		visible && (
-			<ClayModal observer={observer} size="md">
+			<ClayModal
+				className="blueprint-edit-title-modal"
+				observer={observer}
+				size="md"
+			>
 				<ClayModal.Header>{dialogTitle}</ClayModal.Header>
 
 				<form id={`${namespace}form`} onSubmit={_handleSubmit}>
@@ -218,6 +282,62 @@ const AddBlueprintModal = ({
 								type="hidden"
 								value={descriptionInputValue}
 							/>
+						</div>
+
+						<div className="form-group">
+							<label
+								className="control-label"
+								htmlFor={`${namespace}framework`}
+							>
+								{Liferay.Language.get('framework')}
+
+								<span className="reference-mark">
+									<ClayIcon symbol="asterisk" />
+								</span>
+							</label>
+
+							<ClayLayout.Row>
+								<ClayLayout.Col size={6}>
+									<FrameworkCard
+										checked={
+											framework ===
+											FRAMEWORK_TYPES.DEFAULT
+										}
+										description={Liferay.Language.get(
+											'compose-fragments-on-top-of-liferay-default-search-clauses'
+										)}
+										imagePath={`${contextPath}/images/liferay-default-clauses.svg`}
+										onChange={() =>
+											setFramework(
+												FRAMEWORK_TYPES.DEFAULT
+											)
+										}
+										title={Liferay.Language.get(
+											'liferay-default-clauses'
+										)}
+										value={FRAMEWORK_TYPES.DEFAULT}
+									/>
+								</ClayLayout.Col>
+
+								<ClayLayout.Col size={6}>
+									<FrameworkCard
+										checked={
+											framework === FRAMEWORK_TYPES.CUSTOM
+										}
+										description={Liferay.Language.get(
+											'compose-fragments-from-the-ground-up'
+										)}
+										imagePath={`${contextPath}/images/custom-clauses.svg`}
+										onChange={() =>
+											setFramework(FRAMEWORK_TYPES.CUSTOM)
+										}
+										title={Liferay.Language.get(
+											'custom-clauses'
+										)}
+										value={FRAMEWORK_TYPES.CUSTOM}
+									/>
+								</ClayLayout.Col>
+							</ClayLayout.Row>
 						</div>
 					</ClayModal.Body>
 

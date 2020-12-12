@@ -30,6 +30,8 @@ function renderBuilder(props) {
 	return render(
 		<QueryBuilder
 			deleteFragment={jest.fn()}
+			frameworkConfig={{}}
+			onFrameworkConfigChange={jest.fn()}
 			selectedFragments={SELECTED_FRAGMENTS}
 			updateFragment={updateFragment}
 			{...props}

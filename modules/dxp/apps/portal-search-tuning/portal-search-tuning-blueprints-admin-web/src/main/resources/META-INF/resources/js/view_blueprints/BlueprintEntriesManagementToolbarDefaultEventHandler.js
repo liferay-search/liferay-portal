@@ -17,6 +17,7 @@ import openImportBlueprintModal from './OpenImportBlueprintModalCommand';
 class BlueprintEntriesManagementToolbarDefaultEventHandler extends DefaultEventHandler {
 	addBlueprint(itemData) {
 		openAddBlueprintModal({
+			contextPath: itemData.contextPath,
 			defaultLocale: itemData.defaultLocale,
 			dialogTitle: Liferay.Language.get('new-search-blueprint'),
 			formSubmitURL: itemData.editBlueprintURL,

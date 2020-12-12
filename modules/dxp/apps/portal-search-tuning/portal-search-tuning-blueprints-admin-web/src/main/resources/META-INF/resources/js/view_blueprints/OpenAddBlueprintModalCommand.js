@@ -44,6 +44,7 @@ function dispose() {
 
 function openAddBlueprintModal({
 	alert,
+	contextPath,
 	defaultLocale,
 	dialogTitle,
 	formSubmitURL,
@@ -59,12 +60,13 @@ function openAddBlueprintModal({
 		<AddBlueprintModal
 			alert={alert}
 			closeModal={dispose}
+			contextPath={contextPath}
 			defaultLocale={defaultLocale}
 			dialogTitle={dialogTitle}
 			formSubmitURL={formSubmitURL}
 			idFieldName={idFieldName}
 			idFieldValue={idFieldValue}
-			initialVisible="true"
+			initialVisible
 			namespace={namespace}
 			onFormSuccess={onFormSuccess}
 			type={type}

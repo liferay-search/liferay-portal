@@ -525,6 +525,7 @@ function ConfigFragment({
 							<ClayInput
 								aria-label={config.name}
 								disabled={disabled}
+								id={config.key}
 								onChange={(event) => {
 									_handleChange(
 										config.key,
