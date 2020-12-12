@@ -33,10 +33,12 @@ export const DEFAULT_FRAGMENT = {
 				occur: 'must',
 				query: {
 					query: {
-						query_string: {
-							default_operator: '${config.default_operator}',
+						multi_match: {
+							boost: '${config.boost}',
 							fields: '${config.fields}',
+							operator: '${config.operator}',
 							query: '${keywords}',
+							type: '${config.type}',
 						},
 					},
 				},
@@ -45,26 +47,31 @@ export const DEFAULT_FRAGMENT = {
 		],
 		conditions: [],
 		description: {
-			en_US: 'Search title and content',
+			en_US: 'Search for a text match over multiple text fields',
 		},
 		enabled: true,
-		icon: 'vocabulary',
 		title: {
-			en_US: 'Match Any Keyword',
+			en_US: 'Text Match Over Multiple Fields',
 		},
 	},
 	uiConfigurationJSON: [
 		{
+			defaultValue: 1,
+			key: 'config.boost',
+			name: 'Boost',
+			type: 'number',
+		},
+		{
 			defaultValue: [
 				{
-					boost: '1',
-					field: 'title',
-					locale: '',
+					boost: '2',
+					field: 'localized_title',
+					locale: '${context.language_id}',
 				},
 				{
-					boost: '2',
+					boost: '1',
 					field: 'content',
-					locale: '',
+					locale: '${context.language_id}',
 				},
 			],
 			key: 'config.fields',
@@ -72,22 +79,23 @@ export const DEFAULT_FRAGMENT = {
 			type: 'field-select',
 			typeOptions: [
 				{
-					label: 'Title',
-					value: 'title',
+					label: 'localized_title',
+					value: 'localized_title',
 				},
 				{
-					label: 'Description',
+					label: 'description',
 					value: 'description',
 				},
 				{
-					label: 'Content',
+					label: 'content',
 					value: 'content',
 				},
 			],
 		},
 		{
-			key: 'config.default_operator',
-			name: 'Default Operator',
+			defaultValue: 'or',
+			key: 'config.operator',
+			name: 'Operator',
 			type: 'single-select',
 			typeOptions: [
 				{
@@ -100,6 +108,46 @@ export const DEFAULT_FRAGMENT = {
 				},
 			],
 		},
+		{
+			defaultValue: 'best_fields',
+			key: 'config.type',
+			name: 'Match Type',
+			type: 'single-select',
+			typeOptions: [
+				{
+					label: 'Best Fields',
+					value: 'best_fields',
+				},
+				{
+					label: 'Most Fields',
+					value: 'most_fields',
+				},
+				{
+					label: 'Cross Fields',
+					value: 'cross_fields',
+				},
+				{
+					label: 'Phrase',
+					value: 'phrase',
+				},
+				{
+					label: 'Phrase Prefix',
+					value: 'phrase_prefix',
+				},
+				{
+					label: 'Boolean Prefix',
+					value: 'bool_prefix',
+				},
+			],
+		},
+	],
+};
+
+export const DEFAULT_FRAMEWORK_CONFIGURATION = {
+	apply_indexer_clauses: true,
+	searchable_asset_types: [
+		'com.liferay.journal.model.JournalArticle',
+		'com.liferay.document.library.kernel.model.DLFileEntry',
 	],
 };
 

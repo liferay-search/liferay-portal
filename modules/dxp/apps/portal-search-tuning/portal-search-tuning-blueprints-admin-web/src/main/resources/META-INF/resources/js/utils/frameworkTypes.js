@@ -9,12 +9,7 @@
  * distribution rights of the Software.
  */
 
-import React from 'react';
-
-export default React.createContext({
-	availableLanguages: {},
-	contextPath: '/o/portal-search-tuning-blueprints-admin-web',
-	defaultLocale: 'en_US',
-	locale: 'en_US',
-	namespace: '',
-});
+export const FRAMEWORK_TYPES = {
+	CUSTOM: 'custom',
+	DEFAULT: 'default',
+};

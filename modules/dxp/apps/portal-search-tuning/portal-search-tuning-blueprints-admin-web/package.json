@@ -2,6 +2,7 @@
 	"dependencies": {
 		"@clayui/alert": "3.5.0",
 		"@clayui/button": "3.5.0",
+		"@clayui/card": "3.6.1",
 		"@clayui/drop-down": "3.8.1",
 		"@clayui/empty-state": "3.2.0",
 		"@clayui/form": "3.13.0",
@@ -13,6 +14,8 @@
 		"@clayui/management-toolbar": "3.2.3",
 		"@clayui/modal": "3.8.1",
 		"@clayui/navigation-bar": "3.3.1",
+		"@clayui/panel": "3.3.1",
+		"@clayui/sticker": "3.3.0",
 		"@clayui/toolbar": "3.0.1",
 		"classnames": "2.2.6",
 		"codemirror": "^5.52.0",

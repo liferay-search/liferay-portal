@@ -40,6 +40,7 @@ import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.HashMapBuilder;
+import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
@@ -93,6 +94,8 @@ public class EditBlueprintDisplayBuilder {
 
 		_blueprint = _getBlueprint();
 
+		_portletRequest = (PortletRequest)_httpServletRequest.getAttribute(
+			JavaConstants.JAVAX_PORTLET_REQUEST);
 		_themeDisplay = (ThemeDisplay)_httpServletRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 	}
@@ -161,6 +164,8 @@ public class EditBlueprintDisplayBuilder {
 	private Map<String, Object> _getContext() {
 		return HashMapBuilder.<String, Object>put(
 			"availableLanguages", _getAvailableLanguagesJSONObject()
+		).put(
+			"contextPath", _portletRequest.getContextPath()
 		).put(
 			"defaultLocale", LocaleUtil.toLanguageId(LocaleUtil.getDefault())
 		).put(
@@ -403,6 +408,7 @@ public class EditBlueprintDisplayBuilder {
 	private final JSONFactory _jsonFactory;
 	private final Language _language;
 	private final Log _log;
+	private final PortletRequest _portletRequest;
 	private final RenderRequest _renderRequest;
 	private final RenderResponse _renderResponse;
 	private final ThemeDisplay _themeDisplay;

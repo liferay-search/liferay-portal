@@ -34,6 +34,8 @@ function renderEditBlueprint(props) {
 	return render(
 		<EditBlueprint
 			context={{
+				availableLanguages: {},
+				contextPath: '',
 				defaultLocale: 'en_US',
 				locale: 'en_US',
 				namespace:

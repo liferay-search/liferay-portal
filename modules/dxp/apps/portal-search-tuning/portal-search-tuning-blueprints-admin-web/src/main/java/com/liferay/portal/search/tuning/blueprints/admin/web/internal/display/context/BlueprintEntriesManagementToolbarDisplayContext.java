@@ -28,6 +28,7 @@ import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.Constants;
+import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Validator;
@@ -41,6 +42,7 @@ import java.util.List;
 import java.util.Objects;
 
 import javax.portlet.ActionRequest;
+import javax.portlet.PortletRequest;
 import javax.portlet.PortletURL;
 
 import javax.servlet.http.HttpServletRequest;
@@ -62,9 +64,11 @@ public class BlueprintEntriesManagementToolbarDisplayContext
 			httpServletRequest, liferayPortletRequest, liferayPortletResponse,
 			searchContainer);
 
-		_httpServletRequest = httpServletRequest;
-		_displayStyle = displayStyle;
 		_blueprintType = blueprintType;
+		_displayStyle = displayStyle;
+		_httpServletRequest = httpServletRequest;
+		_portletRequest = (PortletRequest)_httpServletRequest.getAttribute(
+			JavaConstants.JAVAX_PORTLET_REQUEST);
 		_themeDisplay = (ThemeDisplay)httpServletRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 	}
@@ -101,6 +105,7 @@ public class BlueprintEntriesManagementToolbarDisplayContext
 		return CreationMenuBuilder.addDropdownItem(
 			dropdownItem -> {
 				dropdownItem.putData("action", "addBlueprint");
+				dropdownItem.putData("contextPath", _portletRequest.getContextPath());
 				dropdownItem.putData(
 					"defaultLocale",
 					LocaleUtil.toLanguageId(LocaleUtil.getDefault()));
@@ -249,6 +254,7 @@ public class BlueprintEntriesManagementToolbarDisplayContext
 	private final int _blueprintType;
 	private final String _displayStyle;
 	private final HttpServletRequest _httpServletRequest;
+	private final PortletRequest _portletRequest;
 	private final ThemeDisplay _themeDisplay;
 
 }

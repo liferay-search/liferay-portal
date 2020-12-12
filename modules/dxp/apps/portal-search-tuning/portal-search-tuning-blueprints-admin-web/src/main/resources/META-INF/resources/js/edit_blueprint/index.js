@@ -16,7 +16,7 @@ import React, {useCallback, useContext, useRef, useState} from 'react';
 import ErrorBoundary from '../shared/ErrorBoundary';
 import PageToolbar from '../shared/PageToolbar';
 import ThemeContext from '../shared/ThemeContext';
-import {DEFAULT_FRAGMENT} from '../utils/data';
+import {DEFAULT_FRAGMENT, DEFAULT_FRAMEWORK_CONFIGURATION} from '../utils/data';
 import {
 	convertToSelectedFragment,
 	openErrorToast,
@@ -60,7 +60,7 @@ function EditBlueprintForm({
 
 	const form = useRef();
 
-	const fragmentIdCounter = useRef(1); // 0 reserved for default fragment
+	const fragmentIdCounter = useRef(1);
 
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -81,6 +81,13 @@ function EditBlueprintForm({
 			'\t'
 		)
 	);
+	const [facetConfig, setFacetConfig] = useState(
+		JSON.stringify(initialConfiguration['facet_configuration'], null, '\t')
+	);
+	const [frameworkConfig, setFrameworkConfig] = useState(
+		initialConfiguration['framework_configuration'] ||
+			DEFAULT_FRAMEWORK_CONFIGURATION
+	);
 	const [parameterConfig, setParameterConfig] = useState(
 		JSON.stringify(
 			initialConfiguration['parameter_configuration'],
@@ -91,10 +98,6 @@ function EditBlueprintForm({
 	const [sortConfig, setSortConfig] = useState(
 		JSON.stringify(initialConfiguration['sort_configuration'], null, '\t')
 	);
-	const [facetConfig, setFacetConfig] = useState(
-		JSON.stringify(initialConfiguration['facet_configuration'], null, '\t')
-	);
-
 	const [selectedQueryFragments, setSelectedQueryFragments] = useState(
 		blueprintId !== '0'
 			? initialSelectedFragments['query_configuration'].map(
@@ -140,6 +143,7 @@ function EditBlueprintForm({
 							aggregationConfig
 						),
 						facet_configuration: JSON.parse(facetConfig),
+						framework_configuration: frameworkConfig,
 						parameter_configuration: JSON.parse(parameterConfig),
 						query_configuration: selectedQueryFragments.map(
 							(item) => item.fragmentOutput
@@ -210,6 +214,7 @@ function EditBlueprintForm({
 			aggregationConfig,
 			blueprintType,
 			blueprintId,
+			frameworkConfig,
 			namespace,
 			parameterConfig,
 			redirectURL,
@@ -283,6 +288,10 @@ function EditBlueprintForm({
 						<QueryBuilder
 							deleteFragment={deleteFragment}
 							entityJSON={entityJSON}
+							frameworkConfig={frameworkConfig}
+							onFrameworkConfigChange={(val) =>
+								setFrameworkConfig(val)
+							}
 							selectedFragments={selectedQueryFragments}
 							toggleSidebar={() => setShowSidebar(!showSidebar)}
 							updateFragment={updateQueryFragment}
