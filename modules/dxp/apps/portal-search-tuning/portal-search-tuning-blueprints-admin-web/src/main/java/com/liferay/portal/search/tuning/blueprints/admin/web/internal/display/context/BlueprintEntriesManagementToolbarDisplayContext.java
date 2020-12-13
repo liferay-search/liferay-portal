@@ -123,6 +123,30 @@ public class BlueprintEntriesManagementToolbarDisplayContext
 				dropdownItem.setLabel(
 					LanguageUtil.get(_httpServletRequest, "add-blueprint"));
 			}
+		).addDropdownItem(
+			dropdownItem -> {
+				dropdownItem.putData("action", "importBlueprint");
+				dropdownItem.putData(
+					"defaultLocale",
+					LocaleUtil.toLanguageId(LocaleUtil.getDefault()));
+
+				PortletURL importBlueprintURL =
+					liferayPortletResponse.createActionURL();
+
+				importBlueprintURL.setParameter(
+					ActionRequest.ACTION_NAME,
+					BlueprintsAdminMVCCommandNames.IMPORT_BLUEPRINT);
+				importBlueprintURL.setParameter(
+					"redirect", currentURLObj.toString());
+
+				dropdownItem.putData(
+					"importBlueprintURL", importBlueprintURL.toString());
+
+				dropdownItem.putData(
+					"type", String.valueOf(BlueprintTypes.BLUEPRINT));
+				dropdownItem.setLabel(
+					LanguageUtil.get(httpServletRequest, "import-blueprint"));
+			}
 		).build();
 	}
 

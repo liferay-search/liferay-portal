@@ -12,6 +12,7 @@
 import {DefaultEventHandler} from 'frontend-js-web';
 
 import openAddBlueprintModal from './OpenAddBlueprintModalCommand';
+import openImportBlueprintModal from './OpenImportBlueprintModalCommand';
 
 class BlueprintEntriesManagementToolbarDefaultEventHandler extends DefaultEventHandler {
 	addBlueprint(itemData) {
@@ -19,6 +20,16 @@ class BlueprintEntriesManagementToolbarDefaultEventHandler extends DefaultEventH
 			defaultLocale: itemData.defaultLocale,
 			dialogTitle: Liferay.Language.get('new-search-blueprint'),
 			formSubmitURL: itemData.editBlueprintURL,
+			namespace: this.namespace,
+			spritemap: this.spritemap,
+			type: itemData.type,
+		});
+	}
+	importBlueprint(itemData) {
+		openImportBlueprintModal({
+			defaultLocale: itemData.defaultLocale,
+			dialogTitle: Liferay.Language.get('import-blueprint'),
+			formSubmitURL: itemData.importBlueprintURL,
 			namespace: this.namespace,
 			spritemap: this.spritemap,
 			type: itemData.type,
