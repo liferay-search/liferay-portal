@@ -12,7 +12,7 @@
  *
  */
 
-package com.liferay.portal.search.tuning.blueprints.util.attributes;
+package com.liferay.portal.search.tuning.blueprints.util.internal.attributes;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
@@ -37,6 +37,7 @@ import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetsBluepr
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
 import com.liferay.portal.search.tuning.blueprints.util.BlueprintHelper;
+import com.liferay.portal.search.tuning.blueprints.util.attributes.BlueprintsAttributesHelper;
 
 import java.util.Optional;
 
