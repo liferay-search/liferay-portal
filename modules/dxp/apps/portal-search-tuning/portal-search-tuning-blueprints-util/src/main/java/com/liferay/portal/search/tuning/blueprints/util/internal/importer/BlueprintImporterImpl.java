@@ -221,8 +221,6 @@ public class BlueprintImporterImpl implements BlueprintImporter {
 			return false;
 		}
 
-		// TODO: add support for fragments
-
 		if (type == BlueprintTypes.BLUEPRINT) {
 			if (_validateTitle(payloadJSONObject) &&
 				_validateConfiguration(payloadJSONObject) &&
@@ -237,7 +235,8 @@ public class BlueprintImporterImpl implements BlueprintImporter {
 			if (_validateTitle(payloadJSONObject) &&
 				_validateClauses(payloadJSONObject)) {
 
-				// TODO
+				// TODO: add support for fragments
+				// https://issues.liferay.com/browse/LPS-114089
 
 				return false;
 			}
