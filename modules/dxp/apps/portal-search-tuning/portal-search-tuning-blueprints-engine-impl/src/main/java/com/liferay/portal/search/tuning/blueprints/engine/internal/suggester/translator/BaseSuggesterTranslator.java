@@ -19,6 +19,7 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.search.suggest.Suggester;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.suggester.SuggesterTranslator;
 import com.liferay.portal.search.tuning.blueprints.message.Message;
@@ -36,6 +37,12 @@ public abstract class BaseSuggesterTranslator implements SuggesterTranslator {
 	public abstract Optional<Suggester> translate(
 		String suggesterName, JSONObject configurationJSONObject,
 		ParameterData parameterData, Messages messages);
+
+	protected Suggester.SuggestMode getSuggestMode(String s)
+		throws IllegalArgumentException {
+
+		return Suggester.SuggestMode.valueOf(StringUtil.toUpperCase(s));
+	}
 
 	protected boolean validateSuggesterConfiguration(
 		Messages messages, JSONObject configurationJSONObject,

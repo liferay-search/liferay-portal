@@ -26,7 +26,6 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.query.Queries;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.suggester.CompletionSuggesterConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.suggester.PhraseSuggesterConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.suggester.SuggesterTranslator;
@@ -69,7 +68,7 @@ public class PhraseSuggesterTranslator
 
 		PhraseSuggester phraseSuggester = new PhraseSuggester(
 			suggesterName, field,
-			getValue(parameterData, configurationJSONObject));
+			getValue(configurationJSONObject, parameterData));
 
 		if (!configurationJSONObject.isNull(
 				PhraseSuggesterConfigurationKeys.ANALYZER.getJsonKey())) {
@@ -189,10 +188,10 @@ public class PhraseSuggesterTranslator
 	}
 
 	protected String getValue(
-		ParameterData parameterData, JSONObject configurationJSONObject) {
+		JSONObject configurationJSONObject, ParameterData parameterData) {
 
 		String text = configurationJSONObject.getString(
-			CompletionSuggesterConfigurationKeys.PREFIX.getJsonKey());
+			PhraseSuggesterConfigurationKeys.TEXT.getJsonKey());
 
 		if (Validator.isBlank(text)) {
 			text = parameterData.getKeywords();
@@ -259,12 +258,6 @@ public class PhraseSuggesterTranslator
 		String field = iterator.next();
 
 		return new MatchQuery(field, matchQueryJSONObject.getString(field));
-	}
-
-	private Suggester.SuggestMode _getSuggestMode(String s)
-		throws IllegalArgumentException {
-
-		return Suggester.SuggestMode.valueOf(StringUtil.toUpperCase(s));
 	}
 
 	private void _setCandidateGenerators(
@@ -343,7 +336,7 @@ public class PhraseSuggesterTranslator
 			if (!jsonObject.isNull("suggest_mode")) {
 				try {
 					candidateGenerator.setSuggestMode(
-						_getSuggestMode(jsonObject.getString("suggest_mode")));
+						getSuggestMode(jsonObject.getString("suggest_mode")));
 				}
 				catch (IllegalArgumentException illegalArgumentException) {
 					messages.addMessage(
