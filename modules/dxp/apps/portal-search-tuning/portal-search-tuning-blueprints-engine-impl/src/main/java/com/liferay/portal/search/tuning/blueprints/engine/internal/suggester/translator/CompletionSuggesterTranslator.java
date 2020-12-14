@@ -64,7 +64,7 @@ public class CompletionSuggesterTranslator
 					CompletionSuggesterConfigurationKeys.ANALYZER.
 						getJsonKey()));
 		}
-		
+
 		if (!configurationJSONObject.isNull(
 				CompletionSuggesterConfigurationKeys.SHARD_SIZE.getJsonKey())) {
 
@@ -85,7 +85,6 @@ public class CompletionSuggesterTranslator
 		return Optional.of(completionSuggester);
 	}
 
-
 	protected String getValue(
 		ParameterData parameterData, JSONObject configurationJSONObject) {
 
@@ -98,4 +97,5 @@ public class CompletionSuggesterTranslator
 
 		return StringUtil.toLowerCase(text);
 	}
+
 }

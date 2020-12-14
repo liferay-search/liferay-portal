@@ -18,11 +18,10 @@ import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.search.Query;
 import com.liferay.portal.kernel.search.generic.MatchQuery;
 import com.liferay.portal.kernel.search.suggest.PhraseSuggester;
-import com.liferay.portal.kernel.search.suggest.PhraseSuggester.Collate;
 import com.liferay.portal.kernel.search.suggest.Suggester;
-import com.liferay.portal.kernel.search.suggest.Suggester.SuggestMode;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
@@ -100,7 +99,8 @@ public class PhraseSuggesterTranslator
 				PhraseSuggesterConfigurationKeys.DIRECT_GENERATOR.
 					getJsonKey())) {
 
-			_setCandidateGenerators(phraseSuggester, configurationJSONObject, messages);
+			_setCandidateGenerators(
+				phraseSuggester, configurationJSONObject, messages);
 		}
 
 		if (!configurationJSONObject.isNull(
@@ -184,7 +184,7 @@ public class PhraseSuggesterTranslator
 					PhraseSuggesterConfigurationKeys.POST_HIGHLIGHT_TAG.
 						getJsonKey()));
 		}
-		
+
 		return Optional.of(phraseSuggester);
 	}
 
@@ -200,86 +200,76 @@ public class PhraseSuggesterTranslator
 
 		return StringUtil.toLowerCase(text);
 	}
-	
-	private com.liferay.portal.kernel.search.Query _getCollateQuery(JSONObject collateJSONObject, Messages messages) {
-		
+
+	private Query _getCollateQuery(
+		JSONObject collateJSONObject, Messages messages) {
+
 		JSONObject queryJSONObject = collateJSONObject.getJSONObject("query");
 
 		if (queryJSONObject == null) {
 			return null;
 		}
-		
-		JSONObject querySourceJSONObject = queryJSONObject.getJSONObject("source");
+
+		JSONObject querySourceJSONObject = queryJSONObject.getJSONObject(
+			"source");
 
 		if (querySourceJSONObject == null) {
 			messages.addMessage(
-					new Message.Builder().className(
-						getClass().getName()
-					).localizationKey(
-						"core.error.undefined-collate-query-source"
-					).msg(
-						"Collate query source is not defined"
-					).rootObject(
-						queryJSONObject
-					).rootProperty(
-						"source"
-					).severity(
-						Severity.ERROR
-					).build());					
-			
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"core.error.undefined-collate-query-source"
+				).msg(
+					"PhraseSuggester.Collate query source is not defined"
+				).rootObject(
+					queryJSONObject
+				).rootProperty(
+					"source"
+				).severity(
+					Severity.ERROR
+				).build());
+
 			return null;
 		}
-		
-		JSONObject matchQueryJSONObject = querySourceJSONObject.getJSONObject("match");
+
+		JSONObject matchQueryJSONObject = querySourceJSONObject.getJSONObject(
+			"match");
 
 		if (matchQueryJSONObject == null) {
 			messages.addMessage(
-					new Message.Builder().className(
-						getClass().getName()
-					).localizationKey(
-						"core.error.unsupported-collate-query-type"
-					).msg(
-						"Collate query only support Match type"
-					).rootObject(
-							querySourceJSONObject
-					).rootProperty(
-						"source"
-					).severity(
-						Severity.ERROR
-					).build());					
-			
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"core.error.unsupported-collate-query-type"
+				).msg(
+					"PhraseSuggester.Collate query only support Match type"
+				).rootObject(
+					querySourceJSONObject
+				).rootProperty(
+					"source"
+				).severity(
+					Severity.ERROR
+				).build());
+
 			return null;
 		}
 
-		Iterator<String> it = matchQueryJSONObject.keys();
+		Iterator<String> iterator = matchQueryJSONObject.keys();
 
-		String field = it.next();
+		String field = iterator.next();
 
 		return new MatchQuery(field, matchQueryJSONObject.getString(field));
-		
 	}
-	
-	private SuggestMode _getSuggestMode(String s) 
-			throws IllegalArgumentException{
-		return SuggestMode.valueOf(StringUtil.toUpperCase(s));
+
+	private Suggester.SuggestMode _getSuggestMode(String s)
+		throws IllegalArgumentException {
+
+		return Suggester.SuggestMode.valueOf(StringUtil.toUpperCase(s));
 	}
-	
-	private Map<String, Object> _setCollateParams(Collate collate, JSONObject paramsJSONObject) {
-		
-		Map<String, Object> params = new HashMap<String, Object>();
-		
-		Stream<String> stream =	paramsJSONObject.keySet().stream();
-		
-		stream.forEach(key -> {
-			collate.addParams(key, paramsJSONObject.get(key));
-			
-		});
-		
-		return params;
-	}
-	
+
 	private void _setCandidateGenerators(
-		PhraseSuggester phraseSuggester, JSONObject configurationJSONObject, Messages messages) {
+		PhraseSuggester phraseSuggester, JSONObject configurationJSONObject,
+		Messages messages) {
 
 		JSONArray directGeneratorJSONArray =
 			configurationJSONObject.getJSONArray(
@@ -291,106 +281,89 @@ public class PhraseSuggesterTranslator
 			return;
 		}
 
-		
 		for (int i = 0; i < directGeneratorJSONArray.length(); i++) {
-
 			JSONObject jsonObject = directGeneratorJSONArray.getJSONObject(i);
-			
+
 			String field = jsonObject.getString("field");
-			
+
 			if (Validator.isBlank(field)) {
 				continue;
 			}
-			
+
 			PhraseSuggester.CandidateGenerator candidateGenerator =
-					new PhraseSuggester.CandidateGenerator(field);
+				new PhraseSuggester.CandidateGenerator(field);
 
 			if (!jsonObject.isNull("max_edits")) {
-				
-				candidateGenerator.setMaxEdits(
-					jsonObject.getInt("max_edits"));
+				candidateGenerator.setMaxEdits(jsonObject.getInt("max_edits"));
 			}
 
 			if (!jsonObject.isNull("max_inspections")) {
-			
 				candidateGenerator.setMaxInspections(
 					jsonObject.getInt("max_inspections"));
 			}
 
 			if (!jsonObject.isNull("max_term_freq")) {
-			
 				candidateGenerator.setMaxTermFreq(
 					jsonObject.getInt("max_term_freq"));
 			}
 
 			if (!jsonObject.isNull("min_doc_freq")) {
-				
 				candidateGenerator.setMinDocFreq(
 					jsonObject.getInt("min_doc_freq"));
 			}
 
-
 			if (!jsonObject.isNull("min_word_length")) {
-				
 				candidateGenerator.setMinWordLength(
 					jsonObject.getInt("min_word_length"));
 			}
 
 			if (!jsonObject.isNull("post_filter")) {
-				
 				candidateGenerator.setPostFilterAnalyzer(
-						jsonObject.getString("post_filter"));
+					jsonObject.getString("post_filter"));
 			}
 
 			if (!jsonObject.isNull("pre_filter")) {
-				
 				candidateGenerator.setPreFilterAnalyzer(
 					jsonObject.getString("pre_filter"));
 			}
-			
+
 			if (!jsonObject.isNull("prefix_length")) {
-				
 				candidateGenerator.setPrefixLength(
 					jsonObject.getInt("prefix_length"));
 			}
 
 			if (!jsonObject.isNull("size")) {
-			
-				candidateGenerator.setSize(
-					jsonObject.getInt("size"));
+				candidateGenerator.setSize(jsonObject.getInt("size"));
 			}
 
 			if (!jsonObject.isNull("size")) {
-			
-				candidateGenerator.setSize(
-					jsonObject.getInt("size"));
+				candidateGenerator.setSize(jsonObject.getInt("size"));
 			}
 
 			if (!jsonObject.isNull("suggest_mode")) {
-			
 				try {
-				
-					candidateGenerator.setSuggestMode(_getSuggestMode(
-							jsonObject.getString("suggest_mode")));
-					
-				} catch (IllegalArgumentException illegalArgumentException) {
-
+					candidateGenerator.setSuggestMode(
+						_getSuggestMode(jsonObject.getString("suggest_mode")));
+				}
+				catch (IllegalArgumentException illegalArgumentException) {
 					messages.addMessage(
-							new Message.Builder().className(
-								getClass().getName()
-							).localizationKey(
-								"core.error.unknown-suggest-mode"
-							).msg(
-								"Unknown suggest mode"
-							).rootObject(
-								jsonObject
-							).rootProperty(
-								"suggest_mode"
-							).severity(
-								Severity.ERROR
-							).build());					
-					
-					_log.error(illegalArgumentException.getMessage(), illegalArgumentException);
+						new Message.Builder().className(
+							getClass().getName()
+						).localizationKey(
+							"core.error.unknown-suggest-mode"
+						).msg(
+							"Unknown suggest mode"
+						).rootObject(
+							jsonObject
+						).rootProperty(
+							"suggest_mode"
+						).severity(
+							Severity.ERROR
+						).build());
+
+					_log.error(
+						illegalArgumentException.getMessage(),
+						illegalArgumentException);
 				}
 			}
 
@@ -399,39 +372,56 @@ public class PhraseSuggesterTranslator
 	}
 
 	private void _setCollate(
-		PhraseSuggester phraseSuggester, JSONObject configurationJSONObject, Messages messages) {
+		PhraseSuggester phraseSuggester, JSONObject configurationJSONObject,
+		Messages messages) {
 
 		if (!configurationJSONObject.has(
 				PhraseSuggesterConfigurationKeys.COLLATE.getJsonKey())) {
+
 			return;
 		}
-		
+
 		JSONObject collateJSONObject = configurationJSONObject.getJSONObject(
 			PhraseSuggesterConfigurationKeys.COLLATE.getJsonKey());
 
-		com.liferay.portal.kernel.search.Query query = _getCollateQuery(collateJSONObject, messages);
-		
+		Query query = _getCollateQuery(collateJSONObject, messages);
+
 		if (query == null) {
 			return;
 		}
-		
-		Collate collate = new PhraseSuggester.Collate(query);
-			
+
+		PhraseSuggester.Collate collate = new PhraseSuggester.Collate(query);
+
 		if (!collateJSONObject.isNull("prune")) {
-			collate.setPrune(
-				collateJSONObject.getBoolean("prune"));
+			collate.setPrune(collateJSONObject.getBoolean("prune"));
 		}
 
 		if (!collateJSONObject.isNull("params")) {
-			_setCollateParams(collate, collateJSONObject.getJSONObject("params"));
+			_setCollateParams(
+				collate, collateJSONObject.getJSONObject("params"));
 		}
 
 		phraseSuggester.setCollate(collate);
 	}
-	
+
+	private Map<String, Object> _setCollateParams(
+		PhraseSuggester.Collate collate, JSONObject paramsJSONObject) {
+
+		Map<String, Object> params = new HashMap<>();
+
+		Stream<String> stream = paramsJSONObject.keySet(
+		).stream();
+
+		stream.forEach(
+			key -> collate.addParams(key, paramsJSONObject.get(key)));
+
+		return params;
+	}
+
 	private static final Log _log = LogFactoryUtil.getLog(
 		PhraseSuggesterTranslator.class);
 
 	@Reference
 	private Queries _queries;
+
 }
