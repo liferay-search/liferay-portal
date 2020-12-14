@@ -12,7 +12,7 @@
  *
  */
 
-package com.liferay.portal.search.tuning.blueprints.constants.json.keys.suggester;
+package com.liferay.portal.search.tuning.blueprints.constants.json.keys.query;
 
 import java.util.Arrays;
 import java.util.stream.Stream;
@@ -20,19 +20,18 @@ import java.util.stream.Stream;
 /**
  * @author Petteri Karttunen
  */
-public enum CompletionSuggesterConfigurationKeys {
+public enum WrapperQueryConfigurationKeys {
 
-	ANALYZER("analyzer"), FIELD("field"), PREFIX("prefix"), SHARD_SIZE("shard_size"),
-	SIZE("size");
+	QUERY("query");
 
-	public static final CompletionSuggesterConfigurationKeys findByJsonKey(
+	public static final WrapperQueryConfigurationKeys findByJsonKey(
 		String jsonKey) {
 
-		Stream<CompletionSuggesterConfigurationKeys>
-			completionSuggesterConfigurationKeysStream = Arrays.stream(
-				CompletionSuggesterConfigurationKeys.values());
+		Stream<WrapperQueryConfigurationKeys>
+			wrapperQueryConfigurationKeysStream = Arrays.stream(
+				WrapperQueryConfigurationKeys.values());
 
-		return completionSuggesterConfigurationKeysStream.filter(
+		return wrapperQueryConfigurationKeysStream.filter(
 			value -> value._jsonKey.equals(jsonKey)
 		).findFirst(
 		).orElse(
@@ -44,7 +43,7 @@ public enum CompletionSuggesterConfigurationKeys {
 		return _jsonKey;
 	}
 
-	private CompletionSuggesterConfigurationKeys(String jsonKey) {
+	private WrapperQueryConfigurationKeys(String jsonKey) {
 		_jsonKey = jsonKey;
 	}
 

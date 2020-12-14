@@ -18,7 +18,7 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.query.Queries;
 import com.liferay.portal.search.query.Query;
 import com.liferay.portal.search.query.WrapperQuery;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.query.SimpleQueryStringConfigurationKeys;
+import com.liferay.portal.search.tuning.blueprints.constants.json.keys.query.WrapperQueryConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.clause.ClauseTranslator;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
@@ -44,7 +44,7 @@ public class WrapperClauseTranslator implements ClauseTranslator {
 		ParameterData parameterData, Messages messages) {
 
 		String query = configurationJSONObject.getString(
-			SimpleQueryStringConfigurationKeys.QUERY.getJsonKey());
+			WrapperQueryConfigurationKeys.QUERY.getJsonKey());
 
 		WrapperQuery wrapperQuery = _queries.wrapper(query);
 

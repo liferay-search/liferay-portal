@@ -17,6 +17,8 @@ package com.liferay.portal.search.tuning.blueprints.engine.internal.suggester.tr
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.search.suggest.CompletionSuggester;
 import com.liferay.portal.kernel.search.suggest.Suggester;
+import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.suggester.CompletionSuggesterConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.suggester.SuggesterTranslator;
@@ -52,7 +54,7 @@ public class CompletionSuggesterTranslator
 
 		CompletionSuggester completionSuggester = new CompletionSuggester(
 			suggesterName, field,
-			getText(parameterData, configurationJSONObject));
+			getValue(parameterData, configurationJSONObject));
 
 		if (!configurationJSONObject.isNull(
 				CompletionSuggesterConfigurationKeys.ANALYZER.getJsonKey())) {
@@ -62,7 +64,7 @@ public class CompletionSuggesterTranslator
 					CompletionSuggesterConfigurationKeys.ANALYZER.
 						getJsonKey()));
 		}
-
+		
 		if (!configurationJSONObject.isNull(
 				CompletionSuggesterConfigurationKeys.SHARD_SIZE.getJsonKey())) {
 
@@ -83,4 +85,17 @@ public class CompletionSuggesterTranslator
 		return Optional.of(completionSuggester);
 	}
 
+
+	protected String getValue(
+		ParameterData parameterData, JSONObject configurationJSONObject) {
+
+		String text = configurationJSONObject.getString(
+			CompletionSuggesterConfigurationKeys.PREFIX.getJsonKey());
+
+		if (Validator.isBlank(text)) {
+			text = parameterData.getKeywords();
+		}
+
+		return StringUtil.toLowerCase(text);
+	}
 }
