@@ -99,7 +99,7 @@ public class TermSuggesterTranslator
 					).rootObject(
 						configurationJSONObject
 					).rootProperty(
-						"suggest_mode"
+						TermSuggesterConfigurationKeys.SUGGEST_MODE.getJsonKey()
 					).severity(
 						Severity.ERROR
 					).build());
@@ -153,10 +153,11 @@ public class TermSuggesterTranslator
 		}
 
 		if (!configurationJSONObject.isNull(
-				TermSuggesterConfigurationKeys.STRING_DISTANCE.getJsonKey())) {
+				TermSuggesterConfigurationKeys.PREFIX_LENGTH.getJsonKey())) {
 
-			termSuggester.setStringDistance(
-				configurationJSONObject.getInt("string_distance"));
+			termSuggester.setPrefixLength(
+				configurationJSONObject.getInt(
+					TermSuggesterConfigurationKeys.PREFIX_LENGTH.getJsonKey()));
 		}
 
 		if (!configurationJSONObject.isNull(
@@ -168,11 +169,36 @@ public class TermSuggesterTranslator
 		}
 
 		if (!configurationJSONObject.isNull(
-				TermSuggesterConfigurationKeys.PREFIX_LENGTH.getJsonKey())) {
+				TermSuggesterConfigurationKeys.STRING_DISTANCE.getJsonKey())) {
 
-			termSuggester.setPrefixLength(
-				configurationJSONObject.getInt(
-					TermSuggesterConfigurationKeys.PREFIX_LENGTH.getJsonKey()));
+			try {
+				termSuggester.setStringDistance(
+					getStringDistance(
+						configurationJSONObject.getString(
+							TermSuggesterConfigurationKeys.STRING_DISTANCE.
+								getJsonKey())));
+			}
+			catch (IllegalArgumentException illegalArgumentException) {
+				messages.addMessage(
+					new Message.Builder().className(
+						getClass().getName()
+					).localizationKey(
+						"core.error.unknown-string-distance"
+					).msg(
+						"Unknown string distance"
+					).rootObject(
+						configurationJSONObject
+					).rootProperty(
+						TermSuggesterConfigurationKeys.STRING_DISTANCE.
+							getJsonKey()
+					).severity(
+						Severity.ERROR
+					).build());
+
+				_log.error(
+					illegalArgumentException.getMessage(),
+					illegalArgumentException);
+			}
 		}
 
 		return Optional.of(termSuggester);

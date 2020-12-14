@@ -122,7 +122,7 @@ public class HighlightSearchRequestBodyContributor
 		}
 
 		// TODO: waiting for support in SearchRequestBuilder
-
+		// https://issues.liferay.com/browse/LPS-121365
 		// searchRequestBuilder.setHighlight(highlightBuilder.build());
 
 	}
