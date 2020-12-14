@@ -43,6 +43,7 @@ public class SuggestionsResponseContributor implements ResponseContributor {
 		ResourceBundle resourceBundle, Messages messages) {
 
 		// TODO: Waiting for suggest support in SearchRequest & SearchResponse
+		// https://issues.liferay.com/browse/LPS-120711
 
 		responseJSONObject.put(
 			JSONResponseKeys.SUGGESTIONS, JSONFactoryUtil.createJSONObject());
