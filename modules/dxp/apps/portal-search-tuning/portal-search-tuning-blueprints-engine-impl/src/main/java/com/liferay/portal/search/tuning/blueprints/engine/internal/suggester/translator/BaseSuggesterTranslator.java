@@ -19,9 +19,6 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.search.suggest.Suggester;
-import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.suggester.CompletionSuggesterConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.suggester.SuggesterTranslator;
 import com.liferay.portal.search.tuning.blueprints.message.Message;
@@ -39,19 +36,6 @@ public abstract class BaseSuggesterTranslator implements SuggesterTranslator {
 	public abstract Optional<Suggester> translate(
 		String suggesterName, JSONObject configurationJSONObject,
 		ParameterData parameterData, Messages messages);
-
-	protected String getText(
-		ParameterData parameterData, JSONObject configurationJSONObject) {
-
-		String text = configurationJSONObject.getString(
-			CompletionSuggesterConfigurationKeys.TEXT.getJsonKey());
-
-		if (Validator.isBlank(text)) {
-			text = parameterData.getKeywords();
-		}
-
-		return StringUtil.toLowerCase(text);
-	}
 
 	protected boolean validateSuggesterConfiguration(
 		Messages messages, JSONObject configurationJSONObject,

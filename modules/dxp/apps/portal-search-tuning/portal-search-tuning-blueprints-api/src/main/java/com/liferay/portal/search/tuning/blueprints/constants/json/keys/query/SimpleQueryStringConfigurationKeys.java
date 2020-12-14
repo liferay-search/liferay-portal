@@ -36,10 +36,10 @@ public enum SimpleQueryStringConfigurationKeys {
 		String jsonKey) {
 
 		Stream<SimpleQueryStringConfigurationKeys>
-			completionSuggesterConfigurationKeysStream = Arrays.stream(
+			simpleQueryStringConfigurationKeysStream = Arrays.stream(
 				SimpleQueryStringConfigurationKeys.values());
 
-		return completionSuggesterConfigurationKeysStream.filter(
+		return simpleQueryStringConfigurationKeysStream.filter(
 			value -> value._jsonKey.equals(jsonKey)
 		).findFirst(
 		).orElse(
