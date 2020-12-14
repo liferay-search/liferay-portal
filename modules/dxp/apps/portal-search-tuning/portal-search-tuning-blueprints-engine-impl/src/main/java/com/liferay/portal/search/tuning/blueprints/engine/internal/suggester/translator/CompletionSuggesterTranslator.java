@@ -54,7 +54,7 @@ public class CompletionSuggesterTranslator
 
 		CompletionSuggester completionSuggester = new CompletionSuggester(
 			suggesterName, field,
-			getValue(parameterData, configurationJSONObject));
+			getValue(configurationJSONObject, parameterData));
 
 		if (!configurationJSONObject.isNull(
 				CompletionSuggesterConfigurationKeys.ANALYZER.getJsonKey())) {
@@ -86,7 +86,7 @@ public class CompletionSuggesterTranslator
 	}
 
 	protected String getValue(
-		ParameterData parameterData, JSONObject configurationJSONObject) {
+		JSONObject configurationJSONObject, ParameterData parameterData) {
 
 		String text = configurationJSONObject.getString(
 			CompletionSuggesterConfigurationKeys.PREFIX.getJsonKey());
