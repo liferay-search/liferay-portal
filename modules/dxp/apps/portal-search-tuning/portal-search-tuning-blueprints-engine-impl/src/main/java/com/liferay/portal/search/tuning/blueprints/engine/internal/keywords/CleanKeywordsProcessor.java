@@ -31,7 +31,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(
 	immediate = true, property = "name=clean", service = KeywordsProcessor.class
 )
-public class CleanKeywordsProcessorImpl implements KeywordsProcessor {
+public class CleanKeywordsProcessor implements KeywordsProcessor {
 
 	@Override
 	public String process(
