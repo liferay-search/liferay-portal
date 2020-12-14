@@ -22,8 +22,8 @@ import java.util.stream.Stream;
  */
 public enum CompletionSuggesterConfigurationKeys {
 
-	ANALYZER("analyzer"), FIELD("field"), PREFIX("prefix"), SHARD_SIZE("shard_size"),
-	SIZE("size");
+	ANALYZER("analyzer"), FIELD("field"), PREFIX("prefix"),
+	SHARD_SIZE("shard_size"), SIZE("size");
 
 	public static final CompletionSuggesterConfigurationKeys findByJsonKey(
 		String jsonKey) {
