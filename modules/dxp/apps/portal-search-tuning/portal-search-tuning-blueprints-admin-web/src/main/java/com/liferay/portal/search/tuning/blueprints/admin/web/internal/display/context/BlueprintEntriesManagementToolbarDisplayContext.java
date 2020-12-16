@@ -161,7 +161,7 @@ public class BlueprintEntriesManagementToolbarDisplayContext
 
 		searchURL.setProperty(
 			"mvcRenderCommandName",
-			BlueprintsAdminMVCCommandNames.VIEW_BLUEPRINT);
+			BlueprintsAdminMVCCommandNames.VIEW_BLUEPRINTS);
 
 		String tabs = ParamUtil.getString(
 			liferayPortletRequest, "tabs", "blueprints");
@@ -180,7 +180,7 @@ public class BlueprintEntriesManagementToolbarDisplayContext
 
 		portletURL.setProperty(
 			"mvcRenderCommandName",
-			BlueprintsAdminMVCCommandNames.VIEW_BLUEPRINT);
+			BlueprintsAdminMVCCommandNames.VIEW_BLUEPRINTS);
 
 		if (searchContainer.getDelta() > 0) {
 			portletURL.setProperty(
@@ -232,7 +232,7 @@ public class BlueprintEntriesManagementToolbarDisplayContext
 
 		sortingURL.setProperty(
 			"mvcRenderCommandName",
-			BlueprintsAdminMVCCommandNames.VIEW_BLUEPRINT);
+			BlueprintsAdminMVCCommandNames.VIEW_BLUEPRINTS);
 
 		sortingURL.setProperty(SearchContainer.DEFAULT_CUR_PARAM, "0");
 

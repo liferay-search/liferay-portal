@@ -33,6 +33,6 @@ public class BlueprintsAdminMVCCommandNames {
 
 	public static final String SELECT_BLUEPRINT = "/blueprint/select";
 
-	public static final String VIEW_BLUEPRINT = "/blueprint/view";
+	public static final String VIEW_BLUEPRINTS = "/blueprint/view";
 
 }

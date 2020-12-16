@@ -137,7 +137,7 @@ public class FragmentEntriesManagementToolbarDisplayContext
 
 		searchURL.setProperty(
 			"mvcRenderCommandName",
-			BlueprintsAdminMVCCommandNames.VIEW_BLUEPRINT);
+			BlueprintsAdminMVCCommandNames.VIEW_BLUEPRINTS);
 
 		searchURL.setParameter("tabs", "fragments");
 
@@ -153,7 +153,7 @@ public class FragmentEntriesManagementToolbarDisplayContext
 
 		portletURL.setProperty(
 			"mvcRenderCommandName",
-			BlueprintsAdminMVCCommandNames.VIEW_BLUEPRINT);
+			BlueprintsAdminMVCCommandNames.VIEW_BLUEPRINTS);
 
 		portletURL.setParameter("tabs", "fragments");
 
@@ -207,7 +207,7 @@ public class FragmentEntriesManagementToolbarDisplayContext
 
 		sortingURL.setProperty(
 			"mvcRenderCommandName",
-			BlueprintsAdminMVCCommandNames.VIEW_BLUEPRINT);
+			BlueprintsAdminMVCCommandNames.VIEW_BLUEPRINTS);
 
 		sortingURL.setParameter("tabs", "fragments");
 

@@ -46,7 +46,7 @@ import org.osgi.service.component.annotations.Reference;
 	immediate = true,
 	property = {
 		"javax.portlet.name=" + BlueprintsPortletKeys.BLUEPRINTS_ADMIN,
-		"mvc.command.name=" + BlueprintsAdminMVCCommandNames.VIEW_BLUEPRINT,
+		"mvc.command.name=" + BlueprintsAdminMVCCommandNames.VIEW_BLUEPRINTS,
 		"mvc.command.name=/"
 	},
 	service = MVCRenderCommand.class

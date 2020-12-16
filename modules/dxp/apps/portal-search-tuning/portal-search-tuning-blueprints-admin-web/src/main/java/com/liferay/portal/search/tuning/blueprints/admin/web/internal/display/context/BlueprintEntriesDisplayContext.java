@@ -130,7 +130,7 @@ public class BlueprintEntriesDisplayContext {
 
 		portletURL.setProperty(
 			"mvcRenderCommandName",
-			BlueprintsAdminMVCCommandNames.VIEW_BLUEPRINT);
+			BlueprintsAdminMVCCommandNames.VIEW_BLUEPRINTS);
 
 		SearchContainer<Blueprint> entriesSearchContainer =
 			new SearchContainer<>(
