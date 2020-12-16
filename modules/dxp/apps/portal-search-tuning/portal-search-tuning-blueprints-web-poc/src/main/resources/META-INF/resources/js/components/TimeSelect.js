@@ -13,24 +13,19 @@ import ClayDatePicker from '@clayui/date-picker';
 import ClayForm, {ClaySelect} from '@clayui/form';
 import ClayLayout from '@clayui/layout';
 import {PropTypes} from 'prop-types';
-import React, {useContext, useState} from 'react';
+import React from 'react';
 
-import ThemeContext from '../ThemeContext';
-import {formatDate, validDateRange} from '../utils/util';
+import {validDateRange} from '../utils/util';
 
 const YEAR_RANGE = {
 	end: 2024,
 	start: 1997,
 };
 
-export default function TimeSelect({setFilters}) {
-	const [timeFrom, setTimeFrom] = useState('');
-	const [timeTo, setTimeTo] = useState('');
-	const [timeRange, setTimeRange] = useState();
+export default function TimeSelect({children, timeRange, updateTimeRange}) {
+	const DEFAULT_TIME = 'any';
 
-	const {namespace} = useContext(ThemeContext);
-
-	const timeOptions = [
+	const TIME_OPTIONS = [
 		{
 			label: Liferay.Language.get('anytime'),
 			value: 'any',
@@ -61,105 +56,124 @@ export default function TimeSelect({setFilters}) {
 		},
 	];
 
-	function updateTimeRange(event) {
+	function updateTimeOption(event) {
 		const value = event.target.value;
 
-		setTimeRange(value);
-
-		if (value !== 'custom-range') {
-			setTimeFrom('');
-			setTimeTo('');
-
-			if (value === 'any') {
-				setFilters({});
-			}
-			else {
-				setFilters({[`${namespace}time`]: value});
-			}
+		if (value === DEFAULT_TIME) {
+			updateTimeRange({});
+		}
+		else {
+			updateTimeRange({time: value});
 		}
 	}
 
 	function updateTimeFrom(value) {
-		setTimeFrom(value);
-
-		if (timeTo && value && validDateRange(value, timeTo)) {
-			setFilters({
-				[`${namespace}timeFrom`]: formatDate(value),
-				[`${namespace}timeTo`]: formatDate(timeTo),
-			});
-		}
+		updateTimeRange({
+			...timeRange,
+			timeFrom: value,
+		});
 	}
 
 	function updateTimeTo(value) {
-		setTimeTo(value);
-
-		if (timeFrom && value && validDateRange(timeFrom, value)) {
-			setFilters({
-				[`${namespace}timeFrom`]: formatDate(timeFrom),
-				[`${namespace}timeTo`]: formatDate(value),
-			});
-		}
+		updateTimeRange({
+			...timeRange,
+			timeTo: value,
+		});
 	}
 
+	const _hasError = () =>
+		timeRange.timeTo && timeRange.timeFrom && !validDateRange(timeRange);
+
 	return (
-		<ClayLayout.Col size={3}>
-			<ClayForm.Group className="form-group-autofit" small>
-				<div className="form-group-item">
-					<ClaySelect
-						aria-label={Liferay.Language.get('time-range')}
-						onChange={updateTimeRange}
-						value={timeRange}
-					>
-						{timeOptions.map((item) => (
-							<ClaySelect.Option
-								key={item.value}
-								label={item.label}
-								value={item.value}
-							/>
-						))}
-					</ClaySelect>
+		<>
+			<ClayLayout.Row justify="center">
+				<ClayLayout.Col size={4}>
+					<ClayForm.Group className="form-group-autofit" small>
+						<div className="form-group-item">
+							<ClaySelect
+								aria-label={Liferay.Language.get('time-range')}
+								onChange={updateTimeOption}
+								value={
+									timeRange.time
+										? timeRange.time
+										: DEFAULT_TIME
+								}
+							>
+								{TIME_OPTIONS.map((item) => (
+									<ClaySelect.Option
+										key={item.value}
+										label={item.label}
+										value={item.value}
+									/>
+								))}
+							</ClaySelect>
+						</div>
 
-					{timeRange === 'custom-range' && (
-						<div>
-							<label>{Liferay.Language.get('from')}</label>
+						<div className="form-group-item form-group-item-shrink">
+							{children}
+						</div>
+					</ClayForm.Group>
+				</ClayLayout.Col>
+			</ClayLayout.Row>
 
-							<ClayDatePicker
-								ariaLabels={Liferay.Language.get('time-from')}
-								onValueChange={updateTimeFrom}
-								placeholder="YYYY-MM-DD"
-								value={timeFrom}
-								years={YEAR_RANGE}
-							/>
+			{timeRange.time === 'custom-range' && (
+				<ClayLayout.Row justify="center">
+					<ClayLayout.Col size={8}>
+						<ClayForm.Group
+							className={`form-group-autofit ${
+								_hasError() ? `has-error` : ``
+							}`}
+							small
+						>
+							<div className="form-group-item form-group-item-label form-group-item-shrink">
+								<label>{Liferay.Language.get('from')}</label>
+							</div>
 
-							<label>{Liferay.Language.get('to')}</label>
+							<div className="form-group-item">
+								<ClayDatePicker
+									ariaLabels={Liferay.Language.get(
+										'time-from'
+									)}
+									onValueChange={updateTimeFrom}
+									placeholder="YYYY-MM-DD"
+									value={timeRange.timeFrom}
+									years={YEAR_RANGE}
+								/>
+							</div>
 
-							<ClayDatePicker
-								ariaLabels={Liferay.Language.get('time-to')}
-								onValueChange={updateTimeTo}
-								placeholder="YYYY-MM-DD"
-								value={timeTo}
-								years={YEAR_RANGE}
-							/>
+							<div className="form-group-item form-group-item-label form-group-item-shrink">
+								<label>{Liferay.Language.get('to')}</label>
+							</div>
 
-							{timeTo &&
-								timeFrom &&
-								!validDateRange(timeFrom, timeTo) && (
-									<div className="form-feedback-group">
-										<div className="form-text">
-											{Liferay.Language.get(
-												'search-custom-range-invalid-date-range'
-											)}
+							<div className="form-group-item">
+								<ClayDatePicker
+									ariaLabels={Liferay.Language.get('time-to')}
+									onValueChange={updateTimeTo}
+									placeholder="YYYY-MM-DD"
+									value={timeRange.timeTo}
+									years={YEAR_RANGE}
+								/>
+								{_hasError() && (
+									<div className="form-group-item form-group-item-shrink">
+										<div className="form-feedback-group">
+											<div className="form-feedback-item">
+												{Liferay.Language.get(
+													'search-custom-range-invalid-date-range'
+												)}
+											</div>
 										</div>
 									</div>
 								)}
-						</div>
-					)}
-				</div>
-			</ClayForm.Group>
-		</ClayLayout.Col>
+							</div>
+						</ClayForm.Group>
+					</ClayLayout.Col>
+				</ClayLayout.Row>
+			)}
+		</>
 	);
 }
 
 TimeSelect.propTypes = {
-	setFilters: PropTypes.func,
+	timeRange: PropTypes.object,
+	updateTimeRange: PropTypes.func,
 };

@@ -92,7 +92,8 @@ export function formatDate(date) {
 	],
 };
  * formatFacets(sampleFacets, '', 'name')
- * => {entryClassName: 'com.liferay.wiki.model.WikiPage,com.liferay.message.boards.model.MBMessage', extension: 'pdf,war'}
+ * => {entryClassName: 'com.liferay.wiki.model.WikiPage,
+ 	com.liferay.message.boards.model.MBMessage', extension: 'pdf,war'}
  *
  * @param {string} facets Object with the list of values as an array of objects
  * @param {string} namespace Namespace to insert before param
@@ -114,6 +115,63 @@ export function formatFacets(facets, namespace, label) {
 }
 
 /**
+ * Utility function for formatting the sortBy for fetchURL. Returns either
+ * an empty object or the sort direction identified by the namespace + field.
+ *
+ * Examples:
+ * formatSortBy({field: "sort3", direction: "asc"}, "blueprintsWebPortlet_")
+ * => {blueprintsWebPortlet_sort3: "asc"}
+ *
+ * @param {Object} sortBy Object with sort direction and field
+ * @param {string} namespace Namespace to insert before param
+ * @return {Object} Object formatted with the sorting object
+ */
+export function formatSortBy(sortBy, namespace) {
+	if (JSON.stringify(sortBy) === '{}') {
+		return sortBy;
+	}
+	else {
+		return {[`${namespace}${sortBy.field}`]: sortBy.direction};
+	}
+}
+
+/**
+ * Utility function for formatting the time range for fetchURL. Turns the value into a
+ * concatenated string of the labels, and does not include empty lists of facets.
+ *
+ * Examples:
+ * formatTimeRange({time: "last-week"}, "blueprintsWebPortlet_")
+ * => {blueprintsWebPortlet_time: "last-week"}
+ *
+ * formatTimeRange(
+		{
+			time: "custom-range",
+			timeFrom: 'Tue Aug 04 2020 12:00:00 GMT-0700 (Pacific Daylight Time)',
+			timeTo: 'Wed Dec 16 2020 12:05:24 GMT-0800 (Pacific Standard Time)'
+		},
+		"blueprintsWebPortlet_"
+	)
+ * => {blueprintsWebPortlet_time: "custom-range", blueprintsWebPortlet_timeFrom: "2020-08-04",
+ 	blueprintsWebPortlet_timeTo: "2020-12-16"}
+ *
+ * @param {Object} timerange Object with timespan. If custom-range, it will include timeTo and timeFrom
+ * @param {string} namespace Namespace to insert before param
+ * @return {Object} Object formatted with the time range
+ */
+export function formatTimeRange(timeRange, namespace) {
+	const timeParams = {};
+
+	Object.keys(timeRange).map((param) => {
+		timeParams[`${namespace}${param}`] =
+			param === 'timeFrom' || param === 'timeTo'
+				? formatDate(timeRange[param])
+				: timeRange[param];
+	});
+
+	return timeParams;
+}
+
+/**
  * Utility function for determining whether the end date is later than start.
  *
  * Examples:
@@ -121,13 +179,12 @@ export function formatFacets(facets, namespace, label) {
  * 	'Sat Aug 29 2020 12:00:00 GMT-0700 (Pacific Daylight Time)')
  * => true
  *
- * @param {string} start Beginning date
- * @param {string} end End date
+ * @param {Object} timeRange Contains the timeFrom and timeTo
  * @return {boolean} Returns true if end date is past start date
  */
-export function validDateRange(start, end) {
-	const startDate = new Date(start);
-	const endDate = new Date(end);
+export function validDateRange(timeRange) {
+	const startDate = new Date(timeRange.timeFrom);
+	const endDate = new Date(timeRange.timeTo);
 
 	return startDate.getTime() <= endDate.getTime();
 }

@@ -41,13 +41,12 @@ export default function SearchBar({handleSubmit, suggestionsURL}) {
 	});
 
 	function handleKeyDown(event) {
-		if (!event.currentTarget.value.trim()) {
-			return;
-		}
-
 		if (event.key === 'Enter') {
+			const trimValue = event.currentTarget.value.trim();
+
+			setValue(trimValue);
 			setView(false);
-			handleSubmit(value);
+			handleSubmit(trimValue);
 		}
 	}
 

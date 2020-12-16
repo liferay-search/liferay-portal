@@ -20,6 +20,10 @@ import React, {useLayoutEffect, useRef, useState} from 'react';
 
 const DELIMITER_KEYS = ['Enter', ','];
 
+const escapeRegExp = (str) => {
+	return str.replace(/[-[\]{}()*+?.^$|]/g, '\\$&');
+};
+
 const defaultFilter = (items, item, inputValue, locator) =>
 	!items
 		.map((element) => element[locator.label])
@@ -27,10 +31,6 @@ const defaultFilter = (items, item, inputValue, locator) =>
 	(inputValue
 		? item[locator.label].match(escapeRegExp(inputValue))
 		: item[locator.label]);
-
-const escapeRegExp = (str) => {
-	return str.replace(/[-[\]{}()*+?.^$|]/g, '\\$&');
-};
 
 const MultiSelectMenuRenderer = ({
 	filter = defaultFilter,
@@ -70,13 +70,13 @@ export default function MultiSelect({
 	},
 	menuRenderer: MenuRenderer = MultiSelectMenuRenderer,
 	onBlur = noop,
-	onClearAllButtonClick = () => {
-		onItemsChange([]);
-		onChange('');
-	},
 	onChange = noop,
 	onFocus = noop,
 	onItemsChange = noop,
+	onKeyClearAllButtonClick = () => {
+		onItemsChange([]);
+		onChange('');
+	},
 	onKeyDown = noop,
 	sourceItems = [],
 	spritemap,
@@ -256,7 +256,7 @@ export default function MultiSelect({
 							<button
 								className="component-action"
 								onClick={() => {
-									onClearAllButtonClick();
+									onKeyClearAllButtonClick();
 
 									if (inputRef.current) {
 										inputRef.current.focus();

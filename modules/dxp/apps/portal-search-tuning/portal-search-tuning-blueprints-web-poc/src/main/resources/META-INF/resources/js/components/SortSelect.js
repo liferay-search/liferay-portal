@@ -14,17 +14,24 @@ import ClayForm, {ClaySelect} from '@clayui/form';
 import ClayIcon from '@clayui/icon';
 import ClayLayout from '@clayui/layout';
 import {PropTypes} from 'prop-types';
-import React, {useContext, useState} from 'react';
+import React from 'react';
 
-import ThemeContext from '../ThemeContext';
+export default function SortSelect({sortBy, updateSortBy}) {
+	const DEFAULT_DIRECTION = 'desc';
+	const DEFAULT_FIELD = 'sort1';
 
-export default function SortSelect({setFilters}) {
-	const [sortDirection, setSortDirection] = useState('desc');
-	const [sortField, setSortField] = useState('sort1');
+	const DIRECTIONS = {
+		['asc']: {
+			icon: 'order-arrow-up',
+			title: Liferay.Language.get('ascending'),
+		},
+		['desc']: {
+			icon: 'order-arrow-down',
+			title: Liferay.Language.get('descending'),
+		},
+	};
 
-	const {namespace} = useContext(ThemeContext);
-
-	const sortOptions = [
+	const SORT_OPTIONS = [
 		{
 			label: Liferay.Language.get('relevancy'),
 			value: 'sort1',
@@ -44,19 +51,17 @@ export default function SortSelect({setFilters}) {
 	];
 
 	function updateSortField(event) {
-		const field = event.target.value;
-
-		setSortField(field);
-
-		setFilters({[`${namespace}` + field]: sortDirection});
+		updateSortBy({
+			direction: sortBy.direction ? sortBy.direction : DEFAULT_DIRECTION,
+			field: event.target.value,
+		});
 	}
 
 	function updateSortDirection() {
-		const order = sortDirection === 'asc' ? 'desc' : 'asc';
-
-		setSortDirection(order);
-
-		setFilters({[`${namespace}` + sortField]: order});
+		updateSortBy({
+			direction: sortBy.direction === 'asc' ? 'desc' : 'asc',
+			field: sortBy.field ? sortBy.field : DEFAULT_FIELD,
+		});
 	}
 
 	return (
@@ -70,9 +75,9 @@ export default function SortSelect({setFilters}) {
 					<ClaySelect
 						aria-label={Liferay.Language.get('sort-by')}
 						onChange={updateSortField}
-						value={sortField}
+						value={sortBy.field ? sortBy.field : DEFAULT_FIELD}
 					>
-						{sortOptions.map((item) => (
+						{SORT_OPTIONS.map((item) => (
 							<ClaySelect.Option
 								key={item.value}
 								label={item.label}
@@ -87,16 +92,16 @@ export default function SortSelect({setFilters}) {
 					displayType="secondary"
 					onClick={updateSortDirection}
 					title={
-						sortDirection === 'asc'
-							? Liferay.Language.get('ascending')
-							: Liferay.Language.get('descending')
+						sortBy.direction
+							? DIRECTIONS[sortBy.direction].title
+							: DIRECTIONS[DEFAULT_DIRECTION].title
 					}
 				>
 					<ClayIcon
 						symbol={
-							sortDirection === 'asc'
-								? 'order-arrow-up'
-								: 'order-arrow-down'
+							sortBy.direction
+								? DIRECTIONS[sortBy.direction].icon
+								: DIRECTIONS[DEFAULT_DIRECTION].icon
 						}
 					/>
 				</ClayButton>
@@ -106,5 +111,6 @@ export default function SortSelect({setFilters}) {
 }
 
 SortSelect.propTypes = {
-	setFilters: PropTypes.func,
+	sortBy: PropTypes.object,
+	updateSortBy: PropTypes.func,
 };
