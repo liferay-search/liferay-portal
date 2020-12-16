@@ -35,6 +35,7 @@ import javax.portlet.PortletPreferences;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.ResourceURL;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -44,11 +45,9 @@ public class BlueprintsDisplayBuilder {
 
 	public BlueprintsDisplayBuilder(
 		HttpServletRequest httpServletRequest, RenderRequest renderRequest,
-		RenderResponse renderResponse, 
-		BlueprintHelper blueprintHelper,
+		RenderResponse renderResponse, BlueprintHelper blueprintHelper,
 		BlueprintPortletHelper blueprintPortletHelper) {
 
-		
 		_httpServletRequest = httpServletRequest;
 		_renderRequest = renderRequest;
 		_renderResponse = renderResponse;
@@ -93,7 +92,7 @@ public class BlueprintsDisplayBuilder {
 		return HashMapBuilder.<String, Object>put(
 			"fetchResultsURL", _getFetchResultsURL()
 		).put(
-				"sortOptions", _getSortOptions()
+			"sortOptions", _getSortOptions()
 		).put(
 			"suggestionsURL", _getSuggestionsURL()
 		).put(
@@ -102,41 +101,40 @@ public class BlueprintsDisplayBuilder {
 	}
 
 	private Map<String, String> _getSortOptions() {
-		
-		Map<String, String> optionsMap = new HashMap<String, String>();
-		
-		Optional<Blueprint> blueprintOptional = 
-				_blueprintPortletHelper.getSearchBlueprint(_renderRequest);
-		
+		Map<String, String> optionsMap = new HashMap<>();
+
+		Optional<Blueprint> blueprintOptional =
+			_blueprintPortletHelper.getSearchBlueprint(_renderRequest);
+
 		if (!blueprintOptional.isPresent()) {
 			return optionsMap;
 		}
-		
+
 		Blueprint blueprint = blueprintOptional.get();
-		
+
 		Optional<JSONArray> configurationJsonArrayOptional =
-				_blueprintHelper.getSortParameterConfigurationOptional(blueprint);
+			_blueprintHelper.getSortParameterConfigurationOptional(blueprint);
 
 		if (!configurationJsonArrayOptional.isPresent()) {
 			return optionsMap;
 		}
 
-		JSONArray configurationJsonArray =
-				configurationJsonArrayOptional.get();
+		JSONArray configurationJsonArray = configurationJsonArrayOptional.get();
 
 		for (int i = 0; i < configurationJsonArray.length(); i++) {
-			JSONObject configurationJsonObject = configurationJsonArray.getJSONObject(i); 
-			
+			JSONObject configurationJsonObject =
+				configurationJsonArray.getJSONObject(i);
+
 			optionsMap.put(
-					configurationJsonObject.getString(
-							SortConfigurationKeys.LABEL.getJsonKey()), 
-					configurationJsonObject.getString(
-							SortConfigurationKeys.PARAMETER_NAME.getJsonKey()));
+				configurationJsonObject.getString(
+					SortConfigurationKeys.LABEL.getJsonKey()),
+				configurationJsonObject.getString(
+					SortConfigurationKeys.PARAMETER_NAME.getJsonKey()));
 		}
-		
+
 		return optionsMap;
 	}
-	
+
 	private String _getSuggestionsURL() {
 		ResourceURL resourceURL = _renderResponse.createResourceURL();
 
@@ -167,8 +165,8 @@ public class BlueprintsDisplayBuilder {
 	}
 
 	private final BlueprintHelper _blueprintHelper;
-	private final HttpServletRequest _httpServletRequest;
 	private final BlueprintPortletHelper _blueprintPortletHelper;
+	private final HttpServletRequest _httpServletRequest;
 	private final RenderRequest _renderRequest;
 	private final RenderResponse _renderResponse;
 	private final ThemeDisplay _themeDisplay;

@@ -16,12 +16,17 @@ package com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.di
 
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
 
+import java.util.Date;
 import java.util.List;
 
 /**
- * @author Filipe Oshiro
+ * @author Petteri Karttunen
  */
 public class MisspellingSetDisplayContext {
+
+	public Date getCreated() {
+		return _created;
+	}
 
 	public List<DropdownItem> getDropdownItems() {
 		return _dropDownItems;
@@ -43,12 +48,24 @@ public class MisspellingSetDisplayContext {
 		return _misspellingSetId;
 	}
 
+	public Date getModified() {
+		return _modified;
+	}
+
 	public String getName() {
 		return _name;
 	}
 
 	public String getPhrase() {
 		return _phrase;
+	}
+
+	public String getUserName() {
+		return _userName;
+	}
+
+	public void setCreated(Date created) {
+		_created = created;
 	}
 
 	public void setDropDownItems(List<DropdownItem> dropDownItems) {
@@ -67,15 +84,27 @@ public class MisspellingSetDisplayContext {
 		_misspellingSetId = misspellingSetId;
 	}
 
+	public void setModified(Date modified) {
+		_modified = modified;
+	}
+
 	public void setName(String name) {
 		_name = name;
 	}
 
+	public void setUserName(String userName) {
+		_userName = userName;
+	}
+
+	private Date _created;
 	private List<DropdownItem> _dropDownItems;
 	private String _editRenderURL;
 	private String _languageId;
 	private List<String> _misspellings;
 	private String _misspellingSetId;
+	private Date _modified;
 	private String _name;
 	private String _phrase;
+	private String _userName;
+
 }

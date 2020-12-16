@@ -31,11 +31,9 @@ public class MisspellingSetIndexCreatorImpl
 	implements MisspellingSetIndexCreator {
 
 	@Override
-	public void create(
-		MisspellingSetIndexName misspellingSetIndexName) {
-
+	public void create(MisspellingSetIndexName misspellingSetIndexName) {
 		CreateIndexRequest createIndexRequest = new CreateIndexRequest(
-				misspellingSetIndexName.getIndexName());
+			misspellingSetIndexName.getIndexName());
 
 		createIndexRequest.setSource(readIndexSettings());
 
@@ -43,11 +41,9 @@ public class MisspellingSetIndexCreatorImpl
 	}
 
 	@Override
-	public void delete(
-		MisspellingSetIndexName misspellingSetIndexName) {
-
+	public void delete(MisspellingSetIndexName misspellingSetIndexName) {
 		DeleteIndexRequest deleteIndexRequest = new DeleteIndexRequest(
-				misspellingSetIndexName.getIndexName());
+			misspellingSetIndexName.getIndexName());
 
 		_searchEngineAdapter.execute(deleteIndexRequest);
 	}

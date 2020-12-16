@@ -40,7 +40,7 @@
 					"store": true,
 					"type": "keyword"
 				},
-				"userId": {
+				"userName": {
 					"store": true,
 					"type": "keyword"
 				}

@@ -51,7 +51,7 @@ public class PortletPreferencesHelper {
 				portletPreferences.getValue(key, StringPool.BLANK)));
 	}
 
-	private static Optional<String> _maybe(String s) {
+	private Optional<String> _maybe(String s) {
 		s = StringUtil.trim(s);
 
 		if (Validator.isBlank(s)) {

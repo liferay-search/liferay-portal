@@ -37,16 +37,16 @@ public class EditMisspellingSetDisplayContext {
 		return _inputName;
 	}
 
+	public String getMisspellingSetId() {
+		return _misspellingSetId;
+	}
+
 	public String getOriginalInputName() {
 		return _originalInputName;
 	}
 
 	public String getRedirect() {
 		return _redirect;
-	}
-
-	public String getMisspellingSetId() {
-		return _misspellingSetId;
 	}
 
 	public void setBackURL(String backURL) {
@@ -65,6 +65,10 @@ public class EditMisspellingSetDisplayContext {
 		_inputName = inputName;
 	}
 
+	public void setMisspellingSetId(String misspellingSetId) {
+		_misspellingSetId = misspellingSetId;
+	}
+
 	public void setOriginalInputName(String originalInputName) {
 		_originalInputName = originalInputName;
 	}
@@ -73,16 +77,12 @@ public class EditMisspellingSetDisplayContext {
 		_redirect = redirect;
 	}
 
-	public void setMisspellingSetId(String MisspellingSetId) {
-		_misspellingSetId = MisspellingSetId;
-	}
-
 	private String _backURL;
 	private Map<String, Object> _data;
 	private String _formName;
 	private String _inputName;
+	private String _misspellingSetId;
 	private String _originalInputName;
 	private String _redirect;
-	private String _misspellingSetId;
 
 }

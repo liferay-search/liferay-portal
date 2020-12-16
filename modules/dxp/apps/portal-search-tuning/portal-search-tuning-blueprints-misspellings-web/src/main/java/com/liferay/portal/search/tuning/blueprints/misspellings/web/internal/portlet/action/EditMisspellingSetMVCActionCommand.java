@@ -55,10 +55,9 @@ public class EditMisspellingSetMVCActionCommand extends BaseMVCActionCommand {
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
 
-		long companyId = portal.getCompanyId(actionRequest);
-
 		MisspellingSetIndexName misspellingSetIndexName =
-			_misspellingSetIndexNameBuilder.getMisspellingSetIndexName(companyId);
+			_misspellingSetIndexNameBuilder.getMisspellingSetIndexName(
+				_portal.getCompanyId(actionRequest));
 
 		updateMisspellingSetIndex(
 			misspellingSetIndexName,
@@ -70,31 +69,21 @@ public class EditMisspellingSetMVCActionCommand extends BaseMVCActionCommand {
 		sendRedirect(actionRequest, actionResponse);
 	}
 
-	private List<String> _getMisspellings(ActionRequest actionRequest) {
-		String[] values = ParamUtil.getStringValues(actionRequest, "misspellings");
-		
-		List<String> misspellings = new ArrayList<String>();
-		for (String s : values) {
-			misspellings.add(StringUtil.toLowerCase(s));
-		}
-		
-		return misspellings;
-	}
-
 	protected Optional<MisspellingSet> getMisspellingSetOptional(
-		MisspellingSetIndexName misspellingSetIndexName, ActionRequest actionRequest) {
+		MisspellingSetIndexName misspellingSetIndexName,
+		ActionRequest actionRequest) {
 
 		return Optional.ofNullable(
 			ParamUtil.getString(actionRequest, "misspellingSetId", null)
 		).flatMap(
-			id -> _misspellingSetIndexReader.fetchOptional(misspellingSetIndexName, id)
+			id -> _misspellingSetIndexReader.fetchOptional(
+				misspellingSetIndexName, id)
 		);
 	}
 
 	protected void updateMisspellingSetIndex(
-		MisspellingSetIndexName misspellingSetIndexName,
-		String languageId, String phrase,
-		List<String> misspellings, 
+		MisspellingSetIndexName misspellingSetIndexName, String languageId,
+		String phrase, List<String> misspellings,
 		Optional<MisspellingSet> misspellingSetOptional) {
 
 		MisspellingSet.MisspellingSetBuilder misspellingSetBuilder =
@@ -107,7 +96,8 @@ public class EditMisspellingSetMVCActionCommand extends BaseMVCActionCommand {
 		misspellingSetBuilder.misspellings(misspellings);
 
 		misspellingSetOptional.ifPresent(
-			misspellingSet -> misspellingSetBuilder.misspellingSetId(misspellingSet.getMisspellingSetId()));
+			misspellingSet -> misspellingSetBuilder.misspellingSetId(
+				misspellingSet.getMisspellingSetId()));
 
 		if (misspellingSetOptional.isPresent()) {
 			_misspellingSetIndexWriter.update(
@@ -119,8 +109,18 @@ public class EditMisspellingSetMVCActionCommand extends BaseMVCActionCommand {
 		}
 	}
 
-	@Reference
-	protected Portal portal;
+	private List<String> _getMisspellings(ActionRequest actionRequest) {
+		String[] values = ParamUtil.getStringValues(
+			actionRequest, "misspellings");
+
+		List<String> misspellings = new ArrayList<>();
+
+		for (String s : values) {
+			misspellings.add(StringUtil.toLowerCase(s));
+		}
+
+		return misspellings;
+	}
 
 	@Reference
 	private IndexNameBuilder _indexNameBuilder;
@@ -133,5 +133,8 @@ public class EditMisspellingSetMVCActionCommand extends BaseMVCActionCommand {
 
 	@Reference
 	private MisspellingSetIndexWriter _misspellingSetIndexWriter;
+
+	@Reference
+	private Portal _portal;
 
 }

@@ -35,7 +35,8 @@ import com.liferay.portal.search.tuning.blueprints.engine.util.BlueprintsEngineH
 import com.liferay.portal.search.tuning.blueprints.json.response.BlueprintsJSONResponseBuilder;
 import com.liferay.portal.search.tuning.blueprints.json.response.constants.JSONResponseKeys;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.util.attributes.BlueprintsAttributesHelper;
+import com.liferay.portal.search.tuning.blueprints.util.attributes.BlueprintsRequestAttributesHelper;
+import com.liferay.portal.search.tuning.blueprints.util.attributes.BlueprintsResponseAttributesHelper;
 import com.liferay.portal.search.tuning.blueprints.web.internal.constants.BlueprintsWebPortletKeys;
 import com.liferay.portal.search.tuning.blueprints.web.internal.constants.ResourceRequestKeys;
 import com.liferay.portal.search.tuning.blueprints.web.internal.portlet.preferences.BlueprintsWebPortletPreferences;
@@ -73,7 +74,7 @@ public class GetTypeaheadMVCResourceCommand extends BaseMVCResourceCommand {
 			return;
 		}
 
-		JSONObject responseJsonObject = null;
+		JSONObject responseJSONObject = null;
 
 		try {
 			Messages requestMessages = new Messages();
@@ -86,25 +87,26 @@ public class GetTypeaheadMVCResourceCommand extends BaseMVCResourceCommand {
 
 			BlueprintsAttributes blueprintsResponseAttributes =
 				_getBlueprintsResponseAttributes(
-					resourceRequest, resourceResponse, blueprintId);
+					resourceRequest, resourceResponse,
+					blueprintsRequestAttributes, blueprintId);
 
 			Messages responseMessages = new Messages();
-			
+
 			ThemeDisplay themeDisplay =
-					(ThemeDisplay)resourceRequest.getAttribute(
-						WebKeys.THEME_DISPLAY);
+				(ThemeDisplay)resourceRequest.getAttribute(
+					WebKeys.THEME_DISPLAY);
 
-		    ResourceBundle resourceBundle =  ResourceBundleUtil.getBundle(
-		            "content.Language", themeDisplay.getLocale(), getClass());
+			ResourceBundle resourceBundle = ResourceBundleUtil.getBundle(
+				"content.Language", themeDisplay.getLocale(), getClass());
 
-			responseJsonObject = _blueprintsResponseBuilder.buildJSONObject(
+			responseJSONObject = _blueprintsResponseBuilder.buildJSONObject(
 				searchResponse, blueprintsResponseAttributes, resourceBundle,
-				responseMessages, blueprintId); 
+				responseMessages, blueprintId);
 		}
 		catch (JSONException jsonException) {
 			_log.error(jsonException.getMessage(), jsonException);
 
-			responseJsonObject = JSONUtil.put(
+			responseJSONObject = JSONUtil.put(
 				JSONResponseKeys.ERRORS, jsonException.getMessage());
 		}
 		catch (BlueprintsEngineException blueprintsEngineException) {
@@ -112,40 +114,41 @@ public class GetTypeaheadMVCResourceCommand extends BaseMVCResourceCommand {
 				blueprintsEngineException.getMessage(),
 				blueprintsEngineException);
 
-			responseJsonObject = JSONUtil.put(
+			responseJSONObject = JSONUtil.put(
 				JSONResponseKeys.ERRORS,
 				blueprintsEngineException.getMessage());
 		}
 		catch (PortalException portalException) {
 			_log.error(portalException.getMessage(), portalException);
 
-			responseJsonObject = JSONUtil.put(
+			responseJSONObject = JSONUtil.put(
 				JSONResponseKeys.ERRORS, portalException.getMessage());
 		}
 
 		JSONPortletResponseUtil.writeJSON(
-			resourceRequest, resourceResponse, responseJsonObject);
+			resourceRequest, resourceResponse, responseJSONObject);
 	}
 
 	private BlueprintsAttributes _getBlueprintsRequestAttributes(
 		ResourceRequest resourceRequest, long blueprintId) {
 
 		BlueprintsAttributesBuilder blueprintsAttributesBuilder =
-			_blueprintsAttributesHelper.getBlueprintsRequestAttributesBuilder(
-				resourceRequest, blueprintId);
-
-		// Add here any other attributes
+			_blueprintsRequestAttributesHelper.
+				getBlueprintsRequestAttributesBuilder(
+					resourceRequest, blueprintId);
 
 		return blueprintsAttributesBuilder.build();
 	}
 
 	private BlueprintsAttributes _getBlueprintsResponseAttributes(
 		ResourceRequest resourceRequest, ResourceResponse resourceResponse,
-		long blueprintId) {
+		BlueprintsAttributes blueprintsRequestAttributes, long blueprintId) {
 
 		BlueprintsAttributesBuilder blueprintsAttributesBuilder =
-			_blueprintsAttributesHelper.getBlueprintsResponseAttributesBuilder(
-				resourceRequest, resourceResponse, blueprintId);
+			_blueprintsResponseAttributesHelper.
+				getBlueprintsResponseAttributesBuilder(
+					resourceRequest, resourceResponse,
+					blueprintsRequestAttributes, blueprintId);
 
 		return blueprintsAttributesBuilder.build();
 	}
@@ -162,10 +165,15 @@ public class GetTypeaheadMVCResourceCommand extends BaseMVCResourceCommand {
 		GetTypeaheadMVCResourceCommand.class);
 
 	@Reference
-	private BlueprintsAttributesHelper _blueprintsAttributesHelper;
+	private BlueprintsEngineHelper _blueprintsEngineHelper;
 
 	@Reference
-	private BlueprintsEngineHelper _blueprintsEngineHelper;
+	private BlueprintsRequestAttributesHelper
+		_blueprintsRequestAttributesHelper;
+
+	@Reference
+	private BlueprintsResponseAttributesHelper
+		_blueprintsResponseAttributesHelper;
 
 	@Reference
 	private BlueprintsJSONResponseBuilder _blueprintsResponseBuilder;

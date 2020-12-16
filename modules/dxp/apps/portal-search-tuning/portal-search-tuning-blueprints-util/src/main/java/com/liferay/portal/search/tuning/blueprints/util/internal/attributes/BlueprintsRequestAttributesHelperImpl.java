@@ -17,6 +17,7 @@ package com.liferay.portal.search.tuning.blueprints.util.internal.attributes;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
@@ -34,27 +35,28 @@ import com.liferay.portal.search.tuning.blueprints.constants.json.keys.parameter
 import com.liferay.portal.search.tuning.blueprints.engine.constants.ReservedParameterNames;
 import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetsBlueprintContributorKeys;
+import com.liferay.portal.search.tuning.blueprints.misspellings.processor.MisspellingsProcessor;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
 import com.liferay.portal.search.tuning.blueprints.util.BlueprintHelper;
-import com.liferay.portal.search.tuning.blueprints.util.attributes.BlueprintsAttributesHelper;
+import com.liferay.portal.search.tuning.blueprints.util.attributes.BlueprintsRequestAttributesHelper;
 
 import java.util.Optional;
 
 import javax.portlet.PortletRequest;
-import javax.portlet.PortletResponse;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
 
 /**
  * @author Petteri Karttunen
  */
-@Component(immediate = true, service = BlueprintsAttributesHelper.class)
-public class BlueprintsAttributesHelperImpl
-	implements BlueprintsAttributesHelper {
+@Component(immediate = true, service = BlueprintsRequestAttributesHelper.class)
+public class BlueprintsRequestAttributesHelperImpl
+	implements BlueprintsRequestAttributesHelper {
 
 	@Override
 	public BlueprintsAttributesBuilder getBlueprintsRequestAttributesBuilder(
@@ -90,30 +92,6 @@ public class BlueprintsAttributesHelperImpl
 
 		return _addParameters(
 			portletRequest, blueprintsAttributesBuilder, blueprintId);
-	}
-
-	@Override
-	public BlueprintsAttributesBuilder getBlueprintsResponseAttributesBuilder(
-		PortletRequest portletRequest, PortletResponse portletResponse,
-		long blueprintId) {
-
-		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
-		BlueprintsAttributesBuilder blueprintsAttributesBuilder =
-			_blueprintsAttributesBuilderFactory.builder();
-
-		return blueprintsAttributesBuilder.companyId(
-			themeDisplay.getCompanyId()
-		).locale(
-			themeDisplay.getLocale()
-		).userId(
-			themeDisplay.getUserId()
-		).addAttribute(
-			"portletRequest", portletRequest
-		).addAttribute(
-			"portletResponse", portletResponse
-		);
 	}
 
 	private void _addCustomParameters(
@@ -187,7 +165,7 @@ public class BlueprintsAttributesHelperImpl
 	private void _addKeywordParameter(
 		PortletRequest portletRequest,
 		BlueprintsAttributesBuilder blueprintsAttributesBuilder,
-		JSONObject configurationJSONObject) {
+		Blueprint blueprint, JSONObject configurationJSONObject) {
 
 		JSONObject keywordconfigurationJSONObject =
 			configurationJSONObject.getJSONObject(
@@ -197,10 +175,27 @@ public class BlueprintsAttributesHelperImpl
 			return;
 		}
 
-		_addStringValue(
-			portletRequest, blueprintsAttributesBuilder,
-			keywordconfigurationJSONObject.getString(
-				KeywordsConfigurationKeys.PARAMETER_NAME.getJsonKey()));
+		String parameterName = keywordconfigurationJSONObject.getString(
+			KeywordsConfigurationKeys.PARAMETER_NAME.getJsonKey());
+
+		String keywords = ParamUtil.getString(portletRequest, parameterName);
+
+		if (Validator.isBlank(keywords)) {
+			return;
+		}
+
+		String misspellCheckedWords = _processMisspellings(
+			portletRequest, keywords, blueprint);
+
+		if (!keywords.equals(misspellCheckedWords)) {
+			blueprintsAttributesBuilder.addAttribute(
+				parameterName, misspellCheckedWords);
+			blueprintsAttributesBuilder.addAttribute(
+				ReservedParameterNames.SHOWING_INSTEAD_OF.getKey(), keywords);
+		}
+		else {
+			blueprintsAttributesBuilder.addAttribute(parameterName, keywords);
+		}
 	}
 
 	private void _addPagingParameters(
@@ -254,7 +249,7 @@ public class BlueprintsAttributesHelperImpl
 			configurationJSONObjectOptional.get();
 
 		_addKeywordParameter(
-			portletRequest, blueprintsAttributesBuilder,
+			portletRequest, blueprintsAttributesBuilder, blueprint,
 			configurationJSONObject);
 
 		_addPagingParameters(
@@ -320,8 +315,26 @@ public class BlueprintsAttributesHelperImpl
 		}
 	}
 
+	private boolean _allowMisspellings(PortletRequest portletRequest) {
+		return ParamUtil.getBoolean(
+			portletRequest, ReservedParameterNames.ALLOW_MISSPELLINGS.getKey());
+	}
+
 	private Blueprint _getBlueprint(long blueprintId) throws PortalException {
 		return _blueprintService.getBlueprint(blueprintId);
+	}
+
+	private String[] _getMisspellingSetIds(Blueprint blueprint) {
+		Optional<JSONArray> configurationJSONArrayOptional =
+			_blueprintHelper.getMisspellingSetIdsOptional(blueprint);
+
+		if (!configurationJSONArrayOptional.isPresent()) {
+			return null;
+		}
+
+		JSONArray configurationJSONArray = configurationJSONArrayOptional.get();
+
+		return JSONUtil.toStringArray(configurationJSONArray);
 	}
 
 	private boolean _isArrayValue(String type) {
@@ -335,8 +348,31 @@ public class BlueprintsAttributesHelperImpl
 		return false;
 	}
 
+	private String _processMisspellings(
+		PortletRequest portletRequest, String keywords, Blueprint blueprint) {
+
+		if (_allowMisspellings(portletRequest) ||
+			(_misspellingsProcessor == null)) {
+
+			return keywords;
+		}
+
+		String[] misspellingSetIds = _getMisspellingSetIds(blueprint);
+
+		if (misspellingSetIds == null) {
+			return keywords;
+		}
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		return _misspellingsProcessor.process(
+			themeDisplay.getCompanyId(), misspellingSetIds,
+			new String[] {themeDisplay.getLanguageId()}, keywords);
+	}
+
 	private static final Log _log = LogFactoryUtil.getLog(
-		BlueprintsAttributesHelperImpl.class);
+		BlueprintsRequestAttributesHelperImpl.class);
 
 	@Reference
 	private BlueprintHelper _blueprintHelper;
@@ -347,6 +383,9 @@ public class BlueprintsAttributesHelperImpl
 
 	@Reference
 	private BlueprintService _blueprintService;
+
+	@Reference(cardinality = ReferenceCardinality.OPTIONAL)
+	private volatile MisspellingsProcessor _misspellingsProcessor;
 
 	@Reference
 	private Portal _portal;

@@ -21,7 +21,7 @@ import com.liferay.portal.kernel.dao.search.SearchContainer;
 import java.util.List;
 
 /**
- * @author Filipe Oshiro
+ * @author Petteri Karttunen
  */
 public class MisspellingsDisplayContext {
 

@@ -69,16 +69,16 @@ public class MisspellingsPortlet extends MVCPortlet {
 		throws IOException, PortletException {
 
 		MisspellingsDisplayBuilder misspellingsDisplayBuilder =
-				new MisspellingsDisplayBuilder(
-					_documentToMisspellingSetTranslator,
-					_portal.getHttpServletRequest(renderRequest), _language,
-					_portal, _queries, renderRequest, renderResponse,
-					_searchEngineAdapter, _searchEngineInformation, _sorts,
-					_misspellingSetIndexNameBuilder);
+			new MisspellingsDisplayBuilder(
+				_documentToMisspellingSetTranslator,
+				_portal.getHttpServletRequest(renderRequest), _language,
+				_portal, _queries, renderRequest, renderResponse,
+				_searchEngineAdapter, _searchEngineInformation, _sorts,
+				_misspellingSetIndexNameBuilder);
 
-			renderRequest.setAttribute(
-				MisspellingsWebKeys.MISSPELLINGS_DISPLAY_CONTEXT,
-				misspellingsDisplayBuilder.build());
+		renderRequest.setAttribute(
+			MisspellingsWebKeys.MISSPELLINGS_DISPLAY_CONTEXT,
+			misspellingsDisplayBuilder.build());
 
 		super.render(renderRequest, renderResponse);
 	}
@@ -94,8 +94,7 @@ public class MisspellingsPortlet extends MVCPortlet {
 	private Language _language;
 
 	@Reference
-	private MisspellingSetIndexNameBuilder
-		_misspellingSetIndexNameBuilder;
+	private MisspellingSetIndexNameBuilder _misspellingSetIndexNameBuilder;
 
 	@Reference
 	private Portal _portal;

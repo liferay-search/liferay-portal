@@ -21,10 +21,8 @@ import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.ind
  */
 public interface MisspellingSetIndexCreator {
 
-	public void create(
-		MisspellingSetIndexName misspellingSetIndexName);
+	public void create(MisspellingSetIndexName misspellingSetIndexName);
 
-	public void delete(
-		MisspellingSetIndexName misspellingSetIndexName);
+	public void delete(MisspellingSetIndexName misspellingSetIndexName);
 
 }

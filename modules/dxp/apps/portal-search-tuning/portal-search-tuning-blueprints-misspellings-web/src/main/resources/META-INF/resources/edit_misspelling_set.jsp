@@ -17,7 +17,7 @@
 <%@ include file="/init.jsp" %>
 
 <%
-	EditMisspellingSetDisplayContext editMisspellingSetDisplayContext = (EditMisspellingSetDisplayContext)request.getAttribute(MisspellingsWebKeys.EDIT_MISSPELLING_SET_DISPLAY_CONTEXT);
+EditMisspellingSetDisplayContext editMisspellingSetDisplayContext = (EditMisspellingSetDisplayContext)request.getAttribute(MisspellingsWebKeys.EDIT_MISSPELLING_SET_DISPLAY_CONTEXT);
 
 portletDisplay.setShowBackIcon(true);
 portletDisplay.setURLBack(editMisspellingSetDisplayContext.getBackURL());

@@ -44,28 +44,22 @@ public class MisspellingSetIndexCreationPortalInstanceLifecycleListener
 		}
 
 		MisspellingSetIndexName misspellingSetIndexName =
-			_misspellingSetIndexNameBuilder.
-				getMisspellingSetIndexName(company.getCompanyId());
+			_misspellingSetIndexNameBuilder.getMisspellingSetIndexName(
+				company.getCompanyId());
 
-		if (!_misspellingSetIndexReader.isExists(
-				misspellingSetIndexName)) {
-
-			_misspellingSetIndexCreator.create(
-					misspellingSetIndexName);
+		if (!_misspellingSetIndexReader.isExists(misspellingSetIndexName)) {
+			_misspellingSetIndexCreator.create(misspellingSetIndexName);
 		}
 	}
 
 	@Reference
-	private MisspellingSetIndexCreator
-		_misspellingSetIndexCreator;
+	private MisspellingSetIndexCreator _misspellingSetIndexCreator;
 
 	@Reference
-	private MisspellingSetIndexNameBuilder
-		_misspellingSetIndexNameBuilder;
+	private MisspellingSetIndexNameBuilder _misspellingSetIndexNameBuilder;
 
 	@Reference
-	private MisspellingSetIndexReader
-		_misspellingSetIndexReader;
+	private MisspellingSetIndexReader _misspellingSetIndexReader;
 
 	@Reference
 	private SearchEngineInformation _searchEngineInformation;
