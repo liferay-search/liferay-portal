@@ -58,7 +58,7 @@ public interface BlueprintHelper {
 	public Optional<String> getKeywordsParameterNameOptional(
 		Blueprint blueprint);
 
-	public Optional<JSONArray> getMisspellingsConfigurationOptional(
+	public Optional<JSONArray> getMisspellingSetIdsOptional(
 		Blueprint blueprint);
 
 	public Optional<String> getPageParameterNameOptional(Blueprint blueprint);

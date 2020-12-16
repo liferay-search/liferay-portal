@@ -23,7 +23,6 @@ import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.Portal;
-import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.engine.SearchEngineInformation;
 import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
 import com.liferay.portal.search.hits.SearchHits;
@@ -47,10 +46,11 @@ import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.RenderURL;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * @author Filipe Oshiro
+ * @author Petteri Karttunen
  */
 public class MisspellingsDisplayBuilder {
 
@@ -62,7 +62,8 @@ public class MisspellingsDisplayBuilder {
 		SearchEngineInformation searchEngineInformation, Sorts sorts,
 		MisspellingSetIndexNameBuilder misspellingSetIndexNameBuilder) {
 
-		_documentToMisspellingSetTranslator = documentToMisspellingSetTranslator;
+		_documentToMisspellingSetTranslator =
+			documentToMisspellingSetTranslator;
 		_httpServletRequest = httpServletRequest;
 		_language = language;
 		_portal = portal;
@@ -90,14 +91,15 @@ public class MisspellingsDisplayBuilder {
 		SearchContainer<MisspellingSetDisplayContext> searchContainer =
 			buildSearchContainer();
 
-		List<MisspellingSetDisplayContext> MisspellingSetDisplayContexts =
+		List<MisspellingSetDisplayContext> misspellingSetDisplayContexts =
 			searchContainer.getResults();
 
 		misspellingsDisplayContext.setDisabledManagementBar(
-			isDisabledManagementBar(MisspellingSetDisplayContexts));
+			isDisabledManagementBar(misspellingSetDisplayContexts));
 
 		misspellingsDisplayContext.setDropdownItems(getDropdownItems());
-		misspellingsDisplayContext.setItemsTotal(MisspellingSetDisplayContexts.size());
+		misspellingsDisplayContext.setItemsTotal(
+			misspellingSetDisplayContexts.size());
 		misspellingsDisplayContext.setSearchContainer(searchContainer);
 
 		return misspellingsDisplayContext;
@@ -106,39 +108,14 @@ public class MisspellingsDisplayBuilder {
 	protected RenderURL buildEditRenderURL(MisspellingSet misspellingSet) {
 		RenderURL editRenderURL = _renderResponse.createRenderURL();
 
-		editRenderURL.setParameter("mvcRenderCommandName", "editMisspellingSet");
+		editRenderURL.setParameter(
+			"mvcRenderCommandName", "editMisspellingSet");
 		editRenderURL.setParameter(
 			"redirect", _portal.getCurrentURL(_httpServletRequest));
-		editRenderURL.setParameter("MisspellingSetId", misspellingSet.getMisspellingSetId());
+		editRenderURL.setParameter(
+			"MisspellingSetId", misspellingSet.getMisspellingSetId());
 
 		return editRenderURL;
-	}
-
-	protected SearchContainer<MisspellingSetDisplayContext> buildSearchContainer() {
-		SearchContainer<MisspellingSetDisplayContext> searchContainer =
-			new SearchContainer<>(
-				_renderRequest, _getPortletURL(), null, "there-are-no-entries");
-
-		searchContainer.setId("MisspellingSetsEntries");
-		searchContainer.setRowChecker(
-			new EmptyOnClickRowChecker(_renderResponse));
-
-		SearchMisspellingSetRequest searchMisspellingSetRequest =
-			new SearchMisspellingSetRequest(
-				buildMisspellingSetIndexName(), _httpServletRequest, _queries,
-				_sorts, searchContainer, _searchEngineAdapter);
-
-		SearchMisspellingSetResponse searchMisspellingSetResponse =
-			searchMisspellingSetRequest.search();
-
-		searchContainer.setResults(
-			buildMisspellingSetDisplayContexts(
-				searchMisspellingSetResponse.getSearchHits()));
-
-		searchContainer.setSearch(true);
-		searchContainer.setTotal(searchMisspellingSetResponse.getTotalHits());
-
-		return searchContainer;
 	}
 
 	protected MisspellingSetDisplayContext buildMisspellingSetDisplayContext(
@@ -151,20 +128,23 @@ public class MisspellingsDisplayBuilder {
 
 		RenderURL editRenderURL = buildEditRenderURL(misspellingSet);
 
+		misspellingSetDisplayContext.setCreated(misspellingSet.getCreated());
 		misspellingSetDisplayContext.setDropDownItems(
 			buildMisspellingSetDropdownItemList(misspellingSet, editRenderURL));
 		misspellingSetDisplayContext.setEditRenderURL(editRenderURL.toString());
 
-		misspellingSetDisplayContext.setName(
-				misspellingSet.getName());
-		misspellingSetDisplayContext.setMisspellingSetId(misspellingSet.getMisspellingSetId());
+		misspellingSetDisplayContext.setName(misspellingSet.getName());
+		misspellingSetDisplayContext.setMisspellingSetId(
+			misspellingSet.getMisspellingSetId());
 		misspellingSetDisplayContext.setMisspellings(misspellings);
+		misspellingSetDisplayContext.setModified(misspellingSet.getModified());
+		misspellingSetDisplayContext.setUserName(misspellingSet.getUserName());
 
 		return misspellingSetDisplayContext;
 	}
 
-	protected List<MisspellingSetDisplayContext> buildMisspellingSetDisplayContexts(
-		SearchHits searchHits) {
+	protected List<MisspellingSetDisplayContext>
+		buildMisspellingSetDisplayContexts(SearchHits searchHits) {
 
 		List<MisspellingSet> misspellingSets =
 			_documentToMisspellingSetTranslator.translateAll(searchHits);
@@ -197,7 +177,8 @@ public class MisspellingsDisplayBuilder {
 				deleteURL.setParameter(
 					ActionRequest.ACTION_NAME, "deleteMisspellingSet");
 				deleteURL.setParameter(Constants.CMD, Constants.DELETE);
-				deleteURL.setParameter("rowIds", misspellingSet.getMisspellingSetId());
+				deleteURL.setParameter(
+					"rowIds", misspellingSet.getMisspellingSetId());
 				deleteURL.setParameter(
 					"redirect", _portal.getCurrentURL(_httpServletRequest));
 
@@ -214,6 +195,35 @@ public class MisspellingsDisplayBuilder {
 	protected MisspellingSetIndexName buildMisspellingSetIndexName() {
 		return _misspellingSetIndexNameBuilder.getMisspellingSetIndexName(
 			_portal.getCompanyId(_renderRequest));
+	}
+
+	protected SearchContainer<MisspellingSetDisplayContext>
+		buildSearchContainer() {
+
+		SearchContainer<MisspellingSetDisplayContext> searchContainer =
+			new SearchContainer<>(
+				_renderRequest, _getPortletURL(), null, "there-are-no-entries");
+
+		searchContainer.setId("MisspellingSetsEntries");
+		searchContainer.setRowChecker(
+			new EmptyOnClickRowChecker(_renderResponse));
+
+		SearchMisspellingSetRequest searchMisspellingSetRequest =
+			new SearchMisspellingSetRequest(
+				buildMisspellingSetIndexName(), _httpServletRequest, _queries,
+				_sorts, searchContainer, _searchEngineAdapter);
+
+		SearchMisspellingSetResponse searchMisspellingSetResponse =
+			searchMisspellingSetRequest.search();
+
+		searchContainer.setResults(
+			buildMisspellingSetDisplayContexts(
+				searchMisspellingSetResponse.getSearchHits()));
+
+		searchContainer.setSearch(true);
+		searchContainer.setTotal(searchMisspellingSetResponse.getTotalHits());
+
+		return searchContainer;
 	}
 
 	protected CreationMenu getCreationMenu() {
@@ -263,6 +273,8 @@ public class MisspellingsDisplayBuilder {
 		_documentToMisspellingSetTranslator;
 	private final HttpServletRequest _httpServletRequest;
 	private final Language _language;
+	private final MisspellingSetIndexNameBuilder
+		_misspellingSetIndexNameBuilder;
 	private final Portal _portal;
 	private final Queries _queries;
 	private final RenderRequest _renderRequest;
@@ -270,6 +282,5 @@ public class MisspellingsDisplayBuilder {
 	private final SearchEngineAdapter _searchEngineAdapter;
 	private final SearchEngineInformation _searchEngineInformation;
 	private final Sorts _sorts;
-	private final MisspellingSetIndexNameBuilder _misspellingSetIndexNameBuilder;
 
 }

@@ -19,15 +19,16 @@ import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.search.hits.SearchHits;
-import com.liferay.portal.search.searcher.SearchRequest;
 import com.liferay.portal.search.searcher.SearchResponse;
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
+import com.liferay.portal.search.tuning.blueprints.engine.constants.ReservedParameterNames;
 import com.liferay.portal.search.tuning.blueprints.json.response.constants.JSONResponseKeys;
 import com.liferay.portal.search.tuning.blueprints.json.response.spi.contributor.ResponseContributor;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 
 import java.util.IllegalFormatException;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import org.osgi.service.component.annotations.Component;
@@ -48,34 +49,66 @@ public class MetaResponseContributor implements ResponseContributor {
 		ResourceBundle resourceBundle, Messages messages) {
 
 		responseJSONObject.put(
-			JSONResponseKeys.META, _getMetaJSONObject(searchResponse));
+			JSONResponseKeys.META, _getMetaJSONObject(searchResponse, blueprintsAttributes));
 	}
 
-	private JSONObject _getMetaJSONObject(SearchResponse searchResponse) {
+	private JSONObject _getMetaJSONObject(SearchResponse searchResponse, BlueprintsAttributes blueprintsAttributes) {
 		SearchHits searchHits = searchResponse.getSearchHits();
 
-		SearchRequest searchRequest = searchResponse.getRequest();
-
 		JSONObject jsonObject = JSONUtil.put(
-			JSONResponseKeys.KEYWORDS, searchRequest.getQueryString());
+				JSONResponseKeys.TOTAL_HITS, searchHits.getTotalHits());
 
-		searchResponse.withHits(
-			hits -> {
-				try {
-					jsonObject.put(
-						JSONResponseKeys.EXECUTION_TIME,
-						String.format("%.3f", hits.getSearchTime()));
-				}
-				catch (IllegalFormatException illegalFormatException) {
-					_log.error(
-						illegalFormatException.getMessage(),
-						illegalFormatException);
-				}
-			});
+		_setKeywords(jsonObject, blueprintsAttributes);
 
-		jsonObject.put(JSONResponseKeys.TOTAL_HITS, searchHits.getTotalHits());
+		_setExecutionTime(jsonObject, searchResponse);
+
+		_setShowingInsteadOf(jsonObject, searchResponse, blueprintsAttributes);
+
 
 		return jsonObject;
+	}
+	
+	private void _setExecutionTime(JSONObject jsonObject, SearchResponse searchResponse) {
+
+		searchResponse.withHits(
+				hits -> {
+					try {
+						jsonObject.put(
+							JSONResponseKeys.EXECUTION_TIME,
+							String.format("%.3f", hits.getSearchTime()));
+					}
+					catch (IllegalFormatException illegalFormatException) {
+						_log.error(
+							illegalFormatException.getMessage(),
+							illegalFormatException);
+					}
+				});
+
+
+	}
+	
+	private void _setKeywords(JSONObject jsonObject, BlueprintsAttributes blueprintsAttributes) {
+		
+		Optional<Object> keywordsOptional = blueprintsAttributes.getAttributeOptional("keywords");
+		
+		if (keywordsOptional.isPresent()) {
+			jsonObject.put(
+					JSONResponseKeys.KEYWORDS, (String)keywordsOptional.get());
+		}
+		
+	}
+	
+	private void _setShowingInsteadOf(JSONObject jsonObject, SearchResponse searchResponse,
+			BlueprintsAttributes blueprintsAttributes) {
+
+		Optional<Object> showingInsteadOfOptional = 
+				blueprintsAttributes.getAttributeOptional(
+						ReservedParameterNames.SHOWING_INSTEAD_OF.getKey());
+		
+		if (showingInsteadOfOptional.isPresent()) {
+			jsonObject.put(JSONResponseKeys.SHOWING_INSTEAD_OF, showingInsteadOfOptional.get());
+		}
+		
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

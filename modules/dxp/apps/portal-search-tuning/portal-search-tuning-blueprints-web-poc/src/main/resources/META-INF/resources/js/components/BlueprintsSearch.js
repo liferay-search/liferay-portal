@@ -109,6 +109,18 @@ export default function BlueprintsSearch({fetchResultsURL, suggestionsURL}) {
 		);
 	}
 
+	function _renderShowInsteadOf() {
+		return (
+			<div className="show-instead-of">
+				{sub(
+					Liferay.Language.get('showing-results-for-x-instead-of-x'),
+					[resource.meta.keywords, resource.meta.showing_instead_of],
+					false
+				)}
+			</div>
+		);
+	}
+
 	function updateSelectedFacets(param, facets) {
 		setSelectedFacets((selectedFacets) => ({
 			...selectedFacets,
@@ -127,17 +139,20 @@ export default function BlueprintsSearch({fetchResultsURL, suggestionsURL}) {
 							setQuery(val);
 							setActivePage(1);
 							setSelectedFacets({});
-						} else {
+						}
+						else {
 							refetch();
 						}
-					} else {
+					}
+					else {
 						if (val !== query) {
 							setQuery(val);
 							setActivePage(1);
 							setSelectedFacets({});
 							setSortBy({});
 							setTimeRange({});
-						} else {
+						}
+						else {
 							setSortBy({});
 							setTimeRange({});
 							refetch();
@@ -151,6 +166,9 @@ export default function BlueprintsSearch({fetchResultsURL, suggestionsURL}) {
 				<div className="search-results">
 					{_hasResults() ? (
 						<>
+							{resource.meta.showing_instead_of &&
+								_renderShowInsteadOf()}
+
 							{resource.facets && (
 								<Facet
 									facets={resource.facets}

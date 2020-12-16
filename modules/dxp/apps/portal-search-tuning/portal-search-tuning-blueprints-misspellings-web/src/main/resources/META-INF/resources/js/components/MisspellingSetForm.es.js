@@ -17,11 +17,8 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 
 class MisspellingSetForm extends Component {
-
 	render() {
-		return (
-				<div>https://issues.liferay.com/browse/LPS-118898</div>
-		);
+		return <div>https://issues.liferay.com/browse/LPS-118898</div>;
 	}
 }
 

@@ -35,7 +35,8 @@ import com.liferay.portal.search.tuning.blueprints.engine.util.BlueprintsEngineH
 import com.liferay.portal.search.tuning.blueprints.json.response.BlueprintsJSONResponseBuilder;
 import com.liferay.portal.search.tuning.blueprints.json.response.constants.JSONResponseKeys;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.util.attributes.BlueprintsAttributesHelper;
+import com.liferay.portal.search.tuning.blueprints.util.attributes.BlueprintsRequestAttributesHelper;
+import com.liferay.portal.search.tuning.blueprints.util.attributes.BlueprintsResponseAttributesHelper;
 import com.liferay.portal.search.tuning.blueprints.web.internal.constants.BlueprintsWebPortletKeys;
 import com.liferay.portal.search.tuning.blueprints.web.internal.constants.ResourceRequestKeys;
 import com.liferay.portal.search.tuning.blueprints.web.internal.portlet.preferences.BlueprintsWebPortletPreferences;
@@ -69,7 +70,7 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 
 		long blueprintId = _getSearchBlueprintId(resourceRequest);
 
-		JSONObject responseJsonObject = null;
+		JSONObject responseJSONObject = null;
 
 		try {
 			Messages requestMessages = new Messages();
@@ -82,26 +83,26 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 
 			BlueprintsAttributes blueprintsResponseAttributes =
 				_getBlueprintsResponseAttributes(
-					resourceRequest, resourceResponse, blueprintId);
+					resourceRequest, resourceResponse,
+					blueprintsRequestAttributes, blueprintId);
 
 			Messages responseMessages = new Messages();
 
 			ThemeDisplay themeDisplay =
-					(ThemeDisplay)resourceRequest.getAttribute(
-						WebKeys.THEME_DISPLAY);
+				(ThemeDisplay)resourceRequest.getAttribute(
+					WebKeys.THEME_DISPLAY);
 
-		    ResourceBundle resourceBundle =  ResourceBundleUtil.getBundle(
-		            "content.Language", themeDisplay.getLocale(), getClass());
+			ResourceBundle resourceBundle = ResourceBundleUtil.getBundle(
+				"content.Language", themeDisplay.getLocale(), getClass());
 
-			responseJsonObject = _blueprintsJSONResponseBuilder.buildJSONObject(
+			responseJSONObject = _blueprintsJSONResponseBuilder.buildJSONObject(
 				searchResponse, blueprintsResponseAttributes, resourceBundle,
-				responseMessages,
-				blueprintId);
+				responseMessages, blueprintId);
 		}
 		catch (JSONException jsonException) {
 			_log.error(jsonException.getMessage(), jsonException);
 
-			responseJsonObject = JSONUtil.put(
+			responseJSONObject = JSONUtil.put(
 				JSONResponseKeys.ERRORS, jsonException.getMessage());
 		}
 		catch (BlueprintsEngineException blueprintsEngineException) {
@@ -109,42 +110,41 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 				blueprintsEngineException.getMessage(),
 				blueprintsEngineException);
 
-			responseJsonObject = JSONUtil.put(
+			responseJSONObject = JSONUtil.put(
 				JSONResponseKeys.ERRORS,
 				blueprintsEngineException.getMessage());
 		}
 		catch (PortalException portalException) {
 			_log.error(portalException.getMessage(), portalException);
 
-			responseJsonObject = JSONUtil.put(
+			responseJSONObject = JSONUtil.put(
 				JSONResponseKeys.ERRORS, portalException.getMessage());
 		}
 
 		JSONPortletResponseUtil.writeJSON(
-			resourceRequest, resourceResponse, responseJsonObject);
+			resourceRequest, resourceResponse, responseJSONObject);
 	}
 
 	private BlueprintsAttributes _getBlueprintsRequestAttributes(
 		ResourceRequest resourceRequest, long blueprintId) {
 
 		BlueprintsAttributesBuilder blueprintsAttributesBuilder =
-			_blueprintsAttributesHelper.getBlueprintsRequestAttributesBuilder(
-				resourceRequest, blueprintId);
-
-		// Add here any other attributes
+			_blueprintsRequestAttributesHelper.
+				getBlueprintsRequestAttributesBuilder(
+					resourceRequest, blueprintId);
 
 		return blueprintsAttributesBuilder.build();
 	}
 
 	private BlueprintsAttributes _getBlueprintsResponseAttributes(
 		ResourceRequest resourceRequest, ResourceResponse resourceResponse,
-		long blueprintId) {
+		BlueprintsAttributes blueprintsRequestAttributes, long blueprintId) {
 
 		BlueprintsAttributesBuilder blueprintsAttributesBuilder =
-			_blueprintsAttributesHelper.getBlueprintsResponseAttributesBuilder(
-				resourceRequest, resourceResponse, blueprintId);
-
-		// Add here any other attributes
+			_blueprintsResponseAttributesHelper.
+				getBlueprintsResponseAttributesBuilder(
+					resourceRequest, resourceResponse,
+					blueprintsRequestAttributes, blueprintId);
 
 		return blueprintsAttributesBuilder.build();
 	}
@@ -161,13 +161,18 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 		GetSearchResultsMVCResourceCommand.class);
 
 	@Reference
-	private BlueprintsAttributesHelper _blueprintsAttributesHelper;
-
-	@Reference
 	private BlueprintsEngineHelper _blueprintsEngineHelper;
 
 	@Reference
 	private BlueprintsJSONResponseBuilder _blueprintsJSONResponseBuilder;
+
+	@Reference
+	private BlueprintsRequestAttributesHelper
+		_blueprintsRequestAttributesHelper;
+
+	@Reference
+	private BlueprintsResponseAttributesHelper
+		_blueprintsResponseAttributesHelper;
 
 	@Reference
 	private Portal _portal;

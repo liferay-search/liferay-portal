@@ -17,12 +17,11 @@ package com.liferay.portal.search.tuning.blueprints.util.attributes;
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributesBuilder;
 
 import javax.portlet.PortletRequest;
-import javax.portlet.PortletResponse;
 
 /**
  * @author Petteri Karttunen
  */
-public interface BlueprintsAttributesHelper {
+public interface BlueprintsRequestAttributesHelper {
 
 	/**
 	 * Gets Blueprints attributes builder for doing a search request.
@@ -37,17 +36,5 @@ public interface BlueprintsAttributesHelper {
 	 */
 	public BlueprintsAttributesBuilder getBlueprintsRequestAttributesBuilder(
 		PortletRequest portletRequest, long blueprintId);
-
-	/**
-	 * Gets Blueprints attributes builder for building a response.
-	 *
-	 * @param portletRequest
-	 * @param portletResponse
-	 * @param blueprintId
-	 * @return
-	 */
-	public BlueprintsAttributesBuilder getBlueprintsResponseAttributesBuilder(
-		PortletRequest portletRequest, PortletResponse portletResponse,
-		long blueprintId);
 
 }

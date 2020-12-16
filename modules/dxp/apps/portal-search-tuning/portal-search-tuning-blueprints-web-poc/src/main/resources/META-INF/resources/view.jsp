@@ -15,9 +15,11 @@
 --%>
 
 <%@ include file="/init.jsp" %>
+
 <%
 BlueprintsDisplayContext blueprintsDisplayContext = (BlueprintsDisplayContext)request.getAttribute(BlueprintsWebPortletKeys.BLUEPRINTS_DISPLAY_CONTEXT);
 %>
+
 <c:choose>
 	<c:when test="<%= !blueprintsDisplayContext.isConfigured() %>">
 		<clay:alert

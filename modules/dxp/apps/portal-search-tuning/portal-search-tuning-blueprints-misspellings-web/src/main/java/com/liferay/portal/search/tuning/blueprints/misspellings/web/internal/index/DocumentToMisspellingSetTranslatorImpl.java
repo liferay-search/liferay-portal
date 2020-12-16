@@ -22,6 +22,7 @@ import com.liferay.portal.search.hits.SearchHits;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,20 +48,20 @@ public class DocumentToMisspellingSetTranslatorImpl
 		).groupId(
 			document.getLong(MisspellingSetFields.GROUP_ID)
 		).languageId(
-				document.getString(MisspellingSetFields.LANGUAGE_ID)
+			document.getString(MisspellingSetFields.LANGUAGE_ID)
 		).misspellings(
-				document.getStrings(MisspellingSetFields.MISSPELLINGS)
+			document.getStrings(MisspellingSetFields.MISSPELLINGS)
 		).misspellingSetId(
 			document.getString(MisspellingSetFields.UID)
 		).modified(
 			parseDateStringFieldValue(
 				document.getDate(MisspellingSetFields.MODIFIED))
 		).phrase(
-				document.getString(MisspellingSetFields.PHRASE)
+			document.getString(MisspellingSetFields.PHRASE)
 		).name(
 			document.getString(MisspellingSetFields.NAME)
-		).userId(
-			document.getLong(MisspellingSetFields.USER_ID)
+		).userName(
+			document.getString(MisspellingSetFields.USER_NAME)
 		).build();
 	}
 

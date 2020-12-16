@@ -16,7 +16,7 @@
 
 <%@ include file="/init.jsp" %>
 
-<%                         
+<%
 MisspellingsDisplayContext misspellingsDisplayContext = (MisspellingsDisplayContext)request.getAttribute(MisspellingsWebKeys.MISSPELLINGS_DISPLAY_CONTEXT);
 %>
 
@@ -36,41 +36,59 @@ MisspellingsDisplayContext misspellingsDisplayContext = (MisspellingsDisplayCont
 	<portlet:param name="redirect" value="<%= currentURL %>" />
 </portlet:actionURL>
 
-<aui:form action="<%= deleteMisspellingSetActionURL %>" cssClass="container-fluid-1280" method="post" name="misspellingSetEntriesFm">
-	<aui:input name="deleteMisspellingSetString" type="hidden" value="" />
+<clay:container-fluid>
+	<aui:form action="<%= deleteMisspellingSetActionURL %>" method="post" name="misspellingSetEntriesFm">
+		<aui:input name="deleteMisspellingSetString" type="hidden" value="" />
 
-	<liferay-ui:search-container
-		id="misspellingSetEntries"
-		searchContainer="<%= misspellingsDisplayContext.getSearchContainer() %>"
-	>
-		<liferay-ui:search-container-row
-			className="com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.display.context.MisspellingSetDisplayContext"
-			keyProperty="misspellingSetId"
-			modelVar="misspellingSetDisplayContext"
+		<liferay-ui:search-container
+			id="misspellingSetEntries"
+			searchContainer="<%= misspellingsDisplayContext.getSearchContainer() %>"
 		>
-			<liferay-ui:search-container-column-text
-				colspan="<%= 2 %>"
-				cssClass="table-cell-expand table-title"
+			<liferay-ui:search-container-row
+				className="com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.display.context.MisspellingSetDisplayContext"
+				keyProperty="misspellingSetId"
+				modelVar="misspellingSetDisplayContext"
 			>
-				<aui:a href="<%= misspellingSetDisplayContext.getEditRenderURL() %>">
-					<%= misspellingSetDisplayContext.getName() %>
-				</aui:a>
-			</liferay-ui:search-container-column-text>
+				<liferay-ui:search-container-column-text
+					colspan="<%= 1 %>"
+					cssClass="table-cell-expand table-cell-minw-200 table-title"
+				>
+					<h4>
+						<aui:a href="<%= misspellingSetDisplayContext.getEditRenderURL() %>">
+							<%= misspellingSetDisplayContext.getName() %>
+						</aui:a>
+					</h4>
 
-			<liferay-ui:search-container-column-text>
-				<clay:dropdown-actions
-					defaultEventHandler="misspellingSetDropdownDefaultEventHandler"
-					dropdownItems="<%= misspellingSetDisplayContext.getDropdownItems() %>"
-				/>
-			</liferay-ui:search-container-column-text>
-		</liferay-ui:search-container-row>
+					<%
+					Date modified = misspellingSetDisplayContext.getModified();
 
-		<liferay-ui:search-iterator
-			markupView="lexicon"
-			paginate="<%= false %>"
-		/>
-	</liferay-ui:search-container>
-</aui:form>
+					String modifiedDateDescription = LanguageUtil.getTimeDescription(request, System.currentTimeMillis() - modified.getTime(), true);
+					%>
+
+					<h5 class="text-default text-truncate">
+						<span class="id-text">
+							<liferay-ui:message arguments="<%= String.valueOf(misspellingSetDisplayContext.getMisspellingSetId()) %>" key="id-x" />
+						</span>
+
+						<liferay-ui:message arguments="<%= new String[] {misspellingSetDisplayContext.getUserName(), modifiedDateDescription} %>" key="modified-by-x-x-ago" />
+					</h5>
+				</liferay-ui:search-container-column-text>
+
+				<liferay-ui:search-container-column-text>
+					<clay:dropdown-actions
+						defaultEventHandler="misspellingSetDropdownDefaultEventHandler"
+						dropdownItems="<%= misspellingSetDisplayContext.getDropdownItems() %>"
+					/>
+				</liferay-ui:search-container-column-text>
+			</liferay-ui:search-container-row>
+
+			<liferay-ui:search-iterator
+				markupView="lexicon"
+				paginate="<%= false %>"
+			/>
+		</liferay-ui:search-container>
+	</aui:form>
+</clay:container-fluid>
 
 <aui:script require='<%= npmResolvedPackageName + "/js/MultipleCheckboxAction.es as MultipleCheckboxAction" %>'>
 	new MultipleCheckboxAction.default('<portlet:namespace />');

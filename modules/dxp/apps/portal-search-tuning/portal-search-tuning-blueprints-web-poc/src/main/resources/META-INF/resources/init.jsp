@@ -31,12 +31,11 @@ page import="com.liferay.portal.kernel.util.Constants" %><%@
 page import="com.liferay.portal.kernel.util.HtmlUtil" %><%@
 page import="com.liferay.portal.kernel.util.ParamUtil" %><%@
 page import="com.liferay.portal.kernel.util.PortalUtil" %><%@
+page import="com.liferay.portal.search.tuning.blueprints.web.internal.constants.BlueprintsWebPortletKeys" %><%@
 page import="com.liferay.portal.search.tuning.blueprints.web.internal.constants.BlueprintsWebPortletPreferenceKeys" %><%@
-page import="com.liferay.portal.search.tuning.blueprints.web.internal.constants.BlueprintsWebPortletKeys"%><%@
 page import="com.liferay.portal.search.tuning.blueprints.web.internal.display.context.BlueprintsContentDisplayBuilder" %><%@
 page import="com.liferay.portal.search.tuning.blueprints.web.internal.display.context.BlueprintsContentDisplayContext" %><%@
-page import="com.liferay.portal.search.tuning.blueprints.web.internal.display.context.BlueprintsDisplayContext"%>
-
+page import="com.liferay.portal.search.tuning.blueprints.web.internal.display.context.BlueprintsDisplayContext" %>
 
 <%@ page import="javax.portlet.PortletPreferences" %>
 

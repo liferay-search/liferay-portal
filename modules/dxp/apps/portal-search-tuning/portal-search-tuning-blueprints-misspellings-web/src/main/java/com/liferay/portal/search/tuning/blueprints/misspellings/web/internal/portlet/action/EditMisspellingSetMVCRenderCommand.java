@@ -65,12 +65,12 @@ public class EditMisspellingSetMVCRenderCommand implements MVCRenderCommand {
 	private IndexNameBuilder _indexNameBuilder;
 
 	@Reference
-	private Portal _portal;
-
-	@Reference
 	private MisspellingSetIndexNameBuilder _misspellingSetIndexNameBuilder;
 
 	@Reference
 	private MisspellingSetIndexReader _misspellingSetIndexReader;
+
+	@Reference
+	private Portal _portal;
 
 }

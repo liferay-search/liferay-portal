@@ -23,7 +23,7 @@ import java.util.stream.Stream;
 public enum AdvancedConfigurationKeys {
 
 	ENTRY_CLASS_NAMES("entry_class_names"), HIGHLIGHTING("highlighting"),
-	MISSPELLINGS_DEFINITION_IDS("misspellings_definition_ids"),
+	MISSPELLING_SET_IDS("misspelling_set_ids"),
 	PAGE_SIZE("page_size"), QUERY_INDEXING("query_indexing"),
 	QUERY_PROCESSING("query_processing"), SOURCE("source");
 

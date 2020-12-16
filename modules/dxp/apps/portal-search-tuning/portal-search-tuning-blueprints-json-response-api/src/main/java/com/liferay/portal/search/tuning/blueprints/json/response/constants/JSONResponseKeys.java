@@ -37,6 +37,8 @@ public class JSONResponseKeys {
 
 	public static final String PAGINATION = "pagination";
 
+	public static final String SHOWING_INSTEAD_OF = "showing_instead_of";
+
 	public static final String START = "start";
 
 	public static final String SUGGESTIONS = "suggestions";

@@ -42,23 +42,20 @@ public class MisspellingSetIndexReaderImpl
 
 	@Override
 	public Optional<MisspellingSet> fetchOptional(
-		MisspellingSetIndexName misspellingSetIndexName,
-		String uid) {
+		MisspellingSetIndexName misspellingSetIndexName, String uid) {
 
 		return _getDocumentOptional(
-				misspellingSetIndexName, uid
+			misspellingSetIndexName, uid
 		).map(
 			document -> translate(document)
 		);
 	}
 
 	@Override
-	public boolean isExists(
-		MisspellingSetIndexName misspellingSetIndexName) {
-
+	public boolean isExists(MisspellingSetIndexName misspellingSetIndexName) {
 		IndicesExistsIndexRequest indicesExistsIndexRequest =
 			new IndicesExistsIndexRequest(
-					misspellingSetIndexName.getIndexName());
+				misspellingSetIndexName.getIndexName());
 
 		indicesExistsIndexRequest.setPreferLocalCluster(false);
 
@@ -75,7 +72,7 @@ public class MisspellingSetIndexReaderImpl
 		SearchSearchRequest searchSearchRequest = new SearchSearchRequest();
 
 		searchSearchRequest.setIndexNames(
-				misspellingSetIndexName.getIndexName());
+			misspellingSetIndexName.getIndexName());
 		searchSearchRequest.setPreferLocalCluster(false);
 
 		SearchSearchResponse searchSearchResponse =
@@ -97,15 +94,14 @@ public class MisspellingSetIndexReaderImpl
 	}
 
 	private Optional<Document> _getDocumentOptional(
-		MisspellingSetIndexName MisspellingSetIndexName,
-		String uid) {
+		MisspellingSetIndexName misspellingSetIndexName, String uid) {
 
 		if (Validator.isNull(uid)) {
 			return Optional.empty();
 		}
 
 		GetDocumentRequest getDocumentRequest = new GetDocumentRequest(
-			MisspellingSetIndexName.getIndexName(), uid);
+			misspellingSetIndexName.getIndexName(), uid);
 
 		getDocumentRequest.setFetchSource(true);
 		getDocumentRequest.setFetchSourceInclude(StringPool.STAR);

@@ -44,17 +44,14 @@ public class MisspellingSetIndexCreationCompanyModelListener
 		}
 
 		MisspellingSetIndexName misspellingSetIndexName =
-			_misspellingSetIndexNameBuilder.
-				getMisspellingSetIndexName(company.getCompanyId());
+			_misspellingSetIndexNameBuilder.getMisspellingSetIndexName(
+				company.getCompanyId());
 
-		if (_misspellingSetIndexReader.isExists(
-				misspellingSetIndexName)) {
-
+		if (_misspellingSetIndexReader.isExists(misspellingSetIndexName)) {
 			return;
 		}
 
-		_misspellingSetIndexCreator.create(
-				misspellingSetIndexName);
+		_misspellingSetIndexCreator.create(misspellingSetIndexName);
 	}
 
 	@Override
@@ -66,30 +63,24 @@ public class MisspellingSetIndexCreationCompanyModelListener
 		}
 
 		MisspellingSetIndexName misspellingSetIndexName =
-			_misspellingSetIndexNameBuilder.
-				getMisspellingSetIndexName(company.getCompanyId());
+			_misspellingSetIndexNameBuilder.getMisspellingSetIndexName(
+				company.getCompanyId());
 
-		if (!_misspellingSetIndexReader.isExists(
-				misspellingSetIndexName)) {
-
+		if (!_misspellingSetIndexReader.isExists(misspellingSetIndexName)) {
 			return;
 		}
 
-		_misspellingSetIndexCreator.delete(
-				misspellingSetIndexName);
+		_misspellingSetIndexCreator.delete(misspellingSetIndexName);
 	}
 
 	@Reference
-	private MisspellingSetIndexCreator
-		_misspellingSetIndexCreator;
+	private MisspellingSetIndexCreator _misspellingSetIndexCreator;
 
 	@Reference
-	private MisspellingSetIndexNameBuilder
-		_misspellingSetIndexNameBuilder;
+	private MisspellingSetIndexNameBuilder _misspellingSetIndexNameBuilder;
 
 	@Reference
-	private MisspellingSetIndexReader
-		_misspellingSetIndexReader;
+	private MisspellingSetIndexReader _misspellingSetIndexReader;
 
 	@Reference
 	private SearchEngineInformation _searchEngineInformation;

@@ -55,25 +55,26 @@ public class DeleteMisspellingSetMVCActionCommand extends BaseMVCActionCommand {
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
 
-		long companyId = _portal.getCompanyId(actionRequest);
-
 		MisspellingSetIndexName misspellingSetIndexName =
-			_misspellingSetIndexNameBuilder.getMisspellingSetIndexName(companyId);
+			_misspellingSetIndexNameBuilder.getMisspellingSetIndexName(
+				_portal.getCompanyId(actionRequest));
 
 		removeMisspellingSets(
-				misspellingSetIndexName,
+			misspellingSetIndexName,
 			getDeletedMisspellingSets(actionRequest, misspellingSetIndexName));
 
 		sendRedirect(actionRequest, actionResponse);
 	}
 
 	protected List<MisspellingSet> getDeletedMisspellingSets(
-		ActionRequest actionRequest, MisspellingSetIndexName misspellingSetIndexName) {
+		ActionRequest actionRequest,
+		MisspellingSetIndexName misspellingSetIndexName) {
 
 		return Stream.of(
 			ParamUtil.getStringValues(actionRequest, "rowIds")
 		).map(
-			id -> _misspellingSetIndexReader.fetchOptional(misspellingSetIndexName, id)
+			id -> _misspellingSetIndexReader.fetchOptional(
+				misspellingSetIndexName, id)
 		).filter(
 			Optional::isPresent
 		).map(
@@ -84,19 +85,17 @@ public class DeleteMisspellingSetMVCActionCommand extends BaseMVCActionCommand {
 	}
 
 	protected void removeMisspellingSets(
-		MisspellingSetIndexName misspellingSetIndexName, List<MisspellingSet> misspellingSets) {
+		MisspellingSetIndexName misspellingSetIndexName,
+		List<MisspellingSet> misspellingSets) {
 
 		for (MisspellingSet misspellingSet : misspellingSets) {
 			_misspellingSetIndexWriter.remove(
-					misspellingSetIndexName, misspellingSet.getMisspellingSetId());
+				misspellingSetIndexName, misspellingSet.getMisspellingSetId());
 		}
 	}
 
 	@Reference
 	private IndexNameBuilder _indexNameBuilder;
-
-	@Reference
-	private Portal _portal;
 
 	@Reference
 	private MisspellingSetIndexNameBuilder _misspellingSetIndexNameBuilder;
@@ -106,5 +105,8 @@ public class DeleteMisspellingSetMVCActionCommand extends BaseMVCActionCommand {
 
 	@Reference
 	private MisspellingSetIndexWriter _misspellingSetIndexWriter;
+
+	@Reference
+	private Portal _portal;
 
 }

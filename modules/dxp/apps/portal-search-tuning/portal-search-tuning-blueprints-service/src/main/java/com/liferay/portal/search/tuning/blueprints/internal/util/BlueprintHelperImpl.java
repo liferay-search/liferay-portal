@@ -274,7 +274,7 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 	}
 
 	@Override
-	public Optional<JSONArray> getMisspellingsConfigurationOptional(
+	public Optional<JSONArray> getMisspellingSetIdsOptional(
 		Blueprint blueprint) {
 
 		Optional<JSONObject> configurationJSONObjectOptional =
@@ -284,8 +284,7 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 			return Optional.empty();
 		}
 
-		String key =
-			AdvancedConfigurationKeys.MISSPELLINGS_DEFINITION_IDS.getJsonKey();
+		String key = AdvancedConfigurationKeys.MISSPELLING_SET_IDS.getJsonKey();
 
 		return BlueprintJSONUtil.getValueAsJSONArrayOptional(
 			configurationJSONObjectOptional.get(),

@@ -22,7 +22,9 @@ import com.liferay.portal.search.document.DocumentBuilderFactory;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+
 import java.util.Date;
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.osgi.service.component.annotations.Component;
@@ -37,39 +39,33 @@ public class MisspellingSetToDocumentTranslatorImpl
 
 	@Override
 	public Document translate(MisspellingSet misspellingSet) {
-		
-		Stream<String>stream = misspellingSet.getMisspellings().stream();
-		
+		List<String> misspellings = misspellingSet.getMisspellings();
+
+		Stream<String> stream = misspellings.stream();
+
 		return _documentBuilderFactory.builder(
 		).setLong(
-			MisspellingSetFields.COMPANY_ID,
-			misspellingSet.getCompanyId()
+			MisspellingSetFields.COMPANY_ID, misspellingSet.getCompanyId()
 		).setDate(
 			MisspellingSetFields.CREATED,
 			parseDateString(misspellingSet.getCreated())
 		).setLong(
-			MisspellingSetFields.GROUP_ID,
-			misspellingSet.getGroupId()
+			MisspellingSetFields.GROUP_ID, misspellingSet.getGroupId()
 		).setValue(
-				MisspellingSetFields.LANGUAGE_ID,
-				misspellingSet.getLanguageId()
+			MisspellingSetFields.LANGUAGE_ID, misspellingSet.getLanguageId()
 		).setStrings(
-			MisspellingSetFields.MISSPELLINGS,
-			stream.toArray(String[]::new)
+			MisspellingSetFields.MISSPELLINGS, stream.toArray(String[]::new)
 		).setDate(
 			MisspellingSetFields.MODIFIED,
 			parseDateString(misspellingSet.getModified())
 		).setString(
 			MisspellingSetFields.NAME, misspellingSet.getName()
 		).setValue(
-				MisspellingSetFields.PHRASE,
-				misspellingSet.getPhrase()
-		).setLong(
-			MisspellingSetFields.USER_ID,
-			misspellingSet.getUserId()
+			MisspellingSetFields.PHRASE, misspellingSet.getPhrase()
 		).setString(
-			MisspellingSetFields.UID,
-			misspellingSet.getMisspellingSetId()
+			MisspellingSetFields.USER_NAME, misspellingSet.getUserName()
+		).setString(
+			MisspellingSetFields.UID, misspellingSet.getMisspellingSetId()
 		).build();
 	}
 

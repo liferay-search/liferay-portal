@@ -28,9 +28,7 @@ public class MisspellingSetIndexNameBuilderImpl
 	implements MisspellingSetIndexNameBuilder {
 
 	@Override
-	public MisspellingSetIndexName getMisspellingSetIndexName(
-		long companyId) {
-
+	public MisspellingSetIndexName getMisspellingSetIndexName(long companyId) {
 		return new MisspellingSetIndexNameImpl(
 			_indexNameBuilder.getIndexName(companyId) + StringPool.DASH +
 				MISSPELLINGS_INDEX_NAME_SUFFIX);

@@ -38,35 +38,38 @@ public class BlueprintPortletHelper {
 	public Optional<Blueprint> getBlueprint(long blueprintId) {
 		try {
 			return Optional.of(_blueprintService.getBlueprint(blueprintId));
-		} catch (PortalException portalException) {
+		}
+		catch (PortalException portalException) {
 			_log.error(portalException.getMessage(), portalException);
 		}
-		
+
 		return Optional.empty();
 	}
-	
-	public Optional<Blueprint> getSearchBlueprint(PortletRequest portletRequest) {
-		
+
+	public Optional<Blueprint> getSearchBlueprint(
+		PortletRequest portletRequest) {
+
 		long blueprintId = getSearchBlueprintId(portletRequest);
-		
+
 		if (blueprintId == 0) {
 			return Optional.empty();
 		}
-		
+
 		return getBlueprint(blueprintId);
 	}
 
 	public long getSearchBlueprintId(PortletRequest portletRequest) {
 		BlueprintsWebPortletPreferences blueprintsWebPortletPreferences =
 			new BlueprintsWebPortletPreferencesImpl(
-					portletRequest.getPreferences());
+				portletRequest.getPreferences());
 
 		return blueprintsWebPortletPreferences.getSearchBlueprintId();
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
-			BlueprintPortletHelper.class);
+		BlueprintPortletHelper.class);
 
 	@Reference
 	private BlueprintService _blueprintService;
+
 }

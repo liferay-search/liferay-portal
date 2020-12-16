@@ -19,7 +19,6 @@ package com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.in
  */
 public interface MisspellingSetIndexNameBuilder {
 
-	public MisspellingSetIndexName getMisspellingSetIndexName(
-		long companyId);
+	public MisspellingSetIndexName getMisspellingSetIndexName(long companyId);
 
 }

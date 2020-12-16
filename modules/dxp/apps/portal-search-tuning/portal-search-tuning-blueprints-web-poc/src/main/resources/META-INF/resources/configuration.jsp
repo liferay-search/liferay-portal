@@ -18,12 +18,6 @@
 
 <%
 PortletPreferences preferences = renderRequest.getPreferences();
-
-String searchBlueprintId = preferences.getValue(BlueprintsWebPortletPreferenceKeys.SEARCH_BLUEPRINT_ID, "0");
-String typeaheadBlueprintId = preferences.getValue(BlueprintsWebPortletPreferenceKeys.TYPEAHEAD_BLUEPRINT_ID, "0");
-
-String searchBlueprintIdKey = "preferences--" + BlueprintsWebPortletPreferenceKeys.SEARCH_BLUEPRINT_ID + "--";
-String typeaheadBlueprintIdKey = "preferences--" + BlueprintsWebPortletPreferenceKeys.TYPEAHEAD_BLUEPRINT_ID + "--";
 %>
 
 <liferay-portlet:actionURL portletConfiguration="<%= true %>" var="configurationActionURL" />
@@ -41,8 +35,8 @@ String typeaheadBlueprintIdKey = "preferences--" + BlueprintsWebPortletPreferenc
 	<liferay-frontend:edit-form-body>
 		<liferay-frontend:fieldset-group>
 			<liferay-frontend:fieldset>
-				<aui:input label="search-blueprint-id" name="<%= searchBlueprintIdKey %>" required="<%= true %>" type="text" value="<%= searchBlueprintId %>" />
-				<aui:input label="typeahead-blueprint-id" name="<%= typeaheadBlueprintIdKey %>" type="text" value="<%= typeaheadBlueprintId %>" />
+				<aui:input label="search-blueprint-id" name='<%= "preferences--" + BlueprintsWebPortletPreferenceKeys.SEARCH_BLUEPRINT_ID + "--" %>' required="<%= true %>" type="text" value='<%= preferences.getValue(BlueprintsWebPortletPreferenceKeys.SEARCH_BLUEPRINT_ID, "0") %>' />
+				<aui:input label="typeahead-blueprint-id" name='<%= "preferences--" + BlueprintsWebPortletPreferenceKeys.TYPEAHEAD_BLUEPRINT_ID + "--" %>' type="text" value='<%= preferences.getValue(BlueprintsWebPortletPreferenceKeys.TYPEAHEAD_BLUEPRINT_ID, "0") %>' />
 			</liferay-frontend:fieldset>
 		</liferay-frontend:fieldset-group>
 	</liferay-frontend:edit-form-body>

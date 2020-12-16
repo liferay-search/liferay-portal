@@ -32,11 +32,11 @@ public class MisspellingSetFields {
 	public static final String MODIFIED = "modified";
 
 	public static final String NAME = "name";
-	
+
 	public static final String PHRASE = "phrase";
-	
+
 	public static final String UID = "uid";
 
-	public static final String USER_ID = "userId";
+	public static final String USER_NAME = "userName";
 
 }

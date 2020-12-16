@@ -73,9 +73,8 @@ public class SearchMisspellingSetRequest {
 		SearchSearchResponse searchSearchResponse =
 			_searchEngineAdapter.execute(searchSearchRequest);
 
-		SearchMisspellingSetResponse
-			searchMisspellingSetResponse =
-				new SearchMisspellingSetResponse();
+		SearchMisspellingSetResponse searchMisspellingSetResponse =
+			new SearchMisspellingSetResponse();
 
 		SearchHits searchHits = searchSearchResponse.getSearchHits();
 
@@ -98,8 +97,7 @@ public class SearchMisspellingSetRequest {
 
 	private Collection<Sort> _getSorts() {
 		String orderByCol = ParamUtil.getString(
-			_httpServletRequest, "orderByCol",
-			MisspellingSetFields.UID);
+			_httpServletRequest, "orderByCol", MisspellingSetFields.UID);
 		String orderByType = ParamUtil.getString(
 			_httpServletRequest, "orderByType", "asc");
 
@@ -113,8 +111,7 @@ public class SearchMisspellingSetRequest {
 	}
 
 	private final HttpServletRequest _httpServletRequest;
-	private final MisspellingSetIndexName
-		_misspellingSetIndexName;
+	private final MisspellingSetIndexName _misspellingSetIndexName;
 	private final Queries _queries;
 	private final SearchContainer<MisspellingSetDisplayContext>
 		_searchContainer;
