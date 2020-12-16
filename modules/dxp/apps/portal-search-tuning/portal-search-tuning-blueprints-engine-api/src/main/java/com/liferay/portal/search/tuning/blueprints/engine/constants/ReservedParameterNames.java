@@ -22,7 +22,7 @@ import java.util.stream.Stream;
  */
 public enum ReservedParameterNames {
 
-	ALLOW_MISSPELLING("allow_misspelling"),
+	ALLOW_MISSPELLINGS("allow_misspellings"),
 	COMMERCE_ACCOUNT_GROUP_IDS("commerce_account_group_ids"),
 	COMMERCE_CHANNEL_GROUP_ID("commerce_channel_group_id"),
 	COMPANY_ID("company_id"), CURRENT_DATE("current_date"),
@@ -35,10 +35,10 @@ public enum ReservedParameterNames {
 	EXPLAIN("explain"), INCLUDE_RESPONSE_STRING("include_response_string"),
 	IP_ADDRESS("ip_address"), LANGUAGE("language"), LANGUAGE_ID("language_id"),
 	LAYOUT_LOCALE_NAME("layout_locale_name"), PLID("plid"),
-	SCOPE_GROUP_ID("scope_group_id"), TIME_OF_DAY("time_of_day"),
-	TIMEZONE_ID("timezone_id"), TIMEZONE_LOCALE_NAME("timezone_locale_name"),
-	USER_AGE("user_age"), USER_BIRTHDAY("user_birthday"),
-	USER_CREATE_DATE("user_create_date"),
+	SCOPE_GROUP_ID("scope_group_id"), SHOWING_INSTEAD_OF("showing_instead_of"),
+	TIME_OF_DAY("time_of_day"), TIMEZONE_ID("timezone_id"),
+	TIMEZONE_LOCALE_NAME("timezone_locale_name"), USER_AGE("user_age"),
+	USER_BIRTHDAY("user_birthday"), USER_CREATE_DATE("user_create_date"),
 	USER_EMAIL_DOMAIN("user_email_domain"), USER_FIRST_NAME("user_first_name"),
 	USER_FULL_NAME("user_full_name"), USER_GROUP_IDS("user_group_ids"),
 	USER_ID("user_id"), USER_IS_FEMALE("user_is_female"),
