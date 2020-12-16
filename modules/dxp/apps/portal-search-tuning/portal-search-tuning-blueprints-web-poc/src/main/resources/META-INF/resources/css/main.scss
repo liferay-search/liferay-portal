@@ -34,9 +34,25 @@
 				}
 			}
 		}
-		.show-instead-of {
-			font-size: initial;
+		.misspellings {
 			padding: 0 0 20px;
+
+			.showing-results-for {
+				font-size: 120%;
+
+				.keyword {
+					font-weight: bold;
+					margin-left: 5px;
+				}
+			}
+
+			.instead-of {
+				font-size: initial;
+
+				.link {
+					margin-left: 5px;
+				}
+			}
 		}
 	}
 }
