@@ -130,7 +130,7 @@ public class FragmentEntriesDisplayContext {
 
 		portletURL.setProperty(
 			"mvcRenderCommandName",
-			BlueprintsAdminMVCCommandNames.VIEW_BLUEPRINT);
+			BlueprintsAdminMVCCommandNames.VIEW_BLUEPRINTS);
 
 		portletURL.setParameter("tabs", "fragments");
 
