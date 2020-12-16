@@ -19,6 +19,7 @@ import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.search.index.IndexNameBuilder;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.constants.MisspellingsMVCCommandNames;
 import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.constants.MisspellingsPortletKeys;
 import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.MisspellingSet;
 import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.MisspellingSetIndexReader;
@@ -44,7 +45,7 @@ import org.osgi.service.component.annotations.Reference;
 	immediate = true,
 	property = {
 		"javax.portlet.name=" + MisspellingsPortletKeys.MISSPELLINGS,
-		"mvc.command.name=deleteMisspellingSet"
+		"mvc.command.name=" + MisspellingsMVCCommandNames.DELETE_MISSPELLING_SET
 	},
 	service = MVCActionCommand.class
 )
@@ -59,14 +60,24 @@ public class DeleteMisspellingSetMVCActionCommand extends BaseMVCActionCommand {
 			_misspellingSetIndexNameBuilder.getMisspellingSetIndexName(
 				_portal.getCompanyId(actionRequest));
 
-		removeMisspellingSets(
+		_deleteMisspellingSets(
 			misspellingSetIndexName,
-			getDeletedMisspellingSets(actionRequest, misspellingSetIndexName));
+			_getMisspellingSets(actionRequest, misspellingSetIndexName));
 
 		sendRedirect(actionRequest, actionResponse);
 	}
 
-	protected List<MisspellingSet> getDeletedMisspellingSets(
+	private void _deleteMisspellingSets(
+		MisspellingSetIndexName misspellingSetIndexName,
+		List<MisspellingSet> misspellingSets) {
+
+		for (MisspellingSet misspellingSet : misspellingSets) {
+			_misspellingSetIndexWriter.remove(
+				misspellingSetIndexName, misspellingSet.getId());
+		}
+	}
+
+	private List<MisspellingSet> _getMisspellingSets(
 		ActionRequest actionRequest,
 		MisspellingSetIndexName misspellingSetIndexName) {
 
@@ -82,16 +93,6 @@ public class DeleteMisspellingSetMVCActionCommand extends BaseMVCActionCommand {
 		).collect(
 			Collectors.toList()
 		);
-	}
-
-	protected void removeMisspellingSets(
-		MisspellingSetIndexName misspellingSetIndexName,
-		List<MisspellingSet> misspellingSets) {
-
-		for (MisspellingSet misspellingSet : misspellingSets) {
-			_misspellingSetIndexWriter.remove(
-				misspellingSetIndexName, misspellingSet.getMisspellingSetId());
-		}
 	}
 
 	@Reference

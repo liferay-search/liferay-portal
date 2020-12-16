@@ -14,9 +14,11 @@
 
 package com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.portlet.action;
 
+import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCRenderCommand;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.search.index.IndexNameBuilder;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.constants.MisspellingsMVCCommandNames;
 import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.constants.MisspellingsPortletKeys;
 import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.constants.MisspellingsWebKeys;
 import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.display.context.EditMisspellingSetDisplayBuilder;
@@ -37,7 +39,7 @@ import org.osgi.service.component.annotations.Reference;
 	immediate = true,
 	property = {
 		"javax.portlet.name=" + MisspellingsPortletKeys.MISSPELLINGS,
-		"mvc.command.name=editMisspellingSet"
+		"mvc.command.name=" + MisspellingsMVCCommandNames.EDIT_MISSPELLING_SET
 	},
 	service = MVCRenderCommand.class
 )
@@ -50,9 +52,9 @@ public class EditMisspellingSetMVCRenderCommand implements MVCRenderCommand {
 
 		EditMisspellingSetDisplayBuilder editMisspellingSetDisplayBuilder =
 			new EditMisspellingSetDisplayBuilder(
-				_portal.getHttpServletRequest(renderRequest), _portal,
-				renderRequest, renderResponse, _misspellingSetIndexNameBuilder,
-				_misspellingSetIndexReader);
+				_portal.getHttpServletRequest(renderRequest), _language,
+				_portal, renderRequest, renderResponse,
+				_misspellingSetIndexNameBuilder, _misspellingSetIndexReader);
 
 		renderRequest.setAttribute(
 			MisspellingsWebKeys.EDIT_MISSPELLING_SET_DISPLAY_CONTEXT,
@@ -63,6 +65,9 @@ public class EditMisspellingSetMVCRenderCommand implements MVCRenderCommand {
 
 	@Reference
 	private IndexNameBuilder _indexNameBuilder;
+
+	@Reference
+	private Language _language;
 
 	@Reference
 	private MisspellingSetIndexNameBuilder _misspellingSetIndexNameBuilder;

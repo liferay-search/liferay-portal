@@ -14,10 +14,17 @@
 
 package com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.display.context;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.language.Language;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.constants.MisspellingsMVCCommandNames;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.constants.MisspellingsWebKeys;
 import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.MisspellingSet;
 import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.MisspellingSetIndexReader;
 import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.name.MisspellingSetIndexName;
@@ -25,8 +32,11 @@ import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.ind
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -38,50 +48,49 @@ import javax.servlet.http.HttpServletRequest;
 public class EditMisspellingSetDisplayBuilder {
 
 	public EditMisspellingSetDisplayBuilder(
-		HttpServletRequest httpServletRequest, Portal portal,
+		HttpServletRequest httpServletRequest, Language language, Portal portal,
 		RenderRequest renderRequest, RenderResponse renderResponse,
 		MisspellingSetIndexNameBuilder misspellingSetIndexNameBuilder,
 		MisspellingSetIndexReader misspellingSetIndexReader) {
 
 		_httpServletRequest = httpServletRequest;
+		_language = language;
 		_portal = portal;
 		_renderRequest = renderRequest;
 		_renderResponse = renderResponse;
 		_misspellingSetIndexNameBuilder = misspellingSetIndexNameBuilder;
 		_misspellingSetIndexReader = misspellingSetIndexReader;
+
+		_id = ParamUtil.getString(renderRequest, MisspellingsWebKeys.ID);
+
+		_misspellingSetOptional = _getMisspellingSetOptional();
+
+		_themeDisplay = (ThemeDisplay)_httpServletRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
 	}
 
 	public EditMisspellingSetDisplayContext build() {
 		EditMisspellingSetDisplayContext editMisspellingSetDisplayContext =
 			new EditMisspellingSetDisplayContext();
 
-		_misspellingSetOptional = _getMisspellingSetOptional(_getCompanyId());
-
-		_setBackURL(editMisspellingSetDisplayContext);
 		_setData(editMisspellingSetDisplayContext);
-		_setFormName(editMisspellingSetDisplayContext);
-		_setInputName(editMisspellingSetDisplayContext);
-		_setRedirect(editMisspellingSetDisplayContext);
 		_setMisspellingSetId(editMisspellingSetDisplayContext);
+		_setPageTitle(editMisspellingSetDisplayContext);
+		_setRedirect(editMisspellingSetDisplayContext);
 
 		return editMisspellingSetDisplayContext;
-	}
-
-	private String _getBackURL() {
-		return ParamUtil.getString(
-			_httpServletRequest, "backURL", _getRedirect());
 	}
 
 	private long _getCompanyId() {
 		return _portal.getCompanyId(_renderRequest);
 	}
 
-	private String _getFormName() {
-		return "misspellingSetForm";
-	}
-
-	private String _getInputName() {
-		return "misspellingSet";
+	private Map<String, Object> _getContext() {
+		return HashMapBuilder.<String, Object>put(
+			"locale", _themeDisplay.getLanguageId()
+		).put(
+			"namespace", _renderResponse.getNamespace()
+		).build();
 	}
 
 	private String _getLanguageId() {
@@ -100,19 +109,21 @@ public class EditMisspellingSetDisplayBuilder {
 		);
 	}
 
-	private Optional<MisspellingSet> _getMisspellingSetOptional(
-		long companyId) {
+	private long _getMisspellingSetId() {
+		return _misspellingSetOptional.map(
+			MisspellingSet::getMisspellingSetId
+		).orElse(
+			0L
+		);
+	}
 
+	private Optional<MisspellingSet> _getMisspellingSetOptional() {
 		MisspellingSetIndexName misspellingSetIndexName =
 			_misspellingSetIndexNameBuilder.getMisspellingSetIndexName(
-				companyId);
+				_getCompanyId());
 
-		return Optional.ofNullable(
-			ParamUtil.getString(_renderRequest, "misspellingSetId", null)
-		).flatMap(
-			id -> _misspellingSetIndexReader.fetchOptional(
-				misspellingSetIndexName, id)
-		);
+		return _misspellingSetIndexReader.fetchOptional(
+			misspellingSetIndexName, _id);
 	}
 
 	private String _getPhrase() {
@@ -123,14 +134,41 @@ public class EditMisspellingSetDisplayBuilder {
 		);
 	}
 
+	private Map<String, Object> _getProps() {
+		return HashMapBuilder.<String, Object>put(
+			"id", _id
+		).put(
+			"languageId", _getLanguageId()
+		).put(
+			"misspellings", _getMisspellings()
+		).put(
+			"misspellingSetId", _getMisspellingSetId()
+		).put(
+			"phrase", _getPhrase()
+		).put(
+			"redirectURL", _getRedirect()
+		).put(
+			"submitFormURL", _getSubmitFormURL()
+		).build();
+	}
+
 	private String _getRedirect() {
 		return ParamUtil.getString(_httpServletRequest, "redirect");
 	}
 
-	private void _setBackURL(
-		EditMisspellingSetDisplayContext editMisspellingSetDisplayContext) {
+	private String _getSubmitFormURL() {
+		ActionURL actionURL = _renderResponse.createActionURL();
 
-		editMisspellingSetDisplayContext.setBackURL(_getBackURL());
+		actionURL.setParameter(
+			ActionRequest.ACTION_NAME,
+			MisspellingsMVCCommandNames.EDIT_MISSPELLING_SET);
+		actionURL.setParameter(
+			Constants.CMD,
+			_misspellingSetOptional.isPresent() ? Constants.EDIT :
+				Constants.ADD);
+		actionURL.setParameter("redirect", _getRedirect());
+
+		return actionURL.toString();
 	}
 
 	private void _setData(
@@ -138,28 +176,10 @@ public class EditMisspellingSetDisplayBuilder {
 
 		editMisspellingSetDisplayContext.setData(
 			HashMapBuilder.<String, Object>put(
-				"formName", _renderResponse.getNamespace() + _getFormName()
+				"context", _getContext()
 			).put(
-				"inputName", _renderResponse.getNamespace() + _getInputName()
-			).put(
-				"languageId", _getLanguageId()
-			).put(
-				"misspellings", _getMisspellings()
-			).put(
-				"phrase", _getPhrase()
+				"props", _getProps()
 			).build());
-	}
-
-	private void _setFormName(
-		EditMisspellingSetDisplayContext editMisspellingSetDisplayContext) {
-
-		editMisspellingSetDisplayContext.setFormName(_getFormName());
-	}
-
-	private void _setInputName(
-		EditMisspellingSetDisplayContext editMisspellingSetDisplayContext) {
-
-		editMisspellingSetDisplayContext.setInputName(_getInputName());
 	}
 
 	private void _setMisspellingSetId(
@@ -171,6 +191,19 @@ public class EditMisspellingSetDisplayBuilder {
 					misspellingSet.getMisspellingSetId()));
 	}
 
+	private void _setPageTitle(
+		EditMisspellingSetDisplayContext editMisspellingSetDisplayContext) {
+
+		StringBundler sb = new StringBundler(2);
+
+		sb.append(_misspellingSetOptional.isPresent() ? "edit-" : "add-");
+
+		sb.append("misspelling-set");
+
+		editMisspellingSetDisplayContext.setPageTitle(
+			_language.get(_httpServletRequest, sb.toString()));
+	}
+
 	private void _setRedirect(
 		EditMisspellingSetDisplayContext editMisspellingSetDisplayContext) {
 
@@ -178,12 +211,15 @@ public class EditMisspellingSetDisplayBuilder {
 	}
 
 	private final HttpServletRequest _httpServletRequest;
+	private final String _id;
+	private final Language _language;
 	private final MisspellingSetIndexNameBuilder
 		_misspellingSetIndexNameBuilder;
 	private final MisspellingSetIndexReader _misspellingSetIndexReader;
-	private Optional<MisspellingSet> _misspellingSetOptional;
+	private final Optional<MisspellingSet> _misspellingSetOptional;
 	private final Portal _portal;
 	private final RenderRequest _renderRequest;
 	private final RenderResponse _renderResponse;
+	private final ThemeDisplay _themeDisplay;
 
 }

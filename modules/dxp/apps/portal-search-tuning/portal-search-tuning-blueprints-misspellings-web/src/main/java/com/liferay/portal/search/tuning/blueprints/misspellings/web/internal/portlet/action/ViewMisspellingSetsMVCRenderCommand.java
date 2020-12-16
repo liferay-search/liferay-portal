@@ -1,0 +1,145 @@
+/**
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of the Liferay Enterprise
+ * Subscription License ("License"). You may not use this file except in
+ * compliance with the License. You can obtain a copy of the License by
+ * contacting Liferay, Inc. See the License for the specific language governing
+ * permissions and limitations under the License, including but not limited to
+ * distribution rights of the Software.
+ *
+ *
+ *
+ */
+
+package com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.portlet.action;
+
+import com.liferay.portal.kernel.dao.search.SearchContainer;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.language.Language;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.portlet.bridges.mvc.MVCRenderCommand;
+import com.liferay.portal.kernel.servlet.SessionErrors;
+import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.search.engine.SearchEngineInformation;
+import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
+import com.liferay.portal.search.index.IndexNameBuilder;
+import com.liferay.portal.search.query.Queries;
+import com.liferay.portal.search.sort.Sorts;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.constants.MisspellingsMVCCommandNames;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.constants.MisspellingsPortletKeys;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.constants.MisspellingsWebKeys;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.display.context.MisspellingSetsDisplayContext;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.display.context.MisspellingSetsManagementToolbarDisplayContext;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.DocumentToMisspellingSetTranslator;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.MisspellingSet;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.name.MisspellingSetIndexNameBuilder;
+
+import javax.portlet.PortletException;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
+
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
+/**
+ * @author Petteri Karttunen
+ */
+@Component(
+	immediate = true,
+	property = {
+		"javax.portlet.name=" + MisspellingsPortletKeys.MISSPELLINGS,
+		"mvc.command.name=" + MisspellingsMVCCommandNames.VIEW_MISSPELLING_SETS,
+		"mvc.command.name=/"
+	},
+	service = MVCRenderCommand.class
+)
+public class ViewMisspellingSetsMVCRenderCommand implements MVCRenderCommand {
+
+	@Override
+	public String render(
+			RenderRequest renderRequest, RenderResponse renderResponse)
+		throws PortletException {
+
+		MisspellingSetsDisplayContext misspellingSetsDisplayContext =
+			new MisspellingSetsDisplayContext(
+				_portal.getLiferayPortletRequest(renderRequest),
+				_portal.getLiferayPortletResponse(renderResponse),
+				_documentToMisspellingSetTranslator,
+				_misspellingSetIndexNameBuilder, _portal, _queries,
+				_searchEngineAdapter, _sorts);
+
+		renderRequest.setAttribute(
+			MisspellingsWebKeys.MISSPELLING_SETS_DISPLAY_CONTEXT,
+			misspellingSetsDisplayContext);
+
+		try {
+			MisspellingSetsManagementToolbarDisplayContext
+				misspellingSetsManagementToolbarDisplayContext =
+					_getMisspellingSetsManagementToolbar(
+						renderRequest, renderResponse,
+						misspellingSetsDisplayContext.getSearchContainer(),
+						misspellingSetsDisplayContext.getDisplayStyle());
+
+			renderRequest.setAttribute(
+				MisspellingsWebKeys.
+					MISSPELLING_SETS_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT,
+				misspellingSetsManagementToolbarDisplayContext);
+		}
+		catch (PortalException portalException) {
+			_log.error(portalException.getMessage(), portalException);
+
+			SessionErrors.add(
+				renderRequest, MisspellingsWebKeys.ERROR_DETAILS,
+				portalException);
+		}
+
+		return "/view.jsp";
+	}
+
+	private MisspellingSetsManagementToolbarDisplayContext
+		_getMisspellingSetsManagementToolbar(
+			RenderRequest renderRequest, RenderResponse renderResponse,
+			SearchContainer<MisspellingSet> searchContainer,
+			String displayStyle) {
+
+		return new MisspellingSetsManagementToolbarDisplayContext(
+			_portal.getHttpServletRequest(renderRequest),
+			_portal.getLiferayPortletRequest(renderRequest),
+			_portal.getLiferayPortletResponse(renderResponse), searchContainer,
+			displayStyle);
+	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		ViewMisspellingSetsMVCRenderCommand.class);
+
+	@Reference
+	private DocumentToMisspellingSetTranslator
+		_documentToMisspellingSetTranslator;
+
+	@Reference
+	private IndexNameBuilder _indexNameBuilder;
+
+	@Reference
+	private Language _language;
+
+	@Reference
+	private MisspellingSetIndexNameBuilder _misspellingSetIndexNameBuilder;
+
+	@Reference
+	private Portal _portal;
+
+	@Reference
+	private Queries _queries;
+
+	@Reference
+	private SearchEngineAdapter _searchEngineAdapter;
+
+	@Reference
+	private SearchEngineInformation _searchEngineInformation;
+
+	@Reference
+	private Sorts _sorts;
+
+}

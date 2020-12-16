@@ -21,68 +21,41 @@ import java.util.Map;
  */
 public class EditMisspellingSetDisplayContext {
 
-	public String getBackURL() {
-		return _backURL;
-	}
-
 	public Map<String, Object> getData() {
 		return _data;
 	}
 
-	public String getFormName() {
-		return _formName;
-	}
-
-	public String getInputName() {
-		return _inputName;
-	}
-
-	public String getMisspellingSetId() {
+	public long getMisspellingSetId() {
 		return _misspellingSetId;
 	}
 
-	public String getOriginalInputName() {
-		return _originalInputName;
+	public String getPageTitle() {
+		return _pageTitle;
 	}
 
 	public String getRedirect() {
 		return _redirect;
 	}
 
-	public void setBackURL(String backURL) {
-		_backURL = backURL;
-	}
-
 	public void setData(Map<String, Object> data) {
 		_data = data;
 	}
 
-	public void setFormName(String formName) {
-		_formName = formName;
-	}
-
-	public void setInputName(String inputName) {
-		_inputName = inputName;
-	}
-
-	public void setMisspellingSetId(String misspellingSetId) {
+	public void setMisspellingSetId(long misspellingSetId) {
 		_misspellingSetId = misspellingSetId;
 	}
 
-	public void setOriginalInputName(String originalInputName) {
-		_originalInputName = originalInputName;
+	public void setPageTitle(String pageTitle) {
+		_pageTitle = pageTitle;
 	}
 
 	public void setRedirect(String redirect) {
 		_redirect = redirect;
 	}
 
-	private String _backURL;
 	private Map<String, Object> _data;
-	private String _formName;
-	private String _inputName;
-	private String _misspellingSetId;
-	private String _originalInputName;
+	private long _misspellingSetId;
+	private String _pageTitle;
 	private String _redirect;
 
 }

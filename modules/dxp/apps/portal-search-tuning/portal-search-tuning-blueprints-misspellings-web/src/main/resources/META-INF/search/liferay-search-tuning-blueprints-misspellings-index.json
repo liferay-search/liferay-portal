@@ -19,6 +19,10 @@
 					"store": true,
 					"type": "keyword"
 				},
+				"misspellingSetId": {
+					"store": true,
+					"type": "keyword"
+				},
 				"misspellings": {
 					"store": true,
 					"type": "keyword"
@@ -36,7 +40,7 @@
 					"store": true,
 					"type": "keyword"
 				},
-				"uid": {
+				"userId": {
 					"store": true,
 					"type": "keyword"
 				},

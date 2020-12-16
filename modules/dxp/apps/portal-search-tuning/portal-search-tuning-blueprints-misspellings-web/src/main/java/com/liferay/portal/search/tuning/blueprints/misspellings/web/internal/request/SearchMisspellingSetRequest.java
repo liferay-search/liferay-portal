@@ -28,7 +28,7 @@ import com.liferay.portal.search.query.Query;
 import com.liferay.portal.search.sort.Sort;
 import com.liferay.portal.search.sort.SortOrder;
 import com.liferay.portal.search.sort.Sorts;
-import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.display.context.MisspellingSetDisplayContext;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.MisspellingSet;
 import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.MisspellingSetFields;
 import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.name.MisspellingSetIndexName;
 
@@ -46,7 +46,7 @@ public class SearchMisspellingSetRequest {
 	public SearchMisspellingSetRequest(
 		MisspellingSetIndexName misspellingSetIndexName,
 		HttpServletRequest httpServletRequest, Queries queries, Sorts sorts,
-		SearchContainer<MisspellingSetDisplayContext> searchContainer,
+		SearchContainer<MisspellingSet> searchContainer,
 		SearchEngineAdapter searchEngineAdapter) {
 
 		_misspellingSetIndexName = misspellingSetIndexName;
@@ -97,7 +97,8 @@ public class SearchMisspellingSetRequest {
 
 	private Collection<Sort> _getSorts() {
 		String orderByCol = ParamUtil.getString(
-			_httpServletRequest, "orderByCol", MisspellingSetFields.UID);
+			_httpServletRequest, "orderByCol",
+			MisspellingSetFields.MISSPELLING_SET_ID);
 		String orderByType = ParamUtil.getString(
 			_httpServletRequest, "orderByType", "asc");
 
@@ -113,8 +114,7 @@ public class SearchMisspellingSetRequest {
 	private final HttpServletRequest _httpServletRequest;
 	private final MisspellingSetIndexName _misspellingSetIndexName;
 	private final Queries _queries;
-	private final SearchContainer<MisspellingSetDisplayContext>
-		_searchContainer;
+	private final SearchContainer<MisspellingSet> _searchContainer;
 	private final SearchContext _searchContext;
 	private final SearchEngineAdapter _searchEngineAdapter;
 	private final Sorts _sorts;

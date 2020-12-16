@@ -52,9 +52,14 @@ public class MisspellingSetToDocumentTranslatorImpl
 		).setLong(
 			MisspellingSetFields.GROUP_ID, misspellingSet.getGroupId()
 		).setValue(
+			MisspellingSetFields.ID, misspellingSet.getId()
+		).setValue(
 			MisspellingSetFields.LANGUAGE_ID, misspellingSet.getLanguageId()
 		).setStrings(
 			MisspellingSetFields.MISSPELLINGS, stream.toArray(String[]::new)
+		).setLong(
+			MisspellingSetFields.MISSPELLING_SET_ID,
+			misspellingSet.getMisspellingSetId()
 		).setDate(
 			MisspellingSetFields.MODIFIED,
 			parseDateString(misspellingSet.getModified())
@@ -62,10 +67,10 @@ public class MisspellingSetToDocumentTranslatorImpl
 			MisspellingSetFields.NAME, misspellingSet.getName()
 		).setValue(
 			MisspellingSetFields.PHRASE, misspellingSet.getPhrase()
-		).setString(
+		).setLong(
+			MisspellingSetFields.USER_ID, misspellingSet.getUserId()
+		).setValue(
 			MisspellingSetFields.USER_NAME, misspellingSet.getUserName()
-		).setString(
-			MisspellingSetFields.UID, misspellingSet.getMisspellingSetId()
 		).build();
 	}
 

@@ -22,7 +22,15 @@ public class MisspellingsWebKeys {
 	public static final String EDIT_MISSPELLING_SET_DISPLAY_CONTEXT =
 		"EDIT_MISSPELLING_SET_DISPLAY_CONTEXT";
 
-	public static final String MISSPELLINGS_DISPLAY_CONTEXT =
-		"MISSPELLINGS_DISPLAY_CONTEXT";
+	public static final String ERROR_DETAILS = "errorDetails";
+
+	public static final String ID = "id";
+
+	public static final String MISSPELLING_SETS_DISPLAY_CONTEXT =
+		"MISSPELLING_SETS_DISPLAY_CONTEXT";
+
+	public static final String
+		MISSPELLING_SETS_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT =
+			"MISSPELLING_SETS_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT";
 
 }

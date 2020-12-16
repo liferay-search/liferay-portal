@@ -25,7 +25,11 @@ public class MisspellingSetFields {
 
 	public static final String GROUP_ID = "groupId";
 
+	public static final String ID = "uid";
+
 	public static final String LANGUAGE_ID = "languageId";
+
+	public static final String MISSPELLING_SET_ID = "misspellingSetId";
 
 	public static final String MISSPELLINGS = "misspellings";
 
@@ -35,7 +39,7 @@ public class MisspellingSetFields {
 
 	public static final String PHRASE = "phrase";
 
-	public static final String UID = "uid";
+	public static final String USER_ID = "userId";
 
 	public static final String USER_NAME = "userName";
 

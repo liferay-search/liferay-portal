@@ -25,7 +25,10 @@ import java.util.Optional;
 public interface MisspellingSetIndexReader {
 
 	public Optional<MisspellingSet> fetchOptional(
-		MisspellingSetIndexName misspellingSetIndexName, String uid);
+		MisspellingSetIndexName misspellingSetIndexName, String id);
+
+	public long getNextMisspellingSetId(
+		MisspellingSetIndexName misspellingSetIndexName);
 
 	public boolean isExists(MisspellingSetIndexName misspellingSetIndexName);
 
