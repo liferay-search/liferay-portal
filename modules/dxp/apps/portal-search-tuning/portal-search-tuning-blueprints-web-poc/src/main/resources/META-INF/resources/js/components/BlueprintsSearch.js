@@ -9,6 +9,7 @@
  * distribution rights of the Software.
  */
 
+import ClayButton from '@clayui/button';
 import {useResource} from '@clayui/data-provider';
 import ClayEmptyState from '@clayui/empty-state';
 import ClayLayout from '@clayui/layout';
@@ -19,7 +20,13 @@ import React, {useContext, useEffect, useState} from 'react';
 
 import ThemeContext from '../ThemeContext';
 import {sub} from '../utils/language';
-import {buildUrl, formatFacets} from '../utils/util';
+import {
+	buildUrl,
+	formatFacets,
+	formatSortBy,
+	formatTimeRange,
+	validDateRange,
+} from '../utils/util';
 import Facet from './Facet';
 import Results from './Results';
 import SearchBar from './SearchBar';
@@ -49,8 +56,8 @@ export default function BlueprintsSearch({fetchResultsURL, suggestionsURL}) {
 			[`${namespace}q`]: query,
 			[`${namespace}page`]: activePage,
 			...formatFacets(selectedFacets, namespace, LOCATOR.value),
-			...timeRange,
-			...sortBy,
+			...formatTimeRange(timeRange, namespace),
+			...formatSortBy(sortBy, namespace),
 		}),
 		onNetworkStatusChange: (status) =>
 			setState({
@@ -61,7 +68,14 @@ export default function BlueprintsSearch({fetchResultsURL, suggestionsURL}) {
 
 	useEffect(() => {
 		if (query) {
-			refetch();
+			if (timeRange.time === 'custom-range') {
+				if (validDateRange(timeRange)) {
+					refetch();
+				}
+			}
+			else {
+				refetch();
+			}
 		}
 	}, [query, activePage, selectedFacets, timeRange, sortBy]); // eslint-disable-line
 
@@ -146,27 +160,18 @@ export default function BlueprintsSearch({fetchResultsURL, suggestionsURL}) {
 		<>
 			<SearchBar
 				handleSubmit={(val) => {
-					if (_hasResults()) {
-						if (val !== query) {
-							setQuery(val);
-							setActivePage(1);
-							setSelectedFacets({});
-						}
-						else {
-							refetch();
-						}
+					if (val !== query) {
+						setQuery(val);
+						setActivePage(1);
+						setSelectedFacets({});
 					}
 					else {
-						if (val !== query) {
-							setQuery(val);
-							setActivePage(1);
-							setSelectedFacets({});
-							setSortBy({});
-							setTimeRange({});
+						if (timeRange.time === 'custom-range') {
+							if (validDateRange(timeRange)) {
+								refetch();
+							}
 						}
 						else {
-							setSortBy({});
-							setTimeRange({});
 							refetch();
 						}
 					}
@@ -176,6 +181,28 @@ export default function BlueprintsSearch({fetchResultsURL, suggestionsURL}) {
 
 			{query && (
 				<div className="search-results">
+					<TimeSelect
+						timeRange={timeRange}
+						updateTimeRange={(val) => {
+							setActivePage(1);
+							setSelectedFacets({});
+							setTimeRange(val);
+						}}
+					>
+						<ClayButton
+							displayType="unstyled"
+							onClick={() => {
+								setActivePage(1);
+								setSelectedFacets({});
+								setTimeRange({});
+								setSortBy({});
+							}}
+							small
+						>
+							{Liferay.Language.get('clear')}
+						</ClayButton>
+					</TimeSelect>
+
 					{_hasResults() ? (
 						<>
 							{resource.meta.showing_instead_of &&
@@ -195,16 +222,10 @@ export default function BlueprintsSearch({fetchResultsURL, suggestionsURL}) {
 								resource.meta.executionTime &&
 								_renderMetaData()}
 
-							<ClayLayout.Row justify="between">
-								<TimeSelect
-									setFilters={(val) => {
-										setActivePage(1);
-										setTimeRange(val);
-									}}
-								/>
-
+							<ClayLayout.Row justify="end">
 								<SortSelect
-									setFilters={(val) => {
+									sortBy={sortBy}
+									updateSortBy={(val) => {
 										setActivePage(1);
 										setSortBy(val);
 									}}
