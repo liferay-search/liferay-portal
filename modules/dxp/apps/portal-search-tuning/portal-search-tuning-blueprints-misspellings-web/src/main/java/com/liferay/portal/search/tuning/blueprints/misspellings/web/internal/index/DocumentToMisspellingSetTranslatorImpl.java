@@ -38,7 +38,7 @@ public class DocumentToMisspellingSetTranslatorImpl
 	implements DocumentToMisspellingSetTranslator {
 
 	@Override
-	public MisspellingSet translate(Document document) {
+	public MisspellingSet translate(Document document, String id) {
 		return builder(
 		).companyId(
 			document.getLong(MisspellingSetFields.COMPANY_ID)
@@ -47,12 +47,14 @@ public class DocumentToMisspellingSetTranslatorImpl
 				document.getDate(MisspellingSetFields.CREATED))
 		).groupId(
 			document.getLong(MisspellingSetFields.GROUP_ID)
+		).id(
+			id
 		).languageId(
 			document.getString(MisspellingSetFields.LANGUAGE_ID)
 		).misspellings(
 			document.getStrings(MisspellingSetFields.MISSPELLINGS)
 		).misspellingSetId(
-			document.getString(MisspellingSetFields.UID)
+			document.getLong(MisspellingSetFields.MISSPELLING_SET_ID)
 		).modified(
 			parseDateStringFieldValue(
 				document.getDate(MisspellingSetFields.MODIFIED))
@@ -60,6 +62,8 @@ public class DocumentToMisspellingSetTranslatorImpl
 			document.getString(MisspellingSetFields.PHRASE)
 		).name(
 			document.getString(MisspellingSetFields.NAME)
+		).userId(
+			document.getLong(MisspellingSetFields.USER_ID)
 		).userName(
 			document.getString(MisspellingSetFields.USER_NAME)
 		).build();
@@ -72,7 +76,7 @@ public class DocumentToMisspellingSetTranslatorImpl
 		Stream<SearchHit> stream = list.stream();
 
 		return stream.map(
-			searchHit -> translate(searchHit.getDocument())
+			searchHit -> translate(searchHit.getDocument(), searchHit.getId())
 		).collect(
 			Collectors.toList()
 		);

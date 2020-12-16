@@ -24,7 +24,7 @@ import java.util.List;
  */
 public interface DocumentToMisspellingSetTranslator {
 
-	public MisspellingSet translate(Document document);
+	public MisspellingSet translate(Document document, String id);
 
 	public List<MisspellingSet> translateAll(SearchHits searchHits);
 

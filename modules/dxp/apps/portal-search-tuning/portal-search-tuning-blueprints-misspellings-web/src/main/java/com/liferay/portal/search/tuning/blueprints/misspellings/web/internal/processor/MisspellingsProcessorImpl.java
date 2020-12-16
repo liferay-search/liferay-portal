@@ -83,7 +83,8 @@ public class MisspellingsProcessorImpl implements MisspellingsProcessor {
 	}
 
 	private Query _getIdsQuery(Object[] misspellingSetIds) {
-		TermsQuery termsQuery = _queries.terms(MisspellingSetFields.UID);
+		TermsQuery termsQuery = _queries.terms(
+			MisspellingSetFields.MISSPELLING_SET_ID);
 
 		termsQuery.addValues(misspellingSetIds);
 

@@ -14,19 +14,8 @@
 
 package com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.portlet;
 
-import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
-import com.liferay.portal.kernel.util.Portal;
-import com.liferay.portal.search.engine.SearchEngineInformation;
-import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
-import com.liferay.portal.search.index.IndexNameBuilder;
-import com.liferay.portal.search.query.Queries;
-import com.liferay.portal.search.sort.Sorts;
 import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.constants.MisspellingsPortletKeys;
-import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.constants.MisspellingsWebKeys;
-import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.display.context.MisspellingsDisplayBuilder;
-import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.DocumentToMisspellingSetTranslator;
-import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.name.MisspellingSetIndexNameBuilder;
 
 import java.io.IOException;
 
@@ -36,7 +25,6 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Petteri Karttunen
@@ -68,47 +56,7 @@ public class MisspellingsPortlet extends MVCPortlet {
 			RenderRequest renderRequest, RenderResponse renderResponse)
 		throws IOException, PortletException {
 
-		MisspellingsDisplayBuilder misspellingsDisplayBuilder =
-			new MisspellingsDisplayBuilder(
-				_documentToMisspellingSetTranslator,
-				_portal.getHttpServletRequest(renderRequest), _language,
-				_portal, _queries, renderRequest, renderResponse,
-				_searchEngineAdapter, _searchEngineInformation, _sorts,
-				_misspellingSetIndexNameBuilder);
-
-		renderRequest.setAttribute(
-			MisspellingsWebKeys.MISSPELLINGS_DISPLAY_CONTEXT,
-			misspellingsDisplayBuilder.build());
-
 		super.render(renderRequest, renderResponse);
 	}
-
-	@Reference
-	private DocumentToMisspellingSetTranslator
-		_documentToMisspellingSetTranslator;
-
-	@Reference
-	private IndexNameBuilder _indexNameBuilder;
-
-	@Reference
-	private Language _language;
-
-	@Reference
-	private MisspellingSetIndexNameBuilder _misspellingSetIndexNameBuilder;
-
-	@Reference
-	private Portal _portal;
-
-	@Reference
-	private Queries _queries;
-
-	@Reference
-	private SearchEngineAdapter _searchEngineAdapter;
-
-	@Reference
-	private SearchEngineInformation _searchEngineInformation;
-
-	@Reference
-	private Sorts _sorts;
 
 }

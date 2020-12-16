@@ -14,63 +14,162 @@
 
 package com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.display.context;
 
-import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
-import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
+import com.liferay.portal.kernel.dao.search.EmptyOnClickRowChecker;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
+import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
+import com.liferay.portal.kernel.portlet.PortalPreferences;
+import com.liferay.portal.kernel.portlet.PortletPreferencesFactoryUtil;
+import com.liferay.portal.kernel.portlet.PortletURLUtil;
+import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
+import com.liferay.portal.search.query.Queries;
+import com.liferay.portal.search.sort.Sorts;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.constants.MisspellingsMVCCommandNames;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.constants.MisspellingsPortletKeys;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.DocumentToMisspellingSetTranslator;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.MisspellingSet;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.name.MisspellingSetIndexName;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.name.MisspellingSetIndexNameBuilder;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.request.SearchMisspellingSetRequest;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.request.SearchMisspellingSetResponse;
 
+import java.util.Collections;
 import java.util.List;
+
+import javax.portlet.PortletException;
+import javax.portlet.PortletURL;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author Petteri Karttunen
  */
-public class MisspellingsDisplayContext {
+public class MisspellingSetsDisplayContext {
 
-	public List<DropdownItem> getActionDropdownMultipleItems() {
-		return _dropdownItems;
+	public MisspellingSetsDisplayContext(
+		LiferayPortletRequest liferayPortletRequest,
+		LiferayPortletResponse liferayPortletResponse,
+		DocumentToMisspellingSetTranslator documentToMisspellingSetTranslator,
+		MisspellingSetIndexNameBuilder misspellingSetIndexNameBuilder,
+		Portal portal, Queries queries, SearchEngineAdapter searchEngineAdapter,
+		Sorts sorts) {
+
+		_liferayPortletRequest = liferayPortletRequest;
+		_liferayPortletResponse = liferayPortletResponse;
+		_documentToMisspellingSetTranslator =
+			documentToMisspellingSetTranslator;
+		_misspellingSetIndexNameBuilder = misspellingSetIndexNameBuilder;
+		_portal = portal;
+
+		_portalPreferences = PortletPreferencesFactoryUtil.getPortalPreferences(
+			liferayPortletRequest);
+
+		_queries = queries;
+		_searchEngineAdapter = searchEngineAdapter;
+		_sorts = sorts;
+
+		_httpServletRequest = _liferayPortletRequest.getHttpServletRequest();
 	}
 
-	public CreationMenu getCreationMenu() {
-		return _creationMenu;
+	public List<String> getAvailableActions(MisspellingSet misspellingSet)
+		throws PortalException {
+
+		return Collections.singletonList("deleteBlueprintEntries");
 	}
 
-	public int getItemsTotal() {
-		return _itemsTotal;
+	public String getDisplayStyle() {
+		String displayStyle = ParamUtil.getString(
+			_httpServletRequest, "displayStyle");
+
+		if (Validator.isNull(displayStyle)) {
+			return _portalPreferences.getValue(
+				MisspellingsPortletKeys.MISSPELLINGS, "entries-display-style",
+				"descriptive");
+		}
+
+		_portalPreferences.setValue(
+			MisspellingsPortletKeys.MISSPELLINGS, "entries-display-style",
+			displayStyle);
+
+		_httpServletRequest.setAttribute(
+			WebKeys.SINGLE_PAGE_APPLICATION_CLEAR_CACHE, Boolean.TRUE);
+
+		return displayStyle;
 	}
 
-	public SearchContainer<MisspellingSetDisplayContext> getSearchContainer() {
-		return _searchContainer;
+	public SearchContainer<MisspellingSet> getSearchContainer()
+		throws PortalException, PortletException {
+
+		PortletURL portletURL = _liferayPortletResponse.createRenderURL();
+
+		portletURL.setProperty(
+			"mvcRenderCommandName",
+			MisspellingsMVCCommandNames.VIEW_MISSPELLING_SETS);
+
+		SearchContainer<MisspellingSet> searchContainer = new SearchContainer<>(
+			_liferayPortletRequest,
+			PortletURLUtil.clone(portletURL, _liferayPortletResponse), null,
+			"there-are-no-misspelling-sets");
+
+		String orderByCol = ParamUtil.getString(
+			_httpServletRequest, "orderByCol", "title");
+
+		searchContainer.setOrderByCol(orderByCol);
+
+		String orderByType = ParamUtil.getString(
+			_httpServletRequest, "orderByType", "asc");
+
+		searchContainer.setOrderByType(orderByType);
+
+		searchContainer.setRowChecker(
+			new EmptyOnClickRowChecker(_liferayPortletResponse));
+
+		_populateResults(searchContainer);
+
+		return searchContainer;
 	}
 
-	public boolean isDisabledManagementBar() {
-		return _disabledManagementBar;
+	protected MisspellingSetIndexName buildMisspellingSetIndexName() {
+		return _misspellingSetIndexNameBuilder.getMisspellingSetIndexName(
+			_portal.getCompanyId(_liferayPortletRequest));
 	}
 
-	public void setCreationMenu(CreationMenu creationMenu) {
-		_creationMenu = creationMenu;
+	private void _populateResults(
+			SearchContainer<MisspellingSet> searchContainer)
+		throws PortalException {
+
+		SearchMisspellingSetRequest searchMisspellingSetRequest =
+			new SearchMisspellingSetRequest(
+				buildMisspellingSetIndexName(), _httpServletRequest, _queries,
+				_sorts, searchContainer, _searchEngineAdapter);
+
+		SearchMisspellingSetResponse searchMisspellingSetResponse =
+			searchMisspellingSetRequest.search();
+
+		searchContainer.setResults(
+			_documentToMisspellingSetTranslator.translateAll(
+				searchMisspellingSetResponse.getSearchHits()));
+
+		searchContainer.setSearch(true);
+		searchContainer.setTotal(searchMisspellingSetResponse.getTotalHits());
 	}
 
-	public void setDisabledManagementBar(boolean disabledManagementBar) {
-		_disabledManagementBar = disabledManagementBar;
-	}
-
-	public void setDropdownItems(List<DropdownItem> dropdownItems) {
-		_dropdownItems = dropdownItems;
-	}
-
-	public void setItemsTotal(int itemsTotal) {
-		_itemsTotal = itemsTotal;
-	}
-
-	public void setSearchContainer(
-		SearchContainer<MisspellingSetDisplayContext> searchContainer) {
-
-		_searchContainer = searchContainer;
-	}
-
-	private CreationMenu _creationMenu;
-	private boolean _disabledManagementBar;
-	private List<DropdownItem> _dropdownItems;
-	private int _itemsTotal;
-	private SearchContainer<MisspellingSetDisplayContext> _searchContainer;
+	private final DocumentToMisspellingSetTranslator
+		_documentToMisspellingSetTranslator;
+	private final HttpServletRequest _httpServletRequest;
+	private final LiferayPortletRequest _liferayPortletRequest;
+	private final LiferayPortletResponse _liferayPortletResponse;
+	private final MisspellingSetIndexNameBuilder
+		_misspellingSetIndexNameBuilder;
+	private final Portal _portal;
+	private final PortalPreferences _portalPreferences;
+	private final Queries _queries;
+	private final SearchEngineAdapter _searchEngineAdapter;
+	private final Sorts _sorts;
 
 }

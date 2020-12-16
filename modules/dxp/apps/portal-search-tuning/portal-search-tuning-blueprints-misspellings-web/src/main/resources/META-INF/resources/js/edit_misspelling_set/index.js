@@ -9,22 +9,13 @@
  * distribution rights of the Software.
  */
 
-import {DefaultEventHandler} from 'frontend-js-web';
+import ClayAlert from '@clayui/alert';
+import React from 'react';
 
-class MisspellingSetDropdownDefaultEventHandler extends DefaultEventHandler {
-	delete(itemData) {
-		const message = Liferay.Language.get(
-			'are-you-sure-you-want-to-delete-this'
-		);
-
-		if (confirm(message)) {
-			this._send(itemData.deleteURL);
-		}
-	}
-
-	_send(url) {
-		submitForm(document.hrefFm, url);
-	}
+export default function () {
+	return (
+		<ClayAlert displayType="info" title="Not implemented">
+			https://issues.liferay.com/browse/LPS-118898
+		</ClayAlert>
+	);
 }
-
-export default MisspellingSetDropdownDefaultEventHandler;

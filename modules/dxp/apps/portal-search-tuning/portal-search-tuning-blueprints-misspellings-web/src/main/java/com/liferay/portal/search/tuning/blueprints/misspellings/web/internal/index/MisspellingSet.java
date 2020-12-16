@@ -26,12 +26,14 @@ public class MisspellingSet {
 		_companyId = misspellings._companyId;
 		_created = misspellings._created;
 		_groupId = misspellings._groupId;
+		_id = misspellings._id;
 		_languageId = misspellings._languageId;
 		_misspellings = misspellings._misspellings;
 		_misspellingSetId = misspellings._misspellingSetId;
 		_modified = misspellings._modified;
 		_name = misspellings._name;
 		_phrase = misspellings._phrase;
+		_userId = misspellings._userId;
 		_userName = misspellings._userName;
 	}
 
@@ -47,6 +49,10 @@ public class MisspellingSet {
 		return _groupId;
 	}
 
+	public String getId() {
+		return _id;
+	}
+
 	public String getLanguageId() {
 		return _languageId;
 	}
@@ -55,7 +61,7 @@ public class MisspellingSet {
 		return _misspellings;
 	}
 
-	public String getMisspellingSetId() {
+	public long getMisspellingSetId() {
 		return _misspellingSetId;
 	}
 
@@ -69,6 +75,10 @@ public class MisspellingSet {
 
 	public String getPhrase() {
 		return _phrase;
+	}
+
+	public long getUserId() {
+		return _userId;
 	}
 
 	public String getUserName() {
@@ -107,6 +117,12 @@ public class MisspellingSet {
 			return this;
 		}
 
+		public MisspellingSetBuilder id(String id) {
+			_misspellingSet._id = id;
+
+			return this;
+		}
+
 		public MisspellingSetBuilder languageId(String languageId) {
 			_misspellingSet._languageId = languageId;
 
@@ -119,7 +135,7 @@ public class MisspellingSet {
 			return this;
 		}
 
-		public MisspellingSetBuilder misspellingSetId(String misspellingSetId) {
+		public MisspellingSetBuilder misspellingSetId(long misspellingSetId) {
 			_misspellingSet._misspellingSetId = misspellingSetId;
 
 			return this;
@@ -143,6 +159,12 @@ public class MisspellingSet {
 			return this;
 		}
 
+		public MisspellingSetBuilder userId(long userId) {
+			_misspellingSet._userId = userId;
+
+			return this;
+		}
+
 		public MisspellingSetBuilder userName(String userName) {
 			_misspellingSet._userName = userName;
 
@@ -159,12 +181,14 @@ public class MisspellingSet {
 	private long _companyId;
 	private Date _created;
 	private long _groupId;
+	private String _id;
 	private String _languageId;
 	private List<String> _misspellings;
-	private String _misspellingSetId;
+	private long _misspellingSetId;
 	private Date _modified;
 	private String _name;
 	private String _phrase;
+	private long _userId;
 	private String _userName;
 
 }

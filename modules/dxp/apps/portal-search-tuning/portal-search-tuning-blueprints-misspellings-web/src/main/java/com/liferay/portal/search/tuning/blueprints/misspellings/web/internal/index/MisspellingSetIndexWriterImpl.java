@@ -33,11 +33,11 @@ public class MisspellingSetIndexWriterImpl
 	@Override
 	public String create(
 		MisspellingSetIndexName misspellingSetIndexName,
-		MisspellingSet misspellings) {
+		MisspellingSet misspellingSet) {
 
 		IndexDocumentRequest documentRequest = new IndexDocumentRequest(
 			misspellingSetIndexName.getIndexName(),
-			_misspellingsToDocumentTranslator.translate(misspellings));
+			_misspellingsToDocumentTranslator.translate(misspellingSet));
 
 		documentRequest.setRefresh(true);
 
@@ -49,10 +49,10 @@ public class MisspellingSetIndexWriterImpl
 
 	@Override
 	public void remove(
-		MisspellingSetIndexName misspellingSetIndexName, String uid) {
+		MisspellingSetIndexName misspellingSetIndexName, String id) {
 
 		DeleteDocumentRequest deleteDocumentRequest = new DeleteDocumentRequest(
-			misspellingSetIndexName.getIndexName(), uid);
+			misspellingSetIndexName.getIndexName(), id);
 
 		deleteDocumentRequest.setRefresh(true);
 
@@ -65,8 +65,7 @@ public class MisspellingSetIndexWriterImpl
 		MisspellingSet misspellingSet) {
 
 		IndexDocumentRequest indexDocumentRequest = new IndexDocumentRequest(
-			misspellingSetIndexName.getIndexName(),
-			misspellingSet.getMisspellingSetId(),
+			misspellingSetIndexName.getIndexName(), misspellingSet.getId(),
 			_misspellingsToDocumentTranslator.translate(misspellingSet));
 
 		indexDocumentRequest.setRefresh(true);

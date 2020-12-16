@@ -26,7 +26,7 @@ public interface MisspellingSetIndexWriter {
 		MisspellingSet misspellingSet);
 
 	public void remove(
-		MisspellingSetIndexName misspellingsIndexName, String uid);
+		MisspellingSetIndexName misspellingsIndexName, String id);
 
 	public void update(
 		MisspellingSetIndexName misspellingsIndexName,

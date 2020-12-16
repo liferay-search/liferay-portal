@@ -24,9 +24,15 @@ import com.liferay.portal.search.engine.adapter.index.IndicesExistsIndexRequest;
 import com.liferay.portal.search.engine.adapter.index.IndicesExistsIndexResponse;
 import com.liferay.portal.search.engine.adapter.search.SearchSearchRequest;
 import com.liferay.portal.search.engine.adapter.search.SearchSearchResponse;
+import com.liferay.portal.search.filter.ComplexQueryPartBuilderFactory;
+import com.liferay.portal.search.hits.SearchHit;
+import com.liferay.portal.search.hits.SearchHits;
 import com.liferay.portal.search.query.Queries;
+import com.liferay.portal.search.sort.SortOrder;
+import com.liferay.portal.search.sort.Sorts;
 import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.name.MisspellingSetIndexName;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,13 +48,41 @@ public class MisspellingSetIndexReaderImpl
 
 	@Override
 	public Optional<MisspellingSet> fetchOptional(
-		MisspellingSetIndexName misspellingSetIndexName, String uid) {
+		MisspellingSetIndexName misspellingSetIndexName, String id) {
 
 		return _getDocumentOptional(
-			misspellingSetIndexName, uid
+			misspellingSetIndexName, id
 		).map(
-			document -> translate(document)
+			document -> translate(document, id)
 		);
+	}
+
+	public long getNextMisspellingSetId(
+		MisspellingSetIndexName misspellingSetIndexName) {
+
+		SearchSearchRequest searchSearchRequest = new SearchSearchRequest();
+
+		searchSearchRequest.addComplexQueryParts(
+			Arrays.asList(
+				_complexQueryPartBuilderFactory.builder(
+				).query(
+					_queries.matchAll()
+				).occur(
+					"filter"
+				).build()));
+
+		searchSearchRequest.setFetchSource(true);
+		searchSearchRequest.setIndexNames(
+			misspellingSetIndexName.getIndexName());
+		searchSearchRequest.setPreferLocalCluster(false);
+		searchSearchRequest.setSize(1);
+		searchSearchRequest.setStart(0);
+		searchSearchRequest.addSorts(
+			_sorts.field(
+				MisspellingSetFields.MISSPELLING_SET_ID, SortOrder.DESC));
+
+		return _getNextMisspellingSetId(
+			_searchEngineAdapter.execute(searchSearchRequest));
 	}
 
 	@Override
@@ -89,19 +123,19 @@ public class MisspellingSetIndexReaderImpl
 		_searchEngineAdapter = searchEngineAdapter;
 	}
 
-	protected MisspellingSet translate(Document document) {
-		return _documentToMisspellingSetTranslator.translate(document);
+	protected MisspellingSet translate(Document document, String id) {
+		return _documentToMisspellingSetTranslator.translate(document, id);
 	}
 
 	private Optional<Document> _getDocumentOptional(
-		MisspellingSetIndexName misspellingSetIndexName, String uid) {
+		MisspellingSetIndexName misspellingSetIndexName, String id) {
 
-		if (Validator.isNull(uid)) {
+		if (Validator.isNull(id)) {
 			return Optional.empty();
 		}
 
 		GetDocumentRequest getDocumentRequest = new GetDocumentRequest(
-			misspellingSetIndexName.getIndexName(), uid);
+			misspellingSetIndexName.getIndexName(), id);
 
 		getDocumentRequest.setFetchSource(true);
 		getDocumentRequest.setFetchSourceInclude(StringPool.STAR);
@@ -117,6 +151,27 @@ public class MisspellingSetIndexReaderImpl
 		return Optional.empty();
 	}
 
+	private long _getNextMisspellingSetId(
+		SearchSearchResponse searchSearchResponse) {
+
+		SearchHits searchHits = searchSearchResponse.getSearchHits();
+
+		if (searchHits.getTotalHits() == 0) {
+			return 1;
+		}
+
+		List<SearchHit> searchHitList = searchHits.getSearchHits();
+
+		SearchHit searchHit = searchHitList.get(0);
+
+		Document document = searchHit.getDocument();
+
+		return document.getLong(MisspellingSetFields.MISSPELLING_SET_ID);
+	}
+
+	@Reference
+	private ComplexQueryPartBuilderFactory _complexQueryPartBuilderFactory;
+
 	@Reference
 	private DocumentToMisspellingSetTranslator
 		_documentToMisspellingSetTranslator;
@@ -126,5 +181,8 @@ public class MisspellingSetIndexReaderImpl
 
 	@Reference
 	private SearchEngineAdapter _searchEngineAdapter;
+
+	@Reference
+	private Sorts _sorts;
 
 }
