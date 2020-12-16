@@ -112,23 +112,23 @@ public class BlueprintsDisplayBuilder {
 
 		Blueprint blueprint = blueprintOptional.get();
 
-		Optional<JSONArray> configurationJsonArrayOptional =
+		Optional<JSONArray> configurationJSONArrayOptional =
 			_blueprintHelper.getSortParameterConfigurationOptional(blueprint);
 
-		if (!configurationJsonArrayOptional.isPresent()) {
+		if (!configurationJSONArrayOptional.isPresent()) {
 			return optionsMap;
 		}
 
-		JSONArray configurationJsonArray = configurationJsonArrayOptional.get();
+		JSONArray configurationJSONArray = configurationJSONArrayOptional.get();
 
-		for (int i = 0; i < configurationJsonArray.length(); i++) {
-			JSONObject configurationJsonObject =
-				configurationJsonArray.getJSONObject(i);
+		for (int i = 0; i < configurationJSONArray.length(); i++) {
+			JSONObject configurationJSONObject =
+				configurationJSONArray.getJSONObject(i);
 
 			optionsMap.put(
-				configurationJsonObject.getString(
+				configurationJSONObject.getString(
 					SortConfigurationKeys.LABEL.getJsonKey()),
-				configurationJsonObject.getString(
+				configurationJSONObject.getString(
 					SortConfigurationKeys.PARAMETER_NAME.getJsonKey()));
 		}
 

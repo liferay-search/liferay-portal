@@ -12,6 +12,7 @@
 import {useResource} from '@clayui/data-provider';
 import ClayEmptyState from '@clayui/empty-state';
 import ClayLayout from '@clayui/layout';
+import ClayLink from '@clayui/link';
 import ClayLoadingIndicator from '@clayui/loading-indicator';
 import {PropTypes} from 'prop-types';
 import React, {useContext, useEffect, useState} from 'react';
@@ -111,12 +112,23 @@ export default function BlueprintsSearch({fetchResultsURL, suggestionsURL}) {
 
 	function _renderShowInsteadOf() {
 		return (
-			<div className="show-instead-of">
-				{sub(
-					Liferay.Language.get('showing-results-for-x-instead-of-x'),
-					[resource.meta.keywords, resource.meta.showing_instead_of],
-					false
-				)}
+			<div className="misspellings">
+				<div className="showing-results-for">
+					{Liferay.Language.get('showing-results-for')}
+					<span className="keyword">
+						{resource.meta.showing_instead_of}
+					</span>
+				</div>
+				<div className="instead-of">
+					{Liferay.Language.get('search-instead-for')}
+					<ClayLink
+						className="link"
+						href="#"
+						label={resource.meta.keywords}
+					>
+						{resource.meta.keywords}
+					</ClayLink>
+				</div>
 			</div>
 		);
 	}
