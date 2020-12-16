@@ -156,12 +156,6 @@ public class BlueprintsSearchRequestContributorTest {
 		return StringUtil.read(clazz, sb.toString());
 	}
 
-	private static Dictionary<String, Object> _toDictionary(
-		Map<String, String> map) {
-
-		return new HashMapDictionary<>(new HashMap<String, Object>(map));
-	}
-
 	private Blueprint _addCompanyBlueprint(String configurationString)
 		throws Exception {
 
@@ -232,6 +226,10 @@ public class BlueprintsSearchRequestContributorTest {
 	private ServiceContext _getServiceContext() throws Exception {
 		return ServiceContextTestUtil.getServiceContext(
 			_group.getGroupId(), _user.getUserId());
+	}
+
+	private Dictionary<String, Object> _toDictionary(Map<String, String> map) {
+		return new HashMapDictionary<>(new HashMap<String, Object>(map));
 	}
 
 	@DeleteAfterTestRun
