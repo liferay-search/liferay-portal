@@ -57,7 +57,7 @@ export const DEFAULT_FRAGMENT = {
 	uiConfigurationJSON: [
 		{
 			defaultValue: 1,
-			key: 'config.boost',
+			key: 'boost',
 			name: 'Boost',
 			type: 'number',
 		},
@@ -74,7 +74,7 @@ export const DEFAULT_FRAGMENT = {
 					locale: '${context.language_id}',
 				},
 			],
-			key: 'config.fields',
+			key: 'fields',
 			name: 'Fields',
 			type: 'field-select',
 			typeOptions: [
@@ -94,7 +94,7 @@ export const DEFAULT_FRAGMENT = {
 		},
 		{
 			defaultValue: 'or',
-			key: 'config.operator',
+			key: 'operator',
 			name: 'Operator',
 			type: 'single-select',
 			typeOptions: [
@@ -110,7 +110,7 @@ export const DEFAULT_FRAGMENT = {
 		},
 		{
 			defaultValue: 'best_fields',
-			key: 'config.type',
+			key: 'type',
 			name: 'Match Type',
 			type: 'single-select',
 			typeOptions: [
@@ -186,7 +186,7 @@ export const DEFAULT_EDIT_FRAGMENT = {
 	uiConfigurationJSON: [
 		{
 			defaultValue: 0,
-			key: 'config.status',
+			key: 'status',
 			name: 'Status',
 			type: 'single-select',
 			typeOptions: [
@@ -240,7 +240,7 @@ export const QUERY_FRAGMENTS = [
 		uiConfigurationJSON: [
 			{
 				defaultValue: 0,
-				key: 'config.status',
+				key: 'status',
 				name: 'Status',
 				type: 'single-select',
 				typeOptions: [
@@ -420,7 +420,7 @@ export const QUERY_FRAGMENTS = [
 			},
 			{
 				defaultValue: 'com.liferay.blogs.kernel.model.BlogsEntry',
-				key: 'config.entryClassName',
+				key: 'entryClassName',
 				name: 'Entry Class Name',
 				type: 'single-select',
 				typeOptions: [
@@ -503,7 +503,7 @@ export const QUERY_FRAGMENTS = [
 		uiConfigurationJSON: [
 			{
 				defaultValue: 'com.liferay.portal.kernel.model.User',
-				key: 'config.entryClassName',
+				key: 'entryClassName',
 				name: 'Entry Class Name',
 				type: 'single-select',
 				typeOptions: [
@@ -543,7 +543,7 @@ export const QUERY_FRAGMENTS = [
 			},
 			{
 				defaultValue: false,
-				key: 'config.stagingGroup',
+				key: 'stagingGroup',
 				name: 'Status',
 				type: 'single-select',
 				typeOptions: [
@@ -744,7 +744,7 @@ export const QUERY_FRAGMENTS = [
 						locale: '',
 					},
 				],
-				key: 'config.fields',
+				key: 'fields',
 				name: 'Fields',
 				type: 'field-select',
 				typeOptions: [
@@ -763,7 +763,7 @@ export const QUERY_FRAGMENTS = [
 				],
 			},
 			{
-				key: 'config.default_operator',
+				key: 'default_operator',
 				name: 'Default Operator',
 				type: 'single-select',
 				typeOptions: [
@@ -819,19 +819,19 @@ export const QUERY_FRAGMENTS = [
 		uiConfigurationJSON: [
 			{
 				defaultValue: 100,
-				key: 'config.boost',
+				key: 'boost',
 				name: 'Boost',
 				type: 'slider',
 			},
 			{
 				defaultValue: 0.3,
-				key: 'config.decay',
+				key: 'decay',
 				name: 'Decay',
 				type: 'number',
 			},
 			{
 				defaultValue: 100,
-				key: 'config.scale',
+				key: 'scale',
 				name: 'Scale',
 				type: 'number',
 				unit: 'kilometers',
@@ -877,26 +877,26 @@ export const QUERY_FRAGMENTS = [
 		uiConfigurationJSON: [
 			{
 				defaultValue: 50,
-				key: 'config.freshness.boost',
+				key: 'freshness.boost',
 				name: 'Freshness Boost',
 				type: 'slider',
 			},
 			{
 				defaultValue: 0.4,
-				key: 'config.decay',
+				key: 'decay',
 				name: 'Decay',
 				type: 'text',
 			},
 			{
 				defaultValue: 3,
-				key: 'config.offset',
+				key: 'offset',
 				name: 'Offset',
 				type: 'number',
 				unit: 'days',
 			},
 			{
 				defaultValue: 30,
-				key: 'config.scale',
+				key: 'scale',
 				name: 'Scale',
 				type: 'number',
 				unit: 'days',
@@ -942,7 +942,7 @@ export const QUERY_FRAGMENTS = [
 				type: 'slider',
 			},
 			{
-				key: 'config.default_operator',
+				key: 'default_operator',
 				name: 'Default Operator',
 				type: 'single-select',
 				typeOptions: [
@@ -1068,7 +1068,7 @@ export const QUERY_FRAGMENTS = [
 		uiConfigurationJSON: [
 			{
 				defaultValue: 4,
-				key: 'config.boost',
+				key: 'boost',
 				name: 'Boost',
 				type: 'number',
 			},
@@ -1085,7 +1085,7 @@ export const QUERY_FRAGMENTS = [
 						locale: '',
 					},
 				],
-				key: 'config.fields',
+				key: 'fields',
 				name: 'Fields',
 				type: 'field-select',
 				typeOptions: [
@@ -1104,7 +1104,7 @@ export const QUERY_FRAGMENTS = [
 				],
 			},
 			{
-				key: 'config.default_operator',
+				key: 'default_operator',
 				name: 'Default Operator',
 				type: 'single-select',
 				typeOptions: [
@@ -1412,7 +1412,7 @@ export const QUERY_FRAGMENTS = [
 						query: '${keywords}',
 					},
 				},
-				key: 'config.query',
+				key: 'query',
 				type: 'json',
 			},
 		],
