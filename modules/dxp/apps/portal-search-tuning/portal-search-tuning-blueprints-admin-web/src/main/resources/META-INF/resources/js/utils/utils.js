@@ -12,6 +12,7 @@
 import {openToast} from 'frontend-js-web';
 import moment from 'moment';
 
+import {CONFIG_PREFIX} from './constants';
 import {INPUT_TYPES} from './inputTypes';
 
 export const openErrorToast = (config) => {
@@ -54,7 +55,7 @@ const isNotNull = (item) =>
  * Function to replace all instances of a string.
  *
  * Example:
- * replaceStr('title_${context.language}','${context.language}','en_US')
+ * replaceStr('title_${config.language}', '${config.language}', 'en_US')
  * => 'title_en_US'
  *
  * @param {String} str Original string
@@ -223,6 +224,17 @@ export const replaceUIConfigurationValues = (
 				configValue = JSON.stringify(uiConfigurationValues[config.key]);
 			}
 
+			// Check if key starts with 'config.' prefix to support keys with
+			// both the prefix or not
+
+			const key =
+				config.key.substring(0, CONFIG_PREFIX.length + 1) ===
+				`${CONFIG_PREFIX}.`
+					? config.key
+					: `${CONFIG_PREFIX}.${config.key}`;
+
+			// Check whether to add quotes around output
+
 			if (
 				typeof configValue === 'number' ||
 				typeof configValue === 'boolean' ||
@@ -232,16 +244,12 @@ export const replaceUIConfigurationValues = (
 			) {
 				flattenJSON = replaceStr(
 					flattenJSON,
-					`"$\{${config.key}}"`,
+					`"$\{${key}}"`,
 					configValue
 				);
 			}
 
-			flattenJSON = replaceStr(
-				flattenJSON,
-				`\${${config.key}}`,
-				configValue
-			);
+			flattenJSON = replaceStr(flattenJSON, `\${${key}}`, configValue);
 		});
 
 		return JSON.parse(flattenJSON);
