@@ -1380,7 +1380,7 @@ export const QUERY_FRAGMENTS = [
 			clauses: [
 				{
 					context: 'query',
-					occur: 'must',
+					occur: '${config.occur}',
 					query: {
 						query: '${config.query}',
 					},
@@ -1395,10 +1395,34 @@ export const QUERY_FRAGMENTS = [
 			enabled: true,
 			icon: 'custom-field',
 			title: {
-				en_US: 'Paste any Elasticsearch query',
+				en_US: 'Paste any Elasticsearch Query',
 			},
 		},
 		uiConfigurationJSON: [
+			{
+				defaultValue: 'must',
+				key: 'occur',
+				name: 'Occuring',
+				type: 'single-select',
+				typeOptions: [
+					{
+						label: 'MUST',
+						value: 'must',
+					},
+					{
+						label: 'SHOULD',
+						value: 'should',
+					},
+					{
+						label: 'MUST NOT',
+						value: 'must-not',
+					},
+					{
+						label: 'FILTER',
+						value: 'filter',
+					},
+				],
+			},
 			{
 				defaultValue: {
 					query_string: {
