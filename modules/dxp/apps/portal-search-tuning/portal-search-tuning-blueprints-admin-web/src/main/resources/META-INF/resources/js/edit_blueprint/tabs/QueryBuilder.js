@@ -64,7 +64,7 @@ function QueryBuilder({
 	const {contextPath} = useContext(ThemeContext);
 	const [collapseAll, setCollapseAll] = useState(false);
 
-	const renderSelectedFragments = () => {
+	const _renderSelectedFragments = () => {
 		return selectedFragments.map((fragment) => {
 			return fragment.uiConfigurationJSON ? (
 				<ConfigFragment
@@ -73,37 +73,20 @@ function QueryBuilder({
 					entityJSON={entityJSON}
 					fragmentOutput={fragment.fragmentOutput}
 					fragmentTemplateJSON={fragment.fragmentTemplateJSON}
+					id={fragment.id}
 					key={fragment.id}
 					uiConfigurationJSON={fragment.uiConfigurationJSON}
 					uiConfigurationValues={fragment.uiConfigurationValues}
-					updateFragment={(uiConfigurationValues, fragmentOutput) => {
-						updateFragment(fragment.id, {
-							...fragment,
-							fragmentOutput,
-							uiConfigurationValues,
-						});
-					}}
-					updateTemplate={(fragmentTemplateJSON, fragmentOutput) => {
-						updateFragment(fragment.id, {
-							...fragment,
-							fragmentOutput,
-							fragmentTemplateJSON,
-						});
-					}}
+					updateFragment={updateFragment}
 				/>
 			) : (
 				<JSONFragment
 					collapseAll={collapseAll}
 					deleteFragment={() => deleteFragment(fragment.id)}
 					fragmentTemplateJSON={fragment.fragmentTemplateJSON}
+					id={fragment.id}
 					key={fragment.id}
-					updateFragment={(fragmentOutput) => {
-						updateFragment(fragment.id, {
-							...fragment,
-							fragmentOutput,
-							fragmentTemplateJSON: fragmentOutput,
-						});
-					}}
+					updateFragment={updateFragment}
 				/>
 			);
 		});
@@ -158,7 +141,7 @@ function QueryBuilder({
 					</div>
 				</div>
 			) : (
-				renderSelectedFragments()
+				_renderSelectedFragments()
 			)}
 
 			<ClayLayout.Row
