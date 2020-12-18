@@ -9,9 +9,7 @@
  * distribution rights of the Software.
  */
 
-/**
- * Temporary data. This data should eventually be fetched from the server.
- */
+import TEXT_MATCH_OVER_MULTIPLE_FIELDS from '../../fragments/text-match-over-multiple-fields';
 
 export const CUSTOM_JSON_FRAGMENT = {
 	fragmentTemplateJSON: {
@@ -25,123 +23,7 @@ export const CUSTOM_JSON_FRAGMENT = {
 	},
 };
 
-export const DEFAULT_FRAGMENT = {
-	fragmentTemplateJSON: {
-		clauses: [
-			{
-				context: 'query',
-				occur: 'must',
-				query: {
-					query: {
-						multi_match: {
-							boost: '${config.boost}',
-							fields: '${config.fields}',
-							operator: '${config.operator}',
-							query: '${keywords}',
-							type: '${config.type}',
-						},
-					},
-				},
-				type: 'wrapper',
-			},
-		],
-		conditions: [],
-		description: {
-			en_US: 'Search for a text match over multiple text fields',
-		},
-		enabled: true,
-		title: {
-			en_US: 'Text Match Over Multiple Fields',
-		},
-	},
-	uiConfigurationJSON: [
-		{
-			defaultValue: 1,
-			key: 'boost',
-			name: 'Boost',
-			type: 'number',
-		},
-		{
-			defaultValue: [
-				{
-					boost: '2',
-					field: 'localized_title',
-					locale: '${context.language_id}',
-				},
-				{
-					boost: '1',
-					field: 'content',
-					locale: '${context.language_id}',
-				},
-			],
-			key: 'fields',
-			name: 'Fields',
-			type: 'field-select',
-			typeOptions: [
-				{
-					label: 'localized_title',
-					value: 'localized_title',
-				},
-				{
-					label: 'description',
-					value: 'description',
-				},
-				{
-					label: 'content',
-					value: 'content',
-				},
-			],
-		},
-		{
-			defaultValue: 'or',
-			key: 'operator',
-			name: 'Operator',
-			type: 'single-select',
-			typeOptions: [
-				{
-					label: 'OR',
-					value: 'or',
-				},
-				{
-					label: 'AND',
-					value: 'and',
-				},
-			],
-		},
-		{
-			defaultValue: 'best_fields',
-			key: 'type',
-			name: 'Match Type',
-			type: 'single-select',
-			typeOptions: [
-				{
-					label: 'Best Fields',
-					value: 'best_fields',
-				},
-				{
-					label: 'Most Fields',
-					value: 'most_fields',
-				},
-				{
-					label: 'Cross Fields',
-					value: 'cross_fields',
-				},
-				{
-					label: 'Phrase',
-					value: 'phrase',
-				},
-				{
-					label: 'Phrase Prefix',
-					value: 'phrase_prefix',
-				},
-				{
-					label: 'Boolean Prefix',
-					value: 'bool_prefix',
-				},
-			],
-		},
-	],
-};
+export const DEFAULT_FRAGMENT = TEXT_MATCH_OVER_MULTIPLE_FIELDS;
 
 export const DEFAULT_FRAMEWORK_CONFIGURATION = {
 	apply_indexer_clauses: true,
