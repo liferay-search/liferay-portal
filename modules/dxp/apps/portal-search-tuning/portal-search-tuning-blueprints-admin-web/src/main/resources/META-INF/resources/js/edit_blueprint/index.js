@@ -22,6 +22,7 @@ import {
 	openErrorToast,
 	openSuccessToast,
 } from '../utils/utils';
+import {replaceUIConfigurationValues} from '../utils/utils';
 import Sidebar from './Sidebar';
 import Aggregations from './tabs/Aggregations';
 import Facets from './tabs/Facets';
@@ -225,15 +226,30 @@ function EditBlueprintForm({
 		]
 	);
 
-	const updateQueryFragment = useCallback((id, configs) => {
+	const updateQueryFragment = useCallback((id, newFragmentValues) => {
 		setSelectedQueryFragments((selectedQueryFragments) => {
 			const index = selectedQueryFragments.findIndex(
 				(item) => id == item.id
 			);
 
+			const fragment = {
+				...selectedQueryFragments[index],
+				...newFragmentValues,
+			};
+
+			// Update fragmentOutput when uiConfigurationValues changes
+
+			if (newFragmentValues.uiConfigurationValues) {
+				fragment.fragmentOutput = replaceUIConfigurationValues(
+					fragment.uiConfigurationJSON,
+					fragment.fragmentTemplateJSON,
+					newFragmentValues.uiConfigurationValues
+				);
+			}
+
 			return [
 				...selectedQueryFragments.slice(0, index),
-				configs,
+				fragment,
 				...selectedQueryFragments.slice(index + 1),
 			];
 		});

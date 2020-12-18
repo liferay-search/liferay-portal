@@ -25,10 +25,7 @@ import {PropTypes} from 'prop-types';
 import React, {useContext, useEffect, useState} from 'react';
 
 import {INPUT_TYPES} from '../utils/inputTypes';
-import {
-	replaceUIConfigurationValues,
-	validateUIConfigurationJSON,
-} from '../utils/utils';
+import {validateUIConfigurationJSON} from '../utils/utils';
 import CodeMirrorEditor from './CodeMirrorEditor';
 import PreviewModal from './PreviewModal';
 import ThemeContext from './ThemeContext';
@@ -196,8 +193,8 @@ function ConfigFragment({
 	entityJSON,
 	fragmentTemplateJSON,
 	fragmentOutput,
+	id,
 	updateFragment = () => {},
-	updateTemplate,
 }) {
 	const {locale} = useContext(ThemeContext);
 	const [collapse, setCollapse] = useState(false);
@@ -208,34 +205,27 @@ function ConfigFragment({
 	}, [collapseAll]);
 
 	const _handleChange = debounce((key, item) => {
-		const newUIConfigurationValues = {
-			...uiConfigurationValues,
-			[key]: item,
-		};
-
-		updateFragment(
-			newUIConfigurationValues,
-			replaceUIConfigurationValues(
-				uiConfigurationJSON,
-				fragmentTemplateJSON,
-				newUIConfigurationValues
-			)
-		);
+		updateFragment(id, {
+			uiConfigurationValues: {
+				...uiConfigurationValues,
+				[key]: item,
+			},
+		});
 	}, 20);
 
 	const _handleToggle = () => {
 		const enabled = !fragmentTemplateJSON.enabled;
 
-		updateTemplate(
-			{
+		updateFragment(id, {
+			fragmentOutput: {
+				...fragmentOutput,
+				enabled,
+			},
+			fragmentTemplateJSON: {
 				...fragmentTemplateJSON,
 				enabled,
 			},
-			{
-				...fragmentOutput,
-				enabled,
-			}
-		);
+		});
 	};
 
 	const _handleMultipleSelect = (key, className) => {
