@@ -47,7 +47,7 @@
 
 	.selected-fragments-empty-text {
 		color: $secondaryL1;
-		margin: 0.5rem auto 1.5rem auto;
+		margin: 0.5rem auto 1.5rem;
 		padding: 16px 0;
 		text-align: center;
 		width: 360px;
@@ -72,10 +72,8 @@
 			text-transform: uppercase;
 		}
 
-		/* Fixes gray border to white */
-
 		.panel-unstyled .panel-header.panel-header-link:focus {
-			box-shadow: 0 0 0 0.25rem $white, 0 0 0 0.375rem $primaryL2;
+			box-shadow: 0 0 0 0.25rem $white, 0 0 0 0.375rem $primaryL2; // Fixes gray border to white
 		}
 	}
 }

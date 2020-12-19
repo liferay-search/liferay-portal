@@ -21,8 +21,8 @@ import {
 	convertToSelectedFragment,
 	openErrorToast,
 	openSuccessToast,
+	replaceUIConfigurationValues,
 } from '../utils/utils';
-import {replaceUIConfigurationValues} from '../utils/utils';
 import Sidebar from './Sidebar';
 import Aggregations from './tabs/Aggregations';
 import Facets from './tabs/Facets';

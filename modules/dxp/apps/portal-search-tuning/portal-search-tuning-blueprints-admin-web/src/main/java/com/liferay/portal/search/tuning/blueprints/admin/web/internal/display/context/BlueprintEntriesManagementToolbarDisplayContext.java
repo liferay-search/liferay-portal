@@ -64,12 +64,13 @@ public class BlueprintEntriesManagementToolbarDisplayContext
 			httpServletRequest, liferayPortletRequest, liferayPortletResponse,
 			searchContainer);
 
-		_blueprintType = blueprintType;
-		_displayStyle = displayStyle;
 		_httpServletRequest = httpServletRequest;
+		_displayStyle = displayStyle;
+		_blueprintType = blueprintType;
+
 		_portletRequest = (PortletRequest)_httpServletRequest.getAttribute(
 			JavaConstants.JAVAX_PORTLET_REQUEST);
-		_themeDisplay = (ThemeDisplay)httpServletRequest.getAttribute(
+		_themeDisplay = (ThemeDisplay)_httpServletRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 	}
 
@@ -105,7 +106,8 @@ public class BlueprintEntriesManagementToolbarDisplayContext
 		return CreationMenuBuilder.addDropdownItem(
 			dropdownItem -> {
 				dropdownItem.putData("action", "addBlueprint");
-				dropdownItem.putData("contextPath", _portletRequest.getContextPath());
+				dropdownItem.putData(
+					"contextPath", _portletRequest.getContextPath());
 				dropdownItem.putData(
 					"defaultLocale",
 					LocaleUtil.toLanguageId(LocaleUtil.getDefault()));
