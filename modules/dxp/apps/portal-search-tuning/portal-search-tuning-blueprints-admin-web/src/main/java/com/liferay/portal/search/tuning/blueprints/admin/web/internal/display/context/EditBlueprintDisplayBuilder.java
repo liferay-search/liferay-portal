@@ -213,9 +213,9 @@ public class EditBlueprintDisplayBuilder {
 		).put(
 			"entityJSON", _getEntityJSONObject()
 		).put(
-			"redirectURL", _getRedirect()
-		).put(
 			"queryFragments", _getQueryFragmentsJSONArray()
+		).put(
+			"redirectURL", _getRedirect()
 		).put(
 			"submitFormURL", _getSubmitFormURL()
 		).build();
@@ -235,10 +235,12 @@ public class EditBlueprintDisplayBuilder {
 
 	private JSONArray _getQueryFragmentsJSONArray() {
 		int blueprintsTotalCount = _blueprintService.getGroupBlueprintsCount(
-			_themeDisplay.getCompanyGroupId(), WorkflowConstants.STATUS_APPROVED, BlueprintTypes.QUERY_FRAGMENT);
+			_themeDisplay.getCompanyGroupId(),
+			WorkflowConstants.STATUS_APPROVED, BlueprintTypes.QUERY_FRAGMENT);
 
 		List<Blueprint> queryFragments = _blueprintService.getGroupBlueprints(
-			_themeDisplay.getCompanyGroupId(), BlueprintTypes.QUERY_FRAGMENT, 0, blueprintsTotalCount);
+			_themeDisplay.getCompanyGroupId(), BlueprintTypes.QUERY_FRAGMENT, 0,
+			blueprintsTotalCount);
 
 		JSONArray queryFragmentsJSONArray = _jsonFactory.createJSONArray();
 
