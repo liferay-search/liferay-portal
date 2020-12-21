@@ -29,6 +29,8 @@ public interface BlueprintsAttributes {
 
 	public Long getCompanyId();
 
+	public String getKeywords();
+
 	public Locale getLocale();
 
 	public Long getUserId();

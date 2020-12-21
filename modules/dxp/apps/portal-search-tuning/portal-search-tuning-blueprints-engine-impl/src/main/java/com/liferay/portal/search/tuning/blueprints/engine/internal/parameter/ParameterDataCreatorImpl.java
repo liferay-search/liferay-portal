@@ -23,7 +23,6 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.parameter.CustomParameterConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.parameter.KeywordsConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.parameter.PageConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.parameter.ParameterConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.sort.SortConfigurationKeys;
@@ -306,35 +305,19 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 		BlueprintsAttributes blueprintsAttributes, Messages messages,
 		JSONObject configurationJSONObject) {
 
-		String parameterName = "q";
-
-		if (configurationJSONObject != null) {
-			parameterName = configurationJSONObject.getString(
-				KeywordsConfigurationKeys.PARAMETER_NAME.getJsonKey(), "q");
-		}
-
-		Optional<Object> valueOptional =
-			blueprintsAttributes.getAttributeOptional(parameterName);
-
-		String value = GetterUtil.getString(
-			valueOptional.orElse(StringPool.BLANK));
+		String keywords = GetterUtil.getString(
+			blueprintsAttributes.getKeywords(), StringPool.BLANK);
 
 		parameterDataBuilder.addParameter(
-			new StringParameter("keywords.raw", "${keywords.raw}", value));
+			new StringParameter("keywords.raw", "${keywords.raw}", keywords));
 
-		value = _executeKeywordsProcessors(
-			blueprint, blueprintsAttributes, messages, value);
-
-		// Keywords is always available through ${keywords}
+		keywords = _executeKeywordsProcessors(
+			blueprint, blueprintsAttributes, messages, keywords);
 
 		parameterDataBuilder.addParameter(
-			new StringParameter("keywords", "${keywords}", value));
+			new StringParameter("keywords", "${keywords}", keywords));
 
-		parameterDataBuilder.addParameter(
-			new StringParameter(
-				parameterName, "${" + parameterName + "}", value));
-
-		parameterDataBuilder.keywords(value);
+		parameterDataBuilder.keywords(keywords);
 	}
 
 	private void _addPagingParameters(
@@ -342,26 +325,19 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 		BlueprintsAttributes blueprintsAttributes,
 		JSONObject configurationJSONObject) {
 
-		String parameterName = "page";
-
+		int page = 1;
+		
 		if (configurationJSONObject != null) {
-			parameterName = configurationJSONObject.getString(
-				PageConfigurationKeys.PARAMETER_NAME.getJsonKey(), "page");
+			String parameterName = configurationJSONObject.getString(
+				PageConfigurationKeys.PARAMETER_NAME.getJsonKey());
+
+			if (!Validator.isBlank(parameterName))
+				page = GetterUtil.getInteger(
+						blueprintsAttributes.getAttributeOptional(parameterName).orElse(1));
 		}
 
-		Optional<Object> valueOptional =
-			blueprintsAttributes.getAttributeOptional(parameterName);
-
-		int value = GetterUtil.getInteger(valueOptional.orElse(1));
-
-		// Page is always available through ${page}
-
 		parameterDataBuilder.addParameter(
-			new IntegerParameter(parameterName, "${page}", value));
-
-		parameterDataBuilder.addParameter(
-			new IntegerParameter(
-				parameterName, "${" + parameterName + "}", value));
+			new IntegerParameter("page", "${page}", page));
 	}
 
 	private void _addSortParameters(

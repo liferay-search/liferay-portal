@@ -38,7 +38,7 @@ public class BlueprintsAttributesBuilderImpl
 	public BlueprintsAttributes build() {
 		BlueprintsAttributes blueprintsAttributes =
 			new BlueprintsAttributesImpl(
-				_attributes, _companyId, _locale, _userId);
+				_attributes, _companyId, _keywords, _locale, _userId);
 
 		_validateBlueprintsAttributes(blueprintsAttributes);
 
@@ -48,6 +48,13 @@ public class BlueprintsAttributesBuilderImpl
 	@Override
 	public BlueprintsAttributesBuilder companyId(long companyId) {
 		_companyId = companyId;
+
+		return this;
+	}
+
+	@Override
+	public BlueprintsAttributesBuilder keywords(String keywords) {
+		_keywords = keywords;
 
 		return this;
 	}
@@ -80,6 +87,7 @@ public class BlueprintsAttributesBuilderImpl
 
 	private final Map<String, Object> _attributes = new HashMap<>();
 	private Long _companyId;
+	private String _keywords;
 	private Locale _locale;
 	private Long _userId;
 

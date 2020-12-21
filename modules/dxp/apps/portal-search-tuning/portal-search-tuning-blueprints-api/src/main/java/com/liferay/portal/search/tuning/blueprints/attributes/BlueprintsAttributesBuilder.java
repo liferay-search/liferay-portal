@@ -27,6 +27,8 @@ public interface BlueprintsAttributesBuilder {
 
 	public BlueprintsAttributesBuilder companyId(long companyId);
 
+	public BlueprintsAttributesBuilder keywords(String keywords);
+
 	public BlueprintsAttributesBuilder locale(Locale locale);
 
 	public BlueprintsAttributesBuilder userId(long userId);
