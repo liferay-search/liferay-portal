@@ -236,7 +236,19 @@ public class ViewFlatUsersDisplayContextFactory {
 				userSearch.getEnd(), userSearch.getOrderByComparator());
 
 			if (results != null) {
-				break;
+				boolean staleIndex = false;
+
+				for (User user : results) {
+					if (user.getStatus() != searchTerms.getStatus()) {
+						staleIndex = true;
+
+						break;
+					}
+				}
+
+				if (!staleIndex) {
+					break;
+				}
 			}
 
 			try {
