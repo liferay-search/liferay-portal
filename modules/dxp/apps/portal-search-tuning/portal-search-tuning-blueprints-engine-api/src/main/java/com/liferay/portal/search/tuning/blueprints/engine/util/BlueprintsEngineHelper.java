@@ -21,6 +21,7 @@ import com.liferay.portal.search.searcher.SearchResponse;
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
 import com.liferay.portal.search.tuning.blueprints.engine.exception.BlueprintsEngineException;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
+import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 
 /**
  * @author Petteri Karttunen
@@ -39,6 +40,10 @@ public interface BlueprintsEngineHelper {
 	public SearchResponse search(
 			BlueprintsAttributes blueprintsAttributes, Messages messages,
 			long blueprintId)
+		throws BlueprintsEngineException, JSONException, PortalException;
+
+	public SearchResponse search(
+			BlueprintsAttributes blueprintsAttributes, Blueprint blueprint, Messages messages)
 		throws BlueprintsEngineException, JSONException, PortalException;
 
 }
