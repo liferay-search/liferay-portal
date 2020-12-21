@@ -79,9 +79,7 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 			parameterConfigurationJSONObjectOptional.get();
 
 		_addKeywordParameter(
-			parameterDataBuilder, blueprint, blueprintsAttributes, messages,
-			parameterConfigurationJSONObject.getJSONObject(
-				ParameterConfigurationKeys.KEYWORDS.getJsonKey()));
+			parameterDataBuilder, blueprint, blueprintsAttributes, messages);
 
 		_addPagingParameters(
 			parameterDataBuilder, blueprintsAttributes,
@@ -302,11 +300,10 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 
 	private void _addKeywordParameter(
 		ParameterDataBuilder parameterDataBuilder, Blueprint blueprint,
-		BlueprintsAttributes blueprintsAttributes, Messages messages,
-		JSONObject configurationJSONObject) {
+		BlueprintsAttributes blueprintsAttributes, Messages messages) {
 
 		String keywords = GetterUtil.getString(
-			blueprintsAttributes.getKeywords(), StringPool.BLANK);
+			blueprintsAttributes.getKeywords());
 
 		parameterDataBuilder.addParameter(
 			new StringParameter("keywords.raw", "${keywords.raw}", keywords));
@@ -326,14 +323,17 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 		JSONObject configurationJSONObject) {
 
 		int page = 1;
-		
+
 		if (configurationJSONObject != null) {
 			String parameterName = configurationJSONObject.getString(
 				PageConfigurationKeys.PARAMETER_NAME.getJsonKey());
 
-			if (!Validator.isBlank(parameterName))
-				page = GetterUtil.getInteger(
-						blueprintsAttributes.getAttributeOptional(parameterName).orElse(1));
+			if (!Validator.isBlank(parameterName)) {
+				Optional<Object> optional =
+					blueprintsAttributes.getAttributeOptional(parameterName);
+
+				page = GetterUtil.getInteger(optional.orElse(1));
+			}
 		}
 
 		parameterDataBuilder.addParameter(

@@ -95,6 +95,24 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 
 	@Override
 	public SearchResponse search(
+			BlueprintsAttributes blueprintsAttributes, Blueprint blueprint,
+			Messages messages)
+		throws BlueprintsEngineException, JSONException, PortalException {
+
+		ParameterData parameterData = _parameterDataCreator.create(
+			blueprint, blueprintsAttributes, messages);
+
+		SearchRequestBuilder searchRequestBuilder = _getSearchRequestBuilder(
+			parameterData, blueprint, messages,
+			blueprintsAttributes.getCompanyId(),
+			blueprintsAttributes.getLocale());
+
+		return _searchExecutor.execute(
+			searchRequestBuilder, parameterData, blueprint, messages);
+	}
+
+	@Override
+	public SearchResponse search(
 			BlueprintsAttributes blueprintsAttributes, Messages messages,
 			long blueprintId)
 		throws BlueprintsEngineException, JSONException, PortalException {
