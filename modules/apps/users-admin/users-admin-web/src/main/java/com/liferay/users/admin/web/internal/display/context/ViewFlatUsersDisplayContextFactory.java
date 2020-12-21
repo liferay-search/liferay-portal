@@ -37,6 +37,7 @@ import com.liferay.users.admin.constants.UsersAdminPortletKeys;
 import com.liferay.users.admin.management.toolbar.FilterContributor;
 import com.liferay.users.admin.web.internal.constants.UsersAdminWebKeys;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
@@ -220,16 +221,36 @@ public class ViewFlatUsersDisplayContextFactory {
 			}
 		}
 
-		int total = UserLocalServiceUtil.searchCount(
-			themeDisplay.getCompanyId(), searchTerms.getKeywords(),
-			searchTerms.getStatus(), params);
+		List<User> results = null;
 
-		userSearch.setTotal(total);
+		for (int i = 0; i <= _RETRY_ATTEMPTS; i++) {
+			int total = UserLocalServiceUtil.searchCount(
+				themeDisplay.getCompanyId(), searchTerms.getKeywords(),
+				searchTerms.getStatus(), params);
 
-		List<User> results = UserLocalServiceUtil.search(
-			themeDisplay.getCompanyId(), searchTerms.getKeywords(),
-			searchTerms.getStatus(), params, userSearch.getStart(),
-			userSearch.getEnd(), userSearch.getOrderByComparator());
+			userSearch.setTotal(total);
+
+			results = UserLocalServiceUtil.search(
+				themeDisplay.getCompanyId(), searchTerms.getKeywords(),
+				searchTerms.getStatus(), params, userSearch.getStart(),
+				userSearch.getEnd(), userSearch.getOrderByComparator());
+
+			if (results != null) {
+				break;
+			}
+
+			try {
+				if (i < _RETRY_ATTEMPTS) {
+					Thread.sleep(_RETRY_INTERVAL);
+				}
+			}
+			catch (InterruptedException interruptedException) {
+			}
+		}
+
+		if (results == null) {
+			results = new ArrayList<>();
+		}
 
 		userSearch.setResults(results);
 
@@ -246,5 +267,9 @@ public class ViewFlatUsersDisplayContextFactory {
 
 		return userSearch;
 	}
+
+	private static final int _RETRY_ATTEMPTS = 3;
+
+	private static final int _RETRY_INTERVAL = 500;
 
 }
