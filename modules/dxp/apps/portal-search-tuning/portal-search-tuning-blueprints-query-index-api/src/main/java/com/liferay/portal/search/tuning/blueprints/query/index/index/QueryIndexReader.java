@@ -17,5 +17,5 @@ package com.liferay.portal.search.tuning.blueprints.query.index.index;
 /**
  * @author Petteri Karttunen
  */
-public interface QueryIndexWriter {
+public class QueryIndexReader {
 }

@@ -1,4 +1,4 @@
 Bundle-Name: Liferay Portal Search Tuning Blueprints Query Index API
 Bundle-SymbolicName: com.liferay.portal.search.tuning.blueprints.query.index.api
 Bundle-Version: 1.0.0
-Export-Package: com.liferay.portal.search.tuning.blueprints.query.index.util
+Export-Package: com.liferay.portal.search.tuning.blueprints.query.index.index
