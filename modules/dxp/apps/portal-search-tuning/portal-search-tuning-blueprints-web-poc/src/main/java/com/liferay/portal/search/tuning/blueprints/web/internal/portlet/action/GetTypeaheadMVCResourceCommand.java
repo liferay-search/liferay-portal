@@ -14,35 +14,25 @@
 
 package com.liferay.portal.search.tuning.blueprints.web.internal.portlet.action;
 
-import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.json.JSONException;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.json.JSONUtil;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.JSONPortletResponseUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCResourceCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCResourceCommand;
-import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
-import com.liferay.portal.kernel.util.ResourceBundleUtil;
-import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.portal.search.searcher.SearchResponse;
-import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
-import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributesBuilder;
-import com.liferay.portal.search.tuning.blueprints.engine.exception.BlueprintsEngineException;
-import com.liferay.portal.search.tuning.blueprints.engine.util.BlueprintsEngineHelper;
-import com.liferay.portal.search.tuning.blueprints.json.response.BlueprintsJSONResponseBuilder;
-import com.liferay.portal.search.tuning.blueprints.json.response.constants.JSONResponseKeys;
-import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.util.attributes.BlueprintsRequestAttributesHelper;
-import com.liferay.portal.search.tuning.blueprints.util.attributes.BlueprintsResponseAttributesHelper;
+import com.liferay.portal.search.tuning.blueprints.suggestions.attributes.SuggestionsAttributes;
+import com.liferay.portal.search.tuning.blueprints.suggestions.attributes.SuggestionsAttributesBuilder;
+import com.liferay.portal.search.tuning.blueprints.suggestions.attributes.SuggestionsAttributesBuilderFactory;
+import com.liferay.portal.search.tuning.blueprints.suggestions.suggestion.Suggestion;
+import com.liferay.portal.search.tuning.blueprints.suggestions.typeahead.TypeaheadService;
+import com.liferay.portal.search.tuning.blueprints.util.attributes.SuggestionsAttributesHelper;
 import com.liferay.portal.search.tuning.blueprints.web.internal.constants.BlueprintsWebPortletKeys;
 import com.liferay.portal.search.tuning.blueprints.web.internal.constants.ResourceRequestKeys;
-import com.liferay.portal.search.tuning.blueprints.web.internal.portlet.preferences.BlueprintsWebPortletPreferences;
-import com.liferay.portal.search.tuning.blueprints.web.internal.portlet.preferences.BlueprintsWebPortletPreferencesImpl;
 
-import java.util.ResourceBundle;
+import java.util.List;
+import java.util.stream.Stream;
 
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
@@ -68,117 +58,63 @@ public class GetTypeaheadMVCResourceCommand extends BaseMVCResourceCommand {
 			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
 		throws Exception {
 
-		long blueprintId = _getTypeaheadBlueprintId(resourceRequest);
+		String keywords = ParamUtil.getString(resourceRequest, "q");
 
-		if (blueprintId == 0) {
+		if (keywords.length() <= 1) {
 			return;
 		}
 
-		JSONObject responseJSONObject = null;
-
-		try {
-			Messages requestMessages = new Messages();
-
-			BlueprintsAttributes blueprintsRequestAttributes =
-				_getBlueprintsRequestAttributes(resourceRequest, blueprintId);
-
-			SearchResponse searchResponse = _blueprintsEngineHelper.search(
-				blueprintsRequestAttributes, requestMessages, blueprintId);
-
-			BlueprintsAttributes blueprintsResponseAttributes =
-				_getBlueprintsResponseAttributes(
-					resourceRequest, resourceResponse,
-					blueprintsRequestAttributes, blueprintId);
-
-			Messages responseMessages = new Messages();
-
-			ThemeDisplay themeDisplay =
-				(ThemeDisplay)resourceRequest.getAttribute(
-					WebKeys.THEME_DISPLAY);
-
-			ResourceBundle resourceBundle = ResourceBundleUtil.getBundle(
-				"content.Language", themeDisplay.getLocale(), getClass());
-
-			responseJSONObject = _blueprintsResponseBuilder.buildJSONObject(
-				searchResponse, blueprintsResponseAttributes, resourceBundle,
-				responseMessages, blueprintId);
-		}
-		catch (JSONException jsonException) {
-			_log.error(jsonException.getMessage(), jsonException);
-
-			responseJSONObject = JSONUtil.put(
-				JSONResponseKeys.ERRORS, jsonException.getMessage());
-		}
-		catch (BlueprintsEngineException blueprintsEngineException) {
-			_log.error(
-				blueprintsEngineException.getMessage(),
-				blueprintsEngineException);
-
-			responseJSONObject = JSONUtil.put(
-				JSONResponseKeys.ERRORS,
-				blueprintsEngineException.getMessage());
-		}
-		catch (PortalException portalException) {
-			_log.error(portalException.getMessage(), portalException);
-
-			responseJSONObject = JSONUtil.put(
-				JSONResponseKeys.ERRORS, portalException.getMessage());
-		}
+		SuggestionsAttributes suggestionsAttributes = _getSuggestionsAttributes(
+			resourceRequest, keywords);
 
 		JSONPortletResponseUtil.writeJSON(
-			resourceRequest, resourceResponse, responseJSONObject);
+			resourceRequest, resourceResponse,
+			_getResponseJSONObject(
+				_typeaheadService.getSuggestions(suggestionsAttributes)));
 	}
 
-	private BlueprintsAttributes _getBlueprintsRequestAttributes(
-		ResourceRequest resourceRequest, long blueprintId) {
+	private JSONObject _getResponseJSONObject(List<Suggestion> suggestions) {
+		JSONObject responseJSONObject = JSONFactoryUtil.createJSONObject();
 
-		BlueprintsAttributesBuilder blueprintsAttributesBuilder =
-			_blueprintsRequestAttributesHelper.
-				getBlueprintsRequestAttributesBuilder(
-					resourceRequest, blueprintId);
+		if (suggestions.isEmpty()) {
+			return responseJSONObject;
+		}
 
-		return blueprintsAttributesBuilder.build();
+		JSONArray suggestionsJSONArray = JSONFactoryUtil.createJSONArray();
+
+		Stream<Suggestion> stream = suggestions.stream();
+
+		stream.forEach(
+			suggestion -> suggestionsJSONArray.put(suggestion.getText()));
+
+		return responseJSONObject.put("suggestions", suggestionsJSONArray);
 	}
 
-	private BlueprintsAttributes _getBlueprintsResponseAttributes(
-		ResourceRequest resourceRequest, ResourceResponse resourceResponse,
-		BlueprintsAttributes blueprintsRequestAttributes, long blueprintId) {
+	private SuggestionsAttributes _getSuggestionsAttributes(
+		ResourceRequest resourceRequest, String keywords) {
 
-		BlueprintsAttributesBuilder blueprintsAttributesBuilder =
-			_blueprintsResponseAttributesHelper.
-				getBlueprintsResponseAttributesBuilder(
-					resourceRequest, resourceResponse,
-					blueprintsRequestAttributes, blueprintId);
+		SuggestionsAttributesBuilder suggestionsAttributesBuilder =
+			_suggestionsAttributesHelper.getSuggestionsAttributesBuilder(
+				resourceRequest);
 
-		return blueprintsAttributesBuilder.build();
+		return suggestionsAttributesBuilder.keywords(
+			keywords
+		).size(
+			10
+		).build();
 	}
-
-	private long _getTypeaheadBlueprintId(ResourceRequest resourceRequest) {
-		BlueprintsWebPortletPreferences blueprintsWebPortletPreferences =
-			new BlueprintsWebPortletPreferencesImpl(
-				resourceRequest.getPreferences());
-
-		return blueprintsWebPortletPreferences.getTypeaheadBlueprintId();
-	}
-
-	private static final Log _log = LogFactoryUtil.getLog(
-		GetTypeaheadMVCResourceCommand.class);
-
-	@Reference
-	private BlueprintsEngineHelper _blueprintsEngineHelper;
-
-	@Reference
-	private BlueprintsRequestAttributesHelper
-		_blueprintsRequestAttributesHelper;
-
-	@Reference
-	private BlueprintsResponseAttributesHelper
-		_blueprintsResponseAttributesHelper;
-
-	@Reference
-	private BlueprintsJSONResponseBuilder _blueprintsResponseBuilder;
 
 	@Reference
 	private Portal _portal;
+
+	@Reference
+	private SuggestionsAttributesBuilderFactory
+		_suggestionsAttributesBuilderFactory;
+
+	@Reference
+	private SuggestionsAttributesHelper _suggestionsAttributesHelper;
+
+	@Reference
+	private TypeaheadService _typeaheadService;
 
 }

@@ -129,20 +129,27 @@ export default function BlueprintsSearch({fetchResultsURL, suggestionsURL}) {
 			<div className="misspellings">
 				<div className="showing-results-for">
 					{Liferay.Language.get('showing-results-for')}
-					<span className="keyword">
-						{resource.meta.showing_instead_of}
-					</span>
+					<span className="keyword">{resource.meta.keywords}</span>
 				</div>
 				<div className="instead-of">
 					{Liferay.Language.get('search-instead-for')}
-					<ClayLink
-						className="link"
-						href="#"
-						label={resource.meta.keywords}
-					>
-						{resource.meta.keywords}
+					<ClayLink className="link" href="#">
+						{resource.meta.showing_instead_of}
 					</ClayLink>
 				</div>
+			</div>
+		);
+	}
+
+	function _renderSpellCheckSuggestions() {
+		return (
+			<div className="justify-content-center row spellcheck">
+				<h4>{Liferay.Language.get('spellcheck-suggestions')}</h4>
+				<ul>
+					{resource.spellcheck.map((keyword, index) => (
+						<li key={index}>{keyword}</li>
+					))}
+				</ul>
 			</div>
 		);
 	}
@@ -246,6 +253,10 @@ export default function BlueprintsSearch({fetchResultsURL, suggestionsURL}) {
 					) : (
 						_renderEmptyState()
 					)}
+
+					{resource &&
+						resource.spellcheck &&
+						_renderSpellCheckSuggestions()}
 				</div>
 			)}
 		</>
