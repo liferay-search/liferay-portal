@@ -22,7 +22,7 @@ import java.util.stream.Stream;
  */
 public enum Occur {
 
-	MUST("must"), MUST_NOT("must_not"), SHOULD("should");
+	FILTER("filter"), MUST("must"), MUST_NOT("must_not"), SHOULD("should");
 
 	public static final Occur findByjsonValue(String jsonValue) {
 		Stream<Occur> occurStream = Arrays.stream(Occur.values());

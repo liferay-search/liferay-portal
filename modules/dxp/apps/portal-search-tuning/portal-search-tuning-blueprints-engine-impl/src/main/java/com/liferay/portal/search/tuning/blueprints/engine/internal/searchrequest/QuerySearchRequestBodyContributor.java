@@ -139,21 +139,6 @@ public class QuerySearchRequestBodyContributor
 		_queryContributors.remove(name);
 	}
 
-	private void _addClause(
-		SearchRequestBuilder searchRequestBuilder, Query query,
-		ClauseContext clauseContext, Occur occur) {
-
-		if (clauseContext.equals(ClauseContext.POST_FILTER)) {
-			_addPostFilterClause(searchRequestBuilder, query, occur);
-		}
-		else if (clauseContext.equals(ClauseContext.PRE_FILTER)) {
-			_addPreFilterClause(searchRequestBuilder, query);
-		}
-		else if (clauseContext.equals(ClauseContext.QUERY)) {
-			_addQueryClause(searchRequestBuilder, occur, query);
-		}
-	}
-
 	private void _addPostFilterClause(
 		SearchRequestBuilder searchRequestBuilder, Query subquery,
 		Occur occur) {
@@ -167,20 +152,8 @@ public class QuerySearchRequestBodyContributor
 			).build());
 	}
 
-	private void _addPreFilterClause(
-		SearchRequestBuilder searchRequestBuilder, Query subquery) {
-
-		searchRequestBuilder.addComplexQueryPart(
-			_complexQueryPartBuilderFactory.builder(
-			).query(
-				subquery
-			).occur(
-				"filter"
-			).build());
-	}
-
 	private void _addQueryClause(
-		SearchRequestBuilder searchRequestBuilder, Occur occur, Query query) {
+		SearchRequestBuilder searchRequestBuilder, Query query, Occur occur) {
 
 		searchRequestBuilder.addComplexQueryPart(
 			_complexQueryPartBuilderFactory.builder(
@@ -255,15 +228,18 @@ public class QuerySearchRequestBodyContributor
 					continue;
 				}
 
-				if (clauseContext.equals(ClauseContext.RESCORE)) {
+				if (clauseContext.equals(ClauseContext.POST_FILTER)) {
+					_addPostFilterClause(
+						searchRequestBuilder, clauseOptional.get(), occur);
+				}
+				else if (clauseContext.equals(ClauseContext.QUERY)) {
+					_addQueryClause(
+						searchRequestBuilder, clauseOptional.get(), occur);
+				}
+				else if (clauseContext.equals(ClauseContext.RESCORE)) {
 					_addRescoreClause(
 						searchRequestBuilder, clauseOptional.get(),
 						_getRescoreWindoSize(clauseJSONObject));
-				}
-				else {
-					_addClause(
-						searchRequestBuilder, clauseOptional.get(),
-						clauseContext, occur);
 				}
 			}
 		}
@@ -306,16 +282,20 @@ public class QuerySearchRequestBodyContributor
 				ClauseContext clauseContext =
 					queryContributor.getClauseContext();
 
-				if (clauseContext.equals(ClauseContext.RESCORE)) {
+				if (clauseContext.equals(ClauseContext.POST_FILTER)) {
+					_addPostFilterClause(
+						searchRequestBuilder, queryOptional.get(),
+						queryContributor.getOccur());
+				}
+				else if (clauseContext.equals(ClauseContext.QUERY)) {
+					_addQueryClause(
+						searchRequestBuilder, queryOptional.get(),
+						queryContributor.getOccur());
+				}
+				else if (clauseContext.equals(ClauseContext.RESCORE)) {
 					_addRescoreClause(
 						searchRequestBuilder, queryOptional.get(),
 						_getQueryContributorRescoreWindoSize(queryContributor));
-				}
-				else {
-					_addClause(
-						searchRequestBuilder, queryOptional.get(),
-						queryContributor.getClauseContext(),
-						queryContributor.getOccur());
 				}
 			}
 			catch (Exception exception) {
