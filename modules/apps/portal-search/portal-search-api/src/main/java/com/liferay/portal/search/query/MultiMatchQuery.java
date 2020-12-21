@@ -100,7 +100,7 @@ public interface MultiMatchQuery extends Query {
 
 	public enum Type {
 
-		BEST_FIELDS, CROSS_FIELDS, MOST_FIELDS, PHRASE, PHRASE_PREFIX
+		BEST_FIELDS, BOOL_PREFIX, CROSS_FIELDS, MOST_FIELDS, PHRASE, PHRASE_PREFIX
 
 	}
 
