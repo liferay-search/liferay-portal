@@ -22,7 +22,7 @@ import java.util.stream.Stream;
  */
 public enum ClauseContext {
 
-	POST_FILTER("post_filter"), PRE_FILTER("pre_filter"), QUERY("query"),
+	POST_FILTER("post_filter"), QUERY("query"),
 	RESCORE("rescore");
 
 	public static final ClauseContext findBy_jsonValue(String jsonValue) {
