@@ -26,11 +26,12 @@ import java.util.Optional;
 public class BlueprintsAttributesImpl implements BlueprintsAttributes {
 
 	public BlueprintsAttributesImpl(
-		Map<String, Object> attributes, Long companyId, Locale locale,
-		Long userId) {
+		Map<String, Object> attributes, Long companyId, String keywords,
+		Locale locale, Long userId) {
 
 		_attributes = attributes;
 		_companyId = companyId;
+		_keywords = keywords;
 		_locale = locale;
 		_userId = userId;
 	}
@@ -51,6 +52,11 @@ public class BlueprintsAttributesImpl implements BlueprintsAttributes {
 	}
 
 	@Override
+	public String getKeywords() {
+		return _keywords;
+	}
+
+	@Override
 	public Locale getLocale() {
 		return _locale;
 	}
@@ -62,6 +68,7 @@ public class BlueprintsAttributesImpl implements BlueprintsAttributes {
 
 	private final Map<String, Object> _attributes;
 	private final Long _companyId;
+	private final String _keywords;
 	private final Locale _locale;
 	private final Long _userId;
 

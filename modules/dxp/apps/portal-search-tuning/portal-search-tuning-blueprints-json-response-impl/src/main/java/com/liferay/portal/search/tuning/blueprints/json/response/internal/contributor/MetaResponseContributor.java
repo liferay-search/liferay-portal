@@ -49,66 +49,59 @@ public class MetaResponseContributor implements ResponseContributor {
 		ResourceBundle resourceBundle, Messages messages) {
 
 		responseJSONObject.put(
-			JSONResponseKeys.META, _getMetaJSONObject(searchResponse, blueprintsAttributes));
+			JSONResponseKeys.META,
+			_getMetaJSONObject(searchResponse, blueprintsAttributes));
 	}
 
-	private JSONObject _getMetaJSONObject(SearchResponse searchResponse, BlueprintsAttributes blueprintsAttributes) {
+	private JSONObject _getMetaJSONObject(
+		SearchResponse searchResponse,
+		BlueprintsAttributes blueprintsAttributes) {
+
 		SearchHits searchHits = searchResponse.getSearchHits();
 
 		JSONObject jsonObject = JSONUtil.put(
-				JSONResponseKeys.TOTAL_HITS, searchHits.getTotalHits());
+			JSONResponseKeys.TOTAL_HITS, searchHits.getTotalHits());
 
-		_setKeywords(jsonObject, blueprintsAttributes);
+		jsonObject.put(
+			JSONResponseKeys.KEYWORDS, blueprintsAttributes.getKeywords());
 
 		_setExecutionTime(jsonObject, searchResponse);
 
-		_setShowingInsteadOf(jsonObject, searchResponse, blueprintsAttributes);
-
+		_setShowingInsteadOf(jsonObject, blueprintsAttributes);
 
 		return jsonObject;
 	}
-	
-	private void _setExecutionTime(JSONObject jsonObject, SearchResponse searchResponse) {
+
+	private void _setExecutionTime(
+		JSONObject jsonObject, SearchResponse searchResponse) {
 
 		searchResponse.withHits(
-				hits -> {
-					try {
-						jsonObject.put(
-							JSONResponseKeys.EXECUTION_TIME,
-							String.format("%.3f", hits.getSearchTime()));
-					}
-					catch (IllegalFormatException illegalFormatException) {
-						_log.error(
-							illegalFormatException.getMessage(),
-							illegalFormatException);
-					}
-				});
-
-
+			hits -> {
+				try {
+					jsonObject.put(
+						JSONResponseKeys.EXECUTION_TIME,
+						String.format("%.3f", hits.getSearchTime()));
+				}
+				catch (IllegalFormatException illegalFormatException) {
+					_log.error(
+						illegalFormatException.getMessage(),
+						illegalFormatException);
+				}
+			});
 	}
-	
-	private void _setKeywords(JSONObject jsonObject, BlueprintsAttributes blueprintsAttributes) {
-		
-		Optional<Object> keywordsOptional = blueprintsAttributes.getAttributeOptional("keywords");
-		
-		if (keywordsOptional.isPresent()) {
-			jsonObject.put(
-					JSONResponseKeys.KEYWORDS, (String)keywordsOptional.get());
-		}
-		
-	}
-	
-	private void _setShowingInsteadOf(JSONObject jsonObject, SearchResponse searchResponse,
-			BlueprintsAttributes blueprintsAttributes) {
 
-		Optional<Object> showingInsteadOfOptional = 
-				blueprintsAttributes.getAttributeOptional(
-						ReservedParameterNames.SHOWING_INSTEAD_OF.getKey());
-		
+	private void _setShowingInsteadOf(
+		JSONObject jsonObject, BlueprintsAttributes blueprintsAttributes) {
+
+		Optional<Object> showingInsteadOfOptional =
+			blueprintsAttributes.getAttributeOptional(
+				ReservedParameterNames.SHOWING_INSTEAD_OF.getKey());
+
 		if (showingInsteadOfOptional.isPresent()) {
-			jsonObject.put(JSONResponseKeys.SHOWING_INSTEAD_OF, showingInsteadOfOptional.get());
+			jsonObject.put(
+				JSONResponseKeys.SHOWING_INSTEAD_OF,
+				showingInsteadOfOptional.get());
 		}
-		
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
