@@ -21,16 +21,16 @@ import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributesBuilder;
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributesBuilderFactory;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.parameter.CustomParameterConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.parameter.KeywordsConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.parameter.PageConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.parameter.ParameterConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.constants.ReservedParameterNames;
 import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetConfigurationKeys;
@@ -39,11 +39,14 @@ import com.liferay.portal.search.tuning.blueprints.misspellings.processor.Misspe
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
 import com.liferay.portal.search.tuning.blueprints.util.BlueprintHelper;
-import com.liferay.portal.search.tuning.blueprints.util.attributes.BlueprintsRequestAttributesHelper;
+import com.liferay.portal.search.tuning.blueprints.util.attributes.BlueprintsAttributesHelper;
+import com.liferay.portal.search.tuning.blueprints.util.internal.util.AttributesUtil;
 
 import java.util.Optional;
+import java.util.TimeZone;
 
 import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -54,9 +57,9 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 /**
  * @author Petteri Karttunen
  */
-@Component(immediate = true, service = BlueprintsRequestAttributesHelper.class)
-public class BlueprintsRequestAttributesHelperImpl
-	implements BlueprintsRequestAttributesHelper {
+@Component(immediate = true, service = BlueprintsAttributesHelper.class)
+public class BlueprintsAttributesHelperImpl
+	implements BlueprintsAttributesHelper {
 
 	@Override
 	public BlueprintsAttributesBuilder getBlueprintsRequestAttributesBuilder(
@@ -67,6 +70,8 @@ public class BlueprintsRequestAttributesHelperImpl
 
 		HttpServletRequest httpServletRequest = _portal.getHttpServletRequest(
 			portletRequest);
+
+		TimeZone timeZone = themeDisplay.getTimeZone();
 
 		BlueprintsAttributesBuilder blueprintsAttributesBuilder =
 			_blueprintsAttributesBuilderFactory.builder();
@@ -86,12 +91,42 @@ public class BlueprintsRequestAttributesHelperImpl
 			ReservedParameterNames.SCOPE_GROUP_ID.getKey(),
 			themeDisplay.getScopeGroupId()
 		).addAttribute(
-			ReservedParameterNames.TIMEZONE_ID.getKey(),
-			themeDisplay.getScopeGroupId()
+			ReservedParameterNames.TIMEZONE_ID.getKey(), timeZone.getID()
 		);
 
-		return _addParameters(
+		return _addRequestParameters(
 			portletRequest, blueprintsAttributesBuilder, blueprintId);
+	}
+
+	@Override
+	public BlueprintsAttributesBuilder getBlueprintsResponseAttributesBuilder(
+		PortletRequest portletRequest, PortletResponse portletResponse,
+		BlueprintsAttributes blueprintsRequestAttributes, long blueprintId) {
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		BlueprintsAttributesBuilder blueprintsAttributesBuilder =
+			_blueprintsAttributesBuilderFactory.builder();
+
+		blueprintsAttributesBuilder.companyId(
+			themeDisplay.getCompanyId()
+		).keywords(
+			blueprintsRequestAttributes.getKeywords()
+		).locale(
+			themeDisplay.getLocale()
+		).userId(
+			themeDisplay.getUserId()
+		).addAttribute(
+			"portletRequest", portletRequest
+		).addAttribute(
+			"portletResponse", portletResponse
+		);
+
+		_addShowingInsteadOf(
+			blueprintsAttributesBuilder, blueprintsRequestAttributes);
+
+		return blueprintsAttributesBuilder;
 	}
 
 	private void _addCustomParameters(
@@ -167,16 +202,8 @@ public class BlueprintsRequestAttributesHelperImpl
 		BlueprintsAttributesBuilder blueprintsAttributesBuilder,
 		Blueprint blueprint, JSONObject configurationJSONObject) {
 
-		JSONObject keywordconfigurationJSONObject =
-			configurationJSONObject.getJSONObject(
-				ParameterConfigurationKeys.KEYWORDS.getJsonKey());
-
-		if (keywordconfigurationJSONObject == null) {
-			return;
-		}
-
-		String parameterName = keywordconfigurationJSONObject.getString(
-			KeywordsConfigurationKeys.PARAMETER_NAME.getJsonKey());
+		String parameterName = AttributesUtil.getKeywordParameterName(
+			configurationJSONObject);
 
 		String keywords = ParamUtil.getString(portletRequest, parameterName);
 
@@ -192,32 +219,27 @@ public class BlueprintsRequestAttributesHelperImpl
 				parameterName, misspellCheckedWords);
 			blueprintsAttributesBuilder.addAttribute(
 				ReservedParameterNames.SHOWING_INSTEAD_OF.getKey(), keywords);
+			blueprintsAttributesBuilder.keywords(misspellCheckedWords);
 		}
 		else {
 			blueprintsAttributesBuilder.addAttribute(parameterName, keywords);
+			blueprintsAttributesBuilder.keywords(keywords);
 		}
 	}
 
-	private void _addPagingParameters(
+	private void _addPagingParameter(
 		PortletRequest portletRequest,
 		BlueprintsAttributesBuilder blueprintsAttributesBuilder,
 		JSONObject configurationJSONObject) {
 
-		JSONObject pagingconfigurationJSONObject =
-			configurationJSONObject.getJSONObject(
-				ParameterConfigurationKeys.PAGE.getJsonKey());
-
-		if (pagingconfigurationJSONObject == null) {
-			return;
-		}
+		String parameterName = AttributesUtil.getPageParameterName(
+			configurationJSONObject);
 
 		_addStringValue(
-			portletRequest, blueprintsAttributesBuilder,
-			pagingconfigurationJSONObject.getString(
-				PageConfigurationKeys.PARAMETER_NAME.getJsonKey()));
+			portletRequest, blueprintsAttributesBuilder, parameterName);
 	}
 
-	private BlueprintsAttributesBuilder _addParameters(
+	private BlueprintsAttributesBuilder _addRequestParameters(
 		PortletRequest portletRequest,
 		BlueprintsAttributesBuilder blueprintsAttributesBuilder,
 		long blueprintId) {
@@ -252,7 +274,7 @@ public class BlueprintsRequestAttributesHelperImpl
 			portletRequest, blueprintsAttributesBuilder, blueprint,
 			configurationJSONObject);
 
-		_addPagingParameters(
+		_addPagingParameter(
 			portletRequest, blueprintsAttributesBuilder,
 			configurationJSONObject);
 
@@ -267,6 +289,21 @@ public class BlueprintsRequestAttributesHelperImpl
 			portletRequest, blueprintsAttributesBuilder, blueprint);
 
 		return blueprintsAttributesBuilder;
+	}
+
+	private void _addShowingInsteadOf(
+		BlueprintsAttributesBuilder blueprintsAttributesBuilder,
+		BlueprintsAttributes blueprintsRequestAttributes) {
+
+		Optional<Object> showingInsteadOfOptional =
+			blueprintsRequestAttributes.getAttributeOptional(
+				ReservedParameterNames.SHOWING_INSTEAD_OF.getKey());
+
+		if (showingInsteadOfOptional.isPresent()) {
+			blueprintsAttributesBuilder.addAttribute(
+				ReservedParameterNames.SHOWING_INSTEAD_OF.getKey(),
+				GetterUtil.getString(showingInsteadOfOptional.get()));
+		}
 	}
 
 	private void _addSortParameters(
@@ -372,7 +409,7 @@ public class BlueprintsRequestAttributesHelperImpl
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
-		BlueprintsRequestAttributesHelperImpl.class);
+		BlueprintsAttributesHelperImpl.class);
 
 	@Reference
 	private BlueprintHelper _blueprintHelper;

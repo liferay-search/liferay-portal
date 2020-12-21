@@ -14,27 +14,22 @@
 
 package com.liferay.portal.search.tuning.blueprints.util.attributes;
 
+import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributesBuilder;
 
 import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
 
 /**
  * @author Petteri Karttunen
  */
-public interface BlueprintsRequestAttributesHelper {
+public interface BlueprintsAttributesHelper {
 
-	/**
-	 * Gets Blueprints attributes builder for doing a search request.
-	 *
-	 * Populates the builder with mandatory attributes and
-	 * tries to resolve all the request parameters defined in a
-	 * Blueprint parameter configuration,
-	 *
-	 * @param portletRequest
-	 * @param blueprintId
-	 * @return Blueprints attributes builder
-	 */
 	public BlueprintsAttributesBuilder getBlueprintsRequestAttributesBuilder(
 		PortletRequest portletRequest, long blueprintId);
+
+	public BlueprintsAttributesBuilder getBlueprintsResponseAttributesBuilder(
+		PortletRequest portletRequest, PortletResponse portletResponse,
+		BlueprintsAttributes blueprintsRequestAttributes, long blueprintId);
 
 }
