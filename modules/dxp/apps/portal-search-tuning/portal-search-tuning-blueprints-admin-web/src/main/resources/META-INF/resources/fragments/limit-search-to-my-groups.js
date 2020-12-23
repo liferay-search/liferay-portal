@@ -9,15 +9,31 @@
  * distribution rights of the Software.
  */
 
-export const INPUT_TYPES = {
-	DATE: 'date',
-	ENTITY: 'entity',
-	FIELD_SELECT: 'field-select',
-	JSON: 'json',
-	MULTISELECT: 'multiselect',
-	NUMBER: 'number',
-	SINGLE_FIELD_SELECT: 'single-field-select',
-	SINGLE_SELECT: 'single-select',
-	SLIDER: 'slider',
-	TEXT: 'text',
+export default {
+	fragmentTemplateJSON: {
+		category: 'filter',
+		clauses: [
+			{
+				context: 'pre_filter',
+				occur: 'must',
+				query: {
+					query: {
+						terms: {
+							groupId: '${user.user_group_ids}',
+						},
+					},
+				},
+				type: 'wrapper',
+			},
+		],
+		conditions: [],
+		description: {
+			en_US: 'Limit search scope to the groups user is member of',
+		},
+		enabled: true,
+		icon: 'filter',
+		title: {
+			en_US: 'Limit Search to My Groups',
+		},
+	},
 };

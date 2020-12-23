@@ -9,15 +9,31 @@
  * distribution rights of the Software.
  */
 
-export const INPUT_TYPES = {
-	DATE: 'date',
-	ENTITY: 'entity',
-	FIELD_SELECT: 'field-select',
-	JSON: 'json',
-	MULTISELECT: 'multiselect',
-	NUMBER: 'number',
-	SINGLE_FIELD_SELECT: 'single-field-select',
-	SINGLE_SELECT: 'single-select',
-	SLIDER: 'slider',
-	TEXT: 'text',
+export default {
+	fragmentTemplateJSON: {
+		category: 'boost',
+		clauses: [
+			{
+				context: 'query',
+				occur: 'should',
+				query: {
+					query: {
+						terms: {
+							groupId: '${user.user_group_ids}',
+						},
+					},
+				},
+				type: 'wrapper',
+			},
+		],
+		conditions: [],
+		description: {
+			en_US: "Boost contents in groups I'm member of",
+		},
+		enabled: true,
+		icon: 'thumbs-up',
+		title: {
+			en_US: 'Boost Contents in My Groups',
+		},
+	},
 };

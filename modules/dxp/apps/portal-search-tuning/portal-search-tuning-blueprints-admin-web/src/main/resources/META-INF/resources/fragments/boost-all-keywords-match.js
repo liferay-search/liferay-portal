@@ -11,19 +11,19 @@
 
 export default {
 	fragmentTemplateJSON: {
-		category: 'match',
+		category: 'boost',
 		clauses: [
 			{
 				context: 'query',
-				occur: 'must',
+				occur: 'should',
 				query: {
 					query: {
 						multi_match: {
 							boost: '${config.boost}',
 							fields: '${config.fields}',
-							operator: '${config.operator}',
+							operator: 'and',
 							query: '${keywords}',
-							type: '${config.type}',
+							type: 'cross_fields',
 						},
 					},
 				},
@@ -32,12 +32,12 @@ export default {
 		],
 		conditions: [],
 		description: {
-			en_US: 'Search for a text match over multiple text fields',
+			en_US: 'Boost contents where all keywords of a search phrase match',
 		},
 		enabled: true,
-		icon: 'picture',
+		icon: 'thumbs-up',
 		title: {
-			en_US: 'Text Match Over Multiple Fields',
+			en_US: 'Boost All Keywords Match',
 		},
 	},
 	uiConfigurationJSON: [
@@ -45,18 +45,18 @@ export default {
 			boost: true,
 			defaultValue: [
 				{
-					boost: '2',
+					boost: 2,
 					field: 'localized_title',
 					locale: '${context.language_id}',
 				},
 				{
-					boost: '1',
+					boost: 1,
 					field: 'content',
 					locale: '${context.language_id}',
 				},
 			],
 			key: 'fields',
-			name: 'Fields',
+			name: 'Field',
 			type: 'field-select',
 			typeOptions: [
 				{
@@ -74,55 +74,7 @@ export default {
 			],
 		},
 		{
-			defaultValue: 'or',
-			key: 'operator',
-			name: 'Operator',
-			type: 'single-select',
-			typeOptions: [
-				{
-					label: 'OR',
-					value: 'or',
-				},
-				{
-					label: 'AND',
-					value: 'and',
-				},
-			],
-		},
-		{
-			defaultValue: 'best_fields',
-			key: 'type',
-			name: 'Match Type',
-			type: 'single-select',
-			typeOptions: [
-				{
-					label: 'Best Fields',
-					value: 'best_fields',
-				},
-				{
-					label: 'Most Fields',
-					value: 'most_fields',
-				},
-				{
-					label: 'Cross Fields',
-					value: 'cross_fields',
-				},
-				{
-					label: 'Phrase',
-					value: 'phrase',
-				},
-				{
-					label: 'Phrase Prefix',
-					value: 'phrase_prefix',
-				},
-				{
-					label: 'Boolean Prefix',
-					value: 'bool_prefix',
-				},
-			],
-		},
-		{
-			defaultValue: 1,
+			defaultValue: 10,
 			key: 'boost',
 			name: 'Boost',
 			type: 'slider',

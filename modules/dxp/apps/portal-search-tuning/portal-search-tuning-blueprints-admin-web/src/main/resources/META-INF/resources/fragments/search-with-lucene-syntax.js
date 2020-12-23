@@ -18,12 +18,11 @@ export default {
 				occur: 'must',
 				query: {
 					query: {
-						multi_match: {
+						simple_query_string: {
 							boost: '${config.boost}',
+							default_operator: '${config.operator}',
 							fields: '${config.fields}',
-							operator: '${config.operator}',
 							query: '${keywords}',
-							type: '${config.type}',
 						},
 					},
 				},
@@ -32,12 +31,12 @@ export default {
 		],
 		conditions: [],
 		description: {
-			en_US: 'Search for a text match over multiple text fields',
+			en_US: 'Enable searching using the Lucene syntax',
 		},
 		enabled: true,
 		icon: 'picture',
 		title: {
-			en_US: 'Text Match Over Multiple Fields',
+			en_US: 'Search with the Lucene Syntax',
 		},
 	},
 	uiConfigurationJSON: [
@@ -50,7 +49,7 @@ export default {
 					locale: '${context.language_id}',
 				},
 				{
-					boost: '1',
+					boost: '2',
 					field: 'content',
 					locale: '${context.language_id}',
 				},
@@ -74,7 +73,6 @@ export default {
 			],
 		},
 		{
-			defaultValue: 'or',
 			key: 'operator',
 			name: 'Operator',
 			type: 'single-select',
@@ -86,38 +84,6 @@ export default {
 				{
 					label: 'AND',
 					value: 'and',
-				},
-			],
-		},
-		{
-			defaultValue: 'best_fields',
-			key: 'type',
-			name: 'Match Type',
-			type: 'single-select',
-			typeOptions: [
-				{
-					label: 'Best Fields',
-					value: 'best_fields',
-				},
-				{
-					label: 'Most Fields',
-					value: 'most_fields',
-				},
-				{
-					label: 'Cross Fields',
-					value: 'cross_fields',
-				},
-				{
-					label: 'Phrase',
-					value: 'phrase',
-				},
-				{
-					label: 'Phrase Prefix',
-					value: 'phrase_prefix',
-				},
-				{
-					label: 'Boolean Prefix',
-					value: 'bool_prefix',
 				},
 			],
 		},

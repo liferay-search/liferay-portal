@@ -16,6 +16,7 @@ import ClayDropDown from '@clayui/drop-down';
 import ClayForm, {ClayInput, ClaySelect, ClayToggle} from '@clayui/form';
 import ClayIcon from '@clayui/icon';
 import ClayList from '@clayui/list';
+import ClayMultiSelect from '@clayui/multi-select';
 import ClaySlider from '@clayui/slider';
 import ClaySticker from '@clayui/sticker';
 import {ClayTooltipProvider} from '@clayui/tooltip';
@@ -25,7 +26,11 @@ import {PropTypes} from 'prop-types';
 import React, {useContext, useEffect, useState} from 'react';
 
 import {INPUT_TYPES} from '../utils/inputTypes';
-import {validateUIConfigurationJSON} from '../utils/utils';
+import {
+	replaceStr,
+	toNumber,
+	validateUIConfigurationJSON,
+} from '../utils/utils';
 import CodeMirrorEditor from './CodeMirrorEditor';
 import PreviewModal from './PreviewModal';
 import ThemeContext from './ThemeContext';
@@ -84,7 +89,7 @@ function FieldSelectRow({
 						<ClaySelect.Option
 							key={`users-language-${index}`}
 							label={Liferay.Language.get('users-language')}
-							value={'_${context.language_id}'}
+							value={'${context.language_id}'}
 						/>
 
 						{Object.keys(availableLanguages).map((locale) => (
@@ -97,24 +102,24 @@ function FieldSelectRow({
 					</ClaySelect>
 				</ClayInput.GroupItem>
 
-				<ClayInput.GroupItem shrink>
-					<ClayInput
-						aria-label={Liferay.Language.get('boost')}
-						className="field-boost-input"
-						disabled={disabled}
-						id={`${config.key}_boost`}
-						onChange={(event) => {
-							updateValue(
-								'boost',
-								event.target.value !== ''
-									? JSON.parse(event.target.value)
-									: event.target.value
-							);
-						}}
-						type={'number'}
-						value={item.boost}
-					/>
-				</ClayInput.GroupItem>
+				{!!config.boost && (
+					<ClayInput.GroupItem shrink>
+						<ClayInput
+							aria-label={Liferay.Language.get('boost')}
+							className="field-boost-input"
+							disabled={disabled}
+							id={`${config.key}_boost`}
+							onChange={(event) => {
+								updateValue(
+									'boost',
+									toNumber(event.target.value)
+								);
+							}}
+							type={'number'}
+							value={item.boost}
+						/>
+					</ClayInput.GroupItem>
+				)}
 
 				{deleteItem && (
 					<ClayInput.GroupItem shrink>
@@ -135,6 +140,20 @@ function FieldSelectRow({
 	);
 }
 
+function MultiSelect({items, name, onItemsChange}) {
+	const [value, setValue] = useState('');
+
+	return (
+		<ClayMultiSelect
+			inputName={name}
+			inputValue={value}
+			items={items}
+			onChange={setValue}
+			onItemsChange={onItemsChange}
+		/>
+	);
+}
+
 function Slider({disabled, keyword, name, onChange, value}) {
 	const [active, setActive] = useState(false);
 
@@ -147,7 +166,7 @@ function Slider({disabled, keyword, name, onChange, value}) {
 						disabled={disabled}
 						insetAfter
 						onChange={(event) => {
-							onChange(keyword, parseInt(event.target.value, 10));
+							onChange(keyword, toNumber(event.target.value));
 						}}
 						type={'number'}
 						value={value}
@@ -228,7 +247,7 @@ function ConfigFragment({
 		});
 	};
 
-	const _handleMultipleSelect = (key, className) => {
+	const _handleMultipleEntitySelect = (key, className) => {
 		if (entityJSON[`${className}`].multiple) {
 			openSelectionModal({
 				buttonAddLabel: Liferay.Language.get('select'),
@@ -362,7 +381,7 @@ function ConfigFragment({
 								displayType="secondary"
 								onClick={() => {
 									if (entityJSON) {
-										_handleMultipleSelect(
+										_handleMultipleEntitySelect(
 											config.key,
 											config.className
 										);
@@ -374,6 +393,34 @@ function ConfigFragment({
 							</ClayButton>
 						</ClayInput.GroupItem>
 					</ClayInput.Group>
+				);
+			case INPUT_TYPES.SINGLE_FIELD_SELECT:
+				return (
+					<div className="single-field-select">
+						{uiConfigurationValues[config.key].map(
+							(item, index) => (
+								<FieldSelectRow
+									boost={false}
+									config={config}
+									disabled={disabled}
+									index={index}
+									item={item}
+									key={`${config.key}_${index}`}
+									updateValue={(label, value) => {
+										const configValue =
+											uiConfigurationValues[config.key];
+
+										configValue[index] = {
+											...item,
+											[`${label}`]: value,
+										};
+
+										_handleChange(config.key, configValue);
+									}}
+								/>
+							)
+						)}
+					</div>
 				);
 			case INPUT_TYPES.FIELD_SELECT:
 				return (
@@ -505,25 +552,38 @@ function ConfigFragment({
 						value={uiConfigurationValues[`${config.key}`]}
 					/>
 				);
+			case INPUT_TYPES.MULTISELECT:
+				return (
+					<MultiSelect
+						disabled={disabled}
+						items={uiConfigurationValues[config.key]}
+						name={config.name}
+						onItemsChange={(value) =>
+							_handleChange(config.key, value)
+						}
+					/>
+				);
 			case INPUT_TYPES.NUMBER:
 				return (
 					<ClayInput.Group small>
 						<ClayInput.GroupItem
-							className={`${config.unit && 'arrowless-input'}`}
+							className={`${
+								config.unit || config.key.includes('id')
+									? 'arrowless-input'
+									: ''
+							}`}
 							prepend
 						>
 							<ClayInput
 								aria-label={config.name}
 								disabled={disabled}
 								id={config.key}
-								onChange={(event) => {
+								onChange={(event) =>
 									_handleChange(
 										config.key,
-										event.target.value !== ''
-											? JSON.parse(event.target.value)
-											: event.target.value
-									);
-								}}
+										toNumber(event.target.value)
+									)
+								}
 								type={'number'}
 								value={uiConfigurationValues[config.key]}
 							/>
@@ -551,7 +611,7 @@ function ConfigFragment({
 								onChange={(event) =>
 									_handleChange(
 										config.key,
-										event.target.value
+										replaceStr(event.target.value, '"', '')
 									)
 								}
 								type={'text'}
