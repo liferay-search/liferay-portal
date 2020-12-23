@@ -37,7 +37,12 @@ function JSONFragment({
 
 	function handleChange(value) {
 		try {
-			updateFragment(JSON.parse(value));
+			const parseJSON = JSON.parse(value);
+
+			updateFragment(id, {
+				fragmentOutput: parseJSON,
+				fragmentTemplateJSON: parseJSON,
+			});
 		}
 		catch {}
 	}
