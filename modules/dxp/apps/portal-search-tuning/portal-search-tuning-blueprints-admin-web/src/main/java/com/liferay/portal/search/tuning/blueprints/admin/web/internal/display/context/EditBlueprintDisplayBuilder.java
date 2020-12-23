@@ -14,7 +14,6 @@
 
 package com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context;
 
-import com.liferay.asset.kernel.model.AssetTag;
 import com.liferay.exportimport.kernel.exception.NoSuchConfigurationException;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -189,9 +188,8 @@ public class EditBlueprintDisplayBuilder {
 
 	private JSONObject _getEntityJSONObject() {
 		String[] entityClassNames = {
-			AssetTag.class.getName(), Group.class.getName(),
-			Organization.class.getName(), Team.class.getName(),
-			Role.class.getName(), User.class.getName(),
+			Group.class.getName(), Organization.class.getName(),
+			Team.class.getName(), Role.class.getName(), User.class.getName(),
 			UserGroup.class.getName()
 		};
 

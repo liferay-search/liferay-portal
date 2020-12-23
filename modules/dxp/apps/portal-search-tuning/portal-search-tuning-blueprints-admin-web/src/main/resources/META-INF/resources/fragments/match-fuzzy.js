@@ -18,12 +18,12 @@ export default {
 				occur: 'must',
 				query: {
 					query: {
-						multi_match: {
-							boost: '${config.boost}',
-							fields: '${config.fields}',
-							operator: '${config.operator}',
-							query: '${keywords}',
-							type: '${config.type}',
+						fuzzy: {
+							'${config.field}': {
+								boost: '${config.boost}',
+								fuzziness: '${config.fuzziness}',
+								value: '${keywords}',
+							},
 						},
 					},
 				},
@@ -32,12 +32,12 @@ export default {
 		],
 		conditions: [],
 		description: {
-			en_US: 'Search for a text match over multiple text fields',
+			en_US: 'Search using the Fuzzy query',
 		},
 		enabled: true,
 		icon: 'picture',
 		title: {
-			en_US: 'Text Match Over Multiple Fields',
+			en_US: 'Match Fuzzy',
 		},
 	},
 	uiConfigurationJSON: [
@@ -45,19 +45,14 @@ export default {
 			boost: true,
 			defaultValue: [
 				{
-					boost: '2',
+					boost: '1',
 					field: 'localized_title',
 					locale: '${context.language_id}',
 				},
-				{
-					boost: '1',
-					field: 'content',
-					locale: '${context.language_id}',
-				},
 			],
-			key: 'fields',
-			name: 'Fields',
-			type: 'field-select',
+			key: 'field',
+			name: 'Field',
+			type: 'single-field-select',
 			typeOptions: [
 				{
 					label: 'localized_title',
@@ -74,58 +69,33 @@ export default {
 			],
 		},
 		{
-			defaultValue: 'or',
-			key: 'operator',
-			name: 'Operator',
-			type: 'single-select',
-			typeOptions: [
-				{
-					label: 'OR',
-					value: 'or',
-				},
-				{
-					label: 'AND',
-					value: 'and',
-				},
-			],
-		},
-		{
-			defaultValue: 'best_fields',
-			key: 'type',
-			name: 'Match Type',
-			type: 'single-select',
-			typeOptions: [
-				{
-					label: 'Best Fields',
-					value: 'best_fields',
-				},
-				{
-					label: 'Most Fields',
-					value: 'most_fields',
-				},
-				{
-					label: 'Cross Fields',
-					value: 'cross_fields',
-				},
-				{
-					label: 'Phrase',
-					value: 'phrase',
-				},
-				{
-					label: 'Phrase Prefix',
-					value: 'phrase_prefix',
-				},
-				{
-					label: 'Boolean Prefix',
-					value: 'bool_prefix',
-				},
-			],
-		},
-		{
 			defaultValue: 1,
 			key: 'boost',
 			name: 'Boost',
 			type: 'slider',
+		},
+		{
+			key: 'fuzziness',
+			name: 'Fuzziness',
+			type: 'single-select',
+			typeOptions: [
+				{
+					label: 'Auto',
+					value: 'AUTO',
+				},
+				{
+					label: '0',
+					value: '0',
+				},
+				{
+					label: '1',
+					value: '1',
+				},
+				{
+					label: '2',
+					value: '2',
+				},
+			],
 		},
 	],
 };

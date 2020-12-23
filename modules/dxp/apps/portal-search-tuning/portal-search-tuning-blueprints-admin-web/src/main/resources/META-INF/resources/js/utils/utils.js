@@ -68,6 +68,29 @@ export const replaceStr = (str, search, replace) => {
 };
 
 /**
+ * Function turn string into number, otherwise returns itself.
+ *
+ * Example:
+ * toNumber('234')
+ * => 234
+ * toNumber(234)
+ * => 234
+ * toNumber('0234')
+ * => '0234'
+ *
+ * @param {String} str String
+ * @return {number}
+ */
+export const toNumber = (str) => {
+	try {
+		return JSON.parse(str);
+	}
+	catch {
+		return str;
+	}
+};
+
+/**
  * Function for retrieving a valid default value from one fragment
  * configuration entry.
  *
@@ -126,6 +149,8 @@ export const getDefaultValue = (item) => {
 				)
 				? itemValue
 				: [];
+		case INPUT_TYPES.MULTISELECT:
+			return isNotNull(itemValue) ? itemValue : [];
 		case INPUT_TYPES.NUMBER:
 			return isNotNull(itemValue) && typeof itemValue == 'number'
 				? itemValue
@@ -204,24 +229,62 @@ export const replaceUIConfigurationValues = (
 					uiConfigurationValues[config.key].map((item) => item.id)
 				);
 			}
-			else if (config.type === INPUT_TYPES.FIELD_SELECT) {
-				configValue = JSON.stringify(
-					uiConfigurationValues[config.key].map(
-						(item) =>
-							`${item.field}${
-								item.locale == '' || item.locale.includes('$')
-									? item.locale
-									: '_' + item.locale
-							}${
-								JSON.parse(item.boost) > 1
-									? '^' + item.boost
-									: ''
-							}`
-					)
+			else if (
+				config.type === INPUT_TYPES.FIELD_SELECT ||
+				config.type === INPUT_TYPES.SINGLE_FIELD_SELECT
+			) {
+				const fields = uiConfigurationValues[config.key].map(
+					(item) =>
+						`${item.field}${
+							item.locale == '' || item.locale.includes('$')
+								? item.locale
+								: '_' + item.locale
+						}${
+							item.boost && JSON.parse(item.boost) > 1
+								? '^' + item.boost
+								: ''
+						}`
 				);
+
+				configValue =
+					config.type === INPUT_TYPES.FIELD_SELECT
+						? JSON.stringify(fields)
+						: fields[0];
+			}
+			else if (config.type === INPUT_TYPES.NUMBER) {
+				const oldConfigValue = uiConfigurationValues[config.key];
+
+				configValue = isNotNull(config.unitSuffix)
+					? typeof oldConfigValue == 'string'
+						? oldConfigValue.concat('', config.unitSuffix)
+						: JSON.stringify(oldConfigValue).concat(
+								'',
+								config.unitSuffix
+						  )
+					: oldConfigValue;
+			}
+			else if (config.type === INPUT_TYPES.DATE) {
+				configValue = uiConfigurationValues[config.key]
+					? JSON.parse(
+							moment
+								.unix(uiConfigurationValues[config.key])
+								.format(
+									config.format
+										? config.format
+										: 'YYYYMMDDHHMMSS'
+								)
+					  )
+					: '';
 			}
 			else if (config.type === INPUT_TYPES.JSON) {
 				configValue = JSON.stringify(uiConfigurationValues[config.key]);
+			}
+			else if (config.type === INPUT_TYPES.MULTISELECT) {
+				configValue = JSON.stringify(
+					uiConfigurationValues[config.key].map((item) =>
+						toNumber(item.value)
+					)
+				);
 			}
 
 			// Check if key starts with 'config.' prefix to support keys with
@@ -240,7 +303,8 @@ export const replaceUIConfigurationValues = (
 				typeof configValue === 'boolean' ||
 				config.type === INPUT_TYPES.ENTITY ||
 				config.type === INPUT_TYPES.FIELD_SELECT ||
-				config.type === INPUT_TYPES.JSON
+				config.type === INPUT_TYPES.JSON ||
+				config.type === INPUT_TYPES.MULTISELECT
 			) {
 				flattenJSON = replaceStr(
 					flattenJSON,
@@ -285,7 +349,6 @@ export const convertToSelectedFragment = (
 };
 
 const ENTITY_KEYS = [
-	'com.liferay.asset.kernel.model.AssetTag',
 	'com.liferay.portal.kernel.model.Group',
 	'com.liferay.portal.kernel.model.Organization',
 	'com.liferay.portal.kernel.model.Role',
