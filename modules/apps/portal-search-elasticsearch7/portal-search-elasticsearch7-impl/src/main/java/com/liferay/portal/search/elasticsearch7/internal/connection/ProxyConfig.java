@@ -111,7 +111,9 @@ public class ProxyConfig {
 		}
 
 		protected int getProxyPort() {
-			if (_proxyConfig._proxyPort > 0) {
+			if (!Validator.isBlank(_proxyConfig._proxyHost) &&
+				(_proxyConfig._proxyPort > 0)) {
+
 				return _proxyConfig._proxyPort;
 			}
 
