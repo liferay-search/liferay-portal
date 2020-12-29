@@ -49,7 +49,7 @@ export default {
 				},
 				{
 					label: 'MUST NOT',
-					value: 'must-not',
+					value: 'must_not',
 				},
 				{
 					label: 'FILTER',
