@@ -65,6 +65,7 @@ public class FragmentEntriesManagementToolbarDisplayContext
 		_httpServletRequest = httpServletRequest;
 		_displayStyle = displayStyle;
 		_blueprintType = blueprintType;
+
 		_themeDisplay = (ThemeDisplay)httpServletRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 	}
