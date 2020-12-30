@@ -238,6 +238,13 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 					illegalStateException.getMessage(), illegalStateException);
 			}
 		}
+
+		if (!_shouldApplyIndexerClauses(blueprint)) {
+			searchRequestBuilder.withSearchContext(
+				searchContext -> searchContext.setAttribute(
+					"search.full.query.suppress.indexer.provided.clauses",
+					Boolean.TRUE));
+		}
 	}
 
 	private Blueprint _getBlueprint(long blueprintId) {
@@ -346,16 +353,10 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 
 		// Make SF happy:
 
-		_isApplyIndexerClauses(blueprint);
-
 		_executeSearchRequestBodyContributors(
 			searchRequestBuilder, parameterData, blueprint, messages);
 
 		return searchRequestBuilder;
-	}
-
-	private boolean _isApplyIndexerClauses(Blueprint blueprint) {
-		return _blueprintHelper.applyIndexerClauses(blueprint);
 	}
 
 	private boolean _isExplain(ParameterData parameterData) {
@@ -368,6 +369,10 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 		return GetterUtil.getBoolean(
 			parameterData.getByNameOptional(
 				ReservedParameterNames.INCLUDE_RESPONSE_STRING.getKey()));
+	}
+
+	private boolean _shouldApplyIndexerClauses(Blueprint blueprint) {
+		return _blueprintHelper.applyIndexerClauses(blueprint);
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
