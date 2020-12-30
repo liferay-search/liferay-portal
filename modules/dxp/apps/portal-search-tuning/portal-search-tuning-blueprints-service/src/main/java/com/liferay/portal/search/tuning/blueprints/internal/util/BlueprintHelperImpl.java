@@ -198,11 +198,7 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 			configurationJSONObject.getJSONObject(
 				BlueprintKeys.FRAMEWORK_CONFIGURATION.getJsonKey());
 
-		if ((frameworkConfigurationJSONObject != null) &&
-			frameworkConfigurationJSONObject.has(
-				FrameworkConfigurationKeys.SEARCHABLE_ASSET_TYPES.
-					getJsonKey())) {
-
+		if (frameworkConfigurationJSONObject != null) {
 			return Optional.of(frameworkConfigurationJSONObject);
 		}
 
