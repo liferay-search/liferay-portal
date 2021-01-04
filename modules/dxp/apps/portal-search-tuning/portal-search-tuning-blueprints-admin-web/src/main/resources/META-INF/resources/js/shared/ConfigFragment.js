@@ -141,6 +141,23 @@ function FieldSelectRow({
 	);
 }
 
+function JSONEditor({defaultValue, disabled, onChange}) {
+	const [value, setValue] = useState(
+		JSON.stringify(defaultValue, null, '\t')
+	);
+
+	return (
+		<div
+			className={`custom-json ${disabled ? 'disabled' : 'enabled'}`}
+			onBlur={() => onChange(value)}
+		>
+			<label>{Liferay.Language.get('json')}</label>
+
+			<CodeMirrorEditor onChange={setValue} value={value} />
+		</div>
+	);
+}
+
 function MultiSelect({items, name, onItemsChange}) {
 	const [value, setValue] = useState('');
 
@@ -489,30 +506,16 @@ function ConfigFragment({
 				);
 			case INPUT_TYPES.JSON:
 				return (
-					<div
-						className={`custom-json ${
-							disabled ? 'disabled' : 'enabled'
-						}`}
-					>
-						<label>{Liferay.Language.get('json')}</label>
-
-						<CodeMirrorEditor
-							onChange={(value) => {
-								try {
-									_handleChange(
-										config.key,
-										JSON.parse(value)
-									);
-								}
-								catch {}
-							}}
-							value={JSON.stringify(
-								uiConfigurationValues[config.key],
-								null,
-								'\t'
-							)}
-						/>
-					</div>
+					<JSONEditor
+						defaultValue={uiConfigurationValues[config.key]}
+						disabled={disabled}
+						onChange={(value) => {
+							try {
+								_handleChange(config.key, JSON.parse(value));
+							}
+							catch {}
+						}}
+					/>
 				);
 			case INPUT_TYPES.SINGLE_SELECT:
 				return (
