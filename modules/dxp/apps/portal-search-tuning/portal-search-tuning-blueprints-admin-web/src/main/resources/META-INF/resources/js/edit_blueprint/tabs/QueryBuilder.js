@@ -9,6 +9,7 @@
  * distribution rights of the Software.
  */
 
+import ClayAlert from '@clayui/alert';
 import ClayButton from '@clayui/button';
 import {ClayRadio} from '@clayui/form';
 import ClayIcon from '@clayui/icon';
@@ -64,32 +65,57 @@ function QueryBuilder({
 	const {contextPath} = useContext(ThemeContext);
 	const [collapseAll, setCollapseAll] = useState(false);
 
+	const _hasMustClause = selectedFragments.some(
+		(fragment) =>
+			fragment.fragmentOutput.clauses &&
+			fragment.fragmentOutput.clauses[0] &&
+			fragment.fragmentOutput.clauses[0].occur &&
+			fragment.fragmentOutput.clauses[0].occur === 'must'
+	);
+
 	const _renderSelectedFragments = () => {
-		return selectedFragments.map((fragment) => {
-			return fragment.uiConfigurationJSON ? (
-				<ConfigFragment
-					collapseAll={collapseAll}
-					deleteFragment={() => deleteFragment(fragment.id)}
-					entityJSON={entityJSON}
-					fragmentOutput={fragment.fragmentOutput}
-					fragmentTemplateJSON={fragment.fragmentTemplateJSON}
-					id={fragment.id}
-					key={fragment.id}
-					uiConfigurationJSON={fragment.uiConfigurationJSON}
-					uiConfigurationValues={fragment.uiConfigurationValues}
-					updateFragment={updateFragment}
-				/>
-			) : (
-				<JSONFragment
-					collapseAll={collapseAll}
-					deleteFragment={() => deleteFragment(fragment.id)}
-					fragmentTemplateJSON={fragment.fragmentTemplateJSON}
-					id={fragment.id}
-					key={fragment.id}
-					updateFragment={updateFragment}
-				/>
-			);
-		});
+		return (
+			<>
+				{!_hasMustClause && (
+					<ClayAlert
+						displayType="warning"
+						title={Liferay.Language.get('warning')}
+					>
+						{Liferay.Language.get(
+							'there-are-no-match-clauses-in-your-configuration'
+						)}
+					</ClayAlert>
+				)}
+
+				{selectedFragments.map((fragment) => {
+					return fragment.uiConfigurationJSON ? (
+						<ConfigFragment
+							collapseAll={collapseAll}
+							deleteFragment={() => deleteFragment(fragment.id)}
+							entityJSON={entityJSON}
+							fragmentOutput={fragment.fragmentOutput}
+							fragmentTemplateJSON={fragment.fragmentTemplateJSON}
+							id={fragment.id}
+							key={fragment.id}
+							uiConfigurationJSON={fragment.uiConfigurationJSON}
+							uiConfigurationValues={
+								fragment.uiConfigurationValues
+							}
+							updateFragment={updateFragment}
+						/>
+					) : (
+						<JSONFragment
+							collapseAll={collapseAll}
+							deleteFragment={() => deleteFragment(fragment.id)}
+							fragmentTemplateJSON={fragment.fragmentTemplateJSON}
+							id={fragment.id}
+							key={fragment.id}
+							updateFragment={updateFragment}
+						/>
+					);
+				})}
+			</>
+		);
 	};
 
 	return (
