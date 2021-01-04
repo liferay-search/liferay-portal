@@ -59,13 +59,14 @@ function FieldSelectRow({
 						}}
 						value={item.field}
 					>
-						{config.typeOptions.map((option) => (
-							<ClaySelect.Option
-								key={option.value}
-								label={option.label}
-								value={option.value}
-							/>
-						))}
+						{config.typeOptions &&
+							config.typeOptions.map((option) => (
+								<ClaySelect.Option
+									key={option.value}
+									label={option.label}
+									value={option.value}
+								/>
+							))}
 					</ClaySelect>
 				</ClayInput.GroupItem>
 
@@ -568,7 +569,8 @@ function ConfigFragment({
 					<ClayInput.Group small>
 						<ClayInput.GroupItem
 							className={`${
-								config.unit || config.key.includes('id')
+								config.unit ||
+								(config.key && config.key.includes('id'))
 									? 'arrowless-input'
 									: ''
 							}`}

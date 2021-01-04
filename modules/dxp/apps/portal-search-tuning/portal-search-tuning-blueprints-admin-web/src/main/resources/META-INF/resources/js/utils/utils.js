@@ -35,21 +35,48 @@ export const openSuccessToast = (config) => {
 
 /**
  * Function to validate the UI configuration, used to identify whether
- * a required value is missing
+ * a required value is not null, undefined, or simply an empty string
  *
  * Examples:
- * isNotNull([])
+ * isNotEmpty([])
  * => true
- * isNotNull('')
+ * isNotEmpty('')
  * => false
- * isNotNull(null)
+ * isNotEmpty(null)
  * => false
  *
- * @param {String|object|Array} item Item to check existence
+ * @param {String|object} item Item to check
  * @return {boolean}
  */
-const isNotNull = (item) =>
+const isNotEmpty = (item) =>
 	item !== null && item !== '' && typeof item !== 'undefined';
+
+/**
+ * Function to validate the UI configuration, used to identify whether
+ * every item in array is not null, undefined, or simply an empty string
+ *
+ * @param {Array} item Item to check
+ * @return {boolean}
+ */
+const isNotAllEmpty = (item) => item.every(isNotEmpty);
+
+/**
+ * Function to validate the UI configuration, used to identify whether
+ * a required value is not null or undefined
+ *
+ * Examples:
+ * isNotNullOrUndefined([])
+ * => true
+ * isNotNullOrUndefined('')
+ * => true
+ * isNotNullOrUndefined(null)
+ * => false
+ *
+ * @param {String|object} item Item to check
+ * @return {boolean}
+ */
+const isNotNullOrUndefined = (item) =>
+	item !== null && typeof item !== 'undefined';
 
 /**
  * Function to replace all instances of a string.
@@ -128,13 +155,13 @@ export const getDefaultValue = (item) => {
 
 	switch (item.type) {
 		case INPUT_TYPES.SINGLE_SELECT:
-			return isNotNull(itemValue)
+			return isNotEmpty(itemValue)
 				? itemValue
 				: item.typeOptions && item.typeOptions[0].value
 				? item.typeOptions[0].value
 				: '';
 		case INPUT_TYPES.DATE:
-			return isNotNull(itemValue)
+			return isNotEmpty(itemValue)
 				? typeof itemValue == 'number'
 					? itemValue
 					: moment(itemValue).isValid()
@@ -142,29 +169,29 @@ export const getDefaultValue = (item) => {
 					: ''
 				: '';
 		case INPUT_TYPES.ENTITY:
-			return isNotNull(itemValue) &&
+			return isNotEmpty(itemValue) &&
 				itemValue.length > 0 &&
 				itemValue.every(
-					(item) => isNotNull(item.id) && isNotNull(item.name)
+					(item) => isNotEmpty(item.id) && isNotEmpty(item.name)
 				)
 				? itemValue
 				: [];
 		case INPUT_TYPES.MULTISELECT:
-			return isNotNull(itemValue) ? itemValue : [];
+			return isNotEmpty(itemValue) ? itemValue : [];
 		case INPUT_TYPES.NUMBER:
-			return isNotNull(itemValue) && typeof itemValue == 'number'
+			return isNotEmpty(itemValue) && typeof itemValue == 'number'
 				? itemValue
 				: '';
 		case INPUT_TYPES.SLIDER:
-			return isNotNull(itemValue) && typeof itemValue == 'number'
+			return isNotEmpty(itemValue) && typeof itemValue == 'number'
 				? itemValue
 				: '';
 		case INPUT_TYPES.FIELD_SELECT:
-			return isNotNull(itemValue) ? itemValue : [];
+			return isNotEmpty(itemValue) ? itemValue : [];
 		case INPUT_TYPES.JSON:
-			return isNotNull(itemValue) ? itemValue : {};
+			return isNotEmpty(itemValue) ? itemValue : {};
 		default:
-			return isNotNull(itemValue) ? itemValue : '';
+			return isNotEmpty(itemValue) ? itemValue : '';
 	}
 };
 
@@ -254,7 +281,7 @@ export const replaceUIConfigurationValues = (
 			else if (config.type === INPUT_TYPES.NUMBER) {
 				const oldConfigValue = uiConfigurationValues[config.key];
 
-				configValue = isNotNull(config.unitSuffix)
+				configValue = isNotEmpty(config.unitSuffix)
 					? typeof oldConfigValue == 'string'
 						? oldConfigValue.concat('', config.unitSuffix)
 						: JSON.stringify(oldConfigValue).concat(
@@ -291,8 +318,9 @@ export const replaceUIConfigurationValues = (
 			// both the prefix or not
 
 			const key =
+				config.key &&
 				config.key.substring(0, CONFIG_PREFIX.length + 1) ===
-				`${CONFIG_PREFIX}.`
+					`${CONFIG_PREFIX}.`
 					? config.key
 					: `${CONFIG_PREFIX}.${config.key}`;
 
@@ -383,36 +411,34 @@ const ENTITY_KEYS = [
  */
 export const validateUIConfigurationJSON = (uiConfigurationJSON) => {
 	return uiConfigurationJSON.every((item) => {
-		if (
-			isNotNull(item.type) &&
-			isNotNull(item.key) &&
-			isNotNull(item.name)
+		if (item.type === INPUT_TYPES.JSON) {
+			return isNotEmpty(item.key);
+		}
+		else if (item.type === INPUT_TYPES.ENTITY) {
+			return (
+				isNotAllEmpty([item.key, item.name, item.className]) &&
+				ENTITY_KEYS.includes(item.className)
+			);
+		}
+		else if (
+			[
+				INPUT_TYPES.FIELD_SELECT,
+				INPUT_TYPES.SINGLE_FIELD_SELECT,
+				INPUT_TYPES.SINGLE_SELECT,
+			].includes(item.type)
 		) {
-			switch (item.type) {
-				case INPUT_TYPES.SINGLE_SELECT:
-					return (
-						!!item.typeOptions &&
-						item.typeOptions.length > 0 &&
-						item.typeOptions.every(
-							(option) =>
-								isNotNull(option.label) &&
-								isNotNull(option.value)
-						)
-					);
-				case INPUT_TYPES.ENTITY:
-					return (
-						item.className && ENTITY_KEYS.includes(item.className)
-					);
-				default:
-					return true;
-			}
+			return (
+				isNotAllEmpty([item.key, item.name, item.typeOptions]) &&
+				item.typeOptions.length > 0 &&
+				item.typeOptions.every(
+					(option) =>
+						isNotNullOrUndefined(option.label) &&
+						isNotNullOrUndefined(option.value)
+				)
+			);
 		}
 		else {
-			return (
-				isNotNull(item.type) &&
-				item.type === INPUT_TYPES.JSON &&
-				isNotNull(item.key)
-			);
+			return isNotAllEmpty([item.type, item.key, item.name]);
 		}
 	});
 };
