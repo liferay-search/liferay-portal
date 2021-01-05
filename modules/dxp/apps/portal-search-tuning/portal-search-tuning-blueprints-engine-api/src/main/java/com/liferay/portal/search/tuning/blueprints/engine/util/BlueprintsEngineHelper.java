@@ -38,12 +38,13 @@ public interface BlueprintsEngineHelper {
 		long blueprintId);
 
 	public SearchResponse search(
-			BlueprintsAttributes blueprintsAttributes, Messages messages,
-			long blueprintId)
+			BlueprintsAttributes blueprintsAttributes, Blueprint blueprint,
+			Messages messages)
 		throws BlueprintsEngineException, JSONException, PortalException;
 
 	public SearchResponse search(
-			BlueprintsAttributes blueprintsAttributes, Blueprint blueprint, Messages messages)
+			BlueprintsAttributes blueprintsAttributes, Messages messages,
+			long blueprintId)
 		throws BlueprintsEngineException, JSONException, PortalException;
 
 }
