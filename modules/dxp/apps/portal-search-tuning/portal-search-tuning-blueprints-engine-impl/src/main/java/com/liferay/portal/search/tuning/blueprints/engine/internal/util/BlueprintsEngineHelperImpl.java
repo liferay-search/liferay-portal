@@ -253,7 +253,11 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 		Optional<JSONArray> optional =
 			_blueprintHelper.getSearchableAssetTypesOptional(blueprint);
 
-		return JSONUtil.toStringArray(optional.get());
+		if (optional.isPresent()) {
+			return JSONUtil.toStringArray(optional.get());
+		}
+		
+		return new String[0];
 	}
 
 	private List<String> _getExcludedSearchRequestBodyContributors(
@@ -336,7 +340,7 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 
 		searchRequestBuilder.modelIndexerClasses(JournalArticle.class);
 
-		searchRequestBuilder.entryClassNames(_getEntryClassNames(blueprint));
+		// searchRequestBuilder.modelIndexerClassNames(_getEntryClassNames(blueprint));
 
 		// TODO: https://issues.liferay.com/browse/LPS-123611
 
