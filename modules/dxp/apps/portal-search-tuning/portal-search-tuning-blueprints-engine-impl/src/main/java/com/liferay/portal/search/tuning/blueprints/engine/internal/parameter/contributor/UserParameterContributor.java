@@ -83,6 +83,11 @@ public class UserParameterContributor implements ParameterContributor {
 	}
 
 	@Override
+	public String getCategoryNameKey() {
+		return "user";
+	}
+
+	@Override
 	public List<ParameterDefinition> getParameterDefinitions() {
 		List<ParameterDefinition> parameterDefinitions = new ArrayList<>();
 
@@ -194,13 +199,6 @@ public class UserParameterContributor implements ParameterContributor {
 					ReservedParameterNames.USER_ROLE_IDS.getKey()),
 				LongArrayParameter.class.getName(),
 				"core.parameter.user.role-ids"));
-
-		parameterDefinitions.add(
-			new ParameterDefinition(
-				_getTemplateVariableName(
-					ReservedParameterNames.USER_SEGMENT_ENTRY_IDS.getKey()),
-				LongArrayParameter.class.getName(),
-				"core.parameter.user.segment-entry-ids"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(

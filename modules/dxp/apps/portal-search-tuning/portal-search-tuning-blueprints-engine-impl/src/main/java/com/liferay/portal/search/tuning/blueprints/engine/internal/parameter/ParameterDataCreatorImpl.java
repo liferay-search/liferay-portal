@@ -44,6 +44,7 @@ import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.util.BlueprintHelper;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -104,8 +105,12 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 		return parameterData;
 	}
 
-	public ParameterDefinition[] getContributedParameterDefinitions() {
-		List<ParameterDefinition> parameterDefinitionList = new ArrayList<>();
+	@Override
+	public Map<String, List<ParameterDefinition>>
+		getContributedParameterDefinitions() {
+
+		Map<String, List<ParameterDefinition>> contributedParameterDefinitions =
+			new HashMap<>();
 
 		for (Map.Entry<String, ServiceComponentReference<ParameterContributor>>
 				entry : _parameterContributors.entrySet()) {
@@ -116,11 +121,12 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 			ParameterContributor parameterContributor =
 				value.getServiceComponent();
 
-			parameterDefinitionList.addAll(
+			contributedParameterDefinitions.put(
+				parameterContributor.getCategoryNameKey(),
 				parameterContributor.getParameterDefinitions());
 		}
 
-		return parameterDefinitionList.toArray(new ParameterDefinition[0]);
+		return contributedParameterDefinitions;
 	}
 
 	@Reference(

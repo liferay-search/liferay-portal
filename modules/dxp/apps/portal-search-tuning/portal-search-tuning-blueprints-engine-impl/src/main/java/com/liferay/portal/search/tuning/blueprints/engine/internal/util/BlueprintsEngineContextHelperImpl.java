@@ -22,6 +22,9 @@ import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterDat
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterDefinition;
 import com.liferay.portal.search.tuning.blueprints.engine.util.BlueprintsEngineContextHelper;
 
+import java.util.List;
+import java.util.Map;
+
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -53,7 +56,9 @@ public class BlueprintsEngineContextHelperImpl
 	}
 
 	@Override
-	public ParameterDefinition[] getContributedParameterDefinitions() {
+	public Map<String, List<ParameterDefinition>>
+		getContributedParameterDefinitions() {
+
 		return _parameterDataCreator.getContributedParameterDefinitions();
 	}
 

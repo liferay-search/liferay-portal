@@ -68,6 +68,12 @@ public class ContextParameterContributor implements ParameterContributor {
 		_addPlid(parameterDataBuilder, blueprintsAttributes);
 	}
 
+	@Override
+	public String getCategoryNameKey() {
+		return "context";
+	}
+
+	@Override
 	public List<ParameterDefinition> getParameterDefinitions() {
 		List<ParameterDefinition> parameterDefinitions = new ArrayList<>();
 
