@@ -88,6 +88,11 @@ public class FacetParameterContributor implements ParameterContributor {
 	}
 
 	@Override
+	public String getCategoryNameKey() {
+		return "facets";
+	}
+
+	@Override
 	public List<ParameterDefinition> getParameterDefinitions() {
 		return new ArrayList<>();
 	}
