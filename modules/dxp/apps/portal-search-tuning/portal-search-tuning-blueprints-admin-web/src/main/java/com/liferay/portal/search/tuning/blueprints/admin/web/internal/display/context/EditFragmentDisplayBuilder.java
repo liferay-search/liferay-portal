@@ -17,6 +17,7 @@ package com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.c
 import com.liferay.exportimport.kernel.exception.NoSuchConfigurationException;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.language.Language;
@@ -33,9 +34,12 @@ import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminMVCCommandNames;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminWebKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintTypes;
+import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterDefinition;
+import com.liferay.portal.search.tuning.blueprints.engine.util.BlueprintsEngineContextHelper;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -54,7 +58,9 @@ public class EditFragmentDisplayBuilder {
 	public EditFragmentDisplayBuilder(
 		HttpServletRequest httpServletRequest, Language language, Log log,
 		JSONFactory jsonFactory, RenderRequest renderRequest,
-		RenderResponse renderResponse, BlueprintService blueprintService) {
+		RenderResponse renderResponse,
+		BlueprintsEngineContextHelper blueprintsEngineContextHelper,
+		BlueprintService blueprintService) {
 
 		_httpServletRequest = httpServletRequest;
 		_language = language;
@@ -62,6 +68,7 @@ public class EditFragmentDisplayBuilder {
 		_jsonFactory = jsonFactory;
 		_renderRequest = renderRequest;
 		_renderResponse = renderResponse;
+		_blueprintsEngineContextHelper = blueprintsEngineContextHelper;
 		_blueprintService = blueprintService;
 
 		_blueprintId = ParamUtil.getLong(
@@ -141,14 +148,51 @@ public class EditFragmentDisplayBuilder {
 		return descriptionJSONObject;
 	}
 
-	/* TODO This is a placeholder for LPS-123115 to get predefinedVariables
-	private List<JSONObject> _getPredefinedVariables() {
-		JSONObject parameterJSONObject = _jsonFactory.createJSONObject();
+	private JSONArray _getPredefinedVariablesJSONArray() {
+		JSONArray predefinedVariablesJSONArray = _jsonFactory.createJSONArray();
 
-		return ListUtil.fromArray(parameterJSONObject);
+		Map<String, List<ParameterDefinition>> contributedParameterDefinitions =
+			_blueprintsEngineContextHelper.getContributedParameterDefinitions();
+
+		for (Map.Entry<String, List<ParameterDefinition>> entry :
+				contributedParameterDefinitions.entrySet()) {
+
+			JSONObject jsonObject = _jsonFactory.createJSONObject();
+
+			jsonObject.put(
+				"categoryName",
+				_language.get(_httpServletRequest, entry.getKey()));
+
+			JSONArray parameterDefinitionsJSONArray =
+				_jsonFactory.createJSONArray();
+
+			for (ParameterDefinition parameterDefinition : entry.getValue()) {
+				JSONObject parameterDefinitionJSONObject =
+					_jsonFactory.createJSONObject();
+
+				parameterDefinitionJSONObject.put(
+					"className", parameterDefinition.getClassName()
+				).put(
+					"description",
+					_language.get(
+						_httpServletRequest,
+						parameterDefinition.getDescriptionKey())
+				).put(
+					"variable", parameterDefinition.getVariable()
+				);
+
+				parameterDefinitionsJSONArray.put(
+					parameterDefinitionJSONObject);
+			}
+
+			jsonObject.put(
+				"parameterDefinitions", parameterDefinitionsJSONArray);
+
+			predefinedVariablesJSONArray.put(jsonObject);
+		}
+
+		return predefinedVariablesJSONArray;
 	}
-
-	*/
 
 	private Map<String, Object> _getProps() {
 		Map<String, Object> props = HashMapBuilder.<String, Object>put(
@@ -166,11 +210,8 @@ public class EditFragmentDisplayBuilder {
 				"initialConfigurationString", _blueprint.getConfiguration());
 			props.put("initialDescription", _getDescriptionJSONObject());
 			props.put("initialTitle", _getTitleJSONObject());
-
-			/*
-			TODO This is a placeholder for LPS-123115 to get predefinedVariables
-			props.put("predefinedVariables", _getPredefinedVariables());
- 			*/
+			props.put(
+				"predefinedVariables", _getPredefinedVariablesJSONArray());
 		}
 
 		return props;
@@ -256,6 +297,7 @@ public class EditFragmentDisplayBuilder {
 
 	private final Blueprint _blueprint;
 	private final long _blueprintId;
+	private final BlueprintsEngineContextHelper _blueprintsEngineContextHelper;
 	private final BlueprintService _blueprintService;
 	private int _blueprintType;
 	private final HttpServletRequest _httpServletRequest;
