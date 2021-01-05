@@ -30,6 +30,7 @@ import ConfigFragment from '../../src/main/resources/META-INF/resources/js/share
 import ErrorBoundary from '../../src/main/resources/META-INF/resources/js/shared/ErrorBoundary';
 import JSONFragment from '../../src/main/resources/META-INF/resources/js/shared/JSONFragment';
 import PageToolbar from '../../src/main/resources/META-INF/resources/js/shared/PageToolbar';
+import SearchInput from '../../src/main/resources/META-INF/resources/js/shared/SearchInput';
 import {
 	DEFAULT_EDIT_FRAGMENT,
 	DEFAULT_FRAGMENT,
@@ -194,6 +195,38 @@ storiesOf('Pages|FragmentForm', module).add('default', () => (
 			initialTitle: {
 				'en-US': 'Test Title',
 			},
+			predefinedVariables: [
+				{
+					categoryName: 'User',
+					parameterDefinitions: [
+						{
+							className:
+								'com.liferay.portal.search.tuning.blueprints.engine.parameter.StringParameter',
+							description: "User's ID",
+							variable: '${user.user_id}',
+						},
+						{
+							className:
+								'com.liferay.portal.search.tuning.blueprints.engine.parameter.StringParameter',
+							description: "User's First Name",
+							variable: '${user.user_first_name}',
+						},
+					],
+				},
+				{
+					categoryName: 'Context',
+					parameterDefinitions: [
+						{
+							description: 'Company ID',
+							variable: '${context.company_id}',
+						},
+						{
+							description: 'Scope Group ID',
+							variable: '${context.scope_group_id}',
+						},
+					],
+				},
+			],
 			redirectURL: '',
 			submitFormURL: '',
 		}}
@@ -264,6 +297,15 @@ storiesOf('Components|QueryBuilder', module)
 			deleteFragment={action('buildFragment')}
 			selectedFragments={SELECTED_FRAGMENTS}
 			updateFragment={action('updateFragment')}
+		/>
+	));
+
+storiesOf('Components|SearchInput', module)
+	.addDecorator(withBlueprintsClass)
+	.add('SearchInput', () => (
+		<SearchInput
+			onChange={action('onChange')}
+			onSubmit={action('onSubmit')}
 		/>
 	));
 

@@ -11,22 +11,28 @@
 
 import ClayButton from '@clayui/button';
 import ClayEmptyState from '@clayui/empty-state';
-import {ClayInput} from '@clayui/form';
 import ClayIcon from '@clayui/icon';
 import ClayLayout from '@clayui/layout';
 import ClaySticker from '@clayui/sticker';
 import {ClayTooltipProvider} from '@clayui/tooltip';
+import getCN from 'classnames';
 import {fetch, navigate} from 'frontend-js-web';
 import {PropTypes} from 'prop-types';
-import React, {useContext, useRef, useState} from 'react';
+import React, {
+	useCallback,
+	useContext,
+	useEffect,
+	useRef,
+	useState,
+} from 'react';
 
 import CodeMirrorEditor from '../shared/CodeMirrorEditor';
 import ConfigFragment from '../shared/ConfigFragment';
 import ErrorBoundary from '../shared/ErrorBoundary';
 import PageToolbar from '../shared/PageToolbar';
 import PreviewModal from '../shared/PreviewModal';
+import SearchInput from '../shared/SearchInput';
 import ThemeContext from '../shared/ThemeContext';
-import {PREDEFINED_VARIABLES} from '../utils/data';
 import {
 	getUIConfigurationValues,
 	openErrorToast,
@@ -39,7 +45,7 @@ function EditFragmentForm({
 	initialConfigurationString,
 	initialDescription,
 	initialTitle,
-	predefinedVariables = PREDEFINED_VARIABLES,
+	predefinedVariables,
 	redirectURL,
 	submitFormURL,
 }) {
@@ -53,6 +59,8 @@ function EditFragmentForm({
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [expand, setExpand] = useState(false);
 
+	const [variables, setVariables] = useState(predefinedVariables);
+
 	const [fragmentTemplateJSON, setFragmentTemplateJSON] = useState(
 		JSON.stringify(initialConfiguration.fragmentTemplateJSON, null, '\t')
 	);
@@ -60,9 +68,40 @@ function EditFragmentForm({
 		JSON.stringify(initialConfiguration.uiConfigurationJSON, null, '\t')
 	);
 
-	function addFragmentTemplateJSONVariable(variable) {
-		var doc = fragmentTemplateJSONRef.current.getDoc();
-		var cursor = doc.getCursor();
+	useEffect(() => {
+
+		// Workaround to force a re-render so `fragmentTemplateJSONRef` will be
+		// defined when calling `_onVariableClick`
+
+		setExpand(true);
+	}, []);
+
+	const _handleSearchFilter = useCallback(
+		(value) => {
+			const filteredParameterDefinitions = predefinedVariables.map(
+				(category) => ({
+					...category,
+					parameterDefinitions: category.parameterDefinitions.filter(
+						({description}) =>
+							description
+								.toLowerCase()
+								.includes(value.toLowerCase())
+					),
+				})
+			);
+
+			const filteredCategories = filteredParameterDefinitions.filter(
+				({parameterDefinitions}) => parameterDefinitions.length
+			);
+
+			setVariables(filteredCategories);
+		},
+		[predefinedVariables]
+	);
+
+	function _onVariableClick(variable) {
+		const doc = fragmentTemplateJSONRef.current.getDoc();
+		const cursor = doc.getCursor();
 
 		doc.replaceRange(variable, cursor);
 	}
@@ -201,6 +240,7 @@ function EditFragmentForm({
 						<div className="fragment-section">
 							<div className="fragment-header">
 								<ClayButton
+									borderless
 									className={expand && 'active'}
 									disabled={false}
 									displayType="secondary"
@@ -212,7 +252,7 @@ function EditFragmentForm({
 									)}
 									type="submit"
 								>
-									<ClayIcon symbol="list-ul"></ClayIcon>
+									<ClayIcon symbol="list-ul" />
 								</ClayButton>
 
 								<div className="expand-header">
@@ -242,60 +282,69 @@ function EditFragmentForm({
 							</div>
 
 							<ClayLayout.Row>
-								{expand && (
-									<ClayLayout.Col
-										className="json-section"
-										size={3}
-									>
-										<div className="sidebar sidebar-light">
-											<div className="sidebar-header">
-												<span className="text-truncate-inline">
-													<span className="text-truncate">
-														{Liferay.Language.get(
-															'predefined-variables'
-														)}
-													</span>
+								<ClayLayout.Col
+									className={getCN('json-section', {
+										hide: !expand,
+									})}
+									size={3}
+								>
+									<div className="sidebar sidebar-light">
+										<div className="sidebar-header">
+											<span className="text-truncate-inline">
+												<span className="text-truncate">
+													{Liferay.Language.get(
+														'predefined-variables'
+													)}
 												</span>
-											</div>
+											</span>
+										</div>
 
-											<div className="container-fluid sidebar-input">
-												<ClayInput
-													aria-label={Liferay.Language.get(
-														'search'
-													)}
-													placeholder={Liferay.Language.get(
-														'search'
-													)}
-													type="text"
-												/>
-											</div>
+										<div className="container-fluid sidebar-input">
+											<SearchInput
+												onChange={_handleSearchFilter}
+											/>
+										</div>
 
-											<div className="container-fluid">
-												<dl className="sidebar-dl">
-													{predefinedVariables.map(
-														(item) => (
+										<div className="container-fluid">
+											<dl className="sidebar-dl">
+												{variables.length ? (
+													variables
+														.filter(
+															(item) =>
+																item
+																	.parameterDefinitions
+																	.length
+														)
+														.map((item) => (
 															<SidebarPanel
 																categoryName={
 																	item.categoryName
 																}
 																handleClick={
-																	addFragmentTemplateJSONVariable
+																	_onVariableClick
 																}
 																item={item}
 																key={
 																	item.categoryName
 																}
-																variables={
-																	item.variables
+																parameterDefinitions={
+																	item.parameterDefinitions
 																}
 															/>
-														)
-													)}
-												</dl>
-											</div>
+														))
+												) : (
+													<div className="empty-list-message">
+														<ClayEmptyState
+															title={Liferay.Language.get(
+																'no-predefined-variables-found'
+															)}
+														/>
+													</div>
+												)}
+											</dl>
 										</div>
-									</ClayLayout.Col>
-								)}
+									</div>
+								</ClayLayout.Col>
 
 								<ClayLayout.Col
 									className="json-section"
@@ -342,12 +391,14 @@ function EditFragmentForm({
 								</div>
 							</div>
 
-							<CodeMirrorEditor
-								onChange={(value) =>
-									setUIConfigurationJSON(value)
-								}
-								value={uiConfigurationJSON}
-							/>
+							<div className="json-section">
+								<CodeMirrorEditor
+									onChange={(value) =>
+										setUIConfigurationJSON(value)
+									}
+									value={uiConfigurationJSON}
+								/>
+							</div>
 						</div>
 					</ClayLayout.Col>
 				</ClayLayout.Row>
@@ -360,12 +411,12 @@ EditFragmentForm.propTypes = {
 	initialConfigurationString: PropTypes.string,
 	initialDescription: PropTypes.object,
 	initialTitle: PropTypes.object,
-	predefinedVariables: PropTypes.object,
+	predefinedVariables: PropTypes.arrayOf(PropTypes.object),
 	redirectURL: PropTypes.string,
 	submitFormURL: PropTypes.string,
 };
 
-function SidebarPanel({categoryName, handleClick, variables}) {
+function SidebarPanel({categoryName, handleClick, parameterDefinitions}) {
 	const [expand, setExpand] = useState(false);
 
 	return (
@@ -383,16 +434,18 @@ function SidebarPanel({categoryName, handleClick, variables}) {
 			</ClayButton>
 
 			{expand &&
-				variables.map((entry) => (
+				parameterDefinitions.map((entry) => (
 					<dd className="sidebar-dd" key={entry.variable}>
-						<ClayButton
-							displayType="unstyled"
-							onClick={() =>
-								handleClick(`"$\{${entry.variable}}"`)
-							}
-						>
-							{entry.name}
-						</ClayButton>
+						<ClayTooltipProvider>
+							<ClayButton
+								className="nav-link"
+								displayType="unstyled"
+								onClick={() => handleClick(entry.variable)}
+								title={entry.variable}
+							>
+								{entry.description}
+							</ClayButton>
+						</ClayTooltipProvider>
 					</dd>
 				))}
 		</div>

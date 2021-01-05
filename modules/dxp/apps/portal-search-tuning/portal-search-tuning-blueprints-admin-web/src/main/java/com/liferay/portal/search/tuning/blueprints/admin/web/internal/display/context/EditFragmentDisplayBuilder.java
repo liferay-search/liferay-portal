@@ -14,12 +14,17 @@
 
 package com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context;
 
+import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactory;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminMVCCommandNames;
+import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterDefinition;
+import com.liferay.portal.search.tuning.blueprints.engine.util.BlueprintsEngineContextHelper;
 import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.portlet.RenderRequest;
@@ -33,13 +38,17 @@ import javax.servlet.http.HttpServletRequest;
 public class EditFragmentDisplayBuilder extends EditEntryDisplayBuilder {
 
 	public EditFragmentDisplayBuilder(
+		BlueprintsEngineContextHelper blueprintsEngineContextHelper,
+		BlueprintService blueprintService,
 		HttpServletRequest httpServletRequest, Language language,
 		JSONFactory jsonFactory, RenderRequest renderRequest,
-		RenderResponse renderResponse, BlueprintService blueprintService) {
+		RenderResponse renderResponse) {
 
 		super(
-			httpServletRequest, language, jsonFactory, renderRequest,
-			renderResponse, blueprintService);
+			blueprintService, httpServletRequest, language, jsonFactory,
+			renderRequest, renderResponse);
+
+		_blueprintsEngineContextHelper = blueprintsEngineContextHelper;
 	}
 
 	public BlueprintDisplayContext build() {
@@ -53,6 +62,52 @@ public class EditFragmentDisplayBuilder extends EditEntryDisplayBuilder {
 		setRedirect(blueprintDisplayContext);
 
 		return blueprintDisplayContext;
+	}
+
+	private JSONArray _getPredefinedVariablesJSONArray() {
+		JSONArray predefinedVariablesJSONArray = jsonFactory.createJSONArray();
+
+		Map<String, List<ParameterDefinition>> contributedParameterDefinitions =
+			_blueprintsEngineContextHelper.getContributedParameterDefinitions();
+
+		for (Map.Entry<String, List<ParameterDefinition>> entry :
+				contributedParameterDefinitions.entrySet()) {
+
+			JSONObject jsonObject = jsonFactory.createJSONObject();
+
+			jsonObject.put(
+				"categoryName",
+				language.get(httpServletRequest, entry.getKey()));
+
+			JSONArray parameterDefinitionsJSONArray =
+				jsonFactory.createJSONArray();
+
+			for (ParameterDefinition parameterDefinition : entry.getValue()) {
+				JSONObject parameterDefinitionJSONObject =
+					jsonFactory.createJSONObject();
+
+				parameterDefinitionJSONObject.put(
+					"className", parameterDefinition.getClassName()
+				).put(
+					"description",
+					language.get(
+						httpServletRequest,
+						parameterDefinition.getDescriptionKey())
+				).put(
+					"variable", parameterDefinition.getVariable()
+				);
+
+				parameterDefinitionsJSONArray.put(
+					parameterDefinitionJSONObject);
+			}
+
+			jsonObject.put(
+				"parameterDefinitions", parameterDefinitionsJSONArray);
+
+			predefinedVariablesJSONArray.put(jsonObject);
+		}
+
+		return predefinedVariablesJSONArray;
 	}
 
 	private Map<String, Object> _getProps() {
@@ -72,14 +127,13 @@ public class EditFragmentDisplayBuilder extends EditEntryDisplayBuilder {
 				"initialConfigurationString", blueprint.getConfiguration());
 			props.put("initialDescription", getDescriptionJSONObject());
 			props.put("initialTitle", getTitleJSONObject());
-
-			/*
-			TODO This is a placeholder for LPS-123115 to get predefinedVariables
-			props.put("predefinedVariables", _getPredefinedVariables());
- 			*/
+			props.put(
+				"predefinedVariables", _getPredefinedVariablesJSONArray());
 		}
 
 		return props;
 	}
+
+	private final BlueprintsEngineContextHelper _blueprintsEngineContextHelper;
 
 }

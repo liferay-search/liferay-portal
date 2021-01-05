@@ -73,10 +73,10 @@ describe('ConfigFragment', () => {
 	it('calls updateJson when typing in one of the form inputs', async () => {
 		const {getByLabelText} = renderFragment();
 
-		getByLabelText('Status');
+		getByLabelText('Boost');
 
-		fireEvent.change(getByLabelText('Status'), {
-			target: {value: '1'},
+		fireEvent.change(getByLabelText('Boost'), {
+			target: {value: '2'},
 		});
 
 		waitForElement(() => expect(updateFragment).toHaveBeenCalled());

@@ -26,6 +26,7 @@ import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context.BlueprintDisplayContext;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context.EditFragmentDisplayBuilder;
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintsPortletKeys;
+import com.liferay.portal.search.tuning.blueprints.engine.util.BlueprintsEngineContextHelper;
 import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
 
 import javax.portlet.RenderRequest;
@@ -53,8 +54,9 @@ public class EditFragmentMVCRenderCommand implements MVCRenderCommand {
 
 		BlueprintDisplayContext blueprintDisplayContext =
 			new EditFragmentDisplayBuilder(
+				_blueprintsEngineContextHelper, _blueprintService,
 				_portal.getHttpServletRequest(renderRequest), _language,
-				_jsonFactory, renderRequest, renderResponse, _blueprintService
+				_jsonFactory, renderRequest, renderResponse
 			).build();
 
 		renderRequest.setAttribute(
@@ -71,6 +73,9 @@ public class EditFragmentMVCRenderCommand implements MVCRenderCommand {
 
 		return "/edit_fragment.jsp";
 	}
+
+	@Reference
+	private BlueprintsEngineContextHelper _blueprintsEngineContextHelper;
 
 	@Reference
 	private BlueprintService _blueprintService;
