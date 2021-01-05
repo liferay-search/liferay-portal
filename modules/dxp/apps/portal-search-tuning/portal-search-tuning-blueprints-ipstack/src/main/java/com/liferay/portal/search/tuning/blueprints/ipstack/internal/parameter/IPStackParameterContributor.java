@@ -54,6 +54,11 @@ public class IPStackParameterContributor implements ParameterContributor {
 	}
 
 	@Override
+	public String getCategoryNameKey() {
+		return "ip";
+	}
+
+	@Override
 	public List<ParameterDefinition> getParameterDefinitions() {
 		List<ParameterDefinition> parameterDefinitions = new ArrayList<>();
 

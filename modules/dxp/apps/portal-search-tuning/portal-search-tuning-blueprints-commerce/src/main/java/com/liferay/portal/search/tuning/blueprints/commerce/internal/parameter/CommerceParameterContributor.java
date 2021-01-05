@@ -53,6 +53,11 @@ public class CommerceParameterContributor implements ParameterContributor {
 	}
 
 	@Override
+	public String getCategoryNameKey() {
+		return "commerce";
+	}
+
+	@Override
 	public List<ParameterDefinition> getParameterDefinitions() {
 		List<ParameterDefinition> parameterDefinitions = new ArrayList<>();
 
