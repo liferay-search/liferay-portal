@@ -31,6 +31,8 @@ public interface ParameterContributor {
 		ParameterDataBuilder parameterDataBuilder, Blueprint blueprint,
 		BlueprintsAttributes blueprintsAttributes, Messages messages);
 
+	public String getCategoryNameKey();
+
 	public List<ParameterDefinition> getParameterDefinitions();
 
 }
