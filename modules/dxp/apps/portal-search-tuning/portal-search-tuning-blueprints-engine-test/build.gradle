@@ -1,6 +1,9 @@
 dependencies {
 	testIntegrationCompile group: "com.liferay.portal", name: "com.liferay.portal.impl", version: "default"
 	testIntegrationCompile group: "com.liferay.portal", name: "com.liferay.portal.kernel", version: "default"
+	testIntegrationCompile project(":apps:journal:journal-api")
+	testIntegrationCompile project(":apps:journal:journal-test-util")
+	testIntegrationCompile project(":apps:layout:layout-test-util")
 	testIntegrationCompile project(":apps:portal-configuration:portal-configuration-test-util")
 	testIntegrationCompile project(":apps:portal-search:portal-search-api")
 	testIntegrationCompile project(":apps:portal-search:portal-search-test-util")
@@ -10,6 +13,7 @@ dependencies {
 	testIntegrationCompile project(":core:petra:petra-lang")
 	testIntegrationCompile project(":core:petra:petra-reflect")
 	testIntegrationCompile project(":core:petra:petra-string")
+	testIntegrationCompile project(":dxp:apps:portal-search-tuning:portal-search-tuning-blueprints-admin-web")
 	testIntegrationCompile project(":dxp:apps:portal-search-tuning:portal-search-tuning-blueprints-api")
 	testIntegrationCompile project(":dxp:apps:portal-search-tuning:portal-search-tuning-blueprints-engine-api")
 	testIntegrationCompile project(":test:arquillian-extension-junit-bridge")
