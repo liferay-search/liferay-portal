@@ -16,12 +16,11 @@
 			"clauses": [
 				{
 					"context": "query",
-					"occur": "should",
+					"occur": "must",
 					"query": {
 						"query": {
 							"match": {
 								"content_en_US": {
-									"boost": 200,
 									"query": "los angeles"
 								}
 							}

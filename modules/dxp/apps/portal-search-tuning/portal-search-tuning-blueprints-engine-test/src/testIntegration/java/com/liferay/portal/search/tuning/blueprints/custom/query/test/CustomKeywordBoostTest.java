@@ -96,28 +96,30 @@ public class CustomKeywordBoostTest {
 		_addGroupAndUser();
 
 		_layout = LayoutTestUtil.addLayout(_group.getGroupId());
+
+		_createJournalArticles();
 	}
 
 	@Test
-	public void testKeywordBoost() throws Exception {
-		String[] titles = {"test title 1", "test title 2", "test title 3"};
-
-		JournalTestUtil.addArticle(
-			_group.getGroupId(), titles[0], "restaurant content");
-
-		JournalTestUtil.addArticle(
-			_group.getGroupId(), titles[1], "restaurant content");
-
-		JournalTestUtil.addArticle(
-			_group.getGroupId(), titles[2], "los angeles restaurant");
-
+	public void testBoostAClause() throws Exception {
 		_addCompanyBlueprint(readConfiguration());
 
 		List<String> expectedValues = new ArrayList<>();
 
-		expectedValues.add(titles[2]);
-		expectedValues.add(titles[0]);
-		expectedValues.add(titles[1]);
+		expectedValues.add(_titles[2]);
+		expectedValues.add(_titles[0]);
+		expectedValues.add(_titles[1]);
+
+		_assertSearch("localized_title", String.valueOf(expectedValues));
+	}
+
+	@Test
+	public void testMustBeClause() throws Exception {
+		_addCompanyBlueprint(readConfiguration());
+
+		List<String> expectedValues = new ArrayList<>();
+
+		expectedValues.add(_titles[2]);
 
 		_assertSearch("localized_title", String.valueOf(expectedValues));
 	}
@@ -198,6 +200,21 @@ public class CustomKeywordBoostTest {
 		DocumentsAssert.assertValues(
 			searchResponse.getRequestString(),
 			searchResponse.getDocumentsStream(), fieldName, expected);
+	}
+
+	private void _createJournalArticles() throws Exception {
+		String[] titles = {"test title 1", "test title 2", "test title 3"};
+
+		_titles = titles;
+
+		JournalTestUtil.addArticle(
+			_group.getGroupId(), _titles[0], "restaurant content");
+
+		JournalTestUtil.addArticle(
+			_group.getGroupId(), _titles[1], "restaurant content");
+
+		JournalTestUtil.addArticle(
+			_group.getGroupId(), _titles[2], "los angeles restaurant");
 	}
 
 	private MockActionRequest _getMockActionrequest() throws Exception {
@@ -286,6 +303,7 @@ public class CustomKeywordBoostTest {
 	@Inject
 	private SearchRequestBuilderFactory _searchRequestBuilderFactory;
 
+	private String[] _titles;
 	private User _user;
 
 	@DeleteAfterTestRun
