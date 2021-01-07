@@ -76,7 +76,7 @@ import org.junit.runner.RunWith;
  * @author Joshua Cords
  */
 @RunWith(Arquillian.class)
-public class CustomKeywordBoostTest {
+public class CustomQueryBlueprintsTest {
 
 	@ClassRule
 	@Rule
@@ -120,6 +120,18 @@ public class CustomKeywordBoostTest {
 		List<String> expectedValues = new ArrayList<>();
 
 		expectedValues.add(_titles[2]);
+
+		_assertSearch("localized_title", String.valueOf(expectedValues));
+	}
+
+	@Test
+	public void testMustNotBeClause() throws Exception {
+		_addCompanyBlueprint(readConfiguration());
+
+		List<String> expectedValues = new ArrayList<>();
+
+		expectedValues.add(_titles[0]);
+		expectedValues.add(_titles[1]);
 
 		_assertSearch("localized_title", String.valueOf(expectedValues));
 	}
