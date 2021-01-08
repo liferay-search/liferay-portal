@@ -15,7 +15,7 @@
 package com.liferay.portal.search.tuning.blueprints.query.index.web.internal.portlet;
 
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
-import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.constants.QueryIndexAdminPortletKeys;
+import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.constants.QueryIndexPortletKeys;
 
 import java.io.IOException;
 
@@ -32,7 +32,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(
 	immediate = true,
 	property = {
-		"com.liferay.portlet.css-class-wrapper=portlet-search-tuning-blueprints-misspellings",
+		"com.liferay.portlet.css-class-wrapper=portlet-search-tuning-blueprints-query-index",
 		"com.liferay.portlet.display-category=category.hidden",
 		"com.liferay.portlet.layout-cacheable=true",
 		"com.liferay.portlet.preferences-owned-by-group=true",
@@ -43,7 +43,7 @@ import org.osgi.service.component.annotations.Component;
 		"javax.portlet.expiration-cache=0",
 		"javax.portlet.init-param.template-path=/META-INF/resources/",
 		"javax.portlet.init-param.view-template=/view.jsp",
-		"javax.portlet.name=" + QueryIndexAdminPortletKeys.QUERY_INDEX_ADMIN,
+		"javax.portlet.name=" + QueryIndexPortletKeys.QUERY_INDEX_ADMIN,
 		"javax.portlet.resource-bundle=content.Language",
 		"javax.portlet.security-role-ref=administrator"
 	},

@@ -17,14 +17,14 @@
 <%@ include file="/init.jsp" %>
 
 <%
-ActiveEntriesManagementToolbarDisplayContext activeEntriesManagementToolbarDisplayContext = (ActiveEntriesManagementToolbarDisplayContext)request.getAttribute(QueryIndexWebKeys.ACTIVE_ENTRIES_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT);
+BlacklistedEntriesManagementToolbarDisplayContext blackListedEntriesManagementToolbarDisplayContext = (BlacklistedEntriesManagementToolbarDisplayContext)request.getAttribute(QueryIndexWebKeys.BLACKLISTED_ENTRIES_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT);
 
 ViewQueryStringsDisplayContext viewQueryStringsDisplayContext = (ViewQueryStringsDisplayContext)request.getAttribute(QueryIndexWebKeys.VIEW_QUERY_STRINGS_DISPLAY_CONTEXT);
 %>
 
 <clay:management-toolbar
-	displayContext="<%= activeEntriesManagementToolbarDisplayContext %>"
-	searchContainerId="activeEntries"
+	displayContext="<%= blackListedEntriesManagementToolbarDisplayContext %>"
+	searchContainerId="blackListedEntries"
 	supportsBulkActions="<%= true %>"
 />
 
@@ -33,7 +33,7 @@ ViewQueryStringsDisplayContext viewQueryStringsDisplayContext = (ViewQueryString
 		<aui:input name="redirect" type="hidden" value="<%= currentURL %>" />
 
 		<liferay-ui:search-container
-			id="activeEntries"
+			id="blackListedEntries"
 			searchContainer="<%= viewQueryStringsDisplayContext.getSearchContainer() %>"
 		>
 			<liferay-ui:search-container-row
@@ -41,7 +41,7 @@ ViewQueryStringsDisplayContext viewQueryStringsDisplayContext = (ViewQueryString
 				keyProperty="queryStringId"
 				modelVar="entry"
 			>
-				<%@ include file="/active_entry_search_columns.jspf" %>
+				<%@ include file="/blacklisted_entry_search_columns.jspf" %>
 			</liferay-ui:search-container-row>
 
 			<liferay-ui:search-iterator
@@ -53,14 +53,14 @@ ViewQueryStringsDisplayContext viewQueryStringsDisplayContext = (ViewQueryString
 </clay:container-fluid>
 
 <liferay-frontend:component
-	componentId="<%= activeEntriesManagementToolbarDisplayContext.getDefaultEventHandler() %>"
-	module="js/view_active_entries/ActiveEntriesManagementToolbarDefaultEventHandler"
+	componentId="<%= blackListedEntriesManagementToolbarDisplayContext.getDefaultEventHandler() %>"
+	module="js/view_blacklisted_entries/BlacklistedEntriesManagementToolbarDefaultEventHandler"
 />
 
 <aui:script sandbox="<%= true %>">
 	var submitForm = function (url) {
 		var searchContainer = document.getElementById(
-			'<portlet:namespace />activeEntries'
+			'<portlet:namespace />blackListedEntries'
 		);
 
 		if (searchContainer) {
@@ -94,7 +94,7 @@ ViewQueryStringsDisplayContext viewQueryStringsDisplayContext = (ViewQueryString
 		deleteEntries: deleteEntries,
 	};
 
-	Liferay.componentReady('activeEntriesManagementToolbar').then(function (
+	Liferay.componentReady('blackListedEntriesManagementToolbar').then(function (
 		managementToolbar
 	) {
 		managementToolbar.on('actionItemClicked', function (event) {

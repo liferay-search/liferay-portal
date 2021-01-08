@@ -21,7 +21,7 @@ import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.search.engine.SearchEngineInformation;
-import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.constants.QueryIndexAdminPortletKeys;
+import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.constants.QueryIndexPortletKeys;
 import com.liferay.portal.search.tuning.web.application.list.constants.SearchTuningPanelCategoryKeys;
 
 import java.util.Objects;
@@ -40,11 +40,11 @@ import org.osgi.service.component.annotations.Reference;
 	},
 	service = PanelApp.class
 )
-public class QueryIndexAdminPanelApp extends BasePanelApp {
+public class QueryIndexPanelApp extends BasePanelApp {
 
 	@Override
 	public String getPortletId() {
-		return QueryIndexAdminPortletKeys.QUERY_INDEX_ADMIN;
+		return QueryIndexPortletKeys.QUERY_INDEX_ADMIN;
 	}
 
 	@Override
@@ -60,7 +60,7 @@ public class QueryIndexAdminPanelApp extends BasePanelApp {
 
 	@Override
 	@Reference(
-		target = "(javax.portlet.name=" + QueryIndexAdminPortletKeys.QUERY_INDEX_ADMIN + ")",
+		target = "(javax.portlet.name=" + QueryIndexPortletKeys.QUERY_INDEX_ADMIN + ")",
 		unbind = "-"
 	)
 	public void setPortlet(Portlet portlet) {

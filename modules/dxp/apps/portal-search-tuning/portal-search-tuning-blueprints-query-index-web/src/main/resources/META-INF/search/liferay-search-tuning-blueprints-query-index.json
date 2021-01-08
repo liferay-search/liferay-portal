@@ -6,221 +6,21 @@
 					"template_ar": {
 						"mapping": {
 							"analyzer": "arabic",
+							"fields": {
+								"raw": {
+									"store": true,
+									"type": "keyword"
+								},
+								"snowball": {
+									"store": true,
+									"type": "text"
+								}
+							},
 							"store": true,
 							"term_vector": "with_positions_offsets",
 							"type": "search_as_you_type"
 						},
-						"match": "\\w+_ar\\b|\\w+_ar_[A-Z]{2}\\b",
-						"match_mapping_type": "string",
-						"match_pattern": "regex"
-					}
-				},
-				{
-					"template_bg": {
-						"mapping": {
-							"analyzer": "bulgarian",
-							"store": true,
-							"term_vector": "with_positions_offsets",
-							"type": "search_as_you_type"
-						},
-						"match": "\\w+_bg\\b|\\w+_bg_[A-Z]{2}\\b",
-						"match_mapping_type": "string",
-						"match_pattern": "regex"
-					}
-				},
-				{
-					"template_ca": {
-						"mapping": {
-							"analyzer": "catalan",
-							"store": true,
-							"term_vector": "with_positions_offsets",
-							"type": "search_as_you_type"
-						},
-						"match": "\\w+_ca\\b|\\w+_ca_[A-Z]{2}\\b",
-						"match_mapping_type": "string",
-						"match_pattern": "regex"
-					}
-				},
-				{
-					"template_cs": {
-						"mapping": {
-							"analyzer": "czech",
-							"store": true,
-							"term_vector": "with_positions_offsets",
-							"type": "search_as_you_type"
-						},
-						"match": "\\w+_cs\\b|\\w+_cs_[A-Z]{2}\\b",
-						"match_mapping_type": "string",
-						"match_pattern": "regex"
-					}
-				},
-				{
-					"template_da": {
-						"mapping": {
-							"analyzer": "danish",
-							"store": true,
-							"term_vector": "with_positions_offsets",
-							"type": "search_as_you_type"
-						},
-						"match": "\\w+_da\\b|\\w+_da_[A-Z]{2}\\b",
-						"match_mapping_type": "string",
-						"match_pattern": "regex"
-					}
-				},
-				{
-					"template_de": {
-						"mapping": {
-							"analyzer": "german",
-							"store": true,
-							"term_vector": "with_positions_offsets",
-							"type": "search_as_you_type"
-						},
-						"match": "\\w+_de\\b|\\w+_de_[A-Z]{2}\\b",
-						"match_mapping_type": "string",
-						"match_pattern": "regex"
-					}
-				},
-				{
-					"template_el": {
-						"mapping": {
-							"analyzer": "greek",
-							"store": true,
-							"term_vector": "with_positions_offsets",
-							"type": "search_as_you_type"
-						},
-						"match": "\\w+_el\\b|\\w+_el_[A-Z]{2}\\b",
-						"match_mapping_type": "string",
-						"match_pattern": "regex"
-					}
-				},
-				{
-					"template_en": {
-						"mapping": {
-							"analyzer": "english",
-							"search_analyzer": "liferay_analyzer_en",
-							"store": true,
-							"term_vector": "with_positions_offsets",
-							"type": "search_as_you_type"
-						},
-						"match": "\\w+_en\\b|\\w+_en_[A-Z]{2}\\b",
-						"match_mapping_type": "string",
-						"match_pattern": "regex"
-					}
-				},
-				{
-					"template_es": {
-						"mapping": {
-							"analyzer": "spanish",
-							"search_analyzer": "liferay_analyzer_es",
-							"store": true,
-							"term_vector": "with_positions_offsets",
-							"type": "search_as_you_type"
-						},
-						"match": "\\w+_es\\b|\\w+_es_[A-Z]{2}\\b",
-						"match_mapping_type": "string",
-						"match_pattern": "regex"
-					}
-				},
-				{
-					"template_eu": {
-						"mapping": {
-							"analyzer": "basque",
-							"store": true,
-							"term_vector": "with_positions_offsets",
-							"type": "search_as_you_type"
-						},
-						"match": "\\w+_eu\\b|\\w+_eu_[A-Z]{2}\\b",
-						"match_mapping_type": "string",
-						"match_pattern": "regex"
-					}
-				},
-				{
-					"template_fi": {
-						"mapping": {
-							"analyzer": "finnish",
-							"store": true,
-							"term_vector": "with_positions_offsets",
-							"type": "search_as_you_type"
-						},
-						"match": "\\w+_fi\\b|\\w+_fi_[A-Z]{2}\\b",
-						"match_mapping_type": "string",
-						"match_pattern": "regex"
-					}
-				},
-				{
-					"template_fr": {
-						"mapping": {
-							"analyzer": "french",
-							"store": true,
-							"term_vector": "with_positions_offsets",
-							"type": "search_as_you_type"
-						},
-						"match": "\\w+_fr\\b|\\w+_fr_[A-Z]{2}\\b",
-						"match_mapping_type": "string",
-						"match_pattern": "regex"
-					}
-				},
-				{
-					"template_hi": {
-						"mapping": {
-							"analyzer": "hindi",
-							"store": true,
-							"term_vector": "with_positions_offsets",
-							"type": "search_as_you_type"
-						},
-						"match": "\\w+_hi\\b|\\w+_hi_[A-Z]{2}\\b",
-						"match_mapping_type": "string",
-						"match_pattern": "regex"
-					}
-				},
-				{
-					"template_hu": {
-						"mapping": {
-							"analyzer": "hungarian",
-							"store": true,
-							"term_vector": "with_positions_offsets",
-							"type": "search_as_you_type"
-						},
-						"match": "\\w+_hu\\b|\\w+_hu_[A-Z]{2}\\b",
-						"match_mapping_type": "string",
-						"match_pattern": "regex"
-					}
-				},
-				{
-					"template_hy": {
-						"mapping": {
-							"analyzer": "armenian",
-							"store": true,
-							"term_vector": "with_positions_offsets",
-							"type": "search_as_you_type"
-						},
-						"match": "\\w+_hy\\b|\\w+_hy_[A-Z]{2}\\b",
-						"match_mapping_type": "string",
-						"match_pattern": "regex"
-					}
-				},
-				{
-					"template_id": {
-						"mapping": {
-							"analyzer": "indonesian",
-							"store": true,
-							"term_vector": "with_positions_offsets",
-							"type": "search_as_you_type"
-						},
-						"match": "\\w+_id\\b|\\w+_id_[A-Z]{2}\\b",
-						"match_mapping_type": "string",
-						"match_pattern": "regex"
-					}
-				},
-				{
-					"template_it": {
-						"mapping": {
-							"analyzer": "italian",
-							"store": true,
-							"term_vector": "with_positions_offsets",
-							"type": "search_as_you_type"
-						},
-						"match": "\\w+_it\\b|\\w+_it_[A-Z]{2}\\b",
+						"match": "content_ar|content_ar_[A-Z]{2}",
 						"match_mapping_type": "string",
 						"match_pattern": "regex"
 					}
@@ -229,11 +29,21 @@
 					"template_ja": {
 						"mapping": {
 							"analyzer": "kuromoji",
+							"fields": {
+								"raw": {
+									"store": true,
+									"type": "keyword"
+								},
+								"snowball": {
+									"store": true,
+									"type": "text"
+								}
+							},
 							"store": true,
 							"term_vector": "with_positions_offsets",
 							"type": "search_as_you_type"
 						},
-						"match": "\\w+_ja\\b|\\w+_ja_[A-Z]{2}\\b",
+						"match": "content_ja|content_ja_[A-Z]{2}",
 						"match_mapping_type": "string",
 						"match_pattern": "regex"
 					}
@@ -242,140 +52,21 @@
 					"template_ko": {
 						"mapping": {
 							"analyzer": "cjk",
+							"fields": {
+								"raw": {
+									"store": true,
+									"type": "keyword"
+								},
+								"snowball": {
+									"store": true,
+									"type": "text"
+								}
+							},
 							"store": true,
 							"term_vector": "with_positions_offsets",
 							"type": "search_as_you_type"
 						},
-						"match": "\\w+_ko\\b|\\w+_ko_[A-Z]{2}\\b",
-						"match_mapping_type": "string",
-						"match_pattern": "regex"
-					}
-				},
-				{
-					"template_nl": {
-						"mapping": {
-							"analyzer": "dutch",
-							"store": true,
-							"term_vector": "with_positions_offsets",
-							"type": "search_as_you_type"
-						},
-						"match": "\\w+_nl\\b|\\w+_nl_[A-Z]{2}\\b",
-						"match_mapping_type": "string",
-						"match_pattern": "regex"
-					}
-				},
-				{
-					"template_no": {
-						"mapping": {
-							"analyzer": "norwegian",
-							"store": true,
-							"term_vector": "with_positions_offsets",
-							"type": "search_as_you_type"
-						},
-						"match": "\\w+_nb\\b|\\w+_nb_[A-Z]{2}\\b",
-						"match_mapping_type": "string",
-						"match_pattern": "regex"
-					}
-				},
-				{
-					"template_pl": {
-						"mapping": {
-							"analyzer": "polish",
-							"store": true,
-							"term_vector": "with_positions_offsets",
-							"type": "search_as_you_type"
-						},
-						"match": "\\w+_pl\\b|\\w+_pl_[A-Z]{2}\\b",
-						"match_mapping_type": "string",
-						"match_pattern": "regex"
-					}
-				},
-				{
-					"template_pt": {
-						"mapping": {
-							"analyzer": "portuguese",
-							"store": true,
-							"term_vector": "with_positions_offsets",
-							"type": "search_as_you_type"
-						},
-						"match": "\\w+_pt\\b|\\w+_pt_PT\\b",
-						"match_mapping_type": "string",
-						"match_pattern": "regex"
-					}
-				},
-				{
-					"template_pt_br": {
-						"mapping": {
-							"analyzer": "brazilian",
-							"store": true,
-							"term_vector": "with_positions_offsets",
-							"type": "search_as_you_type"
-						},
-						"match": "*_pt_BR",
-						"match_mapping_type": "string"
-					}
-				},
-				{
-					"template_ro": {
-						"mapping": {
-							"analyzer": "romanian",
-							"store": true,
-							"term_vector": "with_positions_offsets",
-							"type": "search_as_you_type"
-						},
-						"match": "\\w+_ro\\b|\\w+_ro_RO\\b",
-						"match_mapping_type": "string",
-						"match_pattern": "regex"
-					}
-				},
-				{
-					"template_ru": {
-						"mapping": {
-							"analyzer": "russian",
-							"store": true,
-							"term_vector": "with_positions_offsets",
-							"type": "search_as_you_type"
-						},
-						"match": "\\w+_ru\\b|\\w+_ru_RU\\b",
-						"match_mapping_type": "string",
-						"match_pattern": "regex"
-					}
-				},
-				{
-					"template_sv": {
-						"mapping": {
-							"analyzer": "swedish",
-							"store": true,
-							"term_vector": "with_positions_offsets",
-							"type": "search_as_you_type"
-						},
-						"match": "\\w+_sv\\b|\\w+_sv_[A-Z]{2}\\b",
-						"match_mapping_type": "string",
-						"match_pattern": "regex"
-					}
-				},
-				{
-					"template_th": {
-						"mapping": {
-							"analyzer": "thai",
-							"store": true,
-							"term_vector": "with_positions_offsets",
-							"type": "search_as_you_type"
-						},
-						"match": "\\w+_th\\b|\\w+_th_TH\\b",
-						"match_mapping_type": "string",
-						"match_pattern": "regex"
-					}
-				},
-				{
-					"template_tr": {
-						"mapping": {
-							"analyzer": "turkish",
-							"store": true,
-							"term_vector": "with_positions_offsets",
-							"type": "search_as_you_type"
-						},
-						"match": "\\w+_tr\\b|\\w+_tr_TR\\b",
+						"match": "content_ko|content_ko_[A-Z]{2}",
 						"match_mapping_type": "string",
 						"match_pattern": "regex"
 					}
@@ -384,11 +75,21 @@
 					"template_zh": {
 						"mapping": {
 							"analyzer": "smartcn",
+							"fields": {
+								"raw": {
+									"store": true,
+									"type": "keyword"
+								},
+								"snowball": {
+									"store": true,
+									"type": "text"
+								}
+							},
 							"store": true,
 							"term_vector": "with_positions_offsets",
 							"type": "search_as_you_type"
 						},
-						"match": "\\w+_zh\\b|\\w+_zh_[A-Z]{2}\\b",
+						"match": "content_zh|content_zh_[A-Z]{2}",
 						"match_mapping_type": "string",
 						"match_pattern": "regex"
 					}
@@ -397,7 +98,26 @@
 			"properties": {
 				"companyId": {
 					"store": true,
+					"type": "long"
+				},
+				"content": {
+					"analyzer": "liferay_query_string",
+					"copy_to": [
+						"content_raw",
+						"content_snowball"
+					],
+					"store": true,
+					"term_vector": "with_positions_offsets",
+					"type": "search_as_you_type"
+				},
+				"content_raw": {
+					"store": false,
 					"type": "keyword"
+				},
+				"content_snowball": {
+					"analyzer": "snowball",
+					"store": false,
+					"type": "text"
 				},
 				"created": {
 					"format": "yyyyMMddHHmmss",
@@ -406,12 +126,52 @@
 				},
 				"groupId": {
 					"store": true,
+					"type": "long"
+				},
+				"hitCount": {
+					"store": true,
+					"type": "long"
+				},
+				"lastAccessed": {
+					"format": "yyyyMMddHHmmss",
+					"store": true,
+					"type": "date"
+				},
+				"lastReported": {
+					"store": true,
+					"type": "date"
+				},
+				"modified": {
+					"store": true,
+					"type": "date"
+				},
+				"reportCount": {
+					"store": true,
+					"type": "long"
+				},
+				"status": {
+					"store": true,
+					"type": "keyword"
+				},
+				"statusDate": {
+					"store": true,
 					"type": "keyword"
 				}
 			}
 		}
 	},
 	"settings": {
+		"analysis": {
+			"analyzer": {
+				"liferay_query_string": {
+					"filter": [
+						"lowercase",
+						"asciifolding"
+					],
+					"tokenizer": "standard"
+				}
+			}
+		},
 		"index.auto_expand_replicas": "0-all",
 		"index.number_of_shards": 1
 	}

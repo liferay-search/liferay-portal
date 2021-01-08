@@ -7,20 +7,10 @@
  * contacting Liferay, Inc. See the License for the specific language governing
  * permissions and limitations under the License, including but not limited to
  * distribution rights of the Software.
- *
- *
- *
  */
 
-package com.liferay.portal.search.tuning.blueprints.query.index.web.internal.constants;
+import {DefaultEventHandler} from 'frontend-js-web';
 
-/**
- * @author Petteri Karttunen
- */
-public class QueryIndexAdminPortletKeys {
+class ReportedEntriesManagementToolbarDefaultEventHandler extends DefaultEventHandler {}
 
-	public static final String QUERY_INDEX_ADMIN =
-		"com_liferay_portal_search_tuning_blueprints_query_index_" +
-			"admin_web_internal_portlet_QueryIndexAdminPortlet";
-
-}
+export default ReportedEntriesManagementToolbarDefaultEventHandler;
