@@ -30,12 +30,7 @@ const EmptyListMessage = () => (
 	</div>
 );
 
-const QueryFragmentList = ({
-	category,
-	onAddFragment,
-	queryFragments,
-	toggleSidebar,
-}) => {
+const QueryFragmentList = ({category, onAddFragment, queryFragments}) => {
 	const {locale} = useContext(ThemeContext);
 
 	const [showAdd, setShowAdd] = useState(-1);
@@ -111,7 +106,6 @@ const QueryFragmentList = ({
 														)}
 														displayType="secondary"
 														onClick={() => {
-															toggleSidebar();
 															onAddFragment({
 																fragmentTemplateJSON,
 																uiConfigurationJSON,
@@ -247,15 +241,16 @@ function Sidebar({onAddFragment, showSidebar, toggleSidebar}) {
 
 			{!loading ? (
 				queryFragments.length ? (
-					categories.map((category) => (
-						<QueryFragmentList
-							category={category}
-							key={category}
-							onAddFragment={onAddFragment}
-							queryFragments={categorizedFragments[category]}
-							toggleSidebar={toggleSidebar}
-						/>
-					))
+					<div className="query-fragment-list">
+						{categories.map((category) => (
+							<QueryFragmentList
+								category={category}
+								key={category}
+								onAddFragment={onAddFragment}
+								queryFragments={categorizedFragments[category]}
+							/>
+						))}
+					</div>
 				) : (
 					<EmptyListMessage />
 				)

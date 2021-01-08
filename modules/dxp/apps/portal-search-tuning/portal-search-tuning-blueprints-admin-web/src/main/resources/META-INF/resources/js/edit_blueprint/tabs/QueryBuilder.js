@@ -65,13 +65,16 @@ function QueryBuilder({
 	const {contextPath} = useContext(ThemeContext);
 	const [collapseAll, setCollapseAll] = useState(false);
 
-	const _hasMustClause = selectedFragments.some(
-		(fragment) =>
-			fragment.fragmentOutput.clauses &&
-			fragment.fragmentOutput.clauses[0] &&
-			fragment.fragmentOutput.clauses[0].occur &&
-			fragment.fragmentOutput.clauses[0].occur === 'must'
-	);
+	const _hasMustClause =
+		!!frameworkConfig.apply_indexer_clauses ||
+		selectedFragments.some(
+			(fragment) =>
+				fragment.fragmentOutput.clauses &&
+				fragment.fragmentOutput.clauses[0] &&
+				fragment.fragmentOutput.clauses[0].occur &&
+				fragment.fragmentOutput.clauses[0].occur === 'must' &&
+				fragment.fragmentOutput.enabled
+		);
 
 	const _renderSelectedFragments = () => {
 		return (

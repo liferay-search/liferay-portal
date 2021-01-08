@@ -39,7 +39,6 @@ import LIMIT_SEARCH_TO_THE_CURRENT_GROUP from '../../fragments/limit-search-to-t
 import LIMIT_SEARCH_TO_THESE_GROUPS from '../../fragments/limit-search-to-these-groups';
 import MATCH_FUZZY from '../../fragments/match-fuzzy';
 import MATCH_WORD_PARTS from '../../fragments/match-word-parts';
-import PASTE_AN_ELASTICSEARCH_FILTER_QUERY from '../../fragments/paste-an-elasticsearch-filter-query';
 import PASTE_AN_ELASTICSEARCH_QUERY from '../../fragments/paste-an-elasticsearch-query';
 import SEARCH_WITH_LUCENE_SYNTAX from '../../fragments/search-with-lucene-syntax';
 import TEXT_MATCH from '../../fragments/text-match';
@@ -104,7 +103,6 @@ export const QUERY_FRAGMENTS = [
 	BOOST_CONTENTS_IN_A_CATEGORY_FOR_GUEST_USERS,
 	HIDE_CONTENTS_IN_A_CATEGORY_FOR_GUEST_USERS,
 	PASTE_AN_ELASTICSEARCH_QUERY,
-	PASTE_AN_ELASTICSEARCH_FILTER_QUERY,
 ];
 
 export const PREDEFINED_VARIABLES = [

@@ -36,4 +36,5 @@ export default {
 			en_US: 'Limit Search to My Groups',
 		},
 	},
+	uiConfigurationJSON: [],
 };
