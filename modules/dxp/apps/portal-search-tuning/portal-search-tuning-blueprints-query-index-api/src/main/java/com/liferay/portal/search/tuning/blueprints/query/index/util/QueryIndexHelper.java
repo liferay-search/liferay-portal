@@ -12,10 +12,18 @@
  *
  */
 
-package com.liferay.portal.search.tuning.blueprints.query.index.index;
+package com.liferay.portal.search.tuning.blueprints.query.index.util;
 
 /**
  * @author Petteri Karttunen
  */
-public interface QueryIndexWriter {
+public interface QueryIndexHelper {
+
+	public void indexKeywords(
+		long companyId, long groupId, String languageId, String keywords);
+
+	public boolean isAnalyzedLanguage(String languageId);
+
+	public void reportKeywords(long companyId, long groupId, String keywords);
+
 }

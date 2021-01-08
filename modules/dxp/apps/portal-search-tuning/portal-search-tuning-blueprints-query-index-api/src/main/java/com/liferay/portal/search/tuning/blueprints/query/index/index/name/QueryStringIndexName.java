@@ -12,10 +12,13 @@
  *
  */
 
-package com.liferay.portal.search.tuning.blueprints.query.index.index;
+package com.liferay.portal.search.tuning.blueprints.query.index.index.name;
 
 /**
  * @author Petteri Karttunen
  */
-public class QueryIndexReader {
+public interface QueryStringIndexName {
+
+	public String getIndexName();
+
 }
