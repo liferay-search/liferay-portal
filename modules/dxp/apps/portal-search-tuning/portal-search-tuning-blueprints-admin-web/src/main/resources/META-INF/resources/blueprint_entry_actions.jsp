@@ -23,6 +23,7 @@ Blueprint blueprint = (Blueprint)row.getObject();
 
 long blueprintId = blueprint.getBlueprintId();
 int blueprintType = blueprint.getType();
+
 long companyGroupId = themeDisplay.getCompanyGroupId();
 %>
 

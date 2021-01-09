@@ -58,20 +58,20 @@ public class BlueprintsAdminPortlet extends MVCPortlet {
 		try {
 			super.processAction(actionRequest, actionResponse);
 		}
-		catch (IOException e) {
-			e.printStackTrace();
+		catch (IOException ioException) {
+			ioException.printStackTrace();
 
-			throw e;
+			throw ioException;
 		}
-		catch (PortletException e) {
-			e.printStackTrace();
+		catch (PortletException portletException) {
+			portletException.printStackTrace();
 
-			throw e;
+			throw portletException;
 		}
-		catch (RuntimeException e) {
-			e.printStackTrace();
+		catch (RuntimeException runtimeException) {
+			runtimeException.printStackTrace();
 
-			throw e;
+			throw runtimeException;
 		}
 	}
 
