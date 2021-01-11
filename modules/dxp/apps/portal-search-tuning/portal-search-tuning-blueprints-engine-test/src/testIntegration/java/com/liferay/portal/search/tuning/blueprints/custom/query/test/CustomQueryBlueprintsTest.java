@@ -110,7 +110,20 @@ public class CustomQueryBlueprintsTest {
 		expectedValues.add(_titles[0]);
 		expectedValues.add(_titles[1]);
 
-		_assertSearch("localized_title", String.valueOf(expectedValues));
+		_assertSearch(
+			"localized_title", "restaurant 1", String.valueOf(expectedValues));
+	}
+
+	@Test
+	public void testTextMatch() throws Exception {
+		_addCompanyBlueprint(readConfiguration());
+
+		List<String> expectedValues = new ArrayList<>();
+
+		expectedValues.add(_titles[2]);
+
+		_assertSearch(
+			"localized_title", "cafe", String.valueOf(expectedValues));
 	}
 
 	@Test
@@ -121,7 +134,8 @@ public class CustomQueryBlueprintsTest {
 
 		expectedValues.add(_titles[2]);
 
-		_assertSearch("localized_title", String.valueOf(expectedValues));
+		_assertSearch(
+			"localized_title", "restaurant 1", String.valueOf(expectedValues));
 	}
 
 	@Test
@@ -133,7 +147,8 @@ public class CustomQueryBlueprintsTest {
 		expectedValues.add(_titles[0]);
 		expectedValues.add(_titles[1]);
 
-		_assertSearch("localized_title", String.valueOf(expectedValues));
+		_assertSearch(
+			"localized_title", "restaurant 1", String.valueOf(expectedValues));
 	}
 
 	@Rule
@@ -179,7 +194,8 @@ public class CustomQueryBlueprintsTest {
 			_permissionCheckerFactory.create(_user));
 	}
 
-	private void _assertSearch(String fieldName, String expected) {
+	private void _assertSearch(
+		String fieldName, String keywords, String expected) {
 		SearchResponse searchResponse = _searcher.search(
 			_searchRequestBuilderFactory.builder(
 			).addComplexQueryPart(
@@ -202,7 +218,7 @@ public class CustomQueryBlueprintsTest {
 					searchContext.setAttribute(
 						SearchContextAttributeKeys.BLUEPRINT_ID,
 						_blueprint.getBlueprintId());
-					searchContext.setKeywords("restaurant 1");
+					searchContext.setKeywords(keywords);
 					searchContext.setLayout(_layout);
 					searchContext.setTimeZone(_user.getTimeZone());
 					searchContext.setUserId(_user.getUserId());
@@ -215,7 +231,7 @@ public class CustomQueryBlueprintsTest {
 	}
 
 	private void _createJournalArticles() throws Exception {
-		String[] titles = {"test title 1", "test title 2", "test title 3"};
+		String[] titles = {"restaurant 1", "restaurant 2", "la cafe"};
 
 		_titles = titles;
 
