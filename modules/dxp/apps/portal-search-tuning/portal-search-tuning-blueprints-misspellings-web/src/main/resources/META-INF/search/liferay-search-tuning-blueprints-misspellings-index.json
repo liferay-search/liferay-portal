@@ -19,32 +19,20 @@
 					"store": true,
 					"type": "keyword"
 				},
-				"misspellingSetId": {
-					"store": true,
-					"type": "keyword"
-				},
 				"misspellings": {
 					"store": true,
-					"type": "keyword"
+					"type": "text"
 				},
 				"modified": {
 					"format": "yyyyMMddHHmmss",
 					"store": true,
 					"type": "date"
 				},
-				"name": {
-					"store": true,
-					"type": "text"
-				},
 				"phrase": {
 					"store": true,
 					"type": "keyword"
 				},
 				"userId": {
-					"store": true,
-					"type": "keyword"
-				},
-				"userName": {
 					"store": true,
 					"type": "keyword"
 				}

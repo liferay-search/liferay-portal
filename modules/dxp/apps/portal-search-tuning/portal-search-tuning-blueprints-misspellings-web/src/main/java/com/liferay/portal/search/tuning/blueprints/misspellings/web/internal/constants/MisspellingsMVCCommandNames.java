@@ -23,6 +23,6 @@ public class MisspellingsMVCCommandNames {
 
 	public static final String EDIT_MISSPELLING_SET = "/misspellings/edit";
 
-	public static final String VIEW_MISSPELLING_SETS = "/misspellings/view";
+	public static final String VIEW_MISSPELLING_SETS = "/misspellings";
 
 }

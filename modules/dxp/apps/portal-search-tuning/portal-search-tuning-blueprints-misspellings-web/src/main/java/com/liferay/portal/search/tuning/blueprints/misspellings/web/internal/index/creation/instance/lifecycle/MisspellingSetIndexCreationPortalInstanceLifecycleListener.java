@@ -47,7 +47,9 @@ public class MisspellingSetIndexCreationPortalInstanceLifecycleListener
 			_misspellingSetIndexNameBuilder.getMisspellingSetIndexName(
 				company.getCompanyId());
 
-		if (!_misspellingSetIndexReader.isExists(misspellingSetIndexName)) {
+		if (!_misspellingSetIndexReader.isIndexExists(
+				misspellingSetIndexName)) {
+
 			_misspellingSetIndexCreator.create(misspellingSetIndexName);
 		}
 	}

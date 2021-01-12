@@ -47,7 +47,7 @@ public class MisspellingSetIndexCreationCompanyModelListener
 			_misspellingSetIndexNameBuilder.getMisspellingSetIndexName(
 				company.getCompanyId());
 
-		if (_misspellingSetIndexReader.isExists(misspellingSetIndexName)) {
+		if (_misspellingSetIndexReader.isIndexExists(misspellingSetIndexName)) {
 			return;
 		}
 
@@ -66,7 +66,9 @@ public class MisspellingSetIndexCreationCompanyModelListener
 			_misspellingSetIndexNameBuilder.getMisspellingSetIndexName(
 				company.getCompanyId());
 
-		if (!_misspellingSetIndexReader.isExists(misspellingSetIndexName)) {
+		if (!_misspellingSetIndexReader.isIndexExists(
+				misspellingSetIndexName)) {
+
 			return;
 		}
 

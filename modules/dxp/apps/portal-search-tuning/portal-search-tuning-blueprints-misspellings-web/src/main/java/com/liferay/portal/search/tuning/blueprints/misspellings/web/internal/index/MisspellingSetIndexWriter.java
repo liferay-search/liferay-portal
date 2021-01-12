@@ -22,14 +22,14 @@ import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.ind
 public interface MisspellingSetIndexWriter {
 
 	public String create(
-		MisspellingSetIndexName misspellingsIndexName,
+		MisspellingSetIndexName misspellingSetIndexName,
 		MisspellingSet misspellingSet);
 
 	public void remove(
-		MisspellingSetIndexName misspellingsIndexName, String id);
+		MisspellingSetIndexName misspellingSetIndexName, String id);
 
 	public void update(
-		MisspellingSetIndexName misspellingsIndexName,
+		MisspellingSetIndexName misspellingSetIndexName,
 		MisspellingSet misspellingSet);
 
 }

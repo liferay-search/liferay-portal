@@ -30,8 +30,8 @@ import com.liferay.portal.search.sort.Sorts;
 import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.constants.MisspellingsMVCCommandNames;
 import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.constants.MisspellingsPortletKeys;
 import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.constants.MisspellingsWebKeys;
-import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.display.context.MisspellingSetsDisplayContext;
-import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.display.context.MisspellingSetsManagementToolbarDisplayContext;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.display.context.ViewMisspellingSetsDisplayContext;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.display.context.ViewMisspellingSetsManagementToolbarDisplayContext;
 import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.DocumentToMisspellingSetTranslator;
 import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.MisspellingSet;
 import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.name.MisspellingSetIndexNameBuilder;
@@ -62,8 +62,8 @@ public class ViewMisspellingSetsMVCRenderCommand implements MVCRenderCommand {
 			RenderRequest renderRequest, RenderResponse renderResponse)
 		throws PortletException {
 
-		MisspellingSetsDisplayContext misspellingSetsDisplayContext =
-			new MisspellingSetsDisplayContext(
+		ViewMisspellingSetsDisplayContext misspellingSetsDisplayContext =
+			new ViewMisspellingSetsDisplayContext(
 				_portal.getLiferayPortletRequest(renderRequest),
 				_portal.getLiferayPortletResponse(renderResponse),
 				_documentToMisspellingSetTranslator,
@@ -71,40 +71,36 @@ public class ViewMisspellingSetsMVCRenderCommand implements MVCRenderCommand {
 				_searchEngineAdapter, _sorts);
 
 		renderRequest.setAttribute(
-			MisspellingsWebKeys.MISSPELLING_SETS_DISPLAY_CONTEXT,
+			MisspellingsWebKeys.VIEW_MISSPELLING_SETS_DISPLAY_CONTEXT,
 			misspellingSetsDisplayContext);
 
 		try {
-			MisspellingSetsManagementToolbarDisplayContext
-				misspellingSetsManagementToolbarDisplayContext =
-					_getMisspellingSetsManagementToolbar(
-						renderRequest, renderResponse,
-						misspellingSetsDisplayContext.getSearchContainer(),
-						misspellingSetsDisplayContext.getDisplayStyle());
-
 			renderRequest.setAttribute(
 				MisspellingsWebKeys.
-					MISSPELLING_SETS_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT,
-				misspellingSetsManagementToolbarDisplayContext);
+					VIEW_MISSPELLING_SETS_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT,
+				_getMisspellingSetsManagementToolbarDisplayContext(
+					renderRequest, renderResponse,
+					misspellingSetsDisplayContext.getSearchContainer(),
+					misspellingSetsDisplayContext.getDisplayStyle()));
 		}
-		catch (PortalException portalException) {
-			_log.error(portalException.getMessage(), portalException);
+		catch (PortalException | PortletException exception) {
+			_log.error(exception.getMessage(), exception);
 
 			SessionErrors.add(
-				renderRequest, MisspellingsWebKeys.ERROR_DETAILS,
-				portalException);
+				renderRequest, MisspellingsWebKeys.ERROR,
+				exception.getMessage());
 		}
 
 		return "/view.jsp";
 	}
 
-	private MisspellingSetsManagementToolbarDisplayContext
-		_getMisspellingSetsManagementToolbar(
+	private ViewMisspellingSetsManagementToolbarDisplayContext
+		_getMisspellingSetsManagementToolbarDisplayContext(
 			RenderRequest renderRequest, RenderResponse renderResponse,
 			SearchContainer<MisspellingSet> searchContainer,
 			String displayStyle) {
 
-		return new MisspellingSetsManagementToolbarDisplayContext(
+		return new ViewMisspellingSetsManagementToolbarDisplayContext(
 			_portal.getHttpServletRequest(renderRequest),
 			_portal.getLiferayPortletRequest(renderRequest),
 			_portal.getLiferayPortletResponse(renderResponse), searchContainer,

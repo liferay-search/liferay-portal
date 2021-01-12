@@ -29,18 +29,12 @@ public class MisspellingSetFields {
 
 	public static final String LANGUAGE_ID = "languageId";
 
-	public static final String MISSPELLING_SET_ID = "misspellingSetId";
-
 	public static final String MISSPELLINGS = "misspellings";
 
 	public static final String MODIFIED = "modified";
 
-	public static final String NAME = "name";
-
 	public static final String PHRASE = "phrase";
 
 	public static final String USER_ID = "userId";
-
-	public static final String USER_NAME = "userName";
 
 }

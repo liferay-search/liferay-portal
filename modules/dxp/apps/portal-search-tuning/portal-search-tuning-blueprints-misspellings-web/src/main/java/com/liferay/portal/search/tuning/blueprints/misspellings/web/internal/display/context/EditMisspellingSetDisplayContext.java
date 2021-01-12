@@ -25,7 +25,7 @@ public class EditMisspellingSetDisplayContext {
 		return _data;
 	}
 
-	public long getMisspellingSetId() {
+	public String getMisspellingSetId() {
 		return _misspellingSetId;
 	}
 
@@ -41,7 +41,7 @@ public class EditMisspellingSetDisplayContext {
 		_data = data;
 	}
 
-	public void setMisspellingSetId(long misspellingSetId) {
+	public void setMisspellingSetId(String misspellingSetId) {
 		_misspellingSetId = misspellingSetId;
 	}
 
@@ -54,7 +54,7 @@ public class EditMisspellingSetDisplayContext {
 	}
 
 	private Map<String, Object> _data;
-	private long _misspellingSetId;
+	private String _misspellingSetId;
 	private String _pageTitle;
 	private String _redirect;
 

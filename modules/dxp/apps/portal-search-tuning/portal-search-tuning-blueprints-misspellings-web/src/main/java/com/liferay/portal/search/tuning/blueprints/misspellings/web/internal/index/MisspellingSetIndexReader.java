@@ -16,7 +16,6 @@ package com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.in
 
 import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.name.MisspellingSetIndexName;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -24,15 +23,10 @@ import java.util.Optional;
  */
 public interface MisspellingSetIndexReader {
 
-	public Optional<MisspellingSet> fetchOptional(
+	public Optional<MisspellingSet> fetchMisspellingSetOptional(
 		MisspellingSetIndexName misspellingSetIndexName, String id);
 
-	public long getNextMisspellingSetId(
-		MisspellingSetIndexName misspellingSetIndexName);
-
-	public boolean isExists(MisspellingSetIndexName misspellingSetIndexName);
-
-	public List<MisspellingSet> search(
+	public boolean isIndexExists(
 		MisspellingSetIndexName misspellingSetIndexName);
 
 }

@@ -61,7 +61,8 @@ public class EditMisspellingSetDisplayBuilder {
 		_misspellingSetIndexNameBuilder = misspellingSetIndexNameBuilder;
 		_misspellingSetIndexReader = misspellingSetIndexReader;
 
-		_id = ParamUtil.getString(renderRequest, MisspellingsWebKeys.ID);
+		_misspellingSetId = ParamUtil.getString(
+			renderRequest, MisspellingsWebKeys.MISSPELLING_SET_ID);
 
 		_misspellingSetOptional = _getMisspellingSetOptional();
 
@@ -93,6 +94,23 @@ public class EditMisspellingSetDisplayBuilder {
 		).build();
 	}
 
+	private String _getCreated() {
+		return _misspellingSetOptional.map(
+			misspellingSet -> misspellingSet.getCreated(
+			).toString()
+		).orElse(
+			StringPool.BLANK
+		);
+	}
+
+	private Long _getGroupId() {
+		return _misspellingSetOptional.map(
+			MisspellingSet::getGroupId
+		).orElse(
+			null
+		);
+	}
+
 	private String _getLanguageId() {
 		return _misspellingSetOptional.map(
 			MisspellingSet::getLanguageId
@@ -109,21 +127,22 @@ public class EditMisspellingSetDisplayBuilder {
 		);
 	}
 
-	private long _getMisspellingSetId() {
-		return _misspellingSetOptional.map(
-			MisspellingSet::getMisspellingSetId
-		).orElse(
-			0L
-		);
-	}
-
 	private Optional<MisspellingSet> _getMisspellingSetOptional() {
 		MisspellingSetIndexName misspellingSetIndexName =
 			_misspellingSetIndexNameBuilder.getMisspellingSetIndexName(
 				_getCompanyId());
 
-		return _misspellingSetIndexReader.fetchOptional(
-			misspellingSetIndexName, _id);
+		return _misspellingSetIndexReader.fetchMisspellingSetOptional(
+			misspellingSetIndexName, _misspellingSetId);
+	}
+
+	private String _getModified() {
+		return _misspellingSetOptional.map(
+			misspellingSet -> misspellingSet.getModified(
+			).toString()
+		).orElse(
+			StringPool.BLANK
+		);
 	}
 
 	private String _getPhrase() {
@@ -136,19 +155,25 @@ public class EditMisspellingSetDisplayBuilder {
 
 	private Map<String, Object> _getProps() {
 		return HashMapBuilder.<String, Object>put(
-			"id", _id
+			"created", _getCreated()
+		).put(
+			"groupId", _getGroupId()
 		).put(
 			"languageId", _getLanguageId()
 		).put(
 			"misspellings", _getMisspellings()
 		).put(
-			"misspellingSetId", _getMisspellingSetId()
+			"misspellingSetId", _misspellingSetId
+		).put(
+			"modified", _getModified()
 		).put(
 			"phrase", _getPhrase()
 		).put(
 			"redirectURL", _getRedirect()
 		).put(
 			"submitFormURL", _getSubmitFormURL()
+		).put(
+			"userId", _getUserId()
 		).build();
 	}
 
@@ -169,6 +194,14 @@ public class EditMisspellingSetDisplayBuilder {
 		actionURL.setParameter("redirect", _getRedirect());
 
 		return actionURL.toString();
+	}
+
+	private Long _getUserId() {
+		return _misspellingSetOptional.map(
+			MisspellingSet::getUserId
+		).orElse(
+			null
+		);
 	}
 
 	private void _setData(
@@ -211,8 +244,8 @@ public class EditMisspellingSetDisplayBuilder {
 	}
 
 	private final HttpServletRequest _httpServletRequest;
-	private final String _id;
 	private final Language _language;
+	private final String _misspellingSetId;
 	private final MisspellingSetIndexNameBuilder
 		_misspellingSetIndexNameBuilder;
 	private final MisspellingSetIndexReader _misspellingSetIndexReader;

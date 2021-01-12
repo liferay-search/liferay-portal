@@ -33,7 +33,7 @@ import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.con
 import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.constants.MisspellingsPortletKeys;
 import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.DocumentToMisspellingSetTranslator;
 import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.MisspellingSet;
-import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.name.MisspellingSetIndexName;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.MisspellingSetFields;
 import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.name.MisspellingSetIndexNameBuilder;
 import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.request.SearchMisspellingSetRequest;
 import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.request.SearchMisspellingSetResponse;
@@ -49,9 +49,9 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * @author Petteri Karttunen
  */
-public class MisspellingSetsDisplayContext {
+public class ViewMisspellingSetsDisplayContext {
 
-	public MisspellingSetsDisplayContext(
+	public ViewMisspellingSetsDisplayContext(
 		LiferayPortletRequest liferayPortletRequest,
 		LiferayPortletResponse liferayPortletResponse,
 		DocumentToMisspellingSetTranslator documentToMisspellingSetTranslator,
@@ -117,7 +117,7 @@ public class MisspellingSetsDisplayContext {
 			"there-are-no-misspelling-sets");
 
 		String orderByCol = ParamUtil.getString(
-			_httpServletRequest, "orderByCol", "title");
+			_httpServletRequest, "orderByCol", MisspellingSetFields.PHRASE);
 
 		searchContainer.setOrderByCol(orderByCol);
 
@@ -134,19 +134,16 @@ public class MisspellingSetsDisplayContext {
 		return searchContainer;
 	}
 
-	protected MisspellingSetIndexName buildMisspellingSetIndexName() {
-		return _misspellingSetIndexNameBuilder.getMisspellingSetIndexName(
-			_portal.getCompanyId(_liferayPortletRequest));
-	}
-
 	private void _populateResults(
 			SearchContainer<MisspellingSet> searchContainer)
 		throws PortalException {
 
 		SearchMisspellingSetRequest searchMisspellingSetRequest =
 			new SearchMisspellingSetRequest(
-				buildMisspellingSetIndexName(), _httpServletRequest, _queries,
-				_sorts, searchContainer, _searchEngineAdapter);
+				_misspellingSetIndexNameBuilder.getMisspellingSetIndexName(
+					_portal.getCompanyId(_liferayPortletRequest)),
+				_httpServletRequest, _queries, _sorts, searchContainer,
+				_searchEngineAdapter);
 
 		SearchMisspellingSetResponse searchMisspellingSetResponse =
 			searchMisspellingSetRequest.search();

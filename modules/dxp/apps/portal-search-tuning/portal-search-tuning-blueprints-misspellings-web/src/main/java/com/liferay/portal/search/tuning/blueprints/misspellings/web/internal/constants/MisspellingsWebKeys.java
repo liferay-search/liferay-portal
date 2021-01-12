@@ -22,15 +22,25 @@ public class MisspellingsWebKeys {
 	public static final String EDIT_MISSPELLING_SET_DISPLAY_CONTEXT =
 		"EDIT_MISSPELLING_SET_DISPLAY_CONTEXT";
 
-	public static final String ERROR_DETAILS = "errorDetails";
+	public static final String ERROR = "error";
 
-	public static final String ID = "id";
+	public static final String GROUP_ID = "groupId";
 
-	public static final String MISSPELLING_SETS_DISPLAY_CONTEXT =
-		"MISSPELLING_SETS_DISPLAY_CONTEXT";
+	public static final String LANGUAGE_ID = "languageId";
+
+	public static final String MISSPELLING_SET_ID = "misspellingSetId";
+
+	public static final String MISSPELLINGS = "misspellings";
+
+	public static final String PHRASE = "phrase";
+
+	public static final String ROW_IDS = "rowIds";
+
+	public static final String VIEW_MISSPELLING_SETS_DISPLAY_CONTEXT =
+		"VIEW_MISSPELLING_SETS_DISPLAY_CONTEXT";
 
 	public static final String
-		MISSPELLING_SETS_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT =
-			"MISSPELLING_SETS_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT";
+		VIEW_MISSPELLING_SETS_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT =
+			"VIEW_MISSPELLING_SETS_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT";
 
 }

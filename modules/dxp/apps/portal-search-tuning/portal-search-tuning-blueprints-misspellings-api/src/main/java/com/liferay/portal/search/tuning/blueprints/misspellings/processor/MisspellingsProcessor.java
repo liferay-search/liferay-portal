@@ -20,7 +20,6 @@ package com.liferay.portal.search.tuning.blueprints.misspellings.processor;
 public interface MisspellingsProcessor {
 
 	public String process(
-		long companyId, String[] misspellingSetIds, String[] languageIds,
-		String keywords);
+		long companyId, long groupId, String languageIds, String keywords);
 
 }

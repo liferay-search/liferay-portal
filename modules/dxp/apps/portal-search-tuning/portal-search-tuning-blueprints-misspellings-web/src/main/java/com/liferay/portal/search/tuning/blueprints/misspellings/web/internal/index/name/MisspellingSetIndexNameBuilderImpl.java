@@ -31,7 +31,7 @@ public class MisspellingSetIndexNameBuilderImpl
 	public MisspellingSetIndexName getMisspellingSetIndexName(long companyId) {
 		return new MisspellingSetIndexNameImpl(
 			_indexNameBuilder.getIndexName(companyId) + StringPool.DASH +
-				MISSPELLINGS_INDEX_NAME_SUFFIX);
+				MISSPELLING_SET_INDEX_NAME_SUFFIX);
 	}
 
 	@Reference(unbind = "-")
@@ -39,8 +39,8 @@ public class MisspellingSetIndexNameBuilderImpl
 		_indexNameBuilder = indexNameBuilder;
 	}
 
-	protected static final String MISSPELLINGS_INDEX_NAME_SUFFIX =
-		"search-tuning-blueprints-misspellings";
+	protected static final String MISSPELLING_SET_INDEX_NAME_SUFFIX =
+		"search-tuning-blueprints-misspelling-sets";
 
 	private IndexNameBuilder _indexNameBuilder;
 
