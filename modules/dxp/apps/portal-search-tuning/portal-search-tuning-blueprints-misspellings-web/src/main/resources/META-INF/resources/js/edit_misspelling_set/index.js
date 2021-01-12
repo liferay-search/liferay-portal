@@ -9,13 +9,14 @@
  * distribution rights of the Software.
  */
 
-import ClayAlert from '@clayui/alert';
 import React from 'react';
 
-export default function () {
+import MisspellingSetForm from './components/MisspellingSetForm.es';
+
+export default function (props) {
 	return (
-		<ClayAlert displayType="info" title="Not implemented">
-			https://issues.liferay.com/browse/LPS-118898
-		</ClayAlert>
+		<div className="misspelling-set-root">
+			<MisspellingSetForm {...props} />
+		</div>
 	);
 }

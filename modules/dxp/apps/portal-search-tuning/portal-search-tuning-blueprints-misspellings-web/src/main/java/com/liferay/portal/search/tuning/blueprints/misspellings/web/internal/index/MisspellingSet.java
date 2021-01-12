@@ -23,21 +23,19 @@ import java.util.List;
 public class MisspellingSet {
 
 	public MisspellingSet(MisspellingSet misspellings) {
+		_misspellings = misspellings._misspellings;
+
 		_companyId = misspellings._companyId;
 		_created = misspellings._created;
 		_groupId = misspellings._groupId;
-		_id = misspellings._id;
 		_languageId = misspellings._languageId;
-		_misspellings = misspellings._misspellings;
 		_misspellingSetId = misspellings._misspellingSetId;
 		_modified = misspellings._modified;
-		_name = misspellings._name;
 		_phrase = misspellings._phrase;
 		_userId = misspellings._userId;
-		_userName = misspellings._userName;
 	}
 
-	public long getCompanyId() {
+	public Long getCompanyId() {
 		return _companyId;
 	}
 
@@ -45,12 +43,8 @@ public class MisspellingSet {
 		return _created;
 	}
 
-	public long getGroupId() {
+	public Long getGroupId() {
 		return _groupId;
-	}
-
-	public String getId() {
-		return _id;
 	}
 
 	public String getLanguageId() {
@@ -61,7 +55,7 @@ public class MisspellingSet {
 		return _misspellings;
 	}
 
-	public long getMisspellingSetId() {
+	public String getMisspellingSetId() {
 		return _misspellingSetId;
 	}
 
@@ -69,20 +63,12 @@ public class MisspellingSet {
 		return _modified;
 	}
 
-	public String getName() {
-		return _name;
-	}
-
 	public String getPhrase() {
 		return _phrase;
 	}
 
-	public long getUserId() {
+	public Long getUserId() {
 		return _userId;
-	}
-
-	public String getUserName() {
-		return _userName;
 	}
 
 	public static class MisspellingSetBuilder {
@@ -99,7 +85,7 @@ public class MisspellingSet {
 			return new MisspellingSet(_misspellingSet);
 		}
 
-		public MisspellingSetBuilder companyId(long companyId) {
+		public MisspellingSetBuilder companyId(Long companyId) {
 			_misspellingSet._companyId = companyId;
 
 			return this;
@@ -111,14 +97,8 @@ public class MisspellingSet {
 			return this;
 		}
 
-		public MisspellingSetBuilder groupId(long groupId) {
+		public MisspellingSetBuilder groupId(Long groupId) {
 			_misspellingSet._groupId = groupId;
-
-			return this;
-		}
-
-		public MisspellingSetBuilder id(String id) {
-			_misspellingSet._id = id;
 
 			return this;
 		}
@@ -135,7 +115,7 @@ public class MisspellingSet {
 			return this;
 		}
 
-		public MisspellingSetBuilder misspellingSetId(long misspellingSetId) {
+		public MisspellingSetBuilder misspellingSetId(String misspellingSetId) {
 			_misspellingSet._misspellingSetId = misspellingSetId;
 
 			return this;
@@ -147,26 +127,14 @@ public class MisspellingSet {
 			return this;
 		}
 
-		public MisspellingSetBuilder name(String name) {
-			_misspellingSet._name = name;
-
-			return this;
-		}
-
 		public MisspellingSetBuilder phrase(String phrase) {
 			_misspellingSet._phrase = phrase;
 
 			return this;
 		}
 
-		public MisspellingSetBuilder userId(long userId) {
+		public MisspellingSetBuilder userId(Long userId) {
 			_misspellingSet._userId = userId;
-
-			return this;
-		}
-
-		public MisspellingSetBuilder userName(String userName) {
-			_misspellingSet._userName = userName;
 
 			return this;
 		}
@@ -178,17 +146,14 @@ public class MisspellingSet {
 	private MisspellingSet() {
 	}
 
-	private long _companyId;
+	private Long _companyId;
 	private Date _created;
-	private long _groupId;
-	private String _id;
+	private Long _groupId;
 	private String _languageId;
 	private List<String> _misspellings;
-	private long _misspellingSetId;
+	private String _misspellingSetId;
 	private Date _modified;
-	private String _name;
 	private String _phrase;
-	private long _userId;
-	private String _userName;
+	private Long _userId;
 
 }

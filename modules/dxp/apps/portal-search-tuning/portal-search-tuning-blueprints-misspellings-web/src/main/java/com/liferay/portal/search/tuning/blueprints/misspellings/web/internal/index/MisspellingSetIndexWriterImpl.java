@@ -18,6 +18,7 @@ import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
 import com.liferay.portal.search.engine.adapter.document.DeleteDocumentRequest;
 import com.liferay.portal.search.engine.adapter.document.IndexDocumentRequest;
 import com.liferay.portal.search.engine.adapter.document.IndexDocumentResponse;
+import com.liferay.portal.search.engine.adapter.document.UpdateDocumentRequest;
 import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.name.MisspellingSetIndexName;
 
 import org.osgi.service.component.annotations.Component;
@@ -64,13 +65,14 @@ public class MisspellingSetIndexWriterImpl
 		MisspellingSetIndexName misspellingSetIndexName,
 		MisspellingSet misspellingSet) {
 
-		IndexDocumentRequest indexDocumentRequest = new IndexDocumentRequest(
-			misspellingSetIndexName.getIndexName(), misspellingSet.getId(),
+		UpdateDocumentRequest updateDocumentRequest = new UpdateDocumentRequest(
+			misspellingSetIndexName.getIndexName(),
+			misspellingSet.getMisspellingSetId(),
 			_misspellingsToDocumentTranslator.translate(misspellingSet));
 
-		indexDocumentRequest.setRefresh(true);
+		updateDocumentRequest.setRefresh(true);
 
-		_searchEngineAdapter.execute(indexDocumentRequest);
+		_searchEngineAdapter.execute(updateDocumentRequest);
 	}
 
 	@Reference

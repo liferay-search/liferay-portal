@@ -21,6 +21,7 @@ import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.search.index.IndexNameBuilder;
 import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.constants.MisspellingsMVCCommandNames;
 import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.constants.MisspellingsPortletKeys;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.constants.MisspellingsWebKeys;
 import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.MisspellingSet;
 import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.MisspellingSetIndexReader;
 import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.MisspellingSetIndexWriter;
@@ -73,8 +74,13 @@ public class DeleteMisspellingSetMVCActionCommand extends BaseMVCActionCommand {
 
 		for (MisspellingSet misspellingSet : misspellingSets) {
 			_misspellingSetIndexWriter.remove(
-				misspellingSetIndexName, misspellingSet.getId());
+				misspellingSetIndexName, misspellingSet.getMisspellingSetId());
 		}
+	}
+
+	private String[] _getMisspellingSetIds(ActionRequest actionRequest) {
+		return ParamUtil.getStringValues(
+			actionRequest, MisspellingsWebKeys.ROW_IDS);
 	}
 
 	private List<MisspellingSet> _getMisspellingSets(
@@ -82,9 +88,9 @@ public class DeleteMisspellingSetMVCActionCommand extends BaseMVCActionCommand {
 		MisspellingSetIndexName misspellingSetIndexName) {
 
 		return Stream.of(
-			ParamUtil.getStringValues(actionRequest, "rowIds")
+			_getMisspellingSetIds(actionRequest)
 		).map(
-			id -> _misspellingSetIndexReader.fetchOptional(
+			id -> _misspellingSetIndexReader.fetchMisspellingSetOptional(
 				misspellingSetIndexName, id)
 		).filter(
 			Optional::isPresent

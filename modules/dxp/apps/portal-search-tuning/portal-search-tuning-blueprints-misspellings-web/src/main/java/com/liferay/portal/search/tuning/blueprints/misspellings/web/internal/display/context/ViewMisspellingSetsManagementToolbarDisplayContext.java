@@ -29,6 +29,7 @@ import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.constants.MisspellingsMVCCommandNames;
 import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.MisspellingSet;
+import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.MisspellingSetFields;
 
 import java.util.List;
 import java.util.Objects;
@@ -40,10 +41,10 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * @author Petteri Karttunen
  */
-public class MisspellingSetsManagementToolbarDisplayContext
+public class ViewMisspellingSetsManagementToolbarDisplayContext
 	extends SearchContainerManagementToolbarDisplayContext {
 
-	public MisspellingSetsManagementToolbarDisplayContext(
+	public ViewMisspellingSetsManagementToolbarDisplayContext(
 		HttpServletRequest httpServletRequest,
 		LiferayPortletRequest liferayPortletRequest,
 		LiferayPortletResponse liferayPortletResponse,
@@ -61,7 +62,7 @@ public class MisspellingSetsManagementToolbarDisplayContext
 	public List<DropdownItem> getActionDropdownItems() {
 		return DropdownItemListBuilder.add(
 			dropdownItem -> {
-				dropdownItem.putData("action", "deleteMisspellingSets");
+				dropdownItem.putData("action", "deleteEntries");
 
 				dropdownItem.setLabel(
 					LanguageUtil.get(_httpServletRequest, "delete"));
@@ -146,20 +147,46 @@ public class MisspellingSetsManagementToolbarDisplayContext
 		return DropdownItemListBuilder.add(
 			dropdownItem -> {
 				dropdownItem.setActive(
-					Objects.equals(getOrderByCol(), "title"));
+					Objects.equals(
+						getOrderByCol(), MisspellingSetFields.PHRASE));
 				dropdownItem.setHref(
-					_getCurrentSortingURL(), "orderByCol", "title");
+					_getCurrentSortingURL(), "orderByCol",
+					MisspellingSetFields.PHRASE);
 				dropdownItem.setLabel(
-					LanguageUtil.get(_httpServletRequest, "title"));
+					LanguageUtil.get(_httpServletRequest, "phrase"));
 			}
 		).add(
 			dropdownItem -> {
 				dropdownItem.setActive(
-					Objects.equals(getOrderByCol(), "modified-date"));
+					Objects.equals(
+						getOrderByCol(), MisspellingSetFields.CREATED));
 				dropdownItem.setHref(
-					_getCurrentSortingURL(), "orderByCol", "modified-date");
+					_getCurrentSortingURL(), "orderByCol",
+					MisspellingSetFields.CREATED);
 				dropdownItem.setLabel(
-					LanguageUtil.get(_httpServletRequest, "modified-date"));
+					LanguageUtil.get(_httpServletRequest, "created"));
+			}
+		).add(
+			dropdownItem -> {
+				dropdownItem.setActive(
+					Objects.equals(
+						getOrderByCol(), MisspellingSetFields.MODIFIED));
+				dropdownItem.setHref(
+					_getCurrentSortingURL(), "orderByCol",
+					MisspellingSetFields.MODIFIED);
+				dropdownItem.setLabel(
+					LanguageUtil.get(_httpServletRequest, "modified"));
+			}
+		).add(
+			dropdownItem -> {
+				dropdownItem.setActive(
+					Objects.equals(
+						getOrderByCol(), MisspellingSetFields.LANGUAGE_ID));
+				dropdownItem.setHref(
+					_getCurrentSortingURL(), "orderByCol",
+					MisspellingSetFields.LANGUAGE_ID);
+				dropdownItem.setLabel(
+					LanguageUtil.get(_httpServletRequest, "language"));
 			}
 		).build();
 	}

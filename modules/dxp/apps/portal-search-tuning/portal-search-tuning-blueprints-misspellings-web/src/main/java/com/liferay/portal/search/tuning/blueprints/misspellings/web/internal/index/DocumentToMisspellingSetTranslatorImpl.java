@@ -16,6 +16,7 @@ package com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.in
 
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.document.Document;
 import com.liferay.portal.search.hits.SearchHit;
 import com.liferay.portal.search.hits.SearchHits;
@@ -43,29 +44,23 @@ public class DocumentToMisspellingSetTranslatorImpl
 		).companyId(
 			document.getLong(MisspellingSetFields.COMPANY_ID)
 		).created(
-			parseDateStringFieldValue(
+			_parseDateStringFieldValue(
 				document.getDate(MisspellingSetFields.CREATED))
 		).groupId(
 			document.getLong(MisspellingSetFields.GROUP_ID)
-		).id(
-			id
 		).languageId(
 			document.getString(MisspellingSetFields.LANGUAGE_ID)
 		).misspellings(
 			document.getStrings(MisspellingSetFields.MISSPELLINGS)
 		).misspellingSetId(
-			document.getLong(MisspellingSetFields.MISSPELLING_SET_ID)
+			id
 		).modified(
-			parseDateStringFieldValue(
+			_parseDateStringFieldValue(
 				document.getDate(MisspellingSetFields.MODIFIED))
 		).phrase(
 			document.getString(MisspellingSetFields.PHRASE)
-		).name(
-			document.getString(MisspellingSetFields.NAME)
 		).userId(
 			document.getLong(MisspellingSetFields.USER_ID)
-		).userName(
-			document.getString(MisspellingSetFields.USER_NAME)
 		).build();
 	}
 
@@ -86,7 +81,11 @@ public class DocumentToMisspellingSetTranslatorImpl
 		return new MisspellingSet.MisspellingSetBuilder();
 	}
 
-	protected Date parseDateStringFieldValue(String dateStringFieldValue) {
+	private Date _parseDateStringFieldValue(String dateStringFieldValue) {
+		if (Validator.isBlank(dateStringFieldValue)) {
+			return null;
+		}
+
 		try {
 			DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 

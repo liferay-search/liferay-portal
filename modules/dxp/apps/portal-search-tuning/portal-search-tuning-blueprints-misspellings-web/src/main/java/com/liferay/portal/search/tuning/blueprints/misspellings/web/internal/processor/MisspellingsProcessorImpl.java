@@ -15,23 +15,22 @@
 package com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.processor;
 
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.document.Document;
 import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
 import com.liferay.portal.search.engine.adapter.search.SearchSearchRequest;
 import com.liferay.portal.search.engine.adapter.search.SearchSearchResponse;
-import com.liferay.portal.search.filter.ComplexQueryPart;
 import com.liferay.portal.search.filter.ComplexQueryPartBuilderFactory;
 import com.liferay.portal.search.hits.SearchHit;
 import com.liferay.portal.search.hits.SearchHits;
 import com.liferay.portal.search.query.BooleanQuery;
+import com.liferay.portal.search.query.MatchQuery;
 import com.liferay.portal.search.query.Queries;
 import com.liferay.portal.search.query.Query;
-import com.liferay.portal.search.query.TermsQuery;
 import com.liferay.portal.search.tuning.blueprints.misspellings.processor.MisspellingsProcessor;
 import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.MisspellingSetFields;
 import com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.index.name.MisspellingSetIndexNameBuilder;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.osgi.service.component.annotations.Component;
@@ -45,11 +44,10 @@ public class MisspellingsProcessorImpl implements MisspellingsProcessor {
 
 	@Override
 	public String process(
-		long companyId, String[] misspellingSetIds, String[] languageIds,
-		String keywords) {
+		long companyId, long groupId, String languageId, String keywords) {
 
 		SearchHits searchHits = _search(
-			companyId, misspellingSetIds, languageIds, keywords);
+			companyId, groupId, languageId, keywords);
 
 		if (searchHits.getTotalHits() > 0) {
 			return _spellCheck(keywords, searchHits.getSearchHits());
@@ -58,82 +56,79 @@ public class MisspellingsProcessorImpl implements MisspellingsProcessor {
 		return keywords;
 	}
 
-	private List<ComplexQueryPart> _getFilterClauses(
-		String[] misspellingSetIds, String[] languageIds) {
+	private void _addCompanyFilterClause(
+		BooleanQuery booleanQuery, long companyId) {
 
-		List<ComplexQueryPart> complexQueryParts = new ArrayList<>();
-
-		complexQueryParts.add(
-			_complexQueryPartBuilderFactory.builder(
-			).query(
-				_getIdsQuery(misspellingSetIds)
-			).occur(
-				"filter"
-			).build());
-
-		complexQueryParts.add(
-			_complexQueryPartBuilderFactory.builder(
-			).query(
-				_getLanguageQuery(languageIds)
-			).occur(
-				"filter"
-			).build());
-
-		return complexQueryParts;
+		booleanQuery.addFilterQueryClauses(
+			_queries.term(MisspellingSetFields.COMPANY_ID, companyId));
 	}
 
-	private Query _getIdsQuery(Object[] misspellingSetIds) {
-		TermsQuery termsQuery = _queries.terms(
-			MisspellingSetFields.MISSPELLING_SET_ID);
+	private void _addGroupFilterClause(
+		BooleanQuery booleanQuery, long groupId) {
 
-		termsQuery.addValues(misspellingSetIds);
+		BooleanQuery groupQuery = _queries.booleanQuery();
 
-		return termsQuery;
+		groupQuery.addShouldQueryClauses(
+			_queries.term(MisspellingSetFields.GROUP_ID, groupId));
+
+		groupQuery.addShouldQueryClauses(
+			_queries.term(MisspellingSetFields.GROUP_ID, "*"));
+
+		booleanQuery.addFilterQueryClauses(groupQuery);
 	}
 
-	private String[] _getKeywordsArray(String keywords) {
-		String regex = "[\\ ,.;\\\\-]+";
+	private void _addLanguageFilterClause(
+		BooleanQuery booleanQuery, String languageId) {
 
-		return keywords.split(regex);
+		BooleanQuery languageQuery = _queries.booleanQuery();
+
+		languageQuery.addShouldQueryClauses(
+			_queries.term(MisspellingSetFields.LANGUAGE_ID, languageId));
+
+		languageQuery.addShouldQueryClauses(
+			_queries.term(MisspellingSetFields.LANGUAGE_ID, "*"));
+
+		booleanQuery.addFilterQueryClauses(languageQuery);
 	}
 
-	private Query _getLanguageQuery(Object[] languageIds) {
-		TermsQuery termsQuery = _queries.terms(
-			MisspellingSetFields.LANGUAGE_ID);
+	private void _addSearchClauses(BooleanQuery booleanQuery, String keywords) {
+		MatchQuery matchQuery = _queries.match(
+			MisspellingSetFields.MISSPELLINGS, keywords);
 
-		termsQuery.addValues(languageIds);
-
-		return termsQuery;
+		booleanQuery.addMustQueryClauses(matchQuery);
 	}
 
-	private Query _getQuery(String keywords) {
-		String[] keywordsArray = _getKeywordsArray(keywords);
+	private Query _getQuery(
+		long companyId, long groupId, String languageId, String keywords) {
 
-		BooleanQuery query = _queries.booleanQuery();
+		BooleanQuery booleanQuery = _queries.booleanQuery();
 
-		for (String keyword : keywordsArray) {
-			query.addShouldQueryClauses(
-				_queries.term(MisspellingSetFields.MISSPELLINGS, keyword));
+		_addCompanyFilterClause(booleanQuery, companyId);
+
+		_addGroupFilterClause(booleanQuery, groupId);
+
+		if (!Validator.isBlank(languageId)) {
+			_addLanguageFilterClause(booleanQuery, languageId);
 		}
 
-		return query;
+		_addSearchClauses(booleanQuery, keywords);
+
+		return booleanQuery;
 	}
 
 	private SearchHits _search(
-		long companyId, String[] misspellingSetIds, String[] languageIds,
-		String keywords) {
+		long companyId, long groupId, String languageId, String keywords) {
 
 		SearchSearchRequest searchSearchRequest = new SearchSearchRequest();
 
-		searchSearchRequest.addComplexQueryParts(
-			_getFilterClauses(misspellingSetIds, languageIds));
 		searchSearchRequest.setFetchSource(true);
 		searchSearchRequest.setIndexNames(
 			_misspellingSetIndexNameBuilder.getMisspellingSetIndexName(
 				companyId
 			).getIndexName());
 		searchSearchRequest.setPreferLocalCluster(false);
-		searchSearchRequest.setQuery(_getQuery(keywords));
+		searchSearchRequest.setQuery(
+			_getQuery(companyId, groupId, languageId, keywords));
 		searchSearchRequest.setSize(1);
 		searchSearchRequest.setStart(0);
 

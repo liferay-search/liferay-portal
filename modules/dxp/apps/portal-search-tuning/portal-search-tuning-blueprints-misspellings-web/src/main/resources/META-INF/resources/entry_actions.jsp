@@ -21,7 +21,7 @@ ResultRow row = (ResultRow)request.getAttribute(WebKeys.SEARCH_CONTAINER_RESULT_
 
 MisspellingSet entry = (MisspellingSet)row.getObject();
 
-String id = entry.getId();
+String misspellingSetId = entry.getMisspellingSetId();
 %>
 
 <liferay-ui:icon-menu
@@ -31,23 +31,23 @@ String id = entry.getId();
 	message="<%= StringPool.BLANK %>"
 	showWhenSingleIcon="<%= true %>"
 >
-	<portlet:renderURL var="editMisspellingSetURL">
+	<portlet:renderURL var="editEntryURL">
 		<portlet:param name="mvcRenderCommandName" value="<%= MisspellingsMVCCommandNames.EDIT_MISSPELLING_SET %>" />
 		<portlet:param name="redirect" value="<%= currentURL %>" />
-		<portlet:param name="<%= MisspellingsWebKeys.ID %>" value="<%= String.valueOf(id) %>" />
+		<portlet:param name="<%= MisspellingsWebKeys.MISSPELLING_SET_ID %>" value="<%= misspellingSetId %>" />
 	</portlet:renderURL>
 
 	<liferay-ui:icon
 		message="edit"
-		url="<%= editMisspellingSetURL %>"
+		url="<%= editEntryURL %>"
 	/>
 
-	<portlet:actionURL name="<%= MisspellingsMVCCommandNames.DELETE_MISSPELLING_SET %>" var="deleteMisspellingSetURL">
+	<portlet:actionURL name="<%= MisspellingsMVCCommandNames.DELETE_MISSPELLING_SET %>" var="deleteEntryURL">
 		<portlet:param name="redirect" value="<%= currentURL %>" />
-		<portlet:param name="rowIds" value="<%= String.valueOf(id) %>" />
+		<portlet:param name="rowIds" value="<%= misspellingSetId %>" />
 	</portlet:actionURL>
 
 	<liferay-ui:icon-delete
-		url="<%= deleteMisspellingSetURL %>"
+		url="<%= deleteEntryURL %>"
 	/>
 </liferay-ui:icon-menu>

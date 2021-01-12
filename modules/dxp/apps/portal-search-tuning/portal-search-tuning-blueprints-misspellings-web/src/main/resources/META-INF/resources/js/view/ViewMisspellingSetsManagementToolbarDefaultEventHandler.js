@@ -7,20 +7,10 @@
  * contacting Liferay, Inc. See the License for the specific language governing
  * permissions and limitations under the License, including but not limited to
  * distribution rights of the Software.
- *
- *
- *
  */
 
-package com.liferay.portal.search.tuning.blueprints.misspellings.web.internal.constants;
+import {DefaultEventHandler} from 'frontend-js-web';
 
-/**
- * @author Petteri Karttunen
- */
-public class MisspellingsPortletKeys {
+class ViewMisspellingSetsManagementToolbarDefaultEventHandler extends DefaultEventHandler {}
 
-	public static final String MISSPELLINGS =
-		"com_liferay_portal_search_tuning_blueprints_misspellings_web_" +
-			"internal_portlet_MisspellingsAdminPortlet";
-
-}
+export default ViewMisspellingSetsManagementToolbarDefaultEventHandler;

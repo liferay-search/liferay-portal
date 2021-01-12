@@ -23,6 +23,7 @@ import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
 import com.liferay.portal.search.engine.adapter.search.SearchSearchRequest;
 import com.liferay.portal.search.engine.adapter.search.SearchSearchResponse;
 import com.liferay.portal.search.hits.SearchHits;
+import com.liferay.portal.search.query.BooleanQuery;
 import com.liferay.portal.search.query.Queries;
 import com.liferay.portal.search.query.Query;
 import com.liferay.portal.search.sort.Sort;
@@ -53,9 +54,10 @@ public class SearchMisspellingSetRequest {
 		_httpServletRequest = httpServletRequest;
 		_queries = queries;
 		_sorts = sorts;
-		_searchContext = SearchContextFactory.getInstance(httpServletRequest);
 		_searchContainer = searchContainer;
 		_searchEngineAdapter = searchEngineAdapter;
+
+		_searchContext = SearchContextFactory.getInstance(httpServletRequest);
 	}
 
 	public SearchMisspellingSetResponse search() {
@@ -89,7 +91,18 @@ public class SearchMisspellingSetRequest {
 		String keywords = _searchContext.getKeywords();
 
 		if (!Validator.isBlank(keywords)) {
-			return _queries.match(MisspellingSetFields.NAME, keywords);
+			BooleanQuery booleanQuery = _queries.booleanQuery();
+
+			BooleanQuery keywordsQuery = _queries.booleanQuery();
+
+			keywordsQuery.addShouldQueryClauses(
+				_queries.match(MisspellingSetFields.PHRASE, keywords));
+			keywordsQuery.addShouldQueryClauses(
+				_queries.match(MisspellingSetFields.MISSPELLINGS, keywords));
+
+			booleanQuery.addMustQueryClauses(keywordsQuery);
+
+			return booleanQuery;
 		}
 
 		return _queries.matchAll();
@@ -97,8 +110,7 @@ public class SearchMisspellingSetRequest {
 
 	private Collection<Sort> _getSorts() {
 		String orderByCol = ParamUtil.getString(
-			_httpServletRequest, "orderByCol",
-			MisspellingSetFields.MISSPELLING_SET_ID);
+			_httpServletRequest, "orderByCol", MisspellingSetFields.CREATED);
 		String orderByType = ParamUtil.getString(
 			_httpServletRequest, "orderByType", "asc");
 
