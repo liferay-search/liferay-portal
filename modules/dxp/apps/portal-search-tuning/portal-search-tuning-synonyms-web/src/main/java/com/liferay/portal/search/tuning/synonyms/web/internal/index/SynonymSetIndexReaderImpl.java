@@ -25,7 +25,7 @@ import com.liferay.portal.search.engine.adapter.index.IndicesExistsIndexResponse
 import com.liferay.portal.search.engine.adapter.search.SearchSearchRequest;
 import com.liferay.portal.search.engine.adapter.search.SearchSearchResponse;
 import com.liferay.portal.search.query.Queries;
-import com.liferay.portal.search.tuning.synonyms.web.internal.index.name.SynonymSetIndexName;
+import com.liferay.portal.search.tuning.synonyms.index.name.SynonymSetIndexName;
 
 import java.util.List;
 import java.util.Optional;

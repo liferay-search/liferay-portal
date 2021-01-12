@@ -18,7 +18,7 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
 import com.liferay.portal.search.engine.adapter.index.CreateIndexRequest;
 import com.liferay.portal.search.engine.adapter.index.DeleteIndexRequest;
-import com.liferay.portal.search.tuning.synonyms.web.internal.index.name.SynonymSetIndexName;
+import com.liferay.portal.search.tuning.synonyms.index.name.SynonymSetIndexName;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
