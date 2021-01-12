@@ -17,7 +17,6 @@ package com.liferay.portal.search.tuning.blueprints.util.internal.attributes;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
@@ -200,7 +199,7 @@ public class BlueprintsAttributesHelperImpl
 	private void _addKeywordParameter(
 		PortletRequest portletRequest,
 		BlueprintsAttributesBuilder blueprintsAttributesBuilder,
-		Blueprint blueprint, JSONObject configurationJSONObject) {
+		JSONObject configurationJSONObject) {
 
 		String parameterName = AttributesUtil.getKeywordParameterName(
 			configurationJSONObject);
@@ -212,7 +211,7 @@ public class BlueprintsAttributesHelperImpl
 		}
 
 		String misspellCheckedWords = _processMisspellings(
-			portletRequest, keywords, blueprint);
+			portletRequest, keywords);
 
 		if (!keywords.equals(misspellCheckedWords)) {
 			blueprintsAttributesBuilder.addAttribute(
@@ -271,7 +270,7 @@ public class BlueprintsAttributesHelperImpl
 			configurationJSONObjectOptional.get();
 
 		_addKeywordParameter(
-			portletRequest, blueprintsAttributesBuilder, blueprint,
+			portletRequest, blueprintsAttributesBuilder,
 			configurationJSONObject);
 
 		_addPagingParameter(
@@ -361,19 +360,6 @@ public class BlueprintsAttributesHelperImpl
 		return _blueprintService.getBlueprint(blueprintId);
 	}
 
-	private String[] _getMisspellingSetIds(Blueprint blueprint) {
-		Optional<JSONArray> configurationJSONArrayOptional =
-			_blueprintHelper.getMisspellingSetIdsOptional(blueprint);
-
-		if (!configurationJSONArrayOptional.isPresent()) {
-			return null;
-		}
-
-		JSONArray configurationJSONArray = configurationJSONArrayOptional.get();
-
-		return JSONUtil.toStringArray(configurationJSONArray);
-	}
-
 	private boolean _isArrayValue(String type) {
 		if (StringUtil.equals(type, "string_array") ||
 			StringUtil.equals(type, "integer_array") ||
@@ -386,7 +372,7 @@ public class BlueprintsAttributesHelperImpl
 	}
 
 	private String _processMisspellings(
-		PortletRequest portletRequest, String keywords, Blueprint blueprint) {
+		PortletRequest portletRequest, String keywords) {
 
 		if (_allowMisspellings(portletRequest) ||
 			(_misspellingsProcessor == null)) {
@@ -394,18 +380,12 @@ public class BlueprintsAttributesHelperImpl
 			return keywords;
 		}
 
-		String[] misspellingSetIds = _getMisspellingSetIds(blueprint);
-
-		if (misspellingSetIds == null) {
-			return keywords;
-		}
-
 		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
 		return _misspellingsProcessor.process(
-			themeDisplay.getCompanyId(), misspellingSetIds,
-			new String[] {themeDisplay.getLanguageId()}, keywords);
+			themeDisplay.getCompanyId(), themeDisplay.getScopeGroupId(),
+			themeDisplay.getLanguageId(), keywords);
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
