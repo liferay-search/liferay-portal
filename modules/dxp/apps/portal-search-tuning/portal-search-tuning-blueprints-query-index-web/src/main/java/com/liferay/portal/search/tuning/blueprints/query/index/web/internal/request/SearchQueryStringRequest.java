@@ -29,10 +29,10 @@ import com.liferay.portal.search.query.Query;
 import com.liferay.portal.search.sort.Sort;
 import com.liferay.portal.search.sort.SortOrder;
 import com.liferay.portal.search.sort.Sorts;
-import com.liferay.portal.search.tuning.blueprints.query.index.constants.QueryStringFields;
-import com.liferay.portal.search.tuning.blueprints.query.index.constants.QueryStringStatus;
 import com.liferay.portal.search.tuning.blueprints.query.index.index.name.QueryStringIndexName;
+import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.constants.QueryStringStatus;
 import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.index.QueryString;
+import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.index.QueryStringFields;
 
 import java.util.Arrays;
 import java.util.Collection;

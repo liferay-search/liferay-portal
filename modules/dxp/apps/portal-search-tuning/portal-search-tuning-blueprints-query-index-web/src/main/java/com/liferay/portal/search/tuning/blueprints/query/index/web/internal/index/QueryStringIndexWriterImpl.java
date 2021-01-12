@@ -25,9 +25,9 @@ import com.liferay.portal.search.query.Queries;
 import com.liferay.portal.search.script.Script;
 import com.liferay.portal.search.script.ScriptType;
 import com.liferay.portal.search.script.Scripts;
-import com.liferay.portal.search.tuning.blueprints.query.index.constants.QueryStringFields;
-import com.liferay.portal.search.tuning.blueprints.query.index.constants.QueryStringStatus;
+import com.liferay.portal.search.tuning.blueprints.query.index.constants.Reason;
 import com.liferay.portal.search.tuning.blueprints.query.index.index.name.QueryStringIndexName;
+import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.constants.QueryStringStatus;
 import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.util.QueryIndexUtil;
 
 import java.util.Date;
@@ -56,11 +56,11 @@ public class QueryStringIndexWriterImpl implements QueryStringIndexWriter {
 
 	@Override
 	public void addReport(
-		QueryStringIndexName queryStringIndexName, String id) {
+		QueryStringIndexName queryStringIndexName, String id, Reason reason) {
 
 		UpdateByQueryDocumentRequest updateByQueryDocumentRequest =
 			new UpdateByQueryDocumentRequest(
-				_queries.term("_id", id), _getAddReportScript(),
+				_queries.term("_id", id), _getAddReportScript(reason),
 				queryStringIndexName.getIndexName());
 
 		updateByQueryDocumentRequest.setRefresh(true);
@@ -130,10 +130,10 @@ public class QueryStringIndexWriterImpl implements QueryStringIndexWriter {
 		).build();
 	}
 
-	private Script _getAddReportScript() {
-		String now = QueryIndexUtil.toIndexDateString(new Date());
+	private Script _getAddReportScript(Reason reason) {
+		Date now = new Date();
 
-		StringBundler sb = new StringBundler(9);
+		StringBundler sb = new StringBundler(14);
 
 		sb.append("ctx._source.");
 		sb.append(QueryStringFields.STATUS);
@@ -142,8 +142,13 @@ public class QueryStringIndexWriterImpl implements QueryStringIndexWriter {
 		sb.append(";ctx._source.");
 		sb.append(QueryStringFields.LAST_REPORTED);
 		sb.append("=");
+		sb.append(QueryIndexUtil.toIndexDateString(now));
+		sb.append("L;ctx._source.reportCount++;ctx._source.");
+		sb.append(QueryStringFields.REPORTS);
+		sb.append("=");
 		sb.append(now);
-		sb.append("L;ctx._source.reportCount++");
+		sb.append("-");
+		sb.append(reason.name());
 
 		return _scripts.builder(
 		).idOrCode(

@@ -12,7 +12,7 @@
  *
  */
 
-package com.liferay.portal.search.tuning.blueprints.query.index.constants;
+package com.liferay.portal.search.tuning.blueprints.query.index.web.internal.index;
 
 /**
  * @author Petteri Karttunen
@@ -42,6 +42,8 @@ public class QueryStringFields {
 	public static final String MODIFIED = "modified";
 
 	public static final String REPORT_COUNT = "reportCount";
+
+	public static final String REPORTS = "reports";
 
 	public static final String STATUS = "status";
 

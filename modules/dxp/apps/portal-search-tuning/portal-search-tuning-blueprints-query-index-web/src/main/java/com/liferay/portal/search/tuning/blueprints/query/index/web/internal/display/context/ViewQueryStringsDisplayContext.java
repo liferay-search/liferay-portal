@@ -29,13 +29,13 @@ import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
 import com.liferay.portal.search.query.Queries;
 import com.liferay.portal.search.sort.Sorts;
-import com.liferay.portal.search.tuning.blueprints.query.index.constants.QueryStringFields;
-import com.liferay.portal.search.tuning.blueprints.query.index.constants.QueryStringStatus;
 import com.liferay.portal.search.tuning.blueprints.query.index.index.name.QueryStringIndexNameBuilder;
 import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.constants.QueryIndexMVCCommandNames;
 import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.constants.QueryIndexPortletKeys;
+import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.constants.QueryStringStatus;
 import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.index.DocumentToQueryStringTranslator;
 import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.index.QueryString;
+import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.index.QueryStringFields;
 import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.request.SearchQueryStringRequest;
 import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.request.SearchQueryStringResponse;
 

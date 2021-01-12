@@ -31,8 +31,6 @@ String queryStringId = queryString.getQueryStringId();
 	message="<%= StringPool.BLANK %>"
 	showWhenSingleIcon="<%= true %>"
 >
-
-	<%--
 	<portlet:renderURL var="viewEntryURL">
 		<portlet:param name="mvcRenderCommandName" value="<%= QueryIndexMVCCommandNames.VIEW_QUERY_STRING %>" />
 		<portlet:param name="redirect" value="<%= currentURL %>" />
@@ -43,7 +41,6 @@ String queryStringId = queryString.getQueryStringId();
 		message="view-details"
 		url="<%= viewEntryURL %>"
 	/>
-	--%>
 
 	<portlet:actionURL name="<%= QueryIndexMVCCommandNames.EDIT_QUERY_STRING %>" var="activateEntryURL">
 		<portlet:param name="<%= QueryIndexWebKeys.STATUS %>" value="<%= QueryStringStatus.ACTIVE.name() %>" />

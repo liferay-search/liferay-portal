@@ -23,15 +23,14 @@ import com.liferay.portal.search.engine.adapter.index.IndicesExistsIndexRequest;
 import com.liferay.portal.search.engine.adapter.index.IndicesExistsIndexResponse;
 import com.liferay.portal.search.engine.adapter.search.SearchSearchRequest;
 import com.liferay.portal.search.engine.adapter.search.SearchSearchResponse;
-import com.liferay.portal.search.filter.ComplexQueryPart;
 import com.liferay.portal.search.filter.ComplexQueryPartBuilderFactory;
 import com.liferay.portal.search.hits.SearchHit;
 import com.liferay.portal.search.hits.SearchHits;
+import com.liferay.portal.search.query.BooleanQuery;
 import com.liferay.portal.search.query.Queries;
-import com.liferay.portal.search.tuning.blueprints.query.index.constants.QueryStringFields;
+import com.liferay.portal.search.query.Query;
 import com.liferay.portal.search.tuning.blueprints.query.index.index.name.QueryStringIndexName;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,18 +52,15 @@ public class QueryStringIndexReaderImpl implements QueryStringIndexReader {
 			return Optional.empty();
 		}
 
-		List<ComplexQueryPart> complexQueryParts = _buildIdLookupFilters(
-			companyId, groupId);
+		Query query = _buildQuery(companyId, groupId, keywords);
 
 		SearchSearchRequest searchSearchRequest = new SearchSearchRequest();
 
-		searchSearchRequest.addComplexQueryParts(complexQueryParts);
 		searchSearchRequest.setFetchSource(true);
 		searchSearchRequest.setFetchSourceIncludes(new String[] {"_id"});
 		searchSearchRequest.setIndexNames(queryStringIndexName.getIndexName());
 		searchSearchRequest.setPreferLocalCluster(false);
-		searchSearchRequest.setQuery(
-			_queries.term(QueryStringFields.CONTENT_RAW, keywords));
+		searchSearchRequest.setQuery(query);
 		searchSearchRequest.setSize(1);
 		searchSearchRequest.setStart(0);
 
@@ -119,28 +115,31 @@ public class QueryStringIndexReaderImpl implements QueryStringIndexReader {
 		return _documentToQueryStringTranslator.translate(document, id);
 	}
 
-	private List<ComplexQueryPart> _buildIdLookupFilters(
-		long companyId, long groupId) {
+	private void _addCompanyFilter(BooleanQuery booleanQuery, long companyId) {
+		booleanQuery.addFilterQueryClauses(
+			_queries.term(QueryStringFields.COMPANY_ID, companyId));
+	}
 
-		List<ComplexQueryPart> complexQueryParts = new ArrayList<>();
+	private void _addGroupFilter(BooleanQuery booleanQuery, long groupId) {
+		booleanQuery.addFilterQueryClauses(
+			_queries.term(QueryStringFields.COMPANY_ID, groupId));
+	}
 
-		complexQueryParts.add(
-			_complexQueryPartBuilderFactory.builder(
-			).query(
-				_queries.term(QueryStringFields.COMPANY_ID, companyId)
-			).occur(
-				"filter"
-			).build());
+	private void _addSearchClause(BooleanQuery booleanQuery, String keywords) {
+		booleanQuery.addMustQueryClauses(
+			_queries.term(QueryStringFields.CONTENT_RAW, keywords));
+	}
 
-		complexQueryParts.add(
-			_complexQueryPartBuilderFactory.builder(
-			).query(
-				_queries.term(QueryStringFields.GROUP_ID, groupId)
-			).occur(
-				"filter"
-			).build());
+	private Query _buildQuery(long companyId, long groupId, String keywords) {
+		BooleanQuery booleanQuery = _queries.booleanQuery();
 
-		return complexQueryParts;
+		_addCompanyFilter(booleanQuery, companyId);
+
+		_addGroupFilter(booleanQuery, groupId);
+
+		_addSearchClause(booleanQuery, keywords);
+
+		return booleanQuery;
 	}
 
 	private Optional<Document> _getDocumentOptional(

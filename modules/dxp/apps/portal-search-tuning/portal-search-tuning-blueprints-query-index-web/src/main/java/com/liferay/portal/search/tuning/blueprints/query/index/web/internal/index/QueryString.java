@@ -14,9 +14,10 @@
 
 package com.liferay.portal.search.tuning.blueprints.query.index.web.internal.index;
 
-import com.liferay.portal.search.tuning.blueprints.query.index.constants.QueryStringStatus;
+import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.constants.QueryStringStatus;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Petteri Karttunen
@@ -35,6 +36,7 @@ public class QueryString {
 		_modified = queryString._modified;
 		_queryStringId = queryString._queryStringId;
 		_reportCount = queryString._reportCount;
+		_reports = queryString._reports;
 		_status = queryString._status;
 		_statusDate = queryString._statusDate;
 	}
@@ -81,6 +83,10 @@ public class QueryString {
 
 	public Long getReportCount() {
 		return _reportCount;
+	}
+
+	public List<String> getReports() {
+		return _reports;
 	}
 
 	public QueryStringStatus getStatus() {
@@ -165,6 +171,12 @@ public class QueryString {
 			return this;
 		}
 
+		public QueryStringBuilder reportCount(List<String> reports) {
+			_queryString._reports = reports;
+
+			return this;
+		}
+
 		public QueryStringBuilder reportCount(Long reportCount) {
 			_queryString._reportCount = reportCount;
 
@@ -201,6 +213,7 @@ public class QueryString {
 	private Date _modified;
 	private String _queryStringId;
 	private Long _reportCount;
+	private List<String> _reports;
 	private QueryStringStatus _status;
 	private Date _statusDate;
 

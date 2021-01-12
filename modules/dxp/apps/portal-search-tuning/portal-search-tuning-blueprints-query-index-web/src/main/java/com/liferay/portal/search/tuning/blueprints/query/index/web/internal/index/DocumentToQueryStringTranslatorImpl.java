@@ -21,8 +21,7 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.document.Document;
 import com.liferay.portal.search.hits.SearchHit;
 import com.liferay.portal.search.hits.SearchHits;
-import com.liferay.portal.search.tuning.blueprints.query.index.constants.QueryStringFields;
-import com.liferay.portal.search.tuning.blueprints.query.index.constants.QueryStringStatus;
+import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.constants.QueryStringStatus;
 import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.util.QueryIndexUtil;
 
 import java.text.DateFormat;

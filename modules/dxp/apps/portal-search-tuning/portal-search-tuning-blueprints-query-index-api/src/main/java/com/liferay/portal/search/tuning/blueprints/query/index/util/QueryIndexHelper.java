@@ -14,6 +14,8 @@
 
 package com.liferay.portal.search.tuning.blueprints.query.index.util;
 
+import com.liferay.portal.search.tuning.blueprints.query.index.constants.Reason;
+
 /**
  * @author Petteri Karttunen
  */
@@ -24,6 +26,7 @@ public interface QueryIndexHelper {
 
 	public boolean isAnalyzedLanguage(String languageId);
 
-	public void reportKeywords(long companyId, long groupId, String keywords);
+	public void reportKeywords(
+		long companyId, long groupId, String keywords, Reason reason);
 
 }

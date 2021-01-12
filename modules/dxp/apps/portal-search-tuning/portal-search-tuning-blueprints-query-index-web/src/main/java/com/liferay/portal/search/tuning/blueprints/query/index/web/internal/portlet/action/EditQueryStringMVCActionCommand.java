@@ -24,12 +24,12 @@ import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.portal.search.tuning.blueprints.query.index.constants.QueryStringStatus;
 import com.liferay.portal.search.tuning.blueprints.query.index.index.name.QueryStringIndexName;
 import com.liferay.portal.search.tuning.blueprints.query.index.index.name.QueryStringIndexNameBuilder;
 import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.constants.QueryIndexMVCCommandNames;
 import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.constants.QueryIndexPortletKeys;
 import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.constants.QueryIndexWebKeys;
+import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.constants.QueryStringStatus;
 import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.index.QueryString;
 import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.index.QueryStringIndexReader;
 import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.index.QueryStringIndexWriter;
@@ -104,6 +104,8 @@ public class EditQueryStringMVCActionCommand extends BaseMVCActionCommand {
 				0L
 			).languageId(
 				_getLanguageId(actionRequest)
+			).modified(
+				new Date()
 			).reportCount(
 				0L
 			).status(
@@ -182,7 +184,9 @@ public class EditQueryStringMVCActionCommand extends BaseMVCActionCommand {
 				queryStringIndexName, queryStringBuilder.build());
 		}
 		catch (IllegalArgumentException illegalArgumentException) {
-			SessionErrors.add(actionRequest, "unknownStatus");
+			SessionErrors.add(
+				actionRequest, QueryIndexWebKeys.ERROR,
+				illegalArgumentException.getMessage());
 
 			_log.error(
 				illegalArgumentException.getMessage(),

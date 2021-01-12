@@ -16,9 +16,10 @@ package com.liferay.portal.search.tuning.blueprints.query.index.web.internal.uti
 
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.search.tuning.blueprints.query.index.configuration.QueryIndexConfiguration;
-import com.liferay.portal.search.tuning.blueprints.query.index.constants.QueryStringStatus;
+import com.liferay.portal.search.tuning.blueprints.query.index.constants.Reason;
 import com.liferay.portal.search.tuning.blueprints.query.index.index.name.QueryStringIndexNameBuilder;
 import com.liferay.portal.search.tuning.blueprints.query.index.util.QueryIndexHelper;
+import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.constants.QueryStringStatus;
 import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.index.QueryString;
 import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.index.QueryStringIndexReader;
 import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.index.QueryStringIndexWriter;
@@ -45,7 +46,7 @@ public class QueryIndexHelperImpl implements QueryIndexHelper {
 	public void indexKeywords(
 		long companyId, long groupId, String languageId, String keywords) {
 
-		if (!_queryIndexConfiguration.enable()) {
+		if (!_queryIndexConfiguration.enableQueryIndexing()) {
 			return;
 		}
 
@@ -67,7 +68,9 @@ public class QueryIndexHelperImpl implements QueryIndexHelper {
 	}
 
 	@Override
-	public void reportKeywords(long companyId, long groupId, String keywords) {
+	public void reportKeywords(
+		long companyId, long groupId, String keywords, Reason reason) {
+
 		Optional<String> queryStringIdOptional =
 			_queryStringIndexReader.fetchIdOptional(
 				_queryStringIndexNameBuilder.getQueryStringIndexName(companyId),
@@ -76,7 +79,7 @@ public class QueryIndexHelperImpl implements QueryIndexHelper {
 		if (queryStringIdOptional.isPresent()) {
 			_queryStringIndexWriter.addReport(
 				_queryStringIndexNameBuilder.getQueryStringIndexName(companyId),
-				queryStringIdOptional.get());
+				queryStringIdOptional.get(), reason);
 		}
 	}
 

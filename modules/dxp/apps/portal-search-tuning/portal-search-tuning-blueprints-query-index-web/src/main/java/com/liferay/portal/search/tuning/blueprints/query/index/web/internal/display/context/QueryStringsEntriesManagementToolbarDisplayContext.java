@@ -25,10 +25,10 @@ import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.search.tuning.blueprints.query.index.constants.QueryStringFields;
-import com.liferay.portal.search.tuning.blueprints.query.index.constants.QueryStringStatus;
 import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.constants.QueryIndexMVCCommandNames;
+import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.constants.QueryStringStatus;
 import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.index.QueryString;
+import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.index.QueryStringFields;
 
 import java.util.List;
 import java.util.Objects;

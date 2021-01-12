@@ -14,48 +14,8 @@
 
 package com.liferay.portal.search.tuning.blueprints.query.index.web.internal.display.context;
 
-import java.util.Map;
-
 /**
  * @author Petteri Karttunen
  */
-public class EditQueryStringDisplayContext {
-
-	public Map<String, Object> getData() {
-		return _data;
-	}
-
-	public String getPageTitle() {
-		return _pageTitle;
-	}
-
-	public String getQueryStringId() {
-		return _queryStringId;
-	}
-
-	public String getRedirect() {
-		return _redirect;
-	}
-
-	public void setData(Map<String, Object> data) {
-		_data = data;
-	}
-
-	public void setPageTitle(String pageTitle) {
-		_pageTitle = pageTitle;
-	}
-
-	public void setQueryStringId(String queryStringId) {
-		_queryStringId = queryStringId;
-	}
-
-	public void setRedirect(String redirect) {
-		_redirect = redirect;
-	}
-
-	private Map<String, Object> _data;
-	private String _pageTitle;
-	private String _queryStringId;
-	private String _redirect;
-
+public class EditQueryStringDisplayContext extends QueryStringDisplayContext {
 }
