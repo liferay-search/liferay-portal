@@ -38,6 +38,7 @@ import com.liferay.portal.search.tuning.blueprints.engine.util.BlueprintsEngineH
 import com.liferay.portal.search.tuning.blueprints.json.response.BlueprintsJSONResponseBuilder;
 import com.liferay.portal.search.tuning.blueprints.json.response.constants.JSONResponseKeys;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
+import com.liferay.portal.search.tuning.blueprints.query.index.util.QueryIndexHelper;
 import com.liferay.portal.search.tuning.blueprints.suggestions.attributes.SuggestionsAttributes;
 import com.liferay.portal.search.tuning.blueprints.suggestions.attributes.SuggestionsAttributesBuilder;
 import com.liferay.portal.search.tuning.blueprints.suggestions.spellcheck.SpellCheckService;
@@ -99,7 +100,7 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 			responseJSONObject = _blueprintsJSONResponseBuilder.buildJSONObject(
 				searchResponse, blueprintsResponseAttributes,
 				_getResourceBundle(resourceRequest), messages, blueprintId);
-
+			
 			if (searchResponse.getTotalHits() == 0) {
 
 				// TODO: remove condition after
@@ -113,6 +114,8 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 						blueprintsRequestAttributes.getKeywords(),
 						responseJSONObject);
 				}
+			} else {
+				_indexQuery(resourceRequest, blueprintsRequestAttributes.getKeywords());
 			}
 		}
 		catch (JSONException jsonException) {
@@ -139,6 +142,17 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 
 		JSONPortletResponseUtil.writeJSON(
 			resourceRequest, resourceResponse, responseJSONObject);
+	}
+
+	private void _indexQuery(ResourceRequest resourceRequest, String keywords) {
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)resourceRequest.getAttribute(
+				WebKeys.THEME_DISPLAY);
+		
+		_queryIndexHelper.indexKeywords(
+				themeDisplay.getCompanyId(), themeDisplay.getScopeGroupId(), 
+				themeDisplay.getLanguageId(), keywords);
+
 	}
 
 	private void _addSpellCheck(
@@ -239,6 +253,9 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 	@Reference
 	private Portal _portal;
 
+	@Reference
+	private QueryIndexHelper _queryIndexHelper;
+	
 	@Reference(cardinality = ReferenceCardinality.OPTIONAL)
 	private SpellCheckService _spellCheckService;
 
