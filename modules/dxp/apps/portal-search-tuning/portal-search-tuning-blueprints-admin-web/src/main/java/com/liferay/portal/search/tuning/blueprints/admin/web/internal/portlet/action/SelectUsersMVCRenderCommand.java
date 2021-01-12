@@ -17,6 +17,7 @@ package com.liferay.portal.search.tuning.blueprints.admin.web.internal.portlet.a
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCRenderCommand;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminMVCCommandNames;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminWebKeys;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context.SelectUsersDisplayContext;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context.SelectUsersManagementToolbarDisplayContext;
@@ -35,7 +36,7 @@ import org.osgi.service.component.annotations.Reference;
 	immediate = true,
 	property = {
 		"javax.portlet.name=" + BlueprintsPortletKeys.BLUEPRINTS_ADMIN,
-		"mvc.command.name=selectUsers"
+		"mvc.command.name=" + BlueprintsAdminMVCCommandNames.SELECT_USERS
 	},
 	service = MVCRenderCommand.class
 )

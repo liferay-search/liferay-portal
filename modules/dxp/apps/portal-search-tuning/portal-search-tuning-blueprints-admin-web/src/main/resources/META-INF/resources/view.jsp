@@ -22,10 +22,11 @@
 
 <%
 final String tabs = ParamUtil.getString(request, "tabs", "blueprints");
-PortletURL configurationsURL = renderResponse.createRenderURL();
-configurationsURL.setParameter(BlueprintsAdminWebKeys.BLUEPRINT_TYPE, String.valueOf(BlueprintTypes.BLUEPRINT));
 
+PortletURL configurationsURL = renderResponse.createRenderURL();
 PortletURL queryFragmentsURL = renderResponse.createRenderURL();
+
+configurationsURL.setParameter(BlueprintsAdminWebKeys.BLUEPRINT_TYPE, String.valueOf(BlueprintTypes.BLUEPRINT));
 queryFragmentsURL.setParameter(BlueprintsAdminWebKeys.BLUEPRINT_TYPE, String.valueOf(BlueprintTypes.QUERY_FRAGMENT));
 %>
 

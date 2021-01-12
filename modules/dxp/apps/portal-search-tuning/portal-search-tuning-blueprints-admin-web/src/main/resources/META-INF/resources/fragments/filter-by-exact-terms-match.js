@@ -47,25 +47,7 @@ export default {
 			],
 			key: 'field',
 			name: 'Field',
-			type: 'single-field-select',
-			typeOptions: [
-				{
-					label: '',
-					value: '',
-				},
-				{
-					label: 'localized_title',
-					value: 'localized_title',
-				},
-				{
-					label: 'description',
-					value: 'description',
-				},
-				{
-					label: 'content',
-					value: 'content',
-				},
-			],
+			type: 'single-field',
 		},
 		{
 			defaultValue: [],

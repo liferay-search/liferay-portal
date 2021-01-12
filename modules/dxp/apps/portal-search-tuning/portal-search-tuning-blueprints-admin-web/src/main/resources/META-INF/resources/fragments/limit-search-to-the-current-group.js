@@ -36,4 +36,5 @@ export default {
 			en_US: 'Limit Search to the Current Group',
 		},
 	},
+	uiConfigurationJSON: [],
 };

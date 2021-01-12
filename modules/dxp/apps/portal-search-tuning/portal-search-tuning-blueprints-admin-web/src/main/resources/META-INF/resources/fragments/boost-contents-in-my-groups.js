@@ -36,4 +36,5 @@ export default {
 			en_US: 'Boost Contents in My Groups',
 		},
 	},
+	uiConfigurationJSON: [],
 };

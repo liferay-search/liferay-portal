@@ -126,15 +126,10 @@ public class BlueprintsSearchRequestContributor
 		BlueprintsAttributesBuilder blueprintsAttributesBuilder =
 			_blueprintsAttributesBuilderFactory.builder();
 
-		String keywordsParameterName = getKeywordsParameterName(blueprintId);
-
-		if (!Validator.isBlank(keywordsParameterName)) {
-			blueprintsAttributesBuilder.addAttribute(
-				keywordsParameterName, getKeywords(searchRequest));
-		}
-
 		blueprintsAttributesBuilder.companyId(
 			getCompanyId(searchRequest)
+		).keywords(
+			getKeywords(searchRequest)
 		).locale(
 			getLocale(searchRequest)
 		).userId(

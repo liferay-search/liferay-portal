@@ -58,18 +58,7 @@ export default {
 			],
 		},
 		{
-			defaultValue: {
-				query_string: {
-					default_operator: 'or',
-					fields: [
-						'content',
-						'content_en_US',
-						'title',
-						'title_en_US^2',
-					],
-					query: '${keywords}',
-				},
-			},
+			defaultValue: {},
 			key: 'query',
 			type: 'json',
 		},

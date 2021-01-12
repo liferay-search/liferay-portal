@@ -54,7 +54,7 @@ export default {
 			],
 			key: 'field',
 			name: 'Field',
-			type: 'single-field-select',
+			type: 'single-field',
 			typeOptions: [
 				{
 					label: '',

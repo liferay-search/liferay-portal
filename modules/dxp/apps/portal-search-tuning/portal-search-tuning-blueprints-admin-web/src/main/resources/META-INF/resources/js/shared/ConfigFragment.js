@@ -49,25 +49,37 @@ function FieldSelectRow({
 		<ClayForm.Group>
 			<ClayInput.Group small>
 				<ClayInput.GroupItem>
-					<ClaySelect
-						aria-label={Liferay.Language.get('field')}
-						className="form-control-sm"
-						disabled={disabled}
-						id={`field-${index}`}
-						onChange={(event) => {
-							updateValue('field', event.target.value);
-						}}
-						value={item.field}
-					>
-						{config.typeOptions &&
-							config.typeOptions.map((option) => (
-								<ClaySelect.Option
-									key={option.value}
-									label={option.label}
-									value={option.value}
-								/>
-							))}
-					</ClaySelect>
+					{config.typeOptions ? (
+						<ClaySelect
+							aria-label={Liferay.Language.get('field')}
+							className="form-control-sm"
+							disabled={disabled}
+							id={`field-${index}`}
+							onChange={(event) => {
+								updateValue('field', event.target.value);
+							}}
+							value={item.field}
+						>
+							{config.typeOptions &&
+								config.typeOptions.map((option) => (
+									<ClaySelect.Option
+										key={option.value}
+										label={option.label}
+										value={option.value}
+									/>
+								))}
+						</ClaySelect>
+					) : (
+						<ClayInput
+							aria-label={Liferay.Language.get('field')}
+							disabled={disabled}
+							onChange={(event) => {
+								updateValue('field', event.target.value);
+							}}
+							type="text"
+							value={item.field}
+						/>
+					)}
 				</ClayInput.GroupItem>
 
 				<ClayInput.GroupItem>
@@ -105,20 +117,24 @@ function FieldSelectRow({
 
 				{!!config.boost && (
 					<ClayInput.GroupItem shrink>
-						<ClayInput
-							aria-label={Liferay.Language.get('boost')}
-							className="field-boost-input"
-							disabled={disabled}
-							id={`${config.key}_boost`}
-							onChange={(event) => {
-								updateValue(
-									'boost',
-									toNumber(event.target.value)
-								);
-							}}
-							type={'number'}
-							value={item.boost}
-						/>
+						<ClayTooltipProvider>
+							<ClayInput
+								aria-label={Liferay.Language.get('boost')}
+								className="field-boost-input"
+								data-tooltip-align="top"
+								disabled={disabled}
+								id={`${config.key}_boost`}
+								onChange={(event) => {
+									updateValue(
+										'boost',
+										toNumber(event.target.value)
+									);
+								}}
+								title={Liferay.Language.get('boost')}
+								type={'number'}
+								value={item.boost}
+							/>
+						</ClayTooltipProvider>
 					</ClayInput.GroupItem>
 				)}
 
@@ -158,11 +174,12 @@ function JSONEditor({defaultValue, disabled, onChange}) {
 	);
 }
 
-function MultiSelect({items, name, onItemsChange}) {
+function MultiSelect({disabled, items, name, onItemsChange}) {
 	const [value, setValue] = useState('');
 
 	return (
 		<ClayMultiSelect
+			disabled={disabled}
 			inputName={name}
 			inputValue={value}
 			items={items}
@@ -360,9 +377,6 @@ function ConfigFragment({
 								aria-label={config.name}
 								disabled={disabled}
 								id={config.key}
-								insetAfter={
-									uiConfigurationValues[config.key].length > 0
-								}
 								readOnly
 								type="text"
 								value={
@@ -373,24 +387,23 @@ function ConfigFragment({
 										: ''
 								}
 							/>
-							{uiConfigurationValues[config.key].length > 0 && (
-								<ClayInput.GroupInsetItem after>
-									<ClayButton
-										aria-label={Liferay.Language.get(
-											'delete'
-										)}
-										className="component-action"
-										disabled={disabled}
-										displayType="unstyled"
-										onClick={() =>
-											_handleChange(config.key, [])
-										}
-									>
-										<ClayIcon symbol="times-circle" />
-									</ClayButton>
-								</ClayInput.GroupInsetItem>
-							)}
 						</ClayInput.GroupItem>
+
+						{uiConfigurationValues[config.key].length > 0 && (
+							<ClayInput.GroupItem shrink>
+								<ClayButton
+									aria-label={Liferay.Language.get('delete')}
+									className="component-action"
+									disabled={disabled}
+									displayType="unstyled"
+									onClick={() =>
+										_handleChange(config.key, [])
+									}
+								>
+									<ClayIcon symbol="times-circle" />
+								</ClayButton>
+							</ClayInput.GroupItem>
+						)}
 
 						<ClayInput.GroupItem shrink>
 							<ClayButton
@@ -412,13 +425,12 @@ function ConfigFragment({
 						</ClayInput.GroupItem>
 					</ClayInput.Group>
 				);
-			case INPUT_TYPES.SINGLE_FIELD_SELECT:
+			case INPUT_TYPES.SINGLE_FIELD:
 				return (
-					<div className="single-field-select">
+					<div className="single-field">
 						{uiConfigurationValues[config.key].map(
 							(item, index) => (
 								<FieldSelectRow
-									boost={false}
 									config={config}
 									disabled={disabled}
 									index={index}
@@ -440,9 +452,9 @@ function ConfigFragment({
 						)}
 					</div>
 				);
-			case INPUT_TYPES.FIELD_SELECT:
+			case INPUT_TYPES.FIELD:
 				return (
-					<div className="field-select">
+					<div className="field">
 						{uiConfigurationValues[config.key].map(
 							(item, index) => (
 								<FieldSelectRow
@@ -712,35 +724,36 @@ function ConfigFragment({
 						</ClayDropDown>
 					)}
 
-					<ClayList.ItemField>
-						<ClayButton
-							aria-label={
-								!collapse
-									? Liferay.Language.get('collapse')
-									: Liferay.Language.get('expand')
-							}
-							borderless
-							displayType="secondary"
-							monospaced
-							onClick={() => {
-								setCollapse(!collapse);
-							}}
-							small
-						>
-							<ClayIcon
-								symbol={
-									!collapse ? 'angle-down' : 'angle-right'
+					{_hasConfigurationValues && (
+						<ClayList.ItemField>
+							<ClayButton
+								aria-label={
+									!collapse
+										? Liferay.Language.get('collapse')
+										: Liferay.Language.get('expand')
 								}
-							/>
-						</ClayButton>
-					</ClayList.ItemField>
+								borderless
+								displayType="secondary"
+								monospaced
+								onClick={() => {
+									setCollapse(!collapse);
+								}}
+								small
+							>
+								<ClayIcon
+									symbol={
+										!collapse ? 'angle-down' : 'angle-right'
+									}
+								/>
+							</ClayButton>
+						</ClayList.ItemField>
+					)}
 				</ClayList.Item>
 			</ClayList>
 
 			{!collapse && (
 				<>
-					{(!_hasConfigurationValues ||
-						!validateUIConfigurationJSON(uiConfigurationJSON)) && (
+					{!validateUIConfigurationJSON(uiConfigurationJSON) && (
 						<ClayAlert
 							displayType="danger"
 							title={Liferay.Language.get('error')}

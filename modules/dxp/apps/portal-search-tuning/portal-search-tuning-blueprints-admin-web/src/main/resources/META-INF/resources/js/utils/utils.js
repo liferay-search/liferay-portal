@@ -186,8 +186,29 @@ export const getDefaultValue = (item) => {
 			return isNotEmpty(itemValue) && typeof itemValue == 'number'
 				? itemValue
 				: '';
-		case INPUT_TYPES.FIELD_SELECT:
-			return isNotEmpty(itemValue) ? itemValue : [];
+		case INPUT_TYPES.FIELD:
+			return isNotEmpty(itemValue) &&
+				itemValue.every(
+					(item) =>
+						isNotNullOrUndefined(item.field) &&
+						isNotNullOrUndefined(item.locale)
+				)
+				? itemValue
+				: [];
+		case INPUT_TYPES.SINGLE_FIELD:
+			return isNotEmpty(itemValue) &&
+				itemValue.every(
+					(item) =>
+						isNotNullOrUndefined(item.field) &&
+						isNotNullOrUndefined(item.locale)
+				)
+				? itemValue
+				: [
+						{
+							field: '',
+							locale: '',
+						},
+				  ];
 		case INPUT_TYPES.JSON:
 			return isNotEmpty(itemValue) ? itemValue : {};
 		default:
@@ -257,8 +278,8 @@ export const replaceUIConfigurationValues = (
 				);
 			}
 			else if (
-				config.type === INPUT_TYPES.FIELD_SELECT ||
-				config.type === INPUT_TYPES.SINGLE_FIELD_SELECT
+				config.type === INPUT_TYPES.FIELD ||
+				config.type === INPUT_TYPES.SINGLE_FIELD
 			) {
 				const fields = uiConfigurationValues[config.key].map(
 					(item) =>
@@ -274,7 +295,7 @@ export const replaceUIConfigurationValues = (
 				);
 
 				configValue =
-					config.type === INPUT_TYPES.FIELD_SELECT
+					config.type === INPUT_TYPES.FIELD
 						? JSON.stringify(fields)
 						: fields[0];
 			}
@@ -330,7 +351,7 @@ export const replaceUIConfigurationValues = (
 				typeof configValue === 'number' ||
 				typeof configValue === 'boolean' ||
 				config.type === INPUT_TYPES.ENTITY ||
-				config.type === INPUT_TYPES.FIELD_SELECT ||
+				config.type === INPUT_TYPES.FIELD ||
 				config.type === INPUT_TYPES.JSON ||
 				config.type === INPUT_TYPES.MULTISELECT
 			) {
@@ -420,13 +441,7 @@ export const validateUIConfigurationJSON = (uiConfigurationJSON) => {
 				ENTITY_KEYS.includes(item.className)
 			);
 		}
-		else if (
-			[
-				INPUT_TYPES.FIELD_SELECT,
-				INPUT_TYPES.SINGLE_FIELD_SELECT,
-				INPUT_TYPES.SINGLE_SELECT,
-			].includes(item.type)
-		) {
+		else if (item.type === INPUT_TYPES.SINGLE_SELECT) {
 			return (
 				isNotAllEmpty([item.key, item.name, item.typeOptions]) &&
 				item.typeOptions.length > 0 &&

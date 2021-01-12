@@ -52,18 +52,18 @@ export default {
 			],
 			key: 'field',
 			name: 'Field',
-			type: 'single-field-select',
+			type: 'single-field',
 			typeOptions: [
 				{
-					label: 'localized_title',
+					label: 'Title',
 					value: 'localized_title',
 				},
 				{
-					label: 'description',
+					label: 'Description',
 					value: 'description',
 				},
 				{
-					label: 'content',
+					label: 'Content',
 					value: 'content',
 				},
 			],

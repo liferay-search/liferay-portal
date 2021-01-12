@@ -283,7 +283,9 @@ public class EditBlueprintDisplayBuilder {
 					_renderRequest, BlueprintsPortletKeys.BLUEPRINTS_ADMIN,
 					PortletRequest.RENDER_PHASE);
 
-				portletURL.setParameter("mvcRenderCommandName", "selectUsers");
+				portletURL.setParameter(
+					"mvcRenderCommandName",
+					BlueprintsAdminMVCCommandNames.SELECT_USERS);
 				portletURL.setParameter("eventName", "selectEntity");
 				portletURL.setWindowState(LiferayWindowState.POP_UP);
 
@@ -296,7 +298,8 @@ public class EditBlueprintDisplayBuilder {
 					PortletRequest.RENDER_PHASE);
 
 				portletURL.setParameter(
-					"mvcRenderCommandName", "selectOrganizations");
+					"mvcRenderCommandName",
+					BlueprintsAdminMVCCommandNames.SELECT_ORGANIZATIONS);
 				portletURL.setParameter("eventName", "selectEntity");
 				portletURL.setWindowState(LiferayWindowState.POP_UP);
 

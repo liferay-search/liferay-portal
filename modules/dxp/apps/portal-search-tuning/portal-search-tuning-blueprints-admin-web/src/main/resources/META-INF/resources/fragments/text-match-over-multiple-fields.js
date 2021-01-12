@@ -57,18 +57,18 @@ export default {
 			],
 			key: 'fields',
 			name: 'Fields',
-			type: 'field-select',
+			type: 'field',
 			typeOptions: [
 				{
-					label: 'localized_title',
+					label: 'Title',
 					value: 'localized_title',
 				},
 				{
-					label: 'description',
+					label: 'Description',
 					value: 'description',
 				},
 				{
-					label: 'content',
+					label: 'Content',
 					value: 'content',
 				},
 			],

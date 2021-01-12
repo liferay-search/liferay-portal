@@ -43,27 +43,13 @@ export default {
 		{
 			defaultValue: [
 				{
-					field: 'localized_title',
-					locale: '${context.language_id}',
+					field: '',
+					locale: '',
 				},
 			],
 			key: 'field',
 			name: 'Field',
-			type: 'single-field-select',
-			typeOptions: [
-				{
-					label: 'localized_title',
-					value: 'localized_title',
-				},
-				{
-					label: 'description',
-					value: 'description',
-				},
-				{
-					label: 'content',
-					value: 'content',
-				},
-			],
+			type: 'single-field',
 		},
 		{
 			defaultValue: '',
