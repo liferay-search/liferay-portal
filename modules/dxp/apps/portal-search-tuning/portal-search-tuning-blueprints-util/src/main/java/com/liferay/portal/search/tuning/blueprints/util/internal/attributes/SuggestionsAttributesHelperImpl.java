@@ -52,10 +52,10 @@ public class SuggestionsAttributesHelperImpl
 		return _suggestionsAttributesBuilderFactory.builder(
 		).companyId(
 			themeDisplay.getCompanyId()
-		).groupIds(
-			new Long[] {themeDisplay.getScopeGroupId()}
-		).languageIds(
-			new String[] {themeDisplay.getLanguageId()}
+		).groupId(
+			themeDisplay.getScopeGroupId()
+		).languageId(
+			themeDisplay.getLanguageId()
 		).userId(
 			themeDisplay.getUserId()
 		).addAttribute(
