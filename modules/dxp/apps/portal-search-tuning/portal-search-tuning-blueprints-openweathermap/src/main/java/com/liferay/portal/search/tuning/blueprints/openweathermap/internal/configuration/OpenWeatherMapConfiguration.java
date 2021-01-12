@@ -21,10 +21,12 @@ import com.liferay.portal.configuration.metatype.annotations.ExtendedObjectClass
 /**
  * @author Petteri Karttunen
  */
-@ExtendedObjectClassDefinition(category = "search")
+@ExtendedObjectClassDefinition(category = "search",
+scope = ExtendedObjectClassDefinition.Scope.COMPANY
+)
 @Meta.OCD(
 	id = "com.liferay.portal.search.tuning.blueprints.openweathermap.internal.configuration.OpenWeatherMapConfiguration",
-	localization = "content/Language", name = "openweathermap-configuration"
+	localization = "content/Language", name = "openweathermap-configuration-name"
 )
 public interface OpenWeatherMapConfiguration {
 
