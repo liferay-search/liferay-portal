@@ -122,7 +122,7 @@ public class QueryStringIndexReaderImpl implements QueryStringIndexReader {
 
 	private void _addGroupFilter(BooleanQuery booleanQuery, long groupId) {
 		booleanQuery.addFilterQueryClauses(
-			_queries.term(QueryStringFields.COMPANY_ID, groupId));
+			_queries.term(QueryStringFields.GROUP_ID, groupId));
 	}
 
 	private void _addSearchClause(BooleanQuery booleanQuery, String keywords) {
