@@ -25,11 +25,11 @@ public interface SuggestionsAttributesBuilder {
 
 	public SuggestionsAttributesBuilder companyId(long companyId);
 
-	public SuggestionsAttributesBuilder groupIds(Long[] groupIds);
+	public SuggestionsAttributesBuilder groupId(Long groupId);
 
 	public SuggestionsAttributesBuilder keywords(String keywords);
 
-	public SuggestionsAttributesBuilder languageIds(String[] languageIds);
+	public SuggestionsAttributesBuilder languageId(String languageIds);
 
 	public SuggestionsAttributesBuilder size(int size);
 

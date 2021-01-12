@@ -28,11 +28,11 @@ public interface SuggestionsAttributes {
 
 	public Long getCompanyId();
 
-	public Long[] getGroupIds();
+	public Long getGroupId();
 
 	public String getKeywords();
 
-	public String[] getLanguageIds();
+	public String getLanguageId();
 
 	public Integer getSize();
 
