@@ -19,9 +19,11 @@ import aQute.bnd.annotation.metatype.Meta;
 import com.liferay.portal.configuration.metatype.annotations.ExtendedObjectClassDefinition;
 
 /**
- * @author Sergio González
+ * @author Petteri Karttunen
  */
-@ExtendedObjectClassDefinition(category = "search")
+@ExtendedObjectClassDefinition(
+	category = "search", scope = ExtendedObjectClassDefinition.Scope.COMPANY
+)
 @Meta.OCD(
 	id = "com.liferay.portal.search.tuning.blueprints.query.index.configuration.QueryIndexConfiguration",
 	localization = "content/Language", name = "query-index-configuration-name"
@@ -29,6 +31,35 @@ import com.liferay.portal.configuration.metatype.annotations.ExtendedObjectClass
 public interface QueryIndexConfiguration {
 
 	@Meta.AD(deflt = "false", name = "enable-query-indexing", required = false)
-	public boolean enable();
+	public boolean enableQueryIndexing();
+
+	@Meta.AD(
+		deflt = "true", name = "enable-spellcheck-provider", required = false
+	)
+	public boolean enableSpellcheckDataProvider();
+
+	@Meta.AD(
+		deflt = "1", description = "spellcheck-provider-weight-description",
+		name = "spellcheck-provider-weight-name", required = false
+	)
+	public int spellCheckDataProviderWeight();
+
+	@Meta.AD(
+		deflt = "true", name = "enable-typeahead-provider", required = false
+	)
+	public boolean enableTypeaheadDataProvider();
+
+	@Meta.AD(
+		deflt = "1", description = "typeahead-provider-weight-description",
+		name = "typeahead-provider-weight-name", required = false
+	)
+	public int typeaheadDataProviderWeight();
+
+	@Meta.AD(
+		deflt = "2",
+		description = "typeahead-provider-hitcount-threshold-description",
+		name = "typeahead-provider-hitcount-threshold-name", required = false
+	)
+	public int typeAheadProviderHitCountThreshold();
 
 }

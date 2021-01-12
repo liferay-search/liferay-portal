@@ -145,6 +145,10 @@
 					"store": true,
 					"type": "date"
 				},
+				"report": {
+					"store": true,
+					"type": "text"
+				},
 				"reportCount": {
 					"store": true,
 					"type": "long"

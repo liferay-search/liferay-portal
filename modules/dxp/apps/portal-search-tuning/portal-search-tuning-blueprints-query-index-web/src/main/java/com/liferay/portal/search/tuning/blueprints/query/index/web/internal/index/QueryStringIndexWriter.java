@@ -14,6 +14,7 @@
 
 package com.liferay.portal.search.tuning.blueprints.query.index.web.internal.index;
 
+import com.liferay.portal.search.tuning.blueprints.query.index.constants.Reason;
 import com.liferay.portal.search.tuning.blueprints.query.index.index.name.QueryStringIndexName;
 
 /**
@@ -23,7 +24,8 @@ public interface QueryStringIndexWriter {
 
 	public void addHit(QueryStringIndexName queryStringIndexName, String id);
 
-	public void addReport(QueryStringIndexName queryStringIndexName, String id);
+	public void addReport(
+		QueryStringIndexName queryStringIndexName, String id, Reason reason);
 
 	public String create(
 		QueryStringIndexName queryStringIndexName, QueryString queryString);

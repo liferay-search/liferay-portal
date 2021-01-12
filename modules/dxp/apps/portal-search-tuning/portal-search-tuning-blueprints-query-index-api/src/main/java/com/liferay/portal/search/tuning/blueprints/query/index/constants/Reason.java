@@ -12,13 +12,13 @@
  *
  */
 
-package com.liferay.portal.search.tuning.blueprints.query.index.web.internal.constants;
+package com.liferay.portal.search.tuning.blueprints.query.index.constants;
 
 /**
  * @author Petteri Karttunen
  */
-public enum QueryStringStatus {
+public enum Reason {
 
-	ACTIVE, BLACKLISTED, REPORTED
+	DANGEROUS, HATEFUL, IRRELELEVANT, SENSITIVE, SEXUALLY_EXPLICIT, VIOLENT
 
 }

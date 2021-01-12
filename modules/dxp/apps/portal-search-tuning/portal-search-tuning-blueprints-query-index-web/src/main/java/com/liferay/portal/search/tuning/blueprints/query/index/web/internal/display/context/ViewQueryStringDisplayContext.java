@@ -12,13 +12,10 @@
  *
  */
 
-package com.liferay.portal.search.tuning.blueprints.query.index.web.internal.constants;
+package com.liferay.portal.search.tuning.blueprints.query.index.web.internal.display.context;
 
 /**
  * @author Petteri Karttunen
  */
-public enum QueryStringStatus {
-
-	ACTIVE, BLACKLISTED, REPORTED
-
+public class ViewQueryStringDisplayContext extends QueryStringDisplayContext {
 }

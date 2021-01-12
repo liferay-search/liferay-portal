@@ -31,8 +31,6 @@ String queryStringId = queryString.getQueryStringId();
 	message="<%= StringPool.BLANK %>"
 	showWhenSingleIcon="<%= true %>"
 >
-
-	<%--
 	<portlet:renderURL var="viewEntryURL">
 		<portlet:param name="mvcRenderCommandName" value="<%= QueryIndexMVCCommandNames.VIEW_QUERY_STRING %>" />
 		<portlet:param name="redirect" value="<%= currentURL %>" />
@@ -44,16 +42,16 @@ String queryStringId = queryString.getQueryStringId();
 		url="<%= viewEntryURL %>"
 	/>
 
-	<portlet:actionURL name="<%= QueryIndexMVCCommandNames.EDIT_QUERY_STRING %>" var="editEntryURL">
+	<portlet:renderURL var="editEntryURL">
+		<portlet:param name="mvcRenderCommandName" value="<%= QueryIndexMVCCommandNames.EDIT_QUERY_STRING %>" />
 		<portlet:param name="redirect" value="<%= currentURL %>" />
 		<portlet:param name="<%= QueryIndexWebKeys.QUERY_STRING_ID %>" value="<%= queryStringId %>" />
-	</portlet:actionURL>
+	</portlet:renderURL>
 
 	<liferay-ui:icon
 		message="edit"
 		url="<%= editEntryURL %>"
 	/>
-	--%>
 
 	<portlet:actionURL name="<%= QueryIndexMVCCommandNames.EDIT_QUERY_STRING %>" var="blacklistEntryURL">
 		<portlet:param name="<%= QueryIndexWebKeys.STATUS %>" value="<%= QueryStringStatus.BLACKLISTED.name() %>" />

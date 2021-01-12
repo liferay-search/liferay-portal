@@ -21,6 +21,7 @@
 <%@ taglib uri="http://liferay.com/tld/aui" prefix="aui" %><%@
 taglib uri="http://liferay.com/tld/clay" prefix="clay" %><%@
 taglib uri="http://liferay.com/tld/frontend" prefix="liferay-frontend" %><%@
+taglib uri="http://liferay.com/tld/react" prefix="react" %><%@
 taglib uri="http://liferay.com/tld/theme" prefix="liferay-theme" %><%@
 taglib uri="http://liferay.com/tld/ui" prefix="liferay-ui" %><%@
 taglib uri="http://liferay.com/tld/util" prefix="liferay-util" %>
@@ -32,12 +33,14 @@ page import="com.liferay.portal.kernel.language.LanguageUtil" %><%@
 page import="com.liferay.portal.kernel.servlet.SessionErrors" %><%@
 page import="com.liferay.portal.kernel.util.ParamUtil" %><%@
 page import="com.liferay.portal.kernel.util.WebKeys" %><%@
-page import="com.liferay.portal.search.tuning.blueprints.query.index.constants.QueryStringStatus" %><%@
 page import="com.liferay.portal.search.tuning.blueprints.query.index.web.internal.constants.QueryIndexMVCCommandNames" %><%@
 page import="com.liferay.portal.search.tuning.blueprints.query.index.web.internal.constants.QueryIndexWebKeys" %><%@
+page import="com.liferay.portal.search.tuning.blueprints.query.index.web.internal.constants.QueryStringStatus" %><%@
 page import="com.liferay.portal.search.tuning.blueprints.query.index.web.internal.display.context.ActiveEntriesManagementToolbarDisplayContext" %><%@
 page import="com.liferay.portal.search.tuning.blueprints.query.index.web.internal.display.context.BlacklistedEntriesManagementToolbarDisplayContext" %><%@
+page import="com.liferay.portal.search.tuning.blueprints.query.index.web.internal.display.context.EditQueryStringDisplayContext" %><%@
 page import="com.liferay.portal.search.tuning.blueprints.query.index.web.internal.display.context.ReportedEntriesManagementToolbarDisplayContext" %><%@
+page import="com.liferay.portal.search.tuning.blueprints.query.index.web.internal.display.context.ViewQueryStringDisplayContext" %><%@
 page import="com.liferay.portal.search.tuning.blueprints.query.index.web.internal.display.context.ViewQueryStringsDisplayContext" %><%@
 page import="com.liferay.portal.search.tuning.blueprints.query.index.web.internal.index.QueryString" %><%@
 page import="com.liferay.portal.search.tuning.blueprints.query.index.web.internal.util.QueryIndexUtil" %>
