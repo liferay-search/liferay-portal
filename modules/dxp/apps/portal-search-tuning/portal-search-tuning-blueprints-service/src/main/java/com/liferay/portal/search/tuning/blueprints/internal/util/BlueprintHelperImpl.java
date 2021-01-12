@@ -270,25 +270,6 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 	}
 
 	@Override
-	public Optional<JSONArray> getMisspellingSetIdsOptional(
-		Blueprint blueprint) {
-
-		Optional<JSONObject> configurationJSONObjectOptional =
-			_getConfiguration(blueprint);
-
-		if (!configurationJSONObjectOptional.isPresent()) {
-			return Optional.empty();
-		}
-
-		String key = AdvancedConfigurationKeys.MISSPELLING_SET_IDS.getJsonKey();
-
-		return BlueprintJSONUtil.getValueAsJSONArrayOptional(
-			configurationJSONObjectOptional.get(),
-			"JSONObject/" + BlueprintKeys.ADVANCED_CONFIGURATION.getJsonKey(),
-			"JSONArray/" + key);
-	}
-
-	@Override
 	public Optional<String> getPageParameterNameOptional(Blueprint blueprint) {
 		Optional<JSONObject> configurationJSONObjectOptional =
 			getParameterConfigurationOptional(blueprint);
