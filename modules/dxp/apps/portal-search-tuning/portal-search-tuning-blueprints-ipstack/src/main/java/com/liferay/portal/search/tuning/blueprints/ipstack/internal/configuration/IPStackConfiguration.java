@@ -21,10 +21,12 @@ import com.liferay.portal.configuration.metatype.annotations.ExtendedObjectClass
 /**
  * @author Petteri Karttunen
  */
-@ExtendedObjectClassDefinition(category = "search")
+@ExtendedObjectClassDefinition(category = "search",
+scope = ExtendedObjectClassDefinition.Scope.COMPANY
+)
 @Meta.OCD(
 	id = "com.liferay.portal.search.tuning.blueprints.ipstack.internal.configuration.IPStackConfiguration",
-	localization = "content/Language", name = "ipstack-configuration"
+	localization = "content/Language", name = "ipstack-configuration-name"
 )
 public interface IPStackConfiguration {
 
