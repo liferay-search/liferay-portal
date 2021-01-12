@@ -14,7 +14,7 @@
 
 package com.liferay.portal.search.tuning.synonyms.web.internal.index;
 
-import com.liferay.portal.search.tuning.synonyms.web.internal.index.name.SynonymSetIndexName;
+import com.liferay.portal.search.tuning.synonyms.index.name.SynonymSetIndexName;
 
 /**
  * @author Adam Brandizzi

@@ -12,7 +12,7 @@
  *
  */
 
-package com.liferay.portal.search.tuning.synonyms.web.internal.index.name;
+package com.liferay.portal.search.tuning.synonyms.index.name;
 
 /**
  * @author Adam Brandizzi
