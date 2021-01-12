@@ -36,6 +36,11 @@
 				</aui:a>
 			</h4>
 
+			<h5 class="text-default text-truncate">
+				<liferay-ui:message key="misspellings" />: 
+				<%=String.join(",", entry.getMisspellings()) %>
+			</h5>
+
 			<%
 			Date modified = entry.getModified();
 
@@ -43,12 +48,11 @@
 			%>
 
 			<h5 class="text-default text-truncate">
-				<span class="id-text">
-					<liferay-ui:message arguments="<%= String.valueOf(entry.getMisspellingSetId()) %>" key="id-x" />
-				</span>
-
-				<liferay-ui:message arguments="<%= new String[] {String.valueOf(entry.getUserId()), modifiedDateDescription} %>" key="modified-by-x-x-ago" />
+				<liferay-ui:message arguments="<%= new String[] {modifiedDateDescription} %>" key="modified-x-ago" />
 			</h5>
+
+			
+			
 		</liferay-ui:search-container-column-text>
 
 		<liferay-ui:search-container-column-jsp
@@ -64,6 +68,12 @@
 			href="<%= editEntryURL %>"
 			name="phrase"
 			value="<%= entry.getPhrase() %>"
+		/>
+
+		<liferay-ui:search-container-column-text
+			cssClass="table-cell-expand table-cell-minw-150 table-title"
+			name="Misspellings"
+			value="<%= String.join(",", entry.getMisspellings()) %>"
 		/>
 
 		<liferay-ui:search-container-column-user
