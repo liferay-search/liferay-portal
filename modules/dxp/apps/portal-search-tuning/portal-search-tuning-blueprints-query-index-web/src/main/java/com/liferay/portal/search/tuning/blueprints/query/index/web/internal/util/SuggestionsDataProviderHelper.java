@@ -135,7 +135,7 @@ public class SuggestionsDataProviderHelper {
 				suggestions.add(
 					new Suggestion(
 						document.getString(QueryStringFields.CONTENT),
-						searchHit.getScore()));
+						searchHit.getScore(), "query_index"));
 			});
 
 		return suggestions;

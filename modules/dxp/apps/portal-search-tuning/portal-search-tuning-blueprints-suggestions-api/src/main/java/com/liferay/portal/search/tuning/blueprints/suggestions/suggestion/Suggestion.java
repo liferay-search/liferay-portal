@@ -14,6 +14,7 @@
 
 package com.liferay.portal.search.tuning.blueprints.suggestions.suggestion;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -21,9 +22,10 @@ import java.util.Map;
  */
 public class Suggestion {
 
-	public Suggestion(String text, float score) {
+	public Suggestion(String text, float score, String providerName) {
 		_text = text;
 		_score = score;
+		_attributes.put("provider", providerName);
 	}
 
 	public Map<String, String> getAttributes() {
@@ -50,7 +52,7 @@ public class Suggestion {
 		_text = text;
 	}
 
-	private Map<String, String> _attributes;
+	private Map<String, String> _attributes = new HashMap<String, String>();
 	private float _score;
 	private String _text;
 
