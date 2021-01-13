@@ -16,9 +16,7 @@ package com.liferay.portal.search.tuning.blueprints.query.index.web.internal.sug
 
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
-import com.liferay.portal.search.document.Document;
 import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
-import com.liferay.portal.search.hits.SearchHit;
 import com.liferay.portal.search.hits.SearchHits;
 import com.liferay.portal.search.query.BooleanQuery;
 import com.liferay.portal.search.query.MultiMatchQuery;
@@ -35,7 +33,6 @@ import com.liferay.portal.search.tuning.blueprints.suggestions.suggestion.Sugges
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -67,7 +64,7 @@ public class QueryIndexTypeaheadDataProvider implements TypeaheadDataProvider {
 			return new ArrayList<>();
 		}
 
-		return _getResults(searchHits.getSearchHits());
+		return _suggestionsProviderHelper.getSuggestions(searchHits.getSearchHits());
 	}
 
 	@Override
@@ -138,24 +135,6 @@ public class QueryIndexTypeaheadDataProvider implements TypeaheadDataProvider {
 			booleanQuery, suggestionsAttributes);
 
 		return booleanQuery;
-	}
-
-	private List<Suggestion> _getResults(List<SearchHit> searchHits) {
-		List<Suggestion> suggestions = new ArrayList<>();
-
-		Stream<SearchHit> stream = searchHits.stream();
-
-		stream.forEach(
-			searchHit -> {
-				Document document = searchHit.getDocument();
-
-				suggestions.add(
-					new Suggestion(
-						document.getString(QueryStringFields.CONTENT),
-						searchHit.getScore()));
-			});
-
-		return suggestions;
 	}
 
 	@Reference

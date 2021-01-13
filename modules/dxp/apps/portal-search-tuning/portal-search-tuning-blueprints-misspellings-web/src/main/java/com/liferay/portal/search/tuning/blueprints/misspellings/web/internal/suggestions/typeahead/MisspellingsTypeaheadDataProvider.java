@@ -160,7 +160,7 @@ public class MisspellingsTypeaheadDataProvider
 				suggestions.add(
 					new Suggestion(
 						document.getString(MisspellingSetFields.PHRASE),
-						searchHit.getScore()));
+						searchHit.getScore(), "misspellings"));
 			});
 
 		return suggestions;

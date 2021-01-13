@@ -143,7 +143,7 @@ public class TitleTypeaheadDataProvider implements TypeaheadDataProvider {
 				suggestions.add(
 					new Suggestion(
 						document.getString("localized_title_" + languageId),
-						searchHit.getScore()));
+						searchHit.getScore(), "titles"));
 			});
 
 		return suggestions;
