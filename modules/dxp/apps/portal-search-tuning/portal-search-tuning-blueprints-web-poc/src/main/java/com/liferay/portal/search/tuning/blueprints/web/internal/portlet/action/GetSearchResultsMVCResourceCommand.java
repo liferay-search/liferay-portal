@@ -26,6 +26,7 @@ import com.liferay.portal.kernel.portlet.JSONPortletResponseUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCResourceCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCResourceCommand;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import com.liferay.portal.kernel.util.Validator;
@@ -33,11 +34,14 @@ import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.search.searcher.SearchResponse;
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributesBuilder;
+import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributesBuilderFactory;
+import com.liferay.portal.search.tuning.blueprints.engine.constants.ReservedParameterNames;
 import com.liferay.portal.search.tuning.blueprints.engine.exception.BlueprintsEngineException;
 import com.liferay.portal.search.tuning.blueprints.engine.util.BlueprintsEngineHelper;
 import com.liferay.portal.search.tuning.blueprints.json.response.BlueprintsJSONResponseBuilder;
 import com.liferay.portal.search.tuning.blueprints.json.response.constants.JSONResponseKeys;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
+import com.liferay.portal.search.tuning.blueprints.misspellings.processor.MisspellingsProcessor;
 import com.liferay.portal.search.tuning.blueprints.query.index.util.QueryIndexHelper;
 import com.liferay.portal.search.tuning.blueprints.suggestions.attributes.SuggestionsAttributes;
 import com.liferay.portal.search.tuning.blueprints.suggestions.attributes.SuggestionsAttributesBuilder;
@@ -54,6 +58,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Stream;
 
+import javax.portlet.PortletRequest;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 
@@ -84,10 +89,16 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 		JSONObject responseJSONObject = null;
 
 		try {
+			BlueprintsWebPortletPreferences blueprintsWebPortletPreferences =
+				new BlueprintsWebPortletPreferencesImpl(
+					resourceRequest.getPreferences());
+
 			Messages messages = new Messages();
 
 			BlueprintsAttributes blueprintsRequestAttributes =
-				_getBlueprintsRequestAttributes(resourceRequest, blueprintId);
+				_getBlueprintsRequestAttributes(
+					resourceRequest, blueprintId,
+					blueprintsWebPortletPreferences);
 
 			SearchResponse searchResponse = _blueprintsEngineHelper.search(
 				blueprintsRequestAttributes, messages, blueprintId);
@@ -100,22 +111,36 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 			responseJSONObject = _blueprintsJSONResponseBuilder.buildJSONObject(
 				searchResponse, blueprintsResponseAttributes,
 				_getResourceBundle(resourceRequest), messages, blueprintId);
-			
+
+			// TODO: remove condition after
+			// https://issues.liferay.com/browse/LPS-125124
+
 			if (searchResponse.getTotalHits() == 0) {
-
-				// TODO: remove condition after
-				// https://issues.liferay.com/browse/LPS-125124
-
-				if (!Validator.isBlank(
+				if (_shouldAddDidYouMean(
+						blueprintsWebPortletPreferences,
+						searchResponse.getTotalHits()) &&
+					!Validator.isBlank(
 						blueprintsRequestAttributes.getKeywords())) {
 
-					_spellCheck(
-						resourceRequest,
+					_addDidYouMean(
+						resourceRequest, blueprintsWebPortletPreferences,
 						blueprintsRequestAttributes.getKeywords(),
 						responseJSONObject);
 				}
-			} else {
-				_indexQuery(resourceRequest, blueprintsRequestAttributes.getKeywords());
+			}
+
+			// TODO: remove condition after
+			// https://issues.liferay.com/browse/LPS-125124
+
+			if (searchResponse.getTotalHits() > 0) {
+				if (_shouldIndexQuery(
+						blueprintsWebPortletPreferences,
+						searchResponse.getTotalHits())) {
+
+					_indexQuery(
+						resourceRequest,
+						blueprintsRequestAttributes.getKeywords());
+				}
 			}
 		}
 		catch (JSONException jsonException) {
@@ -144,18 +169,27 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 			resourceRequest, resourceResponse, responseJSONObject);
 	}
 
-	private void _indexQuery(ResourceRequest resourceRequest, String keywords) {
+	private void _addDidYouMean(
+		ResourceRequest resourceRequest,
+		BlueprintsWebPortletPreferences blueprintsWebPortletPreferences,
+		String keywords, JSONObject responseJSONObject) {
 
-		ThemeDisplay themeDisplay = (ThemeDisplay)resourceRequest.getAttribute(
-				WebKeys.THEME_DISPLAY);
-		
-		_queryIndexHelper.indexKeywords(
-				themeDisplay.getCompanyId(), themeDisplay.getScopeGroupId(), 
-				themeDisplay.getLanguageId(), keywords);
+		if (_spellCheckService == null) {
+			return;
+		}
 
+		List<Suggestion> suggestions = _spellCheckService.getSuggestions(
+			_getDidYouMeanSuggestionsAttributes(
+				resourceRequest, keywords, blueprintsWebPortletPreferences));
+
+		if (suggestions.isEmpty()) {
+			return;
+		}
+
+		_addDidYouMeanSuggestions(responseJSONObject, suggestions);
 	}
 
-	private void _addSpellCheck(
+	private void _addDidYouMeanSuggestions(
 		JSONObject responseJSONObject, List<Suggestion> suggestions) {
 
 		JSONArray suggestionsJSONArray = JSONFactoryUtil.createJSONArray();
@@ -165,15 +199,29 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 		stream.forEach(
 			suggestion -> suggestionsJSONArray.put(suggestion.getText()));
 
-		responseJSONObject.put("spellcheck", suggestionsJSONArray);
+		responseJSONObject.put("didyoumean", suggestionsJSONArray);
+	}
+
+	private boolean _allowMisspellings(PortletRequest portletRequest) {
+		return ParamUtil.getBoolean(
+			portletRequest, ReservedParameterNames.ALLOW_MISSPELLINGS.getKey());
 	}
 
 	private BlueprintsAttributes _getBlueprintsRequestAttributes(
-		ResourceRequest resourceRequest, long blueprintId) {
+		ResourceRequest resourceRequest, long blueprintId,
+		BlueprintsWebPortletPreferences blueprintsWebPortletPreferences) {
 
 		BlueprintsAttributesBuilder blueprintsAttributesBuilder =
 			_blueprintsAttributesHelper.getBlueprintsRequestAttributesBuilder(
 				resourceRequest, blueprintId);
+
+		if ((_misspellingsProcessor != null) &&
+			blueprintsWebPortletPreferences.isMisspellingsEnabled() &&
+			!_allowMisspellings(resourceRequest)) {
+
+			return _processMisspellings(
+				resourceRequest, blueprintsAttributesBuilder);
+		}
 
 		return blueprintsAttributesBuilder.build();
 	}
@@ -190,6 +238,21 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 		return blueprintsAttributesBuilder.build();
 	}
 
+	private SuggestionsAttributes _getDidYouMeanSuggestionsAttributes(
+		ResourceRequest resourceRequest, String keywords,
+		BlueprintsWebPortletPreferences blueprintsWebPortletPreferences) {
+
+		SuggestionsAttributesBuilder suggestionsAttributesBuilder =
+			_suggestionsAttributesHelper.getSuggestionsAttributesBuilder(
+				resourceRequest);
+
+		return suggestionsAttributesBuilder.keywords(
+			keywords
+		).size(
+			blueprintsWebPortletPreferences.getMaxDidYouMeanSuggestions()
+		).build();
+	}
+
 	private ResourceBundle _getResourceBundle(ResourceRequest resourceRequest) {
 		ThemeDisplay themeDisplay = (ThemeDisplay)resourceRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
@@ -203,43 +266,84 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 			new BlueprintsWebPortletPreferencesImpl(
 				resourceRequest.getPreferences());
 
-		return blueprintsWebPortletPreferences.getSearchBlueprintId();
+		return blueprintsWebPortletPreferences.getBlueprintId();
 	}
 
-	private SuggestionsAttributes _getSpellcheckSuggestionAttributes(
-		ResourceRequest resourceRequest, String keywords) {
+	private void _indexQuery(ResourceRequest resourceRequest, String keywords) {
+		ThemeDisplay themeDisplay = (ThemeDisplay)resourceRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
 
-		SuggestionsAttributesBuilder suggestionsAttributesBuilder =
-			_suggestionsAttributesHelper.getSuggestionsAttributesBuilder(
-				resourceRequest);
-
-		return suggestionsAttributesBuilder.keywords(
-			keywords
-		).size(
-			10
-		).build();
+		_queryIndexHelper.indexKeywords(
+			themeDisplay.getCompanyId(), themeDisplay.getScopeGroupId(),
+			themeDisplay.getLanguageId(), keywords);
 	}
 
-	private void _spellCheck(
-		ResourceRequest resourceRequest, String keywords,
-		JSONObject responseJSONObject) {
+	private BlueprintsAttributes _processMisspellings(
+		ResourceRequest resourceRequest,
+		BlueprintsAttributesBuilder blueprintsAttributesBuilder1) {
 
-		if (_spellCheckService == null) {
-			return;
+		BlueprintsAttributes blueprintsAttributes =
+			blueprintsAttributesBuilder1.build();
+
+		String keywords = blueprintsAttributes.getKeywords();
+
+		BlueprintsAttributesBuilder blueprintsAttributesBuilder2 =
+			_blueprintsAttributesBuilderFactory.builder(blueprintsAttributes);
+
+		if (Validator.isBlank(keywords)) {
+			return blueprintsAttributesBuilder2.build();
 		}
 
-		List<Suggestion> suggestions = _spellCheckService.getSuggestions(
-			_getSpellcheckSuggestionAttributes(resourceRequest, keywords));
+		ThemeDisplay themeDisplay = (ThemeDisplay)resourceRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
 
-		if (suggestions.isEmpty()) {
-			return;
+		String misspellCheckedWords = _misspellingsProcessor.process(
+			themeDisplay.getCompanyId(), themeDisplay.getScopeGroupId(),
+			themeDisplay.getLanguageId(), keywords);
+
+		if (!keywords.equals(misspellCheckedWords)) {
+			blueprintsAttributesBuilder2.addAttribute(
+				ReservedParameterNames.SHOWING_INSTEAD_OF.getKey(), keywords);
+			blueprintsAttributesBuilder2.keywords(misspellCheckedWords);
 		}
 
-		_addSpellCheck(responseJSONObject, suggestions);
+		return blueprintsAttributesBuilder2.build();
+	}
+
+	private boolean _shouldAddDidYouMean(
+		BlueprintsWebPortletPreferences blueprintsWebPortletPreferences,
+		int hitCount) {
+
+		if (blueprintsWebPortletPreferences.isDidYouMeanEnabled() &&
+			(blueprintsWebPortletPreferences.getDidYouMeanHitsThreshold() >=
+				hitCount)) {
+
+			return true;
+		}
+
+		return false;
+	}
+
+	private boolean _shouldIndexQuery(
+		BlueprintsWebPortletPreferences blueprintsWebPortletPreferences,
+		int hitCount) {
+
+		if (blueprintsWebPortletPreferences.isQueryIndexingEnabled() &&
+			(blueprintsWebPortletPreferences.getQueryIndexingHitsThreshold() <=
+				hitCount)) {
+
+			return true;
+		}
+
+		return false;
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		GetSearchResultsMVCResourceCommand.class);
+
+	@Reference
+	private BlueprintsAttributesBuilderFactory
+		_blueprintsAttributesBuilderFactory;
 
 	@Reference
 	private BlueprintsAttributesHelper _blueprintsAttributesHelper;
@@ -250,12 +354,15 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 	@Reference
 	private BlueprintsJSONResponseBuilder _blueprintsJSONResponseBuilder;
 
+	@Reference(cardinality = ReferenceCardinality.OPTIONAL)
+	private volatile MisspellingsProcessor _misspellingsProcessor;
+
 	@Reference
 	private Portal _portal;
 
 	@Reference
 	private QueryIndexHelper _queryIndexHelper;
-	
+
 	@Reference(cardinality = ReferenceCardinality.OPTIONAL)
 	private SpellCheckService _spellCheckService;
 

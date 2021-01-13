@@ -141,12 +141,12 @@ export default function BlueprintsSearch({fetchResultsURL, suggestionsURL}) {
 		);
 	}
 
-	function _renderSpellCheckSuggestions() {
+	function _renderDidYouMeanSuggestions() {
 		return (
-			<div className="justify-content-center row spellcheck">
-				<h4>{Liferay.Language.get('spellcheck-suggestions')}</h4>
+			<div className="did-you-mean justify-content-center row">
+				<h4>{Liferay.Language.get('did-you-mean-suggestions')}</h4>
 				<ul>
-					{resource.spellcheck.map((keyword, index) => (
+					{resource.didyoumean.map((keyword, index) => (
 						<li key={index}>{keyword}</li>
 					))}
 				</ul>
@@ -255,8 +255,8 @@ export default function BlueprintsSearch({fetchResultsURL, suggestionsURL}) {
 					)}
 
 					{resource &&
-						resource.spellcheck &&
-						_renderSpellCheckSuggestions()}
+						resource.didyoumean &&
+						_renderDidYouMeanSuggestions()}
 				</div>
 			)}
 		</>

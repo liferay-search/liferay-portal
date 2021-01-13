@@ -21,12 +21,24 @@ import java.util.Optional;
  */
 public interface BlueprintsWebPortletPreferences {
 
-	public long getSearchBlueprintId();
+	public long getBlueprintId();
 
-	public Optional<Long> getSearchBlueprintIdOptional();
+	public Optional<Long> getBlueprintIdOptional();
 
-	public long getTypeaheadBlueprintId();
+	public int getDidYouMeanHitsThreshold();
 
-	public Optional<Long> getTypeaheadBlueprintIdOptional();
+	public int getMaxDidYouMeanSuggestions();
+
+	public int getMaxTypeaheadSuggestions();
+
+	public int getQueryIndexingHitsThreshold();
+
+	public boolean isDidYouMeanEnabled();
+
+	public boolean isMisspellingsEnabled();
+
+	public boolean isQueryIndexingEnabled();
+
+	public boolean isTypeaheadEnabled();
 
 }
