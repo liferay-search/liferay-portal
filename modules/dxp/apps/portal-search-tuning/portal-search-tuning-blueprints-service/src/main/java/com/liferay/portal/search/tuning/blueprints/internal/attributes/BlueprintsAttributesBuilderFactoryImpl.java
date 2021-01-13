@@ -14,6 +14,7 @@
 
 package com.liferay.portal.search.tuning.blueprints.internal.attributes;
 
+import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributesBuilder;
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributesBuilderFactory;
 
@@ -29,6 +30,13 @@ public class BlueprintsAttributesBuilderFactoryImpl
 	@Override
 	public BlueprintsAttributesBuilder builder() {
 		return new BlueprintsAttributesBuilderImpl();
+	}
+
+	@Override
+	public BlueprintsAttributesBuilder builder(
+		BlueprintsAttributes blueprintsAttributes) {
+
+		return new BlueprintsAttributesBuilderImpl(blueprintsAttributes);
 	}
 
 }

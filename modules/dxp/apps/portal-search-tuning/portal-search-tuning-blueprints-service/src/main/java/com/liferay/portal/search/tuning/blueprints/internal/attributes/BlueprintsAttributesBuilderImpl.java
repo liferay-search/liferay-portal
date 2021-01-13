@@ -27,6 +27,19 @@ import java.util.Map;
 public class BlueprintsAttributesBuilderImpl
 	implements BlueprintsAttributesBuilder {
 
+	public BlueprintsAttributesBuilderImpl() {
+	}
+
+	public BlueprintsAttributesBuilderImpl(
+		BlueprintsAttributes blueprintsAttributes) {
+
+		_attributes = blueprintsAttributes.getAttributes();
+		_companyId = blueprintsAttributes.getCompanyId();
+		_keywords = blueprintsAttributes.getKeywords();
+		_locale = blueprintsAttributes.getLocale();
+		_userId = blueprintsAttributes.getUserId();
+	}
+
 	@Override
 	public BlueprintsAttributesBuilder addAttribute(String key, Object value) {
 		_attributes.putIfAbsent(key, value);
@@ -85,7 +98,7 @@ public class BlueprintsAttributesBuilderImpl
 		}
 	}
 
-	private final Map<String, Object> _attributes = new HashMap<>();
+	private Map<String, Object> _attributes = new HashMap<>();
 	private Long _companyId;
 	private String _keywords;
 	private Locale _locale;

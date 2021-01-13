@@ -24,4 +24,7 @@ public interface BlueprintsAttributesBuilderFactory {
 
 	public BlueprintsAttributesBuilder builder();
 
+	public BlueprintsAttributesBuilder builder(
+		BlueprintsAttributes blueprintsAttributes);
+
 }
