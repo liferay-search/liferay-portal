@@ -154,8 +154,7 @@ public class BlueprintsDisplayBuilder {
 			new BlueprintsWebPortletPreferencesImpl(
 				renderRequest.getPreferences());
 
-		long blueprintId =
-			blueprintsWebPortletPreferences.getSearchBlueprintId();
+		long blueprintId = blueprintsWebPortletPreferences.getBlueprintId();
 
 		if (blueprintId != 0) {
 			return true;

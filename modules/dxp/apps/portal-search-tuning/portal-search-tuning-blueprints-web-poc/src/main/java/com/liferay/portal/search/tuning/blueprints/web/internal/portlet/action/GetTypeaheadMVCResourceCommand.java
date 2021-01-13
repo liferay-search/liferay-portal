@@ -30,6 +30,8 @@ import com.liferay.portal.search.tuning.blueprints.suggestions.typeahead.Typeahe
 import com.liferay.portal.search.tuning.blueprints.util.attributes.SuggestionsAttributesHelper;
 import com.liferay.portal.search.tuning.blueprints.web.internal.constants.BlueprintsWebPortletKeys;
 import com.liferay.portal.search.tuning.blueprints.web.internal.constants.ResourceRequestKeys;
+import com.liferay.portal.search.tuning.blueprints.web.internal.portlet.preferences.BlueprintsWebPortletPreferences;
+import com.liferay.portal.search.tuning.blueprints.web.internal.portlet.preferences.BlueprintsWebPortletPreferencesImpl;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -58,14 +60,21 @@ public class GetTypeaheadMVCResourceCommand extends BaseMVCResourceCommand {
 			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
 		throws Exception {
 
+		BlueprintsWebPortletPreferences blueprintsWebPortletPreferences =
+			new BlueprintsWebPortletPreferencesImpl(
+				resourceRequest.getPreferences());
+
 		String keywords = ParamUtil.getString(resourceRequest, "q");
 
-		if (keywords.length() <= 1) {
+		if (!_isTypeaheadEnabled(blueprintsWebPortletPreferences) ||
+			(keywords.length() <= 1)) {
+
 			return;
 		}
 
-		SuggestionsAttributes suggestionsAttributes = _getSuggestionsAttributes(
-			resourceRequest, keywords);
+		SuggestionsAttributes suggestionsAttributes =
+			_getTypeaheadSuggestionsAttributes(
+				resourceRequest, keywords, blueprintsWebPortletPreferences);
 
 		JSONPortletResponseUtil.writeJSON(
 			resourceRequest, resourceResponse,
@@ -90,8 +99,9 @@ public class GetTypeaheadMVCResourceCommand extends BaseMVCResourceCommand {
 		return responseJSONObject.put("suggestions", suggestionsJSONArray);
 	}
 
-	private SuggestionsAttributes _getSuggestionsAttributes(
-		ResourceRequest resourceRequest, String keywords) {
+	private SuggestionsAttributes _getTypeaheadSuggestionsAttributes(
+		ResourceRequest resourceRequest, String keywords,
+		BlueprintsWebPortletPreferences blueprintsWebPortletPreferences) {
 
 		SuggestionsAttributesBuilder suggestionsAttributesBuilder =
 			_suggestionsAttributesHelper.getSuggestionsAttributesBuilder(
@@ -100,8 +110,14 @@ public class GetTypeaheadMVCResourceCommand extends BaseMVCResourceCommand {
 		return suggestionsAttributesBuilder.keywords(
 			keywords
 		).size(
-			10
+			blueprintsWebPortletPreferences.getMaxTypeaheadSuggestions()
 		).build();
+	}
+
+	private boolean _isTypeaheadEnabled(
+		BlueprintsWebPortletPreferences blueprintsWebPortletPreferences) {
+
+		return blueprintsWebPortletPreferences.isTypeaheadEnabled();
 	}
 
 	@Reference

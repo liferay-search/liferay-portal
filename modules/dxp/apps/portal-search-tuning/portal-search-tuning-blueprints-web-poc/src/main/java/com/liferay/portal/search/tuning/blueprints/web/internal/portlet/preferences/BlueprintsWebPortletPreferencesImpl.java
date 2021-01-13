@@ -35,25 +35,65 @@ public class BlueprintsWebPortletPreferencesImpl
 	}
 
 	@Override
-	public long getSearchBlueprintId() {
-		return getSearchBlueprintIdOptional().orElse(0L);
+	public long getBlueprintId() {
+		return getBlueprintIdOptional().orElse(0L);
 	}
 
 	@Override
-	public Optional<Long> getSearchBlueprintIdOptional() {
+	public Optional<Long> getBlueprintIdOptional() {
 		return _portletPreferencesHelper.getLongOptional(
 			BlueprintsWebPortletPreferenceKeys.SEARCH_BLUEPRINT_ID);
 	}
 
 	@Override
-	public long getTypeaheadBlueprintId() {
-		return getTypeaheadBlueprintIdOptional().orElse(0L);
+	public int getDidYouMeanHitsThreshold() {
+		return _portletPreferencesHelper.getInteger(
+			BlueprintsWebPortletPreferenceKeys.DID_YOU_MEAN_HITS_THRESHOLD, 5);
 	}
 
 	@Override
-	public Optional<Long> getTypeaheadBlueprintIdOptional() {
-		return _portletPreferencesHelper.getLongOptional(
-			BlueprintsWebPortletPreferenceKeys.TYPEAHEAD_BLUEPRINT_ID);
+	public int getMaxDidYouMeanSuggestions() {
+		return _portletPreferencesHelper.getInteger(
+			BlueprintsWebPortletPreferenceKeys.
+				MAX_DID_YOU_MEAN_QUERY_SUGGESTIONS,
+			10);
+	}
+
+	@Override
+	public int getMaxTypeaheadSuggestions() {
+		return _portletPreferencesHelper.getInteger(
+			BlueprintsWebPortletPreferenceKeys.MAX_TYPEAHEAD_SUGGESTIONS, 10);
+	}
+
+	@Override
+	public int getQueryIndexingHitsThreshold() {
+		return _portletPreferencesHelper.getInteger(
+			BlueprintsWebPortletPreferenceKeys.QUERY_INDEXING_HITS_THRESHOLD,
+			3);
+	}
+
+	@Override
+	public boolean isDidYouMeanEnabled() {
+		return _portletPreferencesHelper.getBoolean(
+			BlueprintsWebPortletPreferenceKeys.DID_YOU_MEAN_ENABLED, true);
+	}
+
+	@Override
+	public boolean isMisspellingsEnabled() {
+		return _portletPreferencesHelper.getBoolean(
+			BlueprintsWebPortletPreferenceKeys.MISSPELLINGS_ENABLED, true);
+	}
+
+	@Override
+	public boolean isQueryIndexingEnabled() {
+		return _portletPreferencesHelper.getBoolean(
+			BlueprintsWebPortletPreferenceKeys.QUERY_INDEXING_ENABLED, true);
+	}
+
+	@Override
+	public boolean isTypeaheadEnabled() {
+		return _portletPreferencesHelper.getBoolean(
+			BlueprintsWebPortletPreferenceKeys.TYPEAHEAD_ENABLED, true);
 	}
 
 	private final PortletPreferencesHelper _portletPreferencesHelper;

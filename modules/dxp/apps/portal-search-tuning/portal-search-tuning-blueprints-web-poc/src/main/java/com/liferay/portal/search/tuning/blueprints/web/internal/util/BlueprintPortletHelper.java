@@ -63,7 +63,7 @@ public class BlueprintPortletHelper {
 			new BlueprintsWebPortletPreferencesImpl(
 				portletRequest.getPreferences());
 
-		return blueprintsWebPortletPreferences.getSearchBlueprintId();
+		return blueprintsWebPortletPreferences.getBlueprintId();
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
