@@ -22,7 +22,7 @@ import com.liferay.portal.configuration.metatype.annotations.ExtendedObjectClass
  * @author Petteri Karttunen
  */
 @ExtendedObjectClassDefinition(
-	category = "search", scope = ExtendedObjectClassDefinition.Scope.COMPANY
+	category = "blueprints", scope = ExtendedObjectClassDefinition.Scope.COMPANY
 )
 @Meta.OCD(
 	id = "com.liferay.portal.search.tuning.blueprints.ipstack.internal.configuration.IPStackConfiguration",
