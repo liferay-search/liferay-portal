@@ -208,7 +208,6 @@ public class BlueprintsAttributesHelperImpl
 			return;
 		}
 
-		blueprintsAttributesBuilder.addAttribute(parameterName, keywords);
 		blueprintsAttributesBuilder.keywords(keywords);
 	}
 
