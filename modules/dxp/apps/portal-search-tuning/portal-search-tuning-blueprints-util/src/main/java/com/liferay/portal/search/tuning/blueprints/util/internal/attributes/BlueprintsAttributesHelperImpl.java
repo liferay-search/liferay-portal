@@ -34,7 +34,6 @@ import com.liferay.portal.search.tuning.blueprints.constants.json.keys.parameter
 import com.liferay.portal.search.tuning.blueprints.engine.constants.ReservedParameterNames;
 import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetsBlueprintContributorKeys;
-import com.liferay.portal.search.tuning.blueprints.misspellings.processor.MisspellingsProcessor;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
 import com.liferay.portal.search.tuning.blueprints.util.BlueprintHelper;
@@ -51,7 +50,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
 
 /**
  * @author Petteri Karttunen
@@ -210,20 +208,8 @@ public class BlueprintsAttributesHelperImpl
 			return;
 		}
 
-		String misspellCheckedWords = _processMisspellings(
-			portletRequest, keywords);
-
-		if (!keywords.equals(misspellCheckedWords)) {
-			blueprintsAttributesBuilder.addAttribute(
-				parameterName, misspellCheckedWords);
-			blueprintsAttributesBuilder.addAttribute(
-				ReservedParameterNames.SHOWING_INSTEAD_OF.getKey(), keywords);
-			blueprintsAttributesBuilder.keywords(misspellCheckedWords);
-		}
-		else {
-			blueprintsAttributesBuilder.addAttribute(parameterName, keywords);
-			blueprintsAttributesBuilder.keywords(keywords);
-		}
+		blueprintsAttributesBuilder.addAttribute(parameterName, keywords);
+		blueprintsAttributesBuilder.keywords(keywords);
 	}
 
 	private void _addPagingParameter(
@@ -351,11 +337,6 @@ public class BlueprintsAttributesHelperImpl
 		}
 	}
 
-	private boolean _allowMisspellings(PortletRequest portletRequest) {
-		return ParamUtil.getBoolean(
-			portletRequest, ReservedParameterNames.ALLOW_MISSPELLINGS.getKey());
-	}
-
 	private Blueprint _getBlueprint(long blueprintId) throws PortalException {
 		return _blueprintService.getBlueprint(blueprintId);
 	}
@@ -371,23 +352,6 @@ public class BlueprintsAttributesHelperImpl
 		return false;
 	}
 
-	private String _processMisspellings(
-		PortletRequest portletRequest, String keywords) {
-
-		if (_allowMisspellings(portletRequest) ||
-			(_misspellingsProcessor == null)) {
-
-			return keywords;
-		}
-
-		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
-		return _misspellingsProcessor.process(
-			themeDisplay.getCompanyId(), themeDisplay.getScopeGroupId(),
-			themeDisplay.getLanguageId(), keywords);
-	}
-
 	private static final Log _log = LogFactoryUtil.getLog(
 		BlueprintsAttributesHelperImpl.class);
 
@@ -400,9 +364,6 @@ public class BlueprintsAttributesHelperImpl
 
 	@Reference
 	private BlueprintService _blueprintService;
-
-	@Reference(cardinality = ReferenceCardinality.OPTIONAL)
-	private volatile MisspellingsProcessor _misspellingsProcessor;
 
 	@Reference
 	private Portal _portal;
