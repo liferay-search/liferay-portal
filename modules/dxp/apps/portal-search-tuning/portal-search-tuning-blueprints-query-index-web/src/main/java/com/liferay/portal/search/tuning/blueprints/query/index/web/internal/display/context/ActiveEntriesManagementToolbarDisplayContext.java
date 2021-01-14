@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletRequest;
  * @author Petteri Karttunen
  */
 public class ActiveEntriesManagementToolbarDisplayContext
-	extends QueryStringsEntriesManagementToolbarDisplayContext {
+	extends QueryStringEntriesManagementToolbarDisplayContext {
 
 	public ActiveEntriesManagementToolbarDisplayContext(
 		HttpServletRequest httpServletRequest,

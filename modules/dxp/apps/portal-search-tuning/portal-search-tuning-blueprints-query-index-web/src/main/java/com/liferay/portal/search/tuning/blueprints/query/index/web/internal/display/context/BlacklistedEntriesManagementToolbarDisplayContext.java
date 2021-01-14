@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletRequest;
  * @author Petteri Karttunen
  */
 public class BlacklistedEntriesManagementToolbarDisplayContext
-	extends QueryStringsEntriesManagementToolbarDisplayContext {
+	extends QueryStringEntriesManagementToolbarDisplayContext {
 
 	public BlacklistedEntriesManagementToolbarDisplayContext(
 		HttpServletRequest httpServletRequest,
