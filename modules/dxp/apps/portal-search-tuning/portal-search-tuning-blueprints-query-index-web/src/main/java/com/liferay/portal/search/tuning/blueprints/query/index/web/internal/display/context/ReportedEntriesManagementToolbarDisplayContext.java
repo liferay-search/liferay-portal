@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletRequest;
  * @author Petteri Karttunen
  */
 public class ReportedEntriesManagementToolbarDisplayContext
-	extends QueryStringsEntriesManagementToolbarDisplayContext {
+	extends QueryStringEntriesManagementToolbarDisplayContext {
 
 	public ReportedEntriesManagementToolbarDisplayContext(
 		HttpServletRequest httpServletRequest,
