@@ -1,6 +1,10 @@
+$controlMenuToolbarHeight: 56px;
+
 .sidebar {
 	background-color: $white;
-	height: 100%;
+	display: flex;
+	flex-direction: column;
+	height: calc(100% - #{$controlMenuToolbarHeight});
 	min-width: 380px;
 	position: fixed;
 	right: 0;
@@ -54,6 +58,11 @@
 		}
 	}
 
+	.query-fragment-list {
+		overflow-y: scroll;
+		padding-bottom: 16px;
+	}
+
 	.sidebar-header {
 		display: flex;
 		justify-content: space-between;
@@ -80,9 +89,8 @@
 		}
 	}
 
-	.query-fragment-list {
-		height: calc(100% - 120px);
-		overflow-y: scroll;
-		padding-bottom: 45px;
+	.sidebar-search {
+		height: auto;
+		padding-bottom: 16px;
 	}
 }

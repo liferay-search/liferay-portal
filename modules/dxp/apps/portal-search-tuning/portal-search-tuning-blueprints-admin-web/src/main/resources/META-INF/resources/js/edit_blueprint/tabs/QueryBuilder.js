@@ -58,8 +58,8 @@ function QueryBuilder({
 	entityJSON,
 	frameworkConfig,
 	onFrameworkConfigChange,
+	onToggleSidebar,
 	selectedFragments,
-	toggleSidebar,
 	updateFragment,
 }) {
 	const {contextPath} = useContext(ThemeContext);
@@ -148,7 +148,7 @@ function QueryBuilder({
 								)}
 								displayType="primary"
 								monospaced
-								onClick={toggleSidebar}
+								onClick={onToggleSidebar}
 								small
 								title={Liferay.Language.get(
 									'add-query-fragment'

@@ -11,16 +11,16 @@
 
 import ClayButton from '@clayui/button';
 import ClayEmptyState from '@clayui/empty-state';
-import {ClayInput} from '@clayui/form';
 import ClayIcon from '@clayui/icon';
 import ClayList from '@clayui/list';
 import ClayLoadingIndicator from '@clayui/loading-indicator';
 import ClaySticker from '@clayui/sticker';
+import getCN from 'classnames';
 import PropTypes from 'prop-types';
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 
+import SearchInput from '../shared/SearchInput';
 import ThemeContext from '../shared/ThemeContext';
-import {CUSTOM_JSON_FRAGMENT, QUERY_FRAGMENTS} from '../utils/data';
 
 const EmptyListMessage = () => (
 	<div className="empty-list-message">
@@ -131,23 +131,26 @@ const QueryFragmentList = ({category, onAddFragment, queryFragments}) => {
 	);
 };
 
-function Sidebar({onAddFragment, showSidebar, toggleSidebar}) {
+function Sidebar({
+	fragments = [],
+	onAddFragment,
+	onToggleSidebar,
+	showSidebar,
+}) {
 	const {locale} = useContext(ThemeContext);
 
 	const [loading, setLoading] = useState(true);
 
-	const [queryFragments, setQueryFragments] = useState([]);
+	const [queryFragments, setQueryFragments] = useState(fragments);
 
 	const [categories, setCategories] = useState([]);
 	const [categorizedFragments, setCategorizedFragments] = useState({});
 
-	const originalQueryFragments = useRef();
-
-	const categorizeFragments = (fragmentsResponseData) => {
+	const categorizeFragments = (fragments) => {
 		const newCategories = [];
 		const newCategorizedFragments = {};
 
-		fragmentsResponseData.map((fragment) => {
+		fragments.map((fragment) => {
 			const category = fragment.fragmentTemplateJSON.category
 				? fragment.fragmentTemplateJSON.category
 				: Liferay.Language.get('other');
@@ -169,26 +172,14 @@ function Sidebar({onAddFragment, showSidebar, toggleSidebar}) {
 	};
 
 	useEffect(() => {
-
-		// Fetch query fragments.
-
-		const fragmentsResponseData = [
-			...QUERY_FRAGMENTS,
-			CUSTOM_JSON_FRAGMENT,
-		];
-
-		categorizeFragments(fragmentsResponseData);
-		setQueryFragments(fragmentsResponseData);
-		originalQueryFragments.current = fragmentsResponseData;
+		categorizeFragments(fragments);
 
 		setLoading(false);
-	}, [locale]);
+	}, [fragments]);
 
-	const _handleSearchChange = (event) => {
-		const newQueryFragments = originalQueryFragments.current.filter(
-			(fragment) => {
-				const {value} = event.target;
-
+	const _handleSearchChange = useCallback(
+		(value) => {
+			const newQueryFragments = fragments.filter((fragment) => {
 				if (value) {
 					const fragmentTitle =
 						fragment.fragmentTemplateJSON.title[locale] ||
@@ -201,15 +192,16 @@ function Sidebar({onAddFragment, showSidebar, toggleSidebar}) {
 				else {
 					return true;
 				}
-			}
-		);
+			});
 
-		categorizeFragments(newQueryFragments);
-		setQueryFragments(newQueryFragments);
-	};
+			categorizeFragments(newQueryFragments);
+			setQueryFragments(newQueryFragments);
+		},
+		[fragments, locale]
+	);
 
 	return (
-		<div className={`sidebar sidebar-light ${showSidebar && 'open'}`}>
+		<div className={getCN('sidebar', 'sidebar-light', {open: showSidebar})}>
 			<div className="sidebar-header">
 				<h4 className="component-title">
 					<span className="text-truncate-inline">
@@ -218,24 +210,20 @@ function Sidebar({onAddFragment, showSidebar, toggleSidebar}) {
 						</span>
 					</span>
 				</h4>
+
 				<ClayButton
 					aria-label={Liferay.Language.get('close')}
 					displayType="unstyled"
-					onClick={toggleSidebar}
+					onClick={onToggleSidebar}
 					small
 				>
 					<ClayIcon symbol="times" />
 				</ClayButton>
 			</div>
 
-			<nav className="component-tbar tbar">
+			<nav className="component-tbar sidebar-search tbar">
 				<div className="container-fluid">
-					<ClayInput
-						aria-label={Liferay.Language.get('search')}
-						onChange={_handleSearchChange}
-						placeholder={Liferay.Language.get('search')}
-						type="text"
-					/>
+					<SearchInput onChange={_handleSearchChange} />
 				</div>
 			</nav>
 
@@ -262,10 +250,10 @@ function Sidebar({onAddFragment, showSidebar, toggleSidebar}) {
 }
 
 Sidebar.propTypes = {
+	fragments: PropTypes.arrayOf(PropTypes.object),
 	onAddFragment: PropTypes.func,
-	queryFragments: PropTypes.arrayOf(PropTypes.object),
+	onToggleSidebar: PropTypes.func,
 	showSidebar: PropTypes.bool,
-	toggleSidebar: PropTypes.func,
 };
 
 export default React.memo(Sidebar);
