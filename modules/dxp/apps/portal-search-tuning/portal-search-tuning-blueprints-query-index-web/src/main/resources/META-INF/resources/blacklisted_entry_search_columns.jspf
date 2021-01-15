@@ -32,12 +32,13 @@
 			</h4>
 
 			<h5 class="text-default text-truncate">
-				<liferay-ui:message arguments="<%= LanguageUtil.getTimeDescription(request, System.currentTimeMillis() - entry.getCreated().getTime(), true) %>" key="created-x-ago" />
-			</h5>
-
-			<h5 class="text-default text-truncate">
-				<liferay-ui:message key="site" />:
-				<%= QueryIndexUtil.getSiteName(entry.getGroupId(), locale) %>
+				<span class="id-text">
+					<liferay-ui:message key="site" />:
+					<%= QueryIndexUtil.getSiteName(entry.getGroupId(), locale) %>,
+				</span>
+				<span class="id-text">
+					<liferay-ui:message arguments="<%= LanguageUtil.getTimeDescription(request, System.currentTimeMillis() - entry.getCreated().getTime(), true) %>" key="created-x-ago" />
+				</span>
 			</h5>
 
 			<h5 class="text-default text-truncate">

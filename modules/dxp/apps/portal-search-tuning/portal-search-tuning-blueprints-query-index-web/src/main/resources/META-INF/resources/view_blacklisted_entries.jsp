@@ -33,6 +33,7 @@ ViewQueryStringsDisplayContext viewQueryStringsDisplayContext = (ViewQueryString
 		<aui:input name="redirect" type="hidden" value="<%= currentURL %>" />
 
 		<liferay-ui:search-container
+			cssClass="blueprints-search-container"
 			id="blackListedEntries"
 			searchContainer="<%= viewQueryStringsDisplayContext.getSearchContainer() %>"
 		>
