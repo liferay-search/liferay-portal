@@ -13,7 +13,6 @@
 			<supports>
 				<action-key>ADD_BLUEPRINT</action-key>
 				<action-key>ADD_FRAGMENT</action-key>
-				<action-key>ADD_TEMPLATE</action-key>
 				<action-key>PERMISSIONS</action-key>
 			</supports>
 			<site-member-defaults>
@@ -23,7 +22,6 @@
 			<guest-unsupported>
 				<action-key>ADD_BLUEPRINT</action-key>
 				<action-key>ADD_FRAGMENT</action-key>
-				<action-key>ADD_TEMPLATE</action-key>
 				<action-key>PERMISSIONS</action-key>
 			</guest-unsupported>
 		</permissions>
@@ -39,14 +37,11 @@
 				<action-key>APPLY_BLUEPRINT</action-key>
 				<action-key>DELETE_BLUEPRINT</action-key>
 				<action-key>DELETE_FRAGMENT</action-key>
-				<action-key>DELETE_TEMPLATE</action-key>
 				<action-key>PERMISSIONS</action-key>
 				<action-key>UPDATE_BLUEPRINT</action-key>
 				<action-key>UPDATE_FRAGMENT</action-key>
-				<action-key>UPDATE_TEMPLATE</action-key>
 				<action-key>VIEW_BLUEPRINT</action-key>
 				<action-key>VIEW_FRAGMENT</action-key>
-				<action-key>VIEW_TEMPLATE</action-key>
 			</supports>
 			<site-member-defaults>
 			</site-member-defaults>
@@ -56,14 +51,11 @@
 			<guest-unsupported>
 				<action-key>DELETE_BLUEPRINT</action-key>
 				<action-key>DELETE_FRAGMENT</action-key>
-				<action-key>DELETE_TEMPLATE</action-key>
 				<action-key>PERMISSIONS</action-key>
 				<action-key>UPDATE_BLUEPRINT</action-key>
 				<action-key>UPDATE_FRAGMENT</action-key>
-				<action-key>UPDATE_TEMPLATE</action-key>
 				<action-key>VIEW_BLUEPRINT</action-key>
 				<action-key>VIEW_FRAGMENT</action-key>
-				<action-key>VIEW_TEMPLATE</action-key>
 			</guest-unsupported>
 		</permissions>
 	</model-resource>

@@ -23,10 +23,10 @@ public class BlueprintTypes {
 
 	public static final int BLUEPRINT = 1;
 
+	public static final int FACET_FRAGMENT = 10;
+
 	public static final int QUERY_FRAGMENT = 13;
 
 	public static final int SUGGESTER_FRAGMENT = 16;
-
-	public static final int TEMPLATE = 4;
 
 }
