@@ -48,15 +48,15 @@ public class EditQueryStringDisplayBuilder extends QueryStringDisplayBuilder {
 	}
 
 	public QueryStringDisplayContext build() {
-		EditQueryStringDisplayContext editQueryStringDisplayContext =
-			new EditQueryStringDisplayContext();
+		QueryStringDisplayContext queryStringDisplayContext =
+			new QueryStringDisplayContext();
 
-		setData(editQueryStringDisplayContext);
-		setQueryStringId(editQueryStringDisplayContext);
-		_setPageTitle(editQueryStringDisplayContext);
-		setRedirect(editQueryStringDisplayContext);
+		setData(queryStringDisplayContext);
+		setQueryStringId(queryStringDisplayContext);
+		_setPageTitle(queryStringDisplayContext);
+		setRedirect(queryStringDisplayContext);
 
-		return editQueryStringDisplayContext;
+		return queryStringDisplayContext;
 	}
 
 	@Override
@@ -83,7 +83,7 @@ public class EditQueryStringDisplayBuilder extends QueryStringDisplayBuilder {
 	}
 
 	private void _setPageTitle(
-		EditQueryStringDisplayContext editQueryStringDisplayContext) {
+		QueryStringDisplayContext queryStringDisplayContext) {
 
 		StringBundler sb = new StringBundler(2);
 
@@ -91,7 +91,7 @@ public class EditQueryStringDisplayBuilder extends QueryStringDisplayBuilder {
 
 		sb.append("query-string");
 
-		editQueryStringDisplayContext.setPageTitle(
+		queryStringDisplayContext.setPageTitle(
 			language.get(httpServletRequest, sb.toString()));
 	}
 

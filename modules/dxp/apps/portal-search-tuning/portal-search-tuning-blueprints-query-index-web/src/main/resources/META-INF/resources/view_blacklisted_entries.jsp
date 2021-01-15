@@ -17,13 +17,13 @@
 <%@ include file="/init.jsp" %>
 
 <%
-BlacklistedEntriesManagementToolbarDisplayContext blackListedEntriesManagementToolbarDisplayContext = (BlacklistedEntriesManagementToolbarDisplayContext)request.getAttribute(QueryIndexWebKeys.BLACKLISTED_ENTRIES_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT);
+ViewBlacklistedEntriesManagementToolbarDisplayContext viewBlackListedEntriesManagementToolbarDisplayContext = (ViewBlacklistedEntriesManagementToolbarDisplayContext)request.getAttribute(QueryIndexWebKeys.BLACKLISTED_ENTRIES_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT);
 
 ViewQueryStringsDisplayContext viewQueryStringsDisplayContext = (ViewQueryStringsDisplayContext)request.getAttribute(QueryIndexWebKeys.VIEW_QUERY_STRINGS_DISPLAY_CONTEXT);
 %>
 
 <clay:management-toolbar
-	displayContext="<%= blackListedEntriesManagementToolbarDisplayContext %>"
+	displayContext="<%= viewBlackListedEntriesManagementToolbarDisplayContext %>"
 	searchContainerId="blackListedEntries"
 	supportsBulkActions="<%= true %>"
 />
@@ -53,8 +53,8 @@ ViewQueryStringsDisplayContext viewQueryStringsDisplayContext = (ViewQueryString
 </clay:container-fluid>
 
 <liferay-frontend:component
-	componentId="<%= blackListedEntriesManagementToolbarDisplayContext.getDefaultEventHandler() %>"
-	module="js/view_blacklisted_entries/BlacklistedEntriesManagementToolbarDefaultEventHandler"
+	componentId="<%= viewBlackListedEntriesManagementToolbarDisplayContext.getDefaultEventHandler() %>"
+	module="js/view_blacklisted_entries/ViewBlacklistedEntriesManagementToolbarDefaultEventHandler"
 />
 
 <aui:script sandbox="<%= true %>">

@@ -40,22 +40,22 @@ public class ViewQueryStringDisplayBuilder extends QueryStringDisplayBuilder {
 			queryStringIndexNameBuilder, queryStringIndexReader);
 	}
 
-	public ViewQueryStringDisplayContext build() {
-		ViewQueryStringDisplayContext viewQueryStringDisplayContext =
-			new ViewQueryStringDisplayContext();
+	public QueryStringDisplayContext build() {
+		QueryStringDisplayContext queryStringDisplayContext =
+			new QueryStringDisplayContext();
 
-		setData(viewQueryStringDisplayContext);
-		setQueryStringId(viewQueryStringDisplayContext);
-		_setPageTitle(viewQueryStringDisplayContext);
-		setRedirect(viewQueryStringDisplayContext);
+		setData(queryStringDisplayContext);
+		setQueryStringId(queryStringDisplayContext);
+		_setPageTitle(queryStringDisplayContext);
+		setRedirect(queryStringDisplayContext);
 
-		return viewQueryStringDisplayContext;
+		return queryStringDisplayContext;
 	}
 
 	private void _setPageTitle(
-		ViewQueryStringDisplayContext viewQueryStringDisplayContext) {
+		QueryStringDisplayContext queryStringDisplayContext) {
 
-		viewQueryStringDisplayContext.setPageTitle(
+		queryStringDisplayContext.setPageTitle(
 			language.get(httpServletRequest, "view-query-string"));
 	}
 

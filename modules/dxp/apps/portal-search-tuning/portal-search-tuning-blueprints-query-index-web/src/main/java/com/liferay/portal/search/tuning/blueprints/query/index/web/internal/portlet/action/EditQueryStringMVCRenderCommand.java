@@ -57,7 +57,7 @@ public class EditQueryStringMVCRenderCommand implements MVCRenderCommand {
 				_queryStringIndexNameBuilder, _queryStringIndexReader);
 
 		renderRequest.setAttribute(
-			QueryIndexWebKeys.EDIT_QUERY_STRING_DISPLAY_CONTEXT,
+			QueryIndexWebKeys.QUERY_STRING_DISPLAY_CONTEXT,
 			editQueryStringDisplayBuilder.build());
 
 		return "/edit_entry.jsp";

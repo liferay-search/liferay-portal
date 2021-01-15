@@ -17,13 +17,13 @@
 <%@ include file="/init.jsp" %>
 
 <%
-ReportedEntriesManagementToolbarDisplayContext reportedEntriesManagementToolbarDisplayContext = (ReportedEntriesManagementToolbarDisplayContext)request.getAttribute(QueryIndexWebKeys.REPORTED_ENTRIES_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT);
+ViewReportedEntriesManagementToolbarDisplayContext viewReportedEntriesManagementToolbarDisplayContext = (ViewReportedEntriesManagementToolbarDisplayContext)request.getAttribute(QueryIndexWebKeys.REPORTED_ENTRIES_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT);
 
 ViewQueryStringsDisplayContext viewQueryStringsDisplayContext = (ViewQueryStringsDisplayContext)request.getAttribute(QueryIndexWebKeys.VIEW_QUERY_STRINGS_DISPLAY_CONTEXT);
 %>
 
 <clay:management-toolbar
-	displayContext="<%= reportedEntriesManagementToolbarDisplayContext %>"
+	displayContext="<%= viewReportedEntriesManagementToolbarDisplayContext %>"
 	searchContainerId="reportedEntries"
 	supportsBulkActions="<%= true %>"
 />
@@ -53,8 +53,8 @@ ViewQueryStringsDisplayContext viewQueryStringsDisplayContext = (ViewQueryString
 </clay:container-fluid>
 
 <liferay-frontend:component
-	componentId="<%= reportedEntriesManagementToolbarDisplayContext.getDefaultEventHandler() %>"
-	module="js/view_reported_entries/ReportedEntriesManagementToolbarDefaultEventHandler"
+	componentId="<%= viewReportedEntriesManagementToolbarDisplayContext.getDefaultEventHandler() %>"
+	module="js/view_reported_entries/ViewReportedEntriesManagementToolbarDefaultEventHandler"
 />
 
 <aui:script sandbox="<%= true %>">

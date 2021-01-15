@@ -11,6 +11,6 @@
 
 import {DefaultEventHandler} from 'frontend-js-web';
 
-class ReportedEntriesManagementToolbarDefaultEventHandler extends DefaultEventHandler {}
+class ViewReportedEntriesManagementToolbarDefaultEventHandler extends DefaultEventHandler {}
 
-export default ReportedEntriesManagementToolbarDefaultEventHandler;
+export default ViewReportedEntriesManagementToolbarDefaultEventHandler;

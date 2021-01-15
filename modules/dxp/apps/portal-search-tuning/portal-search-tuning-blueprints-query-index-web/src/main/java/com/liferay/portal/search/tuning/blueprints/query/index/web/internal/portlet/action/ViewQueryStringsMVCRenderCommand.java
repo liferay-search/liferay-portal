@@ -32,10 +32,10 @@ import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.cons
 import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.constants.QueryIndexPortletKeys;
 import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.constants.QueryIndexWebKeys;
 import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.constants.QueryStringStatus;
-import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.display.context.ActiveEntriesManagementToolbarDisplayContext;
-import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.display.context.BlacklistedEntriesManagementToolbarDisplayContext;
-import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.display.context.ReportedEntriesManagementToolbarDisplayContext;
+import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.display.context.ViewActiveEntriesManagementToolbarDisplayContext;
+import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.display.context.ViewBlacklistedEntriesManagementToolbarDisplayContext;
 import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.display.context.ViewQueryStringsDisplayContext;
+import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.display.context.ViewReportedEntriesManagementToolbarDisplayContext;
 import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.index.DocumentToQueryStringTranslator;
 
 import javax.portlet.PortletException;
@@ -67,7 +67,8 @@ public class ViewQueryStringsMVCRenderCommand implements MVCRenderCommand {
 		QueryStringStatus status = _getStatusFromTab(renderRequest);
 
 		ViewQueryStringsDisplayContext viewQueryStringsDisplayContext =
-			_getDisplayContext(renderRequest, renderResponse, status);
+			_getViewQueryStringsDisplayContext(
+				renderRequest, renderResponse, status);
 
 		renderRequest.setAttribute(
 			QueryIndexWebKeys.VIEW_QUERY_STRINGS_DISPLAY_CONTEXT,
@@ -89,17 +90,6 @@ public class ViewQueryStringsMVCRenderCommand implements MVCRenderCommand {
 		return "/view.jsp";
 	}
 
-	private ViewQueryStringsDisplayContext _getDisplayContext(
-		RenderRequest renderRequest, RenderResponse renderResponse,
-		QueryStringStatus status) {
-
-		return new ViewQueryStringsDisplayContext(
-			_portal.getLiferayPortletRequest(renderRequest),
-			_portal.getLiferayPortletResponse(renderResponse),
-			_documentToQueryStringTranslator, _portal, _queries,
-			_queryStringIndexNameBuilder, _searchEngineAdapter, _sorts, status);
-	}
-
 	private QueryStringStatus _getStatusFromTab(RenderRequest renderRequest) {
 		String status = ParamUtil.getString(
 			renderRequest, "tabs", QueryStringStatus.REPORTED.name());
@@ -116,14 +106,25 @@ public class ViewQueryStringsMVCRenderCommand implements MVCRenderCommand {
 		return QueryStringStatus.REPORTED;
 	}
 
+	private ViewQueryStringsDisplayContext _getViewQueryStringsDisplayContext(
+		RenderRequest renderRequest, RenderResponse renderResponse,
+		QueryStringStatus status) {
+
+		return new ViewQueryStringsDisplayContext(
+			_portal.getLiferayPortletRequest(renderRequest),
+			_portal.getLiferayPortletResponse(renderResponse),
+			_documentToQueryStringTranslator, _portal, _queries,
+			_queryStringIndexNameBuilder, _searchEngineAdapter, _sorts, status);
+	}
+
 	private void _setActiveEntriesContext(
 		RenderRequest renderRequest, RenderResponse renderResponse,
 		ViewQueryStringsDisplayContext viewQueryStringsDisplayContext) {
 
 		try {
-			ActiveEntriesManagementToolbarDisplayContext
-				activeEntriesManagementToolbarDisplayContext =
-					new ActiveEntriesManagementToolbarDisplayContext(
+			ViewActiveEntriesManagementToolbarDisplayContext
+				viewActiveEntriesManagementToolbarDisplayContext =
+					new ViewActiveEntriesManagementToolbarDisplayContext(
 						_portal.getHttpServletRequest(renderRequest),
 						_portal.getLiferayPortletRequest(renderRequest),
 						_portal.getLiferayPortletResponse(renderResponse),
@@ -133,7 +134,7 @@ public class ViewQueryStringsMVCRenderCommand implements MVCRenderCommand {
 			renderRequest.setAttribute(
 				QueryIndexWebKeys.
 					ACTIVE_ENTRIES_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT,
-				activeEntriesManagementToolbarDisplayContext);
+				viewActiveEntriesManagementToolbarDisplayContext);
 		}
 		catch (PortalException | PortletException exception) {
 			_log.error(exception.getMessage(), exception);
@@ -148,9 +149,9 @@ public class ViewQueryStringsMVCRenderCommand implements MVCRenderCommand {
 		ViewQueryStringsDisplayContext viewQueryStringsDisplayContext) {
 
 		try {
-			BlacklistedEntriesManagementToolbarDisplayContext
-				blacklistedEntriesManagementToolbarDisplayContext =
-					new BlacklistedEntriesManagementToolbarDisplayContext(
+			ViewBlacklistedEntriesManagementToolbarDisplayContext
+				viewBlacklistedEntriesManagementToolbarDisplayContext =
+					new ViewBlacklistedEntriesManagementToolbarDisplayContext(
 						_portal.getHttpServletRequest(renderRequest),
 						_portal.getLiferayPortletRequest(renderRequest),
 						_portal.getLiferayPortletResponse(renderResponse),
@@ -160,7 +161,7 @@ public class ViewQueryStringsMVCRenderCommand implements MVCRenderCommand {
 			renderRequest.setAttribute(
 				QueryIndexWebKeys.
 					BLACKLISTED_ENTRIES_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT,
-				blacklistedEntriesManagementToolbarDisplayContext);
+				viewBlacklistedEntriesManagementToolbarDisplayContext);
 		}
 		catch (PortalException | PortletException exception) {
 			_log.error(exception.getMessage(), exception);
@@ -175,9 +176,9 @@ public class ViewQueryStringsMVCRenderCommand implements MVCRenderCommand {
 		ViewQueryStringsDisplayContext viewQueryStringsDisplayContext) {
 
 		try {
-			ReportedEntriesManagementToolbarDisplayContext
-				reportedEntriesManagementToolbarDisplayContext =
-					new ReportedEntriesManagementToolbarDisplayContext(
+			ViewReportedEntriesManagementToolbarDisplayContext
+				viewReportedEntriesManagementToolbarDisplayContext =
+					new ViewReportedEntriesManagementToolbarDisplayContext(
 						_portal.getHttpServletRequest(renderRequest),
 						_portal.getLiferayPortletRequest(renderRequest),
 						_portal.getLiferayPortletResponse(renderResponse),
@@ -187,7 +188,7 @@ public class ViewQueryStringsMVCRenderCommand implements MVCRenderCommand {
 			renderRequest.setAttribute(
 				QueryIndexWebKeys.
 					REPORTED_ENTRIES_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT,
-				reportedEntriesManagementToolbarDisplayContext);
+				viewReportedEntriesManagementToolbarDisplayContext);
 		}
 		catch (PortalException | PortletException exception) {
 			_log.error(exception.getMessage(), exception);

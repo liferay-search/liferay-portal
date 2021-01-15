@@ -17,17 +17,17 @@
 <%@ include file="/init.jsp" %>
 
 <%
-EditQueryStringDisplayContext editQueryStringDisplayContext = (EditQueryStringDisplayContext)request.getAttribute(QueryIndexWebKeys.EDIT_QUERY_STRING_DISPLAY_CONTEXT);
+QueryStringDisplayContext queryStringDisplayContext = (QueryStringDisplayContext)request.getAttribute(QueryIndexWebKeys.QUERY_STRING_DISPLAY_CONTEXT);
 
 portletDisplay.setShowBackIcon(true);
-portletDisplay.setURLBack(editQueryStringDisplayContext.getRedirect());
+portletDisplay.setURLBack(queryStringDisplayContext.getRedirect());
 
-renderResponse.setTitle(editQueryStringDisplayContext.getPageTitle());
+renderResponse.setTitle(queryStringDisplayContext.getPageTitle());
 %>
 
 <div>
 	<react:component
-		data="<%= editQueryStringDisplayContext.getData() %>"
+		data="<%= queryStringDisplayContext.getData() %>"
 		module="js/edit_entry/index"
 	/>
 </div>

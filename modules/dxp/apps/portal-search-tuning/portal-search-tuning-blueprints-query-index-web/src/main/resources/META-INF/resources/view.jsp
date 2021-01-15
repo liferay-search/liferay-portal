@@ -23,11 +23,7 @@
 <%
 final String tabs = ParamUtil.getString(request, "tabs", QueryStringStatus.REPORTED.name());
 
-PortletURL reportedEntriesURL = renderResponse.createRenderURL();
-
-PortletURL activeEntriesURL = renderResponse.createRenderURL();
-
-PortletURL blacklistedEntriesURL = renderResponse.createRenderURL();
+PortletURL renderURL = renderResponse.createRenderURL();
 %>
 
 <clay:navigation-bar
@@ -38,19 +34,19 @@ PortletURL blacklistedEntriesURL = renderResponse.createRenderURL();
 				add(
 					navigationItem -> {
 						navigationItem.setActive(tabs.equals(QueryStringStatus.REPORTED.name()));
-						navigationItem.setHref(reportedEntriesURL, "tabs", QueryStringStatus.REPORTED.name());
+						navigationItem.setHref(renderURL, "tabs", QueryStringStatus.REPORTED.name());
 						navigationItem.setLabel(LanguageUtil.get(request, "reported-entries"));
 					});
 				add(
 					navigationItem -> {
 						navigationItem.setActive(tabs.equals(QueryStringStatus.ACTIVE.name()));
-						navigationItem.setHref(activeEntriesURL, "tabs", QueryStringStatus.ACTIVE.name());
+						navigationItem.setHref(renderURL, "tabs", QueryStringStatus.ACTIVE.name());
 						navigationItem.setLabel(LanguageUtil.get(request, "active-entries"));
 					});
 				add(
 					navigationItem -> {
 						navigationItem.setActive(tabs.equals(QueryStringStatus.BLACKLISTED.name()));
-						navigationItem.setHref(blacklistedEntriesURL, "tabs", QueryStringStatus.BLACKLISTED.name());
+						navigationItem.setHref(renderURL, "tabs", QueryStringStatus.BLACKLISTED.name());
 						navigationItem.setLabel(LanguageUtil.get(request, "blacklisted-entries"));
 					});
 			}

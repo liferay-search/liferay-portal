@@ -19,7 +19,7 @@ import java.util.Map;
 /**
  * @author Petteri Karttunen
  */
-public abstract class QueryStringDisplayContext {
+public class QueryStringDisplayContext {
 
 	public Map<String, Object> getData() {
 		return _data;

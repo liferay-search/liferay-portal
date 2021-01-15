@@ -34,15 +34,16 @@ import java.util.List;
 import java.util.Objects;
 
 import javax.portlet.PortletURL;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author Petteri Karttunen
  */
-public abstract class QueryStringEntriesManagementToolbarDisplayContext
+public abstract class ViewEntriesManagementToolbarDisplayContext
 	extends SearchContainerManagementToolbarDisplayContext {
 
-	public QueryStringEntriesManagementToolbarDisplayContext(
+	public ViewEntriesManagementToolbarDisplayContext(
 		HttpServletRequest httpServletRequest,
 		LiferayPortletRequest liferayPortletRequest,
 		LiferayPortletResponse liferayPortletResponse,

@@ -21,9 +21,9 @@ import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.portlet.PortalPreferences;
 import com.liferay.portal.kernel.portlet.PortletPreferencesFactoryUtil;
-import com.liferay.portal.kernel.portlet.PortletURLUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
@@ -86,14 +86,17 @@ public class ViewQueryStringsDisplayContext {
 		String displayStyle = ParamUtil.getString(
 			_httpServletRequest, "displayStyle");
 
+		String preferenceName =
+			"entries-display-style-" + StringUtil.toLowerCase(_status.name());
+
 		if (Validator.isNull(displayStyle)) {
 			return _portalPreferences.getValue(
-				QueryIndexPortletKeys.QUERY_INDEX_ADMIN,
-				"entries-display-style", "descriptive");
+				QueryIndexPortletKeys.QUERY_INDEX_ADMIN, preferenceName,
+				"descriptive");
 		}
 
 		_portalPreferences.setValue(
-			QueryIndexPortletKeys.QUERY_INDEX_ADMIN, "entries-display-style",
+			QueryIndexPortletKeys.QUERY_INDEX_ADMIN, preferenceName,
 			displayStyle);
 
 		_httpServletRequest.setAttribute(
@@ -105,28 +108,16 @@ public class ViewQueryStringsDisplayContext {
 	public SearchContainer<QueryString> getSearchContainer()
 		throws PortalException, PortletException {
 
-		PortletURL portletURL = _liferayPortletResponse.createRenderURL();
-
-		portletURL.setParameter("tabs", _status.name());
-
-		portletURL.setProperty(
-			"mvcRenderCommandName",
-			QueryIndexMVCCommandNames.VIEW_QUERY_STRINGS);
-
 		SearchContainer<QueryString> searchContainer = new SearchContainer<>(
-			_liferayPortletRequest,
-			PortletURLUtil.clone(portletURL, _liferayPortletResponse), null,
+			_liferayPortletRequest, _getIteratorURL(), null,
 			"there-are-no-query-strings");
 
-		String orderByCol = ParamUtil.getString(
-			_httpServletRequest, "orderByCol", QueryStringFields.CREATED);
+		searchContainer.setOrderByCol(
+			ParamUtil.getString(
+				_httpServletRequest, "orderByCol", QueryStringFields.CREATED));
 
-		searchContainer.setOrderByCol(orderByCol);
-
-		String orderByType = ParamUtil.getString(
-			_httpServletRequest, "orderByType", "desc");
-
-		searchContainer.setOrderByType(orderByType);
+		searchContainer.setOrderByType(
+			ParamUtil.getString(_httpServletRequest, "orderByType", "desc"));
 
 		searchContainer.setRowChecker(
 			new EmptyOnClickRowChecker(_liferayPortletResponse));
@@ -134,6 +125,18 @@ public class ViewQueryStringsDisplayContext {
 		_populateResults(searchContainer);
 
 		return searchContainer;
+	}
+
+	private PortletURL _getIteratorURL() {
+		PortletURL portletURL = _liferayPortletResponse.createRenderURL();
+
+		portletURL.setProperty(
+			"mvcRenderCommandName",
+			QueryIndexMVCCommandNames.VIEW_QUERY_STRINGS);
+
+		portletURL.setParameter("tabs", _status.name());
+
+		return portletURL;
 	}
 
 	private void _populateResults(SearchContainer<QueryString> searchContainer)

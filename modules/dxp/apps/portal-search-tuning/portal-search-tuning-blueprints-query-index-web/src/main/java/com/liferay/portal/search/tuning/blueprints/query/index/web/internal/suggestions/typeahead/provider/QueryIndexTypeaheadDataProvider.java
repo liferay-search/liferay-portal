@@ -64,7 +64,8 @@ public class QueryIndexTypeaheadDataProvider implements TypeaheadDataProvider {
 			return new ArrayList<>();
 		}
 
-		return _suggestionsProviderHelper.getSuggestions(searchHits.getSearchHits());
+		return _suggestionsProviderHelper.getSuggestions(
+			searchHits.getSearchHits());
 	}
 
 	@Override

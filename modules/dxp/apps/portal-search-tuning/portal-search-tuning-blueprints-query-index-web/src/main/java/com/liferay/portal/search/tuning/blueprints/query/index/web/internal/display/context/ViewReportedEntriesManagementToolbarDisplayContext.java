@@ -32,10 +32,10 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * @author Petteri Karttunen
  */
-public class ReportedEntriesManagementToolbarDisplayContext
-	extends QueryStringEntriesManagementToolbarDisplayContext {
+public class ViewReportedEntriesManagementToolbarDisplayContext
+	extends ViewEntriesManagementToolbarDisplayContext {
 
-	public ReportedEntriesManagementToolbarDisplayContext(
+	public ViewReportedEntriesManagementToolbarDisplayContext(
 		HttpServletRequest httpServletRequest,
 		LiferayPortletRequest liferayPortletRequest,
 		LiferayPortletResponse liferayPortletResponse,

@@ -11,6 +11,6 @@
 
 import {DefaultEventHandler} from 'frontend-js-web';
 
-class ActiveEntriesManagementToolbarDefaultEventHandler extends DefaultEventHandler {}
+class ViewActiveEntriesManagementToolbarDefaultEventHandler extends DefaultEventHandler {}
 
-export default ActiveEntriesManagementToolbarDefaultEventHandler;
+export default ViewActiveEntriesManagementToolbarDefaultEventHandler;
