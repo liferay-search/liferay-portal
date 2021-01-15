@@ -28,6 +28,11 @@ function SearchInput({onChange}) {
 					aria-label={Liferay.Language.get('search')}
 					className="form-control input-group-inset input-group-inset-after"
 					onChange={(event) => setValue(event.target.value)}
+					onKeyDown={(event) => {
+						if (event.key === 'Enter') {
+							event.preventDefault();
+						}
+					}}
 					placeholder={Liferay.Language.get('search')}
 					type="text"
 					value={value}

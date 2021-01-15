@@ -20,8 +20,8 @@ import '@testing-library/jest-dom/extend-expect';
 function renderSidebar(props) {
 	return render(
 		<Sidebar
-			addFragment={jest.fn()}
-			queryFragments={SELECTED_FRAGMENTS}
+			fragments={SELECTED_FRAGMENTS}
+			onAddFragment={jest.fn()}
 			{...props}
 		/>
 	);

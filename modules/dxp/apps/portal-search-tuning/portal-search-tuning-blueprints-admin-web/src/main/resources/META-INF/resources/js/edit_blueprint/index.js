@@ -16,7 +16,12 @@ import React, {useCallback, useContext, useRef, useState} from 'react';
 import ErrorBoundary from '../shared/ErrorBoundary';
 import PageToolbar from '../shared/PageToolbar';
 import ThemeContext from '../shared/ThemeContext';
-import {DEFAULT_FRAGMENT, DEFAULT_FRAMEWORK_CONFIGURATION} from '../utils/data';
+import {
+	CUSTOM_JSON_FRAGMENT,
+	DEFAULT_FRAGMENT,
+	DEFAULT_FRAMEWORK_CONFIGURATION,
+	QUERY_FRAGMENTS,
+} from '../utils/data';
 import {
 	convertToSelectedFragment,
 	openErrorToast,
@@ -295,10 +300,14 @@ function EditBlueprintForm({
 				return (
 					<>
 						<Sidebar
-							fragments={queryFragments}
+							fragments={[
+								...QUERY_FRAGMENTS,
+								CUSTOM_JSON_FRAGMENT,
+								...queryFragments,
+							]}
 							onAddFragment={onAddFragment}
+							onToggleSidebar={() => setShowSidebar(!showSidebar)}
 							showSidebar={showSidebar}
-							toggleSidebar={() => setShowSidebar(!showSidebar)}
 						/>
 
 						<QueryBuilder
@@ -308,8 +317,8 @@ function EditBlueprintForm({
 							onFrameworkConfigChange={(val) =>
 								setFrameworkConfig(val)
 							}
+							onToggleSidebar={() => setShowSidebar(!showSidebar)}
 							selectedFragments={selectedQueryFragments}
-							toggleSidebar={() => setShowSidebar(!showSidebar)}
 							updateFragment={updateQueryFragment}
 						/>
 					</>
