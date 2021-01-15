@@ -52,8 +52,15 @@ public class BlueprintModelDocumentContributor
 					Field.DESCRIPTION, languageId),
 				blueprint.getDescription(locale));
 			document.addText(
-				LocalizationUtil.getLocalizedName(Field.TITLE, languageId),
+				LocalizationUtil.getLocalizedName(
+					"localized_" + Field.TITLE, languageId),
 				blueprint.getTitle(locale));
+			document.addTextSortable(
+				LocalizationUtil.getLocalizedName(
+					"localized_" + Field.TITLE, languageId),
+				blueprint.getTitle(locale));
+
+			document.addNumber(Field.TYPE, blueprint.getType());
 		}
 	}
 

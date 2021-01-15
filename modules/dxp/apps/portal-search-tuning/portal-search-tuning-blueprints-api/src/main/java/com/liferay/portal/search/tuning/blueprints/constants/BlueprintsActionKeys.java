@@ -26,27 +26,19 @@ public class BlueprintsActionKeys {
 
 	public static final String ADD_FRAGMENT = "ADD_FRAGMENT";
 
-	public static final String ADD_TEMPLATE = "ADD_TEMPLATE";
-
 	public static final String APPLY_BLUEPRINT = "APPLY_BLUEPRINT";
 
 	public static final String DELETE_BLUEPRINT = "DELETE_BLUEPRINT";
 
 	public static final String DELETE_FRAGMENT = "DELETE_FRAGMENT";
 
-	public static final String DELETE_TEMPLATE = "DELETE_TEMPLATE";
-
 	public static final String UPDATE_BLUEPRINT = "UPDATE_BLUEPRINT";
 
 	public static final String UPDATE_FRAGMENT = "UPDATE_FRAGMENT";
 
-	public static final String UPDATE_TEMPLATE = "UPDATE_TEMPLATE";
-
 	public static final String VIEW_BLUEPRINT = "VIEW_BLUEPRINT";
 
 	public static final String VIEW_FRAGMENT = "VIEW_FRAGMENT";
-
-	public static final String VIEW_TEMPLATE = "VIEW_TEMPLATE";
 
 	public static String getActionKeyForBlueprintType(int type, String action) {
 		if (type == BlueprintTypes.BLUEPRINT) {
@@ -67,6 +59,7 @@ public class BlueprintsActionKeys {
 			}
 		}
 		else if ((type == BlueprintTypes.AGGREGATION_FRAGMENT) ||
+				 (type == BlueprintTypes.FACET_FRAGMENT) ||
 				 (type == BlueprintTypes.QUERY_FRAGMENT) ||
 				 (type == BlueprintTypes.SUGGESTER_FRAGMENT)) {
 
@@ -81,23 +74,6 @@ public class BlueprintsActionKeys {
 			}
 			else if (ActionKeys.DELETE.equals(action)) {
 				return BlueprintsActionKeys.DELETE_FRAGMENT;
-			}
-			else {
-				return action;
-			}
-		}
-		else if (type == BlueprintTypes.TEMPLATE) {
-			if (ActionKeys.VIEW.equals(action)) {
-				return BlueprintsActionKeys.VIEW_TEMPLATE;
-			}
-			else if (ActionKeys.ADD_ENTRY.equals(action)) {
-				return BlueprintsActionKeys.ADD_TEMPLATE;
-			}
-			else if (ActionKeys.UPDATE.equals(action)) {
-				return BlueprintsActionKeys.UPDATE_TEMPLATE;
-			}
-			else if (ActionKeys.DELETE.equals(action)) {
-				return BlueprintsActionKeys.DELETE_TEMPLATE;
 			}
 			else {
 				return action;
