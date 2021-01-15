@@ -16,6 +16,9 @@ package com.liferay.portal.search.tuning.blueprints.engine.util;
 
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterDefinition;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * @author Petteri Karttunen
  */
@@ -29,6 +32,7 @@ public interface BlueprintsEngineContextHelper {
 
 	public String[] getAvailableSuggesterTranslatorTypes();
 
-	public ParameterDefinition[] getContributedParameterDefinitions();
+	public Map<String, List<ParameterDefinition>>
+		getContributedParameterDefinitions();
 
 }

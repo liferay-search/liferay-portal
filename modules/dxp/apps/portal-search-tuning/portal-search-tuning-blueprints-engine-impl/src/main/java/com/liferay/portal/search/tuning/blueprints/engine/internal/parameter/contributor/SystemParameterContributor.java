@@ -51,6 +51,11 @@ public class SystemParameterContributor implements ParameterContributor {
 	}
 
 	@Override
+	public String getCategoryNameKey() {
+		return "system";
+	}
+
+	@Override
 	public List<ParameterDefinition> getParameterDefinitions() {
 		return new ArrayList<>();
 	}

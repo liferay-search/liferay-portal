@@ -18,6 +18,9 @@ import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttribut
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * @author Petteri Karttunen
  */
@@ -27,6 +30,7 @@ public interface ParameterDataCreator {
 		Blueprint blueprint, BlueprintsAttributes blueprintsAttributes,
 		Messages messages);
 
-	public ParameterDefinition[] getContributedParameterDefinitions();
+	public Map<String, List<ParameterDefinition>>
+		getContributedParameterDefinitions();
 
 }

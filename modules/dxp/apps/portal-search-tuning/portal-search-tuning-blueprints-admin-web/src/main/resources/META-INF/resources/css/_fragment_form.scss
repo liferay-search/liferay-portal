@@ -1,3 +1,5 @@
+$fragmentHeaderHeight: 48px;
+
 .fragment-row {
 	height: 100%;
 	padding-top: 64px;
@@ -19,6 +21,7 @@
 		border-style: solid;
 		border-width: 0 0 0.0625rem;
 		display: flex;
+		height: $fragmentHeaderHeight;
 
 		button {
 			margin: 8px 12px;
@@ -47,19 +50,34 @@
 	}
 
 	.json-section {
+		height: 100%;
+		min-height: calc(100% - #{$fragmentHeaderHeight});
 		padding: 0;
 
 		.sidebar {
+			background-color: $white;
 			border-color: $mainLighten74;
 			border-right-width: 0.0625rem;
 			border-style: solid;
 
 			.sidebar-dd {
-				margin-left: 8px;
+				margin: 0;
+
+				button {
+					padding: 8px 12px;
+
+					&:hover {
+						background-color: $primaryL4;
+					}
+				}
+
+				&:last-of-type {
+					margin-bottom: 8px;
+				}
 			}
 
 			.sidebar-dt {
-				padding: 12px 0;
+				padding: 8px 0;
 
 				.sidebar-arrow {
 					position: absolute;
@@ -80,11 +98,21 @@
 	}
 
 	.codemirror-editor-wrapper {
+		border-width: 0;
 		height: 100%;
 		width: 100%;
 
 		.cm-s-default {
 			height: 100%;
+		}
+
+		.CodeMirror-gutters {
+			background-color: $white;
+			border-width: 0;
+		}
+
+		.CodeMirror-scroll {
+			padding-bottom: 0;
 		}
 	}
 }
@@ -92,6 +120,11 @@
 .row {
 	height: 100%;
 	margin: 0;
+	min-height: calc(100% - #{$fragmentHeaderHeight});
+
+	> div {
+		height: 100%;
+	}
 
 	div:first-child {
 		.fragment-section {

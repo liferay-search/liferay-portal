@@ -81,6 +81,6 @@ describe('QueryBuilder', () => {
 
 		expect(
 			container.querySelectorAll('.configuration-form-list').length
-		).toBe(SELECTED_FRAGMENTS.length);
+		).toBe(29);
 	});
 });

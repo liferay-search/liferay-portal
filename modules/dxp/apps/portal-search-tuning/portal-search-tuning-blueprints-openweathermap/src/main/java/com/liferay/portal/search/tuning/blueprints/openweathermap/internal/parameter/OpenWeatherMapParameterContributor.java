@@ -59,6 +59,11 @@ public class OpenWeatherMapParameterContributor
 	}
 
 	@Override
+	public String getCategoryNameKey() {
+		return "weather";
+	}
+
+	@Override
 	public List<ParameterDefinition> getParameterDefinitions() {
 		List<ParameterDefinition> parameterDefinitions = new ArrayList<>();
 
