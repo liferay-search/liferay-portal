@@ -34,11 +34,8 @@ public class BlueprintEntryPermission {
 			String actionId)
 		throws PortalException {
 
-		String actionKey = BlueprintsActionKeys.getActionKeyForBlueprintType(
-			entry.getType(), actionId);
-
 		return _blueprintEntryModelResourcePermission.contains(
-			permissionChecker, entry, actionKey);
+			permissionChecker, entry, actionId);
 	}
 
 	public static boolean contains(

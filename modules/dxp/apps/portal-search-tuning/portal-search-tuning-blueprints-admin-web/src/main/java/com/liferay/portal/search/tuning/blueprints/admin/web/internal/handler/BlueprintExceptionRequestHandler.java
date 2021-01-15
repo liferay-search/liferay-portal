@@ -27,6 +27,8 @@ import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.search.tuning.blueprints.exception.BlueprintValidationException;
 
+import java.io.IOException;
+
 import java.util.List;
 
 import javax.portlet.ActionRequest;
@@ -42,9 +44,8 @@ import org.osgi.service.component.annotations.Reference;
 public class BlueprintExceptionRequestHandler {
 
 	public void handlePortalException(
-			ActionRequest actionRequest, ActionResponse actionResponse,
-			PortalException portalException)
-		throws Exception {
+		ActionRequest actionRequest, ActionResponse actionResponse,
+		PortalException portalException) {
 
 		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
@@ -54,10 +55,6 @@ public class BlueprintExceptionRequestHandler {
 		if (portalException instanceof BlueprintValidationException) {
 			BlueprintValidationException blueprintValidationException =
 				(BlueprintValidationException)portalException;
-
-			_log.error(
-				blueprintValidationException.getMessage(),
-				blueprintValidationException);
 
 			List<String> errors = blueprintValidationException.getErrors();
 
@@ -77,8 +74,6 @@ public class BlueprintExceptionRequestHandler {
 				});
 		}
 		else {
-			_log.error(portalException.getMessage(), portalException);
-
 			jsonArray.put(
 				_language.get(
 					themeDisplay.getRequest(), "an-unexpected-error-occurred"));
@@ -86,8 +81,13 @@ public class BlueprintExceptionRequestHandler {
 
 		JSONObject jsonObject = JSONUtil.put("error", jsonArray);
 
-		JSONPortletResponseUtil.writeJSON(
-			actionRequest, actionResponse, jsonObject);
+		try {
+			JSONPortletResponseUtil.writeJSON(
+				actionRequest, actionResponse, jsonObject);
+		}
+		catch (IOException ioException) {
+			_log.error(ioException.getMessage(), ioException);
+		}
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

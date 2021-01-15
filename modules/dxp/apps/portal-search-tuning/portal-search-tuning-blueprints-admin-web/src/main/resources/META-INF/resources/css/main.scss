@@ -35,6 +35,10 @@
 	@import '_config_fragment';
 	@import '_page_toolbar';
 
+	.blueprints-search-container {
+		margin-top: 20px;
+	}
+
 	.edit-blueprint-root {
 		@import '_builder';
 		@import '_sidebar';

@@ -18,10 +18,13 @@ import com.liferay.document.library.kernel.exception.FileMimeTypeException;
 import com.liferay.document.library.kernel.exception.FileSizeException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONUtil;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.JSONPortletResponseUtil;
 import com.liferay.portal.kernel.portlet.LiferayActionResponse;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
+import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.upload.LiferayFileItemException;
 import com.liferay.portal.kernel.upload.UploadException;
 import com.liferay.portal.kernel.upload.UploadPortletRequest;
@@ -30,6 +33,7 @@ import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminMVCCommandNames;
+import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminWebKeys;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.handler.BlueprintExceptionRequestHandler;
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintsPortletKeys;
 import com.liferay.portal.search.tuning.blueprints.util.importer.BlueprintImporter;
@@ -73,20 +77,11 @@ public class ImportBlueprintMVCActionCommand extends BaseMVCActionCommand {
 
 			_checkContentType(uploadPortletRequest.getContentType("file"));
 
-			try (InputStream inputStream = uploadPortletRequest.getFileAsStream(
-					"file")) {
-
-				_blueprintImporter.importBlueprint(actionRequest, inputStream);
-
-				PortletURL successURL = _getSuccessRedirectURL(
-					actionRequest, actionResponse);
-
-				JSONPortletResponseUtil.writeJSON(
-					actionRequest, actionResponse,
-					JSONUtil.put("redirectURL", successURL.toString()));
-			}
+			_import(actionRequest, actionResponse, uploadPortletRequest);
 		}
 		catch (PortalException portalException) {
+			_log.error(portalException.getMessage(), portalException);
+
 			hideDefaultErrorMessage(actionRequest);
 
 			_blueprintExceptionRequestHandler.handlePortalException(
@@ -136,14 +131,43 @@ public class ImportBlueprintMVCActionCommand extends BaseMVCActionCommand {
 			(LiferayActionResponse)_portal.getLiferayPortletResponse(
 				actionResponse);
 
-		PortletURL redirectURL = liferayActionResponse.createRenderURL();
+		PortletURL portletURL = liferayActionResponse.createRenderURL();
 
-		redirectURL.setParameter("mvcRenderCommandName", "/");
-		redirectURL.setParameter(
+		portletURL.setParameter(
+			"mvcRenderCommandName", BlueprintsAdminMVCCommandNames.VIEW);
+		portletURL.setParameter(
 			"redirect", ParamUtil.getString(actionRequest, "redirect"));
 
-		return redirectURL;
+		return portletURL;
 	}
+
+	private void _import(
+		ActionRequest actionRequest, ActionResponse actionResponse,
+		UploadPortletRequest uploadPortletRequest) {
+
+		try (InputStream inputStream = uploadPortletRequest.getFileAsStream(
+				"file")) {
+
+			_blueprintImporter.importBlueprint(actionRequest, inputStream);
+
+			PortletURL successURL = _getSuccessRedirectURL(
+				actionRequest, actionResponse);
+
+			JSONPortletResponseUtil.writeJSON(
+				actionRequest, actionResponse,
+				JSONUtil.put("redirectURL", successURL.toString()));
+		}
+		catch (Exception exception) {
+			_log.error(exception.getMessage(), exception);
+
+			SessionErrors.add(
+				actionRequest, BlueprintsAdminWebKeys.ERROR,
+				exception.getMessage());
+		}
+	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		ImportBlueprintMVCActionCommand.class);
 
 	@Reference
 	private BlueprintExceptionRequestHandler _blueprintExceptionRequestHandler;

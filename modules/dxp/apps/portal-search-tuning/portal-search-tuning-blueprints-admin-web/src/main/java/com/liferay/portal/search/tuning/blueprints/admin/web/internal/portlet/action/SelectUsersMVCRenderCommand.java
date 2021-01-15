@@ -52,16 +52,16 @@ public class SelectUsersMVCRenderCommand implements MVCRenderCommand {
 				renderResponse, _userLocalService);
 
 		renderRequest.setAttribute(
+			BlueprintsAdminWebKeys.SELECT_USERS_DISPLAY_CONTEXT,
+			selectUsersDisplayContext);
+		renderRequest.setAttribute(
 			BlueprintsAdminWebKeys.
-				BLUEPRINT_SELECT_USER_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT,
+				SELECT_USERS_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT,
 			new SelectUsersManagementToolbarDisplayContext(
 				_portal.getHttpServletRequest(renderRequest),
 				_portal.getLiferayPortletRequest(renderRequest),
 				_portal.getLiferayPortletResponse(renderResponse),
 				selectUsersDisplayContext));
-		renderRequest.setAttribute(
-			BlueprintsAdminWebKeys.SELECT_USERS_DISPLAY_CONTEXT,
-			selectUsersDisplayContext);
 
 		return "/field/select_users.jsp";
 	}

@@ -57,16 +57,16 @@ public class SelectOrganizationsMVCRenderCommand implements MVCRenderCommand {
 						_organizationLocalService);
 
 			renderRequest.setAttribute(
+				BlueprintsAdminWebKeys.SELECT_ORGANIZATIONS_DISPLAY_CONTEXT,
+				selectOrganizationsDisplayContext);
+			renderRequest.setAttribute(
 				BlueprintsAdminWebKeys.
-					BLUEPRINT_SELECT_ORGANIZATION_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT,
+					SELECT_ORGANIZATIONS_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT,
 				new SelectOrganizationsManagementToolbarDisplayContext(
 					_portal.getHttpServletRequest(renderRequest),
 					_portal.getLiferayPortletRequest(renderRequest),
 					_portal.getLiferayPortletResponse(renderResponse),
 					selectOrganizationsDisplayContext));
-			renderRequest.setAttribute(
-				BlueprintsAdminWebKeys.SELECT_ORGANIZATIONS_DISPLAY_CONTEXT,
-				selectOrganizationsDisplayContext);
 
 			return "/field/select_organizations.jsp";
 		}

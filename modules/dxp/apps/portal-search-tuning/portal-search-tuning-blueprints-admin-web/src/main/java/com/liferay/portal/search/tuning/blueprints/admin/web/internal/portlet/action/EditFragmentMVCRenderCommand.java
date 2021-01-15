@@ -16,8 +16,6 @@ package com.liferay.portal.search.tuning.blueprints.admin.web.internal.portlet.a
 
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.language.Language;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCRenderCommand;
 import com.liferay.portal.kernel.theme.PortletDisplay;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
@@ -25,8 +23,8 @@ import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminMVCCommandNames;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminWebKeys;
+import com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context.BlueprintDisplayContext;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context.EditFragmentDisplayBuilder;
-import com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context.EditFragmentDisplayContext;
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintsPortletKeys;
 import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
 
@@ -53,15 +51,15 @@ public class EditFragmentMVCRenderCommand implements MVCRenderCommand {
 	public String render(
 		RenderRequest renderRequest, RenderResponse renderResponse) {
 
-		EditFragmentDisplayContext editFragmentDisplayContext =
+		BlueprintDisplayContext blueprintDisplayContext =
 			new EditFragmentDisplayBuilder(
-				_portal.getHttpServletRequest(renderRequest), _language, _log,
+				_portal.getHttpServletRequest(renderRequest), _language,
 				_jsonFactory, renderRequest, renderResponse, _blueprintService
 			).build();
 
 		renderRequest.setAttribute(
-			BlueprintsAdminWebKeys.EDIT_FRAGMENT_DISPLAY_CONTEXT,
-			editFragmentDisplayContext);
+			BlueprintsAdminWebKeys.BLUEPRINT_DISPLAY_CONTEXT,
+			blueprintDisplayContext);
 
 		ThemeDisplay themeDisplay = (ThemeDisplay)renderRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
@@ -69,13 +67,10 @@ public class EditFragmentMVCRenderCommand implements MVCRenderCommand {
 		PortletDisplay portletDisplay = themeDisplay.getPortletDisplay();
 
 		portletDisplay.setShowBackIcon(true);
-		portletDisplay.setURLBack(editFragmentDisplayContext.getRedirect());
+		portletDisplay.setURLBack(blueprintDisplayContext.getRedirect());
 
 		return "/edit_fragment.jsp";
 	}
-
-	private static final Log _log = LogFactoryUtil.getLog(
-		EditFragmentMVCRenderCommand.class);
 
 	@Reference
 	private BlueprintService _blueprintService;

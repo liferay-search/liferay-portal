@@ -16,18 +16,14 @@
 
 <%@ include file="/init.jsp" %>
 
-<liferay-ui:error key="<%= BlueprintsAdminWebKeys.ERROR_DETAILS %>">
-	<liferay-ui:message arguments='<%= SessionErrors.get(liferayPortletRequest, "errorDetails") %>' key="error.blueprint-service-error" />
+<liferay-ui:error key="<%= BlueprintsAdminWebKeys.ERROR %>">
+	<liferay-ui:message arguments="<%= SessionErrors.get(liferayPortletRequest, BlueprintsAdminWebKeys.ERROR) %>" key="error-x" />
 </liferay-ui:error>
 
 <%
-final String tabs = ParamUtil.getString(request, "tabs", "blueprints");
+final String tabs = ParamUtil.getString(request, "tabs", BlueprintsAdminTabNames.BLUEPRINTS);
 
-PortletURL configurationsURL = renderResponse.createRenderURL();
-PortletURL queryFragmentsURL = renderResponse.createRenderURL();
-
-configurationsURL.setParameter(BlueprintsAdminWebKeys.BLUEPRINT_TYPE, String.valueOf(BlueprintTypes.BLUEPRINT));
-queryFragmentsURL.setParameter(BlueprintsAdminWebKeys.BLUEPRINT_TYPE, String.valueOf(BlueprintTypes.QUERY_FRAGMENT));
+PortletURL renderURL = renderResponse.createRenderURL();
 %>
 
 <clay:navigation-bar
@@ -37,16 +33,14 @@ queryFragmentsURL.setParameter(BlueprintsAdminWebKeys.BLUEPRINT_TYPE, String.val
 			{
 				add(
 					navigationItem -> {
-						navigationItem.putData(BlueprintsAdminWebKeys.BLUEPRINT_TYPE, String.valueOf(BlueprintTypes.BLUEPRINT));
-						navigationItem.setActive(tabs.equals("blueprints"));
-						navigationItem.setHref(configurationsURL, "tabs", "blueprints");
+						navigationItem.setActive(tabs.equals(BlueprintsAdminTabNames.BLUEPRINTS));
+						navigationItem.setHref(renderURL, "tabs", BlueprintsAdminTabNames.BLUEPRINTS);
 						navigationItem.setLabel(LanguageUtil.get(request, "blueprints"));
 					});
 				add(
 					navigationItem -> {
-						navigationItem.putData(BlueprintsAdminWebKeys.BLUEPRINT_TYPE, String.valueOf(BlueprintTypes.QUERY_FRAGMENT));
-						navigationItem.setActive(tabs.equals("fragments"));
-						navigationItem.setHref(queryFragmentsURL, "tabs", "fragments");
+						navigationItem.setActive(tabs.equals(BlueprintsAdminTabNames.FRAGMENTS));
+						navigationItem.setHref(renderURL, "tabs", BlueprintsAdminTabNames.FRAGMENTS);
 						navigationItem.setLabel(LanguageUtil.get(request, "fragments"));
 					});
 			}
@@ -55,7 +49,7 @@ queryFragmentsURL.setParameter(BlueprintsAdminWebKeys.BLUEPRINT_TYPE, String.val
 />
 
 <c:choose>
-	<c:when test='<%= tabs.equals("fragments") %>'>
+	<c:when test="<%= tabs.equals(BlueprintsAdminTabNames.FRAGMENTS) %>">
 		<liferay-util:include page="/view_fragments.jsp" servletContext="<%= application %>" />
 	</c:when>
 	<c:otherwise>

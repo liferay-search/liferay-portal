@@ -21,7 +21,7 @@ SelectUsersDisplayContext selectUsersDisplayContext = (SelectUsersDisplayContext
 %>
 
 <clay:management-toolbar
-	displayContext="<%= (SelectUsersManagementToolbarDisplayContext)request.getAttribute(BlueprintsAdminWebKeys.BLUEPRINT_SELECT_USER_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT) %>"
+	displayContext="<%= (SelectUsersManagementToolbarDisplayContext)request.getAttribute(BlueprintsAdminWebKeys.SELECT_USERS_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT) %>"
 />
 
 <aui:form cssClass="container-fluid-1280" name="fm">

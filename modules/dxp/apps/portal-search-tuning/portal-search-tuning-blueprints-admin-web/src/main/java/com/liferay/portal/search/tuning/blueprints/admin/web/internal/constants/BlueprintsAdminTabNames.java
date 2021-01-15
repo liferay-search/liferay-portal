@@ -1,4 +1,3 @@
-<%--
 /**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
@@ -12,19 +11,26 @@
  *
  *
  */
---%>
 
-<%@ include file="/init.jsp" %>
+package com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants;
 
-<%
-BlueprintDisplayContext editBlueprintDisplayContext = (BlueprintDisplayContext)request.getAttribute(BlueprintsAdminWebKeys.BLUEPRINT_DISPLAY_CONTEXT);
+import com.liferay.portal.search.tuning.blueprints.constants.BlueprintTypes;
 
-renderResponse.setTitle(editBlueprintDisplayContext.getPageTitle());
-%>
+/**
+ * @author Petteri Karttunen
+ */
+public class BlueprintsAdminTabNames {
 
-<div>
-	<react:component
-		data="<%= editBlueprintDisplayContext.getData() %>"
-		module="js/edit_blueprint/index"
-	/>
-</div>
+	public static final String BLUEPRINTS = "blueprints";
+
+	public static final String FRAGMENTS = "fragments";
+
+	public static final String getTabName(int blueprintType) {
+		if (blueprintType == BlueprintTypes.BLUEPRINT) {
+			return BLUEPRINTS;
+		}
+
+		return FRAGMENTS;
+	}
+
+}

@@ -23,6 +23,7 @@ import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminMVCCommandNames;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminWebKeys;
+import com.liferay.portal.search.tuning.blueprints.admin.web.internal.util.BlueprintsAdminRequestHelper;
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintsPortletKeys;
 import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
 
@@ -52,9 +53,9 @@ public class DeleteBlueprintMVCActionCommand extends BaseMVCActionCommand {
 
 		_delete(actionRequest);
 
-		String redirect = ParamUtil.getString(actionRequest, "redirect");
-
-		sendRedirect(actionRequest, actionResponse, redirect);
+		sendRedirect(
+			actionRequest, actionResponse,
+			ParamUtil.getString(actionRequest, "redirect"));
 	}
 
 	private void _delete(ActionRequest actionRequest) {
@@ -66,18 +67,19 @@ public class DeleteBlueprintMVCActionCommand extends BaseMVCActionCommand {
 			}
 		}
 		catch (PortalException portalException) {
-			SessionErrors.add(
-				actionRequest, BlueprintsAdminWebKeys.ERROR_DETAILS,
-				portalException);
 			_log.error(portalException.getMessage(), portalException);
+
+			SessionErrors.add(
+				actionRequest, BlueprintsAdminWebKeys.ERROR,
+				portalException.getMessage());
 		}
 	}
 
 	private long[] _getBlueprintIds(ActionRequest actionRequest) {
 		long[] blueprintIds = null;
 
-		long blueprintId = ParamUtil.getLong(
-			actionRequest, BlueprintsAdminWebKeys.BLUEPRINT_ID);
+		long blueprintId = _blueprintsAdminRequestHelper.getIdFromRequest(
+			actionRequest);
 
 		if (blueprintId > 0) {
 			blueprintIds = new long[] {blueprintId};
@@ -92,6 +94,9 @@ public class DeleteBlueprintMVCActionCommand extends BaseMVCActionCommand {
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		DeleteBlueprintMVCActionCommand.class);
+
+	@Reference
+	private BlueprintsAdminRequestHelper _blueprintsAdminRequestHelper;
 
 	@Reference
 	private BlueprintService _blueprintService;
