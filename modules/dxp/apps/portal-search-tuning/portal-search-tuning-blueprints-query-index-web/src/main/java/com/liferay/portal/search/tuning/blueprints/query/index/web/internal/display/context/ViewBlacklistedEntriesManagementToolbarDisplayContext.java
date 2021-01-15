@@ -25,10 +25,10 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * @author Petteri Karttunen
  */
-public class BlacklistedEntriesManagementToolbarDisplayContext
-	extends QueryStringEntriesManagementToolbarDisplayContext {
+public class ViewBlacklistedEntriesManagementToolbarDisplayContext
+	extends ViewEntriesManagementToolbarDisplayContext {
 
-	public BlacklistedEntriesManagementToolbarDisplayContext(
+	public ViewBlacklistedEntriesManagementToolbarDisplayContext(
 		HttpServletRequest httpServletRequest,
 		LiferayPortletRequest liferayPortletRequest,
 		LiferayPortletResponse liferayPortletResponse,

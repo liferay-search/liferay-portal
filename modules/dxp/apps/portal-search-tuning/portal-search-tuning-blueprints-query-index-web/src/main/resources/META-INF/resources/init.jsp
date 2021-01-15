@@ -36,12 +36,11 @@ page import="com.liferay.portal.kernel.util.WebKeys" %><%@
 page import="com.liferay.portal.search.tuning.blueprints.query.index.web.internal.constants.QueryIndexMVCCommandNames" %><%@
 page import="com.liferay.portal.search.tuning.blueprints.query.index.web.internal.constants.QueryIndexWebKeys" %><%@
 page import="com.liferay.portal.search.tuning.blueprints.query.index.web.internal.constants.QueryStringStatus" %><%@
-page import="com.liferay.portal.search.tuning.blueprints.query.index.web.internal.display.context.ActiveEntriesManagementToolbarDisplayContext" %><%@
-page import="com.liferay.portal.search.tuning.blueprints.query.index.web.internal.display.context.BlacklistedEntriesManagementToolbarDisplayContext" %><%@
-page import="com.liferay.portal.search.tuning.blueprints.query.index.web.internal.display.context.EditQueryStringDisplayContext" %><%@
-page import="com.liferay.portal.search.tuning.blueprints.query.index.web.internal.display.context.ReportedEntriesManagementToolbarDisplayContext" %><%@
-page import="com.liferay.portal.search.tuning.blueprints.query.index.web.internal.display.context.ViewQueryStringDisplayContext" %><%@
+page import="com.liferay.portal.search.tuning.blueprints.query.index.web.internal.display.context.QueryStringDisplayContext" %><%@
+page import="com.liferay.portal.search.tuning.blueprints.query.index.web.internal.display.context.ViewActiveEntriesManagementToolbarDisplayContext" %><%@
+page import="com.liferay.portal.search.tuning.blueprints.query.index.web.internal.display.context.ViewBlacklistedEntriesManagementToolbarDisplayContext" %><%@
 page import="com.liferay.portal.search.tuning.blueprints.query.index.web.internal.display.context.ViewQueryStringsDisplayContext" %><%@
+page import="com.liferay.portal.search.tuning.blueprints.query.index.web.internal.display.context.ViewReportedEntriesManagementToolbarDisplayContext" %><%@
 page import="com.liferay.portal.search.tuning.blueprints.query.index.web.internal.index.QueryString" %><%@
 page import="com.liferay.portal.search.tuning.blueprints.query.index.web.internal.util.QueryIndexUtil" %>
 

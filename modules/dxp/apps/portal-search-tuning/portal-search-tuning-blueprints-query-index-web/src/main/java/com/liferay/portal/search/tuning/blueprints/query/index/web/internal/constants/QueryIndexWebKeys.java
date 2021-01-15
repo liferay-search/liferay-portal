@@ -29,14 +29,14 @@ public class QueryIndexWebKeys {
 
 	public static final String CONTENT = "content";
 
-	public static final String EDIT_QUERY_STRING_DISPLAY_CONTEXT =
-		"EDIT_QUERY_STRING_DISPLAY_CONTEXT";
-
 	public static final String ERROR = "error";
 
 	public static final String GROUP_ID = "groupId";
 
 	public static final String LANGUAGE_ID = "languageId";
+
+	public static final String QUERY_STRING_DISPLAY_CONTEXT =
+		"QUERY_STRING_DISPLAY_CONTEXT";
 
 	public static final String QUERY_STRING_ID = "queryStringId";
 
@@ -47,9 +47,6 @@ public class QueryIndexWebKeys {
 	public static final String ROW_IDS = "rowIds";
 
 	public static final String STATUS = "status";
-
-	public static final String VIEW_QUERY_STRING_DISPLAY_CONTEXT =
-		"VIEW_QUERY_STRING_DISPLAY_CONTEXT";
 
 	public static final String VIEW_QUERY_STRINGS_DISPLAY_CONTEXT =
 		"VIEW_QUERY_STRINGS_DISPLAY_CONTEXT";

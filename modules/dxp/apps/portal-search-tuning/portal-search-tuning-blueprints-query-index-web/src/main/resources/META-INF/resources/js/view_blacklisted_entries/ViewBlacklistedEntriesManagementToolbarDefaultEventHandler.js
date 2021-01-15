@@ -10,6 +10,6 @@
  */
 
 import {DefaultEventHandler} from 'frontend-js-web';
-class BlacklistedEntriesManagementToolbarDefaultEventHandler extends DefaultEventHandler {}
+class ViewBlacklistedEntriesManagementToolbarDefaultEventHandler extends DefaultEventHandler {}
 
-export default BlacklistedEntriesManagementToolbarDefaultEventHandler;
+export default ViewBlacklistedEntriesManagementToolbarDefaultEventHandler;

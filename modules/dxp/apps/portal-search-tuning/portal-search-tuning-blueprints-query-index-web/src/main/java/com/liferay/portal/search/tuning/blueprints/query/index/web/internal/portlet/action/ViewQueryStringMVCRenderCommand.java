@@ -57,7 +57,7 @@ public class ViewQueryStringMVCRenderCommand implements MVCRenderCommand {
 				_queryStringIndexNameBuilder, _queryStringIndexReader);
 
 		renderRequest.setAttribute(
-			QueryIndexWebKeys.VIEW_QUERY_STRING_DISPLAY_CONTEXT,
+			QueryIndexWebKeys.QUERY_STRING_DISPLAY_CONTEXT,
 			viewQueryStringDisplayBuilder.build());
 
 		return "/view_entry.jsp";
