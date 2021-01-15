@@ -17,7 +17,6 @@ package com.liferay.portal.search.tuning.blueprints.suggestions.titles.internal.
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.search.document.Document;
-import com.liferay.portal.search.filter.ComplexQueryPartBuilderFactory;
 import com.liferay.portal.search.hits.SearchHit;
 import com.liferay.portal.search.hits.SearchHits;
 import com.liferay.portal.search.index.IndexNameBuilder;
@@ -171,9 +170,6 @@ public class TitleTypeaheadDataProvider implements TypeaheadDataProvider {
 
 		return searchResponse.getSearchHits();
 	}
-
-	@Reference
-	private ComplexQueryPartBuilderFactory _complexQueryPartBuilderFactory;
 
 	@Reference
 	private IndexNameBuilder _indexNameBuilder;
