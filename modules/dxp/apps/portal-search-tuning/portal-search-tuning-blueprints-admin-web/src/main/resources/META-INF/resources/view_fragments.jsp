@@ -17,13 +17,13 @@
 <%@ include file="/init.jsp" %>
 
 <%
-FragmentEntriesManagementToolbarDisplayContext fragmentEntriesManagementToolbarDisplayContext = (FragmentEntriesManagementToolbarDisplayContext)request.getAttribute(BlueprintsAdminWebKeys.FRAGMENT_ENTRIES_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT);
+ViewFragmentsManagementToolbarDisplayContext viewFragmentsManagementToolbarDisplayContext = (ViewFragmentsManagementToolbarDisplayContext)request.getAttribute(BlueprintsAdminWebKeys.VIEW_FRAGMENTS_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT);
 
-FragmentEntriesDisplayContext fragmentEntriesDisplayContext = (FragmentEntriesDisplayContext)request.getAttribute(BlueprintsAdminWebKeys.FRAGMENT_ENTRIES_DISPLAY_CONTEXT);
+ViewBlueprintsDisplayContext viewBlueprintsDisplayContext = (ViewBlueprintsDisplayContext)request.getAttribute(BlueprintsAdminWebKeys.VIEW_BLUEPRINTS_DISPLAY_CONTEXT);
 %>
 
 <clay:management-toolbar
-	displayContext="<%= fragmentEntriesManagementToolbarDisplayContext %>"
+	displayContext="<%= viewFragmentsManagementToolbarDisplayContext %>"
 	searchContainerId="fragmentEntries"
 	supportsBulkActions="<%= true %>"
 />
@@ -33,8 +33,9 @@ FragmentEntriesDisplayContext fragmentEntriesDisplayContext = (FragmentEntriesDi
 		<aui:input name="redirect" type="hidden" value="<%= currentURL %>" />
 
 		<liferay-ui:search-container
+			cssClass="blueprints-search-container"
 			id="fragmentEntries"
-			searchContainer="<%= fragmentEntriesDisplayContext.getSearchContainer() %>"
+			searchContainer="<%= viewBlueprintsDisplayContext.getSearchContainer() %>"
 		>
 			<liferay-ui:search-container-row
 				className="com.liferay.portal.search.tuning.blueprints.model.Blueprint"
@@ -45,7 +46,7 @@ FragmentEntriesDisplayContext fragmentEntriesDisplayContext = (FragmentEntriesDi
 			</liferay-ui:search-container-row>
 
 			<liferay-ui:search-iterator
-				displayStyle="<%= fragmentEntriesDisplayContext.getDisplayStyle() %>"
+				displayStyle="<%= viewBlueprintsDisplayContext.getDisplayStyle() %>"
 				markupView="lexicon"
 			/>
 		</liferay-ui:search-container>
@@ -53,7 +54,7 @@ FragmentEntriesDisplayContext fragmentEntriesDisplayContext = (FragmentEntriesDi
 </clay:container-fluid>
 
 <liferay-frontend:component
-	componentId="<%= fragmentEntriesManagementToolbarDisplayContext.getDefaultEventHandler() %>"
+	componentId="<%= viewFragmentsManagementToolbarDisplayContext.getDefaultEventHandler() %>"
 	module="js/view_fragments/FragmentEntriesManagementToolbarDefaultEventHandler"
 />
 
@@ -76,7 +77,7 @@ FragmentEntriesDisplayContext fragmentEntriesDisplayContext = (FragmentEntriesDi
 		}
 	};
 
-	var deleteFragmentEntries = function () {
+	var deleteEntries = function () {
 		if (
 			confirm(
 				'<liferay-ui:message key="are-you-sure-you-want-to-delete-fragments" />'
@@ -91,7 +92,7 @@ FragmentEntriesDisplayContext fragmentEntriesDisplayContext = (FragmentEntriesDi
 	};
 
 	var ACTIONS = {
-		deleteFragmentEntries: deleteFragmentEntries,
+		deleteEntries: deleteEntries,
 	};
 
 	Liferay.componentReady('fragmentEntriesManagementToolbar').then(function (

@@ -19,7 +19,7 @@ import java.util.Map;
 /**
  * @author Kevin Tan
  */
-public class EditFragmentDisplayContext {
+public class BlueprintDisplayContext {
 
 	public long getBlueprintId() {
 		return _blueprintId;

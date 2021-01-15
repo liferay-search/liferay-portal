@@ -40,6 +40,13 @@ public class BlueprintPermission {
 			permissionChecker, groupId, typedActionKey);
 	}
 
+	public static boolean contains(
+		PermissionChecker permissionChecker, long groupId, String actionKey) {
+
+		return _portletResourcePermission.contains(
+			permissionChecker, groupId, actionKey);
+	}
+
 	@Reference(
 		target = "(resource.name=" + BlueprintsConstants.RESOURCE_NAME + ")",
 		unbind = "-"

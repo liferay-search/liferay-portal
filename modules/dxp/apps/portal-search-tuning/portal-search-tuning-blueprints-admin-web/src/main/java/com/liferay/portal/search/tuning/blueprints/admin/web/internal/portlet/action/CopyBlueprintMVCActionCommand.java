@@ -24,12 +24,11 @@ import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextFactory;
 import com.liferay.portal.kernel.servlet.SessionErrors;
-import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminMVCCommandNames;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminWebKeys;
+import com.liferay.portal.search.tuning.blueprints.admin.web.internal.util.BlueprintsAdminRequestHelper;
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintsPortletKeys;
 import com.liferay.portal.search.tuning.blueprints.exception.BlueprintValidationException;
-import com.liferay.portal.search.tuning.blueprints.exception.NoSuchBlueprintException;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
 
@@ -39,6 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -64,31 +64,15 @@ public class CopyBlueprintMVCActionCommand extends BaseMVCActionCommand {
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
 
-		long blueprintId = ParamUtil.getLong(
-			actionRequest, BlueprintsAdminWebKeys.BLUEPRINT_ID);
+		Optional<Blueprint> blueprintOptional =
+			_blueprintsAdminRequestHelper.getBlueprintFromRequest(
+				actionRequest, actionResponse);
 
-		try {
-			Blueprint sourceBlueprint = _blueprintService.getBlueprint(
-				blueprintId);
-
-			_createCopy(actionRequest, actionResponse, sourceBlueprint);
+		if (!blueprintOptional.isPresent()) {
+			return;
 		}
-		catch (NoSuchBlueprintException noSuchBlueprintException) {
-			_log.error(
-				"Blueprint " + blueprintId + " not found",
-				noSuchBlueprintException);
 
-			SessionErrors.add(
-				actionRequest, BlueprintsAdminWebKeys.ERROR_DETAILS,
-				noSuchBlueprintException);
-		}
-		catch (PortalException portalException) {
-			_log.error(portalException.getMessage(), portalException);
-
-			SessionErrors.add(
-				actionRequest, BlueprintsAdminWebKeys.ERROR_DETAILS,
-				portalException);
-		}
+		_createCopy(actionRequest, actionResponse, blueprintOptional.get());
 	}
 
 	private void _createCopy(
@@ -99,10 +83,9 @@ public class CopyBlueprintMVCActionCommand extends BaseMVCActionCommand {
 			ServiceContext serviceContext = ServiceContextFactory.getInstance(
 				Blueprint.class.getName(), actionRequest);
 
-			Map<Locale, String> titleMap = _getTargetTitleMap(sourceBlueprint);
-
 			_blueprintService.addCompanyBlueprint(
-				titleMap, sourceBlueprint.getDescriptionMap(),
+				_getTargetTitleMap(sourceBlueprint),
+				sourceBlueprint.getDescriptionMap(),
 				sourceBlueprint.getConfiguration(),
 				sourceBlueprint.getSelectedFragments(),
 				sourceBlueprint.getType(), serviceContext);
@@ -122,15 +105,15 @@ public class CopyBlueprintMVCActionCommand extends BaseMVCActionCommand {
 			_log.error(portalException.getMessage(), portalException);
 
 			SessionErrors.add(
-				actionRequest, BlueprintsAdminWebKeys.ERROR_DETAILS,
-				portalException);
+				actionRequest, BlueprintsAdminWebKeys.ERROR,
+				portalException.getMessage());
 		}
 		catch (IOException ioException) {
-			SessionErrors.add(
-				actionRequest, BlueprintsAdminWebKeys.ERROR_DETAILS,
-				ioException);
-
 			_log.error(ioException.getMessage(), ioException);
+
+			SessionErrors.add(
+				actionRequest, BlueprintsAdminWebKeys.ERROR,
+				ioException.getMessage());
 		}
 	}
 
@@ -154,6 +137,9 @@ public class CopyBlueprintMVCActionCommand extends BaseMVCActionCommand {
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		CopyBlueprintMVCActionCommand.class);
+
+	@Reference
+	private BlueprintsAdminRequestHelper _blueprintsAdminRequestHelper;
 
 	@Reference
 	private BlueprintService _blueprintService;

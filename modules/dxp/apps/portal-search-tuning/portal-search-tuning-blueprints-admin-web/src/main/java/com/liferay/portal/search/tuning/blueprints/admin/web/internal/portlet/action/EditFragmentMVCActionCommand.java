@@ -18,6 +18,8 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.JSONPortletResponseUtil;
 import com.liferay.portal.kernel.portlet.LiferayActionResponse;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
@@ -30,6 +32,7 @@ import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminMVCCommandNames;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminWebKeys;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.handler.BlueprintExceptionRequestHandler;
+import com.liferay.portal.search.tuning.blueprints.admin.web.internal.util.BlueprintsAdminRequestHelper;
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintsPortletKeys;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
@@ -62,12 +65,6 @@ public class EditFragmentMVCActionCommand extends BaseMVCActionCommand {
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
 
-		long blueprintId = ParamUtil.getLong(
-			actionRequest, BlueprintsAdminWebKeys.BLUEPRINT_ID);
-
-		int type = ParamUtil.getInteger(
-			actionRequest, BlueprintsAdminWebKeys.BLUEPRINT_TYPE);
-
 		Map<Locale, String> titleMap = LocalizationUtil.getLocalizationMap(
 			actionRequest, BlueprintsAdminWebKeys.TITLE);
 
@@ -91,36 +88,30 @@ public class EditFragmentMVCActionCommand extends BaseMVCActionCommand {
 			if (Constants.ADD.equals(cmd)) {
 				Blueprint blueprint = _blueprintService.addCompanyBlueprint(
 					titleMap, descriptionMap, configuration, selectedFragments,
-					type, serviceContext);
-
-				LiferayActionResponse liferayActionResponse =
-					(LiferayActionResponse)actionResponse;
-
-				PortletURL editBlueprintURL =
-					liferayActionResponse.createRenderURL();
-
-				editBlueprintURL.setParameter(
-					"mvcRenderCommandName",
-					BlueprintsAdminMVCCommandNames.EDIT_FRAGMENT);
-				editBlueprintURL.setParameter(
-					"redirect", ParamUtil.getString(actionRequest, "redirect"));
-				editBlueprintURL.setParameter(
-					BlueprintsAdminWebKeys.BLUEPRINT_ID,
-					String.valueOf(blueprint.getBlueprintId()));
+					_blueprintsAdminRequestHelper.getTypeFromRequest(
+						actionRequest),
+					serviceContext);
 
 				jsonObject = JSONUtil.put(
-					"redirectURL", editBlueprintURL.toString());
+					"redirectURL",
+					_getRedirectURL(
+						actionRequest, actionResponse,
+						blueprint.getBlueprintId()));
 			}
 			else {
 				_blueprintService.updateBlueprint(
-					blueprintId, titleMap, descriptionMap, configuration,
-					selectedFragments, serviceContext);
+					_blueprintsAdminRequestHelper.getIdFromRequest(
+						actionRequest),
+					titleMap, descriptionMap, configuration, selectedFragments,
+					serviceContext);
 			}
 
 			JSONPortletResponseUtil.writeJSON(
 				actionRequest, actionResponse, jsonObject);
 		}
 		catch (PortalException portalException) {
+			_log.error(portalException.getMessage(), portalException);
+
 			hideDefaultErrorMessage(actionRequest);
 
 			_blueprintExceptionRequestHandler.handlePortalException(
@@ -128,8 +119,34 @@ public class EditFragmentMVCActionCommand extends BaseMVCActionCommand {
 		}
 	}
 
+	private String _getRedirectURL(
+		ActionRequest actionRequest, ActionResponse actionResponse,
+		long blueprintId) {
+
+		LiferayActionResponse liferayActionResponse =
+			(LiferayActionResponse)actionResponse;
+
+		PortletURL portletURL = liferayActionResponse.createRenderURL();
+
+		portletURL.setParameter(
+			"mvcRenderCommandName",
+			BlueprintsAdminMVCCommandNames.EDIT_FRAGMENT);
+		portletURL.setParameter(
+			"redirect", ParamUtil.getString(actionRequest, "redirect"));
+		portletURL.setParameter(
+			BlueprintsAdminWebKeys.BLUEPRINT_ID, String.valueOf(blueprintId));
+
+		return portletURL.toString();
+	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		EditFragmentMVCActionCommand.class);
+
 	@Reference
 	private BlueprintExceptionRequestHandler _blueprintExceptionRequestHandler;
+
+	@Reference
+	private BlueprintsAdminRequestHelper _blueprintsAdminRequestHelper;
 
 	@Reference
 	private BlueprintService _blueprintService;

@@ -15,8 +15,6 @@
 package com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context;
 
 import com.liferay.frontend.taglib.clay.servlet.taglib.display.context.SearchContainerManagementToolbarDisplayContext;
-import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
-import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenuBuilder;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItemListBuilder;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.ViewTypeItem;
@@ -25,22 +23,21 @@ import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
-import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.Constants;
-import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminMVCCommandNames;
-import com.liferay.portal.search.tuning.blueprints.admin.web.internal.security.permission.resource.BlueprintPermission;
-import com.liferay.portal.search.tuning.blueprints.constants.BlueprintTypes;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 
 import java.util.List;
 import java.util.Objects;
 
 import javax.portlet.ActionRequest;
+import javax.portlet.PortletRequest;
 import javax.portlet.PortletURL;
 
 import javax.servlet.http.HttpServletRequest;
@@ -48,25 +45,27 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * @author Petteri Karttunen
  */
-public class FragmentEntriesManagementToolbarDisplayContext
+public abstract class ViewEntriesManagementToolbarDisplayContext
 	extends SearchContainerManagementToolbarDisplayContext {
 
-	public FragmentEntriesManagementToolbarDisplayContext(
+	public ViewEntriesManagementToolbarDisplayContext(
 		HttpServletRequest httpServletRequest,
 		LiferayPortletRequest liferayPortletRequest,
 		LiferayPortletResponse liferayPortletResponse,
 		SearchContainer<Blueprint> searchContainer, String displayStyle,
-		int blueprintType) {
+		String tab) {
 
 		super(
 			httpServletRequest, liferayPortletRequest, liferayPortletResponse,
 			searchContainer);
 
-		_httpServletRequest = httpServletRequest;
-		_displayStyle = displayStyle;
-		_blueprintType = blueprintType;
+		this.httpServletRequest = httpServletRequest;
+		this.displayStyle = displayStyle;
+		this.tab = tab;
 
-		_themeDisplay = (ThemeDisplay)httpServletRequest.getAttribute(
+		portletRequest = (PortletRequest)httpServletRequest.getAttribute(
+			JavaConstants.JAVAX_PORTLET_REQUEST);
+		themeDisplay = (ThemeDisplay)httpServletRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 	}
 
@@ -74,10 +73,10 @@ public class FragmentEntriesManagementToolbarDisplayContext
 	public List<DropdownItem> getActionDropdownItems() {
 		return DropdownItemListBuilder.add(
 			dropdownItem -> {
-				dropdownItem.putData("action", "deleteFragmentEntries");
+				dropdownItem.putData("action", "deleteEntries");
 
 				dropdownItem.setLabel(
-					LanguageUtil.get(_httpServletRequest, "delete"));
+					LanguageUtil.get(httpServletRequest, "delete"));
 
 				dropdownItem.setQuickAction(true);
 			}
@@ -90,46 +89,8 @@ public class FragmentEntriesManagementToolbarDisplayContext
 	}
 
 	@Override
-	public CreationMenu getCreationMenu() {
-		if (!BlueprintPermission.contains(
-				_themeDisplay.getPermissionChecker(),
-				_themeDisplay.getScopeGroupId(), _blueprintType,
-				ActionKeys.ADD_ENTRY)) {
-
-			return null;
-		}
-
-		return CreationMenuBuilder.addDropdownItem(
-			dropdownItem -> {
-				dropdownItem.putData("action", "addFragment");
-				dropdownItem.putData(
-					"defaultLocale",
-					LocaleUtil.toLanguageId(LocaleUtil.getDefault()));
-
-				PortletURL editFragmentURL =
-					liferayPortletResponse.createActionURL();
-
-				editFragmentURL.setParameter(
-					ActionRequest.ACTION_NAME,
-					BlueprintsAdminMVCCommandNames.EDIT_FRAGMENT);
-				editFragmentURL.setParameter(Constants.CMD, Constants.ADD);
-				editFragmentURL.setParameter(
-					"redirect", currentURLObj.toString());
-
-				dropdownItem.putData(
-					"editFragmentURL", editFragmentURL.toString());
-
-				dropdownItem.putData(
-					"type", String.valueOf(BlueprintTypes.QUERY_FRAGMENT));
-				dropdownItem.setLabel(
-					LanguageUtil.get(_httpServletRequest, "add-fragment"));
-			}
-		).build();
-	}
-
-	@Override
 	public String getDefaultEventHandler() {
-		return "FRAGMENT_ENTRIES_MANAGEMENT_TOOLBAR_DEFAULT_EVENT_HANDLER";
+		return "VIEW_ENTRIES_MANAGEMENT_TOOLBAR_DEFAULT_EVENT_HANDLER";
 	}
 
 	@Override
@@ -137,10 +98,9 @@ public class FragmentEntriesManagementToolbarDisplayContext
 		PortletURL searchURL = liferayPortletResponse.createRenderURL();
 
 		searchURL.setProperty(
-			"mvcRenderCommandName",
-			BlueprintsAdminMVCCommandNames.VIEW_BLUEPRINTS);
+			"mvcRenderCommandName", BlueprintsAdminMVCCommandNames.VIEW);
 
-		searchURL.setParameter("tabs", "fragments");
+		searchURL.setParameter("tabs", tab);
 
 		searchURL.setProperty("orderByCol", getOrderByCol());
 		searchURL.setProperty("orderByType", getOrderByType());
@@ -153,10 +113,9 @@ public class FragmentEntriesManagementToolbarDisplayContext
 		PortletURL portletURL = liferayPortletResponse.createRenderURL();
 
 		portletURL.setProperty(
-			"mvcRenderCommandName",
-			BlueprintsAdminMVCCommandNames.VIEW_BLUEPRINTS);
+			"mvcRenderCommandName", BlueprintsAdminMVCCommandNames.VIEW);
 
-		portletURL.setParameter("tabs", "fragments");
+		portletURL.setParameter("tabs", tab);
 
 		if (searchContainer.getDelta() > 0) {
 			portletURL.setProperty(
@@ -171,7 +130,7 @@ public class FragmentEntriesManagementToolbarDisplayContext
 				"cur", String.valueOf(searchContainer.getCur()));
 		}
 
-		return new ViewTypeItemList(portletURL, _displayStyle) {
+		return new ViewTypeItemList(portletURL, displayStyle) {
 			{
 				addListViewTypeItem();
 
@@ -180,37 +139,28 @@ public class FragmentEntriesManagementToolbarDisplayContext
 		};
 	}
 
-	@Override
-	protected List<DropdownItem> getOrderByDropdownItems() {
-		return DropdownItemListBuilder.add(
-			dropdownItem -> {
-				dropdownItem.setActive(
-					Objects.equals(getOrderByCol(), "title"));
-				dropdownItem.setHref(
-					_getCurrentSortingURL(), "orderByCol", "title");
-				dropdownItem.setLabel(
-					LanguageUtil.get(_httpServletRequest, "title"));
-			}
-		).add(
-			dropdownItem -> {
-				dropdownItem.setActive(
-					Objects.equals(getOrderByCol(), "modified-date"));
-				dropdownItem.setHref(
-					_getCurrentSortingURL(), "orderByCol", "modified-date");
-				dropdownItem.setLabel(
-					LanguageUtil.get(_httpServletRequest, "modified-date"));
-			}
-		).build();
+	protected String createActionURL(String actionName, String cmd) {
+		PortletURL portletURL = liferayPortletResponse.createActionURL();
+
+		portletURL.setParameter(ActionRequest.ACTION_NAME, actionName);
+
+		if (!Validator.isBlank(cmd)) {
+			portletURL.setParameter(Constants.CMD, Constants.ADD);
+		}
+
+		portletURL.setParameter("redirect", currentURLObj.toString());
+		portletURL.setParameter("tabs", tab);
+
+		return portletURL.toString();
 	}
 
-	private PortletURL _getCurrentSortingURL() {
+	protected PortletURL getCurrentSortingURL() {
 		PortletURL sortingURL = getPortletURL();
 
 		sortingURL.setProperty(
-			"mvcRenderCommandName",
-			BlueprintsAdminMVCCommandNames.VIEW_BLUEPRINTS);
+			"mvcRenderCommandName", BlueprintsAdminMVCCommandNames.VIEW);
 
-		sortingURL.setParameter("tabs", "fragments");
+		sortingURL.setParameter("tabs", tab);
 
 		sortingURL.setProperty(SearchContainer.DEFAULT_CUR_PARAM, "0");
 
@@ -224,9 +174,42 @@ public class FragmentEntriesManagementToolbarDisplayContext
 		return sortingURL;
 	}
 
-	private final int _blueprintType;
-	private final String _displayStyle;
-	private final HttpServletRequest _httpServletRequest;
-	private final ThemeDisplay _themeDisplay;
+	@Override
+	protected List<DropdownItem> getOrderByDropdownItems() {
+		return DropdownItemListBuilder.add(
+			dropdownItem -> {
+				dropdownItem.setActive(
+					Objects.equals(getOrderByCol(), Field.TITLE));
+				dropdownItem.setHref(
+					getCurrentSortingURL(), "orderByCol", Field.TITLE);
+				dropdownItem.setLabel(
+					LanguageUtil.get(httpServletRequest, "title"));
+			}
+		).add(
+			dropdownItem -> {
+				dropdownItem.setActive(
+					Objects.equals(getOrderByCol(), Field.CREATE_DATE));
+				dropdownItem.setHref(
+					getCurrentSortingURL(), "orderByCol", Field.CREATE_DATE);
+				dropdownItem.setLabel(
+					LanguageUtil.get(httpServletRequest, "created"));
+			}
+		).add(
+			dropdownItem -> {
+				dropdownItem.setActive(
+					Objects.equals(getOrderByCol(), Field.MODIFIED_DATE));
+				dropdownItem.setHref(
+					getCurrentSortingURL(), "orderByCol", Field.MODIFIED_DATE);
+				dropdownItem.setLabel(
+					LanguageUtil.get(httpServletRequest, "modified"));
+			}
+		).build();
+	}
+
+	protected final String displayStyle;
+	protected final HttpServletRequest httpServletRequest;
+	protected final PortletRequest portletRequest;
+	protected final String tab;
+	protected final ThemeDisplay themeDisplay;
 
 }

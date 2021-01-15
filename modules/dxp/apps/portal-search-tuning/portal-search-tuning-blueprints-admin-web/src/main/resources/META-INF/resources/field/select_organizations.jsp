@@ -21,7 +21,7 @@ SelectOrganizationsDisplayContext selectOrganizationsDisplayContext = (SelectOrg
 %>
 
 <clay:management-toolbar
-	displayContext="<%= (SelectOrganizationsManagementToolbarDisplayContext)request.getAttribute(BlueprintsAdminWebKeys.BLUEPRINT_SELECT_ORGANIZATION_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT) %>"
+	displayContext="<%= (SelectOrganizationsManagementToolbarDisplayContext)request.getAttribute(BlueprintsAdminWebKeys.SELECT_ORGANIZATIONS_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT) %>"
 />
 
 <aui:form cssClass="container-fluid-1280" name="fm">

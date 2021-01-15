@@ -17,14 +17,14 @@
 <%@ include file="/init.jsp" %>
 
 <%
-EditFragmentDisplayContext editFragmentDisplayContext = (EditFragmentDisplayContext)request.getAttribute(BlueprintsAdminWebKeys.EDIT_FRAGMENT_DISPLAY_CONTEXT);
+BlueprintDisplayContext editBlueprintDisplayContext = (BlueprintDisplayContext)request.getAttribute(BlueprintsAdminWebKeys.BLUEPRINT_DISPLAY_CONTEXT);
 
-renderResponse.setTitle(editFragmentDisplayContext.getPageTitle());
+renderResponse.setTitle(editBlueprintDisplayContext.getPageTitle());
 %>
 
 <div>
 	<react:component
-		data="<%= editFragmentDisplayContext.getData() %>"
+		data="<%= editBlueprintDisplayContext.getData() %>"
 		module="js/edit_fragment/index"
 	/>
 </div>

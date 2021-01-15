@@ -14,7 +14,6 @@
 
 package com.liferay.portal.search.tuning.blueprints.admin.web.internal.portlet.action;
 
-import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -24,18 +23,19 @@ import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCResourceCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCResourceCommand;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
-import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminMVCCommandNames;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminWebKeys;
+import com.liferay.portal.search.tuning.blueprints.admin.web.internal.util.BlueprintsAdminRequestHelper;
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintsPortletKeys;
-import com.liferay.portal.search.tuning.blueprints.exception.NoSuchBlueprintException;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+
+import java.util.Optional;
 
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
@@ -63,39 +63,16 @@ public class ExportBlueprintMVCResourceCommand extends BaseMVCResourceCommand {
 			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
 		throws Exception {
 
-		long blueprintId = ParamUtil.getLong(
-			resourceRequest, BlueprintsAdminWebKeys.BLUEPRINT_ID);
+		Optional<Blueprint> blueprintOptional =
+			_blueprintsAdminRequestHelper.getBlueprintFromRequest(
+				resourceRequest, resourceResponse);
 
-		try {
-			Blueprint blueprint = _blueprintService.getBlueprint(blueprintId);
-
-			String configuration = _getConfiguration(blueprint);
-
-			String title = _getFileTitle(resourceRequest, blueprint);
-
-			_writeResponse(
-				resourceRequest, resourceResponse, title, configuration);
+		if (!blueprintOptional.isPresent()) {
+			return;
 		}
-		catch (NoSuchBlueprintException noSuchBlueprintException) {
-			_log.error(
-				"Blueprint " + blueprintId + " not found",
-				noSuchBlueprintException);
 
-			SessionErrors.add(
-				resourceRequest, BlueprintsAdminWebKeys.ERROR_DETAILS,
-				noSuchBlueprintException);
-
-			_log.error(
-				noSuchBlueprintException.getMessage(),
-				noSuchBlueprintException);
-		}
-		catch (PortalException portalException) {
-			_log.error(portalException.getMessage(), portalException);
-
-			SessionErrors.add(
-				resourceRequest, BlueprintsAdminWebKeys.ERROR_DETAILS,
-				portalException);
-		}
+		_writeResponse(
+			resourceRequest, resourceResponse, blueprintOptional.get());
 	}
 
 	private String _getConfiguration(Blueprint blueprint) {
@@ -127,7 +104,7 @@ public class ExportBlueprintMVCResourceCommand extends BaseMVCResourceCommand {
 
 	private void _writeResponse(
 		ResourceRequest resourceRequest, ResourceResponse resourceResponse,
-		String title, String configuration) {
+		Blueprint blueprint) {
 
 		HttpServletResponse httpServletResponse =
 			_portal.getHttpServletResponse(resourceResponse);
@@ -138,22 +115,26 @@ public class ExportBlueprintMVCResourceCommand extends BaseMVCResourceCommand {
 			httpServletResponse.setContentType("application/json");
 			httpServletResponse.setCharacterEncoding("UTF-8");
 			httpServletResponse.setHeader(
-				"Content-disposition", "attachment; filename=" + title);
+				"Content-disposition",
+				"attachment; filename=" +
+					_getFileTitle(resourceRequest, blueprint));
 
-			out.print(configuration);
+			out.print(_getConfiguration(blueprint));
 			out.flush();
 		}
 		catch (IOException ioException) {
 			_log.error(ioException.getMessage(), ioException);
 
 			SessionErrors.add(
-				resourceRequest, BlueprintsAdminWebKeys.ERROR_DETAILS,
-				ioException);
+				resourceRequest, BlueprintsAdminWebKeys.ERROR, ioException);
 		}
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		ExportBlueprintMVCResourceCommand.class);
+
+	@Reference
+	private BlueprintsAdminRequestHelper _blueprintsAdminRequestHelper;
 
 	@Reference
 	private BlueprintService _blueprintService;
