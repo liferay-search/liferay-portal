@@ -37,6 +37,7 @@ ViewMisspellingSetsDisplayContext viewMisspellingSetsDisplayContext = (ViewMissp
 		<aui:input name="redirect" type="hidden" value="<%= currentURL %>" />
 
 		<liferay-ui:search-container
+			cssClass="blueprints-search-container"
 			id="misspellingSets"
 			searchContainer="<%= viewMisspellingSetsDisplayContext.getSearchContainer() %>"
 		>

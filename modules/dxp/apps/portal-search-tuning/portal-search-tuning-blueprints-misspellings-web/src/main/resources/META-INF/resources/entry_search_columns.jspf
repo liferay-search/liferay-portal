@@ -37,22 +37,17 @@
 			</h4>
 
 			<h5 class="text-default text-truncate">
-				<liferay-ui:message key="misspellings" />: 
-				<%=String.join(",", entry.getMisspellings()) %>
+				<liferay-ui:message key="misspellings" />:
+				<%= StringUtil.merge(entry.getMisspellings(), ",") %>
 			</h5>
 
 			<%
 			Date modified = entry.getModified();
-
-			String modifiedDateDescription = LanguageUtil.getTimeDescription(request, System.currentTimeMillis() - modified.getTime(), true);
 			%>
 
 			<h5 class="text-default text-truncate">
-				<liferay-ui:message arguments="<%= new String[] {modifiedDateDescription} %>" key="modified-x-ago" />
+				<liferay-ui:message arguments="<%= LanguageUtil.getTimeDescription(request, System.currentTimeMillis() - modified.getTime(), true) %>" key="modified-x-ago" />
 			</h5>
-
-			
-			
 		</liferay-ui:search-container-column-text>
 
 		<liferay-ui:search-container-column-jsp
@@ -73,7 +68,7 @@
 		<liferay-ui:search-container-column-text
 			cssClass="table-cell-expand table-cell-minw-150 table-title"
 			name="Misspellings"
-			value="<%= String.join(",", entry.getMisspellings()) %>"
+			value='<%= StringUtil.merge(entry.getMisspellings(), ",") %>'
 		/>
 
 		<liferay-ui:search-container-column-user
