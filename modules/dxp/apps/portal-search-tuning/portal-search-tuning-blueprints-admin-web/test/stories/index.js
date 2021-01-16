@@ -191,7 +191,7 @@ storiesOf('Pages|FragmentForm', module).add('default', () => (
 		context={CONTEXT}
 		props={{
 			initialConfigurationString: JSON.stringify(DEFAULT_EDIT_FRAGMENT),
-			initialDescription: {},
+			initialDescription: {'en-US': 'Description'},
 			initialTitle: {
 				'en-US': 'Test Title',
 			},
