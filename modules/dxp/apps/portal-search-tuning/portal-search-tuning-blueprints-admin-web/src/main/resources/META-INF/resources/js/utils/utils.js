@@ -48,7 +48,7 @@ export const openSuccessToast = (config) => {
  * @param {String|object} item Item to check
  * @return {boolean}
  */
-const isNotEmpty = (item) =>
+export const isNotEmpty = (item) =>
 	item !== null && item !== '' && typeof item !== 'undefined';
 
 /**
@@ -92,6 +92,26 @@ const isNotNullOrUndefined = (item) =>
  */
 export const replaceStr = (str, search, replace) => {
 	return str.split(search).join(replace);
+};
+
+/**
+ * Function to return a new object with renamed keys.
+ *
+ * Example:
+ * renameKeys({"en-US": "Hello", "zh-CN": "Ni Hao"}, (str) => str.replace('-', '_'))
+ * => {en_US: "Hello", zh_CN: "Ni Hao"}
+ *
+ * @param {Object} obj Original object
+ * @return {Object}
+ */
+export const renameKeys = (obj, func) => {
+	const newObj = {};
+
+	Object.keys(obj).map((key) => {
+		newObj[`${func(key)}`] = obj[key];
+	});
+
+	return newObj;
 };
 
 /**

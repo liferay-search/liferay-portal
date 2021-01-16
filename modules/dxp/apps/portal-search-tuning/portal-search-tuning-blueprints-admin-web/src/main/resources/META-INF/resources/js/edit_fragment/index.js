@@ -13,7 +13,9 @@ import ClayButton from '@clayui/button';
 import ClayEmptyState from '@clayui/empty-state';
 import ClayIcon from '@clayui/icon';
 import ClayLayout from '@clayui/layout';
+import ClayLink from '@clayui/link';
 import ClaySticker from '@clayui/sticker';
+import ClayToolbar from '@clayui/toolbar';
 import {ClayTooltipProvider} from '@clayui/tooltip';
 import getCN from 'classnames';
 import {fetch, navigate} from 'frontend-js-web';
@@ -29,13 +31,14 @@ import React, {
 import CodeMirrorEditor from '../shared/CodeMirrorEditor';
 import ConfigFragment from '../shared/ConfigFragment';
 import ErrorBoundary from '../shared/ErrorBoundary';
-import PageToolbar from '../shared/PageToolbar';
 import PreviewModal from '../shared/PreviewModal';
 import SearchInput from '../shared/SearchInput';
 import ThemeContext from '../shared/ThemeContext';
 import {
 	getUIConfigurationValues,
+	isNotEmpty,
 	openErrorToast,
+	renameKeys,
 	replaceUIConfigurationValues,
 } from '../utils/utils';
 
@@ -49,7 +52,7 @@ function EditFragmentForm({
 	redirectURL,
 	submitFormURL,
 }) {
-	const {namespace} = useContext(ThemeContext);
+	const {defaultLocale, namespace} = useContext(ThemeContext);
 
 	const initialConfiguration = JSON.parse(initialConfigurationString);
 
@@ -60,6 +63,15 @@ function EditFragmentForm({
 	const [expand, setExpand] = useState(false);
 
 	const [variables, setVariables] = useState(predefinedVariables);
+
+	initialConfiguration.fragmentTemplateJSON.title = renameKeys(
+		initialTitle,
+		(str) => str.replace('-', '_')
+	);
+	initialConfiguration.fragmentTemplateJSON.description = renameKeys(
+		initialDescription,
+		(str) => str.replace('-', '_')
+	);
 
 	const [fragmentTemplateJSON, setFragmentTemplateJSON] = useState(
 		JSON.stringify(initialConfiguration.fragmentTemplateJSON, null, '\t')
@@ -75,6 +87,23 @@ function EditFragmentForm({
 
 		setExpand(true);
 	}, []);
+
+	function _appendEntryLocale(entry, name, formData) {
+		if (typeof entry == 'object') {
+			return Object.keys(entry).map((key) => {
+				formData.append(
+					`${namespace}${name}_${key.replace('-', '_')}`,
+					entry[key]
+				);
+			});
+		}
+		else if (typeof entry == 'string') {
+			formData.append(
+				`${namespace}${name}_${defaultLocale.replace('-', '_')}`,
+				entry
+			);
+		}
+	}
 
 	const _handleSearchFilter = useCallback(
 		(value) => {
@@ -154,10 +183,34 @@ function EditFragmentForm({
 		const formData = new FormData(form.current);
 
 		try {
+			const parseFragmentTemplateJSON = JSON.parse(fragmentTemplateJSON);
+
+			if (!isNotEmpty(parseFragmentTemplateJSON.title)) {
+				throw '';
+			}
+
+			if (
+				typeof parseFragmentTemplateJSON.title === 'object' &&
+				!isNotEmpty(parseFragmentTemplateJSON.title[`${defaultLocale}`])
+			) {
+				throw '';
+			}
+
+			_appendEntryLocale(
+				parseFragmentTemplateJSON.title,
+				'title',
+				formData
+			);
+			_appendEntryLocale(
+				parseFragmentTemplateJSON.description,
+				'description',
+				formData
+			);
+
 			formData.append(
 				`${namespace}configuration`,
 				JSON.stringify({
-					fragmentTemplateJSON: JSON.parse(fragmentTemplateJSON),
+					fragmentTemplateJSON: parseFragmentTemplateJSON,
 					uiConfigurationJSON: JSON.parse(uiConfigurationJSON),
 				})
 			);
@@ -208,30 +261,57 @@ function EditFragmentForm({
 	return (
 		<>
 			<form ref={form}>
-				<PageToolbar
-					initialDescription={initialDescription}
-					initialTitle={initialTitle}
-					isSubmitting={isSubmitting}
-					onCancel={redirectURL}
-					onSubmit={handleSubmit}
-					toolbarItem={
-						<PreviewModal
-							body={_renderPreviewBody()}
-							size="lg"
-							title={Liferay.Language.get(
-								'preview-configuration'
-							)}
-						>
-							<ClayButton
-								borderless
-								displayType="secondary"
-								small
-							>
-								{Liferay.Language.get('preview')}
-							</ClayButton>
-						</PreviewModal>
-					}
-				/>
+				<div className="page-toolbar-root">
+					<ClayToolbar light>
+						<ClayLayout.ContainerFluid>
+							<ClayToolbar.Nav>
+								<ClayToolbar.Item
+									className="text-left"
+									expand
+								/>
+
+								<ClayToolbar.Item>
+									<PreviewModal
+										body={_renderPreviewBody()}
+										size="lg"
+										title={Liferay.Language.get(
+											'preview-configuration'
+										)}
+									>
+										<ClayButton
+											borderless
+											displayType="secondary"
+											small
+										>
+											{Liferay.Language.get('preview')}
+										</ClayButton>
+									</PreviewModal>
+								</ClayToolbar.Item>
+
+								<ClayToolbar.Item>
+									<ClayLink
+										displayType="secondary"
+										href={redirectURL}
+										outline="secondary"
+									>
+										{Liferay.Language.get('cancel')}
+									</ClayLink>
+								</ClayToolbar.Item>
+
+								<ClayToolbar.Item>
+									<ClayButton
+										disabled={isSubmitting}
+										onClick={handleSubmit}
+										small
+										type="submit"
+									>
+										{Liferay.Language.get('save')}
+									</ClayButton>
+								</ClayToolbar.Item>
+							</ClayToolbar.Nav>
+						</ClayLayout.ContainerFluid>
+					</ClayToolbar>
+				</div>
 			</form>
 
 			<div className="fragment-row">

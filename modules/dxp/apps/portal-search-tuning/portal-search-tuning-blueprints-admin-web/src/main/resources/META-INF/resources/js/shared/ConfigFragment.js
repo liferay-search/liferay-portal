@@ -652,14 +652,18 @@ function ConfigFragment({
 						{fragmentTemplateJSON.title && (
 							<ClayList.ItemTitle>
 								{fragmentTemplateJSON.title[locale] ||
-									fragmentTemplateJSON.title}
+									(typeof fragmentTemplateJSON.title ==
+										'string' &&
+										fragmentTemplateJSON.title)}
 							</ClayList.ItemTitle>
 						)}
 
 						{fragmentTemplateJSON.description && (
 							<ClayList.ItemText subtext={true}>
 								{fragmentTemplateJSON.description[locale] ||
-									fragmentTemplateJSON.description}
+									(typeof fragmentTemplateJSON.description ==
+										'string' &&
+										fragmentTemplateJSON.description)}
 							</ClayList.ItemText>
 						)}
 					</ClayList.ItemField>
