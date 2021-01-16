@@ -29,6 +29,7 @@ import java.util.Map;
 
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -39,13 +40,14 @@ public class EditFragmentDisplayBuilder extends EditEntryDisplayBuilder {
 	public EditFragmentDisplayBuilder(
 		HttpServletRequest httpServletRequest, Language language,
 		JSONFactory jsonFactory, RenderRequest renderRequest,
-		RenderResponse renderResponse, BlueprintsEngineContextHelper blueprintsEngineContextHelper, 
+		RenderResponse renderResponse,
+		BlueprintsEngineContextHelper blueprintsEngineContextHelper,
 		BlueprintService blueprintService) {
 
 		super(
 			httpServletRequest, language, jsonFactory, renderRequest,
 			renderResponse, blueprintService);
-		
+
 		_blueprintsEngineContextHelper = blueprintsEngineContextHelper;
 	}
 
@@ -61,7 +63,7 @@ public class EditFragmentDisplayBuilder extends EditEntryDisplayBuilder {
 
 		return blueprintDisplayContext;
 	}
-	
+
 	private JSONArray _getPredefinedVariablesJSONArray() {
 		JSONArray predefinedVariablesJSONArray = jsonFactory.createJSONArray();
 
@@ -108,7 +110,6 @@ public class EditFragmentDisplayBuilder extends EditEntryDisplayBuilder {
 		return predefinedVariablesJSONArray;
 	}
 
-
 	private Map<String, Object> _getProps() {
 		Map<String, Object> props = HashMapBuilder.<String, Object>put(
 			"blueprintId", blueprintId
@@ -127,13 +128,12 @@ public class EditFragmentDisplayBuilder extends EditEntryDisplayBuilder {
 			props.put("initialDescription", getDescriptionJSONObject());
 			props.put("initialTitle", getTitleJSONObject());
 			props.put(
-	 				"predefinedVariables", _getPredefinedVariablesJSONArray());
+				"predefinedVariables", _getPredefinedVariablesJSONArray());
 		}
 
-		
 		return props;
 	}
 
-	
 	private final BlueprintsEngineContextHelper _blueprintsEngineContextHelper;
+
 }

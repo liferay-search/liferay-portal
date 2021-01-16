@@ -55,7 +55,8 @@ public class EditFragmentMVCRenderCommand implements MVCRenderCommand {
 		BlueprintDisplayContext blueprintDisplayContext =
 			new EditFragmentDisplayBuilder(
 				_portal.getHttpServletRequest(renderRequest), _language,
-				_jsonFactory, renderRequest, renderResponse, _blueprintsEngineContextHelper, _blueprintService
+				_jsonFactory, renderRequest, renderResponse,
+				_blueprintsEngineContextHelper, _blueprintService
 			).build();
 
 		renderRequest.setAttribute(
@@ -74,8 +75,8 @@ public class EditFragmentMVCRenderCommand implements MVCRenderCommand {
 	}
 
 	@Reference
- 	private BlueprintsEngineContextHelper _blueprintsEngineContextHelper;
-	
+	private BlueprintsEngineContextHelper _blueprintsEngineContextHelper;
+
 	@Reference
 	private BlueprintService _blueprintService;
 
