@@ -39,6 +39,7 @@ import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminMVCCommandNames;
+import com.liferay.portal.search.tuning.blueprints.admin.web.internal.util.BlueprintsAdminIndexHelper;
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintTypes;
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintsPortletKeys;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
@@ -63,13 +64,15 @@ import javax.servlet.http.HttpServletRequest;
 public class EditBlueprintDisplayBuilder extends EditEntryDisplayBuilder {
 
 	public EditBlueprintDisplayBuilder(
+		BlueprintsAdminIndexHelper blueprintsAdminIndexHelper,
+		BlueprintService blueprintService,
 		HttpServletRequest httpServletRequest, Language language,
 		JSONFactory jsonFactory, RenderRequest renderRequest,
-		RenderResponse renderResponse, BlueprintService blueprintService) {
+		RenderResponse renderResponse) {
 
 		super(
-			httpServletRequest, language, jsonFactory, renderRequest,
-			renderResponse, blueprintService);
+			blueprintsAdminIndexHelper, blueprintService, httpServletRequest,
+			language, jsonFactory, renderRequest, renderResponse);
 	}
 
 	public BlueprintDisplayContext build() {
@@ -104,17 +107,21 @@ public class EditBlueprintDisplayBuilder extends EditEntryDisplayBuilder {
 
 	private Map<String, Object> _getProps() {
 		Map<String, Object> props = HashMapBuilder.<String, Object>put(
-			"searchableAssetTypes", _getSearchableAssetTypesJSONArray()
-		).put(
 			"blueprintId", blueprintId
 		).put(
 			"blueprintType", blueprintType
 		).put(
 			"entityJSON", _getEntityJSONObject()
 		).put(
+			"indexFields",
+			blueprintsAdminIndexHelper.getMappedFields(
+				themeDisplay.getCompanyId())
+		).put(
 			"queryFragments", _getQueryFragmentsJSONArray()
 		).put(
 			"redirectURL", getRedirect()
+		).put(
+			"searchableAssetTypes", _getSearchableAssetTypesJSONArray()
 		).put(
 			"submitFormURL",
 			getSubmitFormURL(BlueprintsAdminMVCCommandNames.EDIT_BLUEPRINT)

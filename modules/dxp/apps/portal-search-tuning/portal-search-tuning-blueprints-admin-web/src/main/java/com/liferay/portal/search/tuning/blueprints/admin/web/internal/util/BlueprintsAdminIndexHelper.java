@@ -14,6 +14,10 @@
 
 package com.liferay.portal.search.tuning.blueprints.admin.web.internal.util;
 
+import com.liferay.portal.kernel.json.JSONException;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.search.Field;
@@ -22,9 +26,9 @@ import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.portal.search.document.Document;
-import com.liferay.portal.search.hits.SearchHit;
 import com.liferay.portal.search.hits.SearchHits;
+import com.liferay.portal.search.index.IndexInformation;
+import com.liferay.portal.search.index.IndexNameBuilder;
 import com.liferay.portal.search.query.BooleanQuery;
 import com.liferay.portal.search.query.Queries;
 import com.liferay.portal.search.query.Query;
@@ -41,9 +45,12 @@ import com.liferay.portal.search.tuning.blueprints.constants.BlueprintTypes;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -54,10 +61,47 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Petteri Karttunen
  */
-@Component(immediate = true, service = {})
-public class BlueprintsAdminSearchUtil {
+@Component(immediate = true, service = BlueprintsAdminIndexHelper.class)
+public class BlueprintsAdminIndexHelper {
 
-	public static SearchHits searchBlueprints(
+	public Map<String, List<String>> getMappedFields(long companyId) {
+		String indexName = _indexNameBuilder.getIndexName(companyId);
+
+		String fieldMappings = _indexInformation.getFieldMappings(indexName);
+
+		Map<String, List<String>> fieldMap = new HashMap<>();
+
+		try {
+			JSONObject propertiesJSONObject = JSONUtil.getValueAsJSONObject(
+				JSONFactoryUtil.createJSONObject(fieldMappings),
+				"JSONObject/" + indexName, "JSONObject/mappings",
+				"JSONObject/properties");
+
+			Set<String> fieldKeySet = propertiesJSONObject.keySet();
+
+			for (String fieldName : fieldKeySet) {
+				JSONObject fieldJSONObject = propertiesJSONObject.getJSONObject(
+					fieldName);
+
+				String type = fieldJSONObject.getString("type");
+
+				if (!fieldMap.containsKey(type)) {
+					fieldMap.put(type, new ArrayList<String>());
+				}
+
+				List<String> fields = fieldMap.get(type);
+
+				fields.add(fieldName);
+			}
+		}
+		catch (JSONException jsonException) {
+			_log.error(jsonException.getMessage(), jsonException);
+		}
+
+		return fieldMap;
+	}
+
+	public SearchHits searchBlueprints(
 		HttpServletRequest httpServletRequest, long groupId, int status,
 		String blueprintType, int size, int start, String orderByCol,
 		String orderByType) {
@@ -90,60 +134,12 @@ public class BlueprintsAdminSearchUtil {
 		return searchResponse.getSearchHits();
 	}
 
-	public static Optional<Blueprint> toBlueprintOptional(SearchHit searchHit) {
-		long entryClassPK = _getEntryClassPK(searchHit);
-
-		try {
-			return Optional.of(_blueprintService.getBlueprint(entryClassPK));
-		}
-		catch (Exception exception) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(
-					"Search index is stale and contains a Blueprint entry " +
-						entryClassPK);
-			}
-
-			return Optional.empty();
-		}
-	}
-
-	@Reference(unbind = "-")
-	protected void setBlueprintService(BlueprintService blueprintService) {
-		_blueprintService = blueprintService;
-	}
-
-	@Reference(unbind = "-")
-	protected void setQueries(Queries queries) {
-		_queries = queries;
-	}
-
-	@Reference(unbind = "-")
-	protected void setSearcher(Searcher searcher) {
-		_searcher = searcher;
-	}
-
-	@Reference(unbind = "-")
-	protected void setSearchRequestBuilderFactory(
-		SearchRequestBuilderFactory searchRequestBuilderFactory) {
-
-		_searchRequestBuilderFactory = searchRequestBuilderFactory;
-	}
-
-	@Reference(unbind = "-")
-	protected void setSorts(Sorts sorts) {
-		_sorts = sorts;
-	}
-
-	private static void _addBlueprintTypeFilterClause(
-		BooleanQuery booleanQuery) {
-
+	private void _addBlueprintTypeFilterClause(BooleanQuery booleanQuery) {
 		booleanQuery.addFilterQueryClauses(
 			_queries.term(Field.TYPE, BlueprintTypes.BLUEPRINT));
 	}
 
-	private static void _addFragmentTypeFilterClause(
-		BooleanQuery booleanQuery) {
-
+	private void _addFragmentTypeFilterClause(BooleanQuery booleanQuery) {
 		TermsQuery termsQuery = _queries.terms(Field.TYPE + "_sortable");
 
 		termsQuery.addValues(_getFragmentTypes());
@@ -151,7 +147,7 @@ public class BlueprintsAdminSearchUtil {
 		booleanQuery.addFilterQueryClauses(termsQuery);
 	}
 
-	private static void _addGroupFilterClause(
+	private void _addGroupFilterClause(
 		BooleanQuery booleanQuery, long groupId) {
 
 		TermQuery groupQuery = _queries.term(Field.GROUP_ID, groupId);
@@ -159,7 +155,7 @@ public class BlueprintsAdminSearchUtil {
 		booleanQuery.addFilterQueryClauses(groupQuery);
 	}
 
-	private static void _addSearchClauses(
+	private void _addSearchClauses(
 		BooleanQuery booleanQuery, String keywords, String languageId) {
 
 		if (Validator.isBlank(keywords)) {
@@ -171,19 +167,11 @@ public class BlueprintsAdminSearchUtil {
 		}
 	}
 
-	private static void _addStatusFilterClause(
-		BooleanQuery booleanQuery, int status) {
-
+	private void _addStatusFilterClause(BooleanQuery booleanQuery, int status) {
 		booleanQuery.addFilterQueryClauses(_queries.term(Field.STATUS, status));
 	}
 
-	private static long _getEntryClassPK(SearchHit searchHit) {
-		Document document = searchHit.getDocument();
-
-		return document.getLong(Field.ENTRY_CLASS_PK);
-	}
-
-	private static Object[] _getFragmentTypes() {
+	private Object[] _getFragmentTypes() {
 		return new Object[] {
 			String.valueOf(BlueprintTypes.AGGREGATION_FRAGMENT),
 			String.valueOf(BlueprintTypes.FACET_FRAGMENT),
@@ -192,11 +180,11 @@ public class BlueprintsAdminSearchUtil {
 		};
 	}
 
-	private static String _getKeywords(HttpServletRequest httpServletRequest) {
+	private String _getKeywords(HttpServletRequest httpServletRequest) {
 		return ParamUtil.getString(httpServletRequest, "keywords");
 	}
 
-	private static Query _getQuery(
+	private Query _getQuery(
 		String keywords, String blueprintType, long groupId, int status,
 		String languageId) {
 
@@ -218,7 +206,7 @@ public class BlueprintsAdminSearchUtil {
 		return booleanQuery;
 	}
 
-	private static Set<String> _getSearchFields(String languageId) {
+	private Set<String> _getSearchFields(String languageId) {
 		Set<String> fields = new HashSet<>();
 
 		fields.add(_getTitleField(languageId));
@@ -228,7 +216,7 @@ public class BlueprintsAdminSearchUtil {
 		return fields;
 	}
 
-	private static Sort _getSort(
+	private Sort _getSort(
 		String orderByCol, String orderByType, String languageId) {
 
 		SortOrder sortOrder = SortOrder.ASC;
@@ -245,18 +233,33 @@ public class BlueprintsAdminSearchUtil {
 		return _sorts.field(orderByCol, sortOrder);
 	}
 
-	private static String _getTitleField(String languageId) {
+	private String _getTitleField(String languageId) {
 		return LocalizationUtil.getLocalizedName(
 			"localized_" + Field.TITLE, languageId);
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
-		BlueprintsAdminSearchUtil.class);
+		BlueprintsAdminIndexHelper.class);
 
-	private static BlueprintService _blueprintService;
-	private static Queries _queries;
-	private static Searcher _searcher;
-	private static SearchRequestBuilderFactory _searchRequestBuilderFactory;
-	private static Sorts _sorts;
+	@Reference
+	private BlueprintService _blueprintService;
+
+	@Reference
+	private IndexInformation _indexInformation;
+
+	@Reference
+	private IndexNameBuilder _indexNameBuilder;
+
+	@Reference
+	private Queries _queries;
+
+	@Reference
+	private Searcher _searcher;
+
+	@Reference
+	private SearchRequestBuilderFactory _searchRequestBuilderFactory;
+
+	@Reference
+	private Sorts _sorts;
 
 }

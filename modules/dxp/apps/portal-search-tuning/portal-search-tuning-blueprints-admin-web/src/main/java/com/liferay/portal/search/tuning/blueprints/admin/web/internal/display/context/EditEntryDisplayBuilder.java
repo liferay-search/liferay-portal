@@ -33,6 +33,7 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminWebKeys;
+import com.liferay.portal.search.tuning.blueprints.admin.web.internal.util.BlueprintsAdminIndexHelper;
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintTypes;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
@@ -54,16 +55,19 @@ import javax.servlet.http.HttpServletRequest;
 public abstract class EditEntryDisplayBuilder {
 
 	public EditEntryDisplayBuilder(
+		BlueprintsAdminIndexHelper blueprintsAdminIndexHelper,
+		BlueprintService blueprintService,
 		HttpServletRequest httpServletRequest, Language language,
 		JSONFactory jsonFactory, RenderRequest renderRequest,
-		RenderResponse renderResponse, BlueprintService blueprintService) {
+		RenderResponse renderResponse) {
 
+		this.blueprintsAdminIndexHelper = blueprintsAdminIndexHelper;
+		this.blueprintService = blueprintService;
 		this.httpServletRequest = httpServletRequest;
 		this.language = language;
 		this.jsonFactory = jsonFactory;
 		this.renderRequest = renderRequest;
 		this.renderResponse = renderResponse;
-		this.blueprintService = blueprintService;
 
 		blueprintId = ParamUtil.getLong(
 			renderRequest, BlueprintsAdminWebKeys.BLUEPRINT_ID);
@@ -231,6 +235,7 @@ public abstract class EditEntryDisplayBuilder {
 
 	protected final Blueprint blueprint;
 	protected final long blueprintId;
+	protected final BlueprintsAdminIndexHelper blueprintsAdminIndexHelper;
 	protected final BlueprintService blueprintService;
 	protected int blueprintType;
 	protected final HttpServletRequest httpServletRequest;

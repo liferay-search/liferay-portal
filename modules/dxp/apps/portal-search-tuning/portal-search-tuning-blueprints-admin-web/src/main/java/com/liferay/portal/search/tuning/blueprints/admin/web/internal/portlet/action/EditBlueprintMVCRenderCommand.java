@@ -25,6 +25,7 @@ import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminWebKeys;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context.BlueprintDisplayContext;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context.EditBlueprintDisplayBuilder;
+import com.liferay.portal.search.tuning.blueprints.admin.web.internal.util.BlueprintsAdminIndexHelper;
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintsPortletKeys;
 import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
 
@@ -53,8 +54,9 @@ public class EditBlueprintMVCRenderCommand implements MVCRenderCommand {
 
 		BlueprintDisplayContext blueprintDisplayContext =
 			new EditBlueprintDisplayBuilder(
+				_blueprintsAdminIndexHelper, _blueprintService,
 				_portal.getHttpServletRequest(renderRequest), _language,
-				_jsonFactory, renderRequest, renderResponse, _blueprintService
+				_jsonFactory, renderRequest, renderResponse
 			).build();
 
 		renderRequest.setAttribute(
@@ -71,6 +73,9 @@ public class EditBlueprintMVCRenderCommand implements MVCRenderCommand {
 
 		return "/edit_blueprint.jsp";
 	}
+
+	@Reference
+	private BlueprintsAdminIndexHelper _blueprintsAdminIndexHelper;
 
 	@Reference
 	private BlueprintService _blueprintService;

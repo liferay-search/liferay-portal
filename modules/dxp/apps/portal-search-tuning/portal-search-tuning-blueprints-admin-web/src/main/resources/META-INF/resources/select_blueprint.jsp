@@ -17,11 +17,11 @@
 <%@ include file="/init.jsp" %>
 
 <%
-SelectBlueprintDisplayContext selectBlueprintDisplayContext = new SelectBlueprintDisplayContext(liferayPortletRequest, liferayPortletResponse);
+SelectBlueprintDisplayContext selectBlueprintDisplayContext = (SelectBlueprintDisplayContext)request.getAttribute(BlueprintsAdminWebKeys.SELECT_BLUEPRINT_DISPLAY_CONTEXT);
 %>
 
 <clay:management-toolbar
-	displayContext="<%= new SelectBlueprintManagementToolbarDisplayContext(request, liferayPortletRequest, liferayPortletResponse, selectBlueprintDisplayContext.getSearchContainer()) %>"
+	displayContext="<%= (ViewBlueprintsManagementToolbarDisplayContext)request.getAttribute(BlueprintsAdminWebKeys.SELECT_BLUEPRINT_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT) %>"
 />
 
 <clay:container-fluid>
