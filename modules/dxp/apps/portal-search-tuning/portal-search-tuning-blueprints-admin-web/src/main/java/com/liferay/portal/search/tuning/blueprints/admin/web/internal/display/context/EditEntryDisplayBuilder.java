@@ -147,15 +147,6 @@ public abstract class EditEntryDisplayBuilder {
 		return descriptionJSONObject;
 	}
 
-	/* TODO This is a placeholder for LPS-123115 to get predefinedVariables
-	protected List<JSONObject> getPredefinedVariables() {
-		JSONObject parameterJSONObject = _jsonFactory.createJSONObject();
-
-		return ListUtil.fromArray(parameterJSONObject);
-	}
-
-	*/
-
 	protected String getRedirect() {
 		String redirect = ParamUtil.getString(httpServletRequest, "redirect");
 

@@ -14,6 +14,8 @@
 
 package com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context;
 
+import com.liferay.asset.kernel.AssetRendererFactoryRegistryUtil;
+import com.liferay.asset.kernel.model.AssetRendererFactory;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
@@ -45,6 +47,7 @@ import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletURL;
@@ -101,6 +104,8 @@ public class EditBlueprintDisplayBuilder extends EditEntryDisplayBuilder {
 
 	private Map<String, Object> _getProps() {
 		Map<String, Object> props = HashMapBuilder.<String, Object>put(
+			"availableAssetTypes", _getSearchableAssetTypesJSONArray()
+		).put(
 			"blueprintId", blueprintId
 		).put(
 			"blueprintType", blueprintType
@@ -152,6 +157,25 @@ public class EditBlueprintDisplayBuilder extends EditEntryDisplayBuilder {
 		}
 
 		return queryFragmentsJSONArray;
+	}
+
+	private JSONArray _getSearchableAssetTypesJSONArray() {
+		JSONArray jsonArray = jsonFactory.createJSONArray();
+
+		List<AssetRendererFactory<?>> assetRendererFactories =
+			AssetRendererFactoryRegistryUtil.getAssetRendererFactories(
+				themeDisplay.getCompanyId(), true);
+
+		Stream<AssetRendererFactory<?>> stream =
+			assetRendererFactories.stream();
+
+		stream.filter(
+			item -> item.isSearchable()
+		).forEach(
+			item -> jsonArray.put(item.getClassName())
+		);
+
+		return jsonArray;
 	}
 
 	private JSONObject _getSelectEntityJSONObject(String className) {
