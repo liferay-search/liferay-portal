@@ -17,14 +17,14 @@
 <%@ include file="/init.jsp" %>
 
 <%
-BlueprintDisplayContext editBlueprintDisplayContext = (BlueprintDisplayContext)request.getAttribute(BlueprintsAdminWebKeys.BLUEPRINT_DISPLAY_CONTEXT);
+BlueprintDisplayContext blueprintDisplayContext = (BlueprintDisplayContext)request.getAttribute(BlueprintsAdminWebKeys.BLUEPRINT_DISPLAY_CONTEXT);
 
-renderResponse.setTitle(editBlueprintDisplayContext.getPageTitle());
+renderResponse.setTitle(blueprintDisplayContext.getPageTitle());
 %>
 
 <div>
 	<react:component
-		data="<%= editBlueprintDisplayContext.getData() %>"
+		data="<%= blueprintDisplayContext.getData() %>"
 		module="js/edit_blueprint/index"
 	/>
 </div>
