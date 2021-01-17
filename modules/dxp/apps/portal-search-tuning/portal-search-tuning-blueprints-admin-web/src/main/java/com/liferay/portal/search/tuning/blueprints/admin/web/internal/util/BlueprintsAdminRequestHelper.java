@@ -38,7 +38,7 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Petteri Karttunen
  */
-@Component(immediate = true, service = {})
+@Component(immediate = true, service = BlueprintsAdminRequestHelper.class)
 public class BlueprintsAdminRequestHelper {
 
 	public Optional<Blueprint> getBlueprintFromRequest(
