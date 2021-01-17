@@ -104,7 +104,7 @@ public class EditBlueprintDisplayBuilder extends EditEntryDisplayBuilder {
 
 	private Map<String, Object> _getProps() {
 		Map<String, Object> props = HashMapBuilder.<String, Object>put(
-			"availableAssetTypes", _getSearchableAssetTypesJSONArray()
+			"searchableAssetTypes", _getSearchableAssetTypesJSONArray()
 		).put(
 			"blueprintId", blueprintId
 		).put(
