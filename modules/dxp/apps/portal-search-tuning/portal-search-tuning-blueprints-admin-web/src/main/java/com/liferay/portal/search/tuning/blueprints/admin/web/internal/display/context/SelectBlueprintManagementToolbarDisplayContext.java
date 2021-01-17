@@ -23,8 +23,6 @@ import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 
 import javax.portlet.PortletURL;
 
-import javax.servlet.http.HttpServletRequest;
-
 /**
  * @author Kevin Tan
  */
@@ -32,14 +30,13 @@ public class SelectBlueprintManagementToolbarDisplayContext
 	extends SearchContainerManagementToolbarDisplayContext {
 
 	public SelectBlueprintManagementToolbarDisplayContext(
-		HttpServletRequest httpServletRequest,
 		LiferayPortletRequest liferayPortletRequest,
 		LiferayPortletResponse liferayPortletResponse,
 		SearchContainer<Blueprint> searchContainer) {
 
 		super(
-			httpServletRequest, liferayPortletRequest, liferayPortletResponse,
-			searchContainer);
+			liferayPortletRequest.getHttpServletRequest(),
+			liferayPortletRequest, liferayPortletResponse, searchContainer);
 	}
 
 	@Override

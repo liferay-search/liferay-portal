@@ -27,7 +27,9 @@ import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context.ViewBlueprintsDisplayContext;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context.ViewBlueprintsManagementToolbarDisplayContext;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context.ViewFragmentsManagementToolbarDisplayContext;
+import com.liferay.portal.search.tuning.blueprints.admin.web.internal.util.BlueprintsAdminIndexHelper;
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintsPortletKeys;
+import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
 
 import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
@@ -83,6 +85,7 @@ public class ViewBlueprintsMVCRenderCommand implements MVCRenderCommand {
 		String tab) {
 
 		return new ViewBlueprintsDisplayContext(
+			_blueprintsAdminIndexHelper, _blueprintService,
 			_portal.getLiferayPortletRequest(renderRequest),
 			_portal.getLiferayPortletResponse(renderResponse), tab);
 	}
@@ -145,6 +148,12 @@ public class ViewBlueprintsMVCRenderCommand implements MVCRenderCommand {
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		ViewBlueprintsMVCRenderCommand.class);
+
+	@Reference
+	private BlueprintsAdminIndexHelper _blueprintsAdminIndexHelper;
+
+	@Reference
+	private BlueprintService _blueprintService;
 
 	@Reference
 	private Portal _portal;

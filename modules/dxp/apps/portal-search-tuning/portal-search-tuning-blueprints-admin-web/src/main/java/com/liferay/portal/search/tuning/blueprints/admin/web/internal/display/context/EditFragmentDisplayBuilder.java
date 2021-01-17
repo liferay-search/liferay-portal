@@ -20,6 +20,7 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminMVCCommandNames;
+import com.liferay.portal.search.tuning.blueprints.admin.web.internal.util.BlueprintsAdminIndexHelper;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterDefinition;
 import com.liferay.portal.search.tuning.blueprints.engine.util.BlueprintsEngineContextHelper;
 import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
@@ -38,15 +39,16 @@ import javax.servlet.http.HttpServletRequest;
 public class EditFragmentDisplayBuilder extends EditEntryDisplayBuilder {
 
 	public EditFragmentDisplayBuilder(
+		BlueprintsAdminIndexHelper blueprintsAdminIndexHelper,
+		BlueprintsEngineContextHelper blueprintsEngineContextHelper,
+		BlueprintService blueprintService,
 		HttpServletRequest httpServletRequest, Language language,
 		JSONFactory jsonFactory, RenderRequest renderRequest,
-		RenderResponse renderResponse,
-		BlueprintsEngineContextHelper blueprintsEngineContextHelper,
-		BlueprintService blueprintService) {
+		RenderResponse renderResponse) {
 
 		super(
-			httpServletRequest, language, jsonFactory, renderRequest,
-			renderResponse, blueprintService);
+			blueprintsAdminIndexHelper, blueprintService, httpServletRequest,
+			language, jsonFactory, renderRequest, renderResponse);
 
 		_blueprintsEngineContextHelper = blueprintsEngineContextHelper;
 	}
