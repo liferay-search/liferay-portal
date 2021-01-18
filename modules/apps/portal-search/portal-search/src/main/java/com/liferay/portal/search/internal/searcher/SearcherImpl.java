@@ -87,7 +87,7 @@ public class SearcherImpl implements Searcher {
 		SearchRequestImpl searchRequestImpl,
 		SearchResponseBuilder searchResponseBuilder) {
 
-		String singleIndexerClassName = getSingleIndexerClassNames(
+		String singleIndexerClassName = getSingleModelIndexerClassName(
 			searchRequestImpl);
 
 		if (singleIndexerClassName != null) {
@@ -203,7 +203,7 @@ public class SearcherImpl implements Searcher {
 			searchRequestContributor -> searchRequestContributor::contribute);
 	}
 
-	protected String getSingleIndexerClassNames(
+	protected String getSingleModelIndexerClassName(
 		SearchRequestImpl searchRequestImpl) {
 
 		List<String> modelIndexerClassNames =
