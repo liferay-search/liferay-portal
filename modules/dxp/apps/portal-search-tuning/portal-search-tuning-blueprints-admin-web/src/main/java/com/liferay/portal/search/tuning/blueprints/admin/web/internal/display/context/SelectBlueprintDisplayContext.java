@@ -20,9 +20,7 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.util.ParamUtil;
-import com.liferay.portal.search.tuning.blueprints.admin.web.internal.util.BlueprintsAdminIndexHelper;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
-import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
 
 import javax.portlet.PortletException;
 
@@ -33,14 +31,10 @@ import javax.portlet.PortletException;
 public class SelectBlueprintDisplayContext extends BlueprintsDisplayContext {
 
 	public SelectBlueprintDisplayContext(
-		BlueprintsAdminIndexHelper blueprintsAdminIndexHelper,
-		BlueprintService blueprintService,
 		LiferayPortletRequest liferayPortletRequest,
 		LiferayPortletResponse liferayPortletResponse) {
 
-		super(
-			blueprintsAdminIndexHelper, blueprintService, liferayPortletRequest,
-			liferayPortletResponse, StringPool.BLANK);
+		super(liferayPortletRequest, liferayPortletResponse, StringPool.BLANK);
 	}
 
 	public String getEventName() {

@@ -17,32 +17,20 @@ package com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.c
 import com.liferay.portal.kernel.dao.search.EmptyOnClickRowChecker;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.portlet.PortalPreferences;
 import com.liferay.portal.kernel.portlet.PortletPreferencesFactoryUtil;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
-import com.liferay.portal.search.document.Document;
-import com.liferay.portal.search.hits.SearchHit;
-import com.liferay.portal.search.hits.SearchHits;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminMVCCommandNames;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminTabNames;
-import com.liferay.portal.search.tuning.blueprints.admin.web.internal.util.BlueprintsAdminIndexHelper;
+import com.liferay.portal.search.tuning.blueprints.admin.web.internal.util.BlueprintsAdminIndexUtil;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
-import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.portlet.PortletException;
 import javax.portlet.PortletURL;
@@ -55,13 +43,9 @@ import javax.servlet.http.HttpServletRequest;
 public abstract class BlueprintsDisplayContext {
 
 	public BlueprintsDisplayContext(
-		BlueprintsAdminIndexHelper blueprintsAdminIndexHelper,
-		BlueprintService blueprintService,
 		LiferayPortletRequest liferayPortletRequest,
 		LiferayPortletResponse liferayPortletResponse, String tab) {
 
-		this.blueprintsAdminIndexHelper = blueprintsAdminIndexHelper;
-		this.blueprintService = blueprintService;
 		this.liferayPortletRequest = liferayPortletRequest;
 		this.liferayPortletResponse = liferayPortletResponse;
 		this.tab = tab;
@@ -117,62 +101,18 @@ public abstract class BlueprintsDisplayContext {
 	protected void populateResults(SearchContainer<Blueprint> searchContainer)
 		throws PortalException {
 
-		SearchHits searchHits = blueprintsAdminIndexHelper.searchBlueprints(
+		BlueprintsAdminIndexUtil.populateResults(
 			httpServletRequest, themeDisplay.getCompanyGroupId(),
 			WorkflowConstants.STATUS_APPROVED, _getSearchType(),
-			searchContainer.getDelta(), searchContainer.getStart(),
-			getOrderByCol(), getOrderByType());
-
-		searchContainer.setTotal(
-			GetterUtil.getInteger(searchHits.getTotalHits()));
-
-		List<SearchHit> hits = searchHits.getSearchHits();
-
-		Stream<SearchHit> stream = hits.stream();
-
-		searchContainer.setResults(
-			stream.map(
-				searchHit -> toBlueprintOptional(searchHit)
-			).filter(
-				Optional::isPresent
-			).map(
-				Optional::get
-			).collect(
-				Collectors.toList()
-			));
+			searchContainer, getOrderByCol(), getOrderByType());
 	}
 
-	protected Optional<Blueprint> toBlueprintOptional(SearchHit searchHit) {
-		long entryClassPK = _getEntryClassPK(searchHit);
-
-		try {
-			return Optional.of(blueprintService.getBlueprint(entryClassPK));
-		}
-		catch (Exception exception) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(
-					"Search index is stale and contains a Blueprint entry " +
-						entryClassPK);
-			}
-
-			return Optional.empty();
-		}
-	}
-
-	protected final BlueprintsAdminIndexHelper blueprintsAdminIndexHelper;
-	protected final BlueprintService blueprintService;
 	protected final HttpServletRequest httpServletRequest;
 	protected final LiferayPortletRequest liferayPortletRequest;
 	protected final LiferayPortletResponse liferayPortletResponse;
 	protected final PortalPreferences portalPreferences;
 	protected final String tab;
 	protected final ThemeDisplay themeDisplay;
-
-	private long _getEntryClassPK(SearchHit searchHit) {
-		Document document = searchHit.getDocument();
-
-		return document.getLong(Field.ENTRY_CLASS_PK);
-	}
 
 	private String _getSearchType() {
 		if (BlueprintsAdminTabNames.FRAGMENTS.equals(tab)) {
@@ -181,8 +121,5 @@ public abstract class BlueprintsDisplayContext {
 
 		return "blueprints";
 	}
-
-	private static final Log _log = LogFactoryUtil.getLog(
-		BlueprintsDisplayContext.class);
 
 }

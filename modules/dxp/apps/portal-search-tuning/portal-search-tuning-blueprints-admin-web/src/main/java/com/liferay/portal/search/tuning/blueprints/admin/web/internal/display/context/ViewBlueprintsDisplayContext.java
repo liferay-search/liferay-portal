@@ -22,10 +22,8 @@ import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.security.permission.resource.BlueprintEntryPermission;
-import com.liferay.portal.search.tuning.blueprints.admin.web.internal.util.BlueprintsAdminIndexHelper;
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintsPortletKeys;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
-import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
 
 import java.util.Collections;
 import java.util.List;
@@ -36,14 +34,10 @@ import java.util.List;
 public class ViewBlueprintsDisplayContext extends BlueprintsDisplayContext {
 
 	public ViewBlueprintsDisplayContext(
-		BlueprintsAdminIndexHelper blueprintsAdminIndexHelper,
-		BlueprintService blueprintService,
 		LiferayPortletRequest liferayPortletRequest,
 		LiferayPortletResponse liferayPortletResponse, String tab) {
 
-		super(
-			blueprintsAdminIndexHelper, blueprintService, liferayPortletRequest,
-			liferayPortletResponse, tab);
+		super(liferayPortletRequest, liferayPortletResponse, tab);
 	}
 
 	public List<String> getAvailableActions(Blueprint blueprint)
