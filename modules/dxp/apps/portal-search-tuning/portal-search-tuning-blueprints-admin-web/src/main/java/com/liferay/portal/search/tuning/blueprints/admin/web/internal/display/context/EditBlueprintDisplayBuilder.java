@@ -39,7 +39,7 @@ import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminMVCCommandNames;
-import com.liferay.portal.search.tuning.blueprints.admin.web.internal.util.BlueprintsAdminIndexHelper;
+import com.liferay.portal.search.tuning.blueprints.admin.web.internal.util.BlueprintsAdminIndexUtil;
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintTypes;
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintsPortletKeys;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
@@ -64,15 +64,14 @@ import javax.servlet.http.HttpServletRequest;
 public class EditBlueprintDisplayBuilder extends EditEntryDisplayBuilder {
 
 	public EditBlueprintDisplayBuilder(
-		BlueprintsAdminIndexHelper blueprintsAdminIndexHelper,
 		BlueprintService blueprintService,
 		HttpServletRequest httpServletRequest, Language language,
 		JSONFactory jsonFactory, RenderRequest renderRequest,
 		RenderResponse renderResponse) {
 
 		super(
-			blueprintsAdminIndexHelper, blueprintService, httpServletRequest,
-			language, jsonFactory, renderRequest, renderResponse);
+			blueprintService, httpServletRequest, language, jsonFactory,
+			renderRequest, renderResponse);
 	}
 
 	public BlueprintDisplayContext build() {
@@ -114,7 +113,7 @@ public class EditBlueprintDisplayBuilder extends EditEntryDisplayBuilder {
 			"entityJSON", _getEntityJSONObject()
 		).put(
 			"indexFields",
-			blueprintsAdminIndexHelper.getMappedFields(
+			BlueprintsAdminIndexUtil.getMappedFields(
 				themeDisplay.getCompanyId())
 		).put(
 			"queryFragments", _getQueryFragmentsJSONArray()

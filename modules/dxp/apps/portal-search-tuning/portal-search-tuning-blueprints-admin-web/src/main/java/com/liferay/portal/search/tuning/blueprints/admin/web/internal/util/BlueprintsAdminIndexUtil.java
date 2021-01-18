@@ -14,6 +14,7 @@
 
 package com.liferay.portal.search.tuning.blueprints.admin.web.internal.util;
 
+import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -22,10 +23,13 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.search.document.Document;
+import com.liferay.portal.search.hits.SearchHit;
 import com.liferay.portal.search.hits.SearchHits;
 import com.liferay.portal.search.index.IndexInformation;
 import com.liferay.portal.search.index.IndexNameBuilder;
@@ -51,7 +55,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -61,10 +68,10 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Petteri Karttunen
  */
-@Component(immediate = true, service = BlueprintsAdminIndexHelper.class)
-public class BlueprintsAdminIndexHelper {
+@Component(immediate = true, service = {})
+public class BlueprintsAdminIndexUtil {
 
-	public Map<String, List<String>> getMappedFields(long companyId) {
+	public static Map<String, List<String>> getMappedFields(long companyId) {
 		String indexName = _indexNameBuilder.getIndexName(companyId);
 
 		String fieldMappings = _indexInformation.getFieldMappings(indexName);
@@ -101,9 +108,136 @@ public class BlueprintsAdminIndexHelper {
 		return fieldMap;
 	}
 
-	public SearchHits searchBlueprints(
+	public static void populateResults(
+		HttpServletRequest httpServletRequest, long groupId, int status,
+		String blueprintType, SearchContainer<Blueprint> searchContainer,
+		String orderByCol, String orderByType) {
+
+		SearchRequest searchRequest = _createSearchRequest(
+			httpServletRequest, groupId, status, blueprintType,
+			searchContainer.getStart(), searchContainer.getDelta(), orderByCol,
+			orderByType);
+
+		SearchResponse searchResponse = _searcher.search(searchRequest);
+
+		SearchHits searchHits = searchResponse.getSearchHits();
+
+		searchContainer.setTotal(
+			GetterUtil.getInteger(searchHits.getTotalHits()));
+
+		List<SearchHit> hits = searchHits.getSearchHits();
+
+		Stream<SearchHit> stream = hits.stream();
+
+		searchContainer.setResults(
+			stream.map(
+				searchHit -> _toBlueprintOptional(searchHit)
+			).filter(
+				Optional::isPresent
+			).map(
+				Optional::get
+			).collect(
+				Collectors.toList()
+			));
+	}
+
+	public static SearchHits searchBlueprints(
 		HttpServletRequest httpServletRequest, long groupId, int status,
 		String blueprintType, int size, int start, String orderByCol,
+		String orderByType) {
+
+		SearchRequest searchRequest = _createSearchRequest(
+			httpServletRequest, groupId, status, blueprintType, start, size,
+			orderByCol, orderByType);
+
+		SearchResponse searchResponse = _searcher.search(searchRequest);
+
+		return searchResponse.getSearchHits();
+	}
+
+	@Reference(unbind = "-")
+	protected void setBlueprintService(BlueprintService blueprintService) {
+		_blueprintService = blueprintService;
+	}
+
+	@Reference(unbind = "-")
+	protected void setIndexInformation(IndexInformation indexInformation) {
+		_indexInformation = indexInformation;
+	}
+
+	@Reference(unbind = "-")
+	protected void setIndexNameBuilder(IndexNameBuilder indexNameBuilder) {
+		_indexNameBuilder = indexNameBuilder;
+	}
+
+	@Reference(unbind = "-")
+	protected void setQueries(Queries queries) {
+		_queries = queries;
+	}
+
+	@Reference(unbind = "-")
+	protected void setSearcher(Searcher searcher) {
+		_searcher = searcher;
+	}
+
+	@Reference(unbind = "-")
+	protected void setSearchRequestBuilderFactory(
+		SearchRequestBuilderFactory searchRequestBuilderFactory) {
+
+		_searchRequestBuilderFactory = searchRequestBuilderFactory;
+	}
+
+	@Reference(unbind = "-")
+	protected void setSorts(Sorts sorts) {
+		_sorts = sorts;
+	}
+
+	private static void _addBlueprintTypeFilterClause(
+		BooleanQuery booleanQuery) {
+
+		booleanQuery.addFilterQueryClauses(
+			_queries.term(Field.TYPE, BlueprintTypes.BLUEPRINT));
+	}
+
+	private static void _addFragmentTypeFilterClause(
+		BooleanQuery booleanQuery) {
+
+		TermsQuery termsQuery = _queries.terms(Field.TYPE + "_sortable");
+
+		termsQuery.addValues(_getFragmentTypes());
+
+		booleanQuery.addFilterQueryClauses(termsQuery);
+	}
+
+	private static void _addGroupFilterClause(
+		BooleanQuery booleanQuery, long groupId) {
+
+		TermQuery groupQuery = _queries.term(Field.GROUP_ID, groupId);
+
+		booleanQuery.addFilterQueryClauses(groupQuery);
+	}
+
+	private static void _addSearchClauses(
+		BooleanQuery booleanQuery, String keywords, String languageId) {
+
+		if (Validator.isBlank(keywords)) {
+			booleanQuery.addMustQueryClauses(_queries.matchAll());
+		}
+		else {
+			booleanQuery.addMustQueryClauses(
+				_queries.multiMatch(keywords, _getSearchFields(languageId)));
+		}
+	}
+
+	private static void _addStatusFilterClause(
+		BooleanQuery booleanQuery, int status) {
+
+		booleanQuery.addFilterQueryClauses(_queries.term(Field.STATUS, status));
+	}
+
+	private static SearchRequest _createSearchRequest(
+		HttpServletRequest httpServletRequest, long groupId, int status,
+		String blueprintType, int start, int size, String orderByCol,
 		String orderByType) {
 
 		ThemeDisplay themeDisplay =
@@ -112,7 +246,7 @@ public class BlueprintsAdminIndexHelper {
 
 		String languageId = themeDisplay.getLanguageId();
 
-		SearchRequest searchRequest = _searchRequestBuilderFactory.builder(
+		return _searchRequestBuilderFactory.builder(
 		).companyId(
 			themeDisplay.getCompanyId()
 		).from(
@@ -128,50 +262,15 @@ public class BlueprintsAdminIndexHelper {
 		).addSort(
 			_getSort(orderByCol, orderByType, languageId)
 		).build();
-
-		SearchResponse searchResponse = _searcher.search(searchRequest);
-
-		return searchResponse.getSearchHits();
 	}
 
-	private void _addBlueprintTypeFilterClause(BooleanQuery booleanQuery) {
-		booleanQuery.addFilterQueryClauses(
-			_queries.term(Field.TYPE, BlueprintTypes.BLUEPRINT));
+	private static long _getEntryClassPK(SearchHit searchHit) {
+		Document document = searchHit.getDocument();
+
+		return document.getLong(Field.ENTRY_CLASS_PK);
 	}
 
-	private void _addFragmentTypeFilterClause(BooleanQuery booleanQuery) {
-		TermsQuery termsQuery = _queries.terms(Field.TYPE + "_sortable");
-
-		termsQuery.addValues(_getFragmentTypes());
-
-		booleanQuery.addFilterQueryClauses(termsQuery);
-	}
-
-	private void _addGroupFilterClause(
-		BooleanQuery booleanQuery, long groupId) {
-
-		TermQuery groupQuery = _queries.term(Field.GROUP_ID, groupId);
-
-		booleanQuery.addFilterQueryClauses(groupQuery);
-	}
-
-	private void _addSearchClauses(
-		BooleanQuery booleanQuery, String keywords, String languageId) {
-
-		if (Validator.isBlank(keywords)) {
-			booleanQuery.addMustQueryClauses(_queries.matchAll());
-		}
-		else {
-			booleanQuery.addMustQueryClauses(
-				_queries.multiMatch(keywords, _getSearchFields(languageId)));
-		}
-	}
-
-	private void _addStatusFilterClause(BooleanQuery booleanQuery, int status) {
-		booleanQuery.addFilterQueryClauses(_queries.term(Field.STATUS, status));
-	}
-
-	private Object[] _getFragmentTypes() {
+	private static Object[] _getFragmentTypes() {
 		return new Object[] {
 			String.valueOf(BlueprintTypes.AGGREGATION_FRAGMENT),
 			String.valueOf(BlueprintTypes.FACET_FRAGMENT),
@@ -180,11 +279,11 @@ public class BlueprintsAdminIndexHelper {
 		};
 	}
 
-	private String _getKeywords(HttpServletRequest httpServletRequest) {
+	private static String _getKeywords(HttpServletRequest httpServletRequest) {
 		return ParamUtil.getString(httpServletRequest, "keywords");
 	}
 
-	private Query _getQuery(
+	private static Query _getQuery(
 		String keywords, String blueprintType, long groupId, int status,
 		String languageId) {
 
@@ -206,7 +305,7 @@ public class BlueprintsAdminIndexHelper {
 		return booleanQuery;
 	}
 
-	private Set<String> _getSearchFields(String languageId) {
+	private static Set<String> _getSearchFields(String languageId) {
 		Set<String> fields = new HashSet<>();
 
 		fields.add(_getTitleField(languageId));
@@ -216,7 +315,7 @@ public class BlueprintsAdminIndexHelper {
 		return fields;
 	}
 
-	private Sort _getSort(
+	private static Sort _getSort(
 		String orderByCol, String orderByType, String languageId) {
 
 		SortOrder sortOrder = SortOrder.ASC;
@@ -233,33 +332,39 @@ public class BlueprintsAdminIndexHelper {
 		return _sorts.field(orderByCol, sortOrder);
 	}
 
-	private String _getTitleField(String languageId) {
+	private static String _getTitleField(String languageId) {
 		return LocalizationUtil.getLocalizedName(
 			"localized_" + Field.TITLE, languageId);
 	}
 
+	private static Optional<Blueprint> _toBlueprintOptional(
+		SearchHit searchHit) {
+
+		long entryClassPK = _getEntryClassPK(searchHit);
+
+		try {
+			return Optional.of(_blueprintService.getBlueprint(entryClassPK));
+		}
+		catch (Exception exception) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(
+					"Search index is stale and contains a Blueprint entry " +
+						entryClassPK);
+			}
+
+			return Optional.empty();
+		}
+	}
+
 	private static final Log _log = LogFactoryUtil.getLog(
-		BlueprintsAdminIndexHelper.class);
+		BlueprintsAdminIndexUtil.class);
 
-	@Reference
-	private BlueprintService _blueprintService;
-
-	@Reference
-	private IndexInformation _indexInformation;
-
-	@Reference
-	private IndexNameBuilder _indexNameBuilder;
-
-	@Reference
-	private Queries _queries;
-
-	@Reference
-	private Searcher _searcher;
-
-	@Reference
-	private SearchRequestBuilderFactory _searchRequestBuilderFactory;
-
-	@Reference
-	private Sorts _sorts;
+	private static BlueprintService _blueprintService;
+	private static IndexInformation _indexInformation;
+	private static IndexNameBuilder _indexNameBuilder;
+	private static Queries _queries;
+	private static Searcher _searcher;
+	private static SearchRequestBuilderFactory _searchRequestBuilderFactory;
+	private static Sorts _sorts;
 
 }
