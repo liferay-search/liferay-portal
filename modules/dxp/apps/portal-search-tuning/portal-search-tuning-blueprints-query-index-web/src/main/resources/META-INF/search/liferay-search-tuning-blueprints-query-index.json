@@ -6,21 +6,11 @@
 					"template_ar": {
 						"mapping": {
 							"analyzer": "arabic",
-							"fields": {
-								"raw": {
-									"store": true,
-									"type": "keyword"
-								},
-								"snowball": {
-									"store": true,
-									"type": "text"
-								}
-							},
 							"store": true,
 							"term_vector": "with_positions_offsets",
 							"type": "search_as_you_type"
 						},
-						"match": "content_ar|content_ar_[A-Z]{2}",
+						"match": "content_ar\\b|content_ar_[A-Z]{2}\\b",
 						"match_mapping_type": "string",
 						"match_pattern": "regex"
 					}
@@ -29,21 +19,11 @@
 					"template_ja": {
 						"mapping": {
 							"analyzer": "kuromoji",
-							"fields": {
-								"raw": {
-									"store": true,
-									"type": "keyword"
-								},
-								"snowball": {
-									"store": true,
-									"type": "text"
-								}
-							},
 							"store": true,
 							"term_vector": "with_positions_offsets",
 							"type": "search_as_you_type"
 						},
-						"match": "content_ja|content_ja_[A-Z]{2}",
+						"match": "content_ja\\b|content_ja_[A-Z]{2}\\b",
 						"match_mapping_type": "string",
 						"match_pattern": "regex"
 					}
@@ -52,21 +32,11 @@
 					"template_ko": {
 						"mapping": {
 							"analyzer": "cjk",
-							"fields": {
-								"raw": {
-									"store": true,
-									"type": "keyword"
-								},
-								"snowball": {
-									"store": true,
-									"type": "text"
-								}
-							},
 							"store": true,
 							"term_vector": "with_positions_offsets",
 							"type": "search_as_you_type"
 						},
-						"match": "content_ko|content_ko_[A-Z]{2}",
+						"match": "content_ko\\b|content_ko_[A-Z]{2}\\b",
 						"match_mapping_type": "string",
 						"match_pattern": "regex"
 					}
@@ -75,21 +45,11 @@
 					"template_zh": {
 						"mapping": {
 							"analyzer": "smartcn",
-							"fields": {
-								"raw": {
-									"store": true,
-									"type": "keyword"
-								},
-								"snowball": {
-									"store": true,
-									"type": "text"
-								}
-							},
 							"store": true,
 							"term_vector": "with_positions_offsets",
 							"type": "search_as_you_type"
 						},
-						"match": "content_zh|content_zh_[A-Z]{2}",
+						"match": "content_zh\\b|content_zh_[A-Z]{2}\\b",
 						"match_mapping_type": "string",
 						"match_pattern": "regex"
 					}
