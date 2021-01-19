@@ -16,30 +16,37 @@ package com.liferay.portal.search.tuning.blueprints.util.internal.importer;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
-import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.security.SecureRandomUtil;
+import com.liferay.portal.kernel.security.permission.PermissionCheckerFactory;
+import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
+import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextFactory;
+import com.liferay.portal.kernel.service.UserLocalService;
+import com.liferay.portal.kernel.util.LocaleThreadLocal;
+import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintTypes;
 import com.liferay.portal.search.tuning.blueprints.exception.BlueprintValidationException;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
+import com.liferay.portal.search.tuning.blueprints.service.BlueprintLocalService;
 import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
 import com.liferay.portal.search.tuning.blueprints.util.importer.BlueprintImporter;
 
-import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UncheckedIOException;
-
-import java.nio.charset.StandardCharsets;
-
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import javax.portlet.PortletRequest;
@@ -54,41 +61,58 @@ import org.osgi.service.component.annotations.Reference;
 public class BlueprintImporterImpl implements BlueprintImporter {
 
 	@Override
+	public void importBlueprint(long companyId, JSONObject jsonObject)
+		throws PortalException {
+
+		if (!_validate(jsonObject)) {
+			throw new BlueprintValidationException("Invalid Blueprint syntax");
+		}
+
+		_add(jsonObject, _createServiceContext(companyId), true);
+	}
+
+	@Override
 	public void importBlueprint(
 			PortletRequest portletRequest, InputStream inputStream)
-		throws PortalException, UncheckedIOException {
+		throws IOException, PortalException {
 
-		JSONObject jsonObject = JSONFactoryUtil.createJSONObject(
+		JSONObject jsonObject = _jsonFactory.createJSONObject(
 			_getRawText(inputStream));
 
 		if (!_validate(jsonObject)) {
 			throw new BlueprintValidationException("Invalid Blueprint syntax");
 		}
 
-		_addBlueprint(jsonObject, portletRequest);
+		_add(
+			jsonObject,
+			ServiceContextFactory.getInstance(
+				Blueprint.class.getName(), portletRequest),
+			false);
 	}
 
-	private void _addBlueprint(
-			JSONObject jsonObject, PortletRequest portletRequest)
+	private void _add(
+			JSONObject jsonObject, ServiceContext serviceContext,
+			boolean privileged)
 		throws PortalException {
 
 		int type = jsonObject.getInt("type");
 
 		JSONObject payloadJSONObject = jsonObject.getJSONObject("payload");
 
-		ServiceContext serviceContext = ServiceContextFactory.getInstance(
-			Blueprint.class.getName(), portletRequest);
-
 		if (type == BlueprintTypes.BLUEPRINT) {
-			_addBlueprint(payloadJSONObject, serviceContext);
+			_addBlueprint(payloadJSONObject, serviceContext, privileged);
 		}
 		else if (type == BlueprintTypes.QUERY_FRAGMENT) {
-			_addQueryFragment(payloadJSONObject, serviceContext);
+
+			// TODO: https://issues.liferay.com/browse/LPS-114089
+
+			_log.error("Not implemented");
 		}
 	}
 
 	private void _addBlueprint(
-			JSONObject payloadJSONObject, ServiceContext serviceContext)
+			JSONObject payloadJSONObject, ServiceContext serviceContext,
+			boolean privileged)
 		throws PortalException {
 
 		Map<Locale, String> titleMap = _getTitleMap(payloadJSONObject);
@@ -106,15 +130,37 @@ public class BlueprintImporterImpl implements BlueprintImporter {
 
 		_save(
 			titleMap, descriptionMap, configuration, selectedFragments,
-			BlueprintTypes.BLUEPRINT, serviceContext);
+			BlueprintTypes.BLUEPRINT, serviceContext, privileged);
 	}
 
-	private void _addQueryFragment(
-		JSONObject payloadJSONObject, ServiceContext serviceContext) {
+	private ServiceContext _createServiceContext(long companyId)
+		throws PortalException {
 
-		// TODO
+		User defaultUser = _userLocalService.getDefaultUser(companyId);
 
-		_log.error("Not implemented");
+		PermissionThreadLocal.setPermissionChecker(
+			_permissionCheckerFactory.create(defaultUser));
+
+		LocaleThreadLocal.setDefaultLocale(
+			LocaleUtil.fromLanguageId(defaultUser.getLanguageId()));
+
+		ServiceContext serviceContext = new ServiceContext();
+
+		serviceContext.setAddGroupPermissions(true);
+		serviceContext.setAddGuestPermissions(true);
+		serviceContext.setCompanyId(companyId);
+		serviceContext.setScopeGroupId(_getGlobalGroupId(companyId));
+		serviceContext.setUuid(_createUUID());
+		serviceContext.setUserId(defaultUser.getUserId());
+
+		return serviceContext;
+	}
+
+	private String _createUUID() {
+		UUID uuid = new UUID(
+			SecureRandomUtil.nextLong(), SecureRandomUtil.nextLong());
+
+		return uuid.toString();
 	}
 
 	private Map<Locale, String> _getDescriptionMap(JSONObject jsonObject) {
@@ -126,6 +172,12 @@ public class BlueprintImporterImpl implements BlueprintImporter {
 		}
 
 		return _getLocalizationMap(descriptionJSONObject);
+	}
+
+	private long _getGlobalGroupId(long companyId) throws PortalException {
+		Group group = _groupLocalService.getCompanyGroup(companyId);
+
+		return group.getGroupId();
 	}
 
 	private Map<Locale, String> _getLocalizationMap(JSONObject jsonObject) {
@@ -148,15 +200,8 @@ public class BlueprintImporterImpl implements BlueprintImporter {
 		return map;
 	}
 
-	private String _getRawText(InputStream inputStream)
-		throws UncheckedIOException {
-
-		BufferedReader bufferedReader = new BufferedReader(
-			new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-
-		Stream<String> lines = bufferedReader.lines();
-
-		return lines.collect(Collectors.joining(System.lineSeparator()));
+	private String _getRawText(InputStream inputStream) throws IOException {
+		return StringUtil.read(inputStream);
 	}
 
 	private Map<Locale, String> _getTitleMap(JSONObject jsonObject) {
@@ -172,12 +217,20 @@ public class BlueprintImporterImpl implements BlueprintImporter {
 	private void _save(
 			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
 			String configuration, String selectedFragments, int type,
-			ServiceContext serviceContext)
+			ServiceContext serviceContext, boolean privileged)
 		throws PortalException {
 
-		_blueprintService.addCompanyBlueprint(
-			titleMap, descriptionMap, configuration, selectedFragments, type,
-			serviceContext);
+		if (privileged) {
+			_blueprintLocalService.addBlueprint(
+				serviceContext.getUserId(), serviceContext.getScopeGroupId(),
+				titleMap, descriptionMap, configuration, selectedFragments,
+				BlueprintTypes.BLUEPRINT, serviceContext);
+		}
+		else {
+			_blueprintService.addCompanyBlueprint(
+				titleMap, descriptionMap, configuration, selectedFragments,
+				type, serviceContext);
+		}
 	}
 
 	private boolean _validate(JSONObject jsonObject) {
@@ -235,8 +288,7 @@ public class BlueprintImporterImpl implements BlueprintImporter {
 			if (_validateTitle(payloadJSONObject) &&
 				_validateClauses(payloadJSONObject)) {
 
-				// TODO: add support for fragments
-				// https://issues.liferay.com/browse/LPS-114089
+				// TODO: https://issues.liferay.com/browse/LPS-114089
 
 				return false;
 			}
@@ -273,6 +325,24 @@ public class BlueprintImporterImpl implements BlueprintImporter {
 		BlueprintImporterImpl.class);
 
 	@Reference
+	private BlueprintLocalService _blueprintLocalService;
+
+	@Reference
 	private BlueprintService _blueprintService;
+
+	@Reference
+	private GroupLocalService _groupLocalService;
+
+	@Reference
+	private JSONFactory _jsonFactory;
+
+	@Reference
+	private PermissionCheckerFactory _permissionCheckerFactory;
+
+	@Reference
+	private Portal _portal;
+
+	@Reference
+	private UserLocalService _userLocalService;
 
 }
