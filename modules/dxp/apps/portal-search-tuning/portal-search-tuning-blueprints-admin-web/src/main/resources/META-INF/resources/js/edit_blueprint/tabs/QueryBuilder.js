@@ -24,6 +24,7 @@ import React, {useContext, useState} from 'react';
 import ConfigFragment from '../../shared/ConfigFragment';
 import JSONFragment from '../../shared/JSONFragment';
 import ThemeContext from '../../shared/ThemeContext';
+import SelectAssetTypes from './SelectAssetTypes';
 
 const FrameworkListItem = ({
 	checked,
@@ -59,6 +60,7 @@ function QueryBuilder({
 	frameworkConfig,
 	onFrameworkConfigChange,
 	onToggleSidebar,
+	searchableAssetTypes,
 	selectedFragments,
 	updateFragment,
 }) {
@@ -185,6 +187,47 @@ function QueryBuilder({
 			<div className="settings-content-container sheet">
 				<ClayPanel.Group flush>
 					<ClayPanel
+						className="searchable-asset-types"
+						collapsable
+						displayTitle={Liferay.Language.get(
+							'searchable-asset-types'
+						)}
+						displayType="unstyled"
+						showCollapseIcon
+					>
+						<ClayPanel.Body>
+							<div className="sheet-text">
+								{Liferay.Language.get(
+									'select-the-searchable-asset-types'
+								)}
+							</div>
+
+							<div className="sheet-text">
+								{Liferay.Language.get(
+									'please-note-that-blueprints-selected-framework-determines-whether-the-asset-types-default-clause-is-used'
+								)}
+							</div>
+						</ClayPanel.Body>
+
+						<SelectAssetTypes
+							searchableAssetTypes={searchableAssetTypes}
+							selectedAssetTypes={
+								frameworkConfig.searchable_asset_types
+									? frameworkConfig.searchable_asset_types
+									: []
+							}
+							updateSelectedAssetTypes={(assets) =>
+								onFrameworkConfigChange({
+									...frameworkConfig,
+									searchable_asset_types: assets,
+								})
+							}
+						/>
+					</ClayPanel>
+				</ClayPanel.Group>
+
+				<ClayPanel.Group flush>
+					<ClayPanel
 						collapsable
 						displayTitle={Liferay.Language.get('framework')}
 						displayType="unstyled"
@@ -241,6 +284,10 @@ function QueryBuilder({
 QueryBuilder.propTypes = {
 	deleteFragment: PropTypes.func,
 	entityJSON: PropTypes.object,
+	frameworkConfig: PropTypes.object,
+	onFrameworkConfigChange: PropTypes.func,
+	onToggleSidebar: PropTypes.func,
+	searchableAssetTypes: PropTypes.arrayOf(PropTypes.object),
 	selectedFragments: PropTypes.arrayOf(PropTypes.object),
 	updateFragment: PropTypes.func,
 };
