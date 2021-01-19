@@ -15,9 +15,10 @@
 package com.liferay.portal.search.tuning.blueprints.util.importer;
 
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.json.JSONObject;
 
+import java.io.IOException;
 import java.io.InputStream;
-import java.io.UncheckedIOException;
 
 import javax.portlet.PortletRequest;
 
@@ -26,8 +27,11 @@ import javax.portlet.PortletRequest;
  */
 public interface BlueprintImporter {
 
+	public void importBlueprint(long companyId, JSONObject jsonObject)
+		throws PortalException;
+
 	public void importBlueprint(
 			PortletRequest portletRequest, InputStream inputStream)
-		throws PortalException, UncheckedIOException;
+		throws IOException, PortalException;
 
 }
