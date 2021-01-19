@@ -97,6 +97,22 @@ const ENTITY_JSON = {
 	},
 };
 
+const SEARCHABLE_ASSET_TYPES = [
+	'com.liferay.wiki.model.WikiPage',
+	'com.liferay.commerce.product.model.CPDefinition',
+	'com.liferay.document.library.kernel.model.DLFileEntry',
+	'com.liferay.bookmarks.model.BookmarksFolder',
+	'com.liferay.blogs.model.BlogsEntry',
+	'com.liferay.document.library.kernel.model.DLFolder',
+	'com.liferay.dynamic.data.lists.model.DDLRecord',
+	'com.liferay.bookmarks.model.BookmarksEntry',
+	'com.liferay.journal.model.JournalArticle',
+	'com.liferay.journal.model.JournalFolder',
+	'com.liferay.message.boards.model.MBMessage',
+	'com.liferay.calendar.model.CalendarBooking',
+	'com.liferay.knowledge.base.model.KBArticle',
+];
+
 addDecorator(withKnobs);
 
 addDecorator((storyFn) => {
@@ -141,6 +157,7 @@ storiesOf('Pages|BlueprintForm', module)
 					'en-US': 'Test Title',
 				},
 				redirectURL: '',
+				searchableAssetTypes: SEARCHABLE_ASSET_TYPES,
 				submitFormURL: '',
 			}}
 		/>
@@ -160,6 +177,7 @@ storiesOf('Pages|BlueprintForm', module)
 					'en-US': 'Test Title',
 				},
 				redirectURL: '',
+				searchableAssetTypes: SEARCHABLE_ASSET_TYPES,
 				submitFormURL: '',
 			}}
 		/>
@@ -181,6 +199,7 @@ storiesOf('Pages|BlueprintForm', module)
 					'en-US': 'Test Title',
 				},
 				redirectURL: '',
+				searchableAssetTypes: SEARCHABLE_ASSET_TYPES,
 				submitFormURL: '',
 			}}
 		/>

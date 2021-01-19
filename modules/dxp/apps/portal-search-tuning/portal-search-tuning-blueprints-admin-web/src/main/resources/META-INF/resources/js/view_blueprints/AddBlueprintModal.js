@@ -23,6 +23,7 @@ import React, {useState} from 'react';
 import {
 	DEFAULT_ADVANCED_CONFIGURATION,
 	DEFAULT_FRAGMENT,
+	DEFAULT_FRAMEWORK_CONFIGURATION,
 	DEFAULT_PARAMETER_CONFIGURATION,
 	DEFAULT_SORT_CONFIGURATION,
 } from '../utils/data';
@@ -118,6 +119,7 @@ const AddBlueprintModal = ({
 				aggregation_configuration: [],
 				facet_configuration: [],
 				framework_configuration: {
+					...DEFAULT_FRAMEWORK_CONFIGURATION,
 					apply_indexer_clauses:
 						framework === FRAMEWORK_TYPES.DEFAULT,
 				},

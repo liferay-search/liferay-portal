@@ -51,6 +51,7 @@ function EditBlueprintForm({
 	initialTitle = {},
 	queryFragments = [],
 	redirectURL = '',
+	searchableAssetTypes,
 	submitFormURL = '',
 }) {
 	const {namespace} = useContext(ThemeContext);
@@ -297,6 +298,7 @@ function EditBlueprintForm({
 								setFrameworkConfig(val)
 							}
 							onToggleSidebar={() => setShowSidebar(!showSidebar)}
+							searchableAssetTypes={searchableAssetTypes}
 							selectedFragments={selectedQueryFragments}
 							updateFragment={updateQueryFragment}
 						/>
@@ -331,11 +333,11 @@ EditBlueprintForm.propTypes = {
 	initialDescription: PropTypes.object,
 	initialSelectedFragmentsString: PropTypes.string,
 	initialTitle: PropTypes.object,
+	queryFragments: PropTypes.arrayOf(PropTypes.object),
 	redirectURL: PropTypes.string,
+	searchableAssetTypes: PropTypes.arrayOf(PropTypes.object),
 	submitFormURL: PropTypes.string,
 };
-
-React.memo(EditBlueprintForm);
 
 export default function ({context, props}) {
 	return (

@@ -75,5 +75,17 @@
 		.panel-unstyled .panel-header.panel-header-link:focus {
 			box-shadow: 0 0 0 0.25rem $white, 0 0 0 0.375rem $primaryL2; // Fixes gray border to white
 		}
+
+		.searchable-asset-types {
+			.sheet-text {
+				font-size: 14px;
+			}
+
+			.select-asset-types {
+				background-color: $secondaryHover;
+				color: $main;
+				margin-bottom: 24px;
+			}
+		}
 	}
 }
