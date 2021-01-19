@@ -16,6 +16,13 @@ package com.liferay.portal.search.searcher.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.document.library.kernel.model.DLFileEntry;
+import com.liferay.journal.model.JournalArticle;
+import com.liferay.journal.service.JournalArticleLocalService;
+import com.liferay.journal.test.util.search.JournalArticleBlueprint;
+import com.liferay.journal.test.util.search.JournalArticleContent;
+import com.liferay.journal.test.util.search.JournalArticleDescription;
+import com.liferay.journal.test.util.search.JournalArticleSearchFixture;
+import com.liferay.journal.test.util.search.JournalArticleTitle;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.User;
@@ -75,6 +82,11 @@ public class SearchRequestBuilderTest {
 
 	@Before
 	public void setUp() throws Exception {
+		_journalArticleSearchFixture = new JournalArticleSearchFixture(
+			_journalArticleLocalService);
+
+		_journalArticleSearchFixture.setUp();
+
 		_userSearchFixture = new UserSearchFixture();
 
 		_userSearchFixture.setUp();
@@ -249,7 +261,7 @@ public class SearchRequestBuilderTest {
 			).groupIds(
 				_group.getGroupId()
 			).modelIndexerClassNames(
-				User.class.getCanonicalName(), DLFileEntry.class.getName()
+				User.class.getCanonicalName()
 			).queryString(
 				queryString
 			);
@@ -271,6 +283,32 @@ public class SearchRequestBuilderTest {
 		_assertSearch("[]", "userName", searchRequestBuilder);
 	}
 
+	@Test
+	public void testModelIndexerClassNamesNotCoreModel() throws Exception {
+		_addJournalArticle("epsilon", "epsilon", "lambda1");
+		_addJournalArticle("theta", "theta", "lambda2");
+		_addJournalArticle("kappa", "kappa", "lambda3");
+
+		String queryString = "lambda";
+
+		SearchRequestBuilder searchRequestBuilder =
+			_searchRequestBuilderFactory.builder(
+			).companyId(
+				_group.getCompanyId()
+			).fields(
+				StringPool.STAR
+			).groupIds(
+				_group.getGroupId()
+			).modelIndexerClassNames(
+				JournalArticle.class.getCanonicalName()
+			).queryString(
+				queryString
+			);
+
+		_assertSearch(
+			"[lambda1, lambda2, lambda3]", "title_en_US", searchRequestBuilder);
+	}
+
 	@Rule
 	public SearchTestRule searchTestRule = new SearchTestRule();
 
@@ -288,6 +326,40 @@ public class SearchRequestBuilderTest {
 
 		PermissionThreadLocal.setPermissionChecker(
 			_permissionCheckerFactory.create(_user));
+	}
+
+	private void _addJournalArticle(
+		String content, String description, String title) {
+
+		_journalArticleSearchFixture.addArticle(
+			new JournalArticleBlueprint() {
+				{
+					setGroupId(_group.getGroupId());
+					setJournalArticleContent(
+						new JournalArticleContent() {
+							{
+								put(LocaleUtil.US, content);
+
+								setDefaultLocale(LocaleUtil.US);
+								setName("content");
+							}
+						});
+
+					setJournalArticleDescription(
+						new JournalArticleDescription() {
+							{
+								put(LocaleUtil.US, description);
+							}
+						});
+
+					setJournalArticleTitle(
+						new JournalArticleTitle() {
+							{
+								put(LocaleUtil.US, title);
+							}
+						});
+				}
+			});
 	}
 
 	private void _addUser(String userName, String firstName, String lastName)
@@ -380,6 +452,11 @@ public class SearchRequestBuilderTest {
 
 	@DeleteAfterTestRun
 	private List<Group> _groups;
+
+	@Inject
+	private JournalArticleLocalService _journalArticleLocalService;
+
+	private JournalArticleSearchFixture _journalArticleSearchFixture;
 
 	@Inject
 	private PermissionCheckerFactory _permissionCheckerFactory;
