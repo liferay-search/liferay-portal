@@ -1,6 +1,14 @@
 .portlet-search-tuning-blueprints-web {
+	.searchbar-wrapper {
+		padding-bottom: 24px;
+
+		.clear {
+			float: right;
+		}
+	}
+
 	.searchbar {
-		padding-bottom: 12px;
+		padding-bottom: 6px;
 	}
 
 	.search-results {

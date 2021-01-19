@@ -31,7 +31,6 @@ import Facet from './Facet';
 import Results from './Results';
 import SearchBar from './SearchBar';
 import SortSelect from './SortSelect';
-import TimeSelect from './TimeSelect';
 
 const LOCATOR = {
 	label: 'text',
@@ -165,51 +164,47 @@ export default function BlueprintsSearch({fetchResultsURL, suggestionsURL}) {
 
 	return (
 		<>
-			<SearchBar
-				handleSubmit={(val) => {
-					if (val !== query) {
-						setQuery(val);
-						setActivePage(1);
-						setSelectedFacets({});
-					}
-					else {
-						if (timeRange.time === 'custom-range') {
-							if (validDateRange(timeRange)) {
+			<div className="searchbar-wrapper">
+				<SearchBar
+					handleSubmit={(val) => {
+						if (val !== query) {
+							setQuery(val);
+							setActivePage(1);
+							setSelectedFacets({});
+						}
+						else {
+							if (timeRange.time === 'custom-range') {
+								if (validDateRange(timeRange)) {
+									refetch();
+								}
+							}
+							else {
 								refetch();
 							}
 						}
-						else {
-							refetch();
-						}
-					}
-				}}
-				suggestionsURL={suggestionsURL}
-			/>
+					}}
+					suggestionsURL={suggestionsURL}
+				/>
+
+				{query && (
+					<ClayButton
+						className="clear"
+						displayType="unstyled"
+						onClick={() => {
+							setActivePage(1);
+							setSelectedFacets({});
+							setTimeRange({});
+							setSortBy({});
+						}}
+						small
+					>
+						{Liferay.Language.get('clear')}
+					</ClayButton>
+				)}
+			</div>
 
 			{query && (
 				<div className="search-results">
-					<TimeSelect
-						timeRange={timeRange}
-						updateTimeRange={(val) => {
-							setActivePage(1);
-							setSelectedFacets({});
-							setTimeRange(val);
-						}}
-					>
-						<ClayButton
-							displayType="unstyled"
-							onClick={() => {
-								setActivePage(1);
-								setSelectedFacets({});
-								setTimeRange({});
-								setSortBy({});
-							}}
-							small
-						>
-							{Liferay.Language.get('clear')}
-						</ClayButton>
-					</TimeSelect>
-
 					{_hasResults() ? (
 						<>
 							{resource.meta.showing_instead_of &&
