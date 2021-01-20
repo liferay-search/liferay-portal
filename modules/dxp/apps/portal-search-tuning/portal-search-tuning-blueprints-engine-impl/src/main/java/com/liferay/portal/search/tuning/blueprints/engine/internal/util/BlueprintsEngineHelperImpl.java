@@ -14,7 +14,8 @@
 
 package com.liferay.portal.search.tuning.blueprints.engine.internal.util;
 
-import com.liferay.journal.model.JournalArticle;
+import com.liferay.asset.kernel.AssetRendererFactoryRegistryUtil;
+import com.liferay.asset.kernel.model.AssetRendererFactory;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONException;
@@ -50,6 +51,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -256,7 +258,7 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 		}
 	}
 
-	private String[] _getEntryClassNames(Blueprint blueprint) {
+	private String[] _getModelIndexerClassNames(Blueprint blueprint, long companyId) {
 		Optional<JSONArray> optional =
 			_blueprintHelper.getSearchableAssetTypesOptional(blueprint);
 
@@ -264,7 +266,9 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 			return JSONUtil.toStringArray(optional.get());
 		}
 		
-		return new String[0];
+		// TODO: remove after asset type selection is available on the UI
+		
+		return _getSearchableAssetTypes(companyId);
 	}
 
 	private List<String> _getExcludedSearchRequestBodyContributors(
@@ -318,6 +322,20 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 		return (page - 1) * size;
 	}
 
+	private String[] _getSearchableAssetTypes(long companyId) {
+
+		List<AssetRendererFactory<?>> assetRendererFactories =
+			AssetRendererFactoryRegistryUtil.getAssetRendererFactories(
+				companyId, true);
+
+		Stream<AssetRendererFactory<?>> stream =
+				assetRendererFactories.stream();
+
+		return stream.filter(
+				item -> item.isSearchable()
+			).map(AssetRendererFactory::getClassName).toArray(String[]::new);		
+	}
+
 	private SearchRequestBuilder _getSearchRequestBuilder(
 		ParameterData parameterData, Blueprint blueprint, Messages messages,
 		long companyId, Locale locale) {
@@ -326,6 +344,7 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 			_searchRequestBuilderFactory.builder(
 			).companyId(
 				companyId
+			).emptySearchEnabled(true
 			).excludeContributors(
 				"com.liferay.portal.search.tuning.blueprints"
 			).explain(
@@ -334,28 +353,12 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 				_isIncludeResponseString(parameterData)
 			).locale(
 				locale
+			).modelIndexerClassNames(_getModelIndexerClassNames(blueprint, companyId)
 			).size(
 				_blueprintHelper.getSize(blueprint)
 			).from(
 				_getFrom(parameterData, blueprint)
 			);
-
-		// TODO: https://issues.liferay.com/browse/LPS-123613
-		// we have to be able to support custom assets without
-		// having a related module dependency (model indexer class)
-		// in the engine
-
-		searchRequestBuilder.modelIndexerClasses(JournalArticle.class);
-
-		// searchRequestBuilder.modelIndexerClassNames(_getEntryClassNames(blueprint));
-
-		// TODO: https://issues.liferay.com/browse/LPS-123611
-
-		// searchRequestBuilder.applyIndexerClauses(
-
-		//_isApplyIndexerClauses(blueprint));
-
-		// Make SF happy:
 
 		_executeSearchRequestBodyContributors(
 			searchRequestBuilder, parameterData, blueprint, messages);
