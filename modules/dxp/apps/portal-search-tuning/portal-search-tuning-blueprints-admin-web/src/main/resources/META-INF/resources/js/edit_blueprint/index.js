@@ -29,20 +29,14 @@ import {
 	replaceUIConfigurationValues,
 } from '../utils/utils';
 import Sidebar from './Sidebar';
-import Aggregations from './tabs/Aggregations';
-import Facets from './tabs/Facets';
 import QueryBuilder from './tabs/QueryBuilder';
 import Settings from './tabs/Settings';
-import Sorts from './tabs/Sorts';
 
 // Tabs in display order
 
 /* eslint-disable sort-keys */
 const TABS = {
 	'query-builder': Liferay.Language.get('query-builder'),
-	sorts: Liferay.Language.get('sorts'),
-	aggregations: Liferay.Language.get('aggregations'),
-	facets: Liferay.Language.get('facets'),
 	settings: Liferay.Language.get('settings'),
 };
 /* eslint-enable sort-keys */
@@ -262,38 +256,23 @@ function EditBlueprintForm({
 
 	const _renderTabContent = () => {
 		switch (tab) {
-			case 'aggregations':
-				return (
-					<Aggregations
-						aggregationConfig={aggregationConfig}
-						onAggregationConfigChange={(val) =>
-							setAggregationConfig(val)
-						}
-					/>
-				);
-			case 'facets':
-				return (
-					<Facets
-						facetConfig={facetConfig}
-						onFacetConfigChange={(val) => setFacetConfig(val)}
-					/>
-				);
-			case 'sorts':
-				return (
-					<Sorts
-						onSortConfigChange={(val) => setSortConfig(val)}
-						sortConfig={sortConfig}
-					/>
-				);
 			case 'settings':
 				return (
 					<Settings
 						advancedConfig={advancedConfig}
+						aggregationConfig={aggregationConfig}
+						facetConfig={facetConfig}
 						onAdvancedConfigChange={(val) => setAdvancedConfig(val)}
+						onAggregationConfigChange={(val) =>
+							setAggregationConfig(val)
+						}
+						onFacetConfigChange={(val) => setFacetConfig(val)}
 						onParameterConfigChange={(val) =>
 							setParameterConfig(val)
 						}
+						onSortConfigChange={(val) => setSortConfig(val)}
 						parameterConfig={parameterConfig}
+						sortConfig={sortConfig}
 					/>
 				);
 			default:
