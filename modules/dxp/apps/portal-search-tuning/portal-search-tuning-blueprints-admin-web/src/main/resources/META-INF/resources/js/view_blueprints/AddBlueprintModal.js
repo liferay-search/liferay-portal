@@ -20,7 +20,12 @@ import {useIsMounted} from 'frontend-js-react-web';
 import {fetch, navigate} from 'frontend-js-web';
 import React, {useState} from 'react';
 
-import {DEFAULT_FRAGMENT} from '../utils/data';
+import {
+	DEFAULT_ADVANCED_CONFIGURATION,
+	DEFAULT_FRAGMENT,
+	DEFAULT_PARAMETER_CONFIGURATION,
+	DEFAULT_SORT_CONFIGURATION,
+} from '../utils/data';
 import {FRAMEWORK_TYPES} from '../utils/frameworkTypes';
 import {convertToSelectedFragment} from '../utils/utils';
 
@@ -109,19 +114,19 @@ const AddBlueprintModal = ({
 		formData.append(
 			`${namespace}configuration`,
 			JSON.stringify({
-				advanced_configuration: {},
+				advanced_configuration: DEFAULT_ADVANCED_CONFIGURATION,
 				aggregation_configuration: [],
 				facet_configuration: [],
 				framework_configuration: {
 					apply_indexer_clauses:
 						framework === FRAMEWORK_TYPES.DEFAULT,
 				},
-				parameter_configuration: {},
+				parameter_configuration: DEFAULT_PARAMETER_CONFIGURATION,
 				query_configuration:
 					framework === FRAMEWORK_TYPES.DEFAULT
 						? []
 						: [DEFAULT_SELECTED_FRAGMENT.fragmentOutput],
-				sort_configuration: [],
+				sort_configuration: DEFAULT_SORT_CONFIGURATION,
 			})
 		);
 

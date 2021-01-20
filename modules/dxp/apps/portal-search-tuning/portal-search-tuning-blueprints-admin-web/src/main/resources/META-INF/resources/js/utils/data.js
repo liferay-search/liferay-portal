@@ -56,6 +56,29 @@ export const CUSTOM_JSON_FRAGMENT = {
 	},
 };
 
+export const DEFAULT_ADVANCED_CONFIGURATION = {
+	highlighting: {
+		enabled: 'true',
+		fields: [
+			'localized_title${context.language_id}',
+			'content${context.language_id}',
+		],
+		fragment_size: '50',
+		require_field_match: 'true',
+		snippet_size: '10',
+	},
+	page_size: 10,
+	query_processing: {
+		exclude_query_contributors: '',
+		exclude_query_post_processors: '',
+	},
+	source: {
+		fetch_source: true,
+		source_excludes: '',
+		source_includes: '',
+	},
+};
+
 export const DEFAULT_FRAGMENT = TEXT_MATCH_OVER_MULTIPLE_FIELDS;
 
 export const DEFAULT_FRAMEWORK_CONFIGURATION = {
@@ -67,6 +90,34 @@ export const DEFAULT_FRAMEWORK_CONFIGURATION = {
 };
 
 export const DEFAULT_EDIT_FRAGMENT = TEXT_MATCH;
+
+export const DEFAULT_PARAMETER_CONFIGURATION = {
+	custom: [
+		{
+			configuration: {
+				date_format: 'yyyymmdd',
+				min: '1970-11-11',
+			},
+			parameter_name: 'dateFrom',
+			type: 'date',
+		},
+		{
+			parameter_name: 'time',
+			type: 'time_range',
+		},
+	],
+	keywords: {
+		parameter_name: 'q',
+	},
+	page: {
+		parameter_name: 'page',
+	},
+};
+
+export const DEFAULT_SORT_CONFIGURATION = {
+	default: [],
+	parameters: [],
+};
 
 export const QUERY_FRAGMENTS = [
 	TEXT_MATCH,
