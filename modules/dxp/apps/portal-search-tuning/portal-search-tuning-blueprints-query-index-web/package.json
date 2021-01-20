@@ -15,7 +15,7 @@
 		]
 	},
 	"main": "js/query-index.es.js",
-	"name": "portal-search-query-index-web",
+	"name": "portal-search-tuning-blueprints-query-index-web",
 	"private": true,
 	"scripts": {
 		"build": "liferay-npm-scripts build",
