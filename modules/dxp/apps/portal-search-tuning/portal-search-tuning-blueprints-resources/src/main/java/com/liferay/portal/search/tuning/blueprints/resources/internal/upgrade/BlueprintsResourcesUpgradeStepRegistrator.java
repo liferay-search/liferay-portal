@@ -20,8 +20,6 @@ import com.liferay.portal.search.tuning.blueprints.resources.internal.upgrade.pr
 import com.liferay.portal.search.tuning.blueprints.resources.internal.upgrade.util.ImportHelper;
 import com.liferay.portal.upgrade.registry.UpgradeStepRegistrator;
 
-import java.rmi.registry.Registry;
-
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -29,7 +27,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Petteri Karttunen
  */
 @Component(
-	immediate = true, service = UpgradeStepRegistrator.class
+	enabled = false, immediate = true, service = UpgradeStepRegistrator.class
 )
 public class BlueprintsResourcesUpgradeStepRegistrator
 	implements UpgradeStepRegistrator {

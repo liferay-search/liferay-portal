@@ -28,7 +28,7 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Petteri Karttunen
  */
-@Component(immediate = true, service = ModelListener.class)
+@Component(enabled = false, immediate = true, service = ModelListener.class)
 public class CreateDefaultBlueprintsCompanyModelListener
 	extends BaseModelListener<Company> {
 
