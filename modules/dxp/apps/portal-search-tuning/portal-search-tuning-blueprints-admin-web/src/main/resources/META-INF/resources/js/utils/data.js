@@ -18,7 +18,10 @@ import BOOST_CONTENTS_IN_A_CATEGORY_FOR_A_USER_SEGMENT from '../../fragments/boo
 import BOOST_CONTENTS_IN_A_CATEGORY_FOR_GUEST_USERS from '../../fragments/boost-contents-in-a-category-for-guest-users';
 import BOOST_CONTENTS_IN_A_CATEGORY_FOR_TIME_OF_DAY from '../../fragments/boost-contents-in-a-category-for-time-of-day';
 import BOOST_CONTENTS_IN_MY_GROUPS from '../../fragments/boost-contents-in-my-groups';
+import BOOST_CONTENTS_WITH_MORE_VERSIONS from '../../fragments/boost-contents-with-more-versions';
+import BOOST_CONTENTS_WITH_USERS_LANGUAGE_AS_THE_DEFAULT_LANGUAGE from '../../fragments/boost-contents-with-user-language-as-the-default-language';
 import BOOST_FRESHNESS from '../../fragments/boost-freshness';
+import BOOST_LONGER_CONTENTS from '../../fragments/boost-longer-contents';
 import BOOST_PHRASE_MATCH from '../../fragments/boost-phrase-match';
 import BOOST_PHRASE_PREFIX_MATCH from '../../fragments/boost-phrase-prefix-match';
 import BOOST_PROXIMITY from '../../fragments/boost-proximity';
@@ -31,10 +34,13 @@ import HIDE_BY_EXACT_TERM_MATCH from '../../fragments/hide-by-exact-term-match';
 import HIDE_CONTENTS_IN_A_CATEGORY from '../../fragments/hide-contents-in-a-category';
 import HIDE_CONTENTS_IN_A_CATEGORY_FOR_GUEST_USERS from '../../fragments/hide-contents-in-a-category-for-guest-users';
 import HIDE_TAGGED_CONTENTS from '../../fragments/hide-tagged-contents';
+import LIMIT_SEARCH_TO_DISPLAYED_VERSIONS from '../../fragments/limit-search-displayed-versions';
 import LIMIT_SEARCH_TO_PDF_FILES from '../../fragments/limit-search-to-PDF-files';
 import LIMIT_SEARCH_TO_CONTENTS_CREATED_WITHIN_A_PERIOD_OF_TIME from '../../fragments/limit-search-to-contents-created-within-a-period-of-time';
+import LIMIT_SEARCH_TO_HEAD_VERSION from '../../fragments/limit-search-to-head-version';
 import LIMIT_SEARCH_TO_MY_CONTENTS from '../../fragments/limit-search-to-my-contents';
 import LIMIT_SEARCH_TO_MY_GROUPS from '../../fragments/limit-search-to-my-groups';
+import LIMIT_SEARCH_TO_PUBLISHED_CONTENTS from '../../fragments/limit-search-to-published-contents';
 import LIMIT_SEARCH_TO_THE_CURRENT_GROUP from '../../fragments/limit-search-to-the-current-group';
 import LIMIT_SEARCH_TO_THESE_GROUPS from '../../fragments/limit-search-to-these-groups';
 import MATCH_FUZZY from '../../fragments/match-fuzzy';
@@ -127,6 +133,9 @@ export const QUERY_FRAGMENTS = [
 	SEARCH_WITH_LUCENE_SYNTAX,
 	FILTER_BY_EXACT_TERM_MATCH,
 	FILTER_BY_EXACT_TERMS_MATCH,
+	LIMIT_SEARCH_TO_PUBLISHED_CONTENTS,
+	LIMIT_SEARCH_TO_DISPLAYED_VERSIONS,
+	LIMIT_SEARCH_TO_HEAD_VERSION,
 	LIMIT_SEARCH_TO_THE_CURRENT_GROUP,
 	LIMIT_SEARCH_TO_MY_GROUPS,
 	LIMIT_SEARCH_TO_THESE_GROUPS,
@@ -138,6 +147,9 @@ export const QUERY_FRAGMENTS = [
 	BOOST_PHRASE_PREFIX_MATCH,
 	BOOST_TAGS_MATCH,
 	BOOST_FRESHNESS,
+	BOOST_LONGER_CONTENTS,
+	BOOST_CONTENTS_WITH_MORE_VERSIONS,
+	BOOST_CONTENTS_WITH_USERS_LANGUAGE_AS_THE_DEFAULT_LANGUAGE,
 	BOOST_PROXIMITY,
 	BOOST_CONTENTS_IN_A_CATEGORY,
 	BOOST_TAGGED_CONTENTS,
