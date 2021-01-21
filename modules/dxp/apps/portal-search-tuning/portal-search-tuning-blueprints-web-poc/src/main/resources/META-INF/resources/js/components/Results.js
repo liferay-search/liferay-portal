@@ -19,9 +19,17 @@ import React from 'react';
 import {sub} from '../utils/language';
 
 const ICON_MAP = {
-	Blog: 'blogs',
-	'Web Content': 'web-content',
-	default: 'web-content',
+	['Blogs Entry']: 'blogs',
+	DEFAULT: 'web-content',
+	['Document']: 'document',
+	['Documents Folder']: 'folder',
+	['Knowledge Base Article']: 'info-book',
+	['Message Boards Message']: 'message-boards',
+	['Page']: 'page',
+	['Web Content Article']: 'web-content',
+	['Web Content Folder']: 'folder',
+	['Wiki Page']: 'wiki-page',
+	['com.liferay.bookmarks.model.bookmarksentry']: 'bookmarks',
 };
 
 export default function Results({
@@ -51,7 +59,7 @@ export default function Results({
 									symbol={
 										item.type && ICON_MAP[item.type]
 											? ICON_MAP[item.type]
-											: ICON_MAP.default
+											: ICON_MAP.DEFAULT
 									}
 								/>
 							</ClaySticker>
