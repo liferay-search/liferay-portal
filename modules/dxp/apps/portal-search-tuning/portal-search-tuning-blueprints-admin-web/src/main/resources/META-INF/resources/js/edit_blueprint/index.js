@@ -339,6 +339,8 @@ EditBlueprintForm.propTypes = {
 	submitFormURL: PropTypes.string,
 };
 
+React.memo(EditBlueprintForm);
+
 export default function ({context, props}) {
 	return (
 		<ThemeContext.Provider value={context}>
