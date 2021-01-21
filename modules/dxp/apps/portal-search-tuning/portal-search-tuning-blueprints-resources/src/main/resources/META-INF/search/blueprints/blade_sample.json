@@ -1,1 +1,1008 @@
-{"payload":{"configuration":{"parameter_configuration":{"keywords":{"parameter_name":"q"},"custom":[],"page":{"parameter_name":"page"}},"sort_configuration":{"default":[],"parameters":[{"field":"_score","label":"score","parameter_name":"sort1"},{"field":"localized_title${context.language_id}_sortable","label":"title","parameter_name":"sort2"},{"field":"modified_sortable","label":"modified","parameter_name":"sort3"},{"field":"expando__keyword__custom_fields__location_geolocation","configuration":{"unit":"km","distance_type":"arc","locations":[["${ipstack.latitude}","${ipstack.longitude}"]]},"label":"Geodistance","parameter_name":"sort4","type":"geo_distance","order":"asc"}]},"aggregation_configuration":[],"facet_configuration":[{"handler":"category","field":"assetCategoryIds","filter_mode":"pre","label":"category","parameter_name":"category"},{"field":"assetTagNames.raw","filter_mode":"pre","label":"tag","parameter_name":"tag"},{"handler":"category_tree","field":"assetCategoryIds","multi_value_operator":"or","handler_parameters":{"root_vocabulary_id":"000000"},"filter_mode":"post","label":"Category tree","parameter_name":"treeItem","enabled":false},{"aggregation_type":"date_range","handler":"date_range","field":"createDate","multi_value":"false","handler_parameters":{"ranges":[{"from":"${time.current_date|modifier=-1H,dateFormat=yyyyMMddhhmmss}","label":"last-hour","to":""},{"from":"${time.current_date|modifier=-1D,dateFormat=yyyyMMddhhmmss}","label":"last-day","to":""},{"from":"${time.current_date|modifier=-1W,dateFormat=yyyyMMddhhmmss}","label":"last-week","to":""},{"from":"${time.current_date|modifier=-1M,dateFormat=yyyyMMddhhmmss}","label":"last-month","to":""},{"from":"${time.current_date|modifier=-1Y,dateFormat=yyyyMMddhhmmss}","label":"last-year","to":""}],"date_format":"yyyyMMddhhmmss"},"filter_mode":"pre","label":"create-date","parameter_name":"created"},{"handler":"document_type","field":"fileEntryTypeId","filter_mode":"pre","label":"document-type","parameter_name":"documentType"},{"aggregation_type":"date_range","handler":"date_range","field":"modified","multi_value":"false","handler_parameters":{"ranges":[{"from":"${time.current_date|modifier=-1H,dateFormat=yyyyMMddhhmmss}","label":"last-hour","to":""},{"from":"${time.current_date|modifier=-1D,dateFormat=yyyyMMddhhmmss}","label":"last-day","to":""},{"from":"${time.current_date|modifier=-1W,dateFormat=yyyyMMddhhmmss}","label":"last-week","to":""},{"from":"${time.current_date|modifier=-1M,dateFormat=yyyyMMddhhmmss}","label":"last-month","to":""},{"from":"${time.current_date|modifier=-1Y,dateFormat=yyyyMMddhhmmss}","label":"last-year","to":""}],"date_format":"yyyyMMddhhmmss"},"filter_mode":"post","label":"modified","parameter_name":"modified","aggregation_name":"blueprints-modified"},{"field":"userName","filter_mode":"pre","label":"user","parameter_name":"user"},{"handler":"folder","field":"folderId","filter_mode":"pre","label":"folder","parameter_name":"folder"},{"handler":"site","field":"scopeGroupId","filter_mode":"pre","label":"site","parameter_name":"site"},{"field":"entryClassName","label":"type","parameter_name":"type"},{"handler":"ddm_structure_name","field":"ddmStructureKey","label":"web-content-type","parameter_name":"web-content-type"}],"framework_configuration":{"apply_indexer_clauses":false},"query_configuration":[{"clauses":[{"occur":"must","query":{"query":{"multi_match":{"query":"${keywords}","boost":1,"fields":["localized_title${context.language_id}^2","content${context.language_id}","description"],"type":"best_fields","operator":"or"}}},"context":"query","type":"wrapper"}],"icon":"picture","description":{"en_US":"Search for a text match over multiple text fields"},"category":"match","conditions":[],"title":{"en_US":"Text Match Over Multiple Fields"},"enabled":true},{"clauses":[{"occur":"should","query":{"query":{"multi_match":{"query":"${keywords}","boost":10,"fields":["localized_title${context.language_id}^2","content${context.language_id}","description"],"type":"cross_fields","operator":"and"}}},"context":"query","type":"wrapper"}],"icon":"thumbs-up","description":{"en_US":"Boost contents where all keywords of a search phrase match"},"category":"boost","conditions":[],"title":{"en_US":"Boost All Keywords Match"},"enabled":true},{"clauses":[{"occur":"should","query":{"query":{"multi_match":{"query":"${keywords}","boost":10,"fields":["localized_title${context.language_id}^2","content${context.language_id}"],"type":"phrase","operator":"and"}}},"context":"query","type":"wrapper"}],"icon":"thumbs-up","description":{"en_US":"Boost contents where there\u2019s an exact phrase match"},"category":"boost","conditions":[],"title":{"en_US":"Boost Phrase Match"},"enabled":true},{"clauses":[{"occur":"should","query":{"query":{"match_phrase_prefix":{"localized_title${context.language_id}":{"query":"${keywords}","boost":10,"slop":0}}}},"context":"query","type":"wrapper"}],"icon":"thumbs-up","description":{"en_US":"Boost contents where there's a phrase match in the beginning of field"},"category":"boost","conditions":[],"title":{"en_US":"Boost Phrase Prefix Match"},"enabled":true},{"clauses":[{"occur":"should","query":{"query":{"match":{"assetTagNames.raw":{"query":"${keywords}","boost":10}}}},"context":"query","type":"wrapper"}],"icon":"thumbs-up","description":{"en_US":"Boost contents having an exact keyword match to a tag"},"category":"boost","conditions":[],"title":{"en_US":"Boost Tags Match"},"enabled":true}],"advanced_configuration":{"highlighting":{"fields":["localized_title${context.language_id}","content${context.language_id}"],"require_field_match":"true","enabled":"true","fragment_size":"50","snippet_size":"10"},"page_size":10}},"description":{"en_US":"Showcases the features of the sample reactive widget like custom facets and dynamic sort configuration. Geolocation data provider has to be enabled in Blueprints configuration to take advantage of locating features."},"title":{"en_US":"Blade Sample (Sample Blueprint)"},"selected_fragments":{"query_configuration":[{"uiConfigurationValues":{"boost":1,"fields":[{"field":"localized_title","boost":"2","locale":"${context.language_id}"},{"field":"content","boost":"1","locale":"${context.language_id}"},{"field":"description","boost":1,"locale":""}],"type":"best_fields","operator":"or"},"uiConfigurationJSON":[{"defaultValue":[{"field":"localized_title","boost":"2","locale":"${context.language_id}"},{"field":"content","boost":"1","locale":"${context.language_id}"}],"name":"Fields","typeOptions":[{"label":"Title","value":"localized_title"},{"label":"Description","value":"description"},{"label":"Content","value":"content"}],"boost":true,"type":"field","key":"fields"},{"defaultValue":"or","name":"Operator","typeOptions":[{"label":"OR","value":"or"},{"label":"AND","value":"and"}],"type":"single-select","key":"operator"},{"defaultValue":"best_fields","name":"Match Type","typeOptions":[{"label":"Best Fields","value":"best_fields"},{"label":"Most Fields","value":"most_fields"},{"label":"Cross Fields","value":"cross_fields"},{"label":"Phrase","value":"phrase"},{"label":"Phrase Prefix","value":"phrase_prefix"},{"label":"Boolean Prefix","value":"bool_prefix"}],"type":"single-select","key":"type"},{"defaultValue":1,"name":"Boost","type":"slider","key":"boost"}],"fragmentOutput":{"clauses":[{"occur":"must","query":{"query":{"multi_match":{"query":"${keywords}","boost":1,"fields":["localized_title${context.language_id}^2","content${context.language_id}","description"],"type":"best_fields","operator":"or"}}},"context":"query","type":"wrapper"}],"icon":"picture","description":{"en_US":"Search for a text match over multiple text fields"},"category":"match","conditions":[],"title":{"en_US":"Text Match Over Multiple Fields"},"enabled":true},"fragmentTemplateJSON":{"clauses":[{"occur":"must","query":{"query":{"multi_match":{"query":"${keywords}","boost":"${config.boost}","fields":"${config.fields}","type":"${config.type}","operator":"${config.operator}"}}},"context":"query","type":"wrapper"}],"icon":"picture","description":{"en_US":"Search for a text match over multiple text fields"},"category":"match","conditions":[],"title":{"en_US":"Text Match Over Multiple Fields"},"enabled":true}},{"uiConfigurationValues":{"boost":10,"fields":[{"field":"localized_title","boost":2,"locale":"${context.language_id}"},{"field":"content","boost":1,"locale":"${context.language_id}"},{"field":"description","boost":1,"locale":""}]},"uiConfigurationJSON":[{"defaultValue":[{"field":"localized_title","boost":2,"locale":"${context.language_id}"},{"field":"content","boost":1,"locale":"${context.language_id}"}],"name":"Field","typeOptions":[{"label":"Title","value":"localized_title"},{"label":"Description","value":"description"},{"label":"Content","value":"content"}],"boost":true,"type":"field","key":"fields"},{"defaultValue":10,"name":"Boost","type":"slider","key":"boost"}],"fragmentOutput":{"clauses":[{"occur":"should","query":{"query":{"multi_match":{"query":"${keywords}","boost":10,"fields":["localized_title${context.language_id}^2","content${context.language_id}","description"],"type":"cross_fields","operator":"and"}}},"context":"query","type":"wrapper"}],"icon":"thumbs-up","description":{"en_US":"Boost contents where all keywords of a search phrase match"},"category":"boost","conditions":[],"title":{"en_US":"Boost All Keywords Match"},"enabled":true},"fragmentTemplateJSON":{"clauses":[{"occur":"should","query":{"query":{"multi_match":{"query":"${keywords}","boost":"${config.boost}","fields":"${config.fields}","type":"cross_fields","operator":"and"}}},"context":"query","type":"wrapper"}],"icon":"thumbs-up","description":{"en_US":"Boost contents where all keywords of a search phrase match"},"category":"boost","conditions":[],"title":{"en_US":"Boost All Keywords Match"},"enabled":true}},{"uiConfigurationValues":{"boost":10,"fields":[{"field":"localized_title","boost":2,"locale":"${context.language_id}"},{"field":"content","boost":1,"locale":"${context.language_id}"}]},"uiConfigurationJSON":[{"defaultValue":[{"field":"localized_title","boost":2,"locale":"${context.language_id}"},{"field":"content","boost":1,"locale":"${context.language_id}"}],"name":"Field","typeOptions":[{"label":"Title","value":"localized_title"},{"label":"Description","value":"description"},{"label":"Content","value":"content"}],"boost":true,"type":"field","key":"fields"},{"defaultValue":10,"name":"Boost","type":"slider","key":"boost"}],"fragmentOutput":{"clauses":[{"occur":"should","query":{"query":{"multi_match":{"query":"${keywords}","boost":10,"fields":["localized_title${context.language_id}^2","content${context.language_id}"],"type":"phrase","operator":"and"}}},"context":"query","type":"wrapper"}],"icon":"thumbs-up","description":{"en_US":"Boost contents where there\u2019s an exact phrase match"},"category":"boost","conditions":[],"title":{"en_US":"Boost Phrase Match"},"enabled":true},"fragmentTemplateJSON":{"clauses":[{"occur":"should","query":{"query":{"multi_match":{"query":"${keywords}","boost":"${config.boost}","fields":"${config.fields}","type":"phrase","operator":"and"}}},"context":"query","type":"wrapper"}],"icon":"thumbs-up","description":{"en_US":"Boost contents where there\u2019s an exact phrase match"},"category":"boost","conditions":[],"title":{"en_US":"Boost Phrase Match"},"enabled":true}},{"uiConfigurationValues":{"field":[{"field":"localized_title","locale":"${context.language_id}"}],"boost":10,"slop":0},"uiConfigurationJSON":[{"defaultValue":[{"field":"localized_title","locale":"${context.language_id}"}],"name":"Field","typeOptions":[{"label":"Title","value":"localized_title"},{"label":"Description","value":"description"},{"label":"Content","value":"content"}],"type":"single-field","key":"field"},{"defaultValue":10,"name":"Boost","type":"slider","key":"boost"},{"defaultValue":0,"name":"Slop","type":"number","key":"slop"}],"fragmentOutput":{"clauses":[{"occur":"should","query":{"query":{"match_phrase_prefix":{"localized_title${context.language_id}":{"query":"${keywords}","boost":10,"slop":0}}}},"context":"query","type":"wrapper"}],"icon":"thumbs-up","description":{"en_US":"Boost contents where there's a phrase match in the beginning of field"},"category":"boost","conditions":[],"title":{"en_US":"Boost Phrase Prefix Match"},"enabled":true},"fragmentTemplateJSON":{"clauses":[{"occur":"should","query":{"query":{"match_phrase_prefix":{"${config.field}":{"query":"${keywords}","boost":"${config.boost}","slop":"${config.slop}"}}}},"context":"query","type":"wrapper"}],"icon":"thumbs-up","description":{"en_US":"Boost contents where there's a phrase match in the beginning of field"},"category":"boost","conditions":[],"title":{"en_US":"Boost Phrase Prefix Match"},"enabled":true}},{"uiConfigurationValues":{"boost":10},"uiConfigurationJSON":[{"defaultValue":10,"name":"Boost","type":"slider","key":"boost"}],"fragmentOutput":{"clauses":[{"occur":"should","query":{"query":{"match":{"assetTagNames.raw":{"query":"${keywords}","boost":10}}}},"context":"query","type":"wrapper"}],"icon":"thumbs-up","description":{"en_US":"Boost contents having an exact keyword match to a tag"},"category":"boost","conditions":[],"title":{"en_US":"Boost Tags Match"},"enabled":true},"fragmentTemplateJSON":{"clauses":[{"occur":"should","query":{"query":{"match":{"assetTagNames.raw":{"query":"${keywords}","boost":"${config.boost}"}}}},"context":"query","type":"wrapper"}],"icon":"thumbs-up","description":{"en_US":"Boost contents having an exact keyword match to a tag"},"category":"boost","conditions":[],"title":{"en_US":"Boost Tags Match"},"enabled":true}}]}},"type":1}
+{
+	"payload": {
+		"configuration": {
+			"advanced_configuration": {
+				"highlighting": {
+					"enabled": "true",
+					"fields": [
+						"localized_title${context.language_id}",
+						"content${context.language_id}"
+					],
+					"fragment_size": "50",
+					"require_field_match": "true",
+					"snippet_size": "10"
+				},
+				"page_size": 10
+			},
+			"aggregation_configuration": [
+			],
+			"facet_configuration": [
+				{
+					"field": "assetCategoryIds",
+					"filter_mode": "pre",
+					"handler": "category",
+					"label": "category",
+					"parameter_name": "category"
+				},
+				{
+					"field": "assetTagNames.raw",
+					"filter_mode": "pre",
+					"label": "tag",
+					"parameter_name": "tag"
+				},
+				{
+					"enabled": false,
+					"field": "assetCategoryIds",
+					"filter_mode": "post",
+					"handler": "category_tree",
+					"handler_parameters": {
+						"root_vocabulary_id": "000000"
+					},
+					"label": "Category tree",
+					"multi_value_operator": "or",
+					"parameter_name": "treeItem"
+				},
+				{
+					"aggregation_type": "date_range",
+					"field": "createDate",
+					"filter_mode": "pre",
+					"handler": "date_range",
+					"handler_parameters": {
+						"date_format": "yyyyMMddhhmmss",
+						"ranges": [
+							{
+								"from": "${time.current_date|modifier=-1H,dateFormat=yyyyMMddhhmmss}",
+								"label": "last-hour",
+								"to": ""
+							},
+							{
+								"from": "${time.current_date|modifier=-1D,dateFormat=yyyyMMddhhmmss}",
+								"label": "last-day",
+								"to": ""
+							},
+							{
+								"from": "${time.current_date|modifier=-1W,dateFormat=yyyyMMddhhmmss}",
+								"label": "last-week",
+								"to": ""
+							},
+							{
+								"from": "${time.current_date|modifier=-1M,dateFormat=yyyyMMddhhmmss}",
+								"label": "last-month",
+								"to": ""
+							},
+							{
+								"from": "${time.current_date|modifier=-1Y,dateFormat=yyyyMMddhhmmss}",
+								"label": "last-year",
+								"to": ""
+							}
+						]
+					},
+					"label": "create-date",
+					"multi_value": "false",
+					"parameter_name": "created"
+				},
+				{
+					"field": "fileEntryTypeId",
+					"filter_mode": "pre",
+					"handler": "document_type",
+					"label": "document-type",
+					"parameter_name": "documentType"
+				},
+				{
+					"aggregation_name": "blueprints-modified",
+					"aggregation_type": "date_range",
+					"field": "modified",
+					"filter_mode": "post",
+					"handler": "date_range",
+					"handler_parameters": {
+						"date_format": "yyyyMMddhhmmss",
+						"ranges": [
+							{
+								"from": "${time.current_date|modifier=-1H,dateFormat=yyyyMMddhhmmss}",
+								"label": "last-hour",
+								"to": ""
+							},
+							{
+								"from": "${time.current_date|modifier=-1D,dateFormat=yyyyMMddhhmmss}",
+								"label": "last-day",
+								"to": ""
+							},
+							{
+								"from": "${time.current_date|modifier=-1W,dateFormat=yyyyMMddhhmmss}",
+								"label": "last-week",
+								"to": ""
+							},
+							{
+								"from": "${time.current_date|modifier=-1M,dateFormat=yyyyMMddhhmmss}",
+								"label": "last-month",
+								"to": ""
+							},
+							{
+								"from": "${time.current_date|modifier=-1Y,dateFormat=yyyyMMddhhmmss}",
+								"label": "last-year",
+								"to": ""
+							}
+						]
+					},
+					"label": "modified",
+					"multi_value": "false",
+					"parameter_name": "modified"
+				},
+				{
+					"field": "userName",
+					"filter_mode": "pre",
+					"label": "user",
+					"parameter_name": "user"
+				},
+				{
+					"field": "folderId",
+					"filter_mode": "pre",
+					"handler": "folder",
+					"label": "folder",
+					"parameter_name": "folder"
+				},
+				{
+					"field": "scopeGroupId",
+					"filter_mode": "pre",
+					"handler": "site",
+					"label": "site",
+					"parameter_name": "site"
+				},
+				{
+					"field": "entryClassName",
+					"label": "type",
+					"parameter_name": "type"
+				},
+				{
+					"field": "ddmStructureKey",
+					"handler": "ddm_structure_name",
+					"label": "web-content-type",
+					"parameter_name": "web-content-type"
+				}
+			],
+			"framework_configuration": {
+				"apply_indexer_clauses": false
+			},
+			"parameter_configuration": {
+				"custom": [
+				],
+				"keywords": {
+					"parameter_name": "q"
+				},
+				"page": {
+					"parameter_name": "page"
+				}
+			},
+			"query_configuration": [
+				{
+					"category": "match",
+					"clauses": [
+						{
+							"context": "query",
+							"occur": "must",
+							"query": {
+								"query": {
+									"multi_match": {
+										"boost": 1,
+										"fields": [
+											"localized_title${context.language_id}^2",
+											"content${context.language_id}",
+											"description"
+										],
+										"operator": "or",
+										"query": "${keywords}",
+										"type": "best_fields"
+									}
+								}
+							},
+							"type": "wrapper"
+						}
+					],
+					"conditions": [
+					],
+					"description": {
+						"en_US": "Search for a text match over multiple text fields"
+					},
+					"enabled": true,
+					"icon": "picture",
+					"title": {
+						"en_US": "Text Match Over Multiple Fields"
+					}
+				},
+				{
+					"category": "boost",
+					"clauses": [
+						{
+							"context": "query",
+							"occur": "should",
+							"query": {
+								"query": {
+									"multi_match": {
+										"boost": 10,
+										"fields": [
+											"localized_title${context.language_id}^2",
+											"content${context.language_id}",
+											"description"
+										],
+										"operator": "and",
+										"query": "${keywords}",
+										"type": "cross_fields"
+									}
+								}
+							},
+							"type": "wrapper"
+						}
+					],
+					"conditions": [
+					],
+					"description": {
+						"en_US": "Boost contents where all keywords of a search phrase match"
+					},
+					"enabled": true,
+					"icon": "thumbs-up",
+					"title": {
+						"en_US": "Boost All Keywords Match"
+					}
+				},
+				{
+					"category": "boost",
+					"clauses": [
+						{
+							"context": "query",
+							"occur": "should",
+							"query": {
+								"query": {
+									"multi_match": {
+										"boost": 10,
+										"fields": [
+											"localized_title${context.language_id}^2",
+											"content${context.language_id}"
+										],
+										"operator": "and",
+										"query": "${keywords}",
+										"type": "phrase"
+									}
+								}
+							},
+							"type": "wrapper"
+						}
+					],
+					"conditions": [
+					],
+					"description": {
+						"en_US": "Boost contents where there’s an exact phrase match"
+					},
+					"enabled": true,
+					"icon": "thumbs-up",
+					"title": {
+						"en_US": "Boost Phrase Match"
+					}
+				},
+				{
+					"category": "boost",
+					"clauses": [
+						{
+							"context": "query",
+							"occur": "should",
+							"query": {
+								"query": {
+									"match_phrase_prefix": {
+										"localized_title${context.language_id}": {
+											"boost": 10,
+											"query": "${keywords}",
+											"slop": 0
+										}
+									}
+								}
+							},
+							"type": "wrapper"
+						}
+					],
+					"conditions": [
+					],
+					"description": {
+						"en_US": "Boost contents where there's a phrase match in the beginning of field"
+					},
+					"enabled": true,
+					"icon": "thumbs-up",
+					"title": {
+						"en_US": "Boost Phrase Prefix Match"
+					}
+				},
+				{
+					"category": "boost",
+					"clauses": [
+						{
+							"context": "query",
+							"occur": "should",
+							"query": {
+								"query": {
+									"match": {
+										"assetTagNames.raw": {
+											"boost": 10,
+											"query": "${keywords}"
+										}
+									}
+								}
+							},
+							"type": "wrapper"
+						}
+					],
+					"conditions": [
+					],
+					"description": {
+						"en_US": "Boost contents having an exact keyword match to a tag"
+					},
+					"enabled": true,
+					"icon": "thumbs-up",
+					"title": {
+						"en_US": "Boost Tags Match"
+					}
+				}
+			],
+			"sort_configuration": {
+				"default": [
+				],
+				"parameters": [
+					{
+						"field": "_score",
+						"label": "score",
+						"parameter_name": "sort1"
+					},
+					{
+						"field": "localized_title${context.language_id}_sortable",
+						"label": "title",
+						"parameter_name": "sort2"
+					},
+					{
+						"field": "modified_sortable",
+						"label": "modified",
+						"parameter_name": "sort3"
+					},
+					{
+						"configuration": {
+							"distance_type": "arc",
+							"locations": [
+								[
+									"${ipstack.latitude}",
+									"${ipstack.longitude}"
+								]
+							],
+							"unit": "km"
+						},
+						"field": "expando__keyword__custom_fields__location_geolocation",
+						"label": "Geodistance",
+						"order": "asc",
+						"parameter_name": "sort4",
+						"type": "geo_distance"
+					}
+				]
+			}
+		},
+		"description": {
+			"en_US": "Showcases the features of the sample reactive widget like custom facets and dynamic sort configuration. Geolocation data provider has to be enabled in Blueprints configuration to take advantage of locating features."
+		},
+		"selected_fragments": {
+			"query_configuration": [
+				{
+					"fragmentOutput": {
+						"category": "match",
+						"clauses": [
+							{
+								"context": "query",
+								"occur": "must",
+								"query": {
+									"query": {
+										"multi_match": {
+											"boost": 1,
+											"fields": [
+												"localized_title${context.language_id}^2",
+												"content${context.language_id}",
+												"description"
+											],
+											"operator": "or",
+											"query": "${keywords}",
+											"type": "best_fields"
+										}
+									}
+								},
+								"type": "wrapper"
+							}
+						],
+						"conditions": [
+						],
+						"description": {
+							"en_US": "Search for a text match over multiple text fields"
+						},
+						"enabled": true,
+						"icon": "picture",
+						"title": {
+							"en_US": "Text Match Over Multiple Fields"
+						}
+					},
+					"fragmentTemplateJSON": {
+						"category": "match",
+						"clauses": [
+							{
+								"context": "query",
+								"occur": "must",
+								"query": {
+									"query": {
+										"multi_match": {
+											"boost": "${config.boost}",
+											"fields": "${config.fields}",
+											"operator": "${config.operator}",
+											"query": "${keywords}",
+											"type": "${config.type}"
+										}
+									}
+								},
+								"type": "wrapper"
+							}
+						],
+						"conditions": [
+						],
+						"description": {
+							"en_US": "Search for a text match over multiple text fields"
+						},
+						"enabled": true,
+						"icon": "picture",
+						"title": {
+							"en_US": "Text Match Over Multiple Fields"
+						}
+					},
+					"uiConfigurationJSON": [
+						{
+							"boost": true,
+							"defaultValue": [
+								{
+									"boost": "2",
+									"field": "localized_title",
+									"locale": "${context.language_id}"
+								},
+								{
+									"boost": "1",
+									"field": "content",
+									"locale": "${context.language_id}"
+								}
+							],
+							"key": "fields",
+							"name": "Fields",
+							"type": "field",
+							"typeOptions": [
+								{
+									"label": "Title",
+									"value": "localized_title"
+								},
+								{
+									"label": "Description",
+									"value": "description"
+								},
+								{
+									"label": "Content",
+									"value": "content"
+								}
+							]
+						},
+						{
+							"defaultValue": "or",
+							"key": "operator",
+							"name": "Operator",
+							"type": "single-select",
+							"typeOptions": [
+								{
+									"label": "OR",
+									"value": "or"
+								},
+								{
+									"label": "AND",
+									"value": "and"
+								}
+							]
+						},
+						{
+							"defaultValue": "best_fields",
+							"key": "type",
+							"name": "Match Type",
+							"type": "single-select",
+							"typeOptions": [
+								{
+									"label": "Best Fields",
+									"value": "best_fields"
+								},
+								{
+									"label": "Most Fields",
+									"value": "most_fields"
+								},
+								{
+									"label": "Cross Fields",
+									"value": "cross_fields"
+								},
+								{
+									"label": "Phrase",
+									"value": "phrase"
+								},
+								{
+									"label": "Phrase Prefix",
+									"value": "phrase_prefix"
+								},
+								{
+									"label": "Boolean Prefix",
+									"value": "bool_prefix"
+								}
+							]
+						},
+						{
+							"defaultValue": 1,
+							"key": "boost",
+							"name": "Boost",
+							"type": "slider"
+						}
+					],
+					"uiConfigurationValues": {
+						"boost": 1,
+						"fields": [
+							{
+								"boost": "2",
+								"field": "localized_title",
+								"locale": "${context.language_id}"
+							},
+							{
+								"boost": "1",
+								"field": "content",
+								"locale": "${context.language_id}"
+							},
+							{
+								"boost": 1,
+								"field": "description",
+								"locale": ""
+							}
+						],
+						"operator": "or",
+						"type": "best_fields"
+					}
+				},
+				{
+					"fragmentOutput": {
+						"category": "boost",
+						"clauses": [
+							{
+								"context": "query",
+								"occur": "should",
+								"query": {
+									"query": {
+										"multi_match": {
+											"boost": 10,
+											"fields": [
+												"localized_title${context.language_id}^2",
+												"content${context.language_id}",
+												"description"
+											],
+											"operator": "and",
+											"query": "${keywords}",
+											"type": "cross_fields"
+										}
+									}
+								},
+								"type": "wrapper"
+							}
+						],
+						"conditions": [
+						],
+						"description": {
+							"en_US": "Boost contents where all keywords of a search phrase match"
+						},
+						"enabled": true,
+						"icon": "thumbs-up",
+						"title": {
+							"en_US": "Boost All Keywords Match"
+						}
+					},
+					"fragmentTemplateJSON": {
+						"category": "boost",
+						"clauses": [
+							{
+								"context": "query",
+								"occur": "should",
+								"query": {
+									"query": {
+										"multi_match": {
+											"boost": "${config.boost}",
+											"fields": "${config.fields}",
+											"operator": "and",
+											"query": "${keywords}",
+											"type": "cross_fields"
+										}
+									}
+								},
+								"type": "wrapper"
+							}
+						],
+						"conditions": [
+						],
+						"description": {
+							"en_US": "Boost contents where all keywords of a search phrase match"
+						},
+						"enabled": true,
+						"icon": "thumbs-up",
+						"title": {
+							"en_US": "Boost All Keywords Match"
+						}
+					},
+					"uiConfigurationJSON": [
+						{
+							"boost": true,
+							"defaultValue": [
+								{
+									"boost": 2,
+									"field": "localized_title",
+									"locale": "${context.language_id}"
+								},
+								{
+									"boost": 1,
+									"field": "content",
+									"locale": "${context.language_id}"
+								}
+							],
+							"key": "fields",
+							"name": "Field",
+							"type": "field",
+							"typeOptions": [
+								{
+									"label": "Title",
+									"value": "localized_title"
+								},
+								{
+									"label": "Description",
+									"value": "description"
+								},
+								{
+									"label": "Content",
+									"value": "content"
+								}
+							]
+						},
+						{
+							"defaultValue": 10,
+							"key": "boost",
+							"name": "Boost",
+							"type": "slider"
+						}
+					],
+					"uiConfigurationValues": {
+						"boost": 10,
+						"fields": [
+							{
+								"boost": 2,
+								"field": "localized_title",
+								"locale": "${context.language_id}"
+							},
+							{
+								"boost": 1,
+								"field": "content",
+								"locale": "${context.language_id}"
+							},
+							{
+								"boost": 1,
+								"field": "description",
+								"locale": ""
+							}
+						]
+					}
+				},
+				{
+					"fragmentOutput": {
+						"category": "boost",
+						"clauses": [
+							{
+								"context": "query",
+								"occur": "should",
+								"query": {
+									"query": {
+										"multi_match": {
+											"boost": 10,
+											"fields": [
+												"localized_title${context.language_id}^2",
+												"content${context.language_id}"
+											],
+											"operator": "and",
+											"query": "${keywords}",
+											"type": "phrase"
+										}
+									}
+								},
+								"type": "wrapper"
+							}
+						],
+						"conditions": [
+						],
+						"description": {
+							"en_US": "Boost contents where there’s an exact phrase match"
+						},
+						"enabled": true,
+						"icon": "thumbs-up",
+						"title": {
+							"en_US": "Boost Phrase Match"
+						}
+					},
+					"fragmentTemplateJSON": {
+						"category": "boost",
+						"clauses": [
+							{
+								"context": "query",
+								"occur": "should",
+								"query": {
+									"query": {
+										"multi_match": {
+											"boost": "${config.boost}",
+											"fields": "${config.fields}",
+											"operator": "and",
+											"query": "${keywords}",
+											"type": "phrase"
+										}
+									}
+								},
+								"type": "wrapper"
+							}
+						],
+						"conditions": [
+						],
+						"description": {
+							"en_US": "Boost contents where there’s an exact phrase match"
+						},
+						"enabled": true,
+						"icon": "thumbs-up",
+						"title": {
+							"en_US": "Boost Phrase Match"
+						}
+					},
+					"uiConfigurationJSON": [
+						{
+							"boost": true,
+							"defaultValue": [
+								{
+									"boost": 2,
+									"field": "localized_title",
+									"locale": "${context.language_id}"
+								},
+								{
+									"boost": 1,
+									"field": "content",
+									"locale": "${context.language_id}"
+								}
+							],
+							"key": "fields",
+							"name": "Field",
+							"type": "field",
+							"typeOptions": [
+								{
+									"label": "Title",
+									"value": "localized_title"
+								},
+								{
+									"label": "Description",
+									"value": "description"
+								},
+								{
+									"label": "Content",
+									"value": "content"
+								}
+							]
+						},
+						{
+							"defaultValue": 10,
+							"key": "boost",
+							"name": "Boost",
+							"type": "slider"
+						}
+					],
+					"uiConfigurationValues": {
+						"boost": 10,
+						"fields": [
+							{
+								"boost": 2,
+								"field": "localized_title",
+								"locale": "${context.language_id}"
+							},
+							{
+								"boost": 1,
+								"field": "content",
+								"locale": "${context.language_id}"
+							}
+						]
+					}
+				},
+				{
+					"fragmentOutput": {
+						"category": "boost",
+						"clauses": [
+							{
+								"context": "query",
+								"occur": "should",
+								"query": {
+									"query": {
+										"match_phrase_prefix": {
+											"localized_title${context.language_id}": {
+												"boost": 10,
+												"query": "${keywords}",
+												"slop": 0
+											}
+										}
+									}
+								},
+								"type": "wrapper"
+							}
+						],
+						"conditions": [
+						],
+						"description": {
+							"en_US": "Boost contents where there's a phrase match in the beginning of field"
+						},
+						"enabled": true,
+						"icon": "thumbs-up",
+						"title": {
+							"en_US": "Boost Phrase Prefix Match"
+						}
+					},
+					"fragmentTemplateJSON": {
+						"category": "boost",
+						"clauses": [
+							{
+								"context": "query",
+								"occur": "should",
+								"query": {
+									"query": {
+										"match_phrase_prefix": {
+											"${config.field}": {
+												"boost": "${config.boost}",
+												"query": "${keywords}",
+												"slop": "${config.slop}"
+											}
+										}
+									}
+								},
+								"type": "wrapper"
+							}
+						],
+						"conditions": [
+						],
+						"description": {
+							"en_US": "Boost contents where there's a phrase match in the beginning of field"
+						},
+						"enabled": true,
+						"icon": "thumbs-up",
+						"title": {
+							"en_US": "Boost Phrase Prefix Match"
+						}
+					},
+					"uiConfigurationJSON": [
+						{
+							"defaultValue": [
+								{
+									"field": "localized_title",
+									"locale": "${context.language_id}"
+								}
+							],
+							"key": "field",
+							"name": "Field",
+							"type": "single-field",
+							"typeOptions": [
+								{
+									"label": "Title",
+									"value": "localized_title"
+								},
+								{
+									"label": "Description",
+									"value": "description"
+								},
+								{
+									"label": "Content",
+									"value": "content"
+								}
+							]
+						},
+						{
+							"defaultValue": 10,
+							"key": "boost",
+							"name": "Boost",
+							"type": "slider"
+						},
+						{
+							"defaultValue": 0,
+							"key": "slop",
+							"name": "Slop",
+							"type": "number"
+						}
+					],
+					"uiConfigurationValues": {
+						"boost": 10,
+						"field": [
+							{
+								"field": "localized_title",
+								"locale": "${context.language_id}"
+							}
+						],
+						"slop": 0
+					}
+				},
+				{
+					"fragmentOutput": {
+						"category": "boost",
+						"clauses": [
+							{
+								"context": "query",
+								"occur": "should",
+								"query": {
+									"query": {
+										"match": {
+											"assetTagNames.raw": {
+												"boost": 10,
+												"query": "${keywords}"
+											}
+										}
+									}
+								},
+								"type": "wrapper"
+							}
+						],
+						"conditions": [
+						],
+						"description": {
+							"en_US": "Boost contents having an exact keyword match to a tag"
+						},
+						"enabled": true,
+						"icon": "thumbs-up",
+						"title": {
+							"en_US": "Boost Tags Match"
+						}
+					},
+					"fragmentTemplateJSON": {
+						"category": "boost",
+						"clauses": [
+							{
+								"context": "query",
+								"occur": "should",
+								"query": {
+									"query": {
+										"match": {
+											"assetTagNames.raw": {
+												"boost": "${config.boost}",
+												"query": "${keywords}"
+											}
+										}
+									}
+								},
+								"type": "wrapper"
+							}
+						],
+						"conditions": [
+						],
+						"description": {
+							"en_US": "Boost contents having an exact keyword match to a tag"
+						},
+						"enabled": true,
+						"icon": "thumbs-up",
+						"title": {
+							"en_US": "Boost Tags Match"
+						}
+					},
+					"uiConfigurationJSON": [
+						{
+							"defaultValue": 10,
+							"key": "boost",
+							"name": "Boost",
+							"type": "slider"
+						}
+					],
+					"uiConfigurationValues": {
+						"boost": 10
+					}
+				}
+			]
+		},
+		"title": {
+			"en_US": "Blade Sample (Sample Blueprint)"
+		}
+	},
+	"type": 1
+}

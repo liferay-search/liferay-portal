@@ -20,6 +20,7 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.BaseModelListener;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.ModelListener;
+import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.search.tuning.blueprints.resources.internal.upgrade.util.ImportHelper;
 
 import org.osgi.service.component.annotations.Component;
@@ -28,12 +29,16 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Petteri Karttunen
  */
-@Component(enabled = false, immediate = true, service = ModelListener.class)
+@Component(enabled = true, immediate = true, service = ModelListener.class)
 public class CreateDefaultBlueprintsCompanyModelListener
 	extends BaseModelListener<Company> {
 
 	@Override
 	public void onAfterCreate(Company company) {
+		if (_isCleanDatabase()) {
+			return;
+		}
+
 		try {
 			_importHelper.importDefaultBlueprints(company.getCompanyId());
 		}
@@ -42,8 +47,19 @@ public class CreateDefaultBlueprintsCompanyModelListener
 		}
 	}
 
+	private boolean _isCleanDatabase() {
+		if (_companyLocalService.getCompaniesCount() == 1) {
+			return true;
+		}
+
+		return false;
+	}
+
 	private static final Log _log = LogFactoryUtil.getLog(
 		CreateDefaultBlueprintsCompanyModelListener.class);
+
+	@Reference
+	private CompanyLocalService _companyLocalService;
 
 	@Reference
 	private ImportHelper _importHelper;

@@ -27,7 +27,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Petteri Karttunen
  */
 @Component(
-	enabled = false, immediate = true, service = UpgradeStepRegistrator.class
+	enabled = true, immediate = true, service = UpgradeStepRegistrator.class
 )
 public class BlueprintsResourcesUpgradeStepRegistrator
 	implements UpgradeStepRegistrator {
