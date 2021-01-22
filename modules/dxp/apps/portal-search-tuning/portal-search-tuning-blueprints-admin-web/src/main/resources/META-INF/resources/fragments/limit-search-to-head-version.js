@@ -19,29 +19,23 @@ export default {
 				query: {
 					query: {
 						bool: {
-							must: [
+							should: [
 								{
 									bool: {
-										should: [
+										must: [
 											{
-												bool: {
-													must: [
-														{
-															term: {
-																entryClassName: {
-																	value:
-																		'com.liferay.journal.model.JournalArticle',
-																},
-															},
-														},
-														{
-															term: {
-																head: {
-																	value: true,
-																},
-															},
-														},
-													],
+												term: {
+													entryClassName: {
+														value:
+															'com.liferay.journal.model.JournalArticle',
+													},
+												},
+											},
+											{
+												term: {
+													head: {
+														value: true,
+													},
 												},
 											},
 										],
@@ -49,6 +43,7 @@ export default {
 								},
 							],
 						},
+
 					},
 				},
 				type: 'wrapper',

@@ -14,12 +14,12 @@ export default {
 		category: 'filter',
 		clauses: [
 			{
-				context: 'pre_filter',
-				occur: 'must',
+				context: 'query',
+				occur: 'filter',
 				query: {
 					query: {
 						terms: {
-							groupId: '${config.user_group_ids}',
+							groupId: '${config.group_ids}',
 						},
 					},
 				},
@@ -39,8 +39,8 @@ export default {
 	uiConfigurationJSON: [
 		{
 			helpText: 'Add user group IDs',
-			key: 'user_group_ids',
-			name: 'User Groups',
+			key: 'group_ids',
+			name: 'Group IDs',
 			type: 'multiselect',
 		},
 	],

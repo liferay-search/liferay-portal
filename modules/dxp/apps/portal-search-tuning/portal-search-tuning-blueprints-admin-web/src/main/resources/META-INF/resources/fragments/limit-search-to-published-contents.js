@@ -29,14 +29,8 @@ export default {
 				occur: 'filter',
 				query: {
 					query: {
-						bool: {
-							must: [
-								{
-									term: {
-										status: 0,
-									},
-								},
-							],
+						term: {
+							status: 0,
 						},
 					},
 				},
