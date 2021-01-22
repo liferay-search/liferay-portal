@@ -366,6 +366,12 @@ public class BlueprintLocalServiceWrapper
 	}
 
 	@Override
+	public int getCompanyBlueprintsCount(long companyId, int type) {
+		return _blueprintLocalService.getCompanyBlueprintsCount(
+			companyId, type);
+	}
+
+	@Override
 	public com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery
 		getExportActionableDynamicQuery(
 			com.liferay.exportimport.kernel.lar.PortletDataContext

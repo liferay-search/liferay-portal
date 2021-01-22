@@ -349,6 +349,10 @@ public class BlueprintLocalServiceUtil {
 		return getService().getBlueprintsCount();
 	}
 
+	public static int getCompanyBlueprintsCount(long companyId, int type) {
+		return getService().getCompanyBlueprintsCount(companyId, type);
+	}
+
 	public static com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery
 		getExportActionableDynamicQuery(
 			com.liferay.exportimport.kernel.lar.PortletDataContext

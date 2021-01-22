@@ -297,6 +297,9 @@ public interface BlueprintLocalService
 	public int getBlueprintsCount();
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public int getCompanyBlueprintsCount(long companyId, int type);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public ExportActionableDynamicQuery getExportActionableDynamicQuery(
 		PortletDataContext portletDataContext);
 
