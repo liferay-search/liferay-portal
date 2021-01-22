@@ -14,7 +14,6 @@
 
 package com.liferay.portal.search.tuning.blueprints.internal.validator;
 
-import com.liferay.portal.kernel.util.LocaleThreadLocal;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
@@ -80,14 +79,6 @@ public class BlueprintValidatorImpl implements BlueprintValidator {
 		if (MapUtil.isEmpty(titleMap)) {
 			errors.add("titleEmpty");
 			result = false;
-		}
-		else {
-			if (Validator.isBlank(
-					titleMap.get(LocaleThreadLocal.getDefaultLocale()))) {
-
-				errors.add("defaultLocaleTitleEmpty");
-				result = false;
-			}
 		}
 
 		return result;
