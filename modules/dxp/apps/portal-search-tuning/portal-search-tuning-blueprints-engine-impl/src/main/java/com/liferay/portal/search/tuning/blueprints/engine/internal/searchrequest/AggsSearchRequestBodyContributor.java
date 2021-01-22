@@ -22,9 +22,9 @@ import com.liferay.portal.search.aggregation.Aggregation;
 import com.liferay.portal.search.query.Queries;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.aggregation.AggregationConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.AggregationTranslatorFactory;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslator;
+import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslatorFactory;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.searchrequest.SearchRequestBodyContributor;
 import com.liferay.portal.search.tuning.blueprints.engine.util.BlueprintTemplateVariableParser;
 import com.liferay.portal.search.tuning.blueprints.message.Message;
@@ -112,10 +112,11 @@ public class AggsSearchRequestBodyContributor
 			}
 
 			AggregationTranslator aggregationTranslator =
-				_aggregationBuilderFactory.getTranslator(type);
+				_aggregationTranslatorFactory.getTranslator(type);
 
 			return aggregationTranslator.translate(
-				name, bodyJSONObjectOptional.get(), parameterData, messages);
+				name, bodyJSONObjectOptional.get(), parameterData, messages,
+				_aggregationTranslatorFactory);
 		}
 		catch (IllegalArgumentException illegalArgumentException) {
 			messages.addMessage(
@@ -238,7 +239,7 @@ public class AggsSearchRequestBodyContributor
 		AggsSearchRequestBodyContributor.class);
 
 	@Reference
-	private AggregationTranslatorFactory _aggregationBuilderFactory;
+	private AggregationTranslatorFactory _aggregationTranslatorFactory;
 
 	@Reference
 	private BlueprintHelper _blueprintHelper;

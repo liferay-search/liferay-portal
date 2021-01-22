@@ -12,9 +12,7 @@
  *
  */
 
-package com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation;
-
-import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslator;
+package com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation;
 
 /**
  * @author Petteri Karttunen
