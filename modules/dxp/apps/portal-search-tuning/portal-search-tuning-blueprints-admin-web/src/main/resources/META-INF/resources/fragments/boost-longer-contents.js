@@ -21,11 +21,11 @@ export default {
 						function_score: {
 							boost: '${config.boost}',
 							field_value_factor: {
+								factor: '${config.factor}',
 								field:
 									'content${context.language_id}_length_sortable',
-								factor: '${config.factor}',
-								modifier: '${config.modifier}',
 								missing: '${config.missing}',
+								modifier: '${config.modifier}',
 							},
 						},
 					},

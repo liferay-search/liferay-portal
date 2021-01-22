@@ -31,8 +31,8 @@ export default {
 								{
 									term: {
 										defaultLanguageId: {
-											value: '${context.language_id}',
 											boost: '${config.boost}',
+											value: '${context.language_id}',
 										},
 									},
 								},
@@ -56,9 +56,9 @@ export default {
 	},
 	uiConfigurationJSON: [
 		{
+			defaultValue: 10,
 			helpText:
 				'Values from 1 give a positive, values from 0-1 a negative boost',
-			defaultValue: 10,
 			key: 'boost',
 			name: 'Boost',
 			type: 'slider',
