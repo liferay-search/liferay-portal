@@ -14,32 +14,17 @@
 
 package com.liferay.portal.search.tuning.blueprints.engine.util;
 
-import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
-import com.liferay.portal.search.searcher.SearchResponse;
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
-import com.liferay.portal.search.tuning.blueprints.engine.exception.BlueprintsEngineException;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
-import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 
 /**
  * @author Petteri Karttunen
  */
-public interface BlueprintsEngineHelper {
+public interface BlueprintsSearchRequestContributorHelper {
 
-	public SearchRequestBuilder getSearchRequestBuilder(
-		BlueprintsAttributes blueprintsAttributes, Messages messages,
-		long blueprintId);
-
-	public SearchResponse search(
-			BlueprintsAttributes blueprintsAttributes, Blueprint blueprint,
-			Messages messages)
-		throws BlueprintsEngineException, JSONException, PortalException;
-
-	public SearchResponse search(
+	public void combine(
+			SearchRequestBuilder searchRequestBuilder,
 			BlueprintsAttributes blueprintsAttributes, Messages messages,
-			long blueprintId)
-		throws BlueprintsEngineException, JSONException, PortalException;
-
+			long blueprintId);
 }
