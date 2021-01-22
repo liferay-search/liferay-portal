@@ -20,18 +20,9 @@ import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.model.Group;
-import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.security.SecureRandomUtil;
-import com.liferay.portal.kernel.security.permission.PermissionCheckerFactory;
-import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
-import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextFactory;
-import com.liferay.portal.kernel.service.UserLocalService;
-import com.liferay.portal.kernel.util.LocaleThreadLocal;
-import com.liferay.portal.kernel.util.LocaleUtil;
-import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintTypes;
 import com.liferay.portal.search.tuning.blueprints.exception.BlueprintValidationException;
@@ -42,6 +33,7 @@ import com.liferay.portal.search.tuning.blueprints.util.importer.BlueprintImport
 
 import java.io.IOException;
 import java.io.InputStream;
+
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -61,14 +53,17 @@ import org.osgi.service.component.annotations.Reference;
 public class BlueprintImporterImpl implements BlueprintImporter {
 
 	@Override
-	public void importBlueprint(long companyId, JSONObject jsonObject)
+	public void importBlueprint(
+			long companyId, long groupId, long userId, JSONObject jsonObject)
 		throws PortalException {
 
 		if (!_validate(jsonObject)) {
 			throw new BlueprintValidationException("Invalid Blueprint syntax");
 		}
 
-		_add(jsonObject, _createServiceContext(companyId), true);
+		_add(
+			jsonObject, _createServiceContext(companyId, groupId, userId),
+			true);
 	}
 
 	@Override
@@ -133,25 +128,18 @@ public class BlueprintImporterImpl implements BlueprintImporter {
 			BlueprintTypes.BLUEPRINT, serviceContext, privileged);
 	}
 
-	private ServiceContext _createServiceContext(long companyId)
+	private ServiceContext _createServiceContext(
+			long companyId, long groupId, long userId)
 		throws PortalException {
-
-		User defaultUser = _userLocalService.getDefaultUser(companyId);
-
-		PermissionThreadLocal.setPermissionChecker(
-			_permissionCheckerFactory.create(defaultUser));
-
-		LocaleThreadLocal.setDefaultLocale(
-			LocaleUtil.fromLanguageId(defaultUser.getLanguageId()));
 
 		ServiceContext serviceContext = new ServiceContext();
 
 		serviceContext.setAddGroupPermissions(true);
 		serviceContext.setAddGuestPermissions(true);
 		serviceContext.setCompanyId(companyId);
-		serviceContext.setScopeGroupId(_getGlobalGroupId(companyId));
+		serviceContext.setScopeGroupId(groupId);
 		serviceContext.setUuid(_createUUID());
-		serviceContext.setUserId(defaultUser.getUserId());
+		serviceContext.setUserId(userId);
 
 		return serviceContext;
 	}
@@ -172,12 +160,6 @@ public class BlueprintImporterImpl implements BlueprintImporter {
 		}
 
 		return _getLocalizationMap(descriptionJSONObject);
-	}
-
-	private long _getGlobalGroupId(long companyId) throws PortalException {
-		Group group = _groupLocalService.getCompanyGroup(companyId);
-
-		return group.getGroupId();
 	}
 
 	private Map<Locale, String> _getLocalizationMap(JSONObject jsonObject) {
@@ -331,18 +313,6 @@ public class BlueprintImporterImpl implements BlueprintImporter {
 	private BlueprintService _blueprintService;
 
 	@Reference
-	private GroupLocalService _groupLocalService;
-
-	@Reference
 	private JSONFactory _jsonFactory;
-
-	@Reference
-	private PermissionCheckerFactory _permissionCheckerFactory;
-
-	@Reference
-	private Portal _portal;
-
-	@Reference
-	private UserLocalService _userLocalService;
 
 }
