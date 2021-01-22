@@ -133,6 +133,12 @@ public class BlueprintLocalServiceImpl extends BlueprintLocalServiceBaseImpl {
 		return deleteBlueprint(blueprint);
 	}
 
+	public int getCompanyBlueprintsCount(
+			long companyId, int type) {
+
+		return blueprintPersistence.countByC_T(companyId, type);
+	}
+	
 	public List<Blueprint> getGroupBlueprints(
 		long groupId, int type, int start, int end) {
 

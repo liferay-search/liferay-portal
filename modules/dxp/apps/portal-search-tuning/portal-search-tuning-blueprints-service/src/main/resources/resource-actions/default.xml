@@ -40,9 +40,9 @@
 				<action-key>PERMISSIONS</action-key>
 				<action-key>UPDATE_BLUEPRINT</action-key>
 				<action-key>UPDATE_FRAGMENT</action-key>
+				<action-key>VIEW</action-key>
 				<action-key>VIEW_BLUEPRINT</action-key>
 				<action-key>VIEW_FRAGMENT</action-key>
-				<action-key>VIEW</action-key>
 			</supports>
 			<site-member-defaults>
 			</site-member-defaults>
@@ -55,9 +55,9 @@
 				<action-key>PERMISSIONS</action-key>
 				<action-key>UPDATE_BLUEPRINT</action-key>
 				<action-key>UPDATE_FRAGMENT</action-key>
+				<action-key>VIEW</action-key>
 				<action-key>VIEW_BLUEPRINT</action-key>
 				<action-key>VIEW_FRAGMENT</action-key>
-				<action-key>VIEW</action-key>
 			</guest-unsupported>
 		</permissions>
 	</model-resource>
