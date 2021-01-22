@@ -258,19 +258,6 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 		}
 	}
 
-	private String[] _getModelIndexerClassNames(Blueprint blueprint, long companyId) {
-		Optional<JSONArray> optional =
-			_blueprintHelper.getSearchableAssetTypesOptional(blueprint);
-
-		if (optional.isPresent()) {
-			return JSONUtil.toStringArray(optional.get());
-		}
-		
-		// TODO: remove after asset type selection is available on the UI
-		
-		return _getSearchableAssetTypes(companyId);
-	}
-
 	private List<String> _getExcludedSearchRequestBodyContributors(
 		ParameterData parameterData) {
 
@@ -322,18 +309,36 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 		return (page - 1) * size;
 	}
 
-	private String[] _getSearchableAssetTypes(long companyId) {
+	private String[] _getModelIndexerClassNames(
+		Blueprint blueprint, long companyId) {
 
+		Optional<JSONArray> optional =
+			_blueprintHelper.getSearchableAssetTypesOptional(blueprint);
+
+		if (optional.isPresent()) {
+			return JSONUtil.toStringArray(optional.get());
+		}
+
+		// TODO: remove after asset type selection is available on the UI
+
+		return _getSearchableAssetTypes(companyId);
+	}
+
+	private String[] _getSearchableAssetTypes(long companyId) {
 		List<AssetRendererFactory<?>> assetRendererFactories =
 			AssetRendererFactoryRegistryUtil.getAssetRendererFactories(
 				companyId, true);
 
 		Stream<AssetRendererFactory<?>> stream =
-				assetRendererFactories.stream();
+			assetRendererFactories.stream();
 
 		return stream.filter(
-				item -> item.isSearchable()
-			).map(AssetRendererFactory::getClassName).toArray(String[]::new);		
+			item -> item.isSearchable()
+		).map(
+			AssetRendererFactory::getClassName
+		).toArray(
+			String[]::new
+		);
 	}
 
 	private SearchRequestBuilder _getSearchRequestBuilder(
@@ -344,7 +349,8 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 			_searchRequestBuilderFactory.builder(
 			).companyId(
 				companyId
-			).emptySearchEnabled(true
+			).emptySearchEnabled(
+				true
 			).excludeContributors(
 				"com.liferay.portal.search.tuning.blueprints"
 			).explain(
@@ -353,7 +359,8 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 				_isIncludeResponseString(parameterData)
 			).locale(
 				locale
-			).modelIndexerClassNames(_getModelIndexerClassNames(blueprint, companyId)
+			).modelIndexerClassNames(
+				_getModelIndexerClassNames(blueprint, companyId)
 			).size(
 				_blueprintHelper.getSize(blueprint)
 			).from(

@@ -28,6 +28,7 @@ public interface AggregationTranslator {
 
 	public Optional<Aggregation> translate(
 		String aggregationName, JSONObject configurationJSONObject,
-		ParameterData parameterData, Messages messages);
+		ParameterData parameterData, Messages messages,
+		AggregationTranslatorFactory aggregationTranslatorFactory);
 
 }

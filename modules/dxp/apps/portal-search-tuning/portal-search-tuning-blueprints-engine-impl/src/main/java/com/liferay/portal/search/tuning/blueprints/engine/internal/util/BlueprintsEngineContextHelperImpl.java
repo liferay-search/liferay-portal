@@ -14,12 +14,12 @@
 
 package com.liferay.portal.search.tuning.blueprints.engine.internal.util;
 
-import com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.AggregationTranslatorFactory;
 import com.liferay.portal.search.tuning.blueprints.engine.internal.clause.ClauseTranslatorFactory;
 import com.liferay.portal.search.tuning.blueprints.engine.internal.condition.ConditionHandlerFactory;
 import com.liferay.portal.search.tuning.blueprints.engine.internal.suggester.SuggesterTranslatorFactory;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterDataCreator;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterDefinition;
+import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslatorFactory;
 import com.liferay.portal.search.tuning.blueprints.engine.util.BlueprintsEngineContextHelper;
 
 import java.util.List;

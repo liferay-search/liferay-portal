@@ -32,9 +32,9 @@ import com.liferay.portal.search.script.ScriptType;
 import com.liferay.portal.search.script.Scripts;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.aggregation.AggregationConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.aggregation.TermsAggregationBodyConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.engine.internal.aggregation.AggregationTranslatorFactory;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslator;
+import com.liferay.portal.search.tuning.blueprints.engine.spi.aggregation.AggregationTranslatorFactory;
 import com.liferay.portal.search.tuning.blueprints.message.Message;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 import com.liferay.portal.search.tuning.blueprints.message.Severity;
@@ -60,7 +60,8 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 	@Override
 	public Optional<Aggregation> translate(
 		String aggregationName, JSONObject configurationJSONObject,
-		ParameterData parameterData, Messages messages) {
+		ParameterData parameterData, Messages messages,
+		AggregationTranslatorFactory aggregationTranslatorFactory) {
 
 		if (_log.isDebugEnabled()) {
 			_log.debug(
@@ -83,7 +84,8 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 					getJsonKey())) {
 
 			_addChildAggregations(
-				aggregation, parameterData, messages,
+				aggregationTranslatorFactory, aggregation, parameterData,
+				messages,
 				configurationJSONObject.getJSONArray(
 					TermsAggregationBodyConfigurationKeys.AGGREGATIONS.
 						getJsonKey()));
@@ -181,6 +183,7 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 	}
 
 	private void _addChildAggregations(
+		AggregationTranslatorFactory aggregationTranslatorFactory,
 		TermsAggregation aggregation, ParameterData parameterData,
 		Messages messages, JSONArray childAggregationJSONArray) {
 
@@ -200,12 +203,12 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 
 			try {
 				AggregationTranslator aggregationBuilder =
-					_aggregationRequestBuilderFactory.getTranslator(type);
+					aggregationTranslatorFactory.getTranslator(type);
 
 				Optional<Aggregation> aggregationOptional =
 					aggregationBuilder.translate(
 						name, childAggregationJSONObject, parameterData,
-						messages);
+						messages, aggregationTranslatorFactory);
 
 				if (aggregationOptional.isPresent()) {
 					aggregation.addChildAggregation(aggregationOptional.get());
@@ -458,17 +461,13 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 				object -> {
 					JSONObject orderJSONObject = (JSONObject)object;
 
-					Order order = _getOrder(orderJSONObject, messages);
-
-					orders.add(order);
+					orders.add(_getOrder(orderJSONObject, messages));
 				});
 		}
 		else if (orderObject instanceof JSONObject) {
 			JSONObject orderJSONObject = (JSONObject)orderObject;
 
-			Order order = _getOrder(orderJSONObject, messages);
-
-			orders.add(order);
+			orders.add(_getOrder(orderJSONObject, messages));
 		}
 
 		Stream<Order> stream = orders.stream();
@@ -636,9 +635,6 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		TermsAggregationTranslator.class);
-
-	@Reference
-	private AggregationTranslatorFactory _aggregationRequestBuilderFactory;
 
 	@Reference
 	private Aggregations _aggregations;

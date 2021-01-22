@@ -49,9 +49,10 @@ public class GreaterThanVisitor implements ConditionEvaluationVisitor {
 	public GreaterThanVisitor(
 		JSONObject configurationJSONObject, boolean not, boolean equal) {
 
-		_conditionJSONObject = configurationJSONObject;
 		_not = not;
 		_equal = equal;
+
+		_conditionJSONObject = configurationJSONObject;
 	}
 
 	@Override
