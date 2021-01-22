@@ -41,7 +41,7 @@ export default {
 	},
 	uiConfigurationJSON: [
 		{
-			defaultValue: 10,
+			defaultValue: 20,
 			key: 'boost',
 			name: 'Boost',
 			type: 'slider',

@@ -38,7 +38,7 @@ export default {
 		conditions: [],
 		description: {
 			en_US:
-				'Give a gaussian boost to contents modified within a time frame',
+				'Give a gaussian boost to contents modified recently',
 		},
 		enabled: true,
 		icon: 'thumbs-up',
@@ -54,7 +54,7 @@ export default {
 			type: 'slider',
 		},
 		{
-			defaultValue: 0.4,
+			defaultValue: 0.5,
 			key: 'decay',
 			name: 'Decay',
 			type: 'number',
@@ -62,15 +62,15 @@ export default {
 		{
 			defaultValue: 0,
 			key: 'offset',
-			name: 'Offset',
+			name: 'Offset (days)',
 			type: 'number',
 			unit: 'days',
 			unitSuffix: 'd',
 		},
 		{
-			defaultValue: 30,
+			defaultValue: 10,
 			key: 'scale',
-			name: 'Scale',
+			name: 'Scale (days)',
 			type: 'number',
 			unit: 'days',
 			unitSuffix: 'd',

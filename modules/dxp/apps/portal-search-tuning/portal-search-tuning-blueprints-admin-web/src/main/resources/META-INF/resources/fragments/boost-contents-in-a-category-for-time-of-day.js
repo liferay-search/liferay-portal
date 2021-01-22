@@ -53,7 +53,7 @@ export default {
 		{
 			helpText: 'Add asset category ID',
 			key: 'asset_category_id',
-			name: 'Asset Category',
+			name: 'Asset Category ID',
 			type: 'number',
 		},
 		{
@@ -62,25 +62,25 @@ export default {
 			type: 'single-select',
 			typeOptions: [
 				{
-					label: 'Morning',
+					label: 'Morning (4am - 12am)',
 					value: 'morning',
 				},
 				{
-					label: 'Afternoon',
+					label: 'Afternoon (12pm - 5pm)',
 					value: 'afternoon',
 				},
 				{
-					label: 'Evening',
+					label: 'Evening (5pm - 8pm)',
 					value: 'evening',
 				},
 				{
-					label: 'Night',
+					label: 'Night (8pm - 4am)',
 					value: 'night',
 				},
 			],
 		},
 		{
-			defaultValue: 10,
+			defaultValue: 20,
 			key: 'boost',
 			name: 'Boost',
 			type: 'slider',

@@ -14,13 +14,12 @@ export default {
 		category: 'filter',
 		clauses: [
 			{
-				context: 'pre_filter',
-				occur: 'must',
+				context: 'query',
+				occur: 'filter',
 				query: {
 					query: {
 						terms: {
 							'${config.field}': '${config.values}',
-							boost: '${config.boost}',
 						},
 					},
 				},
@@ -29,7 +28,7 @@ export default {
 		],
 		conditions: [],
 		description: {
-			en_US: 'Filter results by one or multiple terms',
+			en_US: 'Filter results by one or multiple terms. At least one has to match',
 		},
 		enabled: true,
 		icon: 'filter',
@@ -54,12 +53,6 @@ export default {
 			key: 'values',
 			name: 'Values',
 			type: 'multiselect',
-		},
-		{
-			defaultValue: 1,
-			key: 'boost',
-			name: 'Boost',
-			type: 'slider',
 		},
 	],
 };

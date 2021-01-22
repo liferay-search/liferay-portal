@@ -23,7 +23,7 @@ export default {
 							fields: '${config.fields}',
 							operator: 'and',
 							query: '${keywords}',
-							type: 'cross_fields',
+							type: '${config.type}',
 						},
 					},
 				},
@@ -78,6 +78,38 @@ export default {
 			key: 'boost',
 			name: 'Boost',
 			type: 'slider',
+		},
+		{
+			defaultValue: 'best_fields',
+			key: 'type',
+			name: 'Match Type',
+			type: 'single-select',
+			typeOptions: [
+				{
+					label: 'Best Fields',
+					value: 'best_fields',
+				},
+				{
+					label: 'Most Fields',
+					value: 'most_fields',
+				},
+				{
+					label: 'Cross Fields',
+					value: 'cross_fields',
+				},
+				{
+					label: 'Phrase',
+					value: 'phrase',
+				},
+				{
+					label: 'Phrase Prefix',
+					value: 'phrase_prefix',
+				},
+				{
+					label: 'Boolean Prefix',
+					value: 'bool_prefix',
+				},
+			],
 		},
 	],
 };

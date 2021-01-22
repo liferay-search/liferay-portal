@@ -43,11 +43,11 @@ export default {
 		{
 			helpText: 'Add asset category ID',
 			key: 'asset_category_id',
-			name: 'Asset Category',
+			name: 'Asset Category ID',
 			type: 'number',
 		},
 		{
-			defaultValue: 10,
+			defaultValue: 20,
 			key: 'boost',
 			name: 'Boost',
 			type: 'slider',

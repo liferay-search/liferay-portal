@@ -36,8 +36,6 @@ export default {
 					match_value: ['${config.user_segment_id}'],
 					parameter_name: '${user.user_segment_entry_ids}',
 				},
-				handler: 'default',
-				operator: 'AND',
 			},
 		],
 		description: {
@@ -54,13 +52,13 @@ export default {
 		{
 			helpText: 'Add asset category ID',
 			key: 'asset_category_id',
-			name: 'Asset Category',
+			name: 'Asset Category ID',
 			type: 'number',
 		},
 		{
 			helpText: 'Add user segment ID',
 			key: 'user_segment_id',
-			name: 'User Segment',
+			name: 'User Segment ID',
 			type: 'number',
 		},
 		{

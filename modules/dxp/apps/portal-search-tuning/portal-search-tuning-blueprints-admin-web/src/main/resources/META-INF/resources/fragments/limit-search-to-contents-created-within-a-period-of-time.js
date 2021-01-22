@@ -14,8 +14,8 @@ export default {
 		category: 'filter',
 		clauses: [
 			{
-				context: 'pre_filter',
-				occur: 'must',
+				context: 'query',
+				occur: 'filter',
 				query: {
 					query: {
 						range: {

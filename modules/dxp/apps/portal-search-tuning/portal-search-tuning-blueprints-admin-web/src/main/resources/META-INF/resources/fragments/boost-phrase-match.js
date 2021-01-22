@@ -21,7 +21,6 @@ export default {
 						multi_match: {
 							boost: '${config.boost}',
 							fields: '${config.fields}',
-							operator: 'and',
 							query: '${keywords}',
 							type: 'phrase',
 						},

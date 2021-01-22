@@ -33,16 +33,14 @@ export default {
 			{
 				configuration: {
 					evaluation_type: 'any_word_in',
-					match_value: '${config.values}',
+					match_value: '${config.keywords}',
 					parameter_name: '${keywords}',
 				},
-				handler: 'default',
-				operator: 'AND',
 			},
 		],
 		description: {
 			en_US:
-				'Bring Web Contents in a category higher up in the results, if keywords match the given condition',
+				'Bring Web Contents in a category higher up in the results, if the searchphrase contains any of given keywords',
 		},
 		enabled: true,
 		icon: 'thumbs-up',
@@ -54,17 +52,17 @@ export default {
 		{
 			helpText: 'Add asset category ID',
 			key: 'asset_category_id',
-			name: 'Asset Category',
+			name: 'Asset Category ID',
 			type: 'number',
 		},
 		{
 			defaultValue: [],
-			key: 'values',
-			name: 'Values',
+			key: 'keywords',
+			name: 'Keywords',
 			type: 'multiselect',
 		},
 		{
-			defaultValue: 10,
+			defaultValue: 20,
 			key: 'boost',
 			name: 'Boost',
 			type: 'slider',

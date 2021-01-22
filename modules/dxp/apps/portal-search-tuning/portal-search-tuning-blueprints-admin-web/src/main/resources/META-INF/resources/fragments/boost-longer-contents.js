@@ -24,7 +24,7 @@ export default {
 								factor: '${config.factor}',
 								field:
 									'content${context.language_id}_length_sortable',
-								missing: '${config.missing}',
+								missing: 1,
 								modifier: '${config.modifier}',
 							},
 						},
@@ -46,19 +46,19 @@ export default {
 	},
 	uiConfigurationJSON: [
 		{
-			defaultValue: 3,
+			defaultValue: 30,
 			key: 'boost',
 			name: 'Boost',
 			type: 'slider',
 		},
 		{
-			defaultValue: 1.1,
+			defaultValue: 1.5,
 			key: 'factor',
 			name: 'Factor',
 			type: 'number',
 		},
 		{
-			defaultValue: 'log1p',
+			defaultValue: 'ln',
 			key: 'modifier',
 			name: 'Modifier',
 			type: 'single-select',
@@ -104,12 +104,6 @@ export default {
 					value: 'reciprocal',
 				},
 			],
-		},
-		{
-			defaultValue: 1,
-			key: 'missing',
-			name: 'Missing',
-			type: 'number',
 		},
 	],
 };

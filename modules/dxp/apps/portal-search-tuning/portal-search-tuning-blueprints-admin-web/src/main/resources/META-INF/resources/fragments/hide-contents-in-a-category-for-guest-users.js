@@ -42,8 +42,6 @@ export default {
 					match_value: false,
 					parameter_name: '${user.user_is_signed_in}',
 				},
-				handler: 'default',
-				operator: 'AND',
 			},
 		],
 		description: {
@@ -59,7 +57,7 @@ export default {
 		{
 			helpText: 'Add asset category ID',
 			key: 'asset_category_id',
-			name: 'Asset Category',
+			name: 'Asset Category ID',
 			type: 'number',
 		},
 	],

@@ -27,6 +27,7 @@ export default {
 										lat: '${ipstack.latitude}',
 										lon: '${ipstack.longitude}',
 									},
+									offset: 0,
 									scale: '${config.scale}',
 								},
 							},
@@ -49,7 +50,7 @@ export default {
 	},
 	uiConfigurationJSON: [
 		{
-			defaultValue: 40,
+			defaultValue: 20,
 			key: 'boost',
 			name: 'Boost',
 			type: 'slider',
@@ -69,7 +70,7 @@ export default {
 			type: 'number',
 		},
 		{
-			defaultValue: 1000,
+			defaultValue: 100,
 			key: 'scale',
 			name: 'Scale',
 			type: 'number',

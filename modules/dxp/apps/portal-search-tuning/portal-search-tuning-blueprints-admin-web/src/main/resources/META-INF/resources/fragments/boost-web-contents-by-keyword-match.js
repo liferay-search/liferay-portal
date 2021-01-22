@@ -40,7 +40,7 @@ export default {
 		],
 		description: {
 			en_US:
-				'Show selected Web Contents higher in the results, if keywords match',
+				'Show selected Web Contents higher in the results, if given keywords exist in the searchphrase',
 		},
 		enabled: true,
 		icon: 'thumbs-up',
@@ -52,13 +52,13 @@ export default {
 		{
 			helpText: 'Add article IDs',
 			key: 'article_ids',
-			name: 'Articles',
+			name: 'Article IDs',
 			type: 'multiselect',
 		},
 		{
 			defaultValue: [],
 			key: 'values',
-			name: 'Values',
+			name: 'Keywords',
 			type: 'multiselect',
 		},
 		{
