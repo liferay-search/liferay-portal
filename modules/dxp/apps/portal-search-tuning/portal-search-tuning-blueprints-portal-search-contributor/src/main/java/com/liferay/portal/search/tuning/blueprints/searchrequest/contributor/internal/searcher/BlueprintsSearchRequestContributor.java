@@ -20,7 +20,6 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.GetterUtil;
-import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.filter.ComplexQueryPartBuilderFactory;
 import com.liferay.portal.search.index.IndexNameBuilder;
 import com.liferay.portal.search.searcher.SearchRequest;
@@ -32,7 +31,7 @@ import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttribut
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributesBuilderFactory;
 import com.liferay.portal.search.tuning.blueprints.engine.constants.ReservedParameterNames;
 import com.liferay.portal.search.tuning.blueprints.engine.constants.SearchContextAttributeKeys;
-import com.liferay.portal.search.tuning.blueprints.engine.util.BlueprintsEngineHelper;
+import com.liferay.portal.search.tuning.blueprints.engine.util.BlueprintsSearchRequestContributorHelper;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
 import com.liferay.portal.search.tuning.blueprints.util.BlueprintHelper;
@@ -81,7 +80,7 @@ public class BlueprintsSearchRequestContributor
 		SearchRequestBuilder searchRequestBuilder =
 			_searchRequestBuilderFactory.builder(searchRequest);
 
-		_blueprintsEngineHelper.combine(
+		_blueprintsSearchRequestContributorHelper.combine(
 			searchRequestBuilder,
 			getBlueprintsAttributes(searchRequest, blueprintId), messages,
 			getBlueprintId(searchRequest));
@@ -269,7 +268,7 @@ public class BlueprintsSearchRequestContributor
 		_blueprintsAttributesBuilderFactory;
 
 	@Reference
-	private BlueprintsEngineHelper _blueprintsEngineHelper;
+	private BlueprintsSearchRequestContributorHelper _blueprintsSearchRequestContributorHelper;
 
 	@Reference
 	private BlueprintService _blueprintService;
