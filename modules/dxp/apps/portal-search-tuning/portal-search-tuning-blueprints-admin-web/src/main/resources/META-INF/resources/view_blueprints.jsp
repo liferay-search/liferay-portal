@@ -22,7 +22,7 @@ ViewBlueprintsManagementToolbarDisplayContext viewBlueprintsManagementToolbarDis
 ViewBlueprintsDisplayContext viewBlueprintsDisplayContext = (ViewBlueprintsDisplayContext)request.getAttribute(BlueprintsAdminWebKeys.VIEW_BLUEPRINTS_DISPLAY_CONTEXT);
 %>
 
-<clay:management-toolbar
+<clay:management-toolbar-v2
 	displayContext="<%= viewBlueprintsManagementToolbarDisplayContext %>"
 	searchContainerId="blueprintEntries"
 	supportsBulkActions="<%= true %>"
