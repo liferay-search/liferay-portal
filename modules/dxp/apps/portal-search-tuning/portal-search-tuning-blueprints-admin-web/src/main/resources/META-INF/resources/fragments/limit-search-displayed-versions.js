@@ -19,85 +19,40 @@ export default {
 				query: {
 					query: {
 						bool: {
-							must: [
+							should: [
 								{
 									bool: {
-										should: [
+										must: [
 											{
-												bool: {
-													must: [
-														{
-															range: {
-																displayDate_sortable: {
-																	from:
-																		'-9223372036854775808',
-																	include_lower: true,
-																	include_upper: true,
-																	to:
-																		'${time.current_date|dateFormat=timestamp}',
-																},
-															},
-														},
-														{
-															range: {
-																expirationDate_sortable: {
-																	from:
-																		'${time.current_date|dateFormat=timestamp}',
-																	include_lower: true,
-																	include_upper: true,
-																	to:
-																		'9223372036854775807',
-																},
-															},
-														},
-														{
-															term: {
-																entryClassName:
-																	'com.liferay.blogs.kernel.model.BlogsEntry',
-															},
-														},
-													],
+												range: {
+													displayDate_sortable: {
+														from:
+															'-9223372036854775808',
+														include_lower: true,
+														include_upper: true,
+														to:
+															'${time.current_date|dateFormat=timestamp}',
+													},
 												},
 											},
 											{
-												bool: {
-													must: [
-														{
-															range: {
-																displayDate_sortable: {
-																	from:
-																		'-9223372036854775808',
-																	include_lower: true,
-																	include_upper: true,
-																	to:
-																		'${time.current_date|dateFormat=timestamp}',
-																},
-															},
-														},
-														{
-															range: {
-																expirationDate_sortable: {
-																	from:
-																		'${time.current_date|dateFormat=timestamp}',
-																	include_lower: true,
-																	include_upper: true,
-																	to:
-																		'9223372036854775807',
-																},
-															},
-														},
-														{
-															term: {
-																entryClassName:
-																	'com.liferay.journal.model.JournalArticle',
-															},
-														},
-														{
-															term: {
-																head: 'true',
-															},
-														},
-													],
+												range: {
+													expirationDate_sortable: {
+														from:
+															'${time.current_date|dateFormat=timestamp}',
+														include_lower: true,
+														include_upper: true,
+														to:
+															'9223372036854775807',
+													},
+												},
+											},
+											{
+												terms: {
+													entryClassName: [
+														'com.liferay.blogs.kernel.model.BlogsEntry',
+														'com.liferay.journal.model.JournalArticle',
+													]
 												},
 											},
 										],

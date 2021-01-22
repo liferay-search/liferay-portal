@@ -21,7 +21,7 @@ export default {
 						wildcard: {
 							'${config.field}': {
 								boost: '${config.boost}',
-								value: '*${keywords}*',
+								value: '${keywords}*',
 							},
 						},
 					},
@@ -31,12 +31,12 @@ export default {
 		],
 		conditions: [],
 		description: {
-			en_US: 'Search for a text match from word parts',
+			en_US: 'Search for partial, prefix text matches',
 		},
 		enabled: true,
 		icon: 'picture',
 		title: {
-			en_US: 'Match Word Parts',
+			en_US: 'Match Word Prefixes',
 		},
 	},
 	uiConfigurationJSON: [
