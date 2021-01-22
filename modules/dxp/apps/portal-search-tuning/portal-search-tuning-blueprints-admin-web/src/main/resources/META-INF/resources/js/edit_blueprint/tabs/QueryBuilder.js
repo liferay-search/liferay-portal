@@ -193,6 +193,7 @@ function QueryBuilder({
 							'searchable-asset-types'
 						)}
 						displayType="unstyled"
+						onClick={(event) => event.preventDefault()}
 						showCollapseIcon
 					>
 						<ClayPanel.Body>
@@ -231,6 +232,7 @@ function QueryBuilder({
 						collapsable
 						displayTitle={Liferay.Language.get('framework')}
 						displayType="unstyled"
+						onClick={(event) => event.preventDefault()}
 						showCollapseIcon
 					>
 						<ClayPanel.Body>
@@ -287,7 +289,7 @@ QueryBuilder.propTypes = {
 	frameworkConfig: PropTypes.object,
 	onFrameworkConfigChange: PropTypes.func,
 	onToggleSidebar: PropTypes.func,
-	searchableAssetTypes: PropTypes.arrayOf(PropTypes.object),
+	searchableAssetTypes: PropTypes.arrayOf(PropTypes.string),
 	selectedFragments: PropTypes.arrayOf(PropTypes.object),
 	updateFragment: PropTypes.func,
 };
