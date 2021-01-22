@@ -27,7 +27,8 @@ import javax.portlet.PortletRequest;
  */
 public interface BlueprintImporter {
 
-	public void importBlueprint(long companyId, JSONObject jsonObject)
+	public void importBlueprint(
+			long companyId, long groupId, long userId, JSONObject jsonObject)
 		throws PortalException;
 
 	public void importBlueprint(
