@@ -18,10 +18,10 @@ export default {
 				occur: 'should',
 				query: {
 					query: {
-						match: {
+						term: {
 							'assetTagNames.raw': {
 								boost: '${config.boost}',
-								query: '${keywords}',
+								value: '${keywords}',
 							},
 						},
 					},

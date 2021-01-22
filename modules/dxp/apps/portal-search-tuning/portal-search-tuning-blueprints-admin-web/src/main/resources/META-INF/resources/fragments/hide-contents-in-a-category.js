@@ -14,8 +14,8 @@ export default {
 		category: 'hide',
 		clauses: [
 			{
-				context: 'pre_filter',
-				occur: 'must',
+				context: 'query',
+				occur: 'filter',
 				query: {
 					query: {
 						bool: {

@@ -16,6 +16,7 @@ package com.liferay.portal.search.tuning.blueprints.engine.internal.condition.vi
 
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.tuning.blueprints.engine.exception.ParameterEvaluationException;
 import com.liferay.portal.search.tuning.blueprints.engine.internal.util.BlueprintValueUtil;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.BooleanParameter;
@@ -113,20 +114,15 @@ public class AnyWordInVisitor implements ConditionEvaluationVisitor {
 		JSONArray jsonArray = BlueprintValueUtil.getConditionValueJSONArray(
 			_conditionJSONObject);
 
-		String parameterValue = parameter.getValue();
-
-		String[] arr = parameterValue.split("\\s*,|\\s+|-|\\.\\s*");
+		String parameterValue = StringUtil.toLowerCase(parameter.getValue());
 
 		boolean match = false;
 
 		for (int i = 0; i < jsonArray.length(); i++) {
-			String value = jsonArray.getString(i);
-
-			Stream<String> stream = Arrays.stream(arr);
-
-			if (stream.anyMatch(value::equals)) {
+			String value = StringUtil.toLowerCase(jsonArray.getString(i));
+			
+			if (parameterValue.contains(value)) {
 				match = true;
-
 				break;
 			}
 		}

@@ -23,7 +23,7 @@ export default {
 							field_value_factor: {
 								factor: '${config.factor}',
 								field: 'versionCount_sortable',
-								missing: '${config.missing}',
+								missing: 1,
 								modifier: '${config.modifier}',
 							},
 						},
@@ -44,7 +44,7 @@ export default {
 	},
 	uiConfigurationJSON: [
 		{
-			defaultValue: 6,
+			defaultValue: 10,
 			key: 'boost',
 			name: 'Boost',
 			type: 'slider',
@@ -102,12 +102,6 @@ export default {
 					value: 'reciprocal',
 				},
 			],
-		},
-		{
-			defaultValue: 1,
-			key: 'missing',
-			name: 'Missing',
-			type: 'number',
 		},
 	],
 };

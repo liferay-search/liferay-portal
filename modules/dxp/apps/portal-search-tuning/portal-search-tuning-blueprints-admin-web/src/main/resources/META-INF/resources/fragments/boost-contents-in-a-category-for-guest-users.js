@@ -32,12 +32,10 @@ export default {
 		conditions: [
 			{
 				configuration: {
-					evaluation_type: 'equals',
+					evaluation_type: 'eq',
 					match_value: false,
-					parameter_name: '${user.is_signed_in}',
+					parameter_name: '${user.user_is_signed_in}',
 				},
-				handler: 'default',
-				operator: 'AND',
 			},
 		],
 		description: {
@@ -57,7 +55,7 @@ export default {
 			type: 'number',
 		},
 		{
-			defaultValue: 10,
+			defaultValue: 20,
 			key: 'boost',
 			name: 'Boost',
 			type: 'slider',

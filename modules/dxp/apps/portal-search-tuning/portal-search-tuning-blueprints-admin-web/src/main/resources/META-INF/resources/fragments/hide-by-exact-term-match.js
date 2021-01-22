@@ -14,8 +14,8 @@ export default {
 		category: 'hide',
 		clauses: [
 			{
-				context: 'pre_filter',
-				occur: 'must',
+				context: 'query',
+				occur: 'filter',
 				query: {
 					query: {
 						bool: {
@@ -62,19 +62,15 @@ export default {
 				},
 				{
 					label: 'groupId',
-					value: 'groupId',
+					value: 'Group ID',
 				},
 				{
-					label: 'localized_title',
-					value: 'localized_title',
+					label: 'userId',
+					value: 'User ID',
 				},
 				{
-					label: 'description',
-					value: 'description',
-				},
-				{
-					label: 'content',
-					value: 'content',
+					label: 'articleId',
+					value: 'Web Content Article ID',
 				},
 			],
 		},

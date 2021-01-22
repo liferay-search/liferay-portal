@@ -65,6 +65,8 @@ public class CleanKeywordsProcessor implements KeywordsProcessor {
 		keywords = keywords.replaceAll("/", "&#8725;");
 		keywords = keywords.replaceAll("\\\\", "&#92;");
 
+		keywords = keywords.replaceAll("\"", "\\\\\"");
+
 		return keywords;
 	}
 

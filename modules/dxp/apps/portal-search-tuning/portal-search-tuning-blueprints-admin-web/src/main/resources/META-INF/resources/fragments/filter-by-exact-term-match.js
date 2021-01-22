@@ -14,13 +14,12 @@ export default {
 		category: 'filter',
 		clauses: [
 			{
-				context: 'pre_filter',
-				occur: 'must',
+				context: 'query',
+				occur: 'filter',
 				query: {
 					query: {
 						term: {
 							'${config.field}': {
-								boost: '${config.boost}',
 								value: '${config.value}',
 							},
 						},
@@ -56,12 +55,6 @@ export default {
 			key: 'value',
 			name: 'Value',
 			type: 'text',
-		},
-		{
-			defaultValue: 1,
-			key: 'boost',
-			name: 'Boost',
-			type: 'slider',
 		},
 	],
 };

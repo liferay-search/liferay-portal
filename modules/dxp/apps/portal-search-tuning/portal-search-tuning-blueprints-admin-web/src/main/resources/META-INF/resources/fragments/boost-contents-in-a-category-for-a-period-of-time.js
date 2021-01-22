@@ -37,8 +37,6 @@ export default {
 					match_value: ['${config.start_date}', '${config.end_date}'],
 					parameter_name: '${time.current_date}',
 				},
-				handler: 'default',
-				operator: 'AND',
 			},
 		],
 		description: {
@@ -70,7 +68,7 @@ export default {
 			type: 'date',
 		},
 		{
-			defaultValue: 10,
+			defaultValue: 20,
 			key: 'boost',
 			name: 'Boost',
 			type: 'slider',
