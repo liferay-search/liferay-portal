@@ -335,7 +335,7 @@ EditBlueprintForm.propTypes = {
 	initialTitle: PropTypes.object,
 	queryFragments: PropTypes.arrayOf(PropTypes.object),
 	redirectURL: PropTypes.string,
-	searchableAssetTypes: PropTypes.arrayOf(PropTypes.object),
+	searchableAssetTypes: PropTypes.arrayOf(PropTypes.string),
 	submitFormURL: PropTypes.string,
 };
 
