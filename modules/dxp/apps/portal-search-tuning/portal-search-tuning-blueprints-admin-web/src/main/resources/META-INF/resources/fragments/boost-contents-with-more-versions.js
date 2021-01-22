@@ -21,10 +21,10 @@ export default {
 						function_score: {
 							boost: '${config.boost}',
 							field_value_factor: {
-								field: 'versionCount_sortable',
 								factor: '${config.factor}',
-								modifier: '${config.modifier}',
+								field: 'versionCount_sortable',
 								missing: '${config.missing}',
+								modifier: '${config.modifier}',
 							},
 						},
 					},
