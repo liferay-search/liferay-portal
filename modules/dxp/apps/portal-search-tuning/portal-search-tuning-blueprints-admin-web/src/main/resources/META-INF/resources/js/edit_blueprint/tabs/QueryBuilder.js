@@ -193,7 +193,7 @@ function QueryBuilder({
 							'searchable-asset-types'
 						)}
 						displayType="unstyled"
-						onClick={(event) => event.preventDefault()}
+						expanded
 						showCollapseIcon
 					>
 						<ClayPanel.Body>
@@ -232,7 +232,7 @@ function QueryBuilder({
 						collapsable
 						displayTitle={Liferay.Language.get('framework')}
 						displayType="unstyled"
-						onClick={(event) => event.preventDefault()}
+						expanded
 						showCollapseIcon
 					>
 						<ClayPanel.Body>

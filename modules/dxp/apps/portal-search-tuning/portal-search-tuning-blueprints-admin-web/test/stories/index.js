@@ -25,6 +25,7 @@ import ClayLayout from '@clayui/layout';
 import BlueprintForm from '../../src/main/resources/META-INF/resources/js/edit_blueprint';
 import Sidebar from '../../src/main/resources/META-INF/resources/js/edit_blueprint/Sidebar';
 import QueryBuilder from '../../src/main/resources/META-INF/resources/js/edit_blueprint/tabs/QueryBuilder';
+import SelectAssetTypes from '../../src/main/resources/META-INF/resources/js/edit_blueprint/tabs/SelectAssetTypes';
 import FragmentForm from '../../src/main/resources/META-INF/resources/js/edit_fragment';
 import ConfigFragment from '../../src/main/resources/META-INF/resources/js/shared/ConfigFragment';
 import ErrorBoundary from '../../src/main/resources/META-INF/resources/js/shared/ErrorBoundary';
@@ -34,6 +35,7 @@ import SearchInput from '../../src/main/resources/META-INF/resources/js/shared/S
 import {
 	DEFAULT_EDIT_FRAGMENT,
 	DEFAULT_FRAGMENT,
+	DEFAULT_FRAMEWORK_CONFIGURATION,
 } from '../../src/main/resources/META-INF/resources/js/utils/data';
 import {convertToSelectedFragment} from '../../src/main/resources/META-INF/resources/js/utils/utils';
 import AddBlueprintModal from '../../src/main/resources/META-INF/resources/js/view_blueprints/AddBlueprintModal';
@@ -314,6 +316,8 @@ storiesOf('Components|QueryBuilder', module)
 	.add('QueryBuilder', () => (
 		<QueryBuilder
 			deleteFragment={action('buildFragment')}
+			frameworkConfig={DEFAULT_FRAMEWORK_CONFIGURATION}
+			searchableAssetTypes={SEARCHABLE_ASSET_TYPES}
 			selectedFragments={SELECTED_FRAGMENTS}
 			updateFragment={action('updateFragment')}
 		/>
@@ -325,6 +329,17 @@ storiesOf('Components|SearchInput', module)
 		<SearchInput
 			onChange={action('onChange')}
 			onSubmit={action('onSubmit')}
+		/>
+	));
+
+storiesOf('Components|SelectAssetTypes', module)
+	.addDecorator(withBlueprintsClass)
+	.addDecorator(withContainer)
+	.add('SelectAssetTypes', () => (
+		<SelectAssetTypes
+			searchableAssetTypes={SEARCHABLE_ASSET_TYPES}
+			selectedAssetTypes={[]}
+			updateSelectedAssetTypes={action('updateSelectedAssetTypes')}
 		/>
 	));
 
