@@ -57,7 +57,7 @@ export default {
 		{
 			helpText: 'Add asset category ID',
 			key: 'asset_category_id',
-			name: 'Asset Category ID',
+			name: 'Asset Category',
 			type: 'number',
 		},
 	],

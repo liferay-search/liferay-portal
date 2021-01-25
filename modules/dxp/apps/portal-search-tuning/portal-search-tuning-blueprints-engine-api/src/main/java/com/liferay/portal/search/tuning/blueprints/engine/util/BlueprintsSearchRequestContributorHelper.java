@@ -24,7 +24,8 @@ import com.liferay.portal.search.tuning.blueprints.message.Messages;
 public interface BlueprintsSearchRequestContributorHelper {
 
 	public void combine(
-			SearchRequestBuilder searchRequestBuilder,
-			BlueprintsAttributes blueprintsAttributes, Messages messages,
-			long blueprintId);
+		SearchRequestBuilder searchRequestBuilder,
+		BlueprintsAttributes blueprintsAttributes, Messages messages,
+		long blueprintId);
+
 }

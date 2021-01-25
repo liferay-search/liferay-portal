@@ -37,8 +37,7 @@ export default {
 		],
 		conditions: [],
 		description: {
-			en_US:
-				'Give a gaussian boost to contents modified recently',
+			en_US: 'Give a gaussian boost to contents modified recently',
 		},
 		enabled: true,
 		icon: 'thumbs-up',

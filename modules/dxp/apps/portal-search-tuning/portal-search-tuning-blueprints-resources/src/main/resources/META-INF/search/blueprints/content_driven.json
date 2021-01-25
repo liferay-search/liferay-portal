@@ -2,25 +2,9 @@
 	"payload": {
 		"configuration": {
 			"advanced_configuration": {
-				"highlighting": {
-					"enabled": "true",
-					"fields": [
-						"localized_title${context.language_id}",
-						"content${context.language_id}"
-					],
-					"fragment_size": "50",
-					"require_field_match": "true",
-					"snippet_size": "10"
-				},
-				"page_size": 10,
 				"query_processing": {
 					"exclude_query_contributors": "",
 					"exclude_query_post_processors": ""
-				},
-				"source": {
-					"fetch_source": true,
-					"source_excludes": "",
-					"source_includes": ""
 				}
 			},
 			"aggregation_configuration": [
@@ -31,28 +15,42 @@
 				"apply_indexer_clauses": false
 			},
 			"parameter_configuration": {
-				"custom": [
-					{
-						"configuration": {
-							"date_format": "yyyymmdd",
-							"min": "1970-11-11"
-						},
-						"parameter_name": "dateFrom",
-						"type": "date"
-					},
-					{
-						"parameter_name": "time",
-						"type": "time_range"
-					}
-				],
-				"keywords": {
-					"parameter_name": "q"
-				},
-				"page": {
-					"parameter_name": "page"
-				}
 			},
 			"query_configuration": [
+				{
+					"category": "match",
+					"clauses": [
+						{
+							"context": "query",
+							"occur": "must",
+							"query": {
+								"query": {
+									"simple_query_string": {
+										"boost": 1,
+										"default_operator": "or",
+										"fields": [
+											"localized_title${context.language_id}^2",
+											"content${context.language_id}^2",
+											"description${context.language_id}"
+										],
+										"query": "${keywords}"
+									}
+								}
+							},
+							"type": "wrapper"
+						}
+					],
+					"conditions": [
+					],
+					"description": {
+						"en_US": "Enable searching using the Lucene syntax"
+					},
+					"enabled": true,
+					"icon": "picture",
+					"title": {
+						"en_US": "Search with the Lucene Syntax"
+					}
+				},
 				{
 					"category": "match",
 					"clauses": [
@@ -68,6 +66,7 @@
 											"content${context.language_id}",
 											"description${context.language_id}"
 										],
+										"fuzziness": "AUTO",
 										"operator": "or",
 										"query": "${keywords}",
 										"type": "best_fields"
@@ -96,16 +95,25 @@
 							"occur": "should",
 							"query": {
 								"query": {
-									"multi_match": {
-										"boost": 10,
-										"fields": [
-											"localized_title${context.language_id}^2",
-											"content${context.language_id}",
-											"description${context.language_id}"
-										],
-										"operator": "and",
-										"query": "${keywords}",
-										"type": "cross_fields"
+									"bool": {
+										"must": [
+											{
+												"terms": {
+													"entryClassName": [
+														"com.liferay.portal.kernel.model.Layout",
+														"com.liferay.journal.model.JournalArticle"
+													]
+												}
+											},
+											{
+												"term": {
+													"defaultLanguageId": {
+														"boost": 20,
+														"value": "${context.language_id}"
+													}
+												}
+											}
+										]
 									}
 								}
 							},
@@ -115,12 +123,12 @@
 					"conditions": [
 					],
 					"description": {
-						"en_US": "Boost contents where all keywords of a search phrase match"
+						"en_US": "Boost contents with current session language as the default language"
 					},
 					"enabled": true,
 					"icon": "thumbs-up",
 					"title": {
-						"en_US": "Boost All Keywords Match"
+						"en_US": "Boost Contents for the Current Language"
 					}
 				},
 				{
@@ -131,45 +139,13 @@
 							"occur": "should",
 							"query": {
 								"query": {
-									"multi_match": {
+									"function_score": {
 										"boost": 10,
-										"fields": [
-											"localized_title${context.language_id}^2",
-											"content${context.language_id}"
-										],
-										"operator": "and",
-										"query": "${keywords}",
-										"type": "phrase"
-									}
-								}
-							},
-							"type": "wrapper"
-						}
-					],
-					"conditions": [
-					],
-					"description": {
-						"en_US": "Boost contents where there’s an exact phrase match"
-					},
-					"enabled": true,
-					"icon": "thumbs-up",
-					"title": {
-						"en_US": "Boost Phrase Match"
-					}
-				},
-				{
-					"category": "boost",
-					"clauses": [
-						{
-							"context": "query",
-							"occur": "should",
-							"query": {
-								"query": {
-									"match_phrase_prefix": {
-										"localized_title${context.language_id}": {
-											"boost": 10,
-											"query": "${keywords}",
-											"slop": 0
+										"field_value_factor": {
+											"factor": 1.2,
+											"field": "versionCount_sortable",
+											"missing": 1,
+											"modifier": "sqrt"
 										}
 									}
 								}
@@ -180,12 +156,12 @@
 					"conditions": [
 					],
 					"description": {
-						"en_US": "Boost contents where there's a phrase match in the beginning of field"
+						"en_US": "Boost contents edited more often"
 					},
 					"enabled": true,
 					"icon": "thumbs-up",
 					"title": {
-						"en_US": "Boost Phrase Prefix Match"
+						"en_US": "Boost Contents With More Versions"
 					}
 				},
 				{
@@ -196,10 +172,78 @@
 							"occur": "should",
 							"query": {
 								"query": {
-									"match": {
+									"function_score": {
+										"boost": 30,
+										"field_value_factor": {
+											"factor": 1.5,
+											"field": "content${context.language_id}_length_sortable",
+											"missing": 1,
+											"modifier": "ln"
+										}
+									}
+								}
+							},
+							"type": "wrapper"
+						}
+					],
+					"conditions": [
+					],
+					"description": {
+						"en_US": "Boost contents with longer content translation for the current language"
+					},
+					"enabled": true,
+					"icon": "thumbs-up",
+					"title": {
+						"en_US": "Boost Longer Contents"
+					}
+				},
+				{
+					"category": "boost",
+					"clauses": [
+						{
+							"context": "query",
+							"occur": "should",
+							"query": {
+								"query": {
+									"function_score": {
+										"boost": 40,
+										"gauss": {
+											"modified": {
+												"decay": 0.5,
+												"offset": "0d",
+												"origin": "${time.current_date|dateFormat=yyyyMMddHHmmss}",
+												"scale": "10d"
+											}
+										}
+									}
+								}
+							},
+							"type": "wrapper"
+						}
+					],
+					"conditions": [
+					],
+					"description": {
+						"en_US": "Give a gaussian boost to contents modified recently"
+					},
+					"enabled": true,
+					"icon": "thumbs-up",
+					"title": {
+						"en_US": "Boost Freshness"
+					}
+				},
+				{
+					"category": "boost",
+					"clauses": [
+						{
+							"context": "query",
+							"occur": "should",
+							"query": {
+								"query": {
+									"term": {
 										"assetTagNames.raw": {
 											"boost": 10,
-											"query": "${keywords}"
+											"value": "${keywords}"
 										}
 									}
 								}
@@ -226,16 +270,15 @@
 							"occur": "should",
 							"query": {
 								"query": {
-									"function_score": {
-										"boost": 40,
-										"gauss": {
-											"modified": {
-												"decay": 0.4,
-												"offset": "0d",
-												"origin": "${time.current_date|dateFormat=yyyyMMddHHmmss}",
-												"scale": "30d"
-											}
-										}
+									"multi_match": {
+										"boost": 10,
+										"fields": [
+											"localized_title${context.language_id}^2",
+											"content${context.language_id}"
+										],
+										"operator": "and",
+										"query": "${keywords}",
+										"type": "best_fields"
 									}
 								}
 							},
@@ -245,27 +288,508 @@
 					"conditions": [
 					],
 					"description": {
-						"en_US": "Give a gaussian boost to contents modified within a time frame"
+						"en_US": "Boost contents matching all the words in the search phrase"
 					},
 					"enabled": true,
 					"icon": "thumbs-up",
 					"title": {
-						"en_US": "Boost Freshness"
+						"en_US": "Boost All Keywords Match"
+					}
+				},
+				{
+					"category": "hide",
+					"clauses": [
+						{
+							"context": "query",
+							"occur": "filter",
+							"query": {
+								"query": {
+									"bool": {
+										"should": [
+											{
+												"bool": {
+													"must_not": [
+														{
+															"exists": {
+																"field": "discussion"
+															}
+														}
+													]
+												}
+											},
+											{
+												"bool": {
+													"must": [
+														{
+															"term": {
+																"discussion": false
+															}
+														}
+													]
+												}
+											}
+										]
+									}
+								}
+							},
+							"type": "wrapper"
+						}
+					],
+					"conditions": [
+					],
+					"description": {
+						"en_US": "Do not search for comments"
+					},
+					"enabled": true,
+					"icon": "hidden",
+					"title": {
+						"en_US": "Hide Comments"
+					}
+				},
+				{
+					"category": "hide",
+					"clauses": [
+						{
+							"context": "query",
+							"occur": "filter",
+							"query": {
+								"query": {
+									"bool": {
+										"should": [
+											{
+												"bool": {
+													"must_not": [
+														{
+															"exists": {
+																"field": "hidden"
+															}
+														}
+													]
+												}
+											},
+											{
+												"bool": {
+													"must": [
+														{
+															"term": {
+																"hidden": false
+															}
+														}
+													]
+												}
+											}
+										]
+									}
+								}
+							},
+							"type": "wrapper"
+						}
+					],
+					"conditions": [
+					],
+					"description": {
+						"en_US": "Hide assets which are marked not searchable"
+					},
+					"enabled": true,
+					"icon": "hidden",
+					"title": {
+						"en_US": "Hide Hidden Contents"
+					}
+				},
+				{
+					"category": "filter",
+					"clauses": [
+						{
+							"context": "query",
+							"occur": "filter",
+							"query": {
+								"query": {
+									"bool": {
+										"should": [
+											{
+												"bool": {
+													"must_not": [
+														{
+															"term": {
+																"entryClassName": {
+																	"value": "com.liferay.journal.model.JournalArticle"
+																}
+															}
+														}
+													]
+												}
+											},
+											{
+												"bool": {
+													"must": [
+														{
+															"term": {
+																"entryClassName": {
+																	"value": "com.liferay.journal.model.JournalArticle"
+																}
+															}
+														},
+														{
+															"term": {
+																"head": {
+																	"value": true
+																}
+															}
+														}
+													]
+												}
+											}
+										]
+									}
+								}
+							},
+							"type": "wrapper"
+						}
+					],
+					"conditions": [
+					],
+					"description": {
+						"en_US": "Show only the latest HEAD version of Web Content articles"
+					},
+					"enabled": true,
+					"icon": "filter",
+					"title": {
+						"en_US": "Limit Search to HEAD Version"
+					}
+				},
+				{
+					"category": "filter",
+					"clauses": [
+						{
+							"context": "query",
+							"occur": "filter",
+							"query": {
+								"query": {
+									"term": {
+										"status": 0
+									}
+								}
+							},
+							"type": "wrapper"
+						}
+					],
+					"conditions": [
+					],
+					"description": {
+						"en_US": "Limit search to contents that have been published"
+					},
+					"enabled": true,
+					"icon": "filter",
+					"title": {
+						"en_US": "Limit Search to Published Contents"
+					}
+				},
+				{
+					"category": "filter",
+					"clauses": [
+						{
+							"context": "query",
+							"occur": "filter",
+							"query": {
+								"query": {
+									"bool": {
+										"should": [
+											{
+												"bool": {
+													"must_not": [
+														{
+															"exists": {
+																"field": "displayDate"
+															}
+														}
+													]
+												}
+											},
+											{
+												"bool": {
+													"must": [
+														{
+															"range": {
+																"displayDate_sortable": {
+																	"from": "-9223372036854775808",
+																	"include_lower": true,
+																	"include_upper": true,
+																	"to": "${time.current_date|dateFormat=timestamp}"
+																}
+															}
+														},
+														{
+															"range": {
+																"expirationDate_sortable": {
+																	"from": "${time.current_date|dateFormat=timestamp}",
+																	"include_lower": true,
+																	"include_upper": true,
+																	"to": "9223372036854775807"
+																}
+															}
+														}
+													]
+												}
+											}
+										]
+									}
+								}
+							},
+							"type": "wrapper"
+						}
+					],
+					"conditions": [
+					],
+					"description": {
+						"en_US": "Show only contents with a valid display date"
+					},
+					"enabled": true,
+					"icon": "filter",
+					"title": {
+						"en_US": "Scheduling Aware"
+					}
+				},
+				{
+					"category": "filter",
+					"clauses": [
+						{
+							"context": "query",
+							"occur": "filter",
+							"query": {
+								"query": {
+									"bool": {
+										"should": [
+											{
+												"bool": {
+													"must_not": [
+														{
+															"exists": {
+																"field": "stagingGroup"
+															}
+														}
+													]
+												}
+											},
+											{
+												"bool": {
+													"must": [
+														{
+															"term": {
+																"stagingGroup": false
+															}
+														}
+													]
+												}
+											}
+										]
+									}
+								}
+							},
+							"type": "wrapper"
+						}
+					],
+					"conditions": [
+						{
+							"configuration": {
+								"evaluation_type": "eq",
+								"match_value": false,
+								"parameter_name": "${context.is_staging_group}"
+							}
+						}
+					],
+					"description": {
+						"en_US": "Show only published contents on live sites, published and staged contents on staging sites"
+					},
+					"enabled": true,
+					"icon": "thumbs-up",
+					"title": {
+						"en_US": "Staging Aware"
+					}
+				},
+				{
+					"category": "filter",
+					"clauses": [
+						{
+							"context": "query",
+							"occur": "filter",
+							"query": {
+								"query": {
+									"bool": {
+										"must_not": [
+											{
+												"exists": {
+													"field": "ctCollectionId"
+												}
+											}
+										]
+									}
+								}
+							},
+							"type": "wrapper"
+						}
+					],
+					"conditions": [
+					],
+					"description": {
+						"en_US": "When Publications feature is enabled, show only published contents"
+					},
+					"enabled": true,
+					"icon": "thumbs-up",
+					"title": {
+						"en_US": "Publications Aware"
 					}
 				}
 			],
 			"sort_configuration": {
-				"default": [
-				],
-				"parameters": [
-				]
 			}
 		},
 		"description": {
-			"en_US": "Sample Search Blueprint for content driven sites. Emphasizes qualities like content's freshness, length and meta data in calculating relevance. Uses custom clauses."
+			"en_US": "A Sample Blueprint with custom clauses for content driven sites. Emphasizes content qualities like freshness, length and updates in calculating relevance."
 		},
 		"selected_fragments": {
 			"query_configuration": [
+				{
+					"fragmentOutput": {
+						"category": "match",
+						"clauses": [
+							{
+								"context": "query",
+								"occur": "must",
+								"query": {
+									"query": {
+										"simple_query_string": {
+											"boost": 1,
+											"default_operator": "or",
+											"fields": [
+												"localized_title${context.language_id}^2",
+												"content${context.language_id}^2",
+												"description${context.language_id}"
+											],
+											"query": "${keywords}"
+										}
+									}
+								},
+								"type": "wrapper"
+							}
+						],
+						"conditions": [
+						],
+						"description": {
+							"en_US": "Enable searching using the Lucene syntax"
+						},
+						"enabled": true,
+						"icon": "picture",
+						"title": {
+							"en_US": "Search with the Lucene Syntax"
+						}
+					},
+					"fragmentTemplateJSON": {
+						"category": "match",
+						"clauses": [
+							{
+								"context": "query",
+								"occur": "must",
+								"query": {
+									"query": {
+										"simple_query_string": {
+											"boost": "${config.boost}",
+											"default_operator": "${config.operator}",
+											"fields": "${config.fields}",
+											"query": "${keywords}"
+										}
+									}
+								},
+								"type": "wrapper"
+							}
+						],
+						"conditions": [
+						],
+						"description": {
+							"en_US": "Enable searching using the Lucene syntax"
+						},
+						"enabled": true,
+						"icon": "picture",
+						"title": {
+							"en_US": "Search with the Lucene Syntax"
+						}
+					},
+					"uiConfigurationJSON": [
+						{
+							"boost": true,
+							"defaultValue": [
+								{
+									"boost": "2",
+									"field": "localized_title",
+									"locale": "${context.language_id}"
+								},
+								{
+									"boost": "2",
+									"field": "content",
+									"locale": "${context.language_id}"
+								}
+							],
+							"key": "fields",
+							"name": "Fields",
+							"type": "field",
+							"typeOptions": [
+								{
+									"label": "Title",
+									"value": "localized_title"
+								},
+								{
+									"label": "Description",
+									"value": "description"
+								},
+								{
+									"label": "Content",
+									"value": "content"
+								}
+							]
+						},
+						{
+							"key": "operator",
+							"name": "Operator",
+							"type": "single-select",
+							"typeOptions": [
+								{
+									"label": "OR",
+									"value": "or"
+								},
+								{
+									"label": "AND",
+									"value": "and"
+								}
+							]
+						},
+						{
+							"defaultValue": 1,
+							"key": "boost",
+							"name": "Boost",
+							"type": "slider"
+						}
+					],
+					"uiConfigurationValues": {
+						"boost": 1,
+						"fields": [
+							{
+								"boost": "2",
+								"field": "localized_title",
+								"locale": "${context.language_id}"
+							},
+							{
+								"boost": "2",
+								"field": "content",
+								"locale": "${context.language_id}"
+							},
+							{
+								"boost": 1,
+								"field": "description",
+								"locale": "${context.language_id}"
+							}
+						],
+						"operator": "or"
+					}
+				},
 				{
 					"fragmentOutput": {
 						"category": "match",
@@ -282,6 +806,7 @@
 												"content${context.language_id}",
 												"description${context.language_id}"
 											],
+											"fuzziness": "AUTO",
 											"operator": "or",
 											"query": "${keywords}",
 											"type": "best_fields"
@@ -313,6 +838,7 @@
 										"multi_match": {
 											"boost": "${config.boost}",
 											"fields": "${config.fields}",
+											"fuzziness": "${config.fuzziness}",
 											"operator": "${config.operator}",
 											"query": "${keywords}",
 											"type": "${config.type}"
@@ -415,6 +941,29 @@
 							]
 						},
 						{
+							"key": "fuzziness",
+							"name": "Fuzziness",
+							"type": "single-select",
+							"typeOptions": [
+								{
+									"label": "Auto",
+									"value": "AUTO"
+								},
+								{
+									"label": "0",
+									"value": "0"
+								},
+								{
+									"label": "1",
+									"value": "1"
+								},
+								{
+									"label": "2",
+									"value": "2"
+								}
+							]
+						},
+						{
 							"defaultValue": 1,
 							"key": "boost",
 							"name": "Boost",
@@ -440,6 +989,7 @@
 								"locale": "${context.language_id}"
 							}
 						],
+						"fuzziness": "AUTO",
 						"operator": "or",
 						"type": "best_fields"
 					}
@@ -453,16 +1003,25 @@
 								"occur": "should",
 								"query": {
 									"query": {
-										"multi_match": {
-											"boost": 10,
-											"fields": [
-												"localized_title${context.language_id}^2",
-												"content${context.language_id}",
-												"description${context.language_id}"
-											],
-											"operator": "and",
-											"query": "${keywords}",
-											"type": "cross_fields"
+										"bool": {
+											"must": [
+												{
+													"terms": {
+														"entryClassName": [
+															"com.liferay.portal.kernel.model.Layout",
+															"com.liferay.journal.model.JournalArticle"
+														]
+													}
+												},
+												{
+													"term": {
+														"defaultLanguageId": {
+															"boost": 20,
+															"value": "${context.language_id}"
+														}
+													}
+												}
+											]
 										}
 									}
 								},
@@ -472,12 +1031,12 @@
 						"conditions": [
 						],
 						"description": {
-							"en_US": "Boost contents where all keywords of a search phrase match"
+							"en_US": "Boost contents with current session language as the default language"
 						},
 						"enabled": true,
 						"icon": "thumbs-up",
 						"title": {
-							"en_US": "Boost All Keywords Match"
+							"en_US": "Boost Contents for the Current Language"
 						}
 					},
 					"fragmentTemplateJSON": {
@@ -488,12 +1047,25 @@
 								"occur": "should",
 								"query": {
 									"query": {
-										"multi_match": {
-											"boost": "${config.boost}",
-											"fields": "${config.fields}",
-											"operator": "and",
-											"query": "${keywords}",
-											"type": "cross_fields"
+										"bool": {
+											"must": [
+												{
+													"terms": {
+														"entryClassName": [
+															"com.liferay.portal.kernel.model.Layout",
+															"com.liferay.journal.model.JournalArticle"
+														]
+													}
+												},
+												{
+													"term": {
+														"defaultLanguageId": {
+															"boost": "${config.boost}",
+															"value": "${context.language_id}"
+														}
+													}
+												}
+											]
 										}
 									}
 								},
@@ -503,73 +1075,24 @@
 						"conditions": [
 						],
 						"description": {
-							"en_US": "Boost contents where all keywords of a search phrase match"
+							"en_US": "Boost contents with current session language as the default language"
 						},
 						"enabled": true,
 						"icon": "thumbs-up",
 						"title": {
-							"en_US": "Boost All Keywords Match"
+							"en_US": "Boost Contents for the Current Language"
 						}
 					},
 					"uiConfigurationJSON": [
 						{
-							"boost": true,
-							"defaultValue": [
-								{
-									"boost": 2,
-									"field": "localized_title",
-									"locale": "${context.language_id}"
-								},
-								{
-									"boost": 1,
-									"field": "content",
-									"locale": "${context.language_id}"
-								}
-							],
-							"key": "fields",
-							"name": "Field",
-							"type": "field",
-							"typeOptions": [
-								{
-									"label": "Title",
-									"value": "localized_title"
-								},
-								{
-									"label": "Description",
-									"value": "description"
-								},
-								{
-									"label": "Content",
-									"value": "content"
-								}
-							]
-						},
-						{
-							"defaultValue": 10,
+							"defaultValue": 20,
 							"key": "boost",
 							"name": "Boost",
 							"type": "slider"
 						}
 					],
 					"uiConfigurationValues": {
-						"boost": 10,
-						"fields": [
-							{
-								"boost": 2,
-								"field": "localized_title",
-								"locale": "${context.language_id}"
-							},
-							{
-								"boost": 1,
-								"field": "content",
-								"locale": "${context.language_id}"
-							},
-							{
-								"boost": 1,
-								"field": "description",
-								"locale": "${context.language_id}"
-							}
-						]
+						"boost": 20
 					}
 				},
 				{
@@ -581,15 +1104,14 @@
 								"occur": "should",
 								"query": {
 									"query": {
-										"multi_match": {
+										"function_score": {
 											"boost": 10,
-											"fields": [
-												"localized_title${context.language_id}^2",
-												"content${context.language_id}"
-											],
-											"operator": "and",
-											"query": "${keywords}",
-											"type": "phrase"
+											"field_value_factor": {
+												"factor": 1.2,
+												"field": "versionCount_sortable",
+												"missing": 1,
+												"modifier": "sqrt"
+											}
 										}
 									}
 								},
@@ -599,12 +1121,12 @@
 						"conditions": [
 						],
 						"description": {
-							"en_US": "Boost contents where there’s an exact phrase match"
+							"en_US": "Boost contents edited more often"
 						},
 						"enabled": true,
 						"icon": "thumbs-up",
 						"title": {
-							"en_US": "Boost Phrase Match"
+							"en_US": "Boost Contents With More Versions"
 						}
 					},
 					"fragmentTemplateJSON": {
@@ -615,12 +1137,14 @@
 								"occur": "should",
 								"query": {
 									"query": {
-										"multi_match": {
+										"function_score": {
 											"boost": "${config.boost}",
-											"fields": "${config.fields}",
-											"operator": "and",
-											"query": "${keywords}",
-											"type": "phrase"
+											"field_value_factor": {
+												"factor": "${config.factor}",
+												"field": "versionCount_sortable",
+												"missing": 1,
+												"modifier": "${config.modifier}"
+											}
 										}
 									}
 								},
@@ -630,68 +1154,80 @@
 						"conditions": [
 						],
 						"description": {
-							"en_US": "Boost contents where there’s an exact phrase match"
+							"en_US": "Boost contents edited more often"
 						},
 						"enabled": true,
 						"icon": "thumbs-up",
 						"title": {
-							"en_US": "Boost Phrase Match"
+							"en_US": "Boost Contents With More Versions"
 						}
 					},
 					"uiConfigurationJSON": [
-						{
-							"boost": true,
-							"defaultValue": [
-								{
-									"boost": 2,
-									"field": "localized_title",
-									"locale": "${context.language_id}"
-								},
-								{
-									"boost": 1,
-									"field": "content",
-									"locale": "${context.language_id}"
-								}
-							],
-							"key": "fields",
-							"name": "Field",
-							"type": "field",
-							"typeOptions": [
-								{
-									"label": "Title",
-									"value": "localized_title"
-								},
-								{
-									"label": "Description",
-									"value": "description"
-								},
-								{
-									"label": "Content",
-									"value": "content"
-								}
-							]
-						},
 						{
 							"defaultValue": 10,
 							"key": "boost",
 							"name": "Boost",
 							"type": "slider"
+						},
+						{
+							"defaultValue": 1.2,
+							"key": "factor",
+							"name": "Factor",
+							"type": "number"
+						},
+						{
+							"defaultValue": "sqrt",
+							"key": "modifier",
+							"name": "Modifier",
+							"type": "single-select",
+							"typeOptions": [
+								{
+									"label": "None",
+									"value": "none"
+								},
+								{
+									"label": "log",
+									"value": "log"
+								},
+								{
+									"label": "log1p",
+									"value": "log1p"
+								},
+								{
+									"label": "log2p",
+									"value": "log2p"
+								},
+								{
+									"label": "ln",
+									"value": "ln"
+								},
+								{
+									"label": "ln1p",
+									"value": "ln1p"
+								},
+								{
+									"label": "ln2p",
+									"value": "ln2p"
+								},
+								{
+									"label": "Square",
+									"value": "square"
+								},
+								{
+									"label": "Square Root",
+									"value": "sqrt"
+								},
+								{
+									"label": "Reciprocal",
+									"value": "reciprocal"
+								}
+							]
 						}
 					],
 					"uiConfigurationValues": {
 						"boost": 10,
-						"fields": [
-							{
-								"boost": 2,
-								"field": "localized_title",
-								"locale": "${context.language_id}"
-							},
-							{
-								"boost": 1,
-								"field": "content",
-								"locale": "${context.language_id}"
-							}
-						]
+						"factor": 1.2,
+						"modifier": "sqrt"
 					}
 				},
 				{
@@ -703,11 +1239,13 @@
 								"occur": "should",
 								"query": {
 									"query": {
-										"match_phrase_prefix": {
-											"localized_title${context.language_id}": {
-												"boost": 10,
-												"query": "${keywords}",
-												"slop": 0
+										"function_score": {
+											"boost": 30,
+											"field_value_factor": {
+												"factor": 1.5,
+												"field": "content${context.language_id}_length_sortable",
+												"missing": 1,
+												"modifier": "ln"
 											}
 										}
 									}
@@ -718,12 +1256,12 @@
 						"conditions": [
 						],
 						"description": {
-							"en_US": "Boost contents where there's a phrase match in the beginning of field"
+							"en_US": "Boost contents with longer content translation for the current language"
 						},
 						"enabled": true,
 						"icon": "thumbs-up",
 						"title": {
-							"en_US": "Boost Phrase Prefix Match"
+							"en_US": "Boost Longer Contents"
 						}
 					},
 					"fragmentTemplateJSON": {
@@ -734,11 +1272,13 @@
 								"occur": "should",
 								"query": {
 									"query": {
-										"match_phrase_prefix": {
-											"${config.field}": {
-												"boost": "${config.boost}",
-												"query": "${keywords}",
-												"slop": "${config.slop}"
+										"function_score": {
+											"boost": "${config.boost}",
+											"field_value_factor": {
+												"factor": "${config.factor}",
+												"field": "content${context.language_id}_length_sortable",
+												"missing": 1,
+												"modifier": "${config.modifier}"
 											}
 										}
 									}
@@ -749,62 +1289,188 @@
 						"conditions": [
 						],
 						"description": {
-							"en_US": "Boost contents where there's a phrase match in the beginning of field"
+							"en_US": "Boost contents with longer content translation for the current language"
 						},
 						"enabled": true,
 						"icon": "thumbs-up",
 						"title": {
-							"en_US": "Boost Phrase Prefix Match"
+							"en_US": "Boost Longer Contents"
 						}
 					},
 					"uiConfigurationJSON": [
 						{
-							"defaultValue": [
-								{
-									"field": "localized_title",
-									"locale": "${context.language_id}"
-								}
-							],
-							"key": "field",
-							"name": "Field",
-							"type": "single-field",
-							"typeOptions": [
-								{
-									"label": "Title",
-									"value": "localized_title"
-								},
-								{
-									"label": "Description",
-									"value": "description"
-								},
-								{
-									"label": "Content",
-									"value": "content"
-								}
-							]
-						},
-						{
-							"defaultValue": 10,
+							"defaultValue": 30,
 							"key": "boost",
 							"name": "Boost",
 							"type": "slider"
+						},
+						{
+							"defaultValue": 1.5,
+							"key": "factor",
+							"name": "Factor",
+							"type": "number"
+						},
+						{
+							"defaultValue": "ln",
+							"key": "modifier",
+							"name": "Modifier",
+							"type": "single-select",
+							"typeOptions": [
+								{
+									"label": "None",
+									"value": "none"
+								},
+								{
+									"label": "log",
+									"value": "log"
+								},
+								{
+									"label": "log1p",
+									"value": "log1p"
+								},
+								{
+									"label": "log2p",
+									"value": "log2p"
+								},
+								{
+									"label": "ln",
+									"value": "ln"
+								},
+								{
+									"label": "ln1p",
+									"value": "ln1p"
+								},
+								{
+									"label": "ln2p",
+									"value": "ln2p"
+								},
+								{
+									"label": "Square",
+									"value": "square"
+								},
+								{
+									"label": "sqrt",
+									"value": "sqrt"
+								},
+								{
+									"label": "Reciprocal",
+									"value": "reciprocal"
+								}
+							]
+						}
+					],
+					"uiConfigurationValues": {
+						"boost": 30,
+						"factor": 1.5,
+						"modifier": "ln"
+					}
+				},
+				{
+					"fragmentOutput": {
+						"category": "boost",
+						"clauses": [
+							{
+								"context": "query",
+								"occur": "should",
+								"query": {
+									"query": {
+										"function_score": {
+											"boost": 40,
+											"gauss": {
+												"modified": {
+													"decay": 0.5,
+													"offset": "0d",
+													"origin": "${time.current_date|dateFormat=yyyyMMddHHmmss}",
+													"scale": "10d"
+												}
+											}
+										}
+									}
+								},
+								"type": "wrapper"
+							}
+						],
+						"conditions": [
+						],
+						"description": {
+							"en_US": "Give a gaussian boost to contents modified recently"
+						},
+						"enabled": true,
+						"icon": "thumbs-up",
+						"title": {
+							"en_US": "Boost Freshness"
+						}
+					},
+					"fragmentTemplateJSON": {
+						"category": "boost",
+						"clauses": [
+							{
+								"context": "query",
+								"occur": "should",
+								"query": {
+									"query": {
+										"function_score": {
+											"boost": "${config.boost}",
+											"gauss": {
+												"modified": {
+													"decay": "${config.decay}",
+													"offset": "${config.offset}",
+													"origin": "${time.current_date|dateFormat=yyyyMMddHHmmss}",
+													"scale": "${config.scale}"
+												}
+											}
+										}
+									}
+								},
+								"type": "wrapper"
+							}
+						],
+						"conditions": [
+						],
+						"description": {
+							"en_US": "Give a gaussian boost to contents modified recently"
+						},
+						"enabled": true,
+						"icon": "thumbs-up",
+						"title": {
+							"en_US": "Boost Freshness"
+						}
+					},
+					"uiConfigurationJSON": [
+						{
+							"defaultValue": 40,
+							"key": "boost",
+							"name": "Boost",
+							"type": "slider"
+						},
+						{
+							"defaultValue": 0.5,
+							"key": "decay",
+							"name": "Decay",
+							"type": "number"
 						},
 						{
 							"defaultValue": 0,
-							"key": "slop",
-							"name": "Slop",
-							"type": "number"
+							"key": "offset",
+							"name": "Offset (days)",
+							"type": "number",
+							"unit": "days",
+							"unitSuffix": "d"
+						},
+						{
+							"defaultValue": 10,
+							"key": "scale",
+							"name": "Scale (days)",
+							"type": "number",
+							"unit": "days",
+							"unitSuffix": "d"
 						}
 					],
 					"uiConfigurationValues": {
-						"boost": 10,
-						"field": [
-							{
-								"field": "localized_title",
-								"locale": "${context.language_id}"
-							}
-						],
-						"slop": 0
+						"boost": 40,
+						"decay": 0.5,
+						"offset": 0,
+						"scale": 10
 					}
 				},
 				{
@@ -816,10 +1482,10 @@
 								"occur": "should",
 								"query": {
 									"query": {
-										"match": {
+										"term": {
 											"assetTagNames.raw": {
 												"boost": 10,
-												"query": "${keywords}"
+												"value": "${keywords}"
 											}
 										}
 									}
@@ -846,10 +1512,10 @@
 								"occur": "should",
 								"query": {
 									"query": {
-										"match": {
+										"term": {
 											"assetTagNames.raw": {
 												"boost": "${config.boost}",
-												"query": "${keywords}"
+												"value": "${keywords}"
 											}
 										}
 									}
@@ -889,16 +1555,15 @@
 								"occur": "should",
 								"query": {
 									"query": {
-										"function_score": {
-											"boost": 40,
-											"gauss": {
-												"modified": {
-													"decay": 0.4,
-													"offset": "0d",
-													"origin": "${time.current_date|dateFormat=yyyyMMddHHmmss}",
-													"scale": "30d"
-												}
-											}
+										"multi_match": {
+											"boost": 10,
+											"fields": [
+												"localized_title${context.language_id}^2",
+												"content${context.language_id}"
+											],
+											"operator": "and",
+											"query": "${keywords}",
+											"type": "best_fields"
 										}
 									}
 								},
@@ -908,12 +1573,12 @@
 						"conditions": [
 						],
 						"description": {
-							"en_US": "Give a gaussian boost to contents modified within a time frame"
+							"en_US": "Boost contents matching all the words in the search phrase"
 						},
 						"enabled": true,
 						"icon": "thumbs-up",
 						"title": {
-							"en_US": "Boost Freshness"
+							"en_US": "Boost All Keywords Match"
 						}
 					},
 					"fragmentTemplateJSON": {
@@ -924,16 +1589,12 @@
 								"occur": "should",
 								"query": {
 									"query": {
-										"function_score": {
+										"multi_match": {
 											"boost": "${config.boost}",
-											"gauss": {
-												"modified": {
-													"decay": "${config.decay}",
-													"offset": "${config.offset}",
-													"origin": "${time.current_date|dateFormat=yyyyMMddHHmmss}",
-													"scale": "${config.scale}"
-												}
-											}
+											"fields": "${config.fields}",
+											"operator": "and",
+											"query": "${keywords}",
+											"type": "${config.type}"
 										}
 									}
 								},
@@ -943,55 +1604,835 @@
 						"conditions": [
 						],
 						"description": {
-							"en_US": "Give a gaussian boost to contents modified within a time frame"
+							"en_US": "Boost contents matching all the words in the search phrase"
 						},
 						"enabled": true,
 						"icon": "thumbs-up",
 						"title": {
-							"en_US": "Boost Freshness"
+							"en_US": "Boost All Keywords Match"
 						}
 					},
 					"uiConfigurationJSON": [
 						{
-							"defaultValue": 40,
+							"boost": true,
+							"defaultValue": [
+								{
+									"boost": 2,
+									"field": "localized_title",
+									"locale": "${context.language_id}"
+								},
+								{
+									"boost": 1,
+									"field": "content",
+									"locale": "${context.language_id}"
+								}
+							],
+							"key": "fields",
+							"name": "Field",
+							"type": "field",
+							"typeOptions": [
+								{
+									"label": "Title",
+									"value": "localized_title"
+								},
+								{
+									"label": "Description",
+									"value": "description"
+								},
+								{
+									"label": "Content",
+									"value": "content"
+								}
+							]
+						},
+						{
+							"defaultValue": "best_fields",
+							"key": "type",
+							"name": "Match Type",
+							"type": "single-select",
+							"typeOptions": [
+								{
+									"label": "Best Fields",
+									"value": "best_fields"
+								},
+								{
+									"label": "Most Fields",
+									"value": "most_fields"
+								},
+								{
+									"label": "Cross Fields",
+									"value": "cross_fields"
+								},
+								{
+									"label": "Phrase",
+									"value": "phrase"
+								},
+								{
+									"label": "Phrase Prefix",
+									"value": "phrase_prefix"
+								},
+								{
+									"label": "Boolean Prefix",
+									"value": "bool_prefix"
+								}
+							]
+						},
+						{
+							"defaultValue": 10,
 							"key": "boost",
 							"name": "Boost",
 							"type": "slider"
-						},
-						{
-							"defaultValue": 0.4,
-							"key": "decay",
-							"name": "Decay",
-							"type": "number"
-						},
-						{
-							"defaultValue": 0,
-							"key": "offset",
-							"name": "Offset",
-							"type": "number",
-							"unit": "days",
-							"unitSuffix": "d"
-						},
-						{
-							"defaultValue": 30,
-							"key": "scale",
-							"name": "Scale",
-							"type": "number",
-							"unit": "days",
-							"unitSuffix": "d"
 						}
 					],
 					"uiConfigurationValues": {
-						"boost": 40,
-						"decay": 0.4,
-						"offset": 0,
-						"scale": 30
+						"boost": 10,
+						"fields": [
+							{
+								"boost": 2,
+								"field": "localized_title",
+								"locale": "${context.language_id}"
+							},
+							{
+								"boost": 1,
+								"field": "content",
+								"locale": "${context.language_id}"
+							}
+						],
+						"type": "best_fields"
+					}
+				},
+				{
+					"fragmentOutput": {
+						"category": "hide",
+						"clauses": [
+							{
+								"context": "query",
+								"occur": "filter",
+								"query": {
+									"query": {
+										"bool": {
+											"should": [
+												{
+													"bool": {
+														"must_not": [
+															{
+																"exists": {
+																	"field": "discussion"
+																}
+															}
+														]
+													}
+												},
+												{
+													"bool": {
+														"must": [
+															{
+																"term": {
+																	"discussion": false
+																}
+															}
+														]
+													}
+												}
+											]
+										}
+									}
+								},
+								"type": "wrapper"
+							}
+						],
+						"conditions": [
+						],
+						"description": {
+							"en_US": "Do not search for comments"
+						},
+						"enabled": true,
+						"icon": "hidden",
+						"title": {
+							"en_US": "Hide Comments"
+						}
+					},
+					"fragmentTemplateJSON": {
+						"category": "hide",
+						"clauses": [
+							{
+								"context": "query",
+								"occur": "filter",
+								"query": {
+									"query": {
+										"bool": {
+											"should": [
+												{
+													"bool": {
+														"must_not": [
+															{
+																"exists": {
+																	"field": "discussion"
+																}
+															}
+														]
+													}
+												},
+												{
+													"bool": {
+														"must": [
+															{
+																"term": {
+																	"discussion": false
+																}
+															}
+														]
+													}
+												}
+											]
+										}
+									}
+								},
+								"type": "wrapper"
+							}
+						],
+						"conditions": [
+						],
+						"description": {
+							"en_US": "Do not search for comments"
+						},
+						"enabled": true,
+						"icon": "hidden",
+						"title": {
+							"en_US": "Hide Comments"
+						}
+					},
+					"uiConfigurationJSON": [
+					],
+					"uiConfigurationValues": {
+					}
+				},
+				{
+					"fragmentOutput": {
+						"category": "hide",
+						"clauses": [
+							{
+								"context": "query",
+								"occur": "filter",
+								"query": {
+									"query": {
+										"bool": {
+											"should": [
+												{
+													"bool": {
+														"must_not": [
+															{
+																"exists": {
+																	"field": "hidden"
+																}
+															}
+														]
+													}
+												},
+												{
+													"bool": {
+														"must": [
+															{
+																"term": {
+																	"hidden": false
+																}
+															}
+														]
+													}
+												}
+											]
+										}
+									}
+								},
+								"type": "wrapper"
+							}
+						],
+						"conditions": [
+						],
+						"description": {
+							"en_US": "Hide assets which are marked not searchable"
+						},
+						"enabled": true,
+						"icon": "hidden",
+						"title": {
+							"en_US": "Hide Hidden Contents"
+						}
+					},
+					"fragmentTemplateJSON": {
+						"category": "hide",
+						"clauses": [
+							{
+								"context": "query",
+								"occur": "filter",
+								"query": {
+									"query": {
+										"bool": {
+											"should": [
+												{
+													"bool": {
+														"must_not": [
+															{
+																"exists": {
+																	"field": "hidden"
+																}
+															}
+														]
+													}
+												},
+												{
+													"bool": {
+														"must": [
+															{
+																"term": {
+																	"hidden": false
+																}
+															}
+														]
+													}
+												}
+											]
+										}
+									}
+								},
+								"type": "wrapper"
+							}
+						],
+						"conditions": [
+						],
+						"description": {
+							"en_US": "Hide assets which are marked not searchable"
+						},
+						"enabled": true,
+						"icon": "hidden",
+						"title": {
+							"en_US": "Hide Hidden Contents"
+						}
+					},
+					"uiConfigurationJSON": [
+					],
+					"uiConfigurationValues": {
+					}
+				},
+				{
+					"fragmentOutput": {
+						"category": "filter",
+						"clauses": [
+							{
+								"context": "query",
+								"occur": "filter",
+								"query": {
+									"query": {
+										"bool": {
+											"should": [
+												{
+													"bool": {
+														"must_not": [
+															{
+																"term": {
+																	"entryClassName": {
+																		"value": "com.liferay.journal.model.JournalArticle"
+																	}
+																}
+															}
+														]
+													}
+												},
+												{
+													"bool": {
+														"must": [
+															{
+																"term": {
+																	"entryClassName": {
+																		"value": "com.liferay.journal.model.JournalArticle"
+																	}
+																}
+															},
+															{
+																"term": {
+																	"head": {
+																		"value": true
+																	}
+																}
+															}
+														]
+													}
+												}
+											]
+										}
+									}
+								},
+								"type": "wrapper"
+							}
+						],
+						"conditions": [
+						],
+						"description": {
+							"en_US": "Show only the latest HEAD version of Web Content articles"
+						},
+						"enabled": true,
+						"icon": "filter",
+						"title": {
+							"en_US": "Limit Search to HEAD Version"
+						}
+					},
+					"fragmentTemplateJSON": {
+						"category": "filter",
+						"clauses": [
+							{
+								"context": "query",
+								"occur": "filter",
+								"query": {
+									"query": {
+										"bool": {
+											"should": [
+												{
+													"bool": {
+														"must_not": [
+															{
+																"term": {
+																	"entryClassName": {
+																		"value": "com.liferay.journal.model.JournalArticle"
+																	}
+																}
+															}
+														]
+													}
+												},
+												{
+													"bool": {
+														"must": [
+															{
+																"term": {
+																	"entryClassName": {
+																		"value": "com.liferay.journal.model.JournalArticle"
+																	}
+																}
+															},
+															{
+																"term": {
+																	"head": {
+																		"value": true
+																	}
+																}
+															}
+														]
+													}
+												}
+											]
+										}
+									}
+								},
+								"type": "wrapper"
+							}
+						],
+						"conditions": [
+						],
+						"description": {
+							"en_US": "Show only the latest HEAD version of Web Content articles"
+						},
+						"enabled": true,
+						"icon": "filter",
+						"title": {
+							"en_US": "Limit Search to HEAD Version"
+						}
+					},
+					"uiConfigurationJSON": [
+					],
+					"uiConfigurationValues": {
+					}
+				},
+				{
+					"fragmentOutput": {
+						"category": "filter",
+						"clauses": [
+							{
+								"context": "query",
+								"occur": "filter",
+								"query": {
+									"query": {
+										"term": {
+											"status": 0
+										}
+									}
+								},
+								"type": "wrapper"
+							}
+						],
+						"conditions": [
+						],
+						"description": {
+							"en_US": "Limit search to contents that have been published"
+						},
+						"enabled": true,
+						"icon": "filter",
+						"title": {
+							"en_US": "Limit Search to Published Contents"
+						}
+					},
+					"fragmentTemplateJSON": {
+						"category": "filter",
+						"clauses": [
+							{
+								"context": "query",
+								"occur": "filter",
+								"query": {
+									"query": {
+										"term": {
+											"status": 0
+										}
+									}
+								},
+								"type": "wrapper"
+							}
+						],
+						"conditions": [
+						],
+						"description": {
+							"en_US": "Limit search to contents that have been published"
+						},
+						"enabled": true,
+						"icon": "filter",
+						"title": {
+							"en_US": "Limit Search to Published Contents"
+						}
+					},
+					"uiConfigurationJSON": [
+					],
+					"uiConfigurationValues": {
+					}
+				},
+				{
+					"fragmentOutput": {
+						"category": "filter",
+						"clauses": [
+							{
+								"context": "query",
+								"occur": "filter",
+								"query": {
+									"query": {
+										"bool": {
+											"should": [
+												{
+													"bool": {
+														"must_not": [
+															{
+																"exists": {
+																	"field": "displayDate"
+																}
+															}
+														]
+													}
+												},
+												{
+													"bool": {
+														"must": [
+															{
+																"range": {
+																	"displayDate_sortable": {
+																		"from": "-9223372036854775808",
+																		"include_lower": true,
+																		"include_upper": true,
+																		"to": "${time.current_date|dateFormat=timestamp}"
+																	}
+																}
+															},
+															{
+																"range": {
+																	"expirationDate_sortable": {
+																		"from": "${time.current_date|dateFormat=timestamp}",
+																		"include_lower": true,
+																		"include_upper": true,
+																		"to": "9223372036854775807"
+																	}
+																}
+															}
+														]
+													}
+												}
+											]
+										}
+									}
+								},
+								"type": "wrapper"
+							}
+						],
+						"conditions": [
+						],
+						"description": {
+							"en_US": "Show only contents with a valid display date"
+						},
+						"enabled": true,
+						"icon": "filter",
+						"title": {
+							"en_US": "Scheduling Aware"
+						}
+					},
+					"fragmentTemplateJSON": {
+						"category": "filter",
+						"clauses": [
+							{
+								"context": "query",
+								"occur": "filter",
+								"query": {
+									"query": {
+										"bool": {
+											"should": [
+												{
+													"bool": {
+														"must_not": [
+															{
+																"exists": {
+																	"field": "displayDate"
+																}
+															}
+														]
+													}
+												},
+												{
+													"bool": {
+														"must": [
+															{
+																"range": {
+																	"displayDate_sortable": {
+																		"from": "-9223372036854775808",
+																		"include_lower": true,
+																		"include_upper": true,
+																		"to": "${time.current_date|dateFormat=timestamp}"
+																	}
+																}
+															},
+															{
+																"range": {
+																	"expirationDate_sortable": {
+																		"from": "${time.current_date|dateFormat=timestamp}",
+																		"include_lower": true,
+																		"include_upper": true,
+																		"to": "9223372036854775807"
+																	}
+																}
+															}
+														]
+													}
+												}
+											]
+										}
+									}
+								},
+								"type": "wrapper"
+							}
+						],
+						"conditions": [
+						],
+						"description": {
+							"en_US": "Show only contents with a valid display date"
+						},
+						"enabled": true,
+						"icon": "filter",
+						"title": {
+							"en_US": "Scheduling Aware"
+						}
+					},
+					"uiConfigurationJSON": [
+					],
+					"uiConfigurationValues": {
+					}
+				},
+				{
+					"fragmentOutput": {
+						"category": "filter",
+						"clauses": [
+							{
+								"context": "query",
+								"occur": "filter",
+								"query": {
+									"query": {
+										"bool": {
+											"should": [
+												{
+													"bool": {
+														"must_not": [
+															{
+																"exists": {
+																	"field": "stagingGroup"
+																}
+															}
+														]
+													}
+												},
+												{
+													"bool": {
+														"must": [
+															{
+																"term": {
+																	"stagingGroup": false
+																}
+															}
+														]
+													}
+												}
+											]
+										}
+									}
+								},
+								"type": "wrapper"
+							}
+						],
+						"conditions": [
+							{
+								"configuration": {
+									"evaluation_type": "eq",
+									"match_value": false,
+									"parameter_name": "${context.is_staging_group}"
+								}
+							}
+						],
+						"description": {
+							"en_US": "Show only published contents on live sites, published and staged contents on staging sites"
+						},
+						"enabled": true,
+						"icon": "thumbs-up",
+						"title": {
+							"en_US": "Staging Aware"
+						}
+					},
+					"fragmentTemplateJSON": {
+						"category": "filter",
+						"clauses": [
+							{
+								"context": "query",
+								"occur": "filter",
+								"query": {
+									"query": {
+										"bool": {
+											"should": [
+												{
+													"bool": {
+														"must_not": [
+															{
+																"exists": {
+																	"field": "stagingGroup"
+																}
+															}
+														]
+													}
+												},
+												{
+													"bool": {
+														"must": [
+															{
+																"term": {
+																	"stagingGroup": false
+																}
+															}
+														]
+													}
+												}
+											]
+										}
+									}
+								},
+								"type": "wrapper"
+							}
+						],
+						"conditions": [
+							{
+								"configuration": {
+									"evaluation_type": "eq",
+									"match_value": false,
+									"parameter_name": "${context.is_staging_group}"
+								}
+							}
+						],
+						"description": {
+							"en_US": "Show only published contents on live sites, published and staged contents on staging sites"
+						},
+						"enabled": true,
+						"icon": "thumbs-up",
+						"title": {
+							"en_US": "Staging Aware"
+						}
+					},
+					"uiConfigurationJSON": [
+					],
+					"uiConfigurationValues": {
+					}
+				},
+				{
+					"fragmentOutput": {
+						"category": "filter",
+						"clauses": [
+							{
+								"context": "query",
+								"occur": "filter",
+								"query": {
+									"query": {
+										"bool": {
+											"must_not": [
+												{
+													"exists": {
+														"field": "ctCollectionId"
+													}
+												}
+											]
+										}
+									}
+								},
+								"type": "wrapper"
+							}
+						],
+						"conditions": [
+						],
+						"description": {
+							"en_US": "When Publications feature is enabled, show only published contents"
+						},
+						"enabled": true,
+						"icon": "thumbs-up",
+						"title": {
+							"en_US": "Publications Aware"
+						}
+					},
+					"fragmentTemplateJSON": {
+						"category": "filter",
+						"clauses": [
+							{
+								"context": "query",
+								"occur": "filter",
+								"query": {
+									"query": {
+										"bool": {
+											"must_not": [
+												{
+													"exists": {
+														"field": "ctCollectionId"
+													}
+												}
+											]
+										}
+									}
+								},
+								"type": "wrapper"
+							}
+						],
+						"conditions": [
+						],
+						"description": {
+							"en_US": "When Publications feature is enabled, show only published contents"
+						},
+						"enabled": true,
+						"icon": "thumbs-up",
+						"title": {
+							"en_US": "Publications Aware"
+						}
+					},
+					"uiConfigurationJSON": [
+					],
+					"uiConfigurationValues": {
 					}
 				}
 			]
 		},
 		"title": {
-			"en_US": "Content Driven (Sample Blueprint)"
+			"en_US": "Content Driven (Sample Custom Blueprint)"
 		}
 	},
 	"type": 1

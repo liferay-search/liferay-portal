@@ -21,6 +21,7 @@ export default {
 						multi_match: {
 							boost: '${config.boost}',
 							fields: '${config.fields}',
+							fuzziness: '${config.fuzziness}',
 							operator: '${config.operator}',
 							query: '${keywords}',
 							type: '${config.type}',
@@ -118,6 +119,29 @@ export default {
 				{
 					label: 'Boolean Prefix',
 					value: 'bool_prefix',
+				},
+			],
+		},
+		{
+			key: 'fuzziness',
+			name: 'Fuzziness',
+			type: 'single-select',
+			typeOptions: [
+				{
+					label: 'Auto',
+					value: 'AUTO',
+				},
+				{
+					label: '0',
+					value: '0',
+				},
+				{
+					label: '1',
+					value: '1',
+				},
+				{
+					label: '2',
+					value: '2',
 				},
 			],
 		},

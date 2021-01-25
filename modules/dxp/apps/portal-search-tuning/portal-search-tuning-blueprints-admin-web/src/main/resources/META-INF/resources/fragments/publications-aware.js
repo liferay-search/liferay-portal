@@ -11,29 +11,18 @@
 
 export default {
 	fragmentTemplateJSON: {
-		category: 'boost',
+		category: 'filter',
 		clauses: [
 			{
 				context: 'query',
-				occur: 'should',
+				occur: 'filter',
 				query: {
 					query: {
 						bool: {
-							must: [
+							must_not: [
 								{
-									terms: {
-										entryClassName: [
-											'com.liferay.portal.kernel.model.Layout',
-											'com.liferay.journal.model.JournalArticle',
-										],
-									},
-								},
-								{
-									term: {
-										defaultLanguageId: {
-											boost: '${config.boost}',
-											value: '${context.language_id}',
-										},
+									exists: {
+										field: 'ctCollectionId',
 									},
 								},
 							],
@@ -46,20 +35,13 @@ export default {
 		conditions: [],
 		description: {
 			en_US:
-				'Boost contents having the current session language as the default language',
+				'When Publications feature is enabled, show only published contents',
 		},
 		enabled: true,
 		icon: 'thumbs-up',
 		title: {
-			en_US: 'Boost Contents for the Current Language',
+			en_US: 'Publications Aware',
 		},
 	},
-	uiConfigurationJSON: [
-		{
-			defaultValue: 20,
-			key: 'boost',
-			name: 'Boost',
-			type: 'slider',
-		},
-	],
+	uiConfigurationJSON: [],
 };

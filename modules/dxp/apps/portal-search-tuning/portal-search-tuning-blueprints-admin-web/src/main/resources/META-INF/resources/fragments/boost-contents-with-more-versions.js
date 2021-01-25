@@ -34,7 +34,7 @@ export default {
 		],
 		conditions: [],
 		description: {
-			en_US: 'Boost contents which have been edited more often',
+			en_US: 'Boost contents edited more often',
 		},
 		enabled: true,
 		icon: 'thumbs-up',

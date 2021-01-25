@@ -23,11 +23,11 @@ export default {
 							gauss: {
 								'${config.field}': {
 									decay: '${config.decay}',
+									offset: 0,
 									origin: {
 										lat: '${ipstack.latitude}',
 										lon: '${ipstack.longitude}',
 									},
-									offset: 0,
 									scale: '${config.scale}',
 								},
 							},

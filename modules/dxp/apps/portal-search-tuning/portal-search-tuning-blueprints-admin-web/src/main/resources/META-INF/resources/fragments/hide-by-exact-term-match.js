@@ -61,16 +61,24 @@ export default {
 					value: '',
 				},
 				{
-					label: 'groupId',
-					value: 'Group ID',
+					label: 'Entry Class PK',
+					value: 'entryClassPK',
 				},
 				{
-					label: 'userId',
-					value: 'User ID',
+					label: 'Folder ID',
+					value: 'folderId',
 				},
 				{
-					label: 'articleId',
-					value: 'Web Content Article ID',
+					label: 'Group ID',
+					value: 'groupId',
+				},
+				{
+					label: 'User ID',
+					value: 'userId',
+				},
+				{
+					label: 'Web Content Article ID',
+					value: 'articleId_String_sortable',
 				},
 			],
 		},

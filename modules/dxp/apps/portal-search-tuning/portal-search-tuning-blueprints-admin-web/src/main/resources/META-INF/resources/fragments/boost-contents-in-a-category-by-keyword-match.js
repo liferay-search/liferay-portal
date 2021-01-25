@@ -40,7 +40,7 @@ export default {
 		],
 		description: {
 			en_US:
-				'Bring Web Contents in a category higher up in the results, if the searchphrase contains any of given keywords',
+				'Show Web Contents in a category higher in the results, if searchphrase contains any of the given keywords',
 		},
 		enabled: true,
 		icon: 'thumbs-up',
@@ -52,7 +52,7 @@ export default {
 		{
 			helpText: 'Add asset category ID',
 			key: 'asset_category_id',
-			name: 'Asset Category ID',
+			name: 'Asset Category',
 			type: 'number',
 		},
 		{

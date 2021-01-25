@@ -21,8 +21,8 @@ export default {
 						match: {
 							'${config.field}': {
 								boost: '${config.boost}',
+								fuzziness: '${config.fuzziness}',
 								operator: '${config.operator}',
-								query: '${keywords}',
 							},
 						},
 					},
@@ -78,6 +78,29 @@ export default {
 				{
 					label: 'AND',
 					value: 'and',
+				},
+			],
+		},
+		{
+			key: 'fuzziness',
+			name: 'Fuzziness',
+			type: 'single-select',
+			typeOptions: [
+				{
+					label: 'Auto',
+					value: 'AUTO',
+				},
+				{
+					label: '0',
+					value: '0',
+				},
+				{
+					label: '1',
+					value: '1',
+				},
+				{
+					label: '2',
+					value: '2',
 				},
 			],
 		},
