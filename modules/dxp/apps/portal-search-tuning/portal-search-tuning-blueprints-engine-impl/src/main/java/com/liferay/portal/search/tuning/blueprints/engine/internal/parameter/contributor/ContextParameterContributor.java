@@ -61,7 +61,7 @@ public class ContextParameterContributor implements ParameterContributor {
 
 		_addCompanyId(parameterDataBuilder, blueprintsAttributes);
 
-		_addGroupParameters(parameterDataBuilder, blueprintsAttributes);
+		_addGroupParameters(parameterDataBuilder, blueprintsAttributes, messages);
 
 		_addLanguage(parameterDataBuilder, blueprintsAttributes);
 
