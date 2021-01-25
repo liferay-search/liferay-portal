@@ -19,7 +19,7 @@ export default {
 				query: {
 					query: {
 						terms: {
-							articleId: '${config.article_ids}',
+							articleId_String_sortable: '${config.article_ids}',
 							boost: '${config.boost}',
 						},
 					},

@@ -31,7 +31,7 @@ export default {
 		conditions: [],
 		description: {
 			en_US:
-				'Boost Commerce items for my account groups. Note that this only applies to products using account group filtering.',
+				'Boost Commerce items for my account groups. Aapplies only to products using Account Group Filtering.',
 		},
 		enabled: true,
 		icon: 'thumbs-up',

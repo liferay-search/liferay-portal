@@ -11,29 +11,35 @@
 
 export default {
 	fragmentTemplateJSON: {
-		category: 'boost',
+		category: 'filter',
 		clauses: [
 			{
 				context: 'query',
-				occur: 'should',
+				occur: 'filter',
 				query: {
 					query: {
 						bool: {
-							must: [
+							should: [
 								{
-									terms: {
-										entryClassName: [
-											'com.liferay.portal.kernel.model.Layout',
-											'com.liferay.journal.model.JournalArticle',
+									bool: {
+										must_not: [
+											{
+												exists: {
+													field: 'stagingGroup',
+												},
+											},
 										],
 									},
 								},
 								{
-									term: {
-										defaultLanguageId: {
-											boost: '${config.boost}',
-											value: '${context.language_id}',
-										},
+									bool: {
+										must: [
+											{
+												term: {
+													stagingGroup: false,
+												},
+											},
+										],
 									},
 								},
 							],
@@ -43,23 +49,24 @@ export default {
 				type: 'wrapper',
 			},
 		],
-		conditions: [],
+		conditions: [
+			{
+				configuration: {
+					evaluation_type: 'eq',
+					match_value: false,
+					parameter_name: '${context.is_staging_group}',
+				},
+			},
+		],
 		description: {
 			en_US:
-				'Boost contents having the current session language as the default language',
+				'Show only published contents on live sites, published and staged contents on staging sites',
 		},
 		enabled: true,
 		icon: 'thumbs-up',
 		title: {
-			en_US: 'Boost Contents for the Current Language',
+			en_US: 'Staging Aware',
 		},
 	},
-	uiConfigurationJSON: [
-		{
-			defaultValue: 20,
-			key: 'boost',
-			name: 'Boost',
-			type: 'slider',
-		},
-	],
+	uiConfigurationJSON: [],
 };

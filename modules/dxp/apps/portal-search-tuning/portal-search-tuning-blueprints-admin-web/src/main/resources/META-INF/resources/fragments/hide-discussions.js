@@ -11,29 +11,35 @@
 
 export default {
 	fragmentTemplateJSON: {
-		category: 'boost',
+		category: 'hide',
 		clauses: [
 			{
 				context: 'query',
-				occur: 'should',
+				occur: 'filter',
 				query: {
 					query: {
 						bool: {
-							must: [
+							should: [
 								{
-									terms: {
-										entryClassName: [
-											'com.liferay.portal.kernel.model.Layout',
-											'com.liferay.journal.model.JournalArticle',
+									bool: {
+										must_not: [
+											{
+												exists: {
+													field: 'discussion',
+												},
+											},
 										],
 									},
 								},
 								{
-									term: {
-										defaultLanguageId: {
-											boost: '${config.boost}',
-											value: '${context.language_id}',
-										},
+									bool: {
+										must: [
+											{
+												term: {
+													discussion: false,
+												},
+											},
+										],
 									},
 								},
 							],
@@ -45,21 +51,13 @@ export default {
 		],
 		conditions: [],
 		description: {
-			en_US:
-				'Boost contents having the current session language as the default language',
+			en_US: 'Do not search for comments',
 		},
 		enabled: true,
-		icon: 'thumbs-up',
+		icon: 'hidden',
 		title: {
-			en_US: 'Boost Contents for the Current Language',
+			en_US: 'Hide Comments',
 		},
 	},
-	uiConfigurationJSON: [
-		{
-			defaultValue: 20,
-			key: 'boost',
-			name: 'Boost',
-			type: 'slider',
-		},
-	],
+	uiConfigurationJSON: [],
 };

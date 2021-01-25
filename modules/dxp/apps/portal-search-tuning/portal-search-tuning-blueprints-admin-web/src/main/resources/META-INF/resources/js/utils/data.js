@@ -22,8 +22,6 @@ import BOOST_CONTENTS_WITH_MORE_VERSIONS from '../../fragments/boost-contents-wi
 import BOOST_CONTENTS_WITH_USERS_LANGUAGE_AS_THE_DEFAULT_LANGUAGE from '../../fragments/boost-contents-with-user-language-as-the-default-language';
 import BOOST_FRESHNESS from '../../fragments/boost-freshness';
 import BOOST_LONGER_CONTENTS from '../../fragments/boost-longer-contents';
-import BOOST_PHRASE_MATCH from '../../fragments/boost-phrase-match';
-import BOOST_PHRASE_PREFIX_MATCH from '../../fragments/boost-phrase-prefix-match';
 import BOOST_PROXIMITY from '../../fragments/boost-proximity';
 import BOOST_TAGGED_CONTENTS from '../../fragments/boost-tagged-contents';
 import BOOST_TAGS_MATCH from '../../fragments/boost-tags-match';
@@ -33,8 +31,9 @@ import FILTER_BY_EXACT_TERMS_MATCH from '../../fragments/filter-by-exact-terms-m
 import HIDE_BY_EXACT_TERM_MATCH from '../../fragments/hide-by-exact-term-match';
 import HIDE_CONTENTS_IN_A_CATEGORY from '../../fragments/hide-contents-in-a-category';
 import HIDE_CONTENTS_IN_A_CATEGORY_FOR_GUEST_USERS from '../../fragments/hide-contents-in-a-category-for-guest-users';
+import HIDE_DISCUSSIONS from '../../fragments/hide-discussions';
+import HIDE_HIDDEN_CONTENTS from '../../fragments/hide-hidden-contents';
 import HIDE_TAGGED_CONTENTS from '../../fragments/hide-tagged-contents';
-import LIMIT_SEARCH_TO_DISPLAYED_VERSIONS from '../../fragments/limit-search-displayed-versions';
 import LIMIT_SEARCH_TO_PDF_FILES from '../../fragments/limit-search-to-PDF-files';
 import LIMIT_SEARCH_TO_CONTENTS_CREATED_WITHIN_A_PERIOD_OF_TIME from '../../fragments/limit-search-to-contents-created-within-a-period-of-time';
 import LIMIT_SEARCH_TO_HEAD_VERSION from '../../fragments/limit-search-to-head-version';
@@ -43,10 +42,11 @@ import LIMIT_SEARCH_TO_MY_GROUPS from '../../fragments/limit-search-to-my-groups
 import LIMIT_SEARCH_TO_PUBLISHED_CONTENTS from '../../fragments/limit-search-to-published-contents';
 import LIMIT_SEARCH_TO_THE_CURRENT_GROUP from '../../fragments/limit-search-to-the-current-group';
 import LIMIT_SEARCH_TO_THESE_GROUPS from '../../fragments/limit-search-to-these-groups';
-import MATCH_FUZZY from '../../fragments/match-fuzzy';
-import MATCH_WORD_PARTS from '../../fragments/match-word-parts';
 import PASTE_AN_ELASTICSEARCH_QUERY from '../../fragments/paste-an-elasticsearch-query';
+import PUBLICATIONS_AWARE from '../../fragments/publications-aware';
+import SCHEDULING_AWARE from '../../fragments/scheduling-aware';
 import SEARCH_WITH_LUCENE_SYNTAX from '../../fragments/search-with-lucene-syntax';
+import STAGING_AWARE from '../../fragments/staging-aware';
 import TEXT_MATCH from '../../fragments/text-match';
 import TEXT_MATCH_OVER_MULTIPLE_FIELDS from '../../fragments/text-match-over-multiple-fields';
 
@@ -63,17 +63,6 @@ export const CUSTOM_JSON_FRAGMENT = {
 };
 
 export const DEFAULT_ADVANCED_CONFIGURATION = {
-	highlighting: {
-		enabled: 'true',
-		fields: [
-			'localized_title${context.language_id}',
-			'content${context.language_id}',
-		],
-		fragment_size: '50',
-		require_field_match: 'true',
-		snippet_size: '10',
-	},
-	page_size: 10,
 	query_processing: {
 		exclude_query_contributors: '',
 		exclude_query_post_processors: '',
@@ -89,52 +78,25 @@ export const DEFAULT_FRAGMENT = TEXT_MATCH_OVER_MULTIPLE_FIELDS;
 
 export const DEFAULT_FRAMEWORK_CONFIGURATION = {
 	apply_indexer_clauses: true,
-	searchable_asset_types: [
-		'com.liferay.journal.model.JournalArticle',
-		'com.liferay.document.library.kernel.model.DLFileEntry',
-	],
+	searchable_asset_types: [],
 };
 
 export const DEFAULT_EDIT_FRAGMENT = TEXT_MATCH;
 
-export const DEFAULT_PARAMETER_CONFIGURATION = {
-	custom: [
-		{
-			configuration: {
-				date_format: 'yyyymmdd',
-				min: '1970-11-11',
-			},
-			parameter_name: 'dateFrom',
-			type: 'date',
-		},
-		{
-			parameter_name: 'time',
-			type: 'time_range',
-		},
-	],
-	keywords: {
-		parameter_name: 'q',
-	},
-	page: {
-		parameter_name: 'page',
-	},
-};
+export const DEFAULT_PARAMETER_CONFIGURATION = {};
 
-export const DEFAULT_SORT_CONFIGURATION = {
-	default: [],
-	parameters: [],
-};
+export const DEFAULT_SORT_CONFIGURATION = {};
 
 export const QUERY_FRAGMENTS = [
 	TEXT_MATCH,
 	TEXT_MATCH_OVER_MULTIPLE_FIELDS,
-	MATCH_WORD_PARTS,
-	MATCH_FUZZY,
 	SEARCH_WITH_LUCENE_SYNTAX,
 	FILTER_BY_EXACT_TERM_MATCH,
 	FILTER_BY_EXACT_TERMS_MATCH,
+	STAGING_AWARE,
+	PUBLICATIONS_AWARE,
+	SCHEDULING_AWARE,
 	LIMIT_SEARCH_TO_PUBLISHED_CONTENTS,
-	LIMIT_SEARCH_TO_DISPLAYED_VERSIONS,
 	LIMIT_SEARCH_TO_HEAD_VERSION,
 	LIMIT_SEARCH_TO_THE_CURRENT_GROUP,
 	LIMIT_SEARCH_TO_MY_GROUPS,
@@ -143,8 +105,6 @@ export const QUERY_FRAGMENTS = [
 	LIMIT_SEARCH_TO_CONTENTS_CREATED_WITHIN_A_PERIOD_OF_TIME,
 	LIMIT_SEARCH_TO_PDF_FILES,
 	BOOST_ALL_KEYWORDS_MATCH,
-	BOOST_PHRASE_MATCH,
-	BOOST_PHRASE_PREFIX_MATCH,
 	BOOST_TAGS_MATCH,
 	BOOST_FRESHNESS,
 	BOOST_LONGER_CONTENTS,
@@ -155,6 +115,8 @@ export const QUERY_FRAGMENTS = [
 	BOOST_TAGGED_CONTENTS,
 	BOOST_CONTENTS_IN_MY_GROUPS,
 	HIDE_BY_EXACT_TERM_MATCH,
+	HIDE_DISCUSSIONS,
+	HIDE_HIDDEN_CONTENTS,
 	HIDE_CONTENTS_IN_A_CATEGORY,
 	HIDE_TAGGED_CONTENTS,
 	BOOST_COMMERCE_ITEMS_FOR_MY_ACCOUNT_GROUPS,

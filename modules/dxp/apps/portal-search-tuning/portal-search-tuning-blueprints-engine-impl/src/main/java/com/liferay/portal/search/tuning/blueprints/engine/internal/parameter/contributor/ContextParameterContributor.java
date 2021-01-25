@@ -18,12 +18,15 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
+import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
 import com.liferay.portal.search.tuning.blueprints.engine.constants.ReservedParameterNames;
+import com.liferay.portal.search.tuning.blueprints.engine.parameter.BooleanParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.LongParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterDataBuilder;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterDefinition;
@@ -58,7 +61,7 @@ public class ContextParameterContributor implements ParameterContributor {
 
 		_addCompanyId(parameterDataBuilder, blueprintsAttributes);
 
-		_addScopeGroupId(parameterDataBuilder, blueprintsAttributes);
+		_addGroupParameters(parameterDataBuilder, blueprintsAttributes);
 
 		_addLanguage(parameterDataBuilder, blueprintsAttributes);
 
@@ -130,6 +133,38 @@ public class ContextParameterContributor implements ParameterContributor {
 				_getTemplateVariableName(
 					ReservedParameterNames.COMPANY_ID.getKey()),
 				blueprintsAttributes.getCompanyId()));
+	}
+
+	private void _addGroupParameters(
+		ParameterDataBuilder parameterDataBuilder,
+		BlueprintsAttributes blueprintsAttributes, Messages messages) {
+
+		Optional<Object> optional = blueprintsAttributes.getAttributeOptional(
+			ReservedParameterNames.SCOPE_GROUP_ID.getKey());
+
+		if (!optional.isPresent()) {
+			return;
+		}
+
+		parameterDataBuilder.addParameter(
+			new LongParameter(
+				ReservedParameterNames.SCOPE_GROUP_ID.getKey(),
+				_getTemplateVariableName(
+					ReservedParameterNames.SCOPE_GROUP_ID.getKey()),
+				GetterUtil.getLong(optional.get())));
+
+		Group group = _getGroup(GetterUtil.getLong(optional.get()), messages);
+
+		if (group == null) {
+			return;
+		}
+
+		parameterDataBuilder.addParameter(
+			new BooleanParameter(
+				ReservedParameterNames.STAGING_GROUP.getKey(),
+				_getTemplateVariableName(
+					ReservedParameterNames.STAGING_GROUP.getKey()),
+				group.isStagingGroup()));
 	}
 
 	private void _addLanguage(
@@ -213,23 +248,30 @@ public class ContextParameterContributor implements ParameterContributor {
 				GetterUtil.getLong(optional.get())));
 	}
 
-	private void _addScopeGroupId(
-		ParameterDataBuilder parameterDataBuilder,
-		BlueprintsAttributes blueprintsAttributes) {
+	private Group _getGroup(long groupId, Messages messages) {
+		try {
+			return _groupLocalService.getGroup(groupId);
+		}
+		catch (PortalException portalException) {
+			messages.addMessage(
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"core.error.group-not-found"
+				).msg(
+					portalException.getMessage()
+				).rootValue(
+					GetterUtil.getString(groupId)
+				).severity(
+					Severity.ERROR
+				).throwable(
+					portalException
+				).build());
 
-		Optional<Object> optional = blueprintsAttributes.getAttributeOptional(
-			ReservedParameterNames.SCOPE_GROUP_ID.getKey());
-
-		if (!optional.isPresent()) {
-			return;
+			_log.error(portalException.getMessage(), portalException);
 		}
 
-		parameterDataBuilder.addParameter(
-			new LongParameter(
-				ReservedParameterNames.SCOPE_GROUP_ID.getKey(),
-				_getTemplateVariableName(
-					ReservedParameterNames.SCOPE_GROUP_ID.getKey()),
-				GetterUtil.getLong(optional.get())));
+		return null;
 	}
 
 	private String _getTemplateVariableName(String key) {
@@ -244,6 +286,9 @@ public class ContextParameterContributor implements ParameterContributor {
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		ContextParameterContributor.class);
+
+	@Reference
+	private GroupLocalService _groupLocalService;
 
 	@Reference
 	private Language _language;

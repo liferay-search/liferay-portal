@@ -22,6 +22,17 @@ export default {
 							should: [
 								{
 									bool: {
+										must_not: [
+											{
+												exists: {
+													field: 'displayDate',
+												},
+											},
+										],
+									},
+								},
+								{
+									bool: {
 										must: [
 											{
 												range: {
@@ -47,14 +58,6 @@ export default {
 													},
 												},
 											},
-											{
-												terms: {
-													entryClassName: [
-														'com.liferay.blogs.kernel.model.BlogsEntry',
-														'com.liferay.journal.model.JournalArticle',
-													]
-												},
-											},
 										],
 									},
 								},
@@ -67,13 +70,12 @@ export default {
 		],
 		conditions: [],
 		description: {
-			en_US:
-				'Show only the active contents with a valid display date. Applies to Web Content articles and Blog entries',
+			en_US: 'Show only contents with a valid display date',
 		},
 		enabled: true,
 		icon: 'filter',
 		title: {
-			en_US: 'Limit Search to Displayed Versions',
+			en_US: 'Scheduling Aware',
 		},
 	},
 	uiConfigurationJSON: [],

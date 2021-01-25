@@ -1,1 +1,516 @@
-{"payload":{"configuration":{"parameter_configuration":{"keywords":{"parameter_name":"q"},"custom":[{"configuration":{"min":"1970-11-11","date_format":"yyyymmdd"},"parameter_name":"dateFrom","type":"date"},{"parameter_name":"time","type":"time_range"}],"page":{"parameter_name":"page"}},"sort_configuration":{"default":[],"parameters":[]},"aggregation_configuration":[],"facet_configuration":[],"framework_configuration":{"apply_indexer_clauses":true},"query_configuration":[{"clauses":[{"occur":"should","query":{"query":{"terms":{"commerceAccountGroupIds":"${commerce.commerce_account_group_ids}","boost":20}}},"context":"query","type":"wrapper"}],"icon":"thumbs-up","description":{"en_US":"Boost Commerce items for my account groups. Note that this only applies to products using account group filtering."},"category":"commerce","conditions":[],"title":{"en_US":"Boost Items for My Commerce Account Groups"},"enabled":true},{"clauses":[{"occur":"should","query":{"query":{"terms":{"groupId":"${user.user_group_ids}"}}},"context":"query","type":"wrapper"}],"icon":"thumbs-up","description":{"en_US":"Boost contents in groups I'm member of"},"category":"boost","conditions":[],"title":{"en_US":"Boost Contents in My Groups"},"enabled":true},{"clauses":[{"occur":"should","query":{"query":{"bool":{"must":[{"terms":{"entryClassName":["com.liferay.portal.kernel.model.Layout","com.liferay.journal.model.JournalArticle"]}},{"term":{"defaultLanguageId":{"boost":20,"value":"${context.language_id}"}}}]}}},"context":"query","type":"wrapper"}],"icon":"thumbs-up","description":{"en_US":"Boost contents with current session language as the default language"},"category":"boost","conditions":[],"title":{"en_US":"Boost Contents for the Current Language"},"enabled":true},{"clauses":[{"occur":"should","query":{"query":{"function_score":{"gauss":{"expando__keyword__custom_fields__location_geolocation":{"offset":0,"origin":{"lon":"${ipstack.longitude}","lat":"${ipstack.latitude}"},"scale":"100km","decay":0.3}},"boost":20}}},"context":"query","type":"wrapper"}],"icon":"thumbs-up","description":{"en_US":"Boost contents tagged close to my location with a Gaussian function"},"category":"boost","conditions":[],"title":{"en_US":"Boost Proximity"},"enabled":true}],"advanced_configuration":{"query_processing":{"exclude_query_post_processors":"","exclude_query_contributors":""},"source":{"source_includes":"","fetch_source":true,"source_excludes":""},"highlighting":{"fields":["localized_title${context.language_id}","content${context.language_id}"],"require_field_match":"true","enabled":"true","fragment_size":"50","snippet_size":"10"},"page_size":10}},"description":{"en_US":"Boost contents matching user's properties like language, location, groups and segments. Geolocation data provider has to be enabled in Blueprints configuration to take advantage of locating features."},"title":{"en_US":"Personalization (Sample Blueprint)"},"selected_fragments":{"query_configuration":[{"uiConfigurationValues":{"boost":20},"uiConfigurationJSON":[{"defaultValue":20,"name":"Boost","type":"slider","key":"boost"}],"fragmentOutput":{"clauses":[{"occur":"should","query":{"query":{"terms":{"commerceAccountGroupIds":"${commerce.commerce_account_group_ids}","boost":20}}},"context":"query","type":"wrapper"}],"icon":"thumbs-up","description":{"en_US":"Boost Commerce items for my account groups. Note that this only applies to products using account group filtering."},"category":"commerce","conditions":[],"title":{"en_US":"Boost Items for My Commerce Account Groups"},"enabled":true},"fragmentTemplateJSON":{"clauses":[{"occur":"should","query":{"query":{"terms":{"commerceAccountGroupIds":"${commerce.commerce_account_group_ids}","boost":"${config.boost}"}}},"context":"query","type":"wrapper"}],"icon":"thumbs-up","description":{"en_US":"Boost Commerce items for my account groups. Note that this only applies to products using account group filtering."},"category":"commerce","conditions":[],"title":{"en_US":"Boost Items for My Commerce Account Groups"},"enabled":true}},{"uiConfigurationValues":{},"uiConfigurationJSON":[],"fragmentOutput":{"clauses":[{"occur":"should","query":{"query":{"terms":{"groupId":"${user.user_group_ids}"}}},"context":"query","type":"wrapper"}],"icon":"thumbs-up","description":{"en_US":"Boost contents in groups I'm member of"},"category":"boost","conditions":[],"title":{"en_US":"Boost Contents in My Groups"},"enabled":true},"fragmentTemplateJSON":{"clauses":[{"occur":"should","query":{"query":{"terms":{"groupId":"${user.user_group_ids}"}}},"context":"query","type":"wrapper"}],"icon":"thumbs-up","description":{"en_US":"Boost contents in groups I'm member of"},"category":"boost","conditions":[],"title":{"en_US":"Boost Contents in My Groups"},"enabled":true}},{"uiConfigurationValues":{"boost":20},"uiConfigurationJSON":[{"defaultValue":20,"name":"Boost","type":"slider","key":"boost"}],"fragmentOutput":{"clauses":[{"occur":"should","query":{"query":{"bool":{"must":[{"terms":{"entryClassName":["com.liferay.portal.kernel.model.Layout","com.liferay.journal.model.JournalArticle"]}},{"term":{"defaultLanguageId":{"boost":20,"value":"${context.language_id}"}}}]}}},"context":"query","type":"wrapper"}],"icon":"thumbs-up","description":{"en_US":"Boost contents with current session language as the default language"},"category":"boost","conditions":[],"title":{"en_US":"Boost Contents for the Current Language"},"enabled":true},"fragmentTemplateJSON":{"clauses":[{"occur":"should","query":{"query":{"bool":{"must":[{"terms":{"entryClassName":["com.liferay.portal.kernel.model.Layout","com.liferay.journal.model.JournalArticle"]}},{"term":{"defaultLanguageId":{"boost":"${config.boost}","value":"${context.language_id}"}}}]}}},"context":"query","type":"wrapper"}],"icon":"thumbs-up","description":{"en_US":"Boost contents with current session language as the default language"},"category":"boost","conditions":[],"title":{"en_US":"Boost Contents for the Current Language"},"enabled":true}},{"uiConfigurationValues":{"field":"expando__keyword__custom_fields__location_geolocation","scale":100,"boost":20,"decay":0.3},"uiConfigurationJSON":[{"defaultValue":20,"name":"Boost","type":"slider","key":"boost"},{"helpText":"A geopoint field","defaultValue":"expando__keyword__custom_fields__location_geolocation","name":"Field","type":"text","key":"field"},{"defaultValue":0.3,"name":"Decay","type":"number","key":"decay"},{"unit":"km","defaultValue":100,"name":"Scale","type":"number","unitSuffix":"km","key":"scale"}],"fragmentOutput":{"clauses":[{"occur":"should","query":{"query":{"function_score":{"gauss":{"expando__keyword__custom_fields__location_geolocation":{"offset":0,"origin":{"lon":"${ipstack.longitude}","lat":"${ipstack.latitude}"},"scale":"100km","decay":0.3}},"boost":20}}},"context":"query","type":"wrapper"}],"icon":"thumbs-up","description":{"en_US":"Boost contents tagged close to my location with a Gaussian function"},"category":"boost","conditions":[],"title":{"en_US":"Boost Proximity"},"enabled":true},"fragmentTemplateJSON":{"clauses":[{"occur":"should","query":{"query":{"function_score":{"gauss":{"${config.field}":{"offset":0,"origin":{"lon":"${ipstack.longitude}","lat":"${ipstack.latitude}"},"scale":"${config.scale}","decay":"${config.decay}"}},"boost":"${config.boost}"}}},"context":"query","type":"wrapper"}],"icon":"thumbs-up","description":{"en_US":"Boost contents tagged close to my location with a Gaussian function"},"category":"boost","conditions":[],"title":{"en_US":"Boost Proximity"},"enabled":true}}]}},"type":1}
+{
+	"payload": {
+		"configuration": {
+			"advanced_configuration": {
+				"query_processing": {
+					"exclude_query_contributors": "",
+					"exclude_query_post_processors": ""
+				}
+			},
+			"aggregation_configuration": [
+			],
+			"facet_configuration": [
+			],
+			"framework_configuration": {
+				"apply_indexer_clauses": true
+			},
+			"parameter_configuration": {
+			},
+			"query_configuration": [
+				{
+					"category": "boost",
+					"clauses": [
+						{
+							"context": "query",
+							"occur": "should",
+							"query": {
+								"query": {
+									"bool": {
+										"must": [
+											{
+												"terms": {
+													"entryClassName": [
+														"com.liferay.portal.kernel.model.Layout",
+														"com.liferay.journal.model.JournalArticle"
+													]
+												}
+											},
+											{
+												"term": {
+													"defaultLanguageId": {
+														"boost": 20,
+														"value": "${context.language_id}"
+													}
+												}
+											}
+										]
+									}
+								}
+							},
+							"type": "wrapper"
+						}
+					],
+					"conditions": [
+					],
+					"description": {
+						"en_US": "Boost contents with current session language as the default language"
+					},
+					"enabled": true,
+					"icon": "thumbs-up",
+					"title": {
+						"en_US": "Boost Contents for the Current Language"
+					}
+				},
+				{
+					"category": "boost",
+					"clauses": [
+						{
+							"context": "query",
+							"occur": "should",
+							"query": {
+								"query": {
+									"function_score": {
+										"boost": 20,
+										"gauss": {
+											"expando__keyword__custom_fields__location_geolocation": {
+												"decay": 0.3,
+												"offset": 0,
+												"origin": {
+													"lat": "${ipstack.latitude}",
+													"lon": "${ipstack.longitude}"
+												},
+												"scale": "100km"
+											}
+										}
+									}
+								}
+							},
+							"type": "wrapper"
+						}
+					],
+					"conditions": [
+					],
+					"description": {
+						"en_US": "Boost contents tagged close to my location with a Gaussian function"
+					},
+					"enabled": true,
+					"icon": "thumbs-up",
+					"title": {
+						"en_US": "Boost Proximity"
+					}
+				},
+				{
+					"category": "boost",
+					"clauses": [
+						{
+							"context": "query",
+							"occur": "should",
+							"query": {
+								"query": {
+									"terms": {
+										"groupId": "${user.user_group_ids}"
+									}
+								}
+							},
+							"type": "wrapper"
+						}
+					],
+					"conditions": [
+					],
+					"description": {
+						"en_US": "Boost contents in groups I'm member of"
+					},
+					"enabled": true,
+					"icon": "thumbs-up",
+					"title": {
+						"en_US": "Boost Contents in My Groups"
+					}
+				},
+				{
+					"category": "commerce",
+					"clauses": [
+						{
+							"context": "query",
+							"occur": "should",
+							"query": {
+								"query": {
+									"terms": {
+										"boost": 20,
+										"commerceAccountGroupIds": "${commerce.commerce_account_group_ids}"
+									}
+								}
+							},
+							"type": "wrapper"
+						}
+					],
+					"conditions": [
+					],
+					"description": {
+						"en_US": "Boost Commerce items for my account groups. Aapplies only to products using Account Group Filtering."
+					},
+					"enabled": true,
+					"icon": "thumbs-up",
+					"title": {
+						"en_US": "Boost Items for My Commerce Account Groups"
+					}
+				}
+			],
+			"sort_configuration": {
+			}
+		},
+		"description": {
+			"en_US": "A sample Blueprint for personalizing Liferay search. Builds on top of default Liferay search clauses and boosts contents matching user's properties like language, location, groups and segments. Geolocation field has to be configured and data provider be enabled in Blueprints configuration to take advantage of location features."
+		},
+		"selected_fragments": {
+			"query_configuration": [
+				{
+					"fragmentOutput": {
+						"category": "boost",
+						"clauses": [
+							{
+								"context": "query",
+								"occur": "should",
+								"query": {
+									"query": {
+										"bool": {
+											"must": [
+												{
+													"terms": {
+														"entryClassName": [
+															"com.liferay.portal.kernel.model.Layout",
+															"com.liferay.journal.model.JournalArticle"
+														]
+													}
+												},
+												{
+													"term": {
+														"defaultLanguageId": {
+															"boost": 20,
+															"value": "${context.language_id}"
+														}
+													}
+												}
+											]
+										}
+									}
+								},
+								"type": "wrapper"
+							}
+						],
+						"conditions": [
+						],
+						"description": {
+							"en_US": "Boost contents with current session language as the default language"
+						},
+						"enabled": true,
+						"icon": "thumbs-up",
+						"title": {
+							"en_US": "Boost Contents for the Current Language"
+						}
+					},
+					"fragmentTemplateJSON": {
+						"category": "boost",
+						"clauses": [
+							{
+								"context": "query",
+								"occur": "should",
+								"query": {
+									"query": {
+										"bool": {
+											"must": [
+												{
+													"terms": {
+														"entryClassName": [
+															"com.liferay.portal.kernel.model.Layout",
+															"com.liferay.journal.model.JournalArticle"
+														]
+													}
+												},
+												{
+													"term": {
+														"defaultLanguageId": {
+															"boost": "${config.boost}",
+															"value": "${context.language_id}"
+														}
+													}
+												}
+											]
+										}
+									}
+								},
+								"type": "wrapper"
+							}
+						],
+						"conditions": [
+						],
+						"description": {
+							"en_US": "Boost contents with current session language as the default language"
+						},
+						"enabled": true,
+						"icon": "thumbs-up",
+						"title": {
+							"en_US": "Boost Contents for the Current Language"
+						}
+					},
+					"uiConfigurationJSON": [
+						{
+							"defaultValue": 20,
+							"key": "boost",
+							"name": "Boost",
+							"type": "slider"
+						}
+					],
+					"uiConfigurationValues": {
+						"boost": 20
+					}
+				},
+				{
+					"fragmentOutput": {
+						"category": "boost",
+						"clauses": [
+							{
+								"context": "query",
+								"occur": "should",
+								"query": {
+									"query": {
+										"function_score": {
+											"boost": 20,
+											"gauss": {
+												"expando__keyword__custom_fields__location_geolocation": {
+													"decay": 0.3,
+													"offset": 0,
+													"origin": {
+														"lat": "${ipstack.latitude}",
+														"lon": "${ipstack.longitude}"
+													},
+													"scale": "100km"
+												}
+											}
+										}
+									}
+								},
+								"type": "wrapper"
+							}
+						],
+						"conditions": [
+						],
+						"description": {
+							"en_US": "Boost contents tagged close to my location with a Gaussian function"
+						},
+						"enabled": true,
+						"icon": "thumbs-up",
+						"title": {
+							"en_US": "Boost Proximity"
+						}
+					},
+					"fragmentTemplateJSON": {
+						"category": "boost",
+						"clauses": [
+							{
+								"context": "query",
+								"occur": "should",
+								"query": {
+									"query": {
+										"function_score": {
+											"boost": "${config.boost}",
+											"gauss": {
+												"${config.field}": {
+													"decay": "${config.decay}",
+													"offset": 0,
+													"origin": {
+														"lat": "${ipstack.latitude}",
+														"lon": "${ipstack.longitude}"
+													},
+													"scale": "${config.scale}"
+												}
+											}
+										}
+									}
+								},
+								"type": "wrapper"
+							}
+						],
+						"conditions": [
+						],
+						"description": {
+							"en_US": "Boost contents tagged close to my location with a Gaussian function"
+						},
+						"enabled": true,
+						"icon": "thumbs-up",
+						"title": {
+							"en_US": "Boost Proximity"
+						}
+					},
+					"uiConfigurationJSON": [
+						{
+							"defaultValue": 20,
+							"key": "boost",
+							"name": "Boost",
+							"type": "slider"
+						},
+						{
+							"defaultValue": "expando__keyword__custom_fields__location_geolocation",
+							"helpText": "A geopoint field",
+							"key": "field",
+							"name": "Field",
+							"type": "text"
+						},
+						{
+							"defaultValue": 0.3,
+							"key": "decay",
+							"name": "Decay",
+							"type": "number"
+						},
+						{
+							"defaultValue": 100,
+							"key": "scale",
+							"name": "Scale",
+							"type": "number",
+							"unit": "km",
+							"unitSuffix": "km"
+						}
+					],
+					"uiConfigurationValues": {
+						"boost": 20,
+						"decay": 0.3,
+						"field": "expando__keyword__custom_fields__location_geolocation",
+						"scale": 100
+					}
+				},
+				{
+					"fragmentOutput": {
+						"category": "boost",
+						"clauses": [
+							{
+								"context": "query",
+								"occur": "should",
+								"query": {
+									"query": {
+										"terms": {
+											"groupId": "${user.user_group_ids}"
+										}
+									}
+								},
+								"type": "wrapper"
+							}
+						],
+						"conditions": [
+						],
+						"description": {
+							"en_US": "Boost contents in groups I'm member of"
+						},
+						"enabled": true,
+						"icon": "thumbs-up",
+						"title": {
+							"en_US": "Boost Contents in My Groups"
+						}
+					},
+					"fragmentTemplateJSON": {
+						"category": "boost",
+						"clauses": [
+							{
+								"context": "query",
+								"occur": "should",
+								"query": {
+									"query": {
+										"terms": {
+											"groupId": "${user.user_group_ids}"
+										}
+									}
+								},
+								"type": "wrapper"
+							}
+						],
+						"conditions": [
+						],
+						"description": {
+							"en_US": "Boost contents in groups I'm member of"
+						},
+						"enabled": true,
+						"icon": "thumbs-up",
+						"title": {
+							"en_US": "Boost Contents in My Groups"
+						}
+					},
+					"uiConfigurationJSON": [
+					],
+					"uiConfigurationValues": {
+					}
+				},
+				{
+					"fragmentOutput": {
+						"category": "commerce",
+						"clauses": [
+							{
+								"context": "query",
+								"occur": "should",
+								"query": {
+									"query": {
+										"terms": {
+											"boost": 20,
+											"commerceAccountGroupIds": "${commerce.commerce_account_group_ids}"
+										}
+									}
+								},
+								"type": "wrapper"
+							}
+						],
+						"conditions": [
+						],
+						"description": {
+							"en_US": "Boost Commerce items for my account groups. Aapplies only to products using Account Group Filtering."
+						},
+						"enabled": true,
+						"icon": "thumbs-up",
+						"title": {
+							"en_US": "Boost Items for My Commerce Account Groups"
+						}
+					},
+					"fragmentTemplateJSON": {
+						"category": "commerce",
+						"clauses": [
+							{
+								"context": "query",
+								"occur": "should",
+								"query": {
+									"query": {
+										"terms": {
+											"boost": "${config.boost}",
+											"commerceAccountGroupIds": "${commerce.commerce_account_group_ids}"
+										}
+									}
+								},
+								"type": "wrapper"
+							}
+						],
+						"conditions": [
+						],
+						"description": {
+							"en_US": "Boost Commerce items for my account groups. Aapplies only to products using Account Group Filtering."
+						},
+						"enabled": true,
+						"icon": "thumbs-up",
+						"title": {
+							"en_US": "Boost Items for My Commerce Account Groups"
+						}
+					},
+					"uiConfigurationJSON": [
+						{
+							"defaultValue": 20,
+							"key": "boost",
+							"name": "Boost",
+							"type": "slider"
+						}
+					],
+					"uiConfigurationValues": {
+						"boost": 20
+					}
+				}
+			]
+		},
+		"title": {
+			"en_US": "Personalization (Sample Contributor Blueprint)"
+		}
+	},
+	"type": 1
+}

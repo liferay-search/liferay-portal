@@ -32,7 +32,7 @@ export default {
 		],
 		conditions: [],
 		description: {
-			en_US: 'Boost contents where all keywords of a search phrase match',
+			en_US: 'Boost contents matching all the words in the search phrase',
 		},
 		enabled: true,
 		icon: 'thumbs-up',
@@ -74,12 +74,6 @@ export default {
 			],
 		},
 		{
-			defaultValue: 10,
-			key: 'boost',
-			name: 'Boost',
-			type: 'slider',
-		},
-		{
 			defaultValue: 'best_fields',
 			key: 'type',
 			name: 'Match Type',
@@ -110,6 +104,12 @@ export default {
 					value: 'bool_prefix',
 				},
 			],
+		},
+		{
+			defaultValue: 10,
+			key: 'boost',
+			name: 'Boost',
+			type: 'slider',
 		},
 	],
 };

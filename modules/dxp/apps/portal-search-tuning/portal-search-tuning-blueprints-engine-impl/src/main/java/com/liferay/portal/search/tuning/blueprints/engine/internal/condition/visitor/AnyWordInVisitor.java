@@ -31,9 +31,6 @@ import com.liferay.portal.search.tuning.blueprints.engine.parameter.LongParamete
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringArrayParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringParameter;
 
-import java.util.Arrays;
-import java.util.stream.Stream;
-
 /**
  * @author Petteri Karttunen
  */
@@ -120,9 +117,10 @@ public class AnyWordInVisitor implements ConditionEvaluationVisitor {
 
 		for (int i = 0; i < jsonArray.length(); i++) {
 			String value = StringUtil.toLowerCase(jsonArray.getString(i));
-			
+
 			if (parameterValue.contains(value)) {
 				match = true;
+
 				break;
 			}
 		}

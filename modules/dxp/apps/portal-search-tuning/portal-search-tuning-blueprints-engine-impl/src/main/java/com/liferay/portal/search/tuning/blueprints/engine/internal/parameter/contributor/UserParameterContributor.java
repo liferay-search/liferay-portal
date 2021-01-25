@@ -101,7 +101,7 @@ public class UserParameterContributor implements ParameterContributor {
 			new ParameterDefinition(
 				_getTemplateVariableName(
 					ReservedParameterNames.USER_IS_SIGNED_IN.getKey()),
-				LongParameter.class.getName(),
+				BooleanParameter.class.getName(),
 				"core.parameter.user.is-signed-in"));
 
 		parameterDefinitions.add(

@@ -22,6 +22,20 @@ export default {
 							should: [
 								{
 									bool: {
+										must_not: [
+											{
+												term: {
+													entryClassName: {
+														value:
+															'com.liferay.journal.model.JournalArticle',
+													},
+												},
+											},
+										],
+									},
+								},
+								{
+									bool: {
 										must: [
 											{
 												term: {
@@ -43,7 +57,6 @@ export default {
 								},
 							],
 						},
-
 					},
 				},
 				type: 'wrapper',
