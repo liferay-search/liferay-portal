@@ -14,6 +14,10 @@
 
 package com.liferay.portal.search.tuning.blueprints.engine.internal.util;
 
+import com.liferay.asset.kernel.AssetRendererFactoryRegistryUtil;
+import com.liferay.asset.kernel.model.AssetRendererFactory;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -38,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -101,13 +106,6 @@ public class BlueprintsSearchRequestHelper {
 					illegalStateException.getMessage(), illegalStateException);
 			}
 		}
-
-		if (!_shouldApplyIndexerClauses(blueprint)) {
-			searchRequestBuilder.withSearchContext(
-				searchContext -> searchContext.setAttribute(
-					"search.full.query.suppress.indexer.provided.clauses",
-					Boolean.TRUE));
-		}
 	}
 
 	public Blueprint getBlueprint(long blueprintId) {
@@ -117,6 +115,27 @@ public class BlueprintsSearchRequestHelper {
 		catch (Exception exception) {
 			throw new RuntimeException(exception);
 		}
+	}
+
+	public String[] getModelIndexerClassNames(
+		Blueprint blueprint, long companyId) {
+
+		Optional<JSONArray> optional =
+			_blueprintHelper.getSearchableAssetTypesOptional(blueprint);
+
+		if (optional.isPresent()) {
+			JSONArray jsonArray = optional.get();
+
+			if (jsonArray.length() > 0) {
+				return JSONUtil.toStringArray(optional.get());
+			}
+		}
+
+		return _getSearchableAssetTypes(companyId);
+	}
+
+	public boolean shouldApplyIndexerClauses(Blueprint blueprint) {
+		return _blueprintHelper.applyIndexerClauses(blueprint);
 	}
 
 	@Reference(
@@ -196,8 +215,21 @@ public class BlueprintsSearchRequestHelper {
 		return new ArrayList<>();
 	}
 
-	private boolean _shouldApplyIndexerClauses(Blueprint blueprint) {
-		return _blueprintHelper.applyIndexerClauses(blueprint);
+	private String[] _getSearchableAssetTypes(long companyId) {
+		List<AssetRendererFactory<?>> assetRendererFactories =
+			AssetRendererFactoryRegistryUtil.getAssetRendererFactories(
+				companyId, true);
+
+		Stream<AssetRendererFactory<?>> stream =
+			assetRendererFactories.stream();
+
+		return stream.filter(
+			item -> item.isSearchable()
+		).map(
+			AssetRendererFactory::getClassName
+		).toArray(
+			String[]::new
+		);
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

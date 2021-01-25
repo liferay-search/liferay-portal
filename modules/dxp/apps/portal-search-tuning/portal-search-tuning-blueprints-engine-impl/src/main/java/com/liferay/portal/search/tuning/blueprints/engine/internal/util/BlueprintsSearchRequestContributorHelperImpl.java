@@ -45,6 +45,21 @@ public class BlueprintsSearchRequestContributorHelperImpl
 		ParameterData parameterData = _parameterDataCreator.create(
 			blueprint, blueprintsAttributes, messages);
 
+		if (!_blueprintsSearchRequestHelper.shouldApplyIndexerClauses(
+				blueprint)) {
+
+			searchRequestBuilder.emptySearchEnabled(
+				true
+			).modelIndexerClassNames(
+				_blueprintsSearchRequestHelper.getModelIndexerClassNames(
+					blueprint, blueprintsAttributes.getCompanyId())
+			).withSearchContext(
+				searchContext -> searchContext.setAttribute(
+					"search.full.query.suppress.indexer.provided.clauses",
+					Boolean.TRUE)
+			);
+		}
+
 		_blueprintsSearchRequestHelper.executeSearchRequestBodyContributors(
 			searchRequestBuilder, parameterData, blueprint, messages);
 	}
