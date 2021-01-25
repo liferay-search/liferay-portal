@@ -14,12 +14,8 @@
 
 package com.liferay.portal.search.tuning.blueprints.engine.internal.util;
 
-import com.liferay.asset.kernel.AssetRendererFactoryRegistryUtil;
-import com.liferay.asset.kernel.model.AssetRendererFactory;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONException;
-import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.searcher.SearchRequestBuilderFactory;
@@ -36,10 +32,8 @@ import com.liferay.portal.search.tuning.blueprints.message.Messages;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.util.BlueprintHelper;
 
-import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -136,38 +130,6 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 		return (page - 1) * size;
 	}
 
-	private String[] _getModelIndexerClassNames(
-		Blueprint blueprint, long companyId) {
-
-		Optional<JSONArray> optional =
-			_blueprintHelper.getSearchableAssetTypesOptional(blueprint);
-
-		if (optional.isPresent()) {
-			return JSONUtil.toStringArray(optional.get());
-		}
-
-		// TODO: remove after asset type selection is available on the UI
-
-		return _getSearchableAssetTypes(companyId);
-	}
-
-	private String[] _getSearchableAssetTypes(long companyId) {
-		List<AssetRendererFactory<?>> assetRendererFactories =
-			AssetRendererFactoryRegistryUtil.getAssetRendererFactories(
-				companyId, true);
-
-		Stream<AssetRendererFactory<?>> stream =
-			assetRendererFactories.stream();
-
-		return stream.filter(
-			item -> item.isSearchable()
-		).map(
-			AssetRendererFactory::getClassName
-		).toArray(
-			String[]::new
-		);
-	}
-
 	private SearchRequestBuilder _getSearchRequestBuilder(
 		ParameterData parameterData, Blueprint blueprint, Messages messages,
 		long companyId, Locale locale) {
@@ -187,12 +149,22 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 			).locale(
 				locale
 			).modelIndexerClassNames(
-				_getModelIndexerClassNames(blueprint, companyId)
+				_blueprintsSearchRequestHelper.getModelIndexerClassNames(
+					blueprint, companyId)
 			).size(
 				_blueprintHelper.getSize(blueprint)
 			).from(
 				_getFrom(parameterData, blueprint)
 			);
+
+		if (!_blueprintsSearchRequestHelper.shouldApplyIndexerClauses(
+				blueprint)) {
+
+			searchRequestBuilder.withSearchContext(
+				searchContext -> searchContext.setAttribute(
+					"search.full.query.suppress.indexer.provided.clauses",
+					Boolean.TRUE));
+		}
 
 		_blueprintsSearchRequestHelper.executeSearchRequestBodyContributors(
 			searchRequestBuilder, parameterData, blueprint, messages);
