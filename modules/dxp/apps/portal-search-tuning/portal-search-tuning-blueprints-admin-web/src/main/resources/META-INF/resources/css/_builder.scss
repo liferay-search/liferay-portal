@@ -88,4 +88,8 @@
 			}
 		}
 	}
+
+	.sheet + .sheet {
+		margin-top: 0;
+	}
 }
