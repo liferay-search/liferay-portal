@@ -164,6 +164,8 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 				searchContext -> searchContext.setAttribute(
 					"search.full.query.suppress.indexer.provided.clauses",
 					Boolean.TRUE));
+		} else {
+			searchRequestBuilder.queryString(parameterData.getKeywords());
 		}
 
 		_blueprintsSearchRequestHelper.executeSearchRequestBodyContributors(
