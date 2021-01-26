@@ -78,7 +78,6 @@ export const DEFAULT_FRAGMENT = TEXT_MATCH_OVER_MULTIPLE_FIELDS;
 
 export const DEFAULT_FRAMEWORK_CONFIGURATION = {
 	apply_indexer_clauses: true,
-	searchable_asset_types: [],
 };
 
 export const DEFAULT_EDIT_FRAGMENT = TEXT_MATCH;
