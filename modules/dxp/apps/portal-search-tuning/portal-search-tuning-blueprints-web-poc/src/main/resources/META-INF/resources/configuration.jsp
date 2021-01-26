@@ -14,7 +14,7 @@
  */
 --%>
 
-<%@ include file="/init.jsp" %>
+<%@ include file="./init.jsp" %>
 
 <%
 PortletPreferences preferences = renderRequest.getPreferences();
@@ -32,6 +32,8 @@ boolean misspellingsEnabled = GetterUtil.getBoolean(preferences.getValue(Bluepri
 boolean queryIndexingEnabled = GetterUtil.getBoolean(preferences.getValue(BlueprintsWebPortletPreferenceKeys.QUERY_INDEXING_ENABLED, "true"));
 
 int queryIndexingHitsThreshold = GetterUtil.getInteger(preferences.getValue(BlueprintsWebPortletPreferenceKeys.QUERY_INDEXING_HITS_THRESHOLD, "3"));
+
+String titleTypeaheadEntryClassNames = preferences.getValue(BlueprintsWebPortletPreferenceKeys.TITLE_TYPEAHEAD_ENTRY_CLASS_NAMES, "com.liferay.journal.model.JournalArticle, com.liferay.document.library.kernel.model.DLFileEntry");
 
 boolean typeaheadEnabled = GetterUtil.getBoolean(preferences.getValue(BlueprintsWebPortletPreferenceKeys.TYPEAHEAD_ENABLED, "true"));
 %>
@@ -59,6 +61,7 @@ boolean typeaheadEnabled = GetterUtil.getBoolean(preferences.getValue(Blueprints
 
 				<div class="options-container <%= !typeaheadEnabled ? "hide" : StringPool.BLANK %>" id="<portlet:namespace />typeaheadOptionsContainer">
 					<aui:input label="maximum-number-of-typeahead-suggestions" name="preferences--maxTypeaheadSuggestions--" size="10" type="text" value="<%= maxTypeaheadSuggestions %>" />
+					<aui:input label="title-typeahead-entry-class-names" name="preferences--titleTypeaheadEntryClassNames--" size="10" type="text" value="<%= titleTypeaheadEntryClassNames %>" />
 				</div>
 
 				<hr />

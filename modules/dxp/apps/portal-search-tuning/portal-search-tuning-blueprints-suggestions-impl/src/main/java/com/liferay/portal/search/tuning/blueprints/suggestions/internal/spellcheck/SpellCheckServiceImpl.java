@@ -21,6 +21,7 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.tuning.blueprints.engine.component.ServiceComponentReference;
 import com.liferay.portal.search.tuning.blueprints.suggestions.attributes.SuggestionsAttributes;
+import com.liferay.portal.search.tuning.blueprints.suggestions.constants.SuggestionsConstants;
 import com.liferay.portal.search.tuning.blueprints.suggestions.spellcheck.SpellCheckService;
 import com.liferay.portal.search.tuning.blueprints.suggestions.spi.provider.SpellCheckDataProvider;
 import com.liferay.portal.search.tuning.blueprints.suggestions.suggestion.Suggestion;
@@ -31,6 +32,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -59,11 +61,20 @@ public class SpellCheckServiceImpl implements SpellCheckService {
 	protected List<Suggestion> fetchSuggestions(
 		SuggestionsAttributes suggestionsAttributes) {
 
+		List<String> includedProviders = _getIncludedProviders(
+			suggestionsAttributes);
+
 		Map<String, Suggestion> suggestions = new HashMap<>();
 
 		for (Map.Entry
 				<String, ServiceComponentReference<SpellCheckDataProvider>>
 					entry : _spellCheckDataProviders.entrySet()) {
+
+			if (!includedProviders.isEmpty() &&
+				!includedProviders.contains(entry.getKey())) {
+
+				continue;
+			}
 
 			try {
 				ServiceComponentReference<SpellCheckDataProvider> value =
@@ -174,6 +185,26 @@ public class SpellCheckServiceImpl implements SpellCheckService {
 					}
 				}
 			});
+	}
+
+	private List<String> _getIncludedProviders(
+		SuggestionsAttributes suggestionsAttributes) {
+
+		Optional<Object> attributeOptional =
+			suggestionsAttributes.getAttributeOptional(
+				SuggestionsConstants.INCLUDE_PROVIDERS);
+
+		if (!attributeOptional.isPresent()) {
+			return new ArrayList<>();
+		}
+
+		Object object = attributeOptional.get();
+
+		if (!List.class.isAssignableFrom(object.getClass())) {
+			return new ArrayList<>();
+		}
+
+		return (List<String>)object;
 	}
 
 	private List<Suggestion> _getResults(

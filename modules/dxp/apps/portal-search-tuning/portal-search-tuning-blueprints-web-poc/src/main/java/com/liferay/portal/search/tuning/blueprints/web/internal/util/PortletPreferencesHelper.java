@@ -69,6 +69,16 @@ public class PortletPreferencesHelper {
 		return value.map(GetterUtil::getLong);
 	}
 
+	public Optional<String> getString(String key) {
+		return getValue(key);
+	}
+
+	public String getString(String key, String defaultValue) {
+		Optional<String> value = getString(key);
+
+		return value.orElse(defaultValue);
+	}
+
 	protected Optional<String> getValue(String key) {
 		return _portletPreferencesOptional.flatMap(
 			portletPreferences -> _maybe(

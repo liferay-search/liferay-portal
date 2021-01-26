@@ -15,7 +15,10 @@
 package com.liferay.portal.search.tuning.blueprints.suggestions.titles.internal.typeahead.provider;
 
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.search.Field;
+import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.search.document.Document;
 import com.liferay.portal.search.hits.SearchHit;
 import com.liferay.portal.search.hits.SearchHits;
@@ -38,6 +41,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -64,8 +68,20 @@ public class TitleTypeaheadDataProvider implements TypeaheadDataProvider {
 			return new ArrayList<>();
 		}
 
+		String[] modelIndexerClassNames = _getModelIndexerClassNames(
+			suggestionsAttributes);
+
+		if (modelIndexerClassNames.length == 0) {
+			if (_log.isWarnEnabled()) {
+				_log.warn("data.provider.titles.entry_class_names are not set");
+			}
+
+			return new ArrayList<>();
+		}
+
 		SearchHits searchHits = _search(
-			_getQuery(suggestionsAttributes), suggestionsAttributes);
+			_getQuery(suggestionsAttributes), modelIndexerClassNames,
+			suggestionsAttributes);
 
 		if (searchHits.getTotalHits() == 0) {
 			return new ArrayList<>();
@@ -118,6 +134,26 @@ public class TitleTypeaheadDataProvider implements TypeaheadDataProvider {
 		return fields;
 	}
 
+	private String[] _getModelIndexerClassNames(
+		SuggestionsAttributes suggestionsAttributes) {
+
+		Optional<Object> attributeOptional =
+			suggestionsAttributes.getAttributeOptional(
+				"data.provider.titles.entry_class_names");
+
+		if (!attributeOptional.isPresent()) {
+			return new String[0];
+		}
+
+		Object object = attributeOptional.get();
+
+		if (!String[].class.isAssignableFrom(object.getClass())) {
+			return new String[0];
+		}
+
+		return (String[])object;
+	}
+
 	private Query _getQuery(SuggestionsAttributes suggestionsAttributes) {
 		BooleanQuery booleanQuery = _queries.booleanQuery();
 
@@ -149,27 +185,44 @@ public class TitleTypeaheadDataProvider implements TypeaheadDataProvider {
 	}
 
 	private SearchHits _search(
-		Query query, SuggestionsAttributes suggestionsAttributes) {
+		Query query, String[] modelIndexerClassNames,
+		SuggestionsAttributes suggestionsAttributes) {
 
 		SearchRequestBuilder searchRequestBuilder =
 			_searchRequestBuilderFactory.builder(
 			).companyId(
 				suggestionsAttributes.getCompanyId()
+			).emptySearchEnabled(
+				true
+			).excludeContributors(
+				"com.liferay.portal.search.tuning.blueprints"
+			).locale(
+				LocaleUtil.fromLanguageId(suggestionsAttributes.getLanguageId())
+			).modelIndexerClassNames(
+				modelIndexerClassNames
+			).entryClassNames(
+				modelIndexerClassNames
 			).query(
 				query
-			).queryString(
-				suggestionsAttributes.getKeywords()
 			).size(
 				suggestionsAttributes.getSize()
 			).from(
 				0
 			);
 
+		searchRequestBuilder.withSearchContext(
+			searchContext -> searchContext.setAttribute(
+				"search.full.query.suppress.indexer.provided.clauses",
+				Boolean.TRUE));
+
 		SearchResponse searchResponse = _searcher.search(
 			searchRequestBuilder.build());
 
 		return searchResponse.getSearchHits();
 	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		TitleTypeaheadDataProvider.class);
 
 	@Reference
 	private IndexNameBuilder _indexNameBuilder;

@@ -33,6 +33,8 @@ public interface BlueprintsWebPortletPreferences {
 
 	public int getQueryIndexingHitsThreshold();
 
+	public String getTitleTypeaheadEntryClassNames();
+
 	public boolean isDidYouMeanEnabled();
 
 	public boolean isMisspellingsEnabled();
