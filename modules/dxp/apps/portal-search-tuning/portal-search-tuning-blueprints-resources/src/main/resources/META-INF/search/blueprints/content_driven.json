@@ -69,7 +69,7 @@
 										"default_operator": "or",
 										"fields": [
 											"localized_title${context.language_id}^2",
-											"content${context.language_id}^2",
+											"content${context.language_id}",
 											"description${context.language_id}",
 											"name${context.language_id}"
 										],
@@ -279,7 +279,8 @@
 										"fields": [
 											"localized_title${context.language_id}^2",
 											"content${context.language_id}",
-											"description${context.language_id}"
+											"description${context.language_id}",
+											"name${context.language_id}"
 										],
 										"operator": "and",
 										"query": "${keywords}",
@@ -314,7 +315,8 @@
 										"fields": [
 											"localized_title${context.language_id}^2",
 											"content${context.language_id}",
-											"description${context.language_id}"
+											"description${context.language_id}",
+											"name${context.language_id}"
 										],
 										"operator": "and",
 										"query": "${keywords}",
@@ -939,7 +941,7 @@
 											"default_operator": "or",
 											"fields": [
 												"localized_title${context.language_id}^2",
-												"content${context.language_id}^2",
+												"content${context.language_id}",
 												"description${context.language_id}",
 												"name${context.language_id}"
 											],
@@ -1059,7 +1061,7 @@
 								"locale": "${context.language_id}"
 							},
 							{
-								"boost": "2",
+								"boost": 1,
 								"field": "content",
 								"locale": "${context.language_id}"
 							},
@@ -1643,7 +1645,8 @@
 											"fields": [
 												"localized_title${context.language_id}^2",
 												"content${context.language_id}",
-												"description${context.language_id}"
+												"description${context.language_id}",
+												"name${context.language_id}"
 											],
 											"operator": "and",
 											"query": "${keywords}",
@@ -1726,6 +1729,10 @@
 								{
 									"label": "Content",
 									"value": "content"
+								},
+								{
+									"label": "Name",
+									"value": "name"
 								}
 							]
 						},
@@ -1785,6 +1792,11 @@
 								"boost": 1,
 								"field": "description",
 								"locale": "${context.language_id}"
+							},
+							{
+								"boost": 1,
+								"field": "name",
+								"locale": "${context.language_id}"
 							}
 						],
 						"type": "phrase"
@@ -1804,7 +1816,8 @@
 											"fields": [
 												"localized_title${context.language_id}^2",
 												"content${context.language_id}",
-												"description${context.language_id}"
+												"description${context.language_id}",
+												"name${context.language_id}"
 											],
 											"operator": "and",
 											"query": "${keywords}",
@@ -1887,6 +1900,10 @@
 								{
 									"label": "Content",
 									"value": "content"
+								},
+								{
+									"label": "Name",
+									"value": "name"
 								}
 							]
 						},
@@ -1945,6 +1962,11 @@
 							{
 								"boost": 1,
 								"field": "description",
+								"locale": "${context.language_id}"
+							},
+							{
+								"boost": 1,
+								"field": "name",
 								"locale": "${context.language_id}"
 							}
 						],
