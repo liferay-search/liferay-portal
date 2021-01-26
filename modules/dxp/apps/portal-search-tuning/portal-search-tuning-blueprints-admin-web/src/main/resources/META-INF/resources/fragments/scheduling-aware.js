@@ -46,6 +46,31 @@ export default {
 													},
 												},
 											},
+										],
+										must_not: [
+											{
+												exists: {
+													field: 'expirationDate',
+												},
+											},
+										],
+									},
+								},
+								{
+									bool: {
+										must: [
+											{
+												range: {
+													displayDate_sortable: {
+														from:
+															'-9223372036854775808',
+														include_lower: true,
+														include_upper: true,
+														to:
+															'${time.current_date|dateFormat=timestamp}',
+													},
+												},
+											},
 											{
 												range: {
 													expirationDate_sortable: {
