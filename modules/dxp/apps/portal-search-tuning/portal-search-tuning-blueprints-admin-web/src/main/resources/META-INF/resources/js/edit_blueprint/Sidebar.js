@@ -88,12 +88,18 @@ const QueryFragmentList = ({category, onAddFragment, queryFragments}) => {
 											] || fragmentTemplateJSON.title}
 										</ClayList.ItemTitle>
 
-										<ClayList.ItemText subtext={true}>
-											{fragmentTemplateJSON.description[
-												locale
-											] ||
-												fragmentTemplateJSON.description}
-										</ClayList.ItemText>
+										{fragmentTemplateJSON.description &&
+											Object.keys(
+												fragmentTemplateJSON.description
+											).length > 0 && (
+												<ClayList.ItemText
+													subtext={true}
+												>
+													{fragmentTemplateJSON
+														.description[locale] ||
+														fragmentTemplateJSON.description}
+												</ClayList.ItemText>
+											)}
 									</ClayList.ItemField>
 
 									<ClayList.ItemField>
