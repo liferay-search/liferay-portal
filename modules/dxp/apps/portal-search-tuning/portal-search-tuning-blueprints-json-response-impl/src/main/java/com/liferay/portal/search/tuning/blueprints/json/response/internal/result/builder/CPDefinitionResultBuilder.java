@@ -14,41 +14,31 @@
 
 package com.liferay.portal.search.tuning.blueprints.json.response.internal.result.builder;
 
-import com.liferay.blogs.model.BlogsEntry;
-import com.liferay.blogs.service.BlogsEntryService;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.search.document.Document;
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
 import com.liferay.portal.search.tuning.blueprints.json.response.spi.result.ResultBuilder;
 
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Petteri Karttunen
  */
 @Component(
 	immediate = true,
-	property = "model.class.name=com.liferay.blogs.model.BlogsEntry",
+	property = "model.class.name=com.liferay.commerce.product.model.CPDefinition",
 	service = ResultBuilder.class
 )
-public class BlogsEntryResultBuilder
+public class CPDefinitionResultBuilder
 	extends BaseResultBuilder implements ResultBuilder {
 
 	@Override
-	public String getThumbnail(
+	public String getTitle(
 			Document document, BlueprintsAttributes blueprintsAttributes)
 		throws Exception {
 
-		long entryClassPK = Long.valueOf(
-			document.getLong(Field.ENTRY_CLASS_PK));
-
-		BlogsEntry blogsEntry = _blogsEntryService.getEntry(entryClassPK);
-
-		return blogsEntry.getSmallImageURL();
+		return getStringFieldContent(
+			document, Field.NAME, blueprintsAttributes.getLocale());
 	}
-
-	@Reference
-	private BlogsEntryService _blogsEntryService;
 
 }
