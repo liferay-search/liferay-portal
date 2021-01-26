@@ -70,6 +70,10 @@ export default {
 					label: 'Content',
 					value: 'content',
 				},
+				{
+					label: 'Name',
+					value: 'name',
+				},
 			],
 		},
 		{
