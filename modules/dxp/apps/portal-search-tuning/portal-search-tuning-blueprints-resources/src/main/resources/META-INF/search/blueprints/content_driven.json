@@ -12,45 +12,13 @@
 			"facet_configuration": [
 			],
 			"framework_configuration": {
-				"apply_indexer_clauses": false
+				"apply_indexer_clauses": false,
+				"searchable_asset_types": [
+				]
 			},
 			"parameter_configuration": {
 			},
 			"query_configuration": [
-				{
-					"category": "match",
-					"clauses": [
-						{
-							"context": "query",
-							"occur": "must",
-							"query": {
-								"query": {
-									"simple_query_string": {
-										"boost": 1,
-										"default_operator": "or",
-										"fields": [
-											"localized_title${context.language_id}^2",
-											"content${context.language_id}^2",
-											"description${context.language_id}"
-										],
-										"query": "${keywords}"
-									}
-								}
-							},
-							"type": "wrapper"
-						}
-					],
-					"conditions": [
-					],
-					"description": {
-						"en_US": "Enable searching using the Lucene syntax"
-					},
-					"enabled": true,
-					"icon": "picture",
-					"title": {
-						"en_US": "Search with the Lucene Syntax"
-					}
-				},
 				{
 					"category": "match",
 					"clauses": [
@@ -64,7 +32,8 @@
 										"fields": [
 											"localized_title${context.language_id}^2",
 											"content${context.language_id}",
-											"description${context.language_id}"
+											"description${context.language_id}",
+											"name${context.language_id}"
 										],
 										"fuzziness": "AUTO",
 										"operator": "or",
@@ -85,6 +54,41 @@
 					"icon": "picture",
 					"title": {
 						"en_US": "Text Match Over Multiple Fields"
+					}
+				},
+				{
+					"category": "match",
+					"clauses": [
+						{
+							"context": "query",
+							"occur": "must",
+							"query": {
+								"query": {
+									"simple_query_string": {
+										"boost": 1,
+										"default_operator": "or",
+										"fields": [
+											"localized_title${context.language_id}^2",
+											"content${context.language_id}^2",
+											"description${context.language_id}",
+											"name${context.language_id}"
+										],
+										"query": "${keywords}"
+									}
+								}
+							},
+							"type": "wrapper"
+						}
+					],
+					"conditions": [
+					],
+					"description": {
+						"en_US": "Enable searching using the Lucene syntax"
+					},
+					"enabled": true,
+					"icon": "picture",
+					"title": {
+						"en_US": "Search with the Lucene Syntax"
 					}
 				},
 				{
@@ -123,7 +127,7 @@
 					"conditions": [
 					],
 					"description": {
-						"en_US": "Boost contents with current session language as the default language"
+						"en_US": "Boost contents having the current session language as the default language"
 					},
 					"enabled": true,
 					"icon": "thumbs-up",
@@ -274,11 +278,47 @@
 										"boost": 10,
 										"fields": [
 											"localized_title${context.language_id}^2",
-											"content${context.language_id}"
+											"content${context.language_id}",
+											"description${context.language_id}"
 										],
 										"operator": "and",
 										"query": "${keywords}",
-										"type": "best_fields"
+										"type": "phrase"
+									}
+								}
+							},
+							"type": "wrapper"
+						}
+					],
+					"conditions": [
+					],
+					"description": {
+						"en_US": "Boost contents matching all the words in the search phrase"
+					},
+					"enabled": true,
+					"icon": "thumbs-up",
+					"title": {
+						"en_US": "Boost All Keywords Match"
+					}
+				},
+				{
+					"category": "boost",
+					"clauses": [
+						{
+							"context": "query",
+							"occur": "should",
+							"query": {
+								"query": {
+									"multi_match": {
+										"boost": 10,
+										"fields": [
+											"localized_title${context.language_id}^2",
+											"content${context.language_id}",
+											"description${context.language_id}"
+										],
+										"operator": "and",
+										"query": "${keywords}",
+										"type": "cross_fields"
 									}
 								}
 							},
@@ -517,6 +557,29 @@
 																	"to": "${time.current_date|dateFormat=timestamp}"
 																}
 															}
+														}
+													],
+													"must_not": [
+														{
+															"exists": {
+																"field": "expirationDate"
+															}
+														}
+													]
+												}
+											},
+											{
+												"bool": {
+													"must": [
+														{
+															"range": {
+																"displayDate_sortable": {
+																	"from": "-9223372036854775808",
+																	"include_lower": true,
+																	"include_upper": true,
+																	"to": "${time.current_date|dateFormat=timestamp}"
+																}
+															}
 														},
 														{
 															"range": {
@@ -657,154 +720,13 @@
 								"occur": "must",
 								"query": {
 									"query": {
-										"simple_query_string": {
-											"boost": 1,
-											"default_operator": "or",
-											"fields": [
-												"localized_title${context.language_id}^2",
-												"content${context.language_id}^2",
-												"description${context.language_id}"
-											],
-											"query": "${keywords}"
-										}
-									}
-								},
-								"type": "wrapper"
-							}
-						],
-						"conditions": [
-						],
-						"description": {
-							"en_US": "Enable searching using the Lucene syntax"
-						},
-						"enabled": true,
-						"icon": "picture",
-						"title": {
-							"en_US": "Search with the Lucene Syntax"
-						}
-					},
-					"fragmentTemplateJSON": {
-						"category": "match",
-						"clauses": [
-							{
-								"context": "query",
-								"occur": "must",
-								"query": {
-									"query": {
-										"simple_query_string": {
-											"boost": "${config.boost}",
-											"default_operator": "${config.operator}",
-											"fields": "${config.fields}",
-											"query": "${keywords}"
-										}
-									}
-								},
-								"type": "wrapper"
-							}
-						],
-						"conditions": [
-						],
-						"description": {
-							"en_US": "Enable searching using the Lucene syntax"
-						},
-						"enabled": true,
-						"icon": "picture",
-						"title": {
-							"en_US": "Search with the Lucene Syntax"
-						}
-					},
-					"uiConfigurationJSON": [
-						{
-							"boost": true,
-							"defaultValue": [
-								{
-									"boost": "2",
-									"field": "localized_title",
-									"locale": "${context.language_id}"
-								},
-								{
-									"boost": "2",
-									"field": "content",
-									"locale": "${context.language_id}"
-								}
-							],
-							"key": "fields",
-							"name": "Fields",
-							"type": "field",
-							"typeOptions": [
-								{
-									"label": "Title",
-									"value": "localized_title"
-								},
-								{
-									"label": "Description",
-									"value": "description"
-								},
-								{
-									"label": "Content",
-									"value": "content"
-								}
-							]
-						},
-						{
-							"key": "operator",
-							"name": "Operator",
-							"type": "single-select",
-							"typeOptions": [
-								{
-									"label": "OR",
-									"value": "or"
-								},
-								{
-									"label": "AND",
-									"value": "and"
-								}
-							]
-						},
-						{
-							"defaultValue": 1,
-							"key": "boost",
-							"name": "Boost",
-							"type": "slider"
-						}
-					],
-					"uiConfigurationValues": {
-						"boost": 1,
-						"fields": [
-							{
-								"boost": "2",
-								"field": "localized_title",
-								"locale": "${context.language_id}"
-							},
-							{
-								"boost": "2",
-								"field": "content",
-								"locale": "${context.language_id}"
-							},
-							{
-								"boost": 1,
-								"field": "description",
-								"locale": "${context.language_id}"
-							}
-						],
-						"operator": "or"
-					}
-				},
-				{
-					"fragmentOutput": {
-						"category": "match",
-						"clauses": [
-							{
-								"context": "query",
-								"occur": "must",
-								"query": {
-									"query": {
 										"multi_match": {
 											"boost": 1,
 											"fields": [
 												"localized_title${context.language_id}^2",
 												"content${context.language_id}",
-												"description${context.language_id}"
+												"description${context.language_id}",
+												"name${context.language_id}"
 											],
 											"fuzziness": "AUTO",
 											"operator": "or",
@@ -889,6 +811,10 @@
 								{
 									"label": "Content",
 									"value": "content"
+								},
+								{
+									"label": "Name",
+									"value": "name"
 								}
 							]
 						},
@@ -987,11 +913,168 @@
 								"boost": 1,
 								"field": "description",
 								"locale": "${context.language_id}"
+							},
+							{
+								"boost": 1,
+								"field": "name",
+								"locale": "${context.language_id}"
 							}
 						],
 						"fuzziness": "AUTO",
 						"operator": "or",
 						"type": "best_fields"
+					}
+				},
+				{
+					"fragmentOutput": {
+						"category": "match",
+						"clauses": [
+							{
+								"context": "query",
+								"occur": "must",
+								"query": {
+									"query": {
+										"simple_query_string": {
+											"boost": 1,
+											"default_operator": "or",
+											"fields": [
+												"localized_title${context.language_id}^2",
+												"content${context.language_id}^2",
+												"description${context.language_id}",
+												"name${context.language_id}"
+											],
+											"query": "${keywords}"
+										}
+									}
+								},
+								"type": "wrapper"
+							}
+						],
+						"conditions": [
+						],
+						"description": {
+							"en_US": "Enable searching using the Lucene syntax"
+						},
+						"enabled": true,
+						"icon": "picture",
+						"title": {
+							"en_US": "Search with the Lucene Syntax"
+						}
+					},
+					"fragmentTemplateJSON": {
+						"category": "match",
+						"clauses": [
+							{
+								"context": "query",
+								"occur": "must",
+								"query": {
+									"query": {
+										"simple_query_string": {
+											"boost": "${config.boost}",
+											"default_operator": "${config.operator}",
+											"fields": "${config.fields}",
+											"query": "${keywords}"
+										}
+									}
+								},
+								"type": "wrapper"
+							}
+						],
+						"conditions": [
+						],
+						"description": {
+							"en_US": "Enable searching using the Lucene syntax"
+						},
+						"enabled": true,
+						"icon": "picture",
+						"title": {
+							"en_US": "Search with the Lucene Syntax"
+						}
+					},
+					"uiConfigurationJSON": [
+						{
+							"boost": true,
+							"defaultValue": [
+								{
+									"boost": "2",
+									"field": "localized_title",
+									"locale": "${context.language_id}"
+								},
+								{
+									"boost": "2",
+									"field": "content",
+									"locale": "${context.language_id}"
+								}
+							],
+							"key": "fields",
+							"name": "Fields",
+							"type": "field",
+							"typeOptions": [
+								{
+									"label": "Title",
+									"value": "localized_title"
+								},
+								{
+									"label": "Description",
+									"value": "description"
+								},
+								{
+									"label": "Content",
+									"value": "content"
+								},
+								{
+									"label": "Name",
+									"value": "name"
+								}
+							]
+						},
+						{
+							"key": "operator",
+							"name": "Operator",
+							"type": "single-select",
+							"typeOptions": [
+								{
+									"label": "OR",
+									"value": "or"
+								},
+								{
+									"label": "AND",
+									"value": "and"
+								}
+							]
+						},
+						{
+							"defaultValue": 1,
+							"key": "boost",
+							"name": "Boost",
+							"type": "slider"
+						}
+					],
+					"uiConfigurationValues": {
+						"boost": 1,
+						"fields": [
+							{
+								"boost": "2",
+								"field": "localized_title",
+								"locale": "${context.language_id}"
+							},
+							{
+								"boost": "2",
+								"field": "content",
+								"locale": "${context.language_id}"
+							},
+							{
+								"boost": 1,
+								"field": "description",
+								"locale": "${context.language_id}"
+							},
+							{
+								"boost": 1,
+								"field": "name",
+								"locale": "${context.language_id}"
+							}
+						],
+						"operator": "or"
 					}
 				},
 				{
@@ -1031,7 +1114,7 @@
 						"conditions": [
 						],
 						"description": {
-							"en_US": "Boost contents with current session language as the default language"
+							"en_US": "Boost contents having the current session language as the default language"
 						},
 						"enabled": true,
 						"icon": "thumbs-up",
@@ -1075,7 +1158,7 @@
 						"conditions": [
 						],
 						"description": {
-							"en_US": "Boost contents with current session language as the default language"
+							"en_US": "Boost contents having the current session language as the default language"
 						},
 						"enabled": true,
 						"icon": "thumbs-up",
@@ -1559,11 +1642,12 @@
 											"boost": 10,
 											"fields": [
 												"localized_title${context.language_id}^2",
-												"content${context.language_id}"
+												"content${context.language_id}",
+												"description${context.language_id}"
 											],
 											"operator": "and",
 											"query": "${keywords}",
-											"type": "best_fields"
+											"type": "phrase"
 										}
 									}
 								},
@@ -1696,9 +1780,175 @@
 								"boost": 1,
 								"field": "content",
 								"locale": "${context.language_id}"
+							},
+							{
+								"boost": 1,
+								"field": "description",
+								"locale": "${context.language_id}"
 							}
 						],
-						"type": "best_fields"
+						"type": "phrase"
+					}
+				},
+				{
+					"fragmentOutput": {
+						"category": "boost",
+						"clauses": [
+							{
+								"context": "query",
+								"occur": "should",
+								"query": {
+									"query": {
+										"multi_match": {
+											"boost": 10,
+											"fields": [
+												"localized_title${context.language_id}^2",
+												"content${context.language_id}",
+												"description${context.language_id}"
+											],
+											"operator": "and",
+											"query": "${keywords}",
+											"type": "cross_fields"
+										}
+									}
+								},
+								"type": "wrapper"
+							}
+						],
+						"conditions": [
+						],
+						"description": {
+							"en_US": "Boost contents matching all the words in the search phrase"
+						},
+						"enabled": true,
+						"icon": "thumbs-up",
+						"title": {
+							"en_US": "Boost All Keywords Match"
+						}
+					},
+					"fragmentTemplateJSON": {
+						"category": "boost",
+						"clauses": [
+							{
+								"context": "query",
+								"occur": "should",
+								"query": {
+									"query": {
+										"multi_match": {
+											"boost": "${config.boost}",
+											"fields": "${config.fields}",
+											"operator": "and",
+											"query": "${keywords}",
+											"type": "${config.type}"
+										}
+									}
+								},
+								"type": "wrapper"
+							}
+						],
+						"conditions": [
+						],
+						"description": {
+							"en_US": "Boost contents matching all the words in the search phrase"
+						},
+						"enabled": true,
+						"icon": "thumbs-up",
+						"title": {
+							"en_US": "Boost All Keywords Match"
+						}
+					},
+					"uiConfigurationJSON": [
+						{
+							"boost": true,
+							"defaultValue": [
+								{
+									"boost": 2,
+									"field": "localized_title",
+									"locale": "${context.language_id}"
+								},
+								{
+									"boost": 1,
+									"field": "content",
+									"locale": "${context.language_id}"
+								}
+							],
+							"key": "fields",
+							"name": "Field",
+							"type": "field",
+							"typeOptions": [
+								{
+									"label": "Title",
+									"value": "localized_title"
+								},
+								{
+									"label": "Description",
+									"value": "description"
+								},
+								{
+									"label": "Content",
+									"value": "content"
+								}
+							]
+						},
+						{
+							"defaultValue": "best_fields",
+							"key": "type",
+							"name": "Match Type",
+							"type": "single-select",
+							"typeOptions": [
+								{
+									"label": "Best Fields",
+									"value": "best_fields"
+								},
+								{
+									"label": "Most Fields",
+									"value": "most_fields"
+								},
+								{
+									"label": "Cross Fields",
+									"value": "cross_fields"
+								},
+								{
+									"label": "Phrase",
+									"value": "phrase"
+								},
+								{
+									"label": "Phrase Prefix",
+									"value": "phrase_prefix"
+								},
+								{
+									"label": "Boolean Prefix",
+									"value": "bool_prefix"
+								}
+							]
+						},
+						{
+							"defaultValue": 10,
+							"key": "boost",
+							"name": "Boost",
+							"type": "slider"
+						}
+					],
+					"uiConfigurationValues": {
+						"boost": 10,
+						"fields": [
+							{
+								"boost": 2,
+								"field": "localized_title",
+								"locale": "${context.language_id}"
+							},
+							{
+								"boost": 1,
+								"field": "content",
+								"locale": "${context.language_id}"
+							},
+							{
+								"boost": 1,
+								"field": "description",
+								"locale": "${context.language_id}"
+							}
+						],
+						"type": "cross_fields"
 					}
 				},
 				{
@@ -2135,6 +2385,29 @@
 																		"to": "${time.current_date|dateFormat=timestamp}"
 																	}
 																}
+															}
+														],
+														"must_not": [
+															{
+																"exists": {
+																	"field": "expirationDate"
+																}
+															}
+														]
+													}
+												},
+												{
+													"bool": {
+														"must": [
+															{
+																"range": {
+																	"displayDate_sortable": {
+																		"from": "-9223372036854775808",
+																		"include_lower": true,
+																		"include_upper": true,
+																		"to": "${time.current_date|dateFormat=timestamp}"
+																	}
+																}
 															},
 															{
 																"range": {
@@ -2183,6 +2456,29 @@
 															{
 																"exists": {
 																	"field": "displayDate"
+																}
+															}
+														]
+													}
+												},
+												{
+													"bool": {
+														"must": [
+															{
+																"range": {
+																	"displayDate_sortable": {
+																		"from": "-9223372036854775808",
+																		"include_lower": true,
+																		"include_upper": true,
+																		"to": "${time.current_date|dateFormat=timestamp}"
+																	}
+																}
+															}
+														],
+														"must_not": [
+															{
+																"exists": {
+																	"field": "expirationDate"
 																}
 															}
 														]

@@ -23,7 +23,7 @@ export default {
 								boost: '${config.boost}',
 								fuzziness: '${config.fuzziness}',
 								operator: '${config.operator}',
-								query: '${keywords}'
+								query: '${keywords}',
 							},
 						},
 					},
