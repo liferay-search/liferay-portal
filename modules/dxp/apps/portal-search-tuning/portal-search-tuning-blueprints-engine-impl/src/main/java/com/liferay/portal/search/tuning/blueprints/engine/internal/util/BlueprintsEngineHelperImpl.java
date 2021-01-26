@@ -134,12 +134,18 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 		ParameterData parameterData, Blueprint blueprint, Messages messages,
 		long companyId, Locale locale) {
 
+		String[] modelIndexerClassNames = 
+				_blueprintsSearchRequestHelper.getModelIndexerClassNames(
+				blueprint, companyId);
+		
 		SearchRequestBuilder searchRequestBuilder =
 			_searchRequestBuilderFactory.builder(
 			).companyId(
 				companyId
 			).emptySearchEnabled(
 				true
+			).entryClassNames(
+				modelIndexerClassNames
 			).excludeContributors(
 				"com.liferay.portal.search.tuning.blueprints"
 			).explain(
@@ -149,8 +155,7 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 			).locale(
 				locale
 			).modelIndexerClassNames(
-				_blueprintsSearchRequestHelper.getModelIndexerClassNames(
-					blueprint, companyId)
+					modelIndexerClassNames
 			).size(
 				_blueprintHelper.getSize(blueprint)
 			).from(
