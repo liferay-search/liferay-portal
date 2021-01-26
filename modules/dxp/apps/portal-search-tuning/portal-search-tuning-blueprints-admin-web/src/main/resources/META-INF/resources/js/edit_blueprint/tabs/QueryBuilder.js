@@ -188,7 +188,6 @@ function QueryBuilder({
 				<ClayPanel.Group flush>
 					<ClayPanel
 						className="searchable-asset-types"
-						collapsable
 						displayTitle={Liferay.Language.get(
 							'searchable-asset-types'
 						)}
@@ -229,7 +228,6 @@ function QueryBuilder({
 
 				<ClayPanel.Group flush>
 					<ClayPanel
-						collapsable
 						displayTitle={Liferay.Language.get('framework')}
 						displayType="unstyled"
 						expanded
