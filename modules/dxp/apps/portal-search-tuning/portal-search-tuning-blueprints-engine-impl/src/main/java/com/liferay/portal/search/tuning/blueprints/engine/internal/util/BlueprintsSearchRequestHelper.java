@@ -218,7 +218,7 @@ public class BlueprintsSearchRequestHelper {
 	private String[] _getSearchableAssetTypes(long companyId) {
 		List<AssetRendererFactory<?>> assetRendererFactories =
 			AssetRendererFactoryRegistryUtil.getAssetRendererFactories(
-				companyId, true);
+				companyId, false);
 
 		Stream<AssetRendererFactory<?>> stream =
 			assetRendererFactories.stream();
