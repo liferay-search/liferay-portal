@@ -36,8 +36,8 @@
 				</aui:a>
 			</h4>
 
-			<h5 class="text-default text-truncate" title="<%= entry.getDescription(locale) %>">
-				<%= entry.getDescription(locale) %>
+			<h5 class="text-default text-truncate-inline" title="<%= entry.getDescription(locale) %>">
+				<%= (entry.getDescription(locale).length() > 300) ? entry.getDescription(locale).substring(0, 300).concat("...") : entry.getDescription(locale) %>
 			</h5>
 
 			<%
