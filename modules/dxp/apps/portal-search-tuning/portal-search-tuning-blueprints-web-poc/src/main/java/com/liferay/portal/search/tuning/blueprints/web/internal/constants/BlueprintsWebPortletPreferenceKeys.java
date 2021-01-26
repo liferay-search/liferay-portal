@@ -41,6 +41,9 @@ public class BlueprintsWebPortletPreferenceKeys {
 
 	public static final String SUGGEST_MODE = "suggestMode";
 
+	public static final String TITLE_TYPEAHEAD_ENTRY_CLASS_NAMES =
+		"titleTypeaheadEntryClassNames";
+
 	public static final String TYPEAHEAD_ENABLED = "typeaheadEnabled";
 
 }

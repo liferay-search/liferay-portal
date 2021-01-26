@@ -25,6 +25,7 @@ public class Suggestion {
 	public Suggestion(String text, float score, String providerName) {
 		_text = text;
 		_score = score;
+
 		_attributes.put("provider", providerName);
 	}
 
@@ -52,7 +53,7 @@ public class Suggestion {
 		_text = text;
 	}
 
-	private Map<String, String> _attributes = new HashMap<String, String>();
+	private Map<String, String> _attributes = new HashMap<>();
 	private float _score;
 	private String _text;
 

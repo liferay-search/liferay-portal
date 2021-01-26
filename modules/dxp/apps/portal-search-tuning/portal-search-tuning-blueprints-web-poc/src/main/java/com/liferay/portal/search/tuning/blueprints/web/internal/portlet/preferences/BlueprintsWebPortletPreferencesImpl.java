@@ -14,6 +14,9 @@
 
 package com.liferay.portal.search.tuning.blueprints.web.internal.portlet.preferences;
 
+import com.liferay.document.library.kernel.model.DLFileEntry;
+import com.liferay.journal.model.JournalArticle;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.search.tuning.blueprints.web.internal.constants.BlueprintsWebPortletPreferenceKeys;
 import com.liferay.portal.search.tuning.blueprints.web.internal.util.PortletPreferencesHelper;
 
@@ -70,6 +73,20 @@ public class BlueprintsWebPortletPreferencesImpl
 		return _portletPreferencesHelper.getInteger(
 			BlueprintsWebPortletPreferenceKeys.QUERY_INDEXING_HITS_THRESHOLD,
 			3);
+	}
+
+	@Override
+	public String getTitleTypeaheadEntryClassNames() {
+		StringBundler sb = new StringBundler(3);
+
+		sb.append(JournalArticle.class.getName());
+		sb.append(",");
+		sb.append(DLFileEntry.class.getName());
+
+		return _portletPreferencesHelper.getString(
+			BlueprintsWebPortletPreferenceKeys.
+				TITLE_TYPEAHEAD_ENTRY_CLASS_NAMES,
+			sb.toString());
 	}
 
 	@Override

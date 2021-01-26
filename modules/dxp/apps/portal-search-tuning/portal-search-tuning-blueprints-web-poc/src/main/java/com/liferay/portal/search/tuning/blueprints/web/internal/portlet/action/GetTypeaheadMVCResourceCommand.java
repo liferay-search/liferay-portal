@@ -22,6 +22,8 @@ import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCResourceCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCResourceCommand;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.tuning.blueprints.suggestions.attributes.SuggestionsAttributes;
 import com.liferay.portal.search.tuning.blueprints.suggestions.attributes.SuggestionsAttributesBuilder;
 import com.liferay.portal.search.tuning.blueprints.suggestions.attributes.SuggestionsAttributesBuilderFactory;
@@ -99,6 +101,27 @@ public class GetTypeaheadMVCResourceCommand extends BaseMVCResourceCommand {
 		return responseJSONObject.put("suggestions", suggestionsJSONArray);
 	}
 
+	private String[] _getTitleTypeaheadEntryClassNames(
+		BlueprintsWebPortletPreferences blueprintsWebPortletPreferences) {
+
+		String entryClassNames =
+			blueprintsWebPortletPreferences.getTitleTypeaheadEntryClassNames();
+
+		if (Validator.isBlank(entryClassNames)) {
+			return new String[0];
+		}
+
+		String[] arr1 = entryClassNames.split(",");
+
+		String[] arr2 = new String[arr1.length];
+
+		for (int i = 0; i < arr1.length; i++) {
+			arr2[i] = StringUtil.trim(arr1[i]);
+		}
+
+		return arr2;
+	}
+
 	private SuggestionsAttributes _getTypeaheadSuggestionsAttributes(
 		ResourceRequest resourceRequest, String keywords,
 		BlueprintsWebPortletPreferences blueprintsWebPortletPreferences) {
@@ -107,7 +130,10 @@ public class GetTypeaheadMVCResourceCommand extends BaseMVCResourceCommand {
 			_suggestionsAttributesHelper.getSuggestionsAttributesBuilder(
 				resourceRequest);
 
-		return suggestionsAttributesBuilder.keywords(
+		return suggestionsAttributesBuilder.addAttribute(
+			"data.provider.titles.entry_class_names",
+			_getTitleTypeaheadEntryClassNames(blueprintsWebPortletPreferences)
+		).keywords(
 			keywords
 		).size(
 			blueprintsWebPortletPreferences.getMaxTypeaheadSuggestions()

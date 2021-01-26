@@ -21,6 +21,7 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.tuning.blueprints.engine.component.ServiceComponentReference;
 import com.liferay.portal.search.tuning.blueprints.suggestions.attributes.SuggestionsAttributes;
+import com.liferay.portal.search.tuning.blueprints.suggestions.constants.SuggestionsConstants;
 import com.liferay.portal.search.tuning.blueprints.suggestions.spi.provider.TypeaheadDataProvider;
 import com.liferay.portal.search.tuning.blueprints.suggestions.suggestion.Suggestion;
 import com.liferay.portal.search.tuning.blueprints.suggestions.typeahead.TypeaheadService;
@@ -31,6 +32,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -47,22 +49,31 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 public class TypeaheadServiceImpl implements TypeaheadService {
 
 	public List<Suggestion> getSuggestions(
-		SuggestionsAttributes typeaheadAttributes) {
+		SuggestionsAttributes suggestionsAttributes) {
 
 		if (_typeaheadDataProviders.isEmpty()) {
 			return new ArrayList<>();
 		}
 
-		return fetchSuggestions(typeaheadAttributes);
+		return fetchSuggestions(suggestionsAttributes);
 	}
 
 	protected List<Suggestion> fetchSuggestions(
-		SuggestionsAttributes typeaheadAttributes) {
+		SuggestionsAttributes suggestionsAttributes) {
+
+		List<String> includedProviders = _getIncludedProviders(
+			suggestionsAttributes);
 
 		Map<String, Suggestion> suggestions = new HashMap<>();
 
 		for (Map.Entry<String, ServiceComponentReference<TypeaheadDataProvider>>
 				entry : _typeaheadDataProviders.entrySet()) {
+
+			if (!includedProviders.isEmpty() &&
+				!includedProviders.contains(entry.getKey())) {
+
+				continue;
+			}
 
 			try {
 				ServiceComponentReference<TypeaheadDataProvider> value =
@@ -72,7 +83,7 @@ public class TypeaheadServiceImpl implements TypeaheadService {
 					value.getServiceComponent();
 
 				List<Suggestion> providerSuggestions =
-					typeaheadDataProvider.getSuggestions(typeaheadAttributes);
+					typeaheadDataProvider.getSuggestions(suggestionsAttributes);
 
 				if (providerSuggestions.isEmpty()) {
 					continue;
@@ -89,7 +100,7 @@ public class TypeaheadServiceImpl implements TypeaheadService {
 			}
 		}
 
-		return _getResults(suggestions, typeaheadAttributes.getSize());
+		return _getResults(suggestions, suggestionsAttributes.getSize());
 	}
 
 	@Reference(
@@ -172,6 +183,26 @@ public class TypeaheadServiceImpl implements TypeaheadService {
 					}
 				}
 			});
+	}
+
+	private List<String> _getIncludedProviders(
+		SuggestionsAttributes suggestionsAttributes) {
+
+		Optional<Object> attributeOptional =
+			suggestionsAttributes.getAttributeOptional(
+				SuggestionsConstants.INCLUDE_PROVIDERS);
+
+		if (!attributeOptional.isPresent()) {
+			return new ArrayList<>();
+		}
+
+		Object object = attributeOptional.get();
+
+		if (!List.class.isAssignableFrom(object.getClass())) {
+			return new ArrayList<>();
+		}
+
+		return (List<String>)object;
 	}
 
 	private List<Suggestion> _getResults(
