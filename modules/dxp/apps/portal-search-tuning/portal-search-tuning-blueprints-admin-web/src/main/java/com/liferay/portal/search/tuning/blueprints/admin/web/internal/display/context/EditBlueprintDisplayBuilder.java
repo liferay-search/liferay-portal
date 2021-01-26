@@ -170,7 +170,7 @@ public class EditBlueprintDisplayBuilder extends EditEntryDisplayBuilder {
 
 		List<AssetRendererFactory<?>> assetRendererFactories =
 			AssetRendererFactoryRegistryUtil.getAssetRendererFactories(
-				themeDisplay.getCompanyId(), true);
+				themeDisplay.getCompanyId(), false);
 
 		Stream<AssetRendererFactory<?>> stream =
 			assetRendererFactories.stream();
