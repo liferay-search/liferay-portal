@@ -27,6 +27,7 @@ const PreviewModal = ({body, children, size = 'md', title}) => {
 					<ClayModal.Body>{body}</ClayModal.Body>
 				</ClayModal>
 			)}
+
 			<div onClick={() => setVisible(!visible)}>{children}</div>
 		</>
 	);
