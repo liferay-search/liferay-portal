@@ -698,15 +698,18 @@ function ConfigFragment({
 								{fragmentOutput && (
 									<PreviewModal
 										body={
-											<CodeMirrorEditor
-												readOnly
-												value={JSON.stringify(
-													fragmentOutput,
-													null,
-													'\t'
-												)}
-											/>
+											<div className="configuration-json-modal">
+												<CodeMirrorEditor
+													readOnly
+													value={JSON.stringify(
+														fragmentOutput,
+														null,
+														'\t'
+													)}
+												/>
+											</div>
 										}
+										size="lg"
 										title={Liferay.Language.get(
 											'query-configuration-json'
 										)}
