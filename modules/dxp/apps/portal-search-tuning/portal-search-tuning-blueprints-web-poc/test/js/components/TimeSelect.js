@@ -17,7 +17,9 @@ import TimeSelect from '../../../src/main/resources/META-INF/resources/js/compon
 import '@testing-library/jest-dom/extend-expect';
 
 function renderTimeSelect(props) {
-	return render(<TimeSelect setFilters={jest.fn()} {...props} />);
+	return render(
+		<TimeSelect timeRange={{}} updateTimeRange={jest.fn()} {...props} />
+	);
 }
 
 describe('TimeSelect', () => {
@@ -27,47 +29,23 @@ describe('TimeSelect', () => {
 		getByLabelText('time-range');
 	});
 
-	it('calls setFilters when option is selected', () => {
-		const setFilters = jest.fn();
+	it('calls updateTimeRange when option is selected', () => {
+		const updateTimeRange = jest.fn();
 
-		const {getByLabelText} = renderTimeSelect({setFilters});
+		const {getByLabelText} = renderTimeSelect({updateTimeRange});
 
 		fireEvent.change(getByLabelText('time-range'), {
 			target: {value: 'last-hour'},
 		});
 
-		expect(setFilters).toHaveBeenCalled();
+		expect(updateTimeRange).toHaveBeenCalled();
 	});
 
 	it('opens the calendar when custom time range is selected', () => {
-		const setFilters = jest.fn();
-
-		const {getAllByPlaceholderText, getByLabelText} = renderTimeSelect({
-			setFilters,
-		});
-
-		fireEvent.change(getByLabelText('time-range'), {
-			target: {value: 'custom-range'},
+		const {getAllByPlaceholderText} = renderTimeSelect({
+			timeRange: {time: 'custom-range'},
 		});
 
 		expect(getAllByPlaceholderText('YYYY-MM-DD')[0]).toBeVisible();
-	});
-
-	it('closes the calendar when custom time range is unselected', () => {
-		const setFilters = jest.fn();
-
-		const {getByLabelText, queryByPlaceholderText} = renderTimeSelect({
-			setFilters,
-		});
-
-		fireEvent.change(getByLabelText('time-range'), {
-			target: {value: 'custom-range'},
-		});
-
-		fireEvent.change(getByLabelText('time-range'), {
-			target: {value: 'last-week'},
-		});
-
-		expect(queryByPlaceholderText('YYYY-MM-DD')).toBeNull();
 	});
 });
