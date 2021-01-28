@@ -26,7 +26,7 @@ ViewMisspellingSetsManagementToolbarDisplayContext viewMisspellingSetsManagement
 ViewMisspellingSetsDisplayContext viewMisspellingSetsDisplayContext = (ViewMisspellingSetsDisplayContext)request.getAttribute(MisspellingsWebKeys.VIEW_MISSPELLING_SETS_DISPLAY_CONTEXT);
 %>
 
-<clay:management-toolbar
+<clay:management-toolbar-v2
 	displayContext="<%= viewMisspellingSetsManagementToolbarDisplayContext %>"
 	searchContainerId="misspellingSets"
 	supportsBulkActions="<%= true %>"
