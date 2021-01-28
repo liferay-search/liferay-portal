@@ -13,9 +13,12 @@ import {fireEvent, render, waitForElement} from '@testing-library/react';
 import React from 'react';
 
 import BlueprintsSearch from '../../../src/main/resources/META-INF/resources/js/components/BlueprintsSearch';
-import {FETCH_URL, RESOURCE, SUGGEST_URL} from '../mocks/data';
+import {fetchResponse} from '../../../src/main/resources/META-INF/resources/js/utils/api';
+import {FETCH_URL, RESOURCE, SUGGESTIONS, SUGGEST_URL} from '../mocks/data';
 
 import '@testing-library/jest-dom/extend-expect';
+
+jest.mock('../../../src/main/resources/META-INF/resources/js/utils/api');
 
 function renderBlueprintsSearch() {
 	return render(
@@ -28,6 +31,7 @@ function renderBlueprintsSearch() {
 
 describe('BlueprintsSearch', () => {
 	beforeEach(() => {
+		fetchResponse.mockImplementation(() => Promise.resolve(SUGGESTIONS));
 		fetch.mockResponse(JSON.stringify(RESOURCE));
 	});
 

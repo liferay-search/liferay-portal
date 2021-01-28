@@ -13,6 +13,7 @@ import {fireEvent, render, waitForElement} from '@testing-library/react';
 import React from 'react';
 
 import SearchBar from '../../../src/main/resources/META-INF/resources/js/components/SearchBar';
+import {fetchResponse} from '../../../src/main/resources/META-INF/resources/js/utils/api';
 import {SUGGESTIONS, SUGGEST_URL} from '../mocks/data';
 
 import '@testing-library/jest-dom/extend-expect';
@@ -27,9 +28,13 @@ function renderSearchBar(props) {
 	);
 }
 
+jest.mock('../../../src/main/resources/META-INF/resources/js/utils/api');
+
+jest.useFakeTimers();
+
 describe('SearchBar', () => {
 	beforeEach(() => {
-		fetch.mockResponse(JSON.stringify(SUGGESTIONS));
+		fetchResponse.mockImplementation(() => Promise.resolve(SUGGESTIONS));
 	});
 
 	it('renders the searchbar', async () => {
@@ -39,17 +44,17 @@ describe('SearchBar', () => {
 	});
 
 	it('shows suggestions when keywords are typed in', async () => {
-		const {
-			getByLabelText,
-			getByPlaceholderText,
-			getByText,
-		} = renderSearchBar();
+		const {container, getByPlaceholderText, getByText} = renderSearchBar();
 
 		fireEvent.change(getByPlaceholderText('search'), {
 			target: {value: 'Test'},
 		});
 
-		await waitForElement(() => getByLabelText('search'));
+		jest.runAllTimers();
+
+		await waitForElement(() =>
+			container.querySelectorAll('.dropdown-menu')
+		);
 
 		SUGGESTIONS.suggestions.map((item) => getByText(item));
 	});
@@ -69,24 +74,6 @@ describe('SearchBar', () => {
 			code: 'Enter',
 			key: 'Enter',
 		});
-
-		expect(handleSubmit).toHaveBeenCalled();
-	});
-
-	it('calls handleSubmit when the search icon is pressed', async () => {
-		const handleSubmit = jest.fn();
-
-		const {getByLabelText, getByPlaceholderText} = renderSearchBar({
-			handleSubmit,
-		});
-
-		fireEvent.change(getByPlaceholderText('search'), {
-			target: {value: 'Test'},
-		});
-
-		await waitForElement(() => getByLabelText('search'));
-
-		fireEvent.click(getByLabelText('search'));
 
 		expect(handleSubmit).toHaveBeenCalled();
 	});
