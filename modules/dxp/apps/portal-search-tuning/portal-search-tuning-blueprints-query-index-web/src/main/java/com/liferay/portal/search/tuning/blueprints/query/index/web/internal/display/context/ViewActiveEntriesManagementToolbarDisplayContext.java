@@ -14,11 +14,16 @@
 
 package com.liferay.portal.search.tuning.blueprints.query.index.web.internal.display.context;
 
+import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
+import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItemListBuilder;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
+import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.constants.QueryStringStatus;
 import com.liferay.portal.search.tuning.blueprints.query.index.web.internal.index.QueryString;
+
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -37,6 +42,29 @@ public class ViewActiveEntriesManagementToolbarDisplayContext
 		super(
 			httpServletRequest, liferayPortletRequest, liferayPortletResponse,
 			searchContainer, displayStyle, QueryStringStatus.ACTIVE);
+	}
+
+	@Override
+	public List<DropdownItem> getActionDropdownItems() {
+		return DropdownItemListBuilder.add(
+			dropdownItem -> {
+				dropdownItem.putData("action", "deleteEntries");
+
+				dropdownItem.setLabel(
+					LanguageUtil.get(httpServletRequest, "delete"));
+
+				dropdownItem.setQuickAction(true);
+			}
+		).add(
+			dropdownItem -> {
+				dropdownItem.putData("action", "blacklistEntries");
+
+				dropdownItem.setLabel(
+					LanguageUtil.get(httpServletRequest, "blacklist"));
+
+				dropdownItem.setQuickAction(true);
+			}
+		).build();
 	}
 
 	/*
