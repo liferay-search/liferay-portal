@@ -22,7 +22,7 @@ ViewActiveEntriesManagementToolbarDisplayContext viewActiveEntriesManagementTool
 ViewQueryStringsDisplayContext viewQueryStringsDisplayContext = (ViewQueryStringsDisplayContext)request.getAttribute(QueryIndexWebKeys.VIEW_QUERY_STRINGS_DISPLAY_CONTEXT);
 %>
 
-<clay:management-toolbar
+<clay:management-toolbar-v2
 	displayContext="<%= viewActiveEntriesManagementToolbarDisplayContext %>"
 	searchContainerId="activeEntries"
 	supportsBulkActions="<%= true %>"
@@ -77,6 +77,21 @@ ViewQueryStringsDisplayContext viewQueryStringsDisplayContext = (ViewQueryString
 		}
 	};
 
+	var blacklistEntries = function () {
+		if (
+			confirm(
+				'<liferay-ui:message key="are-you-sure-you-want-to-blacklist-selected-entries" />'
+			)
+		) {
+			<portlet:actionURL name="<%= QueryIndexMVCCommandNames.EDIT_QUERY_STRING %>" var="blacklistEntryURL">
+				<portlet:param name="<%= QueryIndexWebKeys.STATUS %>" value="<%= QueryStringStatus.BLACKLISTED.name() %>" />
+				<portlet:param name="redirect" value="<%= currentURL %>" />
+			</portlet:actionURL>
+
+			submitForm('<%= blacklistEntryURL %>');
+		}
+	};
+
 	var deleteEntries = function () {
 		if (
 			confirm(
@@ -92,6 +107,7 @@ ViewQueryStringsDisplayContext viewQueryStringsDisplayContext = (ViewQueryString
 	};
 
 	var ACTIONS = {
+		blacklistEntries: blacklistEntries,
 		deleteEntries: deleteEntries,
 	};
 

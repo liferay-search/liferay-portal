@@ -71,15 +71,23 @@ public class EditQueryStringMVCActionCommand extends BaseMVCActionCommand {
 			_queryStringIndexNameBuilder.getQueryStringIndexName(
 				_portal.getCompanyId(actionRequest));
 
-		Optional<QueryString> queryStringOptional = _getQueryStringOptional(
-			actionRequest, queryStringIndexName);
+		String[] queryStringIds = _getQueryStringIds(actionRequest);
 
-		if (queryStringOptional.isPresent()) {
-			_updateQueryString(
-				actionRequest, queryStringIndexName, queryStringOptional.get());
-		}
-		else {
+		if (queryStringIds == null) {
 			_addQueryString(actionRequest, queryStringIndexName);
+
+			return;
+		}
+
+		for (String id : queryStringIds) {
+			Optional<QueryString> queryStringOptional = _getQueryStringOptional(
+				id, queryStringIndexName);
+
+			if (queryStringOptional.isPresent()) {
+				_updateQueryString(
+					actionRequest, queryStringIndexName,
+					queryStringOptional.get());
+			}
 		}
 	}
 
@@ -128,14 +136,28 @@ public class EditQueryStringMVCActionCommand extends BaseMVCActionCommand {
 			actionRequest, QueryIndexWebKeys.LANGUAGE_ID);
 	}
 
+	private String[] _getQueryStringIds(ActionRequest actionRequest) {
+		String[] queryStringIds = null;
+
+		String queryStringId = ParamUtil.getString(
+			actionRequest, QueryIndexWebKeys.QUERY_STRING_ID);
+
+		if (!Validator.isBlank(queryStringId)) {
+			queryStringIds = new String[] {queryStringId};
+		}
+		else {
+			queryStringIds = ParamUtil.getStringValues(
+				actionRequest, QueryIndexWebKeys.ROW_IDS);
+		}
+
+		return queryStringIds;
+	}
+
 	private Optional<QueryString> _getQueryStringOptional(
-		ActionRequest actionRequest,
-		QueryStringIndexName queryStringIndexName) {
+		String id, QueryStringIndexName queryStringIndexName) {
 
 		return _queryStringIndexReader.fetchQueryStringOptional(
-			queryStringIndexName,
-			ParamUtil.getString(
-				actionRequest, QueryIndexWebKeys.QUERY_STRING_ID));
+			queryStringIndexName, id);
 	}
 
 	private QueryStringStatus _getStatus(ActionRequest actionRequest)

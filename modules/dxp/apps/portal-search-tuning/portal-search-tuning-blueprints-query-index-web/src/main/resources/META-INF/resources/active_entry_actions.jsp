@@ -60,7 +60,7 @@ String queryStringId = queryString.getQueryStringId();
 	</portlet:actionURL>
 
 	<liferay-ui:icon
-		message="blacklist-entry"
+		message="blacklist"
 		url="<%= blacklistEntryURL %>"
 	/>
 
