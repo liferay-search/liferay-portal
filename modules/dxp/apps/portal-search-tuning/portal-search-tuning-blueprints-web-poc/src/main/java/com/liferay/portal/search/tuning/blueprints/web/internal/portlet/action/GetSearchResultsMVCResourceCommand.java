@@ -115,32 +115,28 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 			// TODO: remove condition after
 			// https://issues.liferay.com/browse/LPS-125124
 
-			if (searchResponse.getTotalHits() == 0) {
-				if (_shouldAddDidYouMean(
-						blueprintsWebPortletPreferences,
-						searchResponse.getTotalHits()) &&
-					!Validator.isBlank(
-						blueprintsRequestAttributes.getKeywords())) {
+			if ((searchResponse.getTotalHits() == 0) &&
+				_shouldAddDidYouMean(
+					blueprintsWebPortletPreferences,
+					searchResponse.getTotalHits()) &&
+				!Validator.isBlank(blueprintsRequestAttributes.getKeywords())) {
 
-					_addDidYouMean(
-						resourceRequest, blueprintsWebPortletPreferences,
-						blueprintsRequestAttributes.getKeywords(),
-						responseJSONObject);
-				}
+				_addDidYouMean(
+					resourceRequest, blueprintsWebPortletPreferences,
+					blueprintsRequestAttributes.getKeywords(),
+					responseJSONObject);
 			}
 
 			// TODO: remove condition after
 			// https://issues.liferay.com/browse/LPS-125124
 
-			if (searchResponse.getTotalHits() > 0) {
-				if (_shouldIndexQuery(
-						blueprintsWebPortletPreferences,
-						searchResponse.getTotalHits())) {
+			if ((searchResponse.getTotalHits() > 0) &&
+				_shouldIndexQuery(
+					blueprintsWebPortletPreferences,
+					searchResponse.getTotalHits())) {
 
-					_indexQuery(
-						resourceRequest,
-						blueprintsRequestAttributes.getKeywords());
-				}
+				_indexQuery(
+					resourceRequest, blueprintsRequestAttributes.getKeywords());
 			}
 		}
 		catch (JSONException jsonException) {
