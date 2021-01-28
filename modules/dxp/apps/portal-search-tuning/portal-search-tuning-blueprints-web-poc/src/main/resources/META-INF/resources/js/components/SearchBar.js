@@ -11,12 +11,15 @@
 
 import ClayAutocomplete from '@clayui/autocomplete';
 import ClayButton from '@clayui/button';
-import {useResource} from '@clayui/data-provider';
 import ClayDropDown from '@clayui/drop-down';
 import {ClayInput} from '@clayui/form';
 import ClayIcon from '@clayui/icon';
 import {PropTypes} from 'prop-types';
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
+
+import {fetchResponse} from './../utils/api';
+
+const CHARACTER_MIN = 2;
 
 export default function SearchBar({handleSubmit, suggestionsURL}) {
 	const containerRef = useRef(null);
@@ -24,21 +27,11 @@ export default function SearchBar({handleSubmit, suggestionsURL}) {
 	const [state, setState] = useState({
 		error: false,
 		loading: false,
-		typing: false,
 	});
 	const [view, setView] = useState(false);
+	const [resource, setResource] = useState({});
 
-	const {resource} = useResource({
-		fetchPolicy: 'cache-first',
-		link: suggestionsURL,
-		onNetworkStatusChange: (status) =>
-			setState({
-				error: status === 5,
-				loading: status < 4,
-				typing: false,
-			}),
-		variables: {q: value},
-	});
+	const timeout = useRef();
 
 	function handleKeyDown(event) {
 		if (event.key === 'Enter') {
@@ -53,6 +46,40 @@ export default function SearchBar({handleSubmit, suggestionsURL}) {
 	const _hasResults = () =>
 		!!(resource && resource.suggestions && resource.suggestions.length);
 
+	useEffect(() => {
+		setResource({});
+
+		if (value.length >= CHARACTER_MIN) {
+			setState({error: false, loading: true});
+
+			clearTimeout(timeout.current);
+
+			timeout.current = setTimeout(
+				() =>
+					fetchResponse(suggestionsURL, {q: value})
+						.then((data) => {
+							setResource(data);
+							setState({
+								error: false,
+								loading: false,
+							});
+						})
+						.catch(() => {
+							setTimeout(() => {
+								setState({
+									error: true,
+									loading: false,
+								});
+							}, 3000);
+						}),
+				100
+			);
+		}
+		else {
+			setState({error: false, loading: false});
+		}
+	}, [value]); //eslint-disable-line
+
 	return (
 		<ClayInput.Group className="searchbar">
 			<ClayAutocomplete ref={containerRef}>
@@ -61,7 +88,6 @@ export default function SearchBar({handleSubmit, suggestionsURL}) {
 					className="input-group-inset input-group-inset-after"
 					onChange={(event) => {
 						setView(true);
-						setState({typing: true});
 						setValue(event.target.value);
 					}}
 					onClick={() => {
@@ -73,13 +99,9 @@ export default function SearchBar({handleSubmit, suggestionsURL}) {
 				/>
 				<ClayAutocomplete.DropDown
 					active={
-						!!resource &&
-						!!value &&
+						value.length >= CHARACTER_MIN &&
 						view &&
-						(_hasResults() ||
-							state.loading ||
-							state.typing ||
-							state.error)
+						(_hasResults() || state.error)
 					}
 					alignElementRef={containerRef}
 					onSetActive={setView}
@@ -87,7 +109,9 @@ export default function SearchBar({handleSubmit, suggestionsURL}) {
 					<ClayDropDown.ItemList>
 						{state.error && (
 							<ClayDropDown.Item className="disabled">
-								{Liferay.Language.get('no-results-were-found')}
+								{Liferay.Language.get(
+									'an-unexpected-error-occurred'
+								)}
 							</ClayDropDown.Item>
 						)}
 						{!state.error &&
