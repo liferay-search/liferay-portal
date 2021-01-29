@@ -12,65 +12,69 @@
 import ClayAlert from '@clayui/alert';
 import ClayButton from '@clayui/button';
 import ClayCard from '@clayui/card';
-import {ClayRadio} from '@clayui/form';
+import {ClayCheckbox} from '@clayui/form';
 import ClayIcon from '@clayui/icon';
 import ClayLayout from '@clayui/layout';
 import ClayModal, {useModal} from '@clayui/modal';
+import {ClayTooltipProvider} from '@clayui/tooltip';
 import {useIsMounted} from 'frontend-js-react-web';
 import {fetch, navigate} from 'frontend-js-web';
 import React, {useState} from 'react';
 
 import {
 	DEFAULT_ADVANCED_CONFIGURATION,
-	DEFAULT_FRAGMENT,
+	DEFAULT_BASELINE_FRAGMENTS,
 	DEFAULT_PARAMETER_CONFIGURATION,
 	DEFAULT_SORT_CONFIGURATION,
 } from '../utils/data';
 import {FRAMEWORK_TYPES} from '../utils/frameworkTypes';
 import {convertToSelectedFragment} from '../utils/utils';
 
-const DEFAULT_SELECTED_FRAGMENT = convertToSelectedFragment(DEFAULT_FRAGMENT);
+const DEFAULT_SELECTED_BASELINE_FRAGMENTS = DEFAULT_BASELINE_FRAGMENTS.map(
+	(fragment) => convertToSelectedFragment(fragment)
+);
 
 const FrameworkCard = ({
 	checked,
+	children,
 	description,
 	imagePath,
 	onChange,
 	title,
-	value,
 }) => {
 	return (
 		<ClayCard
 			className={checked ? 'selected' : ''}
 			displayType="file"
+			onClick={onChange}
 			selectable
 		>
-			<ClayRadio checked={checked} onChange={onChange} value={value}>
-				<ClayCard.AspectRatio className="card-item-first">
-					<div className="aspect-ratio-item aspect-ratio-item-center-middle aspect-ratio-item-fluid">
-						<img alt={title} src={imagePath} />
+			<ClayCard.AspectRatio className="card-item-first">
+				<div className="aspect-ratio-item aspect-ratio-item-center-middle aspect-ratio-item-fluid">
+					<img alt={title} src={imagePath} />
+				</div>
+			</ClayCard.AspectRatio>
+
+			<ClayCard.Body>
+				<ClayCard.Row>
+					<div className="autofit-col autofit-col-expand">
+						<section className="autofit-section">
+							<ClayCard.Description displayType="title">
+								{title}
+							</ClayCard.Description>
+
+							<ClayCard.Description
+								displayType="subtitle"
+								truncate={false}
+							>
+								{description}
+							</ClayCard.Description>
+
+							{children}
+						</section>
 					</div>
-				</ClayCard.AspectRatio>
-
-				<ClayCard.Body>
-					<ClayCard.Row>
-						<div className="autofit-col autofit-col-expand">
-							<section className="autofit-section">
-								<ClayCard.Description displayType="title">
-									{title}
-								</ClayCard.Description>
-
-								<ClayCard.Description
-									displayType="subtitle"
-									truncate={false}
-								>
-									{description}
-								</ClayCard.Description>
-							</section>
-						</div>
-					</ClayCard.Row>
-				</ClayCard.Body>
-			</ClayRadio>
+				</ClayCard.Row>
+			</ClayCard.Body>
 		</ClayCard>
 	);
 };
@@ -99,6 +103,9 @@ const AddBlueprintModal = ({
 	const [visible, setVisible] = useState(initialVisible);
 	const [inputValue, setInputValue] = useState('');
 	const [descriptionInputValue, setDescriptionInputValue] = useState('');
+	const [includeBaselineFragments, setIncludeBaselineFragments] = useState(
+		true
+	);
 
 	const handleFormError = (responseContent) => {
 		setErrorMessage(responseContent.error || '');
@@ -123,9 +130,12 @@ const AddBlueprintModal = ({
 				},
 				parameter_configuration: DEFAULT_PARAMETER_CONFIGURATION,
 				query_configuration:
-					framework === FRAMEWORK_TYPES.DEFAULT
-						? []
-						: [DEFAULT_SELECTED_FRAGMENT.fragmentOutput],
+					framework === FRAMEWORK_TYPES.CUSTOM &&
+					includeBaselineFragments
+						? DEFAULT_SELECTED_BASELINE_FRAGMENTS.map(
+								(fragment) => fragment.fragmentOutput
+						  )
+						: [],
 				sort_configuration: DEFAULT_SORT_CONFIGURATION,
 			})
 		);
@@ -134,9 +144,10 @@ const AddBlueprintModal = ({
 			`${namespace}selectedFragments`,
 			JSON.stringify({
 				query_configuration:
-					framework === FRAMEWORK_TYPES.DEFAULT
-						? []
-						: [DEFAULT_SELECTED_FRAGMENT],
+					framework === FRAMEWORK_TYPES.CUSTOM &&
+					includeBaselineFragments
+						? DEFAULT_SELECTED_BASELINE_FRAGMENTS
+						: [],
 			})
 		);
 
@@ -320,7 +331,6 @@ const AddBlueprintModal = ({
 										title={Liferay.Language.get(
 											'liferay-default-clauses'
 										)}
-										value={FRAMEWORK_TYPES.DEFAULT}
 									/>
 								</ClayLayout.Col>
 
@@ -339,8 +349,37 @@ const AddBlueprintModal = ({
 										title={Liferay.Language.get(
 											'custom-clauses'
 										)}
-										value={FRAMEWORK_TYPES.CUSTOM}
-									/>
+									>
+										<ClayTooltipProvider>
+											<div
+												data-tooltip-align="top"
+												title={Liferay.Language.get(
+													'baseline-elements-emulate-the-behavior-of-liferay-default-clauses'
+												)}
+											>
+												<ClayCheckbox
+													aria-label={Liferay.Language.get(
+														'include-baseline-fragments'
+													)}
+													checked={
+														includeBaselineFragments
+													}
+													disabled={
+														framework !==
+														FRAMEWORK_TYPES.CUSTOM
+													}
+													label={Liferay.Language.get(
+														'include-baseline-fragments'
+													)}
+													onChange={() =>
+														setIncludeBaselineFragments(
+															!includeBaselineFragments
+														)
+													}
+												/>
+											</div>
+										</ClayTooltipProvider>
+									</FrameworkCard>
 								</ClayLayout.Col>
 							</ClayLayout.Row>
 						</div>

@@ -258,6 +258,7 @@ storiesOf('Components|AddBlueprintModal', module)
 	.addDecorator(withBlueprintsClass)
 	.add('AddBlueprintModal', () => (
 		<AddBlueprintModal
+			closeModal={action('closeModal')}
 			contextPath="/o/portal-search-tuning-blueprints-admin-web/"
 			dialogTitle="New Search Blueprint"
 			initialVisible
