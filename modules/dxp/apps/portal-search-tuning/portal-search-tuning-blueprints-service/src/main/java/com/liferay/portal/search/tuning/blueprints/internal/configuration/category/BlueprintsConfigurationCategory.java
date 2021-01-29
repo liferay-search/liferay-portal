@@ -41,7 +41,7 @@ public class BlueprintsConfigurationCategory implements ConfigurationCategory {
 
 	private static final String _CATEGORY_ICON = "search";
 
-	private static final String _CATEGORY_KEY = "blueprints";
+	private static final String _CATEGORY_KEY = "search-experiences";
 
 	private static final String _CATEGORY_SECTION = "platform";
 

@@ -22,7 +22,7 @@ import com.liferay.portal.configuration.metatype.annotations.ExtendedObjectClass
  * @author Petteri Karttunen
  */
 @ExtendedObjectClassDefinition(
-	category = "blueprints", scope = ExtendedObjectClassDefinition.Scope.COMPANY
+	category = "search-experiences", scope = ExtendedObjectClassDefinition.Scope.COMPANY
 )
 @Meta.OCD(
 	id = "com.liferay.portal.search.tuning.blueprints.query.index.configuration.QueryIndexConfiguration",
