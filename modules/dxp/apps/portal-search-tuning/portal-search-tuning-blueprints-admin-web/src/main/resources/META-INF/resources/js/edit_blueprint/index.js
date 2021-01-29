@@ -298,6 +298,9 @@ function EditBlueprintForm({
 							deleteElement={deleteElement}
 							entityJSON={entityJSON}
 							frameworkConfig={frameworkConfig}
+							initialSelectedElements={
+								initialSelectedElements['query_configuration']
+							}
 							onFrameworkConfigChange={(val) =>
 								setFrameworkConfig(val)
 							}

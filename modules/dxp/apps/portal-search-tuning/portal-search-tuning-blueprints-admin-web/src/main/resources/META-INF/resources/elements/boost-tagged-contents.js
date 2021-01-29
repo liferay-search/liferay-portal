@@ -43,13 +43,13 @@ export default {
 		{
 			helpText: 'Add asset tag value',
 			key: 'asset_tag',
-			name: 'Asset Tag',
+			label: 'Asset Tag',
 			type: 'text',
 		},
 		{
 			defaultValue: 5,
 			key: 'boost',
-			name: 'Boost',
+			label: 'Boost',
 			type: 'slider',
 		},
 	],

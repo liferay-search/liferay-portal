@@ -48,7 +48,7 @@ export default {
 		{
 			helpText: 'Add asset tag value',
 			key: 'asset_tag',
-			name: 'Asset Tag',
+			label: 'Asset Tag',
 			type: 'text',
 		},
 	],

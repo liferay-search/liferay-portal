@@ -46,15 +46,13 @@ export default {
 	},
 	uiConfigurationJSON: [
 		{
-			defaultValue: [
-				{
-					field: '',
-					locale: '',
-				},
-			],
+			defaultValue: {
+				field: '',
+				locale: '',
+			},
 			key: 'field',
-			name: 'Field',
-			type: 'single-field',
+			label: 'Field',
+			type: 'field',
 			typeOptions: [
 				{
 					label: 'Entry Class PK',
@@ -80,7 +78,7 @@ export default {
 		},
 		{
 			key: 'value',
-			name: 'Value',
+			label: 'Value',
 			type: 'text',
 		},
 	],

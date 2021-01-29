@@ -40,7 +40,7 @@ export default {
 		{
 			helpText: 'Add group IDs',
 			key: 'scope_group_ids',
-			name: 'Group IDs',
+			label: 'Group IDs',
 			type: 'multiselect',
 		},
 	],

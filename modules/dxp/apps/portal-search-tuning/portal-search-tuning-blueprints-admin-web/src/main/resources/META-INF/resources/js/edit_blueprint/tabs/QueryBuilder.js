@@ -21,9 +21,9 @@ import {ClayTooltipProvider} from '@clayui/tooltip';
 import {PropTypes} from 'prop-types';
 import React, {useContext, useState} from 'react';
 
-import ConfigElement from '../../shared/ConfigElement';
 import JSONElement from '../../shared/JSONElement';
 import ThemeContext from '../../shared/ThemeContext';
+import Element from '../../shared/element/index';
 import SelectAssetTypes from './SelectAssetTypes';
 
 const FrameworkListItem = ({
@@ -58,6 +58,7 @@ function QueryBuilder({
 	deleteElement,
 	entityJSON,
 	frameworkConfig,
+	initialSelectedElements = [],
 	onFrameworkConfigChange,
 	onToggleSidebar,
 	searchableAssetTypes,
@@ -92,15 +93,21 @@ function QueryBuilder({
 					</ClayAlert>
 				)}
 
-				{selectedElements.map((element) => {
+				{selectedElements.map((element, index) => {
 					return element.uiConfigurationJSON ? (
-						<ConfigElement
+						<Element
 							collapseAll={collapseAll}
-							deleteElement={() => deleteElement(element.id)}
+							deleteElement={deleteElement}
 							elementOutput={element.elementOutput}
 							elementTemplateJSON={element.elementTemplateJSON}
 							entityJSON={entityJSON}
 							id={element.id}
+							initialUIConfigurationValues={
+								initialSelectedElements[index]
+									? initialSelectedElements[index]
+											.uiConfigurationValues
+									: undefined
+							}
 							key={element.id}
 							uiConfigurationJSON={element.uiConfigurationJSON}
 							uiConfigurationValues={
@@ -111,7 +118,7 @@ function QueryBuilder({
 					) : (
 						<JSONElement
 							collapseAll={collapseAll}
-							deleteElement={() => deleteElement(element.id)}
+							deleteElement={deleteElement}
 							elementTemplateJSON={element.elementTemplateJSON}
 							id={element.id}
 							key={element.id}

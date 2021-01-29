@@ -29,11 +29,11 @@ import React, {
 } from 'react';
 
 import CodeMirrorEditor from '../shared/CodeMirrorEditor';
-import ConfigElement from '../shared/ConfigElement';
 import ErrorBoundary from '../shared/ErrorBoundary';
 import PreviewModal from '../shared/PreviewModal';
 import SearchInput from '../shared/SearchInput';
 import ThemeContext from '../shared/ThemeContext';
+import Element from '../shared/element/index';
 import {
 	getUIConfigurationValues,
 	isNotEmpty,
@@ -158,7 +158,7 @@ function EditElementForm({
 		return (
 			<div className="portlet-blueprints-admin">
 				<ErrorBoundary>
-					<ConfigElement
+					<Element
 						collapseAll={false}
 						elementOutput={replaceUIConfigurationValues(
 							previewUIConfigurationJSON,
@@ -191,7 +191,7 @@ function EditElementForm({
 
 			if (
 				typeof parseElementTemplateJSON.title === 'object' &&
-				!isNotEmpty(parseElementTemplateJSON.title[`${defaultLocale}`])
+				!isNotEmpty(parseElementTemplateJSON.title[defaultLocale])
 			) {
 				throw '';
 			}

@@ -43,7 +43,7 @@ export default {
 		{
 			defaultValue: 40,
 			key: 'boost',
-			name: 'Boost',
+			label: 'Boost',
 			type: 'slider',
 		},
 	],

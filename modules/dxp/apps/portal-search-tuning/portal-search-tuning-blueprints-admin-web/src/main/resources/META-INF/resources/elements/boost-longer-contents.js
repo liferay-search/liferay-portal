@@ -48,20 +48,20 @@ export default {
 		{
 			defaultValue: 30,
 			key: 'boost',
-			name: 'Boost',
+			label: 'Boost',
 			type: 'slider',
 		},
 		{
 			defaultValue: 1.5,
 			key: 'factor',
-			name: 'Factor',
+			label: 'Factor',
 			type: 'number',
 		},
 		{
 			defaultValue: 'ln',
 			key: 'modifier',
-			name: 'Modifier',
-			type: 'single-select',
+			label: 'Modifier',
+			type: 'select',
 			typeOptions: [
 				{
 					label: 'None',

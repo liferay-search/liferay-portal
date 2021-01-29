@@ -57,8 +57,8 @@ export default {
 				},
 			],
 			key: 'fields',
-			name: 'Fields',
-			type: 'field',
+			label: 'Fields',
+			type: 'field-list',
 			typeOptions: [
 				{
 					label: 'Title',
@@ -81,8 +81,8 @@ export default {
 		{
 			defaultValue: 'or',
 			key: 'operator',
-			name: 'Operator',
-			type: 'single-select',
+			label: 'Operator',
+			type: 'select',
 			typeOptions: [
 				{
 					label: 'OR',
@@ -97,8 +97,8 @@ export default {
 		{
 			defaultValue: 'best_fields',
 			key: 'type',
-			name: 'Match Type',
-			type: 'single-select',
+			label: 'Match Type',
+			type: 'select',
 			typeOptions: [
 				{
 					label: 'Best Fields',
@@ -128,8 +128,8 @@ export default {
 		},
 		{
 			key: 'fuzziness',
-			name: 'Fuzziness',
-			type: 'single-select',
+			label: 'Fuzziness',
+			type: 'select',
 			typeOptions: [
 				{
 					label: 'Auto',
@@ -152,7 +152,7 @@ export default {
 		{
 			defaultValue: 1,
 			key: 'boost',
-			name: 'Boost',
+			label: 'Boost',
 			type: 'slider',
 		},
 	],

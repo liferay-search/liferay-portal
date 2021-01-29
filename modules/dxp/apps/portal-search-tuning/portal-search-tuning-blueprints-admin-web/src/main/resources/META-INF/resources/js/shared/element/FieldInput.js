@@ -9,15 +9,29 @@
  * distribution rights of the Software.
  */
 
-export const INPUT_TYPES = {
-	DATE: 'date',
-	ENTITY: 'entity',
-	FIELD: 'field',
-	FIELD_LIST: 'field-list',
-	JSON: 'json',
-	MULTISELECT: 'multiselect',
-	NUMBER: 'number',
-	SELECT: 'select',
-	SLIDER: 'slider',
-	TEXT: 'text',
-};
+import React from 'react';
+
+import FieldRow from './FieldRow';
+
+function FieldInput({boost, configKey, disabled, onChange, value}) {
+	return (
+		<div className="single-field">
+			<FieldRow
+				boost={boost}
+				configKey={configKey}
+				disabled={disabled}
+				index={configKey}
+				item={value}
+				key={configKey}
+				onChange={(label, newValue) => {
+					onChange(configKey, {
+						...value,
+						[label]: newValue,
+					});
+				}}
+			/>
+		</div>
+	);
+}
+
+export default FieldInput;
