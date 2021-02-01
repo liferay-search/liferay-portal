@@ -19,12 +19,26 @@ export default {
 				query: {
 					query: {
 						bool: {
-							must_not: [
+							should: [
 								{
-									exists: {
-										field: 'ctCollectionId',
+									bool: {
+										must_not: [
+											{
+												exists: {
+													field: 'ctCollectionId',
+												},
+											},
+										],
 									},
 								},
+								{
+									term: {
+										ctCollectionId: {
+											value:
+												'${context.ct_collection_id}',
+										},
+									},
+								}
 							],
 						},
 					},
@@ -32,10 +46,9 @@ export default {
 				type: 'wrapper',
 			},
 		],
-		conditions: [],
 		description: {
 			en_US:
-				'When Publications feature is enabled, show only published contents',
+				'When Publications feature is enabled, search only contents on my current timeline',
 		},
 		enabled: true,
 		icon: 'thumbs-up',
