@@ -134,10 +134,10 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 		ParameterData parameterData, Blueprint blueprint, Messages messages,
 		long companyId, Locale locale) {
 
-		String[] modelIndexerClassNames = 
-				_blueprintsSearchRequestHelper.getModelIndexerClassNames(
+		String[] modelIndexerClassNames =
+			_blueprintsSearchRequestHelper.getModelIndexerClassNames(
 				blueprint, companyId);
-		
+
 		SearchRequestBuilder searchRequestBuilder =
 			_searchRequestBuilderFactory.builder(
 			).companyId(
@@ -155,7 +155,7 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 			).locale(
 				locale
 			).modelIndexerClassNames(
-					modelIndexerClassNames
+				modelIndexerClassNames
 			).size(
 				_blueprintHelper.getSize(blueprint)
 			).from(
@@ -169,7 +169,8 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 				searchContext -> searchContext.setAttribute(
 					"search.full.query.suppress.indexer.provided.clauses",
 					Boolean.TRUE));
-		} else {
+		}
+		else {
 			searchRequestBuilder.queryString(parameterData.getKeywords());
 		}
 

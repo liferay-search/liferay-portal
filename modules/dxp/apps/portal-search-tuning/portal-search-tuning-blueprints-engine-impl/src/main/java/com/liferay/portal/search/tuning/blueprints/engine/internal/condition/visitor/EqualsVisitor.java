@@ -55,7 +55,7 @@ public class EqualsVisitor implements ConditionEvaluationVisitor {
 		throws ParameterEvaluationException {
 
 		Boolean value = _conditionJSONObject.getBoolean(
-			ConditionConfigurationKeys.MATCH_VALUE.getJsonKey());
+			ConditionConfigurationKeys.VALUE.getJsonKey());
 
 		Boolean parameterValue = parameter.getValue();
 
@@ -77,7 +77,7 @@ public class EqualsVisitor implements ConditionEvaluationVisitor {
 		throws ParameterEvaluationException {
 
 		String dateString = _conditionJSONObject.getString(
-			ConditionConfigurationKeys.MATCH_VALUE.getJsonKey());
+			ConditionConfigurationKeys.VALUE.getJsonKey());
 
 		String dateFormatString = _conditionJSONObject.getString(
 			ConditionConfigurationKeys.DATE_FORMAT.getJsonKey());
@@ -135,7 +135,7 @@ public class EqualsVisitor implements ConditionEvaluationVisitor {
 				).rootObject(
 					_conditionJSONObject
 				).rootProperty(
-					ConditionConfigurationKeys.MATCH_VALUE.getJsonKey()
+					ConditionConfigurationKeys.VALUE.getJsonKey()
 				).rootValue(
 					dateString
 				).severity(
@@ -151,7 +151,7 @@ public class EqualsVisitor implements ConditionEvaluationVisitor {
 		throws ParameterEvaluationException {
 
 		Double value = _conditionJSONObject.getDouble(
-			ConditionConfigurationKeys.MATCH_VALUE.getJsonKey());
+			ConditionConfigurationKeys.VALUE.getJsonKey());
 
 		if (_not) {
 			return !parameter.equalsTo(value);
@@ -166,7 +166,7 @@ public class EqualsVisitor implements ConditionEvaluationVisitor {
 
 		Float value = GetterUtil.getFloat(
 			_conditionJSONObject.get(
-				ConditionConfigurationKeys.MATCH_VALUE.getJsonKey()));
+				ConditionConfigurationKeys.VALUE.getJsonKey()));
 
 		if (_not) {
 			return !parameter.equalsTo(value);
@@ -187,7 +187,7 @@ public class EqualsVisitor implements ConditionEvaluationVisitor {
 		throws ParameterEvaluationException {
 
 		Integer value = _conditionJSONObject.getInt(
-			ConditionConfigurationKeys.MATCH_VALUE.getJsonKey());
+			ConditionConfigurationKeys.VALUE.getJsonKey());
 
 		if (_not) {
 			return !parameter.equalsTo(value);
@@ -208,7 +208,7 @@ public class EqualsVisitor implements ConditionEvaluationVisitor {
 		throws ParameterEvaluationException {
 
 		Long value = _conditionJSONObject.getLong(
-			ConditionConfigurationKeys.MATCH_VALUE.getJsonKey());
+			ConditionConfigurationKeys.VALUE.getJsonKey());
 
 		if (_not) {
 			return !parameter.equalsTo(value);
@@ -229,7 +229,7 @@ public class EqualsVisitor implements ConditionEvaluationVisitor {
 		throws ParameterEvaluationException {
 
 		String value = _conditionJSONObject.getString(
-			ConditionConfigurationKeys.MATCH_VALUE.getJsonKey());
+			ConditionConfigurationKeys.VALUE.getJsonKey());
 
 		String parameterValue = parameter.getValue();
 

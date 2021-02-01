@@ -67,7 +67,7 @@ public class GreaterThanVisitor implements ConditionEvaluationVisitor {
 		throws ParameterEvaluationException {
 
 		String dateString = _conditionJSONObject.getString(
-			ConditionConfigurationKeys.MATCH_VALUE.getJsonKey());
+			ConditionConfigurationKeys.VALUE.getJsonKey());
 
 		String dateFormatString = _conditionJSONObject.getString(
 			ConditionConfigurationKeys.DATE_FORMAT.getJsonKey());
@@ -127,7 +127,7 @@ public class GreaterThanVisitor implements ConditionEvaluationVisitor {
 				).rootObject(
 					_conditionJSONObject
 				).rootProperty(
-					ConditionConfigurationKeys.MATCH_VALUE.getJsonKey()
+					ConditionConfigurationKeys.VALUE.getJsonKey()
 				).rootValue(
 					dateString
 				).severity(
@@ -143,7 +143,7 @@ public class GreaterThanVisitor implements ConditionEvaluationVisitor {
 		throws ParameterEvaluationException {
 
 		Double value = _conditionJSONObject.getDouble(
-			ConditionConfigurationKeys.MATCH_VALUE.getJsonKey());
+			ConditionConfigurationKeys.VALUE.getJsonKey());
 
 		Double parameterValue = parameter.getValue();
 
@@ -171,7 +171,7 @@ public class GreaterThanVisitor implements ConditionEvaluationVisitor {
 
 		Float value = GetterUtil.getFloat(
 			_conditionJSONObject.get(
-				ConditionConfigurationKeys.MATCH_VALUE.getJsonKey()));
+				ConditionConfigurationKeys.VALUE.getJsonKey()));
 
 		Float parameterValue = parameter.getValue();
 
@@ -205,7 +205,7 @@ public class GreaterThanVisitor implements ConditionEvaluationVisitor {
 		throws ParameterEvaluationException {
 
 		Integer value = _conditionJSONObject.getInt(
-			ConditionConfigurationKeys.MATCH_VALUE.getJsonKey());
+			ConditionConfigurationKeys.VALUE.getJsonKey());
 
 		Integer parameterValue = parameter.getValue();
 
@@ -239,7 +239,7 @@ public class GreaterThanVisitor implements ConditionEvaluationVisitor {
 		throws ParameterEvaluationException {
 
 		Long value = _conditionJSONObject.getLong(
-			ConditionConfigurationKeys.MATCH_VALUE.getJsonKey());
+			ConditionConfigurationKeys.VALUE.getJsonKey());
 
 		Long parameterValue = parameter.getValue();
 

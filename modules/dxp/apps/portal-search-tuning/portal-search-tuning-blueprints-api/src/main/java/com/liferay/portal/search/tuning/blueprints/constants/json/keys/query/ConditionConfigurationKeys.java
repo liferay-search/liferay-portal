@@ -24,8 +24,7 @@ public enum ConditionConfigurationKeys {
 
 	CONFIGURATION("configuration"), DATE_FORMAT("date_format"),
 	EVALUATION_TYPE("evaluation_type"), HANDLER("handler"),
-	MATCH_VALUE("match_value"), OPERATOR("operator"),
-	PARAMETER_NAME("parameter_name");
+	OPERATOR("operator"), PARAMETER_NAME("parameter_name"), VALUE("value");
 
 	public static final ConditionConfigurationKeys findByJsonKey(
 		String jsonKey) {

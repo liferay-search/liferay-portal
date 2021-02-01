@@ -510,12 +510,12 @@ public class QuerySearchRequestBodyContributor
 				Operator operator = BlueprintValueUtil.getOperator(
 					operatorString);
 
-				JSONObject handlerParametersJSONObject =
+				JSONObject handlerConfigurationJSONObject =
 					conditionJSONObject.getJSONObject(
 						ConditionConfigurationKeys.CONFIGURATION.getJsonKey());
 
 				boolean conditionTrue = conditionHandler.isTrue(
-					handlerParametersJSONObject, parameterData, messages);
+					handlerConfigurationJSONObject, parameterData, messages);
 
 				if (operator.equals(Operator.AND) && !conditionTrue) {
 					return false;

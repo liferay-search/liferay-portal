@@ -31,6 +31,7 @@ import com.liferay.portal.search.tuning.blueprints.engine.parameter.ConditionEva
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.Parameter;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterData;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.clause.ConditionHandler;
+import com.liferay.portal.search.tuning.blueprints.engine.util.BlueprintTemplateVariableParser;
 import com.liferay.portal.search.tuning.blueprints.message.Message;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 import com.liferay.portal.search.tuning.blueprints.message.Severity;
@@ -39,6 +40,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Petteri Karttunen
@@ -65,11 +67,10 @@ public class DefaultConditionHandler implements ConditionHandler {
 			return false;
 		}
 
-		String parameterName = configurationJSONObject.getString(
-			ConditionConfigurationKeys.PARAMETER_NAME.getJsonKey());
-
 		Optional<Parameter> parameterOptional =
-			parameterData.getByTemplateVariableNameOptional(parameterName);
+			parameterData.getByTemplateVariableNameOptional(
+				configurationJSONObject.getString(
+					ConditionConfigurationKeys.PARAMETER_NAME.getJsonKey()));
 
 		if (EvaluationType.EXISTS.equals(evaluationType) ||
 			EvaluationType.NOT_EXISTS.equals(evaluationType)) {
@@ -86,6 +87,20 @@ public class DefaultConditionHandler implements ConditionHandler {
 
 			return false;
 		}
+
+		Optional<Object> parsedValueOptional =
+			_blueprintTemplateVariableParser.parseObject(
+				configurationJSONObject.get(
+					ConditionConfigurationKeys.VALUE.getJsonKey()),
+				parameterData, messages);
+
+		if (!parsedValueOptional.isPresent()) {
+			return false;
+		}
+
+		configurationJSONObject.put(
+			ConditionConfigurationKeys.VALUE.getJsonKey(),
+			parsedValueOptional.get());
 
 		Parameter parameter = parameterOptional.get();
 
@@ -135,9 +150,7 @@ public class DefaultConditionHandler implements ConditionHandler {
 	private EvaluationType _getEvaluationType(String s)
 		throws IllegalArgumentException {
 
-		s = StringUtil.toUpperCase(s);
-
-		return EvaluationType.valueOf(s);
+		return EvaluationType.valueOf(StringUtil.toUpperCase(s));
 	}
 
 	private ConditionEvaluationVisitor _getEvaluationVisitor(
@@ -368,5 +381,8 @@ public class DefaultConditionHandler implements ConditionHandler {
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		DefaultConditionHandler.class);
+
+	@Reference
+	private BlueprintTemplateVariableParser _blueprintTemplateVariableParser;
 
 }

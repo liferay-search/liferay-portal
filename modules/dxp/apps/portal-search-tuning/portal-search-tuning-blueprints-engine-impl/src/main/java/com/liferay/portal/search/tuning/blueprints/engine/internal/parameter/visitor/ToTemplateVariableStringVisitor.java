@@ -135,7 +135,7 @@ public class ToTemplateVariableStringVisitor implements ToStringVisitor {
 			return date;
 		}
 
-		if (!option.matches("^[\\+|\\-][0-9]+[H|D|W|M|Y]")) {
+		if (!option.matches("^[\\+|\\-][0-9]+[h|d|w|M|y]")) {
 			return date;
 		}
 
@@ -159,19 +159,19 @@ public class ToTemplateVariableStringVisitor implements ToStringVisitor {
 
 			LocalDateTime localDateTime = zonedDateTime1.toLocalDateTime();
 
-			if (unit == 'H') {
+			if (unit == 'h') {
 				localDateTime = localDateTime.plusHours(amount);
 			}
-			else if (unit == 'D') {
+			else if (unit == 'd') {
 				localDateTime = localDateTime.plusDays(amount);
 			}
-			else if (unit == 'W') {
+			else if (unit == 'w') {
 				localDateTime = localDateTime.plusWeeks(amount);
 			}
 			else if (unit == 'M') {
 				localDateTime = localDateTime.plusMonths(amount);
 			}
-			else if (unit == 'Y') {
+			else if (unit == 'y') {
 				localDateTime = localDateTime.plusYears(amount);
 			}
 

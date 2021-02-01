@@ -14,6 +14,7 @@
 
 package com.liferay.portal.search.tuning.blueprints.engine.internal.parameter.contributor;
 
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.log.Log;
@@ -61,6 +62,8 @@ public class ContextParameterContributor implements ParameterContributor {
 
 		_addCompanyId(parameterDataBuilder, blueprintsAttributes);
 
+		_addCTCollectionParameter(parameterDataBuilder);
+
 		_addGroupParameters(
 			parameterDataBuilder, blueprintsAttributes, messages);
 
@@ -87,6 +90,13 @@ public class ContextParameterContributor implements ParameterContributor {
 					ReservedParameterNames.COMPANY_ID.getKey()),
 				LongParameter.class.getName(),
 				"core.parameter.context.company-id"));
+
+		parameterDefinitions.add(
+			new ParameterDefinition(
+				_getTemplateVariableName(
+					ReservedParameterNames.CT_COLLECTION_ID.getKey()),
+				LongParameter.class.getName(),
+				"core.parameter.context.ct-collection-id"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
@@ -134,6 +144,17 @@ public class ContextParameterContributor implements ParameterContributor {
 				_getTemplateVariableName(
 					ReservedParameterNames.COMPANY_ID.getKey()),
 				blueprintsAttributes.getCompanyId()));
+	}
+
+	private void _addCTCollectionParameter(
+		ParameterDataBuilder parameterDataBuilder) {
+
+		parameterDataBuilder.addParameter(
+			new LongParameter(
+				ReservedParameterNames.CT_COLLECTION_ID.getKey(),
+				_getTemplateVariableName(
+					ReservedParameterNames.CT_COLLECTION_ID.getKey()),
+				CTCollectionThreadLocal.getCTCollectionId()));
 	}
 
 	private void _addGroupParameters(

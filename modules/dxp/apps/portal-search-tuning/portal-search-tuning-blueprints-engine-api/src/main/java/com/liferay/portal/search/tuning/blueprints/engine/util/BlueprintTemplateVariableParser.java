@@ -28,4 +28,7 @@ public interface BlueprintTemplateVariableParser {
 	public Optional<JSONObject> parse(
 		JSONObject jsonObject, ParameterData parameterData, Messages messages);
 
+	public Optional<Object> parseObject(
+		Object object, ParameterData parameterData, Messages messages);
+
 }

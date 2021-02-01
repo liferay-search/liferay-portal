@@ -73,7 +73,7 @@ public class InRangeVisitor implements ConditionEvaluationVisitor {
 			ConditionConfigurationKeys.DATE_FORMAT.getJsonKey());
 
 		String dateString = _conditionJSONObject.getString(
-			ConditionConfigurationKeys.MATCH_VALUE.getJsonKey());
+			ConditionConfigurationKeys.VALUE.getJsonKey());
 
 		if (Validator.isNull(dateFormatString)) {
 			if (_log.isWarnEnabled()) {
@@ -142,7 +142,7 @@ public class InRangeVisitor implements ConditionEvaluationVisitor {
 				).rootObject(
 					_conditionJSONObject
 				).rootProperty(
-					ConditionConfigurationKeys.MATCH_VALUE.getJsonKey()
+					ConditionConfigurationKeys.VALUE.getJsonKey()
 				).rootValue(
 					dateString
 				).severity(
@@ -317,7 +317,7 @@ public class InRangeVisitor implements ConditionEvaluationVisitor {
 				).rootObject(
 					_conditionJSONObject
 				).rootProperty(
-					ConditionConfigurationKeys.MATCH_VALUE.getJsonKey()
+					ConditionConfigurationKeys.VALUE.getJsonKey()
 				).rootValue(
 					jsonArray.toString()
 				).severity(

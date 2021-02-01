@@ -80,7 +80,7 @@ public class ContainsVisitor implements ConditionEvaluationVisitor {
 		throws ParameterEvaluationException {
 
 		Object object = _conditionJSONObject.get(
-			ConditionConfigurationKeys.MATCH_VALUE.getJsonKey());
+			ConditionConfigurationKeys.VALUE.getJsonKey());
 
 		Integer[] parameterValue = parameter.getValue();
 
@@ -135,7 +135,7 @@ public class ContainsVisitor implements ConditionEvaluationVisitor {
 				).rootObject(
 					_conditionJSONObject
 				).rootProperty(
-					ConditionConfigurationKeys.MATCH_VALUE.getJsonKey()
+					ConditionConfigurationKeys.VALUE.getJsonKey()
 				).rootValue(
 					object.toString()
 				).severity(
@@ -158,7 +158,7 @@ public class ContainsVisitor implements ConditionEvaluationVisitor {
 		throws ParameterEvaluationException {
 
 		Object object = _conditionJSONObject.get(
-			ConditionConfigurationKeys.MATCH_VALUE.getJsonKey());
+			ConditionConfigurationKeys.VALUE.getJsonKey());
 
 		Long[] parameterValue = parameter.getValue();
 
@@ -215,7 +215,7 @@ public class ContainsVisitor implements ConditionEvaluationVisitor {
 				).rootObject(
 					_conditionJSONObject
 				).rootProperty(
-					ConditionConfigurationKeys.MATCH_VALUE.getJsonKey()
+					ConditionConfigurationKeys.VALUE.getJsonKey()
 				).rootValue(
 					object.toString()
 				).severity(
@@ -238,7 +238,7 @@ public class ContainsVisitor implements ConditionEvaluationVisitor {
 		throws ParameterEvaluationException {
 
 		Object object = _conditionJSONObject.get(
-			ConditionConfigurationKeys.MATCH_VALUE.getJsonKey());
+			ConditionConfigurationKeys.VALUE.getJsonKey());
 
 		String[] parameterValue = parameter.getValue();
 

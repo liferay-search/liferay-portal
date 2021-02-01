@@ -43,7 +43,7 @@ public class BlueprintValueUtil {
 		throws ParameterEvaluationException {
 
 		Object object = conditionJSONObject.get(
-			ConditionConfigurationKeys.MATCH_VALUE.getJsonKey());
+			ConditionConfigurationKeys.VALUE.getJsonKey());
 
 		if (!(object instanceof JSONArray)) {
 			throw new ParameterEvaluationException(
@@ -56,7 +56,7 @@ public class BlueprintValueUtil {
 				).rootObject(
 					conditionJSONObject
 				).rootProperty(
-					ConditionConfigurationKeys.MATCH_VALUE.getJsonKey()
+					ConditionConfigurationKeys.VALUE.getJsonKey()
 				).rootValue(
 					object.toString()
 				).severity(

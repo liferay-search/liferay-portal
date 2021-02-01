@@ -15,7 +15,9 @@
 package com.liferay.portal.search.tuning.blueprints.engine.internal.util;
 
 import com.liferay.petra.string.StringBundler;
-import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONException;
+import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -36,6 +38,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Petteri Karttunen
@@ -48,6 +51,24 @@ public class BlueprintTemplateVariableParserImpl
 	public Optional<JSONObject> parse(
 		JSONObject jsonObject, ParameterData parameterData, Messages messages) {
 
+		Optional<Object> optional = parseObject(
+			jsonObject, parameterData, messages);
+
+		if (optional.isPresent()) {
+			return Optional.of((JSONObject)optional.get());
+		}
+
+		return Optional.empty();
+	}
+
+	@Override
+	public Optional<Object> parseObject(
+		Object object, ParameterData parameterData, Messages messages) {
+
+		if (object == null) {
+			return Optional.empty();
+		}
+
 		List<Parameter> parameters = parameterData.getParameters();
 
 		if (parameters.isEmpty()) {
@@ -55,11 +76,41 @@ public class BlueprintTemplateVariableParserImpl
 				_log.debug("No parameters available");
 			}
 
-			return Optional.of(jsonObject);
+			return Optional.of(object);
 		}
 
-		return Optional.ofNullable(
-			_parseJSONObject(jsonObject, parameterData, messages));
+		try {
+			if (object instanceof JSONObject) {
+				return Optional.ofNullable(
+					_parseJSONObject(
+						(JSONObject)object, parameterData, messages));
+			}
+			else if (object instanceof JSONArray) {
+				return Optional.ofNullable(
+					_parseJSONArray(
+						(JSONArray)object, parameterData, messages));
+			}
+		}
+		catch (JSONException jsonException) {
+			messages.addMessage(
+				new Message.Builder().className(
+					getClass().getName()
+				).localizationKey(
+					"core.error.unknown-template-variable-parsing-error"
+				).msg(
+					jsonException.getMessage()
+				).rootObject(
+					object.toString()
+				).severity(
+					Severity.ERROR
+				).throwable(
+					jsonException
+				).build());
+
+			_log.error(jsonException.getMessage(), jsonException);
+		}
+
+		return Optional.of(object);
 	}
 
 	private Map<String, String> _getParameterOptions(String optionsString)
@@ -104,18 +155,49 @@ public class BlueprintTemplateVariableParserImpl
 		return false;
 	}
 
+	private JSONArray _parseJSONArray(
+			JSONArray jsonArray, ParameterData parameterData, Messages messages)
+		throws JSONException {
+
+		String json = jsonArray.toString();
+
+		if (!_hasTemplateVariables(json)) {
+			return jsonArray;
+		}
+
+		String parsed = _parseString(json, parameterData, messages);
+
+		if (!Validator.isBlank(parsed)) {
+			return _jsonFactory.createJSONArray(parsed);
+		}
+
+		return null;
+	}
+
 	private JSONObject _parseJSONObject(
-		JSONObject jsonObject, ParameterData parameterData, Messages messages) {
+			JSONObject jsonObject, ParameterData parameterData,
+			Messages messages)
+		throws JSONException {
 
-		String str = jsonObject.toString();
+		String json = jsonObject.toString();
 
-		if (!_hasTemplateVariables(str)) {
+		if (!_hasTemplateVariables(json)) {
 			return jsonObject;
 		}
 
-		try {
-			boolean changed = false;
+		String parsed = _parseString(json, parameterData, messages);
 
+		if (!Validator.isBlank(parsed)) {
+			return _jsonFactory.createJSONObject(parsed);
+		}
+
+		return null;
+	}
+
+	private String _parseString(
+		String str, ParameterData parameterData, Messages messages) {
+
+		try {
 			ToTemplateVariableStringVisitor toStringVisitor =
 				new ToTemplateVariableStringVisitor();
 
@@ -131,13 +213,11 @@ public class BlueprintTemplateVariableParserImpl
 				if (str.contains(stem)) {
 					str = _processParametrizedTemplateVariables(
 						str, parameter, toStringVisitor, stem);
-					changed = true;
 				}
 
 				if (str.contains(templateVariable)) {
 					str = _processTemplateVariables(
 						str, parameter, toStringVisitor);
-					changed = true;
 				}
 
 				if (!_hasTemplateVariables(str)) {
@@ -145,15 +225,11 @@ public class BlueprintTemplateVariableParserImpl
 				}
 			}
 
-			if (!_validateParsing(jsonObject, str, messages)) {
+			if (!_validateParsing(str, messages)) {
 				return null;
 			}
 
-			if (!changed) {
-				return jsonObject;
-			}
-
-			return JSONFactoryUtil.createJSONObject(str);
+			return str;
 		}
 		catch (Exception exception) {
 			messages.addMessage(
@@ -164,7 +240,7 @@ public class BlueprintTemplateVariableParserImpl
 				).msg(
 					exception.getMessage()
 				).rootObject(
-					jsonObject
+					str
 				).severity(
 					Severity.ERROR
 				).throwable(
@@ -258,9 +334,7 @@ public class BlueprintTemplateVariableParserImpl
 		return StringUtil.replace(str, sb.toString(), substitution);
 	}
 
-	private boolean _validateParsing(
-		JSONObject jsonObject, String str, Messages messages) {
-
+	private boolean _validateParsing(String str, Messages messages) {
 		if (str.contains("${")) {
 			messages.addMessage(
 				new Message.Builder().className(
@@ -270,7 +344,7 @@ public class BlueprintTemplateVariableParserImpl
 				).msg(
 					"Some template variables could not be parsed"
 				).rootObject(
-					jsonObject
+					str
 				).severity(
 					Severity.WARN
 				).build());
@@ -295,5 +369,8 @@ public class BlueprintTemplateVariableParserImpl
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		BlueprintTemplateVariableParserImpl.class);
+
+	@Reference
+	private JSONFactory _jsonFactory;
 
 }
