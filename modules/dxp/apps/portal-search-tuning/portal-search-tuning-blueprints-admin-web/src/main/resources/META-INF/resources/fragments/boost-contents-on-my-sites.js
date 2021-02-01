@@ -19,6 +19,7 @@ export default {
 				query: {
 					query: {
 						terms: {
+							boost: '${config.boost}',
 							groupId: '${user.user_group_ids}',
 						},
 					},
@@ -28,13 +29,20 @@ export default {
 		],
 		conditions: [],
 		description: {
-			en_US: "Boost contents in groups I'm member of",
+			en_US: "Boost contents on sites I'm a member of",
 		},
 		enabled: true,
 		icon: 'thumbs-up',
 		title: {
-			en_US: 'Boost Contents in My Groups',
+			en_US: 'Boost Contents on My Sites',
 		},
 	},
-	uiConfigurationJSON: [],
+	uiConfigurationJSON: [
+		{
+			defaultValue: 10,
+			key: 'boost',
+			name: 'Boost',
+			type: 'slider',
+		},
+	],
 };

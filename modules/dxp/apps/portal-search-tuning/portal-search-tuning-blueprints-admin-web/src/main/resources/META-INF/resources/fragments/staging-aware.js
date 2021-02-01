@@ -53,8 +53,8 @@ export default {
 			{
 				configuration: {
 					evaluation_type: 'eq',
-					match_value: false,
 					parameter_name: '${context.is_staging_group}',
+					value: false,
 				},
 			},
 		],

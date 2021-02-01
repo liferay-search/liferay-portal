@@ -11,17 +11,39 @@
 
 export default {
 	fragmentTemplateJSON: {
-		category: 'filter',
+		category: 'hide',
 		clauses: [
 			{
 				context: 'query',
 				occur: 'filter',
 				query: {
 					query: {
-						term: {
-							'${config.field}': {
-								value: '${config.value}',
-							},
+						bool: {
+							should: [
+								{
+									bool: {
+										must_not: [
+											{
+												term: {
+													entryClassName:
+														'com.liferay.portal.kernel.model.User',
+												},
+											},
+										],
+									},
+								},
+								{
+									bool: {
+										must: [
+											{
+												term: {
+													defaultUser: false,
+												},
+											},
+										],
+									},
+								},
+							],
 						},
 					},
 				},
@@ -30,31 +52,13 @@ export default {
 		],
 		conditions: [],
 		description: {
-			en_US: 'Filter results by an exact term match',
+			en_US: 'Hide the instance default user account from being searched',
 		},
 		enabled: true,
-		icon: 'filter',
+		icon: 'hidden',
 		title: {
-			en_US: 'Filter by an Exact Term Match',
+			en_US: 'Hide Default User',
 		},
 	},
-	uiConfigurationJSON: [
-		{
-			defaultValue: [
-				{
-					field: '',
-					locale: '',
-				},
-			],
-			key: 'field',
-			name: 'Field',
-			type: 'single-field',
-		},
-		{
-			defaultValue: '',
-			key: 'value',
-			name: 'Value',
-			type: 'text',
-		},
-	],
+	uiConfigurationJSON: [],
 };

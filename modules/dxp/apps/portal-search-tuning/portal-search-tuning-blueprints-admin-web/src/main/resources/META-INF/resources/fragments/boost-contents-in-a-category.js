@@ -47,7 +47,7 @@ export default {
 			type: 'number',
 		},
 		{
-			defaultValue: 20,
+			defaultValue: 10,
 			key: 'boost',
 			name: 'Boost',
 			type: 'slider',

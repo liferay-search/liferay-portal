@@ -33,11 +33,9 @@ export default {
 			{
 				configuration: {
 					evaluation_type: 'eq',
-					match_value: '${config.time_of_day}',
 					parameter_name: '${time.time_of_day}',
+					value: '${config.time_of_day}',
 				},
-				handler: 'default',
-				operator: 'AND',
 			},
 		],
 		description: {

@@ -19,7 +19,7 @@ export default {
 				query: {
 					query: {
 						terms: {
-							groupId: '${user.user_group_ids}',
+							scopeGroupId: '${user.user_group_ids}',
 						},
 					},
 				},
@@ -28,12 +28,12 @@ export default {
 		],
 		conditions: [],
 		description: {
-			en_US: 'Limit search scope to the groups user is member of',
+			en_US: 'Limit search scope to the sites user is member of',
 		},
 		enabled: true,
 		icon: 'filter',
 		title: {
-			en_US: 'Limit Search to My Groups',
+			en_US: 'Limit Search to My Sites',
 		},
 	},
 	uiConfigurationJSON: [],

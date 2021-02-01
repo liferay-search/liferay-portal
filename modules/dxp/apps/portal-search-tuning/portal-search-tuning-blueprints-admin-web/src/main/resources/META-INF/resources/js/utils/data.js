@@ -16,8 +16,9 @@ import BOOST_CONTENTS_IN_A_CATEGORY_BY_KEYWORD_MATCH from '../../fragments/boost
 import BOOST_CONTENTS_IN_A_CATEGORY_FOR_A_PERIOD_OF_TIME from '../../fragments/boost-contents-in-a-category-for-a-period-of-time';
 import BOOST_CONTENTS_IN_A_CATEGORY_FOR_A_USER_SEGMENT from '../../fragments/boost-contents-in-a-category-for-a-user-segment';
 import BOOST_CONTENTS_IN_A_CATEGORY_FOR_GUEST_USERS from '../../fragments/boost-contents-in-a-category-for-guest-users';
+import BOOST_CONTENTS_IN_A_CATEGORY_FOR_NEW_USER_ACCOUNTS from '../../fragments/boost-contents-in-a-category-for-new-user-accounts';
 import BOOST_CONTENTS_IN_A_CATEGORY_FOR_TIME_OF_DAY from '../../fragments/boost-contents-in-a-category-for-time-of-day';
-import BOOST_CONTENTS_IN_MY_GROUPS from '../../fragments/boost-contents-in-my-groups';
+import BOOST_CONTENTS_ON_MY_SITES from '../../fragments/boost-contents-on-my-sites';
 import BOOST_CONTENTS_WITH_MORE_VERSIONS from '../../fragments/boost-contents-with-more-versions';
 import BOOST_CONTENTS_WITH_USERS_LANGUAGE_AS_THE_DEFAULT_LANGUAGE from '../../fragments/boost-contents-with-user-language-as-the-default-language';
 import BOOST_FRESHNESS from '../../fragments/boost-freshness';
@@ -26,11 +27,11 @@ import BOOST_PROXIMITY from '../../fragments/boost-proximity';
 import BOOST_TAGGED_CONTENTS from '../../fragments/boost-tagged-contents';
 import BOOST_TAGS_MATCH from '../../fragments/boost-tags-match';
 import BOOST_WEB_CONTENTS_BY_KEYWORD_MATCH from '../../fragments/boost-web-contents-by-keyword-match';
-import FILTER_BY_EXACT_TERM_MATCH from '../../fragments/filter-by-exact-term-match';
 import FILTER_BY_EXACT_TERMS_MATCH from '../../fragments/filter-by-exact-terms-match';
 import HIDE_BY_EXACT_TERM_MATCH from '../../fragments/hide-by-exact-term-match';
 import HIDE_CONTENTS_IN_A_CATEGORY from '../../fragments/hide-contents-in-a-category';
 import HIDE_CONTENTS_IN_A_CATEGORY_FOR_GUEST_USERS from '../../fragments/hide-contents-in-a-category-for-guest-users';
+import HIDE_DEFAULT_USER from '../../fragments/hide-default-user';
 import HIDE_DISCUSSIONS from '../../fragments/hide-discussions';
 import HIDE_HIDDEN_CONTENTS from '../../fragments/hide-hidden-contents';
 import HIDE_TAGGED_CONTENTS from '../../fragments/hide-tagged-contents';
@@ -38,10 +39,10 @@ import LIMIT_SEARCH_TO_PDF_FILES from '../../fragments/limit-search-to-PDF-files
 import LIMIT_SEARCH_TO_CONTENTS_CREATED_WITHIN_A_PERIOD_OF_TIME from '../../fragments/limit-search-to-contents-created-within-a-period-of-time';
 import LIMIT_SEARCH_TO_HEAD_VERSION from '../../fragments/limit-search-to-head-version';
 import LIMIT_SEARCH_TO_MY_CONTENTS from '../../fragments/limit-search-to-my-contents';
-import LIMIT_SEARCH_TO_MY_GROUPS from '../../fragments/limit-search-to-my-groups';
+import LIMIT_SEARCH_TO_MY_SITES from '../../fragments/limit-search-to-my-sites';
 import LIMIT_SEARCH_TO_PUBLISHED_CONTENTS from '../../fragments/limit-search-to-published-contents';
-import LIMIT_SEARCH_TO_THE_CURRENT_GROUP from '../../fragments/limit-search-to-the-current-group';
-import LIMIT_SEARCH_TO_THESE_GROUPS from '../../fragments/limit-search-to-these-groups';
+import LIMIT_SEARCH_TO_THE_CURRENT_SITE from '../../fragments/limit-search-to-the-current-site';
+import LIMIT_SEARCH_TO_THESE_SITES from '../../fragments/limit-search-to-these-sites';
 import PASTE_AN_ELASTICSEARCH_QUERY from '../../fragments/paste-an-elasticsearch-query';
 import PUBLICATIONS_AWARE from '../../fragments/publications-aware';
 import SCHEDULING_AWARE from '../../fragments/scheduling-aware';
@@ -90,16 +91,15 @@ export const QUERY_FRAGMENTS = [
 	TEXT_MATCH,
 	TEXT_MATCH_OVER_MULTIPLE_FIELDS,
 	SEARCH_WITH_LUCENE_SYNTAX,
-	FILTER_BY_EXACT_TERM_MATCH,
 	FILTER_BY_EXACT_TERMS_MATCH,
 	STAGING_AWARE,
 	PUBLICATIONS_AWARE,
 	SCHEDULING_AWARE,
 	LIMIT_SEARCH_TO_PUBLISHED_CONTENTS,
 	LIMIT_SEARCH_TO_HEAD_VERSION,
-	LIMIT_SEARCH_TO_THE_CURRENT_GROUP,
-	LIMIT_SEARCH_TO_MY_GROUPS,
-	LIMIT_SEARCH_TO_THESE_GROUPS,
+	LIMIT_SEARCH_TO_THE_CURRENT_SITE,
+	LIMIT_SEARCH_TO_MY_SITES,
+	LIMIT_SEARCH_TO_THESE_SITES,
 	LIMIT_SEARCH_TO_MY_CONTENTS,
 	LIMIT_SEARCH_TO_CONTENTS_CREATED_WITHIN_A_PERIOD_OF_TIME,
 	LIMIT_SEARCH_TO_PDF_FILES,
@@ -112,9 +112,10 @@ export const QUERY_FRAGMENTS = [
 	BOOST_PROXIMITY,
 	BOOST_CONTENTS_IN_A_CATEGORY,
 	BOOST_TAGGED_CONTENTS,
-	BOOST_CONTENTS_IN_MY_GROUPS,
+	BOOST_CONTENTS_ON_MY_SITES,
 	HIDE_BY_EXACT_TERM_MATCH,
 	HIDE_DISCUSSIONS,
+	HIDE_DEFAULT_USER,
 	HIDE_HIDDEN_CONTENTS,
 	HIDE_CONTENTS_IN_A_CATEGORY,
 	HIDE_TAGGED_CONTENTS,
@@ -124,6 +125,7 @@ export const QUERY_FRAGMENTS = [
 	BOOST_CONTENTS_IN_A_CATEGORY_FOR_A_PERIOD_OF_TIME,
 	BOOST_CONTENTS_IN_A_CATEGORY_FOR_A_USER_SEGMENT,
 	BOOST_CONTENTS_IN_A_CATEGORY_FOR_TIME_OF_DAY,
+	BOOST_CONTENTS_IN_A_CATEGORY_FOR_NEW_USER_ACCOUNTS,
 	BOOST_CONTENTS_IN_A_CATEGORY_FOR_GUEST_USERS,
 	HIDE_CONTENTS_IN_A_CATEGORY_FOR_GUEST_USERS,
 	PASTE_AN_ELASTICSEARCH_QUERY,

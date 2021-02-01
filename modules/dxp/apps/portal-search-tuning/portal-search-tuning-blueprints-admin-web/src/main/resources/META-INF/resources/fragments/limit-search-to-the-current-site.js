@@ -28,12 +28,12 @@ export default {
 		],
 		conditions: [],
 		description: {
-			en_US: 'Limit search to the current group',
+			en_US: 'Limit search to the current site',
 		},
 		enabled: true,
 		icon: 'filter',
 		title: {
-			en_US: 'Limit Search to the Current Group',
+			en_US: 'Limit Search to the Current Site',
 		},
 	},
 	uiConfigurationJSON: [],

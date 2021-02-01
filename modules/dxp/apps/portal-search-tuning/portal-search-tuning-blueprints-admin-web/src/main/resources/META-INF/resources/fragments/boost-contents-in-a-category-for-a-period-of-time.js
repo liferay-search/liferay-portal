@@ -34,8 +34,8 @@ export default {
 				configuration: {
 					date_format: 'yyyyMMdd',
 					evaluation_type: 'in_range',
-					match_value: ['${config.start_date}', '${config.end_date}'],
 					parameter_name: '${time.current_date}',
+					value: ['${config.start_date}', '${config.end_date}'],
 				},
 			},
 		],
@@ -68,7 +68,7 @@ export default {
 			type: 'date',
 		},
 		{
-			defaultValue: 20,
+			defaultValue: 10,
 			key: 'boost',
 			name: 'Boost',
 			type: 'slider',

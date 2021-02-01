@@ -31,7 +31,7 @@ export default {
 		conditions: [],
 		description: {
 			en_US:
-				'Boost Commerce items for my account groups. Aapplies only to products using Account Group Filtering.',
+				'Boost Commerce items for my account groups. Applies only to products using Account Group Filtering.',
 		},
 		enabled: true,
 		icon: 'thumbs-up',
@@ -41,7 +41,7 @@ export default {
 	},
 	uiConfigurationJSON: [
 		{
-			defaultValue: 20,
+			defaultValue: 10,
 			key: 'boost',
 			name: 'Boost',
 			type: 'slider',

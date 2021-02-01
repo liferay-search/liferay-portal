@@ -50,12 +50,6 @@ export default {
 	},
 	uiConfigurationJSON: [
 		{
-			defaultValue: 20,
-			key: 'boost',
-			name: 'Boost',
-			type: 'slider',
-		},
-		{
 			defaultValue:
 				'expando__keyword__custom_fields__location_geolocation',
 			helpText: 'A geopoint field',
@@ -76,6 +70,12 @@ export default {
 			type: 'number',
 			unit: 'km',
 			unitSuffix: 'km',
+		},
+		{
+			defaultValue: 2,
+			key: 'boost',
+			name: 'Boost',
+			type: 'slider',
 		},
 	],
 };

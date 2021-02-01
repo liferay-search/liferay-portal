@@ -57,10 +57,6 @@ export default {
 			type: 'single-field',
 			typeOptions: [
 				{
-					label: '',
-					value: '',
-				},
-				{
 					label: 'Entry Class PK',
 					value: 'entryClassPK',
 				},

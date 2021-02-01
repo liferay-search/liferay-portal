@@ -38,7 +38,7 @@ export default {
 												'${context.ct_collection_id}',
 										},
 									},
-								}
+								},
 							],
 						},
 					},

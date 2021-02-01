@@ -33,8 +33,8 @@ export default {
 			{
 				configuration: {
 					evaluation_type: 'any_word_in',
-					match_value: '${config.keywords}',
 					parameter_name: '${keywords}',
+					value: '${config.keywords}',
 				},
 			},
 		],
@@ -62,7 +62,7 @@ export default {
 			type: 'multiselect',
 		},
 		{
-			defaultValue: 20,
+			defaultValue: 10,
 			key: 'boost',
 			name: 'Boost',
 			type: 'slider',

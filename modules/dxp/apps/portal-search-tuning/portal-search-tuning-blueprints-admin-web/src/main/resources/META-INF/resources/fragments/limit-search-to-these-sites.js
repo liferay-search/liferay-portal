@@ -19,7 +19,7 @@ export default {
 				query: {
 					query: {
 						terms: {
-							groupId: '${config.group_ids}',
+							scopeGroupId: '${config.scope_group_ids}',
 						},
 					},
 				},
@@ -28,18 +28,18 @@ export default {
 		],
 		conditions: [],
 		description: {
-			en_US: 'Limit search scope to the given groups',
+			en_US: 'Limit search scope to the given sites',
 		},
 		enabled: true,
 		icon: 'filter',
 		title: {
-			en_US: 'Limit Search to These Groups',
+			en_US: 'Limit Search to These Sites',
 		},
 	},
 	uiConfigurationJSON: [
 		{
-			helpText: 'Add user group IDs',
-			key: 'group_ids',
+			helpText: 'Add group IDs',
+			key: 'scope_group_ids',
 			name: 'Group IDs',
 			type: 'multiselect',
 		},

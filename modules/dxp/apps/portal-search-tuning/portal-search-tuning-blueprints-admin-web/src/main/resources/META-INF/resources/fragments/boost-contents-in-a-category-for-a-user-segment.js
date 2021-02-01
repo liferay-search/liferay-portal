@@ -33,8 +33,8 @@ export default {
 			{
 				configuration: {
 					evaluation_type: 'contains',
-					match_value: ['${config.user_segment_id}'],
 					parameter_name: '${user.user_segment_entry_ids}',
+					value: ['${config.user_segment_id}'],
 				},
 			},
 		],
@@ -62,7 +62,7 @@ export default {
 			type: 'number',
 		},
 		{
-			defaultValue: 10,
+			defaultValue: 20,
 			key: 'boost',
 			name: 'Boost',
 			type: 'slider',

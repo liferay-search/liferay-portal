@@ -31,11 +31,9 @@ export default {
 			{
 				configuration: {
 					evaluation_type: 'any_word_in',
-					match_value: '${config.values}',
 					parameter_name: '${keywords}',
+					value: '${config.values}',
 				},
-				handler: 'default',
-				operator: 'AND',
 			},
 		],
 		description: {
@@ -62,7 +60,7 @@ export default {
 			type: 'multiselect',
 		},
 		{
-			defaultValue: 10,
+			defaultValue: 20,
 			key: 'boost',
 			name: 'Boost',
 			type: 'slider',

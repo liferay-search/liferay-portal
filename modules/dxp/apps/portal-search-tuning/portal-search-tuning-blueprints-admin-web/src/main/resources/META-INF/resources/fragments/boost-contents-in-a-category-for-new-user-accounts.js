@@ -11,23 +11,17 @@
 
 export default {
 	fragmentTemplateJSON: {
-		category: 'boost',
+		category: 'conditional',
 		clauses: [
 			{
 				context: 'query',
 				occur: 'should',
 				query: {
 					query: {
-						function_score: {
-							boost: '${config.boost}',
-							gauss: {
-								modified: {
-									decay: '${config.decay}',
-									offset: '${config.offset}',
-									origin:
-										'${time.current_date|dateFormat=yyyyMMddHHmmss}',
-									scale: '${config.scale}',
-								},
+						term: {
+							assetCategoryIds: {
+								boost: '${config.boost}',
+								value: '${config.asset_category_id}',
 							},
 						},
 					},
@@ -35,41 +29,46 @@ export default {
 				type: 'wrapper',
 			},
 		],
-		conditions: [],
+		conditions: [
+			{
+				configuration: {
+					date_format: 'yyyyMMdd',
+					evaluation_type: 'in_range',
+					parameter_name: '${user.user_create_date}',
+					value: [
+						'${time.current_date|modifier=-${config.time_range},dateFormat=yyyyMMdd}',
+						'${time.current_date|modifier=+1d,dateFormat=yyyyMMdd}',
+					],
+				},
+			},
+		],
 		description: {
-			en_US: 'Give a gaussian boost to contents modified recently',
+			en_US:
+				'Boost contents in a category for user accounts created withing the given time',
 		},
 		enabled: true,
 		icon: 'thumbs-up',
 		title: {
-			en_US: 'Boost Freshness',
+			en_US: 'Boost Contents in a Category for New User Accounts',
 		},
 	},
 	uiConfigurationJSON: [
 		{
-			defaultValue: 0.5,
-			key: 'decay',
-			name: 'Decay',
+			helpText: 'Add asset category ID',
+			key: 'asset_category_id',
+			name: 'Asset Category',
 			type: 'number',
 		},
 		{
-			defaultValue: 0,
-			key: 'offset',
-			name: 'Offset',
-			type: 'number',
-			unit: 'days',
-			unitSuffix: 'd',
-		},
-		{
-			defaultValue: 10,
-			key: 'scale',
-			name: 'Scale',
+			defaultValue: 30,
+			key: 'time_range',
+			name: 'Time range',
 			type: 'number',
 			unit: 'days',
 			unitSuffix: 'd',
 		},
 		{
-			defaultValue: 2,
+			defaultValue: 20,
 			key: 'boost',
 			name: 'Boost',
 			type: 'slider',

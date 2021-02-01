@@ -39,8 +39,8 @@ export default {
 			{
 				configuration: {
 					evaluation_type: 'eq',
-					match_value: false,
 					parameter_name: '${user.user_is_signed_in}',
+					value: false,
 				},
 			},
 		],
