@@ -18,7 +18,7 @@ import PageToolbar from '../shared/PageToolbar';
 import ThemeContext from '../shared/ThemeContext';
 import {
 	CUSTOM_JSON_FRAGMENT,
-	DEFAULT_FRAGMENT,
+	DEFAULT_BASELINE_FRAGMENTS,
 	DEFAULT_FRAMEWORK_CONFIGURATION,
 	QUERY_FRAGMENTS,
 } from '../utils/data';
@@ -107,7 +107,11 @@ function EditBlueprintForm({
 						id: fragmentIdCounter.current++,
 					})
 			  )
-			: [convertToSelectedFragment(DEFAULT_FRAGMENT)]
+			: DEFAULT_BASELINE_FRAGMENTS.map((fragment, idx) => {
+					fragmentIdCounter.current++;
+
+					return convertToSelectedFragment(fragment, idx);
+			  })
 	);
 
 	const onAddFragment = useCallback((fragment) => {

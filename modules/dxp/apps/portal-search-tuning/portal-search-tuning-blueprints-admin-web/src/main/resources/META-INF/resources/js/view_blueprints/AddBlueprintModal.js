@@ -31,7 +31,7 @@ import {FRAMEWORK_TYPES} from '../utils/frameworkTypes';
 import {convertToSelectedFragment} from '../utils/utils';
 
 const DEFAULT_SELECTED_BASELINE_FRAGMENTS = DEFAULT_BASELINE_FRAGMENTS.map(
-	(fragment) => convertToSelectedFragment(fragment)
+	(fragment, idx) => convertToSelectedFragment(fragment, idx)
 );
 
 const FrameworkCard = ({
