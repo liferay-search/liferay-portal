@@ -15,7 +15,6 @@
 package com.liferay.portal.search.tuning.blueprints.util.internal.importer;
 
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
@@ -33,7 +32,6 @@ import com.liferay.portal.search.tuning.blueprints.util.importer.BlueprintImport
 
 import java.io.IOException;
 import java.io.InputStream;
-
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -99,7 +97,7 @@ public class BlueprintImporterImpl implements BlueprintImporter {
 		}
 		else if (type == BlueprintTypes.QUERY_FRAGMENT) {
 
-			// TODO: https://issues.liferay.com/browse/LPS-114089
+			_addElement(payloadJSONObject, type, serviceContext, privileged);
 
 			_log.error("Not implemented");
 		}
@@ -128,6 +126,22 @@ public class BlueprintImporterImpl implements BlueprintImporter {
 			BlueprintTypes.BLUEPRINT, serviceContext, privileged);
 	}
 
+	private void _addElement(
+			JSONObject payloadJSONObject, int blueprintType, ServiceContext serviceContext,
+			boolean privileged)
+		throws PortalException {
+
+		Map<Locale, String> titleMap = _getTitleMap(payloadJSONObject);
+
+		String configuration = payloadJSONObject.getJSONObject(
+			"configuration"
+		).toJSONString();
+
+		_save(
+			titleMap, null, configuration, null,
+			blueprintType, serviceContext, privileged);
+	}
+	
 	private ServiceContext _createServiceContext(
 			long companyId, long groupId, long userId)
 		throws PortalException {
@@ -227,18 +241,6 @@ public class BlueprintImporterImpl implements BlueprintImporter {
 		return _validatePayload(jsonObject.getJSONObject("payload"), type);
 	}
 
-	private boolean _validateClauses(JSONObject payloadJSONObject) {
-		JSONArray clausesJSONArray = payloadJSONObject.getJSONArray("clauses");
-
-		if ((clausesJSONArray == null) || (clausesJSONArray.length() == 0)) {
-			_log.error("Missing clauses object");
-
-			return false;
-		}
-
-		return true;
-	}
-
 	private boolean _validateConfiguration(JSONObject payloadJSONObject) {
 		if (!payloadJSONObject.has("configuration")) {
 			_log.error("Missing configuration object");
@@ -266,19 +268,13 @@ public class BlueprintImporterImpl implements BlueprintImporter {
 
 			return false;
 		}
-		else if (type == BlueprintTypes.QUERY_FRAGMENT) {
+		else {
 			if (_validateTitle(payloadJSONObject) &&
-				_validateClauses(payloadJSONObject)) {
+				_validateConfiguration(payloadJSONObject)) {
 
-				// TODO: https://issues.liferay.com/browse/LPS-114089
-
-				return false;
+				return true;
 			}
-
-			return false;
 		}
-
-		_log.error("Unsupported import type " + type);
 
 		return false;
 	}

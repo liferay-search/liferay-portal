@@ -104,7 +104,7 @@ public class ExportBlueprintMVCResourceCommand extends BaseMVCResourceCommand {
 		}
 	}
 
-	private String _buildResponseString(Blueprint blueprint)
+	private String _buildBlueprintResponseString(Blueprint blueprint)
 		throws JSONException {
 
 		return JSONUtil.put(
@@ -121,8 +121,34 @@ public class ExportBlueprintMVCResourceCommand extends BaseMVCResourceCommand {
 				"title", _mapToJSONObject(blueprint.getTitleMap())
 			)
 		).put(
-			"type", BlueprintTypes.BLUEPRINT
+			"type", blueprint.getType()
 		).toString();
+	}
+
+	private String _buildElementResponseString(Blueprint blueprint)
+		throws JSONException {
+
+		return JSONUtil.put(
+			"payload",
+			JSONUtil.put(
+				"configuration",
+				_jsonFactory.createJSONObject(blueprint.getConfiguration())
+			).put(
+				"title", _mapToJSONObject(blueprint.getTitleMap())
+			)
+		).put(
+			"type", blueprint.getType()
+		).toString();
+	}
+
+	private String _buildResponseString(Blueprint blueprint)
+		throws JSONException {
+
+		if (blueprint.getType() == BlueprintTypes.QUERY_FRAGMENT) {
+			return _buildElementResponseString(blueprint);
+		}
+
+		return _buildBlueprintResponseString(blueprint);
 	}
 
 	private String _getFileTitle(
