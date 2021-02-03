@@ -15,10 +15,12 @@
 package com.liferay.portal.search.tuning.blueprints.suggestions.titles.internal.typeahead.provider;
 
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.search.document.Document;
 import com.liferay.portal.search.hits.SearchHit;
 import com.liferay.portal.search.hits.SearchHits;
@@ -27,7 +29,6 @@ import com.liferay.portal.search.query.BooleanQuery;
 import com.liferay.portal.search.query.MultiMatchQuery;
 import com.liferay.portal.search.query.Queries;
 import com.liferay.portal.search.query.Query;
-import com.liferay.portal.search.query.TermQuery;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.searcher.SearchRequestBuilderFactory;
 import com.liferay.portal.search.searcher.SearchResponse;
@@ -38,6 +39,7 @@ import com.liferay.portal.search.tuning.blueprints.suggestions.suggestion.Sugges
 import com.liferay.portal.search.tuning.blueprints.suggestions.titles.internal.configuration.TitleSuggestionsConfiguration;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -107,10 +109,104 @@ public class TitleTypeaheadDataProvider implements TypeaheadDataProvider {
 		BooleanQuery booleanQuery,
 		SuggestionsAttributes suggestionsAttributes) {
 
-		TermQuery groupQuery = _queries.term(
-			Field.SCOPE_GROUP_ID, suggestionsAttributes.getGroupId());
+		long groupId = suggestionsAttributes.getGroupId();
 
-		booleanQuery.addFilterQueryClauses(groupQuery);
+		if (groupId > 0) {
+			booleanQuery.addFilterQueryClauses(
+				_queries.term(
+					Field.SCOPE_GROUP_ID, suggestionsAttributes.getGroupId()));
+		}
+	}
+
+	private void _addHeadFilterClause(BooleanQuery booleanQuery) {
+		BooleanQuery filterQuery = _queries.booleanQuery();
+
+		BooleanQuery mustNotQuery = _queries.booleanQuery();
+
+		mustNotQuery.addMustNotQueryClauses(
+			_queries.term(
+				"entryClassName", "com.liferay.journal.model.JournalArticle"));
+
+		BooleanQuery mustQuery = _queries.booleanQuery();
+
+		mustQuery.addMustQueryClauses(
+			_queries.term(
+				"entryClassName", "com.liferay.journal.model.JournalArticle"));
+
+		mustQuery.addMustQueryClauses(_queries.term("head", true));
+
+		filterQuery.addShouldQueryClauses(mustNotQuery, mustQuery);
+
+		booleanQuery.addShouldQueryClauses(filterQuery);
+	}
+
+	private void _addHiddenFilterClause(BooleanQuery booleanQuery) {
+		BooleanQuery filterQuery = _queries.booleanQuery();
+
+		BooleanQuery mustNotQuery = _queries.booleanQuery();
+
+		mustNotQuery.addMustNotQueryClauses(_queries.exists("hidden"));
+
+		BooleanQuery mustQuery = _queries.booleanQuery();
+
+		mustQuery.addMustQueryClauses(_queries.term("hidden", false));
+
+		filterQuery.addShouldQueryClauses(mustNotQuery, mustQuery);
+
+		booleanQuery.addShouldQueryClauses(filterQuery);
+	}
+
+	private void _addPublicationsFilterClause(BooleanQuery booleanQuery) {
+		BooleanQuery filterQuery = _queries.booleanQuery();
+
+		BooleanQuery mustNotQuery = _queries.booleanQuery();
+
+		mustNotQuery.addMustNotQueryClauses(_queries.exists("ctCollectionId"));
+
+		BooleanQuery mustQuery = _queries.booleanQuery();
+
+		mustQuery.addMustQueryClauses(
+			_queries.term(
+				"ctCollectionId", CTCollectionThreadLocal.getCTCollectionId()));
+
+		filterQuery.addShouldQueryClauses(mustNotQuery, mustQuery);
+
+		booleanQuery.addShouldQueryClauses(filterQuery);
+	}
+
+	private void _addSchedulingFilterClause(BooleanQuery booleanQuery) {
+		Date now = new Date();
+
+		BooleanQuery filterQuery = _queries.booleanQuery();
+
+		BooleanQuery mustNotQuery = _queries.booleanQuery();
+
+		mustNotQuery.addMustNotQueryClauses(_queries.exists("displayDate"));
+
+		BooleanQuery mustQuery1 = _queries.booleanQuery();
+
+		mustQuery1.addMustQueryClauses(
+			_queries.rangeTerm(
+				"displayDate_sortable", true, true, Long.MIN_VALUE,
+				now.getTime()));
+
+		mustQuery1.addMustNotQueryClauses(_queries.exists("expirationDate"));
+
+		BooleanQuery mustQuery2 = _queries.booleanQuery();
+
+		mustQuery2.addMustQueryClauses(
+			_queries.rangeTerm(
+				"displayDate_sortable", true, true, Long.MIN_VALUE,
+				now.getTime()));
+
+		mustQuery2.addMustQueryClauses(
+			_queries.rangeTerm(
+				"expirationDate_sortable", true, true, now.getTime(),
+				Long.MAX_VALUE));
+
+		filterQuery.addShouldQueryClauses(mustNotQuery, mustQuery1, mustQuery2);
+
+		booleanQuery.addShouldQueryClauses(filterQuery);
 	}
 
 	private void _addSearchClauses(
@@ -124,6 +220,27 @@ public class TitleTypeaheadDataProvider implements TypeaheadDataProvider {
 		multiMatchQuery.setType(MultiMatchQuery.Type.BOOL_PREFIX);
 
 		booleanQuery.addMustQueryClauses(multiMatchQuery);
+	}
+
+	private void _addStagingFilterClause(BooleanQuery booleanQuery) {
+		BooleanQuery filterQuery = _queries.booleanQuery();
+
+		BooleanQuery mustNotQuery = _queries.booleanQuery();
+
+		mustNotQuery.addMustNotQueryClauses(_queries.exists("staginGroup"));
+
+		BooleanQuery mustQuery = _queries.booleanQuery();
+
+		mustQuery.addMustQueryClauses(_queries.term("stagingGroup", false));
+
+		filterQuery.addShouldQueryClauses(mustNotQuery, mustQuery);
+
+		booleanQuery.addShouldQueryClauses(filterQuery);
+	}
+
+	private void _addStatusFilterClause(BooleanQuery booleanQuery) {
+		booleanQuery.addFilterQueryClauses(
+			_queries.term(Field.STATUS, WorkflowConstants.STATUS_APPROVED));
 	}
 
 	private Set<String> _getFields(String languageId) {
@@ -158,6 +275,18 @@ public class TitleTypeaheadDataProvider implements TypeaheadDataProvider {
 		BooleanQuery booleanQuery = _queries.booleanQuery();
 
 		_addGroupFilterClause(booleanQuery, suggestionsAttributes);
+
+		_addHeadFilterClause(booleanQuery);
+
+		_addHiddenFilterClause(booleanQuery);
+
+		_addPublicationsFilterClause(booleanQuery);
+
+		_addSchedulingFilterClause(booleanQuery);
+
+		_addStagingFilterClause(booleanQuery);
+
+		_addStatusFilterClause(booleanQuery);
 
 		_addSearchClauses(booleanQuery, suggestionsAttributes);
 
