@@ -48,7 +48,6 @@ import PUBLICATIONS_AWARE from '../../fragments/publications-aware';
 import SCHEDULING_AWARE from '../../fragments/scheduling-aware';
 import SEARCH_WITH_LUCENE_SYNTAX from '../../fragments/search-with-lucene-syntax';
 import STAGING_AWARE from '../../fragments/staging-aware';
-import TEXT_MATCH from '../../fragments/text-match';
 import TEXT_MATCH_OVER_MULTIPLE_FIELDS from '../../fragments/text-match-over-multiple-fields';
 
 export const CUSTOM_JSON_FRAGMENT = {
@@ -81,14 +80,13 @@ export const DEFAULT_FRAMEWORK_CONFIGURATION = {
 	apply_indexer_clauses: true,
 };
 
-export const DEFAULT_EDIT_FRAGMENT = TEXT_MATCH;
+export const DEFAULT_EDIT_FRAGMENT = TEXT_MATCH_OVER_MULTIPLE_FIELDS;
 
 export const DEFAULT_PARAMETER_CONFIGURATION = {};
 
 export const DEFAULT_SORT_CONFIGURATION = {};
 
 export const QUERY_FRAGMENTS = [
-	TEXT_MATCH,
 	TEXT_MATCH_OVER_MULTIPLE_FIELDS,
 	SEARCH_WITH_LUCENE_SYNTAX,
 	FILTER_BY_EXACT_TERMS_MATCH,
