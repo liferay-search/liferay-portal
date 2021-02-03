@@ -10,6 +10,7 @@
  */
 
 import BOOST_ALL_KEYWORDS_MATCH from '../../fragments/boost-all-keywords-match';
+import BOOST_ASSET_TYPE from '../../fragments/boost-asset-type';
 import BOOST_COMMERCE_ITEMS_FOR_MY_ACCOUNT_GROUPS from '../../fragments/boost-commerce-items-for-my-account-groups';
 import BOOST_CONTENTS_IN_A_CATEGORY from '../../fragments/boost-contents-in-a-category';
 import BOOST_CONTENTS_IN_A_CATEGORY_BY_KEYWORD_MATCH from '../../fragments/boost-contents-in-a-category-by-keyword-match';
@@ -103,11 +104,12 @@ export const QUERY_FRAGMENTS = [
 	LIMIT_SEARCH_TO_PDF_FILES,
 	BOOST_ALL_KEYWORDS_MATCH,
 	BOOST_TAGS_MATCH,
-	BOOST_FRESHNESS,
 	BOOST_LONGER_CONTENTS,
 	BOOST_CONTENTS_WITH_MORE_VERSIONS,
 	BOOST_CONTENTS_WITH_USERS_LANGUAGE_AS_THE_DEFAULT_LANGUAGE,
+	BOOST_FRESHNESS,
 	BOOST_PROXIMITY,
+	BOOST_ASSET_TYPE,
 	BOOST_CONTENTS_IN_A_CATEGORY,
 	BOOST_TAGGED_CONTENTS,
 	BOOST_CONTENTS_ON_MY_SITES,
