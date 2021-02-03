@@ -13,7 +13,7 @@ import {fireEvent, render, within} from '@testing-library/react';
 import React from 'react';
 
 import EditBlueprint from '../../../src/main/resources/META-INF/resources/js/edit_blueprint/index';
-import {DEFAULT_FRAGMENT} from '../../../src/main/resources/META-INF/resources/js/utils/data';
+import {DEFAULT_BASELINE_FRAGMENTS} from '../../../src/main/resources/META-INF/resources/js/utils/data';
 const Utils = require('../../../src/main/resources/META-INF/resources/js/utils/utils');
 import {SELECTED_FRAGMENTS} from '../mocks/data';
 
@@ -50,6 +50,7 @@ function renderEditBlueprint(props) {
 					'en-US': 'Test Title',
 				},
 				redirectURL: '',
+				searchableAssetTypes: [],
 				submitFormURL: '',
 				...props,
 			}}
@@ -69,7 +70,9 @@ describe('EditBlueprint', () => {
 
 		const {getByText} = within(container.querySelector('.builder'));
 
-		getByText(DEFAULT_FRAGMENT.fragmentTemplateJSON.title['en_US']);
+		DEFAULT_BASELINE_FRAGMENTS.map((fragment) =>
+			getByText(fragment.fragmentTemplateJSON.title['en_US'])
+		);
 	});
 
 	it('adds additional query fragment from sidebar', () => {

@@ -32,6 +32,7 @@ function renderBuilder(props) {
 			deleteFragment={jest.fn()}
 			frameworkConfig={{}}
 			onFrameworkConfigChange={jest.fn()}
+			searchableAssetTypes={[]}
 			selectedFragments={SELECTED_FRAGMENTS}
 			updateFragment={updateFragment}
 			{...props}

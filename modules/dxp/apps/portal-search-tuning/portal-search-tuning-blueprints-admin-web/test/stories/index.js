@@ -34,10 +34,8 @@ import PageToolbar from '../../src/main/resources/META-INF/resources/js/shared/P
 import SearchInput from '../../src/main/resources/META-INF/resources/js/shared/SearchInput';
 import {
 	DEFAULT_EDIT_FRAGMENT,
-	DEFAULT_FRAGMENT,
 	DEFAULT_FRAMEWORK_CONFIGURATION,
 } from '../../src/main/resources/META-INF/resources/js/utils/data';
-import {convertToSelectedFragment} from '../../src/main/resources/META-INF/resources/js/utils/utils';
 import AddBlueprintModal from '../../src/main/resources/META-INF/resources/js/view_blueprints/AddBlueprintModal';
 import {SELECTED_FRAGMENTS} from '../js/mocks/data';
 
@@ -188,15 +186,10 @@ storiesOf('Pages|BlueprintForm', module)
 		<BlueprintForm
 			context={CONTEXT}
 			props={{
-				blueprintId: '1',
+				blueprintId: '0',
 				blueprintType: 0,
 				entityJSON: ENTITY_JSON,
 				initialDescription: {},
-				initialSelectedFragmentsString: JSON.stringify({
-					query_configuration: [
-						convertToSelectedFragment(DEFAULT_FRAGMENT, 1),
-					],
-				}),
 				initialTitle: {
 					'en-US': 'Test Title',
 				},
