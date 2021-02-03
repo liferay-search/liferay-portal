@@ -29,7 +29,7 @@ addDecorator(withKnobs);
 addDecorator((storyFn) => {
 	const context = {
 		namespace:
-			'com_liferay_portal_search_tuning_blueprints_web_poc_internal_BlueprintsWebPortlet',
+			'com_liferay_portal_search_tuning_blueprints_web_internal_BlueprintsWebPortlet',
 		spritemap: STORYBOOK_CONSTANTS.SPRITEMAP_PATH,
 	};
 

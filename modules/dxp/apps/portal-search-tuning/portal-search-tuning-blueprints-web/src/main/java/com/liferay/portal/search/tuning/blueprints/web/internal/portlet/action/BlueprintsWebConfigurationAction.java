@@ -42,7 +42,7 @@ public class BlueprintsWebConfigurationAction
 
 	@Override
 	@Reference(
-		target = "(osgi.web.symbolicname=com.liferay.portal.search.tuning.blueprints.web.poc)",
+		target = "(osgi.web.symbolicname=com.liferay.portal.search.tuning.blueprints.web)",
 		unbind = "-"
 	)
 	public void setServletContext(ServletContext servletContext) {
