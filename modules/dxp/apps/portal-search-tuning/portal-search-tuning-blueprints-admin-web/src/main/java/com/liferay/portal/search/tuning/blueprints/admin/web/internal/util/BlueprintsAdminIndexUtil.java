@@ -15,10 +15,6 @@
 package com.liferay.portal.search.tuning.blueprints.admin.web.internal.util;
 
 import com.liferay.portal.kernel.dao.search.SearchContainer;
-import com.liferay.portal.kernel.json.JSONException;
-import com.liferay.portal.kernel.json.JSONFactoryUtil;
-import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.search.Field;
@@ -31,8 +27,6 @@ import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.search.document.Document;
 import com.liferay.portal.search.hits.SearchHit;
 import com.liferay.portal.search.hits.SearchHits;
-import com.liferay.portal.search.index.IndexInformation;
-import com.liferay.portal.search.index.IndexNameBuilder;
 import com.liferay.portal.search.query.BooleanQuery;
 import com.liferay.portal.search.query.Queries;
 import com.liferay.portal.search.query.Query;
@@ -49,11 +43,8 @@ import com.liferay.portal.search.tuning.blueprints.constants.BlueprintTypes;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -70,43 +61,6 @@ import org.osgi.service.component.annotations.Reference;
  */
 @Component(immediate = true, service = {})
 public class BlueprintsAdminIndexUtil {
-
-	public static Map<String, List<String>> getMappedFields(long companyId) {
-		String indexName = _indexNameBuilder.getIndexName(companyId);
-
-		String fieldMappings = _indexInformation.getFieldMappings(indexName);
-
-		Map<String, List<String>> fieldMap = new HashMap<>();
-
-		try {
-			JSONObject propertiesJSONObject = JSONUtil.getValueAsJSONObject(
-				JSONFactoryUtil.createJSONObject(fieldMappings),
-				"JSONObject/" + indexName, "JSONObject/mappings",
-				"JSONObject/properties");
-
-			Set<String> fieldKeySet = propertiesJSONObject.keySet();
-
-			for (String fieldName : fieldKeySet) {
-				JSONObject fieldJSONObject = propertiesJSONObject.getJSONObject(
-					fieldName);
-
-				String type = fieldJSONObject.getString("type");
-
-				if (!fieldMap.containsKey(type)) {
-					fieldMap.put(type, new ArrayList<String>());
-				}
-
-				List<String> fields = fieldMap.get(type);
-
-				fields.add(fieldName);
-			}
-		}
-		catch (JSONException jsonException) {
-			_log.error(jsonException.getMessage(), jsonException);
-		}
-
-		return fieldMap;
-	}
 
 	public static void populateResults(
 		HttpServletRequest httpServletRequest, long groupId, int status,
@@ -158,16 +112,6 @@ public class BlueprintsAdminIndexUtil {
 	@Reference(unbind = "-")
 	protected void setBlueprintService(BlueprintService blueprintService) {
 		_blueprintService = blueprintService;
-	}
-
-	@Reference(unbind = "-")
-	protected void setIndexInformation(IndexInformation indexInformation) {
-		_indexInformation = indexInformation;
-	}
-
-	@Reference(unbind = "-")
-	protected void setIndexNameBuilder(IndexNameBuilder indexNameBuilder) {
-		_indexNameBuilder = indexNameBuilder;
 	}
 
 	@Reference(unbind = "-")
@@ -360,8 +304,6 @@ public class BlueprintsAdminIndexUtil {
 		BlueprintsAdminIndexUtil.class);
 
 	private static BlueprintService _blueprintService;
-	private static IndexInformation _indexInformation;
-	private static IndexNameBuilder _indexNameBuilder;
 	private static Queries _queries;
 	private static Searcher _searcher;
 	private static SearchRequestBuilderFactory _searchRequestBuilderFactory;

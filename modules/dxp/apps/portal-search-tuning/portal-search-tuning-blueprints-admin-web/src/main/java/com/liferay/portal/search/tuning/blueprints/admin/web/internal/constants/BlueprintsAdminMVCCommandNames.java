@@ -35,8 +35,7 @@ public class BlueprintsAdminMVCCommandNames {
 	public static final String IMPORT_BLUEPRINT =
 		"/blueprints/import_blueprint";
 
-	public static final String IMPORT_FRAGMENT = "/blueprints/import_fragment"
-			+ "";
+	public static final String IMPORT_FRAGMENT = "/blueprints/import_fragment";
 
 	public static final String PREVIEW_BLUEPRINT = "/blueprints/preview";
 

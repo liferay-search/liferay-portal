@@ -39,7 +39,7 @@ import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminMVCCommandNames;
-import com.liferay.portal.search.tuning.blueprints.admin.web.internal.util.BlueprintsAdminIndexUtil;
+import com.liferay.portal.search.tuning.blueprints.admin.web.internal.util.BlueprintsAdminFieldsUtil;
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintTypes;
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintsPortletKeys;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
@@ -113,7 +113,7 @@ public class EditBlueprintDisplayBuilder extends EditEntryDisplayBuilder {
 			"entityJSON", _getEntityJSONObject()
 		).put(
 			"indexFields",
-			BlueprintsAdminIndexUtil.getMappedFields(
+			BlueprintsAdminFieldsUtil.getFieldsJSONArray(
 				themeDisplay.getCompanyId())
 		).put(
 			"queryFragments", _getQueryFragmentsJSONArray()
