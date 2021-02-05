@@ -12,7 +12,7 @@
 import ClayAlert from '@clayui/alert';
 import ClayButton from '@clayui/button';
 import ClayCard from '@clayui/card';
-import {ClayCheckbox} from '@clayui/form';
+import {ClayCheckbox, ClayRadio} from '@clayui/form';
 import ClayIcon from '@clayui/icon';
 import ClayLayout from '@clayui/layout';
 import ClayModal, {useModal} from '@clayui/modal';
@@ -41,6 +41,7 @@ const FrameworkCard = ({
 	imagePath,
 	onChange,
 	title,
+	value,
 }) => {
 	return (
 		<ClayCard
@@ -49,11 +50,13 @@ const FrameworkCard = ({
 			onClick={onChange}
 			selectable
 		>
-			<ClayCard.AspectRatio className="card-item-first">
-				<div className="aspect-ratio-item aspect-ratio-item-center-middle aspect-ratio-item-fluid">
-					<img alt={title} src={imagePath} />
-				</div>
-			</ClayCard.AspectRatio>
+			<ClayRadio checked={checked} value={value}>
+				<ClayCard.AspectRatio className="card-item-first">
+					<div className="aspect-ratio-item aspect-ratio-item-center-middle aspect-ratio-item-fluid">
+						<img alt={title} src={imagePath} />
+					</div>
+				</ClayCard.AspectRatio>
+			</ClayRadio>
 
 			<ClayCard.Body>
 				<ClayCard.Row>
@@ -331,6 +334,7 @@ const AddBlueprintModal = ({
 										title={Liferay.Language.get(
 											'liferay-default-clauses'
 										)}
+										value={FRAMEWORK_TYPES.DEFAULT}
 									/>
 								</ClayLayout.Col>
 
@@ -349,10 +353,14 @@ const AddBlueprintModal = ({
 										title={Liferay.Language.get(
 											'custom-clauses'
 										)}
+										value={FRAMEWORK_TYPES.CUSTOM}
 									>
 										<ClayTooltipProvider>
 											<div
 												data-tooltip-align="top"
+												onClick={(event) => {
+													event.stopPropagation();
+												}}
 												title={Liferay.Language.get(
 													'baseline-elements-emulate-the-behavior-of-liferay-default-clauses'
 												)}
