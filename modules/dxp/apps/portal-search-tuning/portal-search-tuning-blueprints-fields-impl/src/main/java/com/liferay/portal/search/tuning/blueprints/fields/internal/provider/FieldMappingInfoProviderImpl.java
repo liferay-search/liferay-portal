@@ -14,6 +14,7 @@
 
 package com.liferay.portal.search.tuning.blueprints.fields.internal.provider;
 
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -42,7 +43,7 @@ public class FieldMappingInfoProviderImpl implements FieldMappingInfoProvider {
 
 	@Override
 	public List<FieldInfo> getFieldInfos(long companyId) {
-		JSONObject mappingsJSONObject = _getMappingsJSONObject(companyId);
+		JSONObject mappingsJSONObject = _getPropertiesJSONObject(companyId);
 
 		if (mappingsJSONObject == null) {
 			return new ArrayList<>();
@@ -69,9 +70,9 @@ public class FieldMappingInfoProviderImpl implements FieldMappingInfoProvider {
 
 	@Override
 	public List<FieldInfo> getFieldInfosDeLocalized(long companyId) {
-		JSONObject mappingsJSONObject = _getMappingsJSONObject(companyId);
+		JSONObject propertiesJSONObject = _getPropertiesJSONObject(companyId);
 
-		if (mappingsJSONObject == null) {
+		if (propertiesJSONObject == null) {
 			return new ArrayList<>();
 		}
 
@@ -79,45 +80,70 @@ public class FieldMappingInfoProviderImpl implements FieldMappingInfoProvider {
 
 		List<FieldInfo> fields = new ArrayList<>();
 
-		Set<String> fieldKeySet = mappingsJSONObject.keySet();
-
-		for (String fieldName : fieldKeySet) {
-			JSONObject fieldJSONObject = mappingsJSONObject.getJSONObject(
-				fieldName);
-
-			String languageId = _getLanguageId(fieldName);
-
-			int languageIdPosition = -1;
-
-			if (!Validator.isBlank(languageId)) {
-				languageIdPosition = fieldName.indexOf(languageId);
-
-				fieldName = StringUtil.removeSubstring(fieldName, languageId);
-			}
-
-			if (!fieldNames.contains(fieldName)) {
-				fields.add(
-					_buildFieldInfo(
-						fieldName, languageIdPosition,
-						fieldJSONObject.getString("type")));
-
-				fieldNames.add(fieldName);
-			}
-		}
+		_addFields(fields, fieldNames, StringPool.BLANK, propertiesJSONObject);
 
 		return fields;
 	}
 
-	private FieldInfo _buildFieldInfo(
-		String fieldName, int languageIdPosition, String type) {
+	private void _addField(
+		List<FieldInfo> fields, List<String> fieldNames, String fieldName,
+		JSONObject fieldJSONObject) {
 
-		return new FieldInfo.FieldInfoBuilder().languageIdPosition(
-			languageIdPosition
-		).name(
-			fieldName
-		).type(
-			type
-		).build();
+		String languageId = _getLanguageId(fieldName);
+
+		int languageIdPosition = -1;
+
+		if (!Validator.isBlank(languageId)) {
+			languageIdPosition = fieldName.lastIndexOf(languageId);
+
+			fieldName = StringUtil.removeSubstring(fieldName, languageId);
+		}
+
+		if (!fieldNames.contains(fieldName)) {
+			fields.add(
+				new FieldInfo.FieldInfoBuilder().languageIdPosition(
+					languageIdPosition
+				).name(
+					fieldName
+				).type(
+					fieldJSONObject.getString("type")
+				).build());
+
+			fieldNames.add(fieldName);
+		}
+	}
+
+	private void _addFields(
+		List<FieldInfo> fields, List<String> fieldNames, String parentPath,
+		JSONObject propertiesJSONObject) {
+
+		Set<String> fieldKeySet = propertiesJSONObject.keySet();
+
+		for (String fieldName : fieldKeySet) {
+			JSONObject fieldJSONObject = propertiesJSONObject.getJSONObject(
+				fieldName);
+
+			String type = fieldJSONObject.getString("type");
+
+			String fieldPath = _getFieldPath(parentPath, fieldName);
+
+			if (type.equals("nested")) {
+				_addFields(
+					fields, fieldNames, fieldPath,
+					fieldJSONObject.getJSONObject("properties"));
+			}
+			else {
+				_addField(fields, fieldNames, fieldPath, fieldJSONObject);
+			}
+		}
+	}
+
+	private String _getFieldPath(String path, String fieldName) {
+		if (Validator.isBlank(path)) {
+			return fieldName;
+		}
+
+		return path + "." + fieldName;
 	}
 
 	private String _getLanguageId(String fieldName) {
@@ -130,7 +156,7 @@ public class FieldMappingInfoProviderImpl implements FieldMappingInfoProvider {
 		return null;
 	}
 
-	private JSONObject _getMappingsJSONObject(long companyId) {
+	private JSONObject _getPropertiesJSONObject(long companyId) {
 		String indexName = _indexNameBuilder.getIndexName(companyId);
 
 		try {
