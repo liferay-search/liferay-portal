@@ -1,0 +1,161 @@
+/**
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of the Liferay Enterprise
+ * Subscription License ("License"). You may not use this file except in
+ * compliance with the License. You can obtain a copy of the License by
+ * contacting Liferay, Inc. See the License for the specific language governing
+ * permissions and limitations under the License, including but not limited to
+ * distribution rights of the Software.
+ *
+ *
+ *
+ */
+
+package com.liferay.portal.search.tuning.blueprints.fields.internal.provider;
+
+import com.liferay.portal.kernel.json.JSONException;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.json.JSONUtil;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.search.index.IndexInformation;
+import com.liferay.portal.search.index.IndexNameBuilder;
+import com.liferay.portal.search.tuning.blueprints.fields.provider.FieldInfo;
+import com.liferay.portal.search.tuning.blueprints.fields.provider.FieldMappingInfoProvider;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
+/**
+ * @author Petteri Karttunen
+ */
+@Component(immediate = true, service = FieldMappingInfoProvider.class)
+public class FieldMappingInfoProviderImpl implements FieldMappingInfoProvider {
+
+	@Override
+	public List<FieldInfo> getFieldInfos(long companyId) {
+		JSONObject mappingsJSONObject = _getMappingsJSONObject(companyId);
+
+		if (mappingsJSONObject == null) {
+			return new ArrayList<>();
+		}
+
+		List<FieldInfo> fields = new ArrayList<>();
+
+		Set<String> fieldKeySet = mappingsJSONObject.keySet();
+
+		for (String fieldName : fieldKeySet) {
+			JSONObject fieldJSONObject = mappingsJSONObject.getJSONObject(
+				fieldName);
+
+			fields.add(
+				new FieldInfo.FieldInfoBuilder().name(
+					fieldName
+				).type(
+					fieldJSONObject.getString("type")
+				).build());
+		}
+
+		return fields;
+	}
+
+	@Override
+	public List<FieldInfo> getFieldInfosDeLocalized(long companyId) {
+		JSONObject mappingsJSONObject = _getMappingsJSONObject(companyId);
+
+		if (mappingsJSONObject == null) {
+			return new ArrayList<>();
+		}
+
+		List<String> fieldNames = new ArrayList<>();
+
+		List<FieldInfo> fields = new ArrayList<>();
+
+		Set<String> fieldKeySet = mappingsJSONObject.keySet();
+
+		for (String fieldName : fieldKeySet) {
+			JSONObject fieldJSONObject = mappingsJSONObject.getJSONObject(
+				fieldName);
+
+			String languageId = _getLanguageId(fieldName);
+
+			int languageIdPosition = -1;
+
+			if (!Validator.isBlank(languageId)) {
+				languageIdPosition = fieldName.indexOf(languageId);
+
+				fieldName = StringUtil.removeSubstring(fieldName, languageId);
+			}
+
+			if (!fieldNames.contains(fieldName)) {
+				fields.add(
+					_buildFieldInfo(
+						fieldName, languageIdPosition,
+						fieldJSONObject.getString("type")));
+
+				fieldNames.add(fieldName);
+			}
+		}
+
+		return fields;
+	}
+
+	private FieldInfo _buildFieldInfo(
+		String fieldName, int languageIdPosition, String type) {
+
+		return new FieldInfo.FieldInfoBuilder().languageIdPosition(
+			languageIdPosition
+		).name(
+			fieldName
+		).type(
+			type
+		).build();
+	}
+
+	private String _getLanguageId(String fieldName) {
+		String pattern = "(.*)(_[a-z]{2}_[A-Z]{2})(_.*)?";
+
+		if (fieldName.matches(pattern)) {
+			return fieldName.replaceFirst(pattern, "$2");
+		}
+
+		return null;
+	}
+
+	private JSONObject _getMappingsJSONObject(long companyId) {
+		String indexName = _indexNameBuilder.getIndexName(companyId);
+
+		try {
+			String fieldMappings = _indexInformation.getFieldMappings(
+				indexName);
+
+			return JSONUtil.getValueAsJSONObject(
+				JSONFactoryUtil.createJSONObject(fieldMappings),
+				"JSONObject/" + indexName, "JSONObject/mappings",
+				"JSONObject/properties");
+		}
+		catch (JSONException jsonException) {
+			_log.error(jsonException.getMessage(), jsonException);
+		}
+
+		return null;
+	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		FieldMappingInfoProviderImpl.class);
+
+	@Reference
+	private IndexInformation _indexInformation;
+
+	@Reference
+	private IndexNameBuilder _indexNameBuilder;
+
+}
