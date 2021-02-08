@@ -18,5 +18,6 @@ dependencies {
 	testIntegrationCompile project(":dxp:apps:portal-search-tuning:portal-search-tuning-blueprints-admin-web")
 	testIntegrationCompile project(":dxp:apps:portal-search-tuning:portal-search-tuning-blueprints-api")
 	testIntegrationCompile project(":dxp:apps:portal-search-tuning:portal-search-tuning-blueprints-engine-api")
+	testIntegrationCompile project(":dxp:apps:portal-search-tuning:portal-search-tuning-blueprints-facets-api")
 	testIntegrationCompile project(":test:arquillian-extension-junit-bridge")
 }
