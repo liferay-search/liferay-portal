@@ -12,20 +12,19 @@
  * details.
  */
 
-package com.liferay.portal.search.elasticsearch7.internal.facet;
+package com.liferay.portal.search.facet.nested;
 
-import com.liferay.portal.search.elasticsearch7.internal.LiferayElasticsearchIndexingFixtureFactory;
-import com.liferay.portal.search.test.util.facet.BaseAggregationFilteringTestCase;
-import com.liferay.portal.search.test.util.indexing.IndexingFixture;
+import com.liferay.portal.search.facet.Facet;
 
 /**
- * @author André de Oliveira
+ * @author Jorge Díaz
  */
-public class AggregationFilteringTest extends BaseAggregationFilteringTestCase {
+public interface NestedFacet extends Facet {
 
-	@Override
-	protected IndexingFixture createIndexingFixture() {
-		return LiferayElasticsearchIndexingFixtureFactory.getInstance();
-	}
+	public String getFilterField();
+
+	public String getFilterValue();
+
+	public String getPath();
 
 }

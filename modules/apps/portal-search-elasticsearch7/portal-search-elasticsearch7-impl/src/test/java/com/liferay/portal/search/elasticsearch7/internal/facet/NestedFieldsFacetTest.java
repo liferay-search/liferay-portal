@@ -15,13 +15,13 @@
 package com.liferay.portal.search.elasticsearch7.internal.facet;
 
 import com.liferay.portal.search.elasticsearch7.internal.LiferayElasticsearchIndexingFixtureFactory;
-import com.liferay.portal.search.test.util.facet.BaseAggregationFilteringTestCase;
+import com.liferay.portal.search.test.util.facet.BaseNestedFieldsFacetTestCase;
 import com.liferay.portal.search.test.util.indexing.IndexingFixture;
 
 /**
- * @author André de Oliveira
+ * @author Jorge Díaz
  */
-public class AggregationFilteringTest extends BaseAggregationFilteringTestCase {
+public class NestedFieldsFacetTest extends BaseNestedFieldsFacetTestCase {
 
 	@Override
 	protected IndexingFixture createIndexingFixture() {
