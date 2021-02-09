@@ -165,6 +165,7 @@ function Element({
 						configKey={config.key}
 						disabled={disabled}
 						onChange={_handleChange}
+						typeOptions={config.typeOptions}
 						value={uiConfigurationValues[config.key]}
 					/>
 				);

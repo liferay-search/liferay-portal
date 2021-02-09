@@ -43,7 +43,7 @@ export default {
 		{
 			key: 'entry_class_name',
 			label: 'Asset Type',
-			type: 'single-select',
+			type: 'select',
 			typeOptions: [
 				{
 					label: 'Blogs Entry',

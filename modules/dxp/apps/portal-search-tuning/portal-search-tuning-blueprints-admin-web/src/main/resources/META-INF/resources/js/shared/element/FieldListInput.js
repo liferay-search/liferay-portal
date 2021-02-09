@@ -48,6 +48,7 @@ function FieldListInput({
 							value.filter((_, i) => index !== i)
 						)
 					}
+					typeOptions={typeOptions}
 				/>
 			))}
 

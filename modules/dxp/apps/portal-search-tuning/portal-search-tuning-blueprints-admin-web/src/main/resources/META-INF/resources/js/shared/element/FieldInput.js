@@ -13,7 +13,14 @@ import React from 'react';
 
 import FieldRow from './FieldRow';
 
-function FieldInput({boost, configKey, disabled, onChange, value}) {
+function FieldInput({
+	boost,
+	configKey,
+	disabled,
+	onChange,
+	typeOptions,
+	value,
+}) {
 	return (
 		<div className="single-field">
 			<FieldRow
@@ -29,6 +36,7 @@ function FieldInput({boost, configKey, disabled, onChange, value}) {
 						[label]: newValue,
 					});
 				}}
+				typeOptions={typeOptions}
 			/>
 		</div>
 	);
