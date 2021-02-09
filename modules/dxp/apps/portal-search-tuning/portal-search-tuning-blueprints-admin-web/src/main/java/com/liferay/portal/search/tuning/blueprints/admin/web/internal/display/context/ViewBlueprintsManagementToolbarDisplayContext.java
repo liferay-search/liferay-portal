@@ -14,9 +14,13 @@
 
 package com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context;
 
+import com.liferay.asset.kernel.AssetRendererFactoryRegistryUtil;
+import com.liferay.asset.kernel.model.AssetRendererFactory;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenuBuilder;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
@@ -28,6 +32,9 @@ import com.liferay.portal.search.tuning.blueprints.admin.web.internal.security.p
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintTypes;
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintsActionKeys;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
+
+import java.util.List;
+import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -74,6 +81,10 @@ public class ViewBlueprintsManagementToolbarDisplayContext
 						Constants.ADD));
 
 				dropdownItem.putData(
+					"searchableAssetTypesString",
+					_getSearchableAssetTypesString());
+
+				dropdownItem.putData(
 					"type", String.valueOf(BlueprintTypes.BLUEPRINT));
 				dropdownItem.setLabel(
 					LanguageUtil.get(httpServletRequest, "add-blueprint"));
@@ -96,6 +107,25 @@ public class ViewBlueprintsManagementToolbarDisplayContext
 					LanguageUtil.get(httpServletRequest, "import-blueprint"));
 			}
 		).build();
+	}
+
+	private String _getSearchableAssetTypesString() {
+		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
+
+		List<AssetRendererFactory<?>> assetRendererFactories =
+			AssetRendererFactoryRegistryUtil.getAssetRendererFactories(
+				themeDisplay.getCompanyId(), false);
+
+		Stream<AssetRendererFactory<?>> stream =
+			assetRendererFactories.stream();
+
+		stream.filter(
+			item -> item.isSearchable()
+		).forEach(
+			item -> jsonArray.put(item.getClassName())
+		);
+
+		return jsonArray.toString();
 	}
 
 }

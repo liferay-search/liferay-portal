@@ -13,9 +13,14 @@ import {fireEvent, render, within} from '@testing-library/react';
 import React from 'react';
 
 import EditBlueprint from '../../../src/main/resources/META-INF/resources/js/edit_blueprint/index';
-import {DEFAULT_BASELINE_ELEMENTS} from '../../../src/main/resources/META-INF/resources/js/utils/data';
 const Utils = require('../../../src/main/resources/META-INF/resources/js/utils/utils');
-import {SELECTED_ELEMENTS} from '../mocks/data';
+import {
+	ENTITY_JSON,
+	INDEX_FIELDS,
+	INITIAL_CONFIGURATION,
+	SEARCHABLE_ASSET_TYPES,
+	SELECTED_ELEMENTS,
+} from '../mocks/data';
 
 import '@testing-library/jest-dom/extend-expect';
 
@@ -42,15 +47,22 @@ function renderEditBlueprint(props) {
 					'_com_liferay_portal_search_tuning_gsearch_configuration_web_internal_portlet_SearchConfigurationAdminPortlet_',
 			}}
 			props={{
-				blueprintId: '0',
+				blueprintId: '1',
 				blueprintType: 0,
-				entityJSON: {},
+				entityJSON: ENTITY_JSON,
+				indexFields: INDEX_FIELDS,
+				initialConfigurationString: JSON.stringify(
+					INITIAL_CONFIGURATION
+				),
 				initialDescription: {},
+				initialSelectedFragmentsString: JSON.stringify({
+					query_configuration: [],
+				}),
 				initialTitle: {
 					'en-US': 'Test Title',
 				},
 				redirectURL: '',
-				searchableAssetTypes: [],
+				searchableAssetTypes: SEARCHABLE_ASSET_TYPES,
 				submitFormURL: '',
 				...props,
 			}}
@@ -65,12 +77,16 @@ describe('EditBlueprint', () => {
 		expect(container).not.toBeNull();
 	});
 
-	it('renders the default query element', () => {
-		const {container} = renderEditBlueprint();
+	it('renders the query elements', () => {
+		const {container} = renderEditBlueprint({
+			initialSelectedFragmentsString: JSON.stringify({
+				query_configuration: SELECTED_ELEMENTS,
+			}),
+		});
 
 		const {getByText} = within(container.querySelector('.builder'));
 
-		DEFAULT_BASELINE_ELEMENTS.map((element) =>
+		SELECTED_ELEMENTS.map((element) =>
 			getByText(element.elementTemplateJSON.title['en_US'])
 		);
 	});
@@ -99,12 +115,9 @@ describe('EditBlueprint', () => {
 			getAllByLabelText,
 			getAllByText,
 		} = renderEditBlueprint({
-			props: {
-				blueprintId: '1',
-				initialSelectedElementsString: JSON.stringify({
-					query_configuration: SELECTED_ELEMENTS,
-				}),
-			},
+			initialSelectedElementsString: JSON.stringify({
+				query_configuration: SELECTED_ELEMENTS,
+			}),
 		});
 
 		const elementCountBefore = container.querySelectorAll(

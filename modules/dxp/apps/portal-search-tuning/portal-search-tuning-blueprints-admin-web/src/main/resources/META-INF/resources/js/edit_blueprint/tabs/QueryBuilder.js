@@ -220,8 +220,6 @@ function QueryBuilder({
 							searchableAssetTypes={searchableAssetTypes}
 							selectedAssetTypes={
 								frameworkConfig.searchable_asset_types
-									? frameworkConfig.searchable_asset_types
-									: searchableAssetTypes
 							}
 							updateSelectedAssetTypes={(assets) =>
 								onFrameworkConfigChange({

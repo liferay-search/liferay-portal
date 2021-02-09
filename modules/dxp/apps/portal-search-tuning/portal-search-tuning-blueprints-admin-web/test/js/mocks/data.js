@@ -122,3 +122,26 @@ export const SEARCHABLE_ASSET_TYPES = [
 export const SELECTED_ELEMENTS = QUERY_ELEMENTS.map((element, index) => {
 	return convertToSelectedElement(element, index);
 });
+
+export const INITIAL_CONFIGURATION = {
+	advanced_configuration: {
+		query_processing: {
+			exclude_query_contributors: '',
+			exclude_query_post_processors: '',
+		},
+		source: {
+			fetch_source: true,
+			source_excludes: '',
+			source_includes: '',
+		},
+	},
+	aggregation_configuration: [],
+	facet_configuration: [],
+	framework_configuration: {
+		apply_indexer_clauses: false,
+		searchable_asset_types: SEARCHABLE_ASSET_TYPES,
+	},
+	parameter_configuration: {},
+	query_configuration: [],
+	sort_configuration: {},
+};

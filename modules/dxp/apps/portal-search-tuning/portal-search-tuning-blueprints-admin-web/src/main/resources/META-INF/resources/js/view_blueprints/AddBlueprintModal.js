@@ -96,6 +96,7 @@ const AddBlueprintModal = ({
 	initialVisible,
 	namespace,
 	onFormSuccess,
+	searchableAssetTypesString,
 	submitButtonLabel = Liferay.Language.get('create'),
 	type,
 }) => {
@@ -130,6 +131,9 @@ const AddBlueprintModal = ({
 				framework_configuration: {
 					apply_indexer_clauses:
 						framework === FRAMEWORK_TYPES.DEFAULT,
+					searchable_asset_types: JSON.parse(
+						searchableAssetTypesString
+					),
 				},
 				parameter_configuration: DEFAULT_PARAMETER_CONFIGURATION,
 				query_configuration:

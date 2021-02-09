@@ -40,6 +40,7 @@ import AddBlueprintModal from '../../src/main/resources/META-INF/resources/js/vi
 import {
 	ENTITY_JSON,
 	INDEX_FIELDS,
+	INITIAL_CONFIGURATION,
 	SEARCHABLE_ASSET_TYPES,
 	SELECTED_ELEMENTS,
 } from '../js/mocks/data';
@@ -97,6 +98,7 @@ const BLUEPRINT_FORM_PROPS = {
 	blueprintType: 0,
 	entityJSON: ENTITY_JSON,
 	indexFields: INDEX_FIELDS,
+	initialConfigurationString: JSON.stringify(INITIAL_CONFIGURATION),
 	initialDescription: {},
 	initialTitle: {
 		'en-US': 'Test Title',
@@ -134,6 +136,7 @@ storiesOf('Pages|BlueprintForm', module)
 			context={CONTEXT}
 			props={{
 				...BLUEPRINT_FORM_PROPS,
+				blueprintId: '0',
 			}}
 		/>
 	));
@@ -193,6 +196,7 @@ storiesOf('Components|AddBlueprintModal', module)
 			contextPath="/o/portal-search-tuning-blueprints-admin-web/"
 			dialogTitle="New Search Blueprint"
 			initialVisible
+			searchableAssetTypesString={JSON.stringify(SEARCHABLE_ASSET_TYPES)}
 		/>
 	));
 
