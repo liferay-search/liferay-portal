@@ -290,6 +290,7 @@ QueryBuilder.propTypes = {
 	deleteElement: PropTypes.func,
 	entityJSON: PropTypes.object,
 	frameworkConfig: PropTypes.object,
+	initialSelectedFragments: PropTypes.arrayOf(PropTypes.object),
 	onFrameworkConfigChange: PropTypes.func,
 	onToggleSidebar: PropTypes.func,
 	searchableAssetTypes: PropTypes.arrayOf(PropTypes.string),

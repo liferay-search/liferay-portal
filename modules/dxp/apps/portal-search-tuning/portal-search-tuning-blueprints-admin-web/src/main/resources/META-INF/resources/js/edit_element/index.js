@@ -488,6 +488,8 @@ function EditElementForm({
 }
 
 EditElementForm.propTypes = {
+	blueprintId: PropTypes.string,
+	blueprintType: PropTypes.number,
 	initialConfigurationString: PropTypes.string,
 	initialDescription: PropTypes.object,
 	initialTitle: PropTypes.object,

@@ -148,7 +148,6 @@ JSONElement.propTypes = {
 	collapseAll: PropTypes.bool,
 	deleteElement: PropTypes.func,
 	elementTemplateJSON: PropTypes.object,
-	icon: PropTypes.string,
 	id: PropTypes.number,
 	updateElement: PropTypes.func,
 };

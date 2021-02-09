@@ -398,6 +398,8 @@ Element.propTypes = {
 	elementTemplateJSON: PropTypes.object,
 	entityJSON: PropTypes.object,
 	fragmentOutput: PropTypes.object,
+	id: PropTypes.number,
+	initialUIConfigurationValues: PropTypes.object,
 	uiConfigurationJSON: PropTypes.arrayOf(PropTypes.object),
 	uiConfigurationValues: PropTypes.object,
 	updateFragment: PropTypes.func,
