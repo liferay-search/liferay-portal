@@ -252,7 +252,10 @@ storiesOf('Components|QueryBuilder', module)
 	.add('QueryBuilder', () => (
 		<QueryBuilder
 			deleteElement={action('buildElement')}
-			frameworkConfig={DEFAULT_FRAMEWORK_CONFIGURATION}
+			frameworkConfig={{
+				apply_indexer_clauses: true,
+				searchable_asset_types: SEARCHABLE_ASSET_TYPES,
+			}}
 			searchableAssetTypes={SEARCHABLE_ASSET_TYPES}
 			selectedElements={SELECTED_ELEMENTS}
 			updateElement={action('updateElement')}
