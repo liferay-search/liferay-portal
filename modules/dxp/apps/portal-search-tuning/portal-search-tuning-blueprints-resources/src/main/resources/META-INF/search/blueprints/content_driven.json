@@ -813,8 +813,8 @@
 								}
 							],
 							"key": "fields",
-							"name": "Fields",
-							"type": "field",
+							"label": "Fields",
+							"type": "field-list",
 							"typeOptions": [
 								{
 									"label": "Title",
@@ -837,8 +837,8 @@
 						{
 							"defaultValue": "or",
 							"key": "operator",
-							"name": "Operator",
-							"type": "single-select",
+							"label": "Operator",
+							"type": "select",
 							"typeOptions": [
 								{
 									"label": "OR",
@@ -853,8 +853,8 @@
 						{
 							"defaultValue": "best_fields",
 							"key": "type",
-							"name": "Match Type",
-							"type": "single-select",
+							"label": "Match Type",
+							"type": "select",
 							"typeOptions": [
 								{
 									"label": "Best Fields",
@@ -884,8 +884,8 @@
 						},
 						{
 							"key": "fuzziness",
-							"name": "Fuzziness",
-							"type": "single-select",
+							"label": "Fuzziness",
+							"type": "select",
 							"typeOptions": [
 								{
 									"label": "Auto",
@@ -908,7 +908,7 @@
 						{
 							"defaultValue": 1,
 							"key": "boost",
-							"name": "Boost",
+							"label": "Boost",
 							"type": "slider"
 						}
 					],
@@ -1023,8 +1023,8 @@
 								}
 							],
 							"key": "fields",
-							"name": "Fields",
-							"type": "field",
+							"label": "Fields",
+							"type": "field-list",
 							"typeOptions": [
 								{
 									"label": "Title",
@@ -1046,8 +1046,8 @@
 						},
 						{
 							"key": "operator",
-							"name": "Operator",
-							"type": "single-select",
+							"label": "Operator",
+							"type": "select",
 							"typeOptions": [
 								{
 									"label": "OR",
@@ -1062,7 +1062,7 @@
 						{
 							"defaultValue": 1,
 							"key": "boost",
-							"name": "Boost",
+							"label": "Boost",
 							"type": "slider"
 						}
 					],
@@ -1186,7 +1186,7 @@
 						{
 							"defaultValue": 20,
 							"key": "boost",
-							"name": "Boost",
+							"label": "Boost",
 							"type": "slider"
 						}
 					],
@@ -1265,20 +1265,20 @@
 						{
 							"defaultValue": 10,
 							"key": "boost",
-							"name": "Boost",
+							"label": "Boost",
 							"type": "slider"
 						},
 						{
 							"defaultValue": 1.2,
 							"key": "factor",
-							"name": "Factor",
+							"label": "Factor",
 							"type": "number"
 						},
 						{
 							"defaultValue": "sqrt",
 							"key": "modifier",
-							"name": "Modifier",
-							"type": "single-select",
+							"label": "Modifier",
+							"type": "select",
 							"typeOptions": [
 								{
 									"label": "None",
@@ -1400,20 +1400,20 @@
 						{
 							"defaultValue": 30,
 							"key": "boost",
-							"name": "Boost",
+							"label": "Boost",
 							"type": "slider"
 						},
 						{
 							"defaultValue": 1.5,
 							"key": "factor",
-							"name": "Factor",
+							"label": "Factor",
 							"type": "number"
 						},
 						{
 							"defaultValue": "ln",
 							"key": "modifier",
-							"name": "Modifier",
-							"type": "single-select",
+							"label": "Modifier",
+							"type": "select",
 							"typeOptions": [
 								{
 									"label": "None",
@@ -1539,13 +1539,13 @@
 						{
 							"defaultValue": 0.5,
 							"key": "decay",
-							"name": "Decay",
+							"label": "Decay",
 							"type": "number"
 						},
 						{
 							"defaultValue": 0,
 							"key": "offset",
-							"name": "Offset",
+							"label": "Offset",
 							"type": "number",
 							"unit": "days",
 							"unitSuffix": "d"
@@ -1553,7 +1553,7 @@
 						{
 							"defaultValue": 10,
 							"key": "scale",
-							"name": "Scale",
+							"label": "Scale",
 							"type": "number",
 							"unit": "days",
 							"unitSuffix": "d"
@@ -1561,7 +1561,7 @@
 						{
 							"defaultValue": 2,
 							"key": "boost",
-							"name": "Boost",
+							"label": "Boost",
 							"type": "slider"
 						}
 					],
@@ -1637,7 +1637,7 @@
 						{
 							"defaultValue": 40,
 							"key": "boost",
-							"name": "Boost",
+							"label": "Boost",
 							"type": "slider"
 						}
 					],
@@ -1729,8 +1729,8 @@
 								}
 							],
 							"key": "fields",
-							"name": "Field",
-							"type": "field",
+							"label": "Field",
+							"type": "field-list",
 							"typeOptions": [
 								{
 									"label": "Title",
@@ -1753,8 +1753,8 @@
 						{
 							"defaultValue": "best_fields",
 							"key": "type",
-							"name": "Match Type",
-							"type": "single-select",
+							"label": "Match Type",
+							"type": "select",
 							"typeOptions": [
 								{
 									"label": "Best Fields",
@@ -1785,7 +1785,7 @@
 						{
 							"defaultValue": 10,
 							"key": "boost",
-							"name": "Boost",
+							"label": "Boost",
 							"type": "slider"
 						}
 					],
@@ -1900,8 +1900,8 @@
 								}
 							],
 							"key": "fields",
-							"name": "Field",
-							"type": "field",
+							"label": "Field",
+							"type": "field-list",
 							"typeOptions": [
 								{
 									"label": "Title",
@@ -1924,8 +1924,8 @@
 						{
 							"defaultValue": "best_fields",
 							"key": "type",
-							"name": "Match Type",
-							"type": "single-select",
+							"label": "Match Type",
+							"type": "select",
 							"typeOptions": [
 								{
 									"label": "Best Fields",
@@ -1956,7 +1956,7 @@
 						{
 							"defaultValue": 10,
 							"key": "boost",
-							"name": "Boost",
+							"label": "Boost",
 							"type": "slider"
 						}
 					],
