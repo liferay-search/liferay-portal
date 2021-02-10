@@ -18,6 +18,7 @@ import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.query.ConditionConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.engine.exception.ParameterEvaluationException;
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.BooleanParameter;
@@ -184,7 +185,7 @@ public class ContainsVisitor implements ConditionEvaluationVisitor {
 				}
 			}
 			else {
-				Long value = Long.valueOf((String)object);
+				Long value = GetterUtil.getLong(object);
 
 				Stream<Long> parameterValueStream = Arrays.stream(
 					parameterValue);
