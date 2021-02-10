@@ -51,8 +51,8 @@ public class DateParameterBuilder implements ParameterBuilder {
 
 	@Override
 	public Optional<Parameter> build(
-		BlueprintsAttributes blueprintsAttributes, Messages messages,
-		JSONObject configurationJSONObject) {
+		BlueprintsAttributes blueprintsAttributes,
+		JSONObject configurationJSONObject, Messages messages) {
 
 		if (!_validateConfiguration(messages, configurationJSONObject)) {
 			return Optional.empty();

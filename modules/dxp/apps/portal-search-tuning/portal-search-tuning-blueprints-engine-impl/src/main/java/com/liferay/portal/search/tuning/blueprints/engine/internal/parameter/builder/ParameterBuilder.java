@@ -27,7 +27,7 @@ import java.util.Optional;
 public interface ParameterBuilder {
 
 	public Optional<Parameter> build(
-		BlueprintsAttributes blueprintsAttributes, Messages messages,
-		JSONObject configurationJSONObject);
+		BlueprintsAttributes blueprintsAttributes,
+		JSONObject configurationJSONObject, Messages messages);
 
 }

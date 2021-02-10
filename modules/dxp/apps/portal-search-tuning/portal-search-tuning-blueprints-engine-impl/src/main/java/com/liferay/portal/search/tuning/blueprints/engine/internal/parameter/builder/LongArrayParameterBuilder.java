@@ -43,8 +43,8 @@ public class LongArrayParameterBuilder implements ParameterBuilder {
 
 	@Override
 	public Optional<Parameter> build(
-		BlueprintsAttributes blueprintsAttributes, Messages messages,
-		JSONObject configurationJSONObject) {
+		BlueprintsAttributes blueprintsAttributes,
+		JSONObject configurationJSONObject, Messages messages) {
 
 		String parameterName = configurationJSONObject.getString(
 			CustomParameterConfigurationKeys.PARAMETER_NAME.getJsonKey());
