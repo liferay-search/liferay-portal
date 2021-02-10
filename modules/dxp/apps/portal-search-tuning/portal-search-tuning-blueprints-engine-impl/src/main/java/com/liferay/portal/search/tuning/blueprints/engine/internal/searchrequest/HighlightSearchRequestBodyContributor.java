@@ -121,9 +121,7 @@ public class HighlightSearchRequestBodyContributor
 			_addFieldConfigs(highlightBuilder, fieldsJSONArray);
 		}
 
-		// TODO: waiting for support in SearchRequestBuilder
-		// https://issues.liferay.com/browse/LPS-121365
-		// searchRequestBuilder.setHighlight(highlightBuilder.build());
+		// TODO: https://issues.liferay.com/browse/LPS-121365
 
 	}
 

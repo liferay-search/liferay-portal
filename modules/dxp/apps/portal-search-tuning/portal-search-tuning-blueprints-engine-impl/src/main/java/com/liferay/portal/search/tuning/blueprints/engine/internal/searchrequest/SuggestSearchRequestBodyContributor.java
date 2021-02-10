@@ -78,9 +78,7 @@ public class SuggestSearchRequestBodyContributor
 
 			if (suggesterOptional.isPresent()) {
 
-				// TODO: waiting for suggest support in SearchRequestBuilder
-				// https://issues.liferay.com/browse/LPS-120711
-				// Make SF happy for now
+				// TODO: https://issues.liferay.com/browse/LPS-120711
 
 				searchRequestBuilder.getClass();
 			}
