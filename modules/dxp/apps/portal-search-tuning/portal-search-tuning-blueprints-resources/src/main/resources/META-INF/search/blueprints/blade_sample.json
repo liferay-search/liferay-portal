@@ -11,8 +11,7 @@
 					"fragment_size": "50",
 					"require_field_match": "true",
 					"snippet_size": "10"
-				},
-				"page_size": 10
+				}
 			},
 			"aggregation_configuration": [
 			],
@@ -171,6 +170,12 @@
 				},
 				"page": {
 					"parameter_name": "page"
+				},
+				"size": {
+					"default": 10,
+					"max": 50,
+					"min": 5,
+					"parameter_name": "size"
 				}
 			},
 			"query_configuration": [
@@ -186,7 +191,9 @@
 										"boost": 1,
 										"fields": [
 											"localized_title${context.language_id}^2",
-											"content${context.language_id}"
+											"content${context.language_id}",
+											"description${context.language_id}",
+											"name${context.language_id}"
 										],
 										"fuzziness": "AUTO",
 										"operator": "or",
@@ -380,6 +387,29 @@
 																	"to": "${time.current_date|dateFormat=timestamp}"
 																}
 															}
+														}
+													],
+													"must_not": [
+														{
+															"exists": {
+																"field": "expirationDate"
+															}
+														}
+													]
+												}
+											},
+											{
+												"bool": {
+													"must": [
+														{
+															"range": {
+																"displayDate_sortable": {
+																	"from": "-9223372036854775808",
+																	"include_lower": true,
+																	"include_upper": true,
+																	"to": "${time.current_date|dateFormat=timestamp}"
+																}
+															}
 														},
 														{
 															"range": {
@@ -455,8 +485,8 @@
 						{
 							"configuration": {
 								"evaluation_type": "eq",
-								"match_value": false,
-								"parameter_name": "${context.is_staging_group}"
+								"parameter_name": "${context.is_staging_group}",
+								"value": false
 							}
 						}
 					],
@@ -478,10 +508,23 @@
 							"query": {
 								"query": {
 									"bool": {
-										"must_not": [
+										"should": [
 											{
-												"exists": {
-													"field": "ctCollectionId"
+												"bool": {
+													"must_not": [
+														{
+															"exists": {
+																"field": "ctCollectionId"
+															}
+														}
+													]
+												}
+											},
+											{
+												"term": {
+													"ctCollectionId": {
+														"value": "${context.ct_collection_id}"
+													}
 												}
 											}
 										]
@@ -491,10 +534,8 @@
 							"type": "wrapper"
 						}
 					],
-					"conditions": [
-					],
 					"description": {
-						"en_US": "When Publications feature is enabled, show only published contents"
+						"en_US": "When Publications feature is enabled, search only contents on my current timeline"
 					},
 					"enabled": true,
 					"icon": "thumbs-up",
@@ -545,10 +586,10 @@
 		"description": {
 			"en_US": "A sample Blueprint for the Blueprints Blade sample widget featuring custom facets and dynamic sort configuration with geo sorting. Geolocation field has to be configured and data provider be enabled in Blueprints configuration to take advantage of location features."
 		},
-		"selected_fragments": {
+		"selectedElements": {
 			"query_configuration": [
 				{
-					"fragmentOutput": {
+					"elementOutput": {
 						"category": "match",
 						"clauses": [
 							{
@@ -560,7 +601,9 @@
 											"boost": 1,
 											"fields": [
 												"localized_title${context.language_id}^2",
-												"content${context.language_id}"
+												"content${context.language_id}",
+												"description${context.language_id}",
+												"name${context.language_id}"
 											],
 											"fuzziness": "AUTO",
 											"operator": "or",
@@ -583,7 +626,7 @@
 							"en_US": "Text Match Over Multiple Fields"
 						}
 					},
-					"fragmentTemplateJSON": {
+					"elementTemplateJSON": {
 						"category": "match",
 						"clauses": [
 							{
@@ -645,6 +688,10 @@
 								{
 									"label": "Content",
 									"value": "content"
+								},
+								{
+									"label": "Name",
+									"value": "name"
 								}
 							]
 						},
@@ -738,6 +785,16 @@
 								"boost": "1",
 								"field": "content",
 								"locale": "${context.language_id}"
+							},
+							{
+								"boost": 1,
+								"field": "description",
+								"locale": "${context.language_id}"
+							},
+							{
+								"boost": 1,
+								"field": "name",
+								"locale": "${context.language_id}"
 							}
 						],
 						"fuzziness": "AUTO",
@@ -746,7 +803,7 @@
 					}
 				},
 				{
-					"fragmentOutput": {
+					"elementOutput": {
 						"category": "hide",
 						"clauses": [
 							{
@@ -796,7 +853,7 @@
 							"en_US": "Hide Hidden Contents"
 						}
 					},
-					"fragmentTemplateJSON": {
+					"elementTemplateJSON": {
 						"category": "hide",
 						"clauses": [
 							{
@@ -852,7 +909,7 @@
 					}
 				},
 				{
-					"fragmentOutput": {
+					"elementOutput": {
 						"category": "filter",
 						"clauses": [
 							{
@@ -913,7 +970,7 @@
 							"en_US": "Limit Search to HEAD Version"
 						}
 					},
-					"fragmentTemplateJSON": {
+					"elementTemplateJSON": {
 						"category": "filter",
 						"clauses": [
 							{
@@ -980,7 +1037,7 @@
 					}
 				},
 				{
-					"fragmentOutput": {
+					"elementOutput": {
 						"category": "filter",
 						"clauses": [
 							{
@@ -1007,7 +1064,7 @@
 							"en_US": "Limit Search to Published Contents"
 						}
 					},
-					"fragmentTemplateJSON": {
+					"elementTemplateJSON": {
 						"category": "filter",
 						"clauses": [
 							{
@@ -1040,7 +1097,7 @@
 					}
 				},
 				{
-					"fragmentOutput": {
+					"elementOutput": {
 						"category": "filter",
 						"clauses": [
 							{
@@ -1056,6 +1113,29 @@
 															{
 																"exists": {
 																	"field": "displayDate"
+																}
+															}
+														]
+													}
+												},
+												{
+													"bool": {
+														"must": [
+															{
+																"range": {
+																	"displayDate_sortable": {
+																		"from": "-9223372036854775808",
+																		"include_lower": true,
+																		"include_upper": true,
+																		"to": "${time.current_date|dateFormat=timestamp}"
+																	}
+																}
+															}
+														],
+														"must_not": [
+															{
+																"exists": {
+																	"field": "expirationDate"
 																}
 															}
 														]
@@ -1105,7 +1185,7 @@
 							"en_US": "Scheduling Aware"
 						}
 					},
-					"fragmentTemplateJSON": {
+					"elementTemplateJSON": {
 						"category": "filter",
 						"clauses": [
 							{
@@ -1121,6 +1201,29 @@
 															{
 																"exists": {
 																	"field": "displayDate"
+																}
+															}
+														]
+													}
+												},
+												{
+													"bool": {
+														"must": [
+															{
+																"range": {
+																	"displayDate_sortable": {
+																		"from": "-9223372036854775808",
+																		"include_lower": true,
+																		"include_upper": true,
+																		"to": "${time.current_date|dateFormat=timestamp}"
+																	}
+																}
+															}
+														],
+														"must_not": [
+															{
+																"exists": {
+																	"field": "expirationDate"
 																}
 															}
 														]
@@ -1176,7 +1279,7 @@
 					}
 				},
 				{
-					"fragmentOutput": {
+					"elementOutput": {
 						"category": "filter",
 						"clauses": [
 							{
@@ -1219,8 +1322,8 @@
 							{
 								"configuration": {
 									"evaluation_type": "eq",
-									"match_value": false,
-									"parameter_name": "${context.is_staging_group}"
+									"parameter_name": "${context.is_staging_group}",
+									"value": false
 								}
 							}
 						],
@@ -1233,7 +1336,7 @@
 							"en_US": "Staging Aware"
 						}
 					},
-					"fragmentTemplateJSON": {
+					"elementTemplateJSON": {
 						"category": "filter",
 						"clauses": [
 							{
@@ -1276,8 +1379,8 @@
 							{
 								"configuration": {
 									"evaluation_type": "eq",
-									"match_value": false,
-									"parameter_name": "${context.is_staging_group}"
+									"parameter_name": "${context.is_staging_group}",
+									"value": false
 								}
 							}
 						],
@@ -1296,7 +1399,7 @@
 					}
 				},
 				{
-					"fragmentOutput": {
+					"elementOutput": {
 						"category": "filter",
 						"clauses": [
 							{
@@ -1305,10 +1408,23 @@
 								"query": {
 									"query": {
 										"bool": {
-											"must_not": [
+											"should": [
 												{
-													"exists": {
-														"field": "ctCollectionId"
+													"bool": {
+														"must_not": [
+															{
+																"exists": {
+																	"field": "ctCollectionId"
+																}
+															}
+														]
+													}
+												},
+												{
+													"term": {
+														"ctCollectionId": {
+															"value": "${context.ct_collection_id}"
+														}
 													}
 												}
 											]
@@ -1318,10 +1434,8 @@
 								"type": "wrapper"
 							}
 						],
-						"conditions": [
-						],
 						"description": {
-							"en_US": "When Publications feature is enabled, show only published contents"
+							"en_US": "When Publications feature is enabled, search only contents on my current timeline"
 						},
 						"enabled": true,
 						"icon": "thumbs-up",
@@ -1329,7 +1443,7 @@
 							"en_US": "Publications Aware"
 						}
 					},
-					"fragmentTemplateJSON": {
+					"elementTemplateJSON": {
 						"category": "filter",
 						"clauses": [
 							{
@@ -1338,10 +1452,23 @@
 								"query": {
 									"query": {
 										"bool": {
-											"must_not": [
+											"should": [
 												{
-													"exists": {
-														"field": "ctCollectionId"
+													"bool": {
+														"must_not": [
+															{
+																"exists": {
+																	"field": "ctCollectionId"
+																}
+															}
+														]
+													}
+												},
+												{
+													"term": {
+														"ctCollectionId": {
+															"value": "${context.ct_collection_id}"
+														}
 													}
 												}
 											]
@@ -1351,10 +1478,8 @@
 								"type": "wrapper"
 							}
 						],
-						"conditions": [
-						],
 						"description": {
-							"en_US": "When Publications feature is enabled, show only published contents"
+							"en_US": "When Publications feature is enabled, search only contents on my current timeline"
 						},
 						"enabled": true,
 						"icon": "thumbs-up",
