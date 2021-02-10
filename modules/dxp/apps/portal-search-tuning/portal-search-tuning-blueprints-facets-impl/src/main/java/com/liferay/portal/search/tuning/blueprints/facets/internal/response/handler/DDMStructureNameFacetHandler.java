@@ -24,7 +24,7 @@ import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.search.aggregation.bucket.Bucket;
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
-import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetJSONResponseKeys;
+import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetsJSONResponseKeys;
 import com.liferay.portal.search.tuning.blueprints.facets.spi.response.FacetResponseHandler;
 
 import java.util.List;
@@ -63,15 +63,15 @@ public class DDMStructureNameFacetHandler
 		Group group = _groupLocalService.getGroup(ddmStructure.getGroupId());
 
 		return JSONUtil.put(
-			FacetJSONResponseKeys.FREQUENCY, bucket.getDocCount()
+			FacetsJSONResponseKeys.FREQUENCY, bucket.getDocCount()
 		).put(
-			FacetJSONResponseKeys.GROUP_NAME, group.getName(locale, true)
+			FacetsJSONResponseKeys.GROUP_NAME, group.getName(locale, true)
 		).put(
-			FacetJSONResponseKeys.NAME, name
+			FacetsJSONResponseKeys.NAME, name
 		).put(
-			FacetJSONResponseKeys.TEXT, getText(name, frequency, null)
+			FacetsJSONResponseKeys.TEXT, getText(name, frequency, null)
 		).put(
-			FacetJSONResponseKeys.VALUE, value
+			FacetsJSONResponseKeys.VALUE, value
 		);
 	}
 

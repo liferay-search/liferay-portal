@@ -30,7 +30,7 @@ import com.liferay.portal.search.aggregation.bucket.Bucket;
 import com.liferay.portal.search.aggregation.bucket.TermsAggregationResult;
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
 import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetJSONResponseKeys;
+import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetsJSONResponseKeys;
 import com.liferay.portal.search.tuning.blueprints.facets.spi.response.FacetResponseHandler;
 import com.liferay.portal.search.tuning.blueprints.message.Message;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
@@ -122,12 +122,12 @@ public abstract class BaseTermsFacetResponseHandler
 		long frequency = bucket.getDocCount();
 
 		return JSONUtil.put(
-			FacetJSONResponseKeys.FREQUENCY, frequency
+			FacetsJSONResponseKeys.FREQUENCY, frequency
 		).put(
-			FacetJSONResponseKeys.TEXT,
+			FacetsJSONResponseKeys.TEXT,
 			getText(value, frequency, resourceBundle)
 		).put(
-			FacetJSONResponseKeys.VALUE, value
+			FacetsJSONResponseKeys.VALUE, value
 		);
 	}
 
@@ -150,14 +150,14 @@ public abstract class BaseTermsFacetResponseHandler
 
 		return Optional.of(
 			JSONUtil.put(
-				FacetJSONResponseKeys.HANDER_NAME, handlerName
+				FacetsJSONResponseKeys.HANDER_NAME, handlerName
 			).put(
-				FacetJSONResponseKeys.LABEL,
+				FacetsJSONResponseKeys.LABEL,
 				LanguageUtil.get(resourceBundle, label)
 			).put(
-				FacetJSONResponseKeys.PARAMETER_NAME, parameterName
+				FacetsJSONResponseKeys.PARAMETER_NAME, parameterName
 			).put(
-				FacetJSONResponseKeys.VALUES, jsonArray
+				FacetsJSONResponseKeys.VALUES, jsonArray
 			));
 	}
 

@@ -23,7 +23,7 @@ import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.search.aggregation.bucket.Bucket;
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
-import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetJSONResponseKeys;
+import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetsJSONResponseKeys;
 import com.liferay.portal.search.tuning.blueprints.facets.spi.response.FacetResponseHandler;
 
 import java.util.Locale;
@@ -61,13 +61,13 @@ public class SiteFacetResponseHandler
 		String name = group.getName(locale, true);
 
 		return JSONUtil.put(
-			FacetJSONResponseKeys.FREQUENCY, frequency
+			FacetsJSONResponseKeys.FREQUENCY, frequency
 		).put(
-			FacetJSONResponseKeys.NAME, name
+			FacetsJSONResponseKeys.NAME, name
 		).put(
-			FacetJSONResponseKeys.TEXT, getText(name, frequency, null)
+			FacetsJSONResponseKeys.TEXT, getText(name, frequency, null)
 		).put(
-			FacetJSONResponseKeys.VALUE, groupId
+			FacetsJSONResponseKeys.VALUE, groupId
 		);
 	}
 

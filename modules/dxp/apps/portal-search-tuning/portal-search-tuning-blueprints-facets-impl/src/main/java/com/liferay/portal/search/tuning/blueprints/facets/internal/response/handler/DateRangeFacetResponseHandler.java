@@ -23,7 +23,7 @@ import com.liferay.portal.search.aggregation.bucket.Bucket;
 import com.liferay.portal.search.aggregation.bucket.RangeAggregationResult;
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
 import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetJSONResponseKeys;
+import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetsJSONResponseKeys;
 import com.liferay.portal.search.tuning.blueprints.facets.spi.response.FacetResponseHandler;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 
@@ -84,14 +84,14 @@ public class DateRangeFacetResponseHandler
 		String value = bucket.getKey();
 
 		return JSONUtil.put(
-			FacetJSONResponseKeys.FREQUENCY, frequency
+			FacetsJSONResponseKeys.FREQUENCY, frequency
 		).put(
-			FacetJSONResponseKeys.NAME, value
+			FacetsJSONResponseKeys.NAME, value
 		).put(
-			FacetJSONResponseKeys.TEXT,
+			FacetsJSONResponseKeys.TEXT,
 			getText(value, frequency, resourceBundle)
 		).put(
-			FacetJSONResponseKeys.VALUE, value
+			FacetsJSONResponseKeys.VALUE, value
 		);
 	}
 

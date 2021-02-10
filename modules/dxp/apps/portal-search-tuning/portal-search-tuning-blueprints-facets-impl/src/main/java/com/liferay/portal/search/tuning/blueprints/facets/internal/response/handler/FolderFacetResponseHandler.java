@@ -35,7 +35,7 @@ import com.liferay.portal.search.searcher.SearchRequestBuilderFactory;
 import com.liferay.portal.search.searcher.SearchResponse;
 import com.liferay.portal.search.searcher.Searcher;
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
-import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetJSONResponseKeys;
+import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetsJSONResponseKeys;
 import com.liferay.portal.search.tuning.blueprints.facets.spi.response.FacetResponseHandler;
 
 import java.util.List;
@@ -83,15 +83,15 @@ public class FolderFacetResponseHandler
 		Group group = _groupLocalService.getGroup(groupId);
 
 		return JSONUtil.put(
-			FacetJSONResponseKeys.FREQUENCY, frequency
+			FacetsJSONResponseKeys.FREQUENCY, frequency
 		).put(
-			FacetJSONResponseKeys.GROUP_NAME, group.getName(locale, true)
+			FacetsJSONResponseKeys.GROUP_NAME, group.getName(locale, true)
 		).put(
-			FacetJSONResponseKeys.NAME, name
+			FacetsJSONResponseKeys.NAME, name
 		).put(
-			FacetJSONResponseKeys.TEXT, getText(name, frequency, null)
+			FacetsJSONResponseKeys.TEXT, getText(name, frequency, null)
 		).put(
-			FacetJSONResponseKeys.VALUE, folderId
+			FacetsJSONResponseKeys.VALUE, folderId
 		);
 	}
 
