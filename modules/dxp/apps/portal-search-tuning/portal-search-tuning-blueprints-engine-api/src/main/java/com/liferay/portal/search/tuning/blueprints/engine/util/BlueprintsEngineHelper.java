@@ -29,17 +29,17 @@ import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 public interface BlueprintsEngineHelper {
 
 	public SearchRequestBuilder getSearchRequestBuilder(
-		BlueprintsAttributes blueprintsAttributes, Messages messages,
-		long blueprintId);
+		long blueprintId, BlueprintsAttributes blueprintsAttributes,
+		Messages messages);
 
 	public SearchResponse search(
-			BlueprintsAttributes blueprintsAttributes, Blueprint blueprint,
+			Blueprint blueprint, BlueprintsAttributes blueprintsAttributes,
 			Messages messages)
 		throws BlueprintsEngineException, JSONException, PortalException;
 
 	public SearchResponse search(
-			BlueprintsAttributes blueprintsAttributes, Messages messages,
-			long blueprintId)
+			long blueprintId, BlueprintsAttributes blueprintsAttributes,
+			Messages messages)
 		throws BlueprintsEngineException, JSONException, PortalException;
 
 }

@@ -35,9 +35,8 @@ public class BlueprintsSearchRequestContributorHelperImpl
 	implements BlueprintsSearchRequestContributorHelper {
 
 	public void combine(
-		SearchRequestBuilder searchRequestBuilder,
-		BlueprintsAttributes blueprintsAttributes, Messages messages,
-		long blueprintId) {
+		SearchRequestBuilder searchRequestBuilder, long blueprintId,
+		BlueprintsAttributes blueprintsAttributes, Messages messages) {
 
 		Blueprint blueprint = _blueprintsSearchRequestHelper.getBlueprint(
 			blueprintId);

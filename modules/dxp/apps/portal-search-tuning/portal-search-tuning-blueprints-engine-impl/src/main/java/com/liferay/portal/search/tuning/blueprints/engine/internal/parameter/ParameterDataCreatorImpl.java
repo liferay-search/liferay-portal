@@ -82,18 +82,25 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 		_addKeywordParameter(
 			parameterDataBuilder, blueprint, blueprintsAttributes, messages);
 
-		_addPagingParameters(
+		_addPagingParameter(
 			parameterDataBuilder, blueprintsAttributes,
 			parameterConfigurationJSONObject.getJSONObject(
 				ParameterConfigurationKeys.PAGE.getJsonKey()));
 
+		_addSizeParameter(
+			parameterDataBuilder, blueprintsAttributes,
+			parameterConfigurationJSONObject.getJSONObject(
+				ParameterConfigurationKeys.SIZE.getJsonKey()),
+			messages);
+
 		_addSortParameters(
-			parameterDataBuilder, blueprintsAttributes, messages, blueprint);
+			parameterDataBuilder, blueprint, blueprintsAttributes, messages);
 
 		_addCustomParameters(
-			parameterDataBuilder, blueprintsAttributes, messages,
+			parameterDataBuilder, blueprintsAttributes,
 			parameterConfigurationJSONObject.getJSONArray(
-				ParameterConfigurationKeys.CUSTOM.getJsonKey()));
+				ParameterConfigurationKeys.CUSTOM.getJsonKey()),
+			messages);
 
 		_executeParameterContributors(
 			parameterDataBuilder, blueprint, blueprintsAttributes, messages);
@@ -238,8 +245,8 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 
 	private void _addCustomParameter(
 		ParameterDataBuilder parameterDataBuilder,
-		BlueprintsAttributes blueprintsAttributes, Messages messages,
-		JSONObject configurationJSONObject) {
+		BlueprintsAttributes blueprintsAttributes,
+		JSONObject configurationJSONObject, Messages messages) {
 
 		String type = configurationJSONObject.getString(
 			CustomParameterConfigurationKeys.TYPE.getJsonKey());
@@ -249,7 +256,7 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 				_parameterBuilderFactory.getBuilder(type);
 
 			Optional<Parameter> optional = parameterBuilder.build(
-				blueprintsAttributes, messages, configurationJSONObject);
+				blueprintsAttributes, configurationJSONObject, messages);
 
 			if (optional.isPresent()) {
 				parameterDataBuilder.addParameter(optional.get());
@@ -281,8 +288,8 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 
 	private void _addCustomParameters(
 		ParameterDataBuilder parameterDataBuilder,
-		BlueprintsAttributes blueprintsAttributes, Messages messages,
-		JSONArray configurationJSONArray) {
+		BlueprintsAttributes blueprintsAttributes,
+		JSONArray configurationJSONArray, Messages messages) {
 
 		if ((configurationJSONArray == null) ||
 			(configurationJSONArray.length() == 0)) {
@@ -295,11 +302,11 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 				configurationJSONArray.getJSONObject(i);
 
 			if (_validateCustomParameterConfiguration(
-					messages, configurationJSONObject)) {
+					configurationJSONObject, messages)) {
 
 				_addCustomParameter(
-					parameterDataBuilder, blueprintsAttributes, messages,
-					configurationJSONObject);
+					parameterDataBuilder, blueprintsAttributes,
+					configurationJSONObject, messages);
 			}
 		}
 	}
@@ -315,7 +322,7 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 			new StringParameter("keywords.raw", "${keywords.raw}", keywords));
 
 		keywords = _executeKeywordsProcessors(
-			blueprint, blueprintsAttributes, messages, keywords);
+			keywords, blueprint, blueprintsAttributes, messages);
 
 		parameterDataBuilder.addParameter(
 			new StringParameter("keywords", "${keywords}", keywords));
@@ -323,33 +330,49 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 		parameterDataBuilder.keywords(keywords);
 	}
 
-	private void _addPagingParameters(
+	private void _addPagingParameter(
 		ParameterDataBuilder parameterDataBuilder,
 		BlueprintsAttributes blueprintsAttributes,
 		JSONObject configurationJSONObject) {
 
-		int page = 1;
+		String parameterName = configurationJSONObject.getString(
+			PageConfigurationKeys.PARAMETER_NAME.getJsonKey());
 
-		if (configurationJSONObject != null) {
-			String parameterName = configurationJSONObject.getString(
-				PageConfigurationKeys.PARAMETER_NAME.getJsonKey());
+		Optional<Object> optional = blueprintsAttributes.getAttributeOptional(
+			parameterName);
 
-			if (!Validator.isBlank(parameterName)) {
-				Optional<Object> optional =
-					blueprintsAttributes.getAttributeOptional(parameterName);
-
-				page = GetterUtil.getInteger(optional.orElse(1));
-			}
+		if (optional.isPresent()) {
+			parameterDataBuilder.addParameter(
+				new IntegerParameter(
+					"page", "${page}",
+					GetterUtil.getInteger(optional.orElse(1))));
 		}
+	}
 
-		parameterDataBuilder.addParameter(
-			new IntegerParameter("page", "${page}", page));
+	private void _addSizeParameter(
+		ParameterDataBuilder parameterDataBuilder,
+		BlueprintsAttributes blueprintsAttributes,
+		JSONObject configurationJSONObject, Messages messages) {
+
+		ParameterBuilder parameterBuilder = _parameterBuilderFactory.getBuilder(
+			"integer");
+
+		Optional<Parameter> optional = parameterBuilder.build(
+			blueprintsAttributes, configurationJSONObject, messages);
+
+		if (optional.isPresent()) {
+			Parameter parameter = optional.get();
+
+			parameterDataBuilder.addParameter(
+				new IntegerParameter(
+					"size", "${size}",
+					GetterUtil.getInteger(parameter.getValue())));
+		}
 	}
 
 	private void _addSortParameters(
-		ParameterDataBuilder parameterDataBuilder,
-		BlueprintsAttributes blueprintsAttributes, Messages messages,
-		Blueprint blueprint) {
+		ParameterDataBuilder parameterDataBuilder, Blueprint blueprint,
+		BlueprintsAttributes blueprintsAttributes, Messages messages) {
 
 		Optional<JSONArray> jsonArrayOptional =
 			_blueprintHelper.getSortParameterConfigurationOptional(blueprint);
@@ -363,12 +386,12 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 		for (int i = 0; i < jsonArray.length(); i++) {
 			JSONObject jsonObject = jsonArray.getJSONObject(i);
 
-			if (_validateSortParameterConfiguration(messages, jsonObject)) {
+			if (_validateSortParameterConfiguration(jsonObject, messages)) {
 				ParameterBuilder parameterBuilder =
 					_parameterBuilderFactory.getBuilder("string");
 
 				Optional<Parameter> parameterOptional = parameterBuilder.build(
-					blueprintsAttributes, messages, jsonObject);
+					blueprintsAttributes, jsonObject, messages);
 
 				if (parameterOptional.isPresent()) {
 					parameterDataBuilder.addParameter(parameterOptional.get());
@@ -378,8 +401,8 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 	}
 
 	private String _executeKeywordsProcessors(
-		Blueprint blueprint, BlueprintsAttributes blueprintsAttributes,
-		Messages messages, String keywords) {
+		String keywords, Blueprint blueprint,
+		BlueprintsAttributes blueprintsAttributes, Messages messages) {
 
 		for (Map.Entry<String, ServiceComponentReference<KeywordsProcessor>>
 				entry : _keywordsProcessors.entrySet()) {
@@ -431,7 +454,7 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 	}
 
 	private boolean _validateCustomParameterConfiguration(
-		Messages messages, JSONObject configurationJSONObject) {
+		JSONObject configurationJSONObject, Messages messages) {
 
 		boolean valid = true;
 
@@ -493,7 +516,7 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 	}
 
 	private boolean _validateSortParameterConfiguration(
-		Messages messages, JSONObject configurationJSONObject) {
+		JSONObject configurationJSONObject, Messages messages) {
 
 		boolean valid = true;
 

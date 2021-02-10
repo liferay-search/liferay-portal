@@ -46,8 +46,8 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 
 	@Override
 	public SearchRequestBuilder getSearchRequestBuilder(
-		BlueprintsAttributes blueprintsAttributes, Messages messages,
-		long blueprintId) {
+		long blueprintId, BlueprintsAttributes blueprintsAttributes,
+		Messages messages) {
 
 		Blueprint blueprint = _blueprintsSearchRequestHelper.getBlueprint(
 			blueprintId);
@@ -63,7 +63,7 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 
 	@Override
 	public SearchResponse search(
-			BlueprintsAttributes blueprintsAttributes, Blueprint blueprint,
+			Blueprint blueprint, BlueprintsAttributes blueprintsAttributes,
 			Messages messages)
 		throws BlueprintsEngineException, JSONException, PortalException {
 
@@ -81,8 +81,8 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 
 	@Override
 	public SearchResponse search(
-			BlueprintsAttributes blueprintsAttributes, Messages messages,
-			long blueprintId)
+			long blueprintId, BlueprintsAttributes blueprintsAttributes,
+			Messages messages)
 		throws BlueprintsEngineException, JSONException, PortalException {
 
 		Blueprint blueprint = _blueprintsSearchRequestHelper.getBlueprint(
@@ -100,26 +100,21 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 			searchRequestBuilder, parameterData, blueprint, messages);
 	}
 
-	private int _getFrom(ParameterData parameterData, Blueprint blueprint) {
-		Optional<String> optional1 =
-			_blueprintHelper.getPageParameterNameOptional(blueprint);
+	private int _getFrom(
+		ParameterData parameterData, Blueprint blueprint, int size) {
 
-		if (!optional1.isPresent()) {
+		Optional<Parameter> optional = parameterData.getByNameOptional(
+			_blueprintHelper.getPageParameterName(blueprint));
+
+		if (!optional.isPresent()) {
 			return 1;
 		}
 
-		Optional<Parameter> optional2 = parameterData.getByNameOptional(
-			optional1.get());
+		Parameter parameter = optional.get();
 
-		if (!optional2.isPresent()) {
-			return 1;
-		}
+		int page = GetterUtil.getInteger(parameter.getValue(), 1);
 
-		Parameter parameter = optional2.get();
-
-		int page = GetterUtil.getInteger(parameter.getValue());
-
-		return _getFromValue(_blueprintHelper.getSize(blueprint), page);
+		return _getFromValue(size, page);
 	}
 
 	private int _getFromValue(int size, int page) {
@@ -137,6 +132,8 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 		String[] modelIndexerClassNames =
 			_blueprintsSearchRequestHelper.getModelIndexerClassNames(
 				blueprint, companyId);
+
+		int size = _getSize(parameterData, blueprint);
 
 		SearchRequestBuilder searchRequestBuilder =
 			_searchRequestBuilderFactory.builder(
@@ -157,9 +154,9 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 			).modelIndexerClassNames(
 				modelIndexerClassNames
 			).size(
-				_blueprintHelper.getSize(blueprint)
+				size
 			).from(
-				_getFrom(parameterData, blueprint)
+				_getFrom(parameterData, blueprint, size)
 			);
 
 		if (!_blueprintsSearchRequestHelper.shouldApplyIndexerClauses(
@@ -178,6 +175,21 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 			searchRequestBuilder, parameterData, blueprint, messages);
 
 		return searchRequestBuilder;
+	}
+
+	private int _getSize(ParameterData parameterData, Blueprint blueprint) {
+		String parameterName = _blueprintHelper.getSizeParameterName(blueprint);
+
+		Optional<Parameter> optional = parameterData.getByNameOptional(
+			parameterName);
+
+		if (!optional.isPresent()) {
+			_blueprintHelper.getDefaultSize(blueprint);
+		}
+
+		Parameter parameter = optional.get();
+
+		return GetterUtil.getInteger(parameter.getValue());
 	}
 
 	private boolean _isExplain(ParameterData parameterData) {
