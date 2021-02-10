@@ -33,8 +33,6 @@ public interface SuggestionsAttributesBuilder {
 
 	public SuggestionsAttributesBuilder size(int size);
 
-	public SuggestionsAttributesBuilder status(int size);
-
 	public SuggestionsAttributesBuilder userId(long userId);
 
 }

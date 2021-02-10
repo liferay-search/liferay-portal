@@ -14,7 +14,6 @@
 
 package com.liferay.portal.search.tuning.blueprints.suggestions.internal.attributes;
 
-import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.search.tuning.blueprints.suggestions.attributes.SuggestionsAttributes;
 import com.liferay.portal.search.tuning.blueprints.suggestions.attributes.SuggestionsAttributesBuilder;
 
@@ -39,7 +38,7 @@ public class SuggestionsAttributesBuilderImpl
 		SuggestionsAttributes suggestionsAttributes =
 			new SuggestionsAttributesImpl(
 				_attributes, _companyId, _groupId, _keywords, _languageId,
-				_size, _status, _userId);
+				_size, _userId);
 
 		_validateSuggestionsAttributes(suggestionsAttributes);
 
@@ -82,13 +81,6 @@ public class SuggestionsAttributesBuilderImpl
 	}
 
 	@Override
-	public SuggestionsAttributesBuilder status(int status) {
-		_status = status;
-
-		return this;
-	}
-
-	@Override
 	public SuggestionsAttributesBuilder userId(long userId) {
 		_userId = userId;
 
@@ -115,7 +107,6 @@ public class SuggestionsAttributesBuilderImpl
 	private String _keywords;
 	private String _languageId;
 	private Integer _size;
-	private int _status = WorkflowConstants.STATUS_APPROVED;
 	private Long _userId;
 
 }

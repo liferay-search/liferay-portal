@@ -26,7 +26,7 @@ public class SuggestionsAttributesImpl implements SuggestionsAttributes {
 
 	public SuggestionsAttributesImpl(
 		Map<String, Object> attributes, Long companyId, Long groupId,
-		String keywords, String languageId, int size, int status, Long userId) {
+		String keywords, String languageId, int size, Long userId) {
 
 		_attributes = attributes;
 		_companyId = companyId;
@@ -34,7 +34,6 @@ public class SuggestionsAttributesImpl implements SuggestionsAttributes {
 		_keywords = keywords;
 		_languageId = languageId;
 		_size = size;
-		_status = status;
 		_userId = userId;
 	}
 
@@ -74,11 +73,6 @@ public class SuggestionsAttributesImpl implements SuggestionsAttributes {
 	}
 
 	@Override
-	public Integer getStatus() {
-		return _status;
-	}
-
-	@Override
 	public Long getUserId() {
 		return _userId;
 	}
@@ -89,7 +83,6 @@ public class SuggestionsAttributesImpl implements SuggestionsAttributes {
 	private final String _keywords;
 	private final String _languageId;
 	private final Integer _size;
-	private final int _status;
 	private final Long _userId;
 
 }

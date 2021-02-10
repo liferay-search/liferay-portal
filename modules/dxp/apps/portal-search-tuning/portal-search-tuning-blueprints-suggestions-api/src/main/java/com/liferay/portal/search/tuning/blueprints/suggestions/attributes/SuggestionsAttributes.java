@@ -36,8 +36,6 @@ public interface SuggestionsAttributes {
 
 	public Integer getSize();
 
-	public Integer getStatus();
-
 	public Long getUserId();
 
 }
