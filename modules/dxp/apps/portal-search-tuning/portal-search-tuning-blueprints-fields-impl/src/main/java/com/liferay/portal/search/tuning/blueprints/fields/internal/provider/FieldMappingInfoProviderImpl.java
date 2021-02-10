@@ -16,7 +16,7 @@ package com.liferay.portal.search.tuning.blueprints.fields.internal.provider;
 
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.json.JSONException;
-import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.Log;
@@ -164,7 +164,7 @@ public class FieldMappingInfoProviderImpl implements FieldMappingInfoProvider {
 				indexName);
 
 			return JSONUtil.getValueAsJSONObject(
-				JSONFactoryUtil.createJSONObject(fieldMappings),
+				_jsonFactory.createJSONObject(fieldMappings),
 				"JSONObject/" + indexName, "JSONObject/mappings",
 				"JSONObject/properties");
 		}
@@ -183,5 +183,8 @@ public class FieldMappingInfoProviderImpl implements FieldMappingInfoProvider {
 
 	@Reference
 	private IndexNameBuilder _indexNameBuilder;
+
+	@Reference
+	private JSONFactory _jsonFactory;
 
 }
