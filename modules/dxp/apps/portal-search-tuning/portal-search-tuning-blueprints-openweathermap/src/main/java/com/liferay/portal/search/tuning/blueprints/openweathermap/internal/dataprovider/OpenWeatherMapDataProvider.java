@@ -16,7 +16,7 @@ package com.liferay.portal.search.tuning.blueprints.openweathermap.internal.data
 
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.json.JSONException;
-import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -132,7 +132,7 @@ public class OpenWeatherMapDataProvider {
 		}
 
 		try {
-			return JSONFactoryUtil.createJSONObject(rawData);
+			return _jsonFactory.createJSONObject(rawData);
 		}
 		catch (JSONException jsonException) {
 			messages.addMessage(
@@ -259,6 +259,9 @@ public class OpenWeatherMapDataProvider {
 
 	@Reference
 	private JSONDataProviderCache _jsonDataProviderCache;
+
+	@Reference
+	private JSONFactory _jsonFactory;
 
 	private volatile OpenWeatherMapConfiguration _openWeatherMapConfiguration;
 

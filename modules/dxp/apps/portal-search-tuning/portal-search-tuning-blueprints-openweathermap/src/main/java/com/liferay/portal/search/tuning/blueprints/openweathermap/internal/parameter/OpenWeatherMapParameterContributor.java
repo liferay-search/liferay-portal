@@ -14,6 +14,7 @@
 
 package com.liferay.portal.search.tuning.blueprints.openweathermap.internal.parameter;
 
+import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.search.geolocation.GeoLocationPoint;
@@ -29,19 +30,24 @@ import com.liferay.portal.search.tuning.blueprints.engine.spi.dataprovider.GeoLo
 import com.liferay.portal.search.tuning.blueprints.engine.spi.parameter.ParameterContributor;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
+import com.liferay.portal.search.tuning.blueprints.openweathermap.internal.configuration.OpenWeatherMapConfiguration;
 import com.liferay.portal.search.tuning.blueprints.openweathermap.internal.dataprovider.OpenWeatherMapDataProvider;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Petteri Karttunen
  */
 @Component(
+	configurationPid = "com.liferay.portal.search.tuning.blueprints.openweathermap.internal.configuration.OpenWeatherMapConfiguration",
 	immediate = true, property = "name=openweathermap",
 	service = ParameterContributor.class
 )
@@ -67,6 +73,10 @@ public class OpenWeatherMapParameterContributor
 	public List<ParameterDefinition> getParameterDefinitions() {
 		List<ParameterDefinition> parameterDefinitions = new ArrayList<>();
 
+		if (!_openWeatherMapConfiguration.isEnabled()) {
+			return parameterDefinitions;
+		}
+
 		parameterDefinitions.add(
 			new ParameterDefinition(
 				"${openweathermap.weather_id}",
@@ -86,6 +96,13 @@ public class OpenWeatherMapParameterContributor
 				"openweathermap.parameter.temperature"));
 
 		return parameterDefinitions;
+	}
+
+	@Activate
+	@Modified
+	protected void activate(Map<String, Object> properties) {
+		_openWeatherMapConfiguration = ConfigurableUtil.createConfigurable(
+			OpenWeatherMapConfiguration.class, properties);
 	}
 
 	private void _contribute(
@@ -144,6 +161,8 @@ public class OpenWeatherMapParameterContributor
 
 	@Reference
 	private GeoLocationDataProvider _geoLocationDataProvider;
+
+	private volatile OpenWeatherMapConfiguration _openWeatherMapConfiguration;
 
 	@Reference
 	private OpenWeatherMapDataProvider _openWeatherMapDataProvider;

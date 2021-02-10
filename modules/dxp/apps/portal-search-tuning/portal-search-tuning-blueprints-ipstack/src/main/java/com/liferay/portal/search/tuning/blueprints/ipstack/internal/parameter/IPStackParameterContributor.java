@@ -14,6 +14,7 @@
 
 package com.liferay.portal.search.tuning.blueprints.ipstack.internal.parameter;
 
+import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
@@ -24,20 +25,25 @@ import com.liferay.portal.search.tuning.blueprints.engine.parameter.ParameterDef
 import com.liferay.portal.search.tuning.blueprints.engine.parameter.StringParameter;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.dataprovider.GeoLocationDataProvider;
 import com.liferay.portal.search.tuning.blueprints.engine.spi.parameter.ParameterContributor;
+import com.liferay.portal.search.tuning.blueprints.ipstack.internal.configuration.IPStackConfiguration;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Petteri Karttunen
  */
 @Component(
+	configurationPid = "com.liferay.portal.search.tuning.blueprints.ipstack.internal.configuration.IPStackConfiguration",
 	immediate = true, property = "name=ipstack",
 	service = ParameterContributor.class
 )
@@ -61,6 +67,10 @@ public class IPStackParameterContributor implements ParameterContributor {
 	@Override
 	public List<ParameterDefinition> getParameterDefinitions() {
 		List<ParameterDefinition> parameterDefinitions = new ArrayList<>();
+
+		if (!_ipStackConfiguration.isEnabled()) {
+			return parameterDefinitions;
+		}
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
@@ -104,6 +114,13 @@ public class IPStackParameterContributor implements ParameterContributor {
 				"ipstack.parameter.zip"));
 
 		return parameterDefinitions;
+	}
+
+	@Activate
+	@Modified
+	protected void activate(Map<String, Object> properties) {
+		_ipStackConfiguration = ConfigurableUtil.createConfigurable(
+			IPStackConfiguration.class, properties);
 	}
 
 	private void _contribute(
@@ -180,5 +197,7 @@ public class IPStackParameterContributor implements ParameterContributor {
 
 	@Reference
 	private GeoLocationDataProvider _geoLocationDataProvider;
+
+	private volatile IPStackConfiguration _ipStackConfiguration;
 
 }
