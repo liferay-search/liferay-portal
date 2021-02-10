@@ -21,7 +21,7 @@ import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.portal.search.tuning.blueprints.web.internal.util.BlueprintsResultUtil;
+import com.liferay.portal.search.tuning.blueprints.web.internal.util.ResultsUtil;
 
 import java.util.Locale;
 
@@ -39,7 +39,7 @@ public class BlueprintsContentDisplayBuilder {
 		BlueprintsContentDisplayContext blueprintsContentDisplayContext =
 			new BlueprintsContentDisplayContext();
 
-		AssetRenderer<?> assetRenderer = BlueprintsResultUtil.getAssetRenderer(
+		AssetRenderer<?> assetRenderer = ResultsUtil.getAssetRenderer(
 			_entryClassName, _entryClassPK);
 
 		if (assetRenderer == null) {

@@ -25,7 +25,7 @@ import com.liferay.portal.search.tuning.blueprints.util.BlueprintHelper;
 import com.liferay.portal.search.tuning.blueprints.web.internal.constants.ResourceRequestKeys;
 import com.liferay.portal.search.tuning.blueprints.web.internal.portlet.preferences.BlueprintsWebPortletPreferences;
 import com.liferay.portal.search.tuning.blueprints.web.internal.portlet.preferences.BlueprintsWebPortletPreferencesImpl;
-import com.liferay.portal.search.tuning.blueprints.web.internal.util.BlueprintPortletHelper;
+import com.liferay.portal.search.tuning.blueprints.web.internal.util.BlueprintsWebPortletHelper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -46,13 +46,13 @@ public class BlueprintsDisplayBuilder {
 	public BlueprintsDisplayBuilder(
 		HttpServletRequest httpServletRequest, RenderRequest renderRequest,
 		RenderResponse renderResponse, BlueprintHelper blueprintHelper,
-		BlueprintPortletHelper blueprintPortletHelper) {
+		BlueprintsWebPortletHelper blueprintsWebPortletHelper) {
 
 		_httpServletRequest = httpServletRequest;
 		_renderRequest = renderRequest;
 		_renderResponse = renderResponse;
 		_blueprintHelper = blueprintHelper;
-		_blueprintPortletHelper = blueprintPortletHelper;
+		_blueprintsWebPortletHelper = blueprintsWebPortletHelper;
 
 		_themeDisplay = (ThemeDisplay)_httpServletRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
@@ -104,7 +104,7 @@ public class BlueprintsDisplayBuilder {
 		Map<String, String> optionsMap = new HashMap<>();
 
 		Optional<Blueprint> blueprintOptional =
-			_blueprintPortletHelper.getSearchBlueprint(_renderRequest);
+			_blueprintsWebPortletHelper.getBlueprint(_renderRequest);
 
 		if (!blueprintOptional.isPresent()) {
 			return optionsMap;
@@ -164,7 +164,7 @@ public class BlueprintsDisplayBuilder {
 	}
 
 	private final BlueprintHelper _blueprintHelper;
-	private final BlueprintPortletHelper _blueprintPortletHelper;
+	private final BlueprintsWebPortletHelper _blueprintsWebPortletHelper;
 	private final HttpServletRequest _httpServletRequest;
 	private final RenderRequest _renderRequest;
 	private final RenderResponse _renderResponse;

@@ -17,14 +17,22 @@ package com.liferay.portal.search.tuning.blueprints.web.internal.util;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
+import com.liferay.portal.search.tuning.blueprints.suggestions.attributes.SuggestionsAttributesBuilder;
+import com.liferay.portal.search.tuning.blueprints.suggestions.attributes.SuggestionsAttributesBuilderFactory;
 import com.liferay.portal.search.tuning.blueprints.web.internal.portlet.preferences.BlueprintsWebPortletPreferences;
 import com.liferay.portal.search.tuning.blueprints.web.internal.portlet.preferences.BlueprintsWebPortletPreferencesImpl;
 
 import java.util.Optional;
+import java.util.TimeZone;
 
 import javax.portlet.PortletRequest;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -32,8 +40,8 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Petteri Karttunen
  */
-@Component(immediate = true, service = BlueprintPortletHelper.class)
-public class BlueprintPortletHelper {
+@Component(immediate = true, service = BlueprintsWebPortletHelper.class)
+public class BlueprintsWebPortletHelper {
 
 	public Optional<Blueprint> getBlueprint(long blueprintId) {
 		try {
@@ -46,10 +54,8 @@ public class BlueprintPortletHelper {
 		return Optional.empty();
 	}
 
-	public Optional<Blueprint> getSearchBlueprint(
-		PortletRequest portletRequest) {
-
-		long blueprintId = getSearchBlueprintId(portletRequest);
+	public Optional<Blueprint> getBlueprint(PortletRequest portletRequest) {
+		long blueprintId = getBlueprintId(portletRequest);
 
 		if (blueprintId == 0) {
 			return Optional.empty();
@@ -58,7 +64,7 @@ public class BlueprintPortletHelper {
 		return getBlueprint(blueprintId);
 	}
 
-	public long getSearchBlueprintId(PortletRequest portletRequest) {
+	public long getBlueprintId(PortletRequest portletRequest) {
 		BlueprintsWebPortletPreferences blueprintsWebPortletPreferences =
 			new BlueprintsWebPortletPreferencesImpl(
 				portletRequest.getPreferences());
@@ -66,10 +72,46 @@ public class BlueprintPortletHelper {
 		return blueprintsWebPortletPreferences.getBlueprintId();
 	}
 
+	public SuggestionsAttributesBuilder getSuggestionsAttributesBuilder(
+		PortletRequest portletRequest) {
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		HttpServletRequest httpServletRequest = _portal.getHttpServletRequest(
+			portletRequest);
+
+		TimeZone timeZone = themeDisplay.getTimeZone();
+
+		return _suggestionsAttributesBuilderFactory.builder(
+		).companyId(
+			themeDisplay.getCompanyId()
+		).groupId(
+			themeDisplay.getScopeGroupId()
+		).languageId(
+			themeDisplay.getLanguageId()
+		).userId(
+			themeDisplay.getUserId()
+		).addAttribute(
+			"ipAddress", httpServletRequest.getRemoteAddr()
+		).addAttribute(
+			"plid", themeDisplay.getPlid()
+		).addAttribute(
+			"timeZoneId", timeZone.getID()
+		);
+	}
+
 	private static final Log _log = LogFactoryUtil.getLog(
-		BlueprintPortletHelper.class);
+		BlueprintsWebPortletHelper.class);
 
 	@Reference
 	private BlueprintService _blueprintService;
+
+	@Reference
+	private Portal _portal;
+
+	@Reference
+	private SuggestionsAttributesBuilderFactory
+		_suggestionsAttributesBuilderFactory;
 
 }

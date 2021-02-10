@@ -57,8 +57,9 @@ export default function Results({
 							<ClaySticker displayType="secondary" size="md">
 								<ClayIcon
 									symbol={
-										item.type && ICON_MAP[item.type]
-											? ICON_MAP[item.type]
+										item.result.type &&
+										ICON_MAP[item.result.type]
+											? ICON_MAP[item.result.type]
 											: ICON_MAP.DEFAULT
 									}
 								/>
@@ -66,58 +67,60 @@ export default function Results({
 						</ClayList.ItemField>
 						<ClayList.ItemField expand>
 							<ClayList.ItemTitle>
-								{item.viewURL ? (
+								{item.result.viewURL ? (
 									<a
 										dangerouslySetInnerHTML={{
-											__html: item.title_highlight
-												? item.title_highlight
-												: item.title,
+											__html: item.result.title_highlight
+												? item.result.title_highlight
+												: item.result.title,
 										}}
-										href={item.viewURL}
+										href={item.result.viewURL}
 										rel="noopener noreferrer"
 										target="_blank"
 									/>
 								) : (
 									<span
 										dangerouslySetInnerHTML={{
-											__html: item.title_highlight
-												? item.title_highlight
-												: item.title,
+											__html: item.result.title_highlight
+												? item.result.title_highlight
+												: item.result.title,
 										}}
 									/>
 								)}
 							</ClayList.ItemTitle>
 
-							{(item.type || item.author || item.date) && (
+							{(item.result.type ||
+								item.result.author ||
+								item.result.date) && (
 								<ClayList.ItemText
 									className="result-subtext"
 									subtext
 								>
-									{item.type && (
+									{item.result.type && (
 										<span>
-											<strong>{item.type}</strong>
+											<strong>{item.result.type}</strong>
 										</span>
 									)}
 
-									{item.author && (
+									{item.result.author && (
 										<span>
 											{Liferay.Language.get('by')}{' '}
-											{item.author}
+											{item.result.author}
 										</span>
 									)}
 
-									{item.date && (
+									{item.result.date && (
 										<span>
 											{Liferay.Language.get('on')}{' '}
-											{item.date}
+											{item.result.date}
 										</span>
 									)}
 								</ClayList.ItemText>
 							)}
 
-							{item.description && (
+							{item.result.description && (
 								<ClayList.ItemText>
-									{item.description}
+									{item.result.description}
 								</ClayList.ItemText>
 							)}
 						</ClayList.ItemField>

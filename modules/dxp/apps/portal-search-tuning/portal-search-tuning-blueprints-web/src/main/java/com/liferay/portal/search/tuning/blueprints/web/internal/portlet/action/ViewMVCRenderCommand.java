@@ -16,11 +16,10 @@ package com.liferay.portal.search.tuning.blueprints.web.internal.portlet.action;
 
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCRenderCommand;
 import com.liferay.portal.kernel.util.Portal;
-import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
 import com.liferay.portal.search.tuning.blueprints.util.BlueprintHelper;
 import com.liferay.portal.search.tuning.blueprints.web.internal.constants.BlueprintsWebPortletKeys;
 import com.liferay.portal.search.tuning.blueprints.web.internal.display.context.BlueprintsDisplayBuilder;
-import com.liferay.portal.search.tuning.blueprints.web.internal.util.BlueprintPortletHelper;
+import com.liferay.portal.search.tuning.blueprints.web.internal.util.BlueprintsWebPortletHelper;
 
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
@@ -48,7 +47,7 @@ public class ViewMVCRenderCommand implements MVCRenderCommand {
 		BlueprintsDisplayBuilder blueprintsDisplayBuilder =
 			new BlueprintsDisplayBuilder(
 				_portal.getHttpServletRequest(renderRequest), renderRequest,
-				renderResponse, _blueprintHelper, _blueprintPortletHelper);
+				renderResponse, _blueprintHelper, _blueprintsWebPortletHelper);
 
 		renderRequest.setAttribute(
 			BlueprintsWebPortletKeys.BLUEPRINTS_DISPLAY_CONTEXT,
@@ -61,10 +60,7 @@ public class ViewMVCRenderCommand implements MVCRenderCommand {
 	private BlueprintHelper _blueprintHelper;
 
 	@Reference
-	private BlueprintPortletHelper _blueprintPortletHelper;
-
-	@Reference
-	private BlueprintService _blueprintService;
+	private BlueprintsWebPortletHelper _blueprintsWebPortletHelper;
 
 	@Reference
 	private Portal _portal;

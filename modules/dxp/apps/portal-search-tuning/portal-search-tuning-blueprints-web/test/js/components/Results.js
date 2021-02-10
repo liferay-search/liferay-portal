@@ -35,18 +35,18 @@ describe('BlueprintsSearch', () => {
 	it('displays titles of results', () => {
 		const {getByText} = renderResults();
 
-		RESOURCE.items.map((item) => getByText(item.title));
+		RESOURCE.items.map((item) => getByText(item.result.title));
 	});
 
 	it('displays descriptions of results', () => {
 		const {getByText} = renderResults();
 
-		RESOURCE.items.map((item) => getByText(item.description));
+		RESOURCE.items.map((item) => getByText(item.result.description));
 	});
 
 	it('displays dates of results', () => {
 		const {getByText} = renderResults();
 
-		RESOURCE.items.map((item) => getByText(`on ${item.date}`));
+		RESOURCE.items.map((item) => getByText(`on ${item.result.date}`));
 	});
 });

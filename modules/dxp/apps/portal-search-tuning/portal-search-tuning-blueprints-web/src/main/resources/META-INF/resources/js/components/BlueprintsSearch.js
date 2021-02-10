@@ -79,7 +79,7 @@ export default function BlueprintsSearch({fetchResultsURL, suggestionsURL}) {
 	}, [query, activePage, selectedFacets, timeRange, sortBy]); // eslint-disable-line
 
 	const _hasResults = () =>
-		!state.error && !!(resource && resource.items && resource.items.length);
+		!state.error && !!(resource && resource.hits && resource.hits.length);
 
 	function _renderEmptyState() {
 		let emptyState = (
@@ -133,7 +133,7 @@ export default function BlueprintsSearch({fetchResultsURL, suggestionsURL}) {
 				<div className="instead-of">
 					{Liferay.Language.get('search-instead-for')}
 					<ClayLink className="link" href="#">
-						{resource.meta.showing_instead_of}
+						{resource.meta.showingInsteadOf}
 					</ClayLink>
 				</div>
 			</div>
@@ -145,7 +145,7 @@ export default function BlueprintsSearch({fetchResultsURL, suggestionsURL}) {
 			<div className="did-you-mean justify-content-center row">
 				<h4>{Liferay.Language.get('did-you-mean-suggestions')}</h4>
 				<ul>
-					{resource.didyoumean.map((keyword, index) => (
+					{resource.didYouMean.map((keyword, index) => (
 						<li key={index}>{keyword}</li>
 					))}
 				</ul>
@@ -207,7 +207,7 @@ export default function BlueprintsSearch({fetchResultsURL, suggestionsURL}) {
 				<div className="search-results">
 					{_hasResults() ? (
 						<>
-							{resource.meta.showing_instead_of &&
+							{resource.meta.showingInsteadOf &&
 								_renderShowInsteadOf()}
 
 							{resource.facets && (
@@ -236,7 +236,7 @@ export default function BlueprintsSearch({fetchResultsURL, suggestionsURL}) {
 
 							<Results
 								activePage={activePage}
-								items={resource.items}
+								items={resource.hits}
 								onPageChange={(page) => {
 									setActivePage(page);
 								}}
@@ -250,7 +250,7 @@ export default function BlueprintsSearch({fetchResultsURL, suggestionsURL}) {
 					)}
 
 					{resource &&
-						resource.didyoumean &&
+						resource.didYouMean &&
 						_renderDidYouMeanSuggestions()}
 				</div>
 			)}

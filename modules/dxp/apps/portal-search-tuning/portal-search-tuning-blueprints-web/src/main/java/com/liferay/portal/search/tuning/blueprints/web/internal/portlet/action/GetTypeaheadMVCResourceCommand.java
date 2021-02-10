@@ -15,25 +15,23 @@
 package com.liferay.portal.search.tuning.blueprints.web.internal.portlet.action;
 
 import com.liferay.portal.kernel.json.JSONArray;
-import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.portlet.JSONPortletResponseUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCResourceCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCResourceCommand;
 import com.liferay.portal.kernel.util.ParamUtil;
-import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.tuning.blueprints.suggestions.attributes.SuggestionsAttributes;
 import com.liferay.portal.search.tuning.blueprints.suggestions.attributes.SuggestionsAttributesBuilder;
-import com.liferay.portal.search.tuning.blueprints.suggestions.attributes.SuggestionsAttributesBuilderFactory;
 import com.liferay.portal.search.tuning.blueprints.suggestions.suggestion.Suggestion;
 import com.liferay.portal.search.tuning.blueprints.suggestions.typeahead.TypeaheadService;
-import com.liferay.portal.search.tuning.blueprints.util.attributes.SuggestionsAttributesHelper;
 import com.liferay.portal.search.tuning.blueprints.web.internal.constants.BlueprintsWebPortletKeys;
 import com.liferay.portal.search.tuning.blueprints.web.internal.constants.ResourceRequestKeys;
 import com.liferay.portal.search.tuning.blueprints.web.internal.portlet.preferences.BlueprintsWebPortletPreferences;
 import com.liferay.portal.search.tuning.blueprints.web.internal.portlet.preferences.BlueprintsWebPortletPreferencesImpl;
+import com.liferay.portal.search.tuning.blueprints.web.internal.util.BlueprintsWebPortletHelper;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -85,13 +83,13 @@ public class GetTypeaheadMVCResourceCommand extends BaseMVCResourceCommand {
 	}
 
 	private JSONObject _getResponseJSONObject(List<Suggestion> suggestions) {
-		JSONObject responseJSONObject = JSONFactoryUtil.createJSONObject();
+		JSONObject responseJSONObject = _jsonFactory.createJSONObject();
 
 		if (suggestions.isEmpty()) {
 			return responseJSONObject;
 		}
 
-		JSONArray suggestionsJSONArray = JSONFactoryUtil.createJSONArray();
+		JSONArray suggestionsJSONArray = _jsonFactory.createJSONArray();
 
 		Stream<Suggestion> stream = suggestions.stream();
 
@@ -127,7 +125,7 @@ public class GetTypeaheadMVCResourceCommand extends BaseMVCResourceCommand {
 		BlueprintsWebPortletPreferences blueprintsWebPortletPreferences) {
 
 		SuggestionsAttributesBuilder suggestionsAttributesBuilder =
-			_suggestionsAttributesHelper.getSuggestionsAttributesBuilder(
+			_blueprintsWebPortletHelper.getSuggestionsAttributesBuilder(
 				resourceRequest);
 
 		return suggestionsAttributesBuilder.addAttribute(
@@ -147,14 +145,10 @@ public class GetTypeaheadMVCResourceCommand extends BaseMVCResourceCommand {
 	}
 
 	@Reference
-	private Portal _portal;
+	private BlueprintsWebPortletHelper _blueprintsWebPortletHelper;
 
 	@Reference
-	private SuggestionsAttributesBuilderFactory
-		_suggestionsAttributesBuilderFactory;
-
-	@Reference
-	private SuggestionsAttributesHelper _suggestionsAttributesHelper;
+	private JSONFactory _jsonFactory;
 
 	@Reference
 	private TypeaheadService _typeaheadService;

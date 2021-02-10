@@ -19,7 +19,6 @@ import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.search.Field;
-import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.search.document.Document;
 import com.liferay.portal.search.document.DocumentBuilderFactory;
 import com.liferay.portal.search.tuning.blueprints.web.internal.constants.BlueprintsWebPortletKeys;
@@ -33,7 +32,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Olivia Yu
  */
 @Component(immediate = true, service = {})
-public class BlueprintsResultUtil {
+public class ResultsUtil {
 
 	public static AssetRenderer<?> getAssetRenderer(
 		String entryClassName, long entryClassPK) {
@@ -65,11 +64,6 @@ public class BlueprintsResultUtil {
 	}
 
 	@Reference(unbind = "-")
-	protected void setPortal(Portal portal) {
-		_portal = portal;
-	}
-
-	@Reference(unbind = "-")
 	protected void setSearchDocumentBuilderFactory(
 		DocumentBuilderFactory documentBuilderFactory) {
 
@@ -88,11 +82,9 @@ public class BlueprintsResultUtil {
 			BlueprintsWebPortletKeys.BLUEPRINTS_WEB);
 	}
 
-	private static final Log _log = LogFactoryUtil.getLog(
-		BlueprintsResultUtil.class);
+	private static final Log _log = LogFactoryUtil.getLog(ResultsUtil.class);
 
 	private static DocumentBuilderFactory _documentBuilderFactory;
-	private static Portal _portal;
 	private static SearchResultInterpreterProvider
 		_searchResultInterpreterProvider;
 

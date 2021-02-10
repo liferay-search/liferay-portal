@@ -17,7 +17,7 @@ package com.liferay.portal.search.tuning.blueprints.web.internal.portlet.action;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONException;
-import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.Log;
@@ -38,23 +38,26 @@ import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttribut
 import com.liferay.portal.search.tuning.blueprints.engine.constants.ReservedParameterNames;
 import com.liferay.portal.search.tuning.blueprints.engine.exception.BlueprintsEngineException;
 import com.liferay.portal.search.tuning.blueprints.engine.util.BlueprintsEngineHelper;
-import com.liferay.portal.search.tuning.blueprints.json.response.BlueprintsJSONResponseBuilder;
-import com.liferay.portal.search.tuning.blueprints.json.response.constants.JSONResponseKeys;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 import com.liferay.portal.search.tuning.blueprints.misspellings.processor.MisspellingsProcessor;
+import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.query.index.util.QueryIndexHelper;
+import com.liferay.portal.search.tuning.blueprints.searchresponse.json.translator.SearchResponseJSONTranslator;
+import com.liferay.portal.search.tuning.blueprints.searchresponse.json.translator.constants.JSONKeys;
+import com.liferay.portal.search.tuning.blueprints.searchresponse.json.translator.constants.ResponseAttributeKeys;
 import com.liferay.portal.search.tuning.blueprints.suggestions.attributes.SuggestionsAttributes;
 import com.liferay.portal.search.tuning.blueprints.suggestions.attributes.SuggestionsAttributesBuilder;
 import com.liferay.portal.search.tuning.blueprints.suggestions.spellcheck.SpellCheckService;
 import com.liferay.portal.search.tuning.blueprints.suggestions.suggestion.Suggestion;
 import com.liferay.portal.search.tuning.blueprints.util.attributes.BlueprintsAttributesHelper;
-import com.liferay.portal.search.tuning.blueprints.util.attributes.SuggestionsAttributesHelper;
 import com.liferay.portal.search.tuning.blueprints.web.internal.constants.BlueprintsWebPortletKeys;
 import com.liferay.portal.search.tuning.blueprints.web.internal.constants.ResourceRequestKeys;
 import com.liferay.portal.search.tuning.blueprints.web.internal.portlet.preferences.BlueprintsWebPortletPreferences;
 import com.liferay.portal.search.tuning.blueprints.web.internal.portlet.preferences.BlueprintsWebPortletPreferencesImpl;
+import com.liferay.portal.search.tuning.blueprints.web.internal.util.BlueprintsWebPortletHelper;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Stream;
 
@@ -84,9 +87,12 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
 		throws Exception {
 
-		long blueprintId = _getSearchBlueprintId(resourceRequest);
-
 		JSONObject responseJSONObject = null;
+
+		Optional<Blueprint> blueprintOptional =
+			_blueprintsWebPortletHelper.getBlueprint(resourceRequest);
+
+		Blueprint blueprint = blueprintOptional.get();
 
 		try {
 			BlueprintsWebPortletPreferences blueprintsWebPortletPreferences =
@@ -97,26 +103,22 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 
 			BlueprintsAttributes blueprintsRequestAttributes =
 				_getBlueprintsRequestAttributes(
-					resourceRequest, blueprintId,
+					resourceRequest, blueprint,
 					blueprintsWebPortletPreferences);
 
 			SearchResponse searchResponse = _blueprintsEngineHelper.search(
-				blueprintsRequestAttributes, messages, blueprintId);
+				blueprint, blueprintsRequestAttributes, messages);
 
 			BlueprintsAttributes blueprintsResponseAttributes =
 				_getBlueprintsResponseAttributes(
 					resourceRequest, resourceResponse,
-					blueprintsRequestAttributes, blueprintId);
+					blueprintsRequestAttributes, blueprint);
 
-			responseJSONObject = _blueprintsJSONResponseBuilder.buildJSONObject(
-				searchResponse, blueprintsResponseAttributes,
-				_getResourceBundle(resourceRequest), messages, blueprintId);
+			responseJSONObject = _searchResponseJSONTranslator.translate(
+				searchResponse, blueprint, blueprintsResponseAttributes,
+				_getResourceBundle(resourceRequest), messages);
 
-			// TODO: remove condition after
-			// https://issues.liferay.com/browse/LPS-125124
-
-			if ((searchResponse.getTotalHits() == 0) &&
-				_shouldAddDidYouMean(
+			if (_shouldAddDidYouMean(
 					blueprintsWebPortletPreferences,
 					searchResponse.getTotalHits()) &&
 				!Validator.isBlank(blueprintsRequestAttributes.getKeywords())) {
@@ -127,11 +129,7 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 					responseJSONObject);
 			}
 
-			// TODO: remove condition after
-			// https://issues.liferay.com/browse/LPS-125124
-
-			if ((searchResponse.getTotalHits() > 0) &&
-				_shouldIndexQuery(
+			if (_shouldIndexQuery(
 					blueprintsWebPortletPreferences,
 					searchResponse.getTotalHits())) {
 
@@ -143,7 +141,7 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 			_log.error(jsonException.getMessage(), jsonException);
 
 			responseJSONObject = JSONUtil.put(
-				JSONResponseKeys.ERRORS, jsonException.getMessage());
+				JSONKeys.ERRORS, jsonException.getMessage());
 		}
 		catch (BlueprintsEngineException blueprintsEngineException) {
 			_log.error(
@@ -151,14 +149,13 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 				blueprintsEngineException);
 
 			responseJSONObject = JSONUtil.put(
-				JSONResponseKeys.ERRORS,
-				blueprintsEngineException.getMessage());
+				JSONKeys.ERRORS, blueprintsEngineException.getMessage());
 		}
 		catch (PortalException portalException) {
 			_log.error(portalException.getMessage(), portalException);
 
 			responseJSONObject = JSONUtil.put(
-				JSONResponseKeys.ERRORS, portalException.getMessage());
+				JSONKeys.ERRORS, portalException.getMessage());
 		}
 
 		JSONPortletResponseUtil.writeJSON(
@@ -188,14 +185,14 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 	private void _addDidYouMeanSuggestions(
 		JSONObject responseJSONObject, List<Suggestion> suggestions) {
 
-		JSONArray suggestionsJSONArray = JSONFactoryUtil.createJSONArray();
+		JSONArray suggestionsJSONArray = _jsonFactory.createJSONArray();
 
 		Stream<Suggestion> stream = suggestions.stream();
 
 		stream.forEach(
 			suggestion -> suggestionsJSONArray.put(suggestion.getText()));
 
-		responseJSONObject.put("didyoumean", suggestionsJSONArray);
+		responseJSONObject.put("didYouMean", suggestionsJSONArray);
 	}
 
 	private boolean _allowMisspellings(PortletRequest portletRequest) {
@@ -204,12 +201,12 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 	}
 
 	private BlueprintsAttributes _getBlueprintsRequestAttributes(
-		ResourceRequest resourceRequest, long blueprintId,
+		ResourceRequest resourceRequest, Blueprint blueprint,
 		BlueprintsWebPortletPreferences blueprintsWebPortletPreferences) {
 
 		BlueprintsAttributesBuilder blueprintsAttributesBuilder =
 			_blueprintsAttributesHelper.getBlueprintsRequestAttributesBuilder(
-				resourceRequest, blueprintId);
+				resourceRequest, blueprint);
 
 		if ((_misspellingsProcessor != null) &&
 			blueprintsWebPortletPreferences.isMisspellingsEnabled() &&
@@ -224,12 +221,15 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 
 	private BlueprintsAttributes _getBlueprintsResponseAttributes(
 		ResourceRequest resourceRequest, ResourceResponse resourceResponse,
-		BlueprintsAttributes blueprintsRequestAttributes, long blueprintId) {
+		BlueprintsAttributes blueprintsRequestAttributes, Blueprint blueprint) {
 
 		BlueprintsAttributesBuilder blueprintsAttributesBuilder =
 			_blueprintsAttributesHelper.getBlueprintsResponseAttributesBuilder(
-				resourceRequest, resourceResponse, blueprintsRequestAttributes,
-				blueprintId);
+				resourceRequest, resourceResponse, blueprint,
+				blueprintsRequestAttributes);
+
+		blueprintsAttributesBuilder.addAttribute(
+			ResponseAttributeKeys.INCLUDE_RESULT, true);
 
 		return blueprintsAttributesBuilder.build();
 	}
@@ -239,7 +239,7 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 		BlueprintsWebPortletPreferences blueprintsWebPortletPreferences) {
 
 		SuggestionsAttributesBuilder suggestionsAttributesBuilder =
-			_suggestionsAttributesHelper.getSuggestionsAttributesBuilder(
+			_blueprintsWebPortletHelper.getSuggestionsAttributesBuilder(
 				resourceRequest);
 
 		return suggestionsAttributesBuilder.keywords(
@@ -255,14 +255,6 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 
 		return ResourceBundleUtil.getBundle(
 			"content.Language", themeDisplay.getLocale(), getClass());
-	}
-
-	private long _getSearchBlueprintId(ResourceRequest resourceRequest) {
-		BlueprintsWebPortletPreferences blueprintsWebPortletPreferences =
-			new BlueprintsWebPortletPreferencesImpl(
-				resourceRequest.getPreferences());
-
-		return blueprintsWebPortletPreferences.getBlueprintId();
 	}
 
 	private void _indexQuery(ResourceRequest resourceRequest, String keywords) {
@@ -348,7 +340,10 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 	private BlueprintsEngineHelper _blueprintsEngineHelper;
 
 	@Reference
-	private BlueprintsJSONResponseBuilder _blueprintsJSONResponseBuilder;
+	private BlueprintsWebPortletHelper _blueprintsWebPortletHelper;
+
+	@Reference
+	private JSONFactory _jsonFactory;
 
 	@Reference(cardinality = ReferenceCardinality.OPTIONAL)
 	private volatile MisspellingsProcessor _misspellingsProcessor;
@@ -359,10 +354,10 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 	@Reference
 	private QueryIndexHelper _queryIndexHelper;
 
-	@Reference(cardinality = ReferenceCardinality.OPTIONAL)
-	private SpellCheckService _spellCheckService;
+	@Reference
+	private SearchResponseJSONTranslator _searchResponseJSONTranslator;
 
 	@Reference(cardinality = ReferenceCardinality.OPTIONAL)
-	private SuggestionsAttributesHelper _suggestionsAttributesHelper;
+	private SpellCheckService _spellCheckService;
 
 }
