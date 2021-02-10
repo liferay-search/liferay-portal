@@ -17,6 +17,8 @@ import {SELECTED_ELEMENTS} from '../mocks/data';
 
 import '@testing-library/jest-dom/extend-expect';
 
+const DEFAULT_EXPANDED_LIST = ['match'];
+
 function renderSidebar(props) {
 	return render(
 		<Sidebar
@@ -37,17 +39,29 @@ describe('Sidebar', () => {
 	it('renders the titles for the possible query elements', () => {
 		const {getByText} = renderSidebar();
 
-		SELECTED_ELEMENTS.map((element) =>
-			getByText(element.elementTemplateJSON.title['en_US'])
-		);
+		SELECTED_ELEMENTS.map((element) => {
+			if (
+				DEFAULT_EXPANDED_LIST.includes(
+					element.elementTemplateJSON.category
+				)
+			) {
+				getByText(element.elementTemplateJSON.title['en_US']);
+			}
+		});
 	});
 
 	it('renders the descriptions for the possible query elements', () => {
 		const {getByText} = renderSidebar();
 
-		SELECTED_ELEMENTS.map((element) =>
-			getByText(element.elementTemplateJSON.description['en_US'])
-		);
+		SELECTED_ELEMENTS.map((element) => {
+			if (
+				DEFAULT_EXPANDED_LIST.includes(
+					element.elementTemplateJSON.category
+				)
+			) {
+				getByText(element.elementTemplateJSON.description['en_US']);
+			}
+		});
 	});
 
 	it('renders the add button when mouseOver item', () => {
