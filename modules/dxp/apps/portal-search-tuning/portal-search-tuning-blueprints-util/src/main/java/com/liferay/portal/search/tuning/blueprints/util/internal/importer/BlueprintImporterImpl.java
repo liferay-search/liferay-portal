@@ -32,6 +32,7 @@ import com.liferay.portal.search.tuning.blueprints.util.importer.BlueprintImport
 
 import java.io.IOException;
 import java.io.InputStream;
+
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -95,8 +96,7 @@ public class BlueprintImporterImpl implements BlueprintImporter {
 		if (type == BlueprintTypes.BLUEPRINT) {
 			_addBlueprint(payloadJSONObject, serviceContext, privileged);
 		}
-		else if (type == BlueprintTypes.QUERY_FRAGMENT) {
-
+		else if (type == BlueprintTypes.QUERY_ELEMENT) {
 			_addElement(payloadJSONObject, type, serviceContext, privileged);
 
 			_log.error("Not implemented");
@@ -117,18 +117,18 @@ public class BlueprintImporterImpl implements BlueprintImporter {
 			"configuration"
 		).toJSONString();
 
-		String selectedFragments = payloadJSONObject.getJSONObject(
-			"selected_fragments"
+		String selectedElements = payloadJSONObject.getJSONObject(
+			"selectedElements"
 		).toJSONString();
 
 		_save(
-			titleMap, descriptionMap, configuration, selectedFragments,
+			titleMap, descriptionMap, configuration, selectedElements,
 			BlueprintTypes.BLUEPRINT, serviceContext, privileged);
 	}
 
 	private void _addElement(
-			JSONObject payloadJSONObject, int blueprintType, ServiceContext serviceContext,
-			boolean privileged)
+			JSONObject payloadJSONObject, int blueprintType,
+			ServiceContext serviceContext, boolean privileged)
 		throws PortalException {
 
 		Map<Locale, String> titleMap = _getTitleMap(payloadJSONObject);
@@ -138,10 +138,10 @@ public class BlueprintImporterImpl implements BlueprintImporter {
 		).toJSONString();
 
 		_save(
-			titleMap, null, configuration, null,
-			blueprintType, serviceContext, privileged);
+			titleMap, null, configuration, null, blueprintType, serviceContext,
+			privileged);
 	}
-	
+
 	private ServiceContext _createServiceContext(
 			long companyId, long groupId, long userId)
 		throws PortalException {
@@ -212,20 +212,20 @@ public class BlueprintImporterImpl implements BlueprintImporter {
 
 	private void _save(
 			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
-			String configuration, String selectedFragments, int type,
+			String configuration, String selectedElements, int type,
 			ServiceContext serviceContext, boolean privileged)
 		throws PortalException {
 
 		if (privileged) {
 			_blueprintLocalService.addBlueprint(
 				serviceContext.getUserId(), serviceContext.getScopeGroupId(),
-				titleMap, descriptionMap, configuration, selectedFragments,
+				titleMap, descriptionMap, configuration, selectedElements,
 				BlueprintTypes.BLUEPRINT, serviceContext);
 		}
 		else {
 			_blueprintService.addCompanyBlueprint(
-				titleMap, descriptionMap, configuration, selectedFragments,
-				type, serviceContext);
+				titleMap, descriptionMap, configuration, selectedElements, type,
+				serviceContext);
 		}
 	}
 
@@ -261,27 +261,26 @@ public class BlueprintImporterImpl implements BlueprintImporter {
 		if (type == BlueprintTypes.BLUEPRINT) {
 			if (_validateTitle(payloadJSONObject) &&
 				_validateConfiguration(payloadJSONObject) &&
-				_validateSelectedFragments(payloadJSONObject)) {
+				_validateSelectedElements(payloadJSONObject)) {
 
 				return true;
 			}
 
 			return false;
 		}
-		else {
-			if (_validateTitle(payloadJSONObject) &&
-				_validateConfiguration(payloadJSONObject)) {
 
-				return true;
-			}
+		if (_validateTitle(payloadJSONObject) &&
+			_validateConfiguration(payloadJSONObject)) {
+
+			return true;
 		}
 
 		return false;
 	}
 
-	private boolean _validateSelectedFragments(JSONObject payloadJSONObject) {
-		if (!payloadJSONObject.has("selected_fragments")) {
-			_log.error("Missing selected fragments object");
+	private boolean _validateSelectedElements(JSONObject payloadJSONObject) {
+		if (!payloadJSONObject.has("selectedElements")) {
+			_log.error("Missing selected element object");
 
 			return false;
 		}
