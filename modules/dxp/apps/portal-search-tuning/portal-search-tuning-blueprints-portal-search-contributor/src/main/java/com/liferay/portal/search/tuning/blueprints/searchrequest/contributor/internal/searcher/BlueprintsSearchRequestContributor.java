@@ -14,8 +14,6 @@
 
 package com.liferay.portal.search.tuning.blueprints.searchrequest.contributor.internal.searcher;
 
-import com.liferay.petra.string.StringPool;
-import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.service.UserLocalService;
@@ -37,7 +35,6 @@ import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
 import com.liferay.portal.search.tuning.blueprints.util.BlueprintHelper;
 
 import java.util.Locale;
-import java.util.Optional;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -81,9 +78,8 @@ public class BlueprintsSearchRequestContributor
 			_searchRequestBuilderFactory.builder(searchRequest);
 
 		_blueprintsSearchRequestContributorHelper.combine(
-			searchRequestBuilder,
-			getBlueprintsAttributes(searchRequest, blueprintId), messages,
-			getBlueprintId(searchRequest));
+			searchRequestBuilder, blueprintId,
+			getBlueprintsAttributes(searchRequest), messages);
 
 		return searchRequestBuilder.build();
 	}
@@ -120,7 +116,7 @@ public class BlueprintsSearchRequestContributor
 	}
 
 	protected BlueprintsAttributes getBlueprintsAttributes(
-		SearchRequest searchRequest, long blueprintId) {
+		SearchRequest searchRequest) {
 
 		BlueprintsAttributesBuilder blueprintsAttributesBuilder =
 			_blueprintsAttributesBuilderFactory.builder();
@@ -199,21 +195,6 @@ public class BlueprintsSearchRequestContributor
 		);
 	}
 
-	protected String getKeywordsParameterName(long blueprintId) {
-		try {
-			Optional<String> optional =
-				_blueprintHelper.getKeywordsParameterNameOptional(
-					_blueprintService.getBlueprint(blueprintId));
-
-			return optional.orElse(StringPool.BLANK);
-		}
-		catch (PortalException portalException) {
-			_log.error(portalException.getMessage(), portalException);
-		}
-
-		return "q";
-	}
-
 	protected Locale getLocale(SearchRequest searchRequest) {
 		return _searchRequestBuilderFactory.builder(
 			searchRequest
@@ -268,10 +249,11 @@ public class BlueprintsSearchRequestContributor
 		_blueprintsAttributesBuilderFactory;
 
 	@Reference
-	private BlueprintsSearchRequestContributorHelper _blueprintsSearchRequestContributorHelper;
+	private BlueprintService _blueprintService;
 
 	@Reference
-	private BlueprintService _blueprintService;
+	private BlueprintsSearchRequestContributorHelper
+		_blueprintsSearchRequestContributorHelper;
 
 	@Reference
 	private ComplexQueryPartBuilderFactory _complexQueryPartBuilderFactory;
