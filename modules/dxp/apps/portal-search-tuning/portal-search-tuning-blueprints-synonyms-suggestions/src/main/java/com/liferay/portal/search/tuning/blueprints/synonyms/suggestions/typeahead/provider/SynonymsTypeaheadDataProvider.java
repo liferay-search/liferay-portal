@@ -135,7 +135,8 @@ public class SynonymsTypeaheadDataProvider implements TypeaheadDataProvider {
 						continue;
 					}
 
-					suggestions.add(new Suggestion(s, searchHit.getScore(), "synonyms"));
+					suggestions.add(
+						new Suggestion(s, searchHit.getScore(), "synonyms"));
 				}
 			});
 
