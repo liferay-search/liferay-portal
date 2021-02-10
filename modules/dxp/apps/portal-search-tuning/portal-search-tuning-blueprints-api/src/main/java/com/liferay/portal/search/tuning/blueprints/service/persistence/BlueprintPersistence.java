@@ -738,160 +738,6 @@ public interface BlueprintPersistence extends BasePersistence<Blueprint> {
 	public int countByCompanyId(long companyId);
 
 	/**
-	 * Returns all the blueprints where companyId = &#63; and type = &#63;.
-	 *
-	 * @param companyId the company ID
-	 * @param type the type
-	 * @return the matching blueprints
-	 */
-	public java.util.List<Blueprint> findByC_T(long companyId, int type);
-
-	/**
-	 * Returns a range of all the blueprints where companyId = &#63; and type = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>BlueprintModelImpl</code>.
-	 * </p>
-	 *
-	 * @param companyId the company ID
-	 * @param type the type
-	 * @param start the lower bound of the range of blueprints
-	 * @param end the upper bound of the range of blueprints (not inclusive)
-	 * @return the range of matching blueprints
-	 */
-	public java.util.List<Blueprint> findByC_T(
-		long companyId, int type, int start, int end);
-
-	/**
-	 * Returns an ordered range of all the blueprints where companyId = &#63; and type = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>BlueprintModelImpl</code>.
-	 * </p>
-	 *
-	 * @param companyId the company ID
-	 * @param type the type
-	 * @param start the lower bound of the range of blueprints
-	 * @param end the upper bound of the range of blueprints (not inclusive)
-	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @return the ordered range of matching blueprints
-	 */
-	public java.util.List<Blueprint> findByC_T(
-		long companyId, int type, int start, int end,
-		com.liferay.portal.kernel.util.OrderByComparator<Blueprint>
-			orderByComparator);
-
-	/**
-	 * Returns an ordered range of all the blueprints where companyId = &#63; and type = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>BlueprintModelImpl</code>.
-	 * </p>
-	 *
-	 * @param companyId the company ID
-	 * @param type the type
-	 * @param start the lower bound of the range of blueprints
-	 * @param end the upper bound of the range of blueprints (not inclusive)
-	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param useFinderCache whether to use the finder cache
-	 * @return the ordered range of matching blueprints
-	 */
-	public java.util.List<Blueprint> findByC_T(
-		long companyId, int type, int start, int end,
-		com.liferay.portal.kernel.util.OrderByComparator<Blueprint>
-			orderByComparator,
-		boolean useFinderCache);
-
-	/**
-	 * Returns the first blueprint in the ordered set where companyId = &#63; and type = &#63;.
-	 *
-	 * @param companyId the company ID
-	 * @param type the type
-	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
-	 * @return the first matching blueprint
-	 * @throws NoSuchBlueprintException if a matching blueprint could not be found
-	 */
-	public Blueprint findByC_T_First(
-			long companyId, int type,
-			com.liferay.portal.kernel.util.OrderByComparator<Blueprint>
-				orderByComparator)
-		throws NoSuchBlueprintException;
-
-	/**
-	 * Returns the first blueprint in the ordered set where companyId = &#63; and type = &#63;.
-	 *
-	 * @param companyId the company ID
-	 * @param type the type
-	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
-	 * @return the first matching blueprint, or <code>null</code> if a matching blueprint could not be found
-	 */
-	public Blueprint fetchByC_T_First(
-		long companyId, int type,
-		com.liferay.portal.kernel.util.OrderByComparator<Blueprint>
-			orderByComparator);
-
-	/**
-	 * Returns the last blueprint in the ordered set where companyId = &#63; and type = &#63;.
-	 *
-	 * @param companyId the company ID
-	 * @param type the type
-	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
-	 * @return the last matching blueprint
-	 * @throws NoSuchBlueprintException if a matching blueprint could not be found
-	 */
-	public Blueprint findByC_T_Last(
-			long companyId, int type,
-			com.liferay.portal.kernel.util.OrderByComparator<Blueprint>
-				orderByComparator)
-		throws NoSuchBlueprintException;
-
-	/**
-	 * Returns the last blueprint in the ordered set where companyId = &#63; and type = &#63;.
-	 *
-	 * @param companyId the company ID
-	 * @param type the type
-	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
-	 * @return the last matching blueprint, or <code>null</code> if a matching blueprint could not be found
-	 */
-	public Blueprint fetchByC_T_Last(
-		long companyId, int type,
-		com.liferay.portal.kernel.util.OrderByComparator<Blueprint>
-			orderByComparator);
-
-	/**
-	 * Returns the blueprints before and after the current blueprint in the ordered set where companyId = &#63; and type = &#63;.
-	 *
-	 * @param blueprintId the primary key of the current blueprint
-	 * @param companyId the company ID
-	 * @param type the type
-	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
-	 * @return the previous, current, and next blueprint
-	 * @throws NoSuchBlueprintException if a blueprint with the primary key could not be found
-	 */
-	public Blueprint[] findByC_T_PrevAndNext(
-			long blueprintId, long companyId, int type,
-			com.liferay.portal.kernel.util.OrderByComparator<Blueprint>
-				orderByComparator)
-		throws NoSuchBlueprintException;
-
-	/**
-	 * Removes all the blueprints where companyId = &#63; and type = &#63; from the database.
-	 *
-	 * @param companyId the company ID
-	 * @param type the type
-	 */
-	public void removeByC_T(long companyId, int type);
-
-	/**
-	 * Returns the number of blueprints where companyId = &#63; and type = &#63;.
-	 *
-	 * @param companyId the company ID
-	 * @param type the type
-	 * @return the number of matching blueprints
-	 */
-	public int countByC_T(long companyId, int type);
-
-	/**
 	 * Returns all the blueprints where groupId = &#63; and status = &#63;.
 	 *
 	 * @param groupId the group ID
@@ -1336,6 +1182,160 @@ public interface BlueprintPersistence extends BasePersistence<Blueprint> {
 	 * @return the number of matching blueprints that the user has permission to view
 	 */
 	public int filterCountByG_T(long groupId, int type);
+
+	/**
+	 * Returns all the blueprints where companyId = &#63; and type = &#63;.
+	 *
+	 * @param companyId the company ID
+	 * @param type the type
+	 * @return the matching blueprints
+	 */
+	public java.util.List<Blueprint> findByC_T(long companyId, int type);
+
+	/**
+	 * Returns a range of all the blueprints where companyId = &#63; and type = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>BlueprintModelImpl</code>.
+	 * </p>
+	 *
+	 * @param companyId the company ID
+	 * @param type the type
+	 * @param start the lower bound of the range of blueprints
+	 * @param end the upper bound of the range of blueprints (not inclusive)
+	 * @return the range of matching blueprints
+	 */
+	public java.util.List<Blueprint> findByC_T(
+		long companyId, int type, int start, int end);
+
+	/**
+	 * Returns an ordered range of all the blueprints where companyId = &#63; and type = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>BlueprintModelImpl</code>.
+	 * </p>
+	 *
+	 * @param companyId the company ID
+	 * @param type the type
+	 * @param start the lower bound of the range of blueprints
+	 * @param end the upper bound of the range of blueprints (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the ordered range of matching blueprints
+	 */
+	public java.util.List<Blueprint> findByC_T(
+		long companyId, int type, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<Blueprint>
+			orderByComparator);
+
+	/**
+	 * Returns an ordered range of all the blueprints where companyId = &#63; and type = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>BlueprintModelImpl</code>.
+	 * </p>
+	 *
+	 * @param companyId the company ID
+	 * @param type the type
+	 * @param start the lower bound of the range of blueprints
+	 * @param end the upper bound of the range of blueprints (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param useFinderCache whether to use the finder cache
+	 * @return the ordered range of matching blueprints
+	 */
+	public java.util.List<Blueprint> findByC_T(
+		long companyId, int type, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<Blueprint>
+			orderByComparator,
+		boolean useFinderCache);
+
+	/**
+	 * Returns the first blueprint in the ordered set where companyId = &#63; and type = &#63;.
+	 *
+	 * @param companyId the company ID
+	 * @param type the type
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching blueprint
+	 * @throws NoSuchBlueprintException if a matching blueprint could not be found
+	 */
+	public Blueprint findByC_T_First(
+			long companyId, int type,
+			com.liferay.portal.kernel.util.OrderByComparator<Blueprint>
+				orderByComparator)
+		throws NoSuchBlueprintException;
+
+	/**
+	 * Returns the first blueprint in the ordered set where companyId = &#63; and type = &#63;.
+	 *
+	 * @param companyId the company ID
+	 * @param type the type
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching blueprint, or <code>null</code> if a matching blueprint could not be found
+	 */
+	public Blueprint fetchByC_T_First(
+		long companyId, int type,
+		com.liferay.portal.kernel.util.OrderByComparator<Blueprint>
+			orderByComparator);
+
+	/**
+	 * Returns the last blueprint in the ordered set where companyId = &#63; and type = &#63;.
+	 *
+	 * @param companyId the company ID
+	 * @param type the type
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching blueprint
+	 * @throws NoSuchBlueprintException if a matching blueprint could not be found
+	 */
+	public Blueprint findByC_T_Last(
+			long companyId, int type,
+			com.liferay.portal.kernel.util.OrderByComparator<Blueprint>
+				orderByComparator)
+		throws NoSuchBlueprintException;
+
+	/**
+	 * Returns the last blueprint in the ordered set where companyId = &#63; and type = &#63;.
+	 *
+	 * @param companyId the company ID
+	 * @param type the type
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching blueprint, or <code>null</code> if a matching blueprint could not be found
+	 */
+	public Blueprint fetchByC_T_Last(
+		long companyId, int type,
+		com.liferay.portal.kernel.util.OrderByComparator<Blueprint>
+			orderByComparator);
+
+	/**
+	 * Returns the blueprints before and after the current blueprint in the ordered set where companyId = &#63; and type = &#63;.
+	 *
+	 * @param blueprintId the primary key of the current blueprint
+	 * @param companyId the company ID
+	 * @param type the type
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the previous, current, and next blueprint
+	 * @throws NoSuchBlueprintException if a blueprint with the primary key could not be found
+	 */
+	public Blueprint[] findByC_T_PrevAndNext(
+			long blueprintId, long companyId, int type,
+			com.liferay.portal.kernel.util.OrderByComparator<Blueprint>
+				orderByComparator)
+		throws NoSuchBlueprintException;
+
+	/**
+	 * Removes all the blueprints where companyId = &#63; and type = &#63; from the database.
+	 *
+	 * @param companyId the company ID
+	 * @param type the type
+	 */
+	public void removeByC_T(long companyId, int type);
+
+	/**
+	 * Returns the number of blueprints where companyId = &#63; and type = &#63;.
+	 *
+	 * @param companyId the company ID
+	 * @param type the type
+	 * @return the number of matching blueprints
+	 */
+	public int countByC_T(long companyId, int type);
 
 	/**
 	 * Returns all the blueprints where groupId = &#63; and status = &#63; and type = &#63;.

@@ -59,7 +59,7 @@ public class BlueprintWrapper
 		attributes.put("title", getTitle());
 		attributes.put("description", getDescription());
 		attributes.put("configuration", getConfiguration());
-		attributes.put("selectedFragments", getSelectedFragments());
+		attributes.put("selectedElements", getSelectedElements());
 		attributes.put("type", getType());
 
 		return attributes;
@@ -163,10 +163,10 @@ public class BlueprintWrapper
 			setConfiguration(configuration);
 		}
 
-		String selectedFragments = (String)attributes.get("selectedFragments");
+		String selectedElements = (String)attributes.get("selectedElements");
 
-		if (selectedFragments != null) {
-			setSelectedFragments(selectedFragments);
+		if (selectedElements != null) {
+			setSelectedElements(selectedElements);
 		}
 
 		Integer type = (Integer)attributes.get("type");
@@ -343,13 +343,13 @@ public class BlueprintWrapper
 	}
 
 	/**
-	 * Returns the selected fragments of this blueprint.
+	 * Returns the selected elements of this blueprint.
 	 *
-	 * @return the selected fragments of this blueprint
+	 * @return the selected elements of this blueprint
 	 */
 	@Override
-	public String getSelectedFragments() {
-		return model.getSelectedFragments();
+	public String getSelectedElements() {
+		return model.getSelectedElements();
 	}
 
 	/**
@@ -776,13 +776,13 @@ public class BlueprintWrapper
 	}
 
 	/**
-	 * Sets the selected fragments of this blueprint.
+	 * Sets the selected elements of this blueprint.
 	 *
-	 * @param selectedFragments the selected fragments of this blueprint
+	 * @param selectedElements the selected elements of this blueprint
 	 */
 	@Override
-	public void setSelectedFragments(String selectedFragments) {
-		model.setSelectedFragments(selectedFragments);
+	public void setSelectedElements(String selectedElements) {
+		model.setSelectedElements(selectedElements);
 	}
 
 	/**

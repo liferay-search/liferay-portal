@@ -13,9 +13,9 @@ import {fireEvent, render, within} from '@testing-library/react';
 import React from 'react';
 
 import EditBlueprint from '../../../src/main/resources/META-INF/resources/js/edit_blueprint/index';
-import {DEFAULT_BASELINE_FRAGMENTS} from '../../../src/main/resources/META-INF/resources/js/utils/data';
+import {DEFAULT_BASELINE_ELEMENTS} from '../../../src/main/resources/META-INF/resources/js/utils/data';
 const Utils = require('../../../src/main/resources/META-INF/resources/js/utils/utils');
-import {SELECTED_FRAGMENTS} from '../mocks/data';
+import {SELECTED_ELEMENTS} from '../mocks/data';
 
 import '@testing-library/jest-dom/extend-expect';
 
@@ -65,35 +65,35 @@ describe('EditBlueprint', () => {
 		expect(container).not.toBeNull();
 	});
 
-	it('renders the default query fragment', () => {
+	it('renders the default query element', () => {
 		const {container} = renderEditBlueprint();
 
 		const {getByText} = within(container.querySelector('.builder'));
 
-		DEFAULT_BASELINE_FRAGMENTS.map((fragment) =>
-			getByText(fragment.fragmentTemplateJSON.title['en_US'])
+		DEFAULT_BASELINE_ELEMENTS.map((element) =>
+			getByText(element.elementTemplateJSON.title['en_US'])
 		);
 	});
 
-	it('adds additional query fragment from sidebar', () => {
+	it('adds additional query element from sidebar', () => {
 		const {container, getByLabelText} = renderEditBlueprint();
 
-		const fragmentCountBefore = container.querySelectorAll(
-			'.configuration-fragment-sheet'
+		const elementCountBefore = container.querySelectorAll(
+			'.configuration-element-sheet'
 		).length;
 
 		fireEvent.mouseOver(container.querySelectorAll('.list-group-title')[1]);
 
 		fireEvent.click(getByLabelText('add'));
 
-		const fragmentCountAfter = container.querySelectorAll(
-			'.configuration-fragment-sheet'
+		const elementCountAfter = container.querySelectorAll(
+			'.configuration-element-sheet'
 		).length;
 
-		expect(fragmentCountAfter).toBe(fragmentCountBefore + 1);
+		expect(elementCountAfter).toBe(elementCountBefore + 1);
 	});
 
-	it('enables removal of additional query fragments', () => {
+	it('enables removal of additional query elements', () => {
 		const {
 			container,
 			getAllByLabelText,
@@ -101,24 +101,24 @@ describe('EditBlueprint', () => {
 		} = renderEditBlueprint({
 			props: {
 				blueprintId: '1',
-				initialSelectedFragmentsString: JSON.stringify({
-					query_configuration: SELECTED_FRAGMENTS,
+				initialSelectedElementsString: JSON.stringify({
+					query_configuration: SELECTED_ELEMENTS,
 				}),
 			},
 		});
 
-		const fragmentCountBefore = container.querySelectorAll(
-			'.configuration-fragment-sheet'
+		const elementCountBefore = container.querySelectorAll(
+			'.configuration-element-sheet'
 		).length;
 
 		fireEvent.click(getAllByLabelText('dropdown')[0]);
 
 		fireEvent.click(getAllByText('remove')[0]);
 
-		const fragmentCountAfter = container.querySelectorAll(
-			'.configuration-fragment-sheet'
+		const elementCountAfter = container.querySelectorAll(
+			'.configuration-element-sheet'
 		).length;
 
-		expect(fragmentCountAfter).toBe(fragmentCountBefore - 1);
+		expect(elementCountAfter).toBe(elementCountBefore - 1);
 	});
 });

@@ -23,15 +23,15 @@ import React, {useState} from 'react';
 
 import {
 	DEFAULT_ADVANCED_CONFIGURATION,
-	DEFAULT_BASELINE_FRAGMENTS,
+	DEFAULT_BASELINE_ELEMENTS,
 	DEFAULT_PARAMETER_CONFIGURATION,
 	DEFAULT_SORT_CONFIGURATION,
 } from '../utils/data';
 import {FRAMEWORK_TYPES} from '../utils/frameworkTypes';
-import {convertToSelectedFragment} from '../utils/utils';
+import {convertToSelectedElement} from '../utils/utils';
 
-const DEFAULT_SELECTED_BASELINE_FRAGMENTS = DEFAULT_BASELINE_FRAGMENTS.map(
-	(fragment, idx) => convertToSelectedFragment(fragment, idx)
+const DEFAULT_SELECTED_BASELINE_ELEMENTS = DEFAULT_BASELINE_ELEMENTS.map(
+	(element, idx) => convertToSelectedElement(element, idx)
 );
 
 const FrameworkCard = ({
@@ -106,7 +106,7 @@ const AddBlueprintModal = ({
 	const [visible, setVisible] = useState(initialVisible);
 	const [inputValue, setInputValue] = useState('');
 	const [descriptionInputValue, setDescriptionInputValue] = useState('');
-	const [includeBaselineFragments, setIncludeBaselineFragments] = useState(
+	const [includeBaselineElements, setIncludeBaselineElements] = useState(
 		true
 	);
 
@@ -134,9 +134,9 @@ const AddBlueprintModal = ({
 				parameter_configuration: DEFAULT_PARAMETER_CONFIGURATION,
 				query_configuration:
 					framework === FRAMEWORK_TYPES.CUSTOM &&
-					includeBaselineFragments
-						? DEFAULT_SELECTED_BASELINE_FRAGMENTS.map(
-								(fragment) => fragment.fragmentOutput
+					includeBaselineElements
+						? DEFAULT_SELECTED_BASELINE_ELEMENTS.map(
+								(element) => element.elementOutput
 						  )
 						: [],
 				sort_configuration: DEFAULT_SORT_CONFIGURATION,
@@ -144,12 +144,12 @@ const AddBlueprintModal = ({
 		);
 
 		formData.append(
-			`${namespace}selectedFragments`,
+			`${namespace}selectedElements`,
 			JSON.stringify({
 				query_configuration:
 					framework === FRAMEWORK_TYPES.CUSTOM &&
-					includeBaselineFragments
-						? DEFAULT_SELECTED_BASELINE_FRAGMENTS
+					includeBaselineElements
+						? DEFAULT_SELECTED_BASELINE_ELEMENTS
 						: [],
 			})
 		);
@@ -323,7 +323,7 @@ const AddBlueprintModal = ({
 											FRAMEWORK_TYPES.DEFAULT
 										}
 										description={Liferay.Language.get(
-											'compose-fragments-on-top-of-liferay-default-search-clauses'
+											'compose-elements-on-top-of-liferay-default-search-clauses'
 										)}
 										imagePath={`${contextPath}/images/liferay-default-clauses.svg`}
 										onChange={() =>
@@ -344,7 +344,7 @@ const AddBlueprintModal = ({
 											framework === FRAMEWORK_TYPES.CUSTOM
 										}
 										description={Liferay.Language.get(
-											'compose-fragments-from-the-ground-up'
+											'compose-elements-from-the-ground-up'
 										)}
 										imagePath={`${contextPath}/images/custom-clauses.svg`}
 										onChange={() =>
@@ -367,21 +367,21 @@ const AddBlueprintModal = ({
 											>
 												<ClayCheckbox
 													aria-label={Liferay.Language.get(
-														'include-baseline-fragments'
+														'include-baseline-elements'
 													)}
 													checked={
-														includeBaselineFragments
+														includeBaselineElements
 													}
 													disabled={
 														framework !==
 														FRAMEWORK_TYPES.CUSTOM
 													}
 													label={Liferay.Language.get(
-														'include-baseline-fragments'
+														'include-baseline-elements'
 													)}
 													onChange={() =>
-														setIncludeBaselineFragments(
-															!includeBaselineFragments
+														setIncludeBaselineElements(
+															!includeBaselineElements
 														)
 													}
 												/>

@@ -50,7 +50,7 @@ $controlMenuToolbarHeight: 56px;
 				position: absolute;
 				right: 0.5rem;
 
-				.add-fragment-button {
+				.add-element-button {
 					display: table-cell;
 					vertical-align: middle;
 				}
@@ -58,7 +58,7 @@ $controlMenuToolbarHeight: 56px;
 		}
 	}
 
-	.query-fragment-list {
+	.query-element-list {
 		overflow-y: scroll;
 		padding-bottom: 16px;
 	}

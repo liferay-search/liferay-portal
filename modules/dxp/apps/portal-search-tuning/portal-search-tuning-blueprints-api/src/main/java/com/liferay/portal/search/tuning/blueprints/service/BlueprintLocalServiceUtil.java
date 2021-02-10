@@ -61,13 +61,13 @@ public class BlueprintLocalServiceUtil {
 				long userId, long groupId,
 				java.util.Map<java.util.Locale, String> titleMap,
 				java.util.Map<java.util.Locale, String> descriptionMap,
-				String configuration, String selectedFragments, int type,
+				String configuration, String selectedElements, int type,
 				com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return getService().addBlueprint(
 			userId, groupId, titleMap, descriptionMap, configuration,
-			selectedFragments, type, serviceContext);
+			selectedElements, type, serviceContext);
 	}
 
 	/**
@@ -460,13 +460,13 @@ public class BlueprintLocalServiceUtil {
 				long userId, long blueprintId,
 				java.util.Map<java.util.Locale, String> titleMap,
 				java.util.Map<java.util.Locale, String> descriptionMap,
-				String configuration, String selectedFragments,
+				String configuration, String selectedElements,
 				com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return getService().updateBlueprint(
 			userId, blueprintId, titleMap, descriptionMap, configuration,
-			selectedFragments, serviceContext);
+			selectedElements, serviceContext);
 	}
 
 	public static com.liferay.portal.search.tuning.blueprints.model.Blueprint

@@ -39,9 +39,9 @@ PortletURL renderURL = renderResponse.createRenderURL();
 					});
 				add(
 					navigationItem -> {
-						navigationItem.setActive(tabs.equals(BlueprintsAdminTabNames.FRAGMENTS));
-						navigationItem.setHref(renderURL, "tabs", BlueprintsAdminTabNames.FRAGMENTS);
-						navigationItem.setLabel(LanguageUtil.get(request, "fragments"));
+						navigationItem.setActive(tabs.equals(BlueprintsAdminTabNames.ELEMENTS));
+						navigationItem.setHref(renderURL, "tabs", BlueprintsAdminTabNames.ELEMENTS);
+						navigationItem.setLabel(LanguageUtil.get(request, "elements"));
 					});
 			}
 		}
@@ -49,8 +49,8 @@ PortletURL renderURL = renderResponse.createRenderURL();
 />
 
 <c:choose>
-	<c:when test="<%= tabs.equals(BlueprintsAdminTabNames.FRAGMENTS) %>">
-		<liferay-util:include page="/view_fragments.jsp" servletContext="<%= application %>" />
+	<c:when test="<%= tabs.equals(BlueprintsAdminTabNames.ELEMENTS) %>">
+		<liferay-util:include page="/view_elements.jsp" servletContext="<%= application %>" />
 	</c:when>
 	<c:otherwise>
 		<liferay-util:include page="/view_blueprints.jsp" servletContext="<%= application %>" />

@@ -24,21 +24,21 @@ public class BlueprintsActionKeys {
 
 	public static final String ADD_BLUEPRINT = "ADD_BLUEPRINT";
 
-	public static final String ADD_FRAGMENT = "ADD_FRAGMENT";
+	public static final String ADD_ELEMENT = "ADD_ELEMENT";
 
 	public static final String APPLY_BLUEPRINT = "APPLY_BLUEPRINT";
 
 	public static final String DELETE_BLUEPRINT = "DELETE_BLUEPRINT";
 
-	public static final String DELETE_FRAGMENT = "DELETE_FRAGMENT";
+	public static final String DELETE_ELEMENT = "DELETE_ELEMENT";
 
 	public static final String UPDATE_BLUEPRINT = "UPDATE_BLUEPRINT";
 
-	public static final String UPDATE_FRAGMENT = "UPDATE_FRAGMENT";
+	public static final String UPDATE_ELEMENT = "UPDATE_ELEMENT";
 
 	public static final String VIEW_BLUEPRINT = "VIEW_BLUEPRINT";
 
-	public static final String VIEW_FRAGMENT = "VIEW_FRAGMENT";
+	public static final String VIEW_ELEMENT = "VIEW_ELEMENT";
 
 	public static String getActionKeyForBlueprintType(int type, String action) {
 		if (type == BlueprintTypes.BLUEPRINT) {
@@ -58,22 +58,22 @@ public class BlueprintsActionKeys {
 				return action;
 			}
 		}
-		else if ((type == BlueprintTypes.AGGREGATION_FRAGMENT) ||
-				 (type == BlueprintTypes.FACET_FRAGMENT) ||
-				 (type == BlueprintTypes.QUERY_FRAGMENT) ||
-				 (type == BlueprintTypes.SUGGESTER_FRAGMENT)) {
+		else if ((type == BlueprintTypes.AGGREGATION_ELEMENT) ||
+				 (type == BlueprintTypes.FACET_ELEMENT) ||
+				 (type == BlueprintTypes.QUERY_ELEMENT) ||
+				 (type == BlueprintTypes.SUGGESTER_ELEMENT)) {
 
 			if (ActionKeys.VIEW.equals(action)) {
-				return BlueprintsActionKeys.VIEW_FRAGMENT;
+				return BlueprintsActionKeys.VIEW_ELEMENT;
 			}
 			else if (ActionKeys.ADD_ENTRY.equals(action)) {
-				return BlueprintsActionKeys.ADD_FRAGMENT;
+				return BlueprintsActionKeys.ADD_ELEMENT;
 			}
 			else if (ActionKeys.UPDATE.equals(action)) {
-				return BlueprintsActionKeys.UPDATE_FRAGMENT;
+				return BlueprintsActionKeys.UPDATE_ELEMENT;
 			}
 			else if (ActionKeys.DELETE.equals(action)) {
-				return BlueprintsActionKeys.DELETE_FRAGMENT;
+				return BlueprintsActionKeys.DELETE_ELEMENT;
 			}
 			else {
 				return action;

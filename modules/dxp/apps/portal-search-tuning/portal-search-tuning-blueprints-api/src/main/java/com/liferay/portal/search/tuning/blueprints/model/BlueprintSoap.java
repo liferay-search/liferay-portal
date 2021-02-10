@@ -49,7 +49,7 @@ public class BlueprintSoap implements Serializable {
 		soapModel.setTitle(model.getTitle());
 		soapModel.setDescription(model.getDescription());
 		soapModel.setConfiguration(model.getConfiguration());
-		soapModel.setSelectedFragments(model.getSelectedFragments());
+		soapModel.setSelectedElements(model.getSelectedElements());
 		soapModel.setType(model.getType());
 
 		return soapModel;
@@ -232,12 +232,12 @@ public class BlueprintSoap implements Serializable {
 		_configuration = configuration;
 	}
 
-	public String getSelectedFragments() {
-		return _selectedFragments;
+	public String getSelectedElements() {
+		return _selectedElements;
 	}
 
-	public void setSelectedFragments(String selectedFragments) {
-		_selectedFragments = selectedFragments;
+	public void setSelectedElements(String selectedElements) {
+		_selectedElements = selectedElements;
 	}
 
 	public int getType() {
@@ -264,7 +264,7 @@ public class BlueprintSoap implements Serializable {
 	private String _title;
 	private String _description;
 	private String _configuration;
-	private String _selectedFragments;
+	private String _selectedElements;
 	private int _type;
 
 }

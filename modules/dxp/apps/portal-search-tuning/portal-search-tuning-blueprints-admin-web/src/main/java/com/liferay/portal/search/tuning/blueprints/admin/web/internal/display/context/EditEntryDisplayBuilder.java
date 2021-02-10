@@ -217,7 +217,7 @@ public abstract class EditEntryDisplayBuilder {
 			sb.append("blueprint");
 		}
 		else {
-			sb.append("fragment");
+			sb.append("element");
 		}
 
 		editBlueprintDisplayContext.setPageTitle(

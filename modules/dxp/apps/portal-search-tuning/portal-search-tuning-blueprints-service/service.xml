@@ -30,7 +30,7 @@
 		<column localized="true" name="title" type="String" />
 		<column localized="true" name="description" type="String" />
 		<column name="configuration" type="String" />
-		<column name="selectedFragments" type="String" />
+		<column name="selectedElements" type="String" />
 		<column name="type" type="int" />
 
 		<!-- Finder methods -->
@@ -45,16 +45,16 @@
 		<finder name="CompanyId" return-type="Collection">
 			<finder-column name="companyId" />
 		</finder>
-		<finder name="C_T" return-type="Collection">
-			<finder-column name="companyId" />
-			<finder-column name="type" />
-		</finder>
 		<finder name="G_S" return-type="Collection">
 			<finder-column name="groupId" />
 			<finder-column name="status" />
 		</finder>
 		<finder name="G_T" return-type="Collection">
 			<finder-column name="groupId" />
+			<finder-column name="type" />
+		</finder>
+		<finder name="C_T" return-type="Collection">
+			<finder-column name="companyId" />
 			<finder-column name="type" />
 		</finder>
 		<finder name="G_S_T" return-type="Collection">

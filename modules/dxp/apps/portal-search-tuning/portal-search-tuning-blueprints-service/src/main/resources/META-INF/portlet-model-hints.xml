@@ -26,7 +26,7 @@
 		<field name="configuration" type="String">
 			<hint-collection name="CLOB" />
 		</field>
-		<field name="selectedFragments" type="String">
+		<field name="selectedElements" type="String">
 			<hint-collection name="CLOB" />
 		</field>
 		<field name="type" type="int" />

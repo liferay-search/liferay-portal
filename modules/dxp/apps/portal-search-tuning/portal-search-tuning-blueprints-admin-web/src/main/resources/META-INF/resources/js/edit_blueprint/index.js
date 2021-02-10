@@ -17,13 +17,13 @@ import ErrorBoundary from '../shared/ErrorBoundary';
 import PageToolbar from '../shared/PageToolbar';
 import ThemeContext from '../shared/ThemeContext';
 import {
-	CUSTOM_JSON_FRAGMENT,
-	DEFAULT_BASELINE_FRAGMENTS,
+	CUSTOM_JSON_ELEMENT,
+	DEFAULT_BASELINE_ELEMENTS,
 	DEFAULT_FRAMEWORK_CONFIGURATION,
-	QUERY_FRAGMENTS,
+	QUERY_ELEMENTS,
 } from '../utils/data';
 import {
-	convertToSelectedFragment,
+	convertToSelectedElement,
 	openErrorToast,
 	openSuccessToast,
 	replaceUIConfigurationValues,
@@ -47,9 +47,9 @@ function EditBlueprintForm({
 	entityJSON,
 	initialConfigurationString = '{}',
 	initialDescription = {},
-	initialSelectedFragmentsString = '{}',
+	initialSelectedElementsString = '{}',
 	initialTitle = {},
-	queryFragments = [],
+	queryElements = [],
 	redirectURL = '',
 	searchableAssetTypes,
 	submitFormURL = '',
@@ -61,12 +61,12 @@ function EditBlueprintForm({
 
 	const form = useRef();
 
-	const fragmentIdCounter = useRef(1);
+	const elementIdCounter = useRef(1);
 
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	const initialConfiguration = JSON.parse(initialConfigurationString);
-	const initialSelectedFragments = JSON.parse(initialSelectedFragmentsString);
+	const initialSelectedElements = JSON.parse(initialSelectedElementsString);
 
 	const [advancedConfig, setAdvancedConfig] = useState(
 		JSON.stringify(
@@ -99,35 +99,35 @@ function EditBlueprintForm({
 	const [sortConfig, setSortConfig] = useState(
 		JSON.stringify(initialConfiguration['sort_configuration'], null, '\t')
 	);
-	const [selectedQueryFragments, setSelectedQueryFragments] = useState(
+	const [selectedQueryElements, setSelectedQueryElements] = useState(
 		blueprintId !== '0'
-			? initialSelectedFragments['query_configuration'].map(
-					(selectedFragment) => ({
-						...selectedFragment,
-						id: fragmentIdCounter.current++,
+			? initialSelectedElements['query_configuration'].map(
+					(selectedElement) => ({
+						...selectedElement,
+						id: elementIdCounter.current++,
 					})
 			  )
-			: DEFAULT_BASELINE_FRAGMENTS.map((fragment, idx) => {
-					fragmentIdCounter.current++;
+			: DEFAULT_BASELINE_ELEMENTS.map((element, idx) => {
+					elementIdCounter.current++;
 
-					return convertToSelectedFragment(fragment, idx);
+					return convertToSelectedElement(element, idx);
 			  })
 	);
 
-	const onAddFragment = useCallback((fragment) => {
-		setSelectedQueryFragments((selectedFragments) => [
-			convertToSelectedFragment(fragment, fragmentIdCounter.current++),
-			...selectedFragments,
+	const onAddElement = useCallback((element) => {
+		setSelectedQueryElements((selectedElements) => [
+			convertToSelectedElement(element, elementIdCounter.current++),
+			...selectedElements,
 		]);
 	}, []);
 
-	const deleteFragment = useCallback((id) => {
-		setSelectedQueryFragments((selectedFragments) =>
-			selectedFragments.filter((item) => item.id !== id)
+	const deleteElement = useCallback((id) => {
+		setSelectedQueryElements((selectedElements) =>
+			selectedElements.filter((item) => item.id !== id)
 		);
 
 		openSuccessToast({
-			message: Liferay.Language.get('fragment-removed'),
+			message: Liferay.Language.get('element-removed'),
 		});
 	}, []);
 
@@ -150,20 +150,20 @@ function EditBlueprintForm({
 						facet_configuration: JSON.parse(facetConfig),
 						framework_configuration: frameworkConfig,
 						parameter_configuration: JSON.parse(parameterConfig),
-						query_configuration: selectedQueryFragments.map(
-							(item) => item.fragmentOutput
+						query_configuration: selectedQueryElements.map(
+							(item) => item.elementOutput
 						),
 						sort_configuration: JSON.parse(sortConfig),
 					})
 				);
 
 				formData.append(
-					`${namespace}selectedFragments`,
+					`${namespace}selectedElements`,
 					JSON.stringify({
-						query_configuration: selectedQueryFragments.map(
+						query_configuration: selectedQueryElements.map(
 							(item) => ({
-								fragmentOutput: item.fragmentOutput,
-								fragmentTemplateJSON: item.fragmentTemplateJSON,
+								elementOutput: item.elementOutput,
+								elementTemplateJSON: item.elementTemplateJSON,
 								uiConfigurationJSON: item.uiConfigurationJSON,
 								uiConfigurationValues:
 									item.uiConfigurationValues,
@@ -223,38 +223,38 @@ function EditBlueprintForm({
 			namespace,
 			parameterConfig,
 			redirectURL,
-			selectedQueryFragments,
+			selectedQueryElements,
 			submitFormURL,
 			sortConfig,
 			facetConfig,
 		]
 	);
 
-	const updateQueryFragment = useCallback((id, newFragmentValues) => {
-		setSelectedQueryFragments((selectedQueryFragments) => {
-			const index = selectedQueryFragments.findIndex(
+	const updateQueryElement = useCallback((id, newElementValues) => {
+		setSelectedQueryElements((selectedQueryElements) => {
+			const index = selectedQueryElements.findIndex(
 				(item) => id == item.id
 			);
 
-			const fragment = {
-				...selectedQueryFragments[index],
-				...newFragmentValues,
+			const element = {
+				...selectedQueryElements[index],
+				...newElementValues,
 			};
 
-			// Update fragmentOutput when uiConfigurationValues changes
+			// Update elementOutput when uiConfigurationValues changes
 
-			if (newFragmentValues.uiConfigurationValues) {
-				fragment.fragmentOutput = replaceUIConfigurationValues(
-					fragment.uiConfigurationJSON,
-					fragment.fragmentTemplateJSON,
-					newFragmentValues.uiConfigurationValues
+			if (newElementValues.uiConfigurationValues) {
+				element.elementOutput = replaceUIConfigurationValues(
+					element.uiConfigurationJSON,
+					element.elementTemplateJSON,
+					newElementValues.uiConfigurationValues
 				);
 			}
 
 			return [
-				...selectedQueryFragments.slice(0, index),
-				fragment,
-				...selectedQueryFragments.slice(index + 1),
+				...selectedQueryElements.slice(0, index),
+				element,
+				...selectedQueryElements.slice(index + 1),
 			];
 		});
 	}, []);
@@ -284,18 +284,18 @@ function EditBlueprintForm({
 				return (
 					<>
 						<Sidebar
-							fragments={[
-								...QUERY_FRAGMENTS,
-								CUSTOM_JSON_FRAGMENT,
-								...queryFragments,
+							elements={[
+								...QUERY_ELEMENTS,
+								CUSTOM_JSON_ELEMENT,
+								...queryElements,
 							]}
-							onAddFragment={onAddFragment}
+							onAddElement={onAddElement}
 							onToggleSidebar={() => setShowSidebar(!showSidebar)}
 							showSidebar={showSidebar}
 						/>
 
 						<QueryBuilder
-							deleteFragment={deleteFragment}
+							deleteElement={deleteElement}
 							entityJSON={entityJSON}
 							frameworkConfig={frameworkConfig}
 							onFrameworkConfigChange={(val) =>
@@ -303,8 +303,8 @@ function EditBlueprintForm({
 							}
 							onToggleSidebar={() => setShowSidebar(!showSidebar)}
 							searchableAssetTypes={searchableAssetTypes}
-							selectedFragments={selectedQueryFragments}
-							updateFragment={updateQueryFragment}
+							selectedElements={selectedQueryElements}
+							updateElement={updateQueryElement}
 						/>
 					</>
 				);
@@ -335,9 +335,9 @@ EditBlueprintForm.propTypes = {
 	entityJSON: PropTypes.object,
 	initialConfigurationString: PropTypes.string,
 	initialDescription: PropTypes.object,
-	initialSelectedFragmentsString: PropTypes.string,
+	initialSelectedElementsString: PropTypes.string,
 	initialTitle: PropTypes.object,
-	queryFragments: PropTypes.arrayOf(PropTypes.object),
+	queryElements: PropTypes.arrayOf(PropTypes.object),
 	redirectURL: PropTypes.string,
 	searchableAssetTypes: PropTypes.arrayOf(PropTypes.string),
 	submitFormURL: PropTypes.string,

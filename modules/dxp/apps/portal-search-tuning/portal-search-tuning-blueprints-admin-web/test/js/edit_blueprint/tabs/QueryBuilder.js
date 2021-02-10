@@ -13,7 +13,7 @@ import {fireEvent, render} from '@testing-library/react';
 import React from 'react';
 
 import QueryBuilder from '../../../../src/main/resources/META-INF/resources/js/edit_blueprint/tabs/QueryBuilder';
-import {SELECTED_FRAGMENTS} from '../../mocks/data';
+import {SELECTED_ELEMENTS} from '../../mocks/data';
 
 import '@testing-library/jest-dom/extend-expect';
 
@@ -24,17 +24,17 @@ jest.mock(
 	)
 );
 
-const updateFragment = jest.fn();
+const updateElement = jest.fn();
 
 function renderBuilder(props) {
 	return render(
 		<QueryBuilder
-			deleteFragment={jest.fn()}
+			deleteElement={jest.fn()}
 			frameworkConfig={{}}
 			onFrameworkConfigChange={jest.fn()}
 			searchableAssetTypes={[]}
-			selectedFragments={SELECTED_FRAGMENTS}
-			updateFragment={updateFragment}
+			selectedElements={SELECTED_ELEMENTS}
+			updateElement={updateElement}
 			{...props}
 		/>
 	);
@@ -47,23 +47,23 @@ describe('QueryBuilder', () => {
 		expect(container).not.toBeNull();
 	});
 
-	it('renders the titles for the selected query fragments', () => {
+	it('renders the titles for the selected query elements', () => {
 		const {getByText} = renderBuilder();
 
-		SELECTED_FRAGMENTS.map((fragment) =>
-			getByText(fragment.fragmentTemplateJSON.title['en_US'])
+		SELECTED_ELEMENTS.map((element) =>
+			getByText(element.elementTemplateJSON.title['en_US'])
 		);
 	});
 
-	it('renders the description for the selected query fragments', () => {
+	it('renders the description for the selected query elements', () => {
 		const {getByText} = renderBuilder();
 
-		SELECTED_FRAGMENTS.map((fragment) =>
-			getByText(fragment.fragmentTemplateJSON.description['en_US'])
+		SELECTED_ELEMENTS.map((element) =>
+			getByText(element.elementTemplateJSON.description['en_US'])
 		);
 	});
 
-	it('can collapse all the query fragments', () => {
+	it('can collapse all the query elements', () => {
 		const {container, getByText} = renderBuilder();
 
 		fireEvent.click(getByText('collapse-all'));
@@ -73,7 +73,7 @@ describe('QueryBuilder', () => {
 		).toBe(0);
 	});
 
-	it('can expand all the query fragments', () => {
+	it('can expand all the query elements', () => {
 		const {container, getByText} = renderBuilder();
 
 		fireEvent.click(getByText('collapse-all'));

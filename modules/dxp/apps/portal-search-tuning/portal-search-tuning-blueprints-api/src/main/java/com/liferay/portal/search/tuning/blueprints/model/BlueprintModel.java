@@ -523,19 +523,19 @@ public interface BlueprintModel
 	public void setConfiguration(String configuration);
 
 	/**
-	 * Returns the selected fragments of this blueprint.
+	 * Returns the selected elements of this blueprint.
 	 *
-	 * @return the selected fragments of this blueprint
+	 * @return the selected elements of this blueprint
 	 */
 	@AutoEscape
-	public String getSelectedFragments();
+	public String getSelectedElements();
 
 	/**
-	 * Sets the selected fragments of this blueprint.
+	 * Sets the selected elements of this blueprint.
 	 *
-	 * @param selectedFragments the selected fragments of this blueprint
+	 * @param selectedElements the selected elements of this blueprint
 	 */
-	public void setSelectedFragments(String selectedFragments);
+	public void setSelectedElements(String selectedElements);
 
 	/**
 	 * Returns the type of this blueprint.

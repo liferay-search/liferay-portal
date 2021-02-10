@@ -22,7 +22,7 @@ import java.util.stream.Stream;
  */
 public enum ParameterConfigurationKeys {
 
-	CUSTOM("custom"), KEYWORDS("keywords"), PAGE("page");
+	CUSTOM("custom"), KEYWORDS("keywords"), PAGE("page"), SIZE("size");
 
 	public static final ParameterConfigurationKeys findByJsonKey(
 		String jsonKey) {

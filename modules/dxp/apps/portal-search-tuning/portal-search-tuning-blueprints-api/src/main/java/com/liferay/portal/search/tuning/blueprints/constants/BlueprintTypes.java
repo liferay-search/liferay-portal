@@ -19,14 +19,14 @@ package com.liferay.portal.search.tuning.blueprints.constants;
  */
 public class BlueprintTypes {
 
-	public static final int AGGREGATION_FRAGMENT = 7;
+	public static final int AGGREGATION_ELEMENT = 7;
 
 	public static final int BLUEPRINT = 1;
 
-	public static final int FACET_FRAGMENT = 10;
+	public static final int FACET_ELEMENT = 10;
 
-	public static final int QUERY_FRAGMENT = 13;
+	public static final int QUERY_ELEMENT = 13;
 
-	public static final int SUGGESTER_FRAGMENT = 16;
+	public static final int SUGGESTER_ELEMENT = 16;
 
 }

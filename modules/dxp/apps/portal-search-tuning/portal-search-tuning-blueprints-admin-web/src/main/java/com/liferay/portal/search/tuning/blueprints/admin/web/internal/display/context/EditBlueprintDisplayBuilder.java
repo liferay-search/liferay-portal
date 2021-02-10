@@ -116,7 +116,7 @@ public class EditBlueprintDisplayBuilder extends EditEntryDisplayBuilder {
 			BlueprintsAdminFieldsUtil.getFieldsJSONArray(
 				themeDisplay.getCompanyId())
 		).put(
-			"queryFragments", _getQueryFragmentsJSONArray()
+			"queryElements", _getQueryElementsJSONArray()
 		).put(
 			"redirectURL", getRedirect()
 		).put(
@@ -131,38 +131,38 @@ public class EditBlueprintDisplayBuilder extends EditEntryDisplayBuilder {
 				"initialConfigurationString", blueprint.getConfiguration());
 			props.put("initialDescription", getDescriptionJSONObject());
 			props.put(
-				"initialSelectedFragmentsString",
-				blueprint.getSelectedFragments());
+				"initialSelectedElementsString",
+				blueprint.getSelectedElements());
 			props.put("initialTitle", getTitleJSONObject());
 		}
 
 		return props;
 	}
 
-	private JSONArray _getQueryFragmentsJSONArray() {
+	private JSONArray _getQueryElementsJSONArray() {
 		int blueprintsTotalCount = blueprintService.getGroupBlueprintsCount(
 			themeDisplay.getCompanyGroupId(), WorkflowConstants.STATUS_APPROVED,
-			BlueprintTypes.QUERY_FRAGMENT);
+			BlueprintTypes.QUERY_ELEMENT);
 
-		List<Blueprint> queryFragments = blueprintService.getGroupBlueprints(
-			themeDisplay.getCompanyGroupId(), BlueprintTypes.QUERY_FRAGMENT, 0,
+		List<Blueprint> queryElements = blueprintService.getGroupBlueprints(
+			themeDisplay.getCompanyGroupId(), BlueprintTypes.QUERY_ELEMENT, 0,
 			blueprintsTotalCount);
 
-		JSONArray queryFragmentsJSONArray = jsonFactory.createJSONArray();
+		JSONArray queryElementsJSONArray = jsonFactory.createJSONArray();
 
-		for (Blueprint fragment : queryFragments) {
+		for (Blueprint blueprint : queryElements) {
 			try {
 				JSONObject jsonObject = jsonFactory.createJSONObject(
-					fragment.getConfiguration());
+					blueprint.getConfiguration());
 
-				queryFragmentsJSONArray.put(jsonObject);
+				queryElementsJSONArray.put(jsonObject);
 			}
 			catch (Exception exception) {
 				_log.error(exception, exception);
 			}
 		}
 
-		return queryFragmentsJSONArray;
+		return queryElementsJSONArray;
 	}
 
 	private JSONArray _getSearchableAssetTypesJSONArray() {

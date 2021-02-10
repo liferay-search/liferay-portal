@@ -26,7 +26,7 @@ import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminWebKeys;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context.ViewBlueprintsDisplayContext;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context.ViewBlueprintsManagementToolbarDisplayContext;
-import com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context.ViewFragmentsManagementToolbarDisplayContext;
+import com.liferay.portal.search.tuning.blueprints.admin.web.internal.display.context.ViewElementsManagementToolbarDisplayContext;
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintsPortletKeys;
 
 import javax.portlet.PortletException;
@@ -70,8 +70,8 @@ public class ViewBlueprintsMVCRenderCommand implements MVCRenderCommand {
 			_setBlueprintsManagementToolbar(
 				renderRequest, renderResponse, viewBlueprintsDisplayContext);
 		}
-		else if (tab.equals(BlueprintsAdminTabNames.FRAGMENTS)) {
-			_setFragmentsManagementToolbar(
+		else if (tab.equals(BlueprintsAdminTabNames.ELEMENTS)) {
+			_setElementsManagementToolbar(
 				renderRequest, renderResponse, viewBlueprintsDisplayContext);
 		}
 
@@ -115,14 +115,14 @@ public class ViewBlueprintsMVCRenderCommand implements MVCRenderCommand {
 		}
 	}
 
-	private void _setFragmentsManagementToolbar(
+	private void _setElementsManagementToolbar(
 		RenderRequest renderRequest, RenderResponse renderResponse,
 		ViewBlueprintsDisplayContext viewBlueprintsDisplayContext) {
 
 		try {
-			ViewFragmentsManagementToolbarDisplayContext
-				viewFragmentEntriesManagementToolbarDisplayContext =
-					new ViewFragmentsManagementToolbarDisplayContext(
+			ViewElementsManagementToolbarDisplayContext
+				viewElementEntriesManagementToolbarDisplayContext =
+					new ViewElementsManagementToolbarDisplayContext(
 						_portal.getHttpServletRequest(renderRequest),
 						_portal.getLiferayPortletRequest(renderRequest),
 						_portal.getLiferayPortletResponse(renderResponse),
@@ -131,8 +131,8 @@ public class ViewBlueprintsMVCRenderCommand implements MVCRenderCommand {
 
 			renderRequest.setAttribute(
 				BlueprintsAdminWebKeys.
-					VIEW_FRAGMENTS_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT,
-				viewFragmentEntriesManagementToolbarDisplayContext);
+					VIEW_ELEMENTS_MANAGEMENT_TOOLBAR_DISPLAY_CONTEXT,
+				viewElementEntriesManagementToolbarDisplayContext);
 		}
 		catch (PortalException | PortletException exception) {
 			_log.error(exception.getMessage(), exception);

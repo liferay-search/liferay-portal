@@ -9,57 +9,57 @@
  * distribution rights of the Software.
  */
 
-import BOOST_ALL_KEYWORDS_MATCH from '../../fragments/boost-all-keywords-match';
-import BOOST_ASSET_TYPE from '../../fragments/boost-asset-type';
-import BOOST_COMMERCE_ITEMS_FOR_MY_ACCOUNT_GROUPS from '../../fragments/boost-commerce-items-for-my-account-groups';
-import BOOST_CONTENTS_IN_A_CATEGORY from '../../fragments/boost-contents-in-a-category';
-import BOOST_CONTENTS_IN_A_CATEGORY_BY_KEYWORD_MATCH from '../../fragments/boost-contents-in-a-category-by-keyword-match';
-import BOOST_CONTENTS_IN_A_CATEGORY_FOR_A_PERIOD_OF_TIME from '../../fragments/boost-contents-in-a-category-for-a-period-of-time';
-import BOOST_CONTENTS_IN_A_CATEGORY_FOR_A_USER_SEGMENT from '../../fragments/boost-contents-in-a-category-for-a-user-segment';
-import BOOST_CONTENTS_IN_A_CATEGORY_FOR_GUEST_USERS from '../../fragments/boost-contents-in-a-category-for-guest-users';
-import BOOST_CONTENTS_IN_A_CATEGORY_FOR_NEW_USER_ACCOUNTS from '../../fragments/boost-contents-in-a-category-for-new-user-accounts';
-import BOOST_CONTENTS_IN_A_CATEGORY_FOR_TIME_OF_DAY from '../../fragments/boost-contents-in-a-category-for-time-of-day';
-import BOOST_CONTENTS_ON_MY_SITES from '../../fragments/boost-contents-on-my-sites';
-import BOOST_CONTENTS_WITH_MORE_VERSIONS from '../../fragments/boost-contents-with-more-versions';
-import BOOST_CONTENTS_WITH_USERS_LANGUAGE_AS_THE_DEFAULT_LANGUAGE from '../../fragments/boost-contents-with-user-language-as-the-default-language';
-import BOOST_FRESHNESS from '../../fragments/boost-freshness';
-import BOOST_LONGER_CONTENTS from '../../fragments/boost-longer-contents';
-import BOOST_PROXIMITY from '../../fragments/boost-proximity';
-import BOOST_TAGGED_CONTENTS from '../../fragments/boost-tagged-contents';
-import BOOST_TAGS_MATCH from '../../fragments/boost-tags-match';
-import BOOST_WEB_CONTENTS_BY_KEYWORD_MATCH from '../../fragments/boost-web-contents-by-keyword-match';
-import FILTER_BY_EXACT_TERMS_MATCH from '../../fragments/filter-by-exact-terms-match';
-import HIDE_BY_EXACT_TERM_MATCH from '../../fragments/hide-by-exact-term-match';
-import HIDE_CONTENTS_IN_A_CATEGORY from '../../fragments/hide-contents-in-a-category';
-import HIDE_CONTENTS_IN_A_CATEGORY_FOR_GUEST_USERS from '../../fragments/hide-contents-in-a-category-for-guest-users';
-import HIDE_DEFAULT_USER from '../../fragments/hide-default-user';
-import HIDE_DISCUSSIONS from '../../fragments/hide-discussions';
-import HIDE_HIDDEN_CONTENTS from '../../fragments/hide-hidden-contents';
-import HIDE_TAGGED_CONTENTS from '../../fragments/hide-tagged-contents';
-import LIMIT_SEARCH_TO_PDF_FILES from '../../fragments/limit-search-to-PDF-files';
-import LIMIT_SEARCH_TO_CONTENTS_CREATED_WITHIN_A_PERIOD_OF_TIME from '../../fragments/limit-search-to-contents-created-within-a-period-of-time';
-import LIMIT_SEARCH_TO_HEAD_VERSION from '../../fragments/limit-search-to-head-version';
-import LIMIT_SEARCH_TO_MY_CONTENTS from '../../fragments/limit-search-to-my-contents';
-import LIMIT_SEARCH_TO_MY_SITES from '../../fragments/limit-search-to-my-sites';
-import LIMIT_SEARCH_TO_PUBLISHED_CONTENTS from '../../fragments/limit-search-to-published-contents';
-import LIMIT_SEARCH_TO_THE_CURRENT_SITE from '../../fragments/limit-search-to-the-current-site';
-import LIMIT_SEARCH_TO_THESE_SITES from '../../fragments/limit-search-to-these-sites';
-import PASTE_AN_ELASTICSEARCH_QUERY from '../../fragments/paste-an-elasticsearch-query';
-import PUBLICATIONS_AWARE from '../../fragments/publications-aware';
-import SCHEDULING_AWARE from '../../fragments/scheduling-aware';
-import SEARCH_WITH_LUCENE_SYNTAX from '../../fragments/search-with-lucene-syntax';
-import STAGING_AWARE from '../../fragments/staging-aware';
-import TEXT_MATCH_OVER_MULTIPLE_FIELDS from '../../fragments/text-match-over-multiple-fields';
+import BOOST_ALL_KEYWORDS_MATCH from '../../elements/boost-all-keywords-match';
+import BOOST_ASSET_TYPE from '../../elements/boost-asset-type';
+import BOOST_COMMERCE_ITEMS_FOR_MY_ACCOUNT_GROUPS from '../../elements/boost-commerce-items-for-my-account-groups';
+import BOOST_CONTENTS_IN_A_CATEGORY from '../../elements/boost-contents-in-a-category';
+import BOOST_CONTENTS_IN_A_CATEGORY_BY_KEYWORD_MATCH from '../../elements/boost-contents-in-a-category-by-keyword-match';
+import BOOST_CONTENTS_IN_A_CATEGORY_FOR_A_PERIOD_OF_TIME from '../../elements/boost-contents-in-a-category-for-a-period-of-time';
+import BOOST_CONTENTS_IN_A_CATEGORY_FOR_A_USER_SEGMENT from '../../elements/boost-contents-in-a-category-for-a-user-segment';
+import BOOST_CONTENTS_IN_A_CATEGORY_FOR_GUEST_USERS from '../../elements/boost-contents-in-a-category-for-guest-users';
+import BOOST_CONTENTS_IN_A_CATEGORY_FOR_NEW_USER_ACCOUNTS from '../../elements/boost-contents-in-a-category-for-new-user-accounts';
+import BOOST_CONTENTS_IN_A_CATEGORY_FOR_TIME_OF_DAY from '../../elements/boost-contents-in-a-category-for-time-of-day';
+import BOOST_CONTENTS_ON_MY_SITES from '../../elements/boost-contents-on-my-sites';
+import BOOST_CONTENTS_WITH_MORE_VERSIONS from '../../elements/boost-contents-with-more-versions';
+import BOOST_CONTENTS_WITH_USERS_LANGUAGE_AS_THE_DEFAULT_LANGUAGE from '../../elements/boost-contents-with-user-language-as-the-default-language';
+import BOOST_FRESHNESS from '../../elements/boost-freshness';
+import BOOST_LONGER_CONTENTS from '../../elements/boost-longer-contents';
+import BOOST_PROXIMITY from '../../elements/boost-proximity';
+import BOOST_TAGGED_CONTENTS from '../../elements/boost-tagged-contents';
+import BOOST_TAGS_MATCH from '../../elements/boost-tags-match';
+import BOOST_WEB_CONTENTS_BY_KEYWORD_MATCH from '../../elements/boost-web-contents-by-keyword-match';
+import FILTER_BY_EXACT_TERMS_MATCH from '../../elements/filter-by-exact-terms-match';
+import HIDE_BY_EXACT_TERM_MATCH from '../../elements/hide-by-exact-term-match';
+import HIDE_CONTENTS_IN_A_CATEGORY from '../../elements/hide-contents-in-a-category';
+import HIDE_CONTENTS_IN_A_CATEGORY_FOR_GUEST_USERS from '../../elements/hide-contents-in-a-category-for-guest-users';
+import HIDE_DEFAULT_USER from '../../elements/hide-default-user';
+import HIDE_DISCUSSIONS from '../../elements/hide-discussions';
+import HIDE_HIDDEN_CONTENTS from '../../elements/hide-hidden-contents';
+import HIDE_TAGGED_CONTENTS from '../../elements/hide-tagged-contents';
+import LIMIT_SEARCH_TO_PDF_FILES from '../../elements/limit-search-to-PDF-files';
+import LIMIT_SEARCH_TO_CONTENTS_CREATED_WITHIN_A_PERIOD_OF_TIME from '../../elements/limit-search-to-contents-created-within-a-period-of-time';
+import LIMIT_SEARCH_TO_HEAD_VERSION from '../../elements/limit-search-to-head-version';
+import LIMIT_SEARCH_TO_MY_CONTENTS from '../../elements/limit-search-to-my-contents';
+import LIMIT_SEARCH_TO_MY_SITES from '../../elements/limit-search-to-my-sites';
+import LIMIT_SEARCH_TO_PUBLISHED_CONTENTS from '../../elements/limit-search-to-published-contents';
+import LIMIT_SEARCH_TO_THE_CURRENT_SITE from '../../elements/limit-search-to-the-current-site';
+import LIMIT_SEARCH_TO_THESE_SITES from '../../elements/limit-search-to-these-sites';
+import PASTE_AN_ELASTICSEARCH_QUERY from '../../elements/paste-an-elasticsearch-query';
+import PUBLICATIONS_AWARE from '../../elements/publications-aware';
+import SCHEDULING_AWARE from '../../elements/scheduling-aware';
+import SEARCH_WITH_LUCENE_SYNTAX from '../../elements/search-with-lucene-syntax';
+import STAGING_AWARE from '../../elements/staging-aware';
+import TEXT_MATCH_OVER_MULTIPLE_FIELDS from '../../elements/text-match-over-multiple-fields';
 
-export const CUSTOM_JSON_FRAGMENT = {
-	fragmentTemplateJSON: {
+export const CUSTOM_JSON_ELEMENT = {
+	elementTemplateJSON: {
 		category: 'custom',
 		clauses: [],
 		conditions: [],
 		description: Liferay.Language.get('editable-json-text-area'),
 		enabled: true,
 		icon: 'custom-field',
-		title: Liferay.Language.get('custom-json-fragment'),
+		title: Liferay.Language.get('custom-json-element'),
 	},
 };
 
@@ -75,7 +75,7 @@ export const DEFAULT_ADVANCED_CONFIGURATION = {
 	},
 };
 
-export const DEFAULT_BASELINE_FRAGMENTS = [
+export const DEFAULT_BASELINE_ELEMENTS = [
 	TEXT_MATCH_OVER_MULTIPLE_FIELDS,
 	STAGING_AWARE,
 	PUBLICATIONS_AWARE,
@@ -91,13 +91,13 @@ export const DEFAULT_FRAMEWORK_CONFIGURATION = {
 	apply_indexer_clauses: true,
 };
 
-export const DEFAULT_EDIT_FRAGMENT = TEXT_MATCH_OVER_MULTIPLE_FIELDS;
+export const DEFAULT_EDIT_ELEMENT = TEXT_MATCH_OVER_MULTIPLE_FIELDS;
 
 export const DEFAULT_PARAMETER_CONFIGURATION = {};
 
 export const DEFAULT_SORT_CONFIGURATION = {};
 
-export const QUERY_FRAGMENTS = [
+export const QUERY_ELEMENTS = [
 	TEXT_MATCH_OVER_MULTIPLE_FIELDS,
 	SEARCH_WITH_LUCENE_SYNTAX,
 	FILTER_BY_EXACT_TERMS_MATCH,

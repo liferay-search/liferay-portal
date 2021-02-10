@@ -56,7 +56,7 @@ public class BlueprintServiceHttp {
 				HttpPrincipal httpPrincipal,
 				java.util.Map<java.util.Locale, String> titleMap,
 				java.util.Map<java.util.Locale, String> descriptionMap,
-				String configuration, String selectedFragments, int type,
+				String configuration, String selectedElements, int type,
 				com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
@@ -67,7 +67,7 @@ public class BlueprintServiceHttp {
 
 			MethodHandler methodHandler = new MethodHandler(
 				methodKey, titleMap, descriptionMap, configuration,
-				selectedFragments, type, serviceContext);
+				selectedElements, type, serviceContext);
 
 			Object returnObj = null;
 
@@ -103,7 +103,7 @@ public class BlueprintServiceHttp {
 				HttpPrincipal httpPrincipal,
 				java.util.Map<java.util.Locale, String> titleMap,
 				java.util.Map<java.util.Locale, String> descriptionMap,
-				String configuration, String selectedFragments, int type,
+				String configuration, String selectedElements, int type,
 				com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
@@ -114,7 +114,7 @@ public class BlueprintServiceHttp {
 
 			MethodHandler methodHandler = new MethodHandler(
 				methodKey, titleMap, descriptionMap, configuration,
-				selectedFragments, type, serviceContext);
+				selectedElements, type, serviceContext);
 
 			Object returnObj = null;
 
@@ -451,7 +451,7 @@ public class BlueprintServiceHttp {
 				HttpPrincipal httpPrincipal, long blueprintId,
 				java.util.Map<java.util.Locale, String> titleMap,
 				java.util.Map<java.util.Locale, String> descriptionMap,
-				String configuration, String selectedFragments,
+				String configuration, String selectedElements,
 				com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
@@ -462,7 +462,7 @@ public class BlueprintServiceHttp {
 
 			MethodHandler methodHandler = new MethodHandler(
 				methodKey, blueprintId, titleMap, descriptionMap, configuration,
-				selectedFragments, serviceContext);
+				selectedElements, serviceContext);
 
 			Object returnObj = null;
 

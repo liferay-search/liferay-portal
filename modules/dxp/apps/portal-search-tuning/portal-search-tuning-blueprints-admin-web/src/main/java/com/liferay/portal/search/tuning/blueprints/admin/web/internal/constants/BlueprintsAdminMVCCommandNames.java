@@ -25,17 +25,17 @@ public class BlueprintsAdminMVCCommandNames {
 
 	public static final String EDIT_BLUEPRINT = "/blueprints/edit_blueprint";
 
-	public static final String EDIT_FRAGMENT = "/blueprints/edit_fragment";
+	public static final String EDIT_ELEMENT = "/blueprints/edit_element";
 
 	public static final String EXPORT_BLUEPRINT =
 		"/blueprints/export_blueprint";
 
-	public static final String EXPORT_FRAGMENT = "/blueprints/export_fragment";
+	public static final String EXPORT_ELEMENT = "/blueprints/export_element";
 
 	public static final String IMPORT_BLUEPRINT =
 		"/blueprints/import_blueprint";
 
-	public static final String IMPORT_FRAGMENT = "/blueprints/import_fragment";
+	public static final String IMPORT_ELEMENT = "/blueprints/import_element";
 
 	public static final String PREVIEW_BLUEPRINT = "/blueprints/preview";
 

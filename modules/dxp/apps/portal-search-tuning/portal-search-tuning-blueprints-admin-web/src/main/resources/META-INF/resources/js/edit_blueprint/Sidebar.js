@@ -25,12 +25,12 @@ import ThemeContext from '../shared/ThemeContext';
 const EmptyListMessage = () => (
 	<div className="empty-list-message">
 		<ClayEmptyState
-			title={Liferay.Language.get('no-query-fragments-found')}
+			title={Liferay.Language.get('no-query-elements-found')}
 		/>
 	</div>
 );
 
-const QueryFragmentList = ({category, onAddFragment, queryFragments}) => {
+const QueryElementList = ({category, onAddElement, queryElements}) => {
 	const {locale} = useContext(ThemeContext);
 
 	const [showAdd, setShowAdd] = useState(-1);
@@ -56,11 +56,8 @@ const QueryFragmentList = ({category, onAddFragment, queryFragments}) => {
 
 			{showList && (
 				<ClayList>
-					{queryFragments.map(
-						(
-							{fragmentTemplateJSON, uiConfigurationJSON},
-							index
-						) => {
+					{queryElements.map(
+						({elementTemplateJSON, uiConfigurationJSON}, index) => {
 							return (
 								<ClayList.Item
 									className={`${
@@ -75,7 +72,7 @@ const QueryFragmentList = ({category, onAddFragment, queryFragments}) => {
 										<ClaySticker size="md">
 											<ClayIcon
 												symbol={
-													fragmentTemplateJSON.icon
+													elementTemplateJSON.icon
 												}
 											/>
 										</ClaySticker>
@@ -83,21 +80,21 @@ const QueryFragmentList = ({category, onAddFragment, queryFragments}) => {
 
 									<ClayList.ItemField expand>
 										<ClayList.ItemTitle>
-											{fragmentTemplateJSON.title[
+											{elementTemplateJSON.title[
 												locale
-											] || fragmentTemplateJSON.title}
+											] || elementTemplateJSON.title}
 										</ClayList.ItemTitle>
 
-										{fragmentTemplateJSON.description &&
+										{elementTemplateJSON.description &&
 											Object.keys(
-												fragmentTemplateJSON.description
+												elementTemplateJSON.description
 											).length > 0 && (
 												<ClayList.ItemText
 													subtext={true}
 												>
-													{fragmentTemplateJSON
+													{elementTemplateJSON
 														.description[locale] ||
-														fragmentTemplateJSON.description}
+														elementTemplateJSON.description}
 												</ClayList.ItemText>
 											)}
 									</ClayList.ItemField>
@@ -105,15 +102,15 @@ const QueryFragmentList = ({category, onAddFragment, queryFragments}) => {
 									<ClayList.ItemField>
 										{showAdd === index && (
 											<div className="button-wrapper">
-												<div className="add-fragment-button">
+												<div className="add-element-button">
 													<ClayButton
 														aria-label={Liferay.Language.get(
 															'add'
 														)}
 														displayType="secondary"
 														onClick={() => {
-															onAddFragment({
-																fragmentTemplateJSON,
+															onAddElement({
+																elementTemplateJSON,
 																uiConfigurationJSON,
 															});
 														}}
@@ -137,61 +134,56 @@ const QueryFragmentList = ({category, onAddFragment, queryFragments}) => {
 	);
 };
 
-function Sidebar({
-	fragments = [],
-	onAddFragment,
-	onToggleSidebar,
-	showSidebar,
-}) {
+function Sidebar({elements = [], onAddElement, onToggleSidebar, showSidebar}) {
 	const {locale} = useContext(ThemeContext);
 
 	const [loading, setLoading] = useState(true);
 
-	const [queryFragments, setQueryFragments] = useState(fragments);
+	const [queryElements, setQueryElements] = useState(elements);
 
 	const [categories, setCategories] = useState([]);
-	const [categorizedFragments, setCategorizedFragments] = useState({});
+	const [categorizedElements, setCategorizedElements] = useState({});
 
-	const categorizeFragments = (fragments) => {
+	const categorizeElements = (elements) => {
 		const newCategories = [];
-		const newCategorizedFragments = {};
+		const newCategorizedElements = {};
 
-		fragments.map((fragment) => {
-			const category = fragment.fragmentTemplateJSON.category
-				? fragment.fragmentTemplateJSON.category
+		elements.map((element) => {
+			const category = element.elementTemplateJSON.category
+				? element.elementTemplateJSON.category
 				: Liferay.Language.get('other');
 
-			if (newCategorizedFragments[category]) {
-				newCategorizedFragments[category] = [
-					...newCategorizedFragments[category],
-					fragment,
+			if (newCategorizedElements[category]) {
+				newCategorizedElements[category] = [
+					...newCategorizedElements[category],
+					element,
 				];
 			}
 			else {
 				newCategories.push(category);
-				newCategorizedFragments[category] = [fragment];
+				newCategorizedElements[category] = [element];
 			}
 		});
 
 		setCategories(newCategories);
-		setCategorizedFragments(newCategorizedFragments);
+		setCategorizedElements(newCategorizedElements);
 	};
 
 	useEffect(() => {
-		categorizeFragments(fragments);
+		categorizeElements(elements);
 
 		setLoading(false);
-	}, [fragments]);
+	}, [elements]);
 
 	const _handleSearchChange = useCallback(
 		(value) => {
-			const newQueryFragments = fragments.filter((fragment) => {
+			const newQueryElements = elements.filter((element) => {
 				if (value) {
-					const fragmentTitle =
-						fragment.fragmentTemplateJSON.title[locale] ||
-						fragment.fragmentTemplateJSON.title;
+					const elementTitle =
+						element.elementTemplateJSON.title[locale] ||
+						element.elementTemplateJSON.title;
 
-					return fragmentTitle
+					return elementTitle
 						.toLowerCase()
 						.includes(value.toLowerCase());
 				}
@@ -200,10 +192,10 @@ function Sidebar({
 				}
 			});
 
-			categorizeFragments(newQueryFragments);
-			setQueryFragments(newQueryFragments);
+			categorizeElements(newQueryElements);
+			setQueryElements(newQueryElements);
 		},
-		[fragments, locale]
+		[elements, locale]
 	);
 
 	return (
@@ -212,7 +204,7 @@ function Sidebar({
 				<h4 className="component-title">
 					<span className="text-truncate-inline">
 						<span className="text-truncate">
-							{Liferay.Language.get('add-query-fragments')}
+							{Liferay.Language.get('add-query-elements')}
 						</span>
 					</span>
 				</h4>
@@ -234,14 +226,14 @@ function Sidebar({
 			</nav>
 
 			{!loading ? (
-				queryFragments.length ? (
-					<div className="query-fragment-list">
+				queryElements.length ? (
+					<div className="query-element-list">
 						{categories.map((category) => (
-							<QueryFragmentList
+							<QueryElementList
 								category={category}
 								key={category}
-								onAddFragment={onAddFragment}
-								queryFragments={categorizedFragments[category]}
+								onAddElement={onAddElement}
+								queryElements={categorizedElements[category]}
 							/>
 						))}
 					</div>
@@ -256,8 +248,8 @@ function Sidebar({
 }
 
 Sidebar.propTypes = {
-	fragments: PropTypes.arrayOf(PropTypes.object),
-	onAddFragment: PropTypes.func,
+	elements: PropTypes.arrayOf(PropTypes.object),
+	onAddElement: PropTypes.func,
 	onToggleSidebar: PropTypes.func,
 	showSidebar: PropTypes.bool,
 };

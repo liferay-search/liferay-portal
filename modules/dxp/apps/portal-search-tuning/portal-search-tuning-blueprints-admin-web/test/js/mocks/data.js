@@ -9,9 +9,9 @@
  * distribution rights of the Software.
  */
 
-import {QUERY_FRAGMENTS} from '../../../src/main/resources/META-INF/resources/js/utils/data';
-import {convertToSelectedFragment} from '../../../src/main/resources/META-INF/resources/js/utils/utils';
+import {QUERY_ELEMENTS} from '../../../src/main/resources/META-INF/resources/js/utils/data';
+import {convertToSelectedElement} from '../../../src/main/resources/META-INF/resources/js/utils/utils';
 
-export const SELECTED_FRAGMENTS = QUERY_FRAGMENTS.map((fragment, index) => {
-	return convertToSelectedFragment(fragment, index);
+export const SELECTED_ELEMENTS = QUERY_ELEMENTS.map((element, index) => {
+	return convertToSelectedElement(element, index);
 });

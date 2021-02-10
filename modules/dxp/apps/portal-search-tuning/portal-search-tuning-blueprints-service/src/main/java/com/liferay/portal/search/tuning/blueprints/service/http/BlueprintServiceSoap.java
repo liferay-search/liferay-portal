@@ -73,7 +73,7 @@ public class BlueprintServiceSoap {
 					String[] titleMapLanguageIds, String[] titleMapValues,
 					String[] descriptionMapLanguageIds,
 					String[] descriptionMapValues, String configuration,
-					String selectedFragments, int type,
+					String selectedElements, int type,
 					com.liferay.portal.kernel.service.ServiceContext
 						serviceContext)
 			throws RemoteException {
@@ -87,7 +87,7 @@ public class BlueprintServiceSoap {
 
 			com.liferay.portal.search.tuning.blueprints.model.Blueprint
 				returnValue = BlueprintServiceUtil.addCompanyBlueprint(
-					titleMap, descriptionMap, configuration, selectedFragments,
+					titleMap, descriptionMap, configuration, selectedElements,
 					type, serviceContext);
 
 			return com.liferay.portal.search.tuning.blueprints.model.
@@ -106,7 +106,7 @@ public class BlueprintServiceSoap {
 					String[] titleMapLanguageIds, String[] titleMapValues,
 					String[] descriptionMapLanguageIds,
 					String[] descriptionMapValues, String configuration,
-					String selectedFragments, int type,
+					String selectedElements, int type,
 					com.liferay.portal.kernel.service.ServiceContext
 						serviceContext)
 			throws RemoteException {
@@ -120,7 +120,7 @@ public class BlueprintServiceSoap {
 
 			com.liferay.portal.search.tuning.blueprints.model.Blueprint
 				returnValue = BlueprintServiceUtil.addGroupBlueprint(
-					titleMap, descriptionMap, configuration, selectedFragments,
+					titleMap, descriptionMap, configuration, selectedElements,
 					type, serviceContext);
 
 			return com.liferay.portal.search.tuning.blueprints.model.
@@ -303,7 +303,7 @@ public class BlueprintServiceSoap {
 					long blueprintId, String[] titleMapLanguageIds,
 					String[] titleMapValues, String[] descriptionMapLanguageIds,
 					String[] descriptionMapValues, String configuration,
-					String selectedFragments,
+					String selectedElements,
 					com.liferay.portal.kernel.service.ServiceContext
 						serviceContext)
 			throws RemoteException {
@@ -318,7 +318,7 @@ public class BlueprintServiceSoap {
 			com.liferay.portal.search.tuning.blueprints.model.Blueprint
 				returnValue = BlueprintServiceUtil.updateBlueprint(
 					blueprintId, titleMap, descriptionMap, configuration,
-					selectedFragments, serviceContext);
+					selectedElements, serviceContext);
 
 			return com.liferay.portal.search.tuning.blueprints.model.
 				BlueprintSoap.toSoapModel(returnValue);

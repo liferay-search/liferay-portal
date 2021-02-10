@@ -110,8 +110,8 @@ public class BlueprintCacheModel
 		sb.append(description);
 		sb.append(", configuration=");
 		sb.append(configuration);
-		sb.append(", selectedFragments=");
-		sb.append(selectedFragments);
+		sb.append(", selectedElements=");
+		sb.append(selectedElements);
 		sb.append(", type=");
 		sb.append(type);
 		sb.append("}");
@@ -196,11 +196,11 @@ public class BlueprintCacheModel
 			blueprintImpl.setConfiguration(configuration);
 		}
 
-		if (selectedFragments == null) {
-			blueprintImpl.setSelectedFragments("");
+		if (selectedElements == null) {
+			blueprintImpl.setSelectedElements("");
 		}
 		else {
-			blueprintImpl.setSelectedFragments(selectedFragments);
+			blueprintImpl.setSelectedElements(selectedElements);
 		}
 
 		blueprintImpl.setType(type);
@@ -236,7 +236,7 @@ public class BlueprintCacheModel
 		title = objectInput.readUTF();
 		description = objectInput.readUTF();
 		configuration = (String)objectInput.readObject();
-		selectedFragments = (String)objectInput.readObject();
+		selectedElements = (String)objectInput.readObject();
 
 		type = objectInput.readInt();
 	}
@@ -304,11 +304,11 @@ public class BlueprintCacheModel
 			objectOutput.writeObject(configuration);
 		}
 
-		if (selectedFragments == null) {
+		if (selectedElements == null) {
 			objectOutput.writeObject("");
 		}
 		else {
-			objectOutput.writeObject(selectedFragments);
+			objectOutput.writeObject(selectedElements);
 		}
 
 		objectOutput.writeInt(type);
@@ -330,7 +330,7 @@ public class BlueprintCacheModel
 	public String title;
 	public String description;
 	public String configuration;
-	public String selectedFragments;
+	public String selectedElements;
 	public int type;
 
 }

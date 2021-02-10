@@ -13,15 +13,15 @@ import {fireEvent, render} from '@testing-library/react';
 import React from 'react';
 
 import Sidebar from '../../../src/main/resources/META-INF/resources/js/edit_blueprint/Sidebar';
-import {SELECTED_FRAGMENTS} from '../mocks/data';
+import {SELECTED_ELEMENTS} from '../mocks/data';
 
 import '@testing-library/jest-dom/extend-expect';
 
 function renderSidebar(props) {
 	return render(
 		<Sidebar
-			fragments={SELECTED_FRAGMENTS}
-			onAddFragment={jest.fn()}
+			elements={SELECTED_ELEMENTS}
+			onAddElement={jest.fn()}
 			{...props}
 		/>
 	);
@@ -34,19 +34,19 @@ describe('Sidebar', () => {
 		expect(container).not.toBeNull();
 	});
 
-	it('renders the titles for the possible query fragments', () => {
+	it('renders the titles for the possible query elements', () => {
 		const {getByText} = renderSidebar();
 
-		SELECTED_FRAGMENTS.map((fragment) =>
-			getByText(fragment.fragmentTemplateJSON.title['en_US'])
+		SELECTED_ELEMENTS.map((element) =>
+			getByText(element.elementTemplateJSON.title['en_US'])
 		);
 	});
 
-	it('renders the descriptions for the possible query fragments', () => {
+	it('renders the descriptions for the possible query elements', () => {
 		const {getByText} = renderSidebar();
 
-		SELECTED_FRAGMENTS.map((fragment) =>
-			getByText(fragment.fragmentTemplateJSON.description['en_US'])
+		SELECTED_ELEMENTS.map((element) =>
+			getByText(element.elementTemplateJSON.description['en_US'])
 		);
 	});
 

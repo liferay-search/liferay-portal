@@ -21,8 +21,8 @@ import {ClayTooltipProvider} from '@clayui/tooltip';
 import {PropTypes} from 'prop-types';
 import React, {useContext, useState} from 'react';
 
-import ConfigFragment from '../../shared/ConfigFragment';
-import JSONFragment from '../../shared/JSONFragment';
+import ConfigElement from '../../shared/ConfigElement';
+import JSONElement from '../../shared/JSONElement';
 import ThemeContext from '../../shared/ThemeContext';
 import SelectAssetTypes from './SelectAssetTypes';
 
@@ -55,30 +55,30 @@ const FrameworkListItem = ({
 };
 
 function QueryBuilder({
-	deleteFragment,
+	deleteElement,
 	entityJSON,
 	frameworkConfig,
 	onFrameworkConfigChange,
 	onToggleSidebar,
 	searchableAssetTypes,
-	selectedFragments,
-	updateFragment,
+	selectedElements,
+	updateElement,
 }) {
 	const {contextPath} = useContext(ThemeContext);
 	const [collapseAll, setCollapseAll] = useState(false);
 
 	const _hasMustClause =
 		!!frameworkConfig.apply_indexer_clauses ||
-		selectedFragments.some(
-			(fragment) =>
-				fragment.fragmentOutput.clauses &&
-				fragment.fragmentOutput.clauses[0] &&
-				fragment.fragmentOutput.clauses[0].occur &&
-				fragment.fragmentOutput.clauses[0].occur === 'must' &&
-				fragment.fragmentOutput.enabled
+		selectedElements.some(
+			(element) =>
+				element.elementOutput.clauses &&
+				element.elementOutput.clauses[0] &&
+				element.elementOutput.clauses[0].occur &&
+				element.elementOutput.clauses[0].occur === 'must' &&
+				element.elementOutput.enabled
 		);
 
-	const _renderSelectedFragments = () => {
+	const _renderSelectedElements = () => {
 		return (
 			<>
 				{!_hasMustClause && (
@@ -92,30 +92,30 @@ function QueryBuilder({
 					</ClayAlert>
 				)}
 
-				{selectedFragments.map((fragment) => {
-					return fragment.uiConfigurationJSON ? (
-						<ConfigFragment
+				{selectedElements.map((element) => {
+					return element.uiConfigurationJSON ? (
+						<ConfigElement
 							collapseAll={collapseAll}
-							deleteFragment={() => deleteFragment(fragment.id)}
+							deleteElement={() => deleteElement(element.id)}
+							elementOutput={element.elementOutput}
+							elementTemplateJSON={element.elementTemplateJSON}
 							entityJSON={entityJSON}
-							fragmentOutput={fragment.fragmentOutput}
-							fragmentTemplateJSON={fragment.fragmentTemplateJSON}
-							id={fragment.id}
-							key={fragment.id}
-							uiConfigurationJSON={fragment.uiConfigurationJSON}
+							id={element.id}
+							key={element.id}
+							uiConfigurationJSON={element.uiConfigurationJSON}
 							uiConfigurationValues={
-								fragment.uiConfigurationValues
+								element.uiConfigurationValues
 							}
-							updateFragment={updateFragment}
+							updateElement={updateElement}
 						/>
 					) : (
-						<JSONFragment
+						<JSONElement
 							collapseAll={collapseAll}
-							deleteFragment={() => deleteFragment(fragment.id)}
-							fragmentTemplateJSON={fragment.fragmentTemplateJSON}
-							id={fragment.id}
-							key={fragment.id}
-							updateFragment={updateFragment}
+							deleteElement={() => deleteElement(element.id)}
+							elementTemplateJSON={element.elementTemplateJSON}
+							id={element.id}
+							key={element.id}
+							updateElement={updateElement}
 						/>
 					);
 				})}
@@ -146,14 +146,14 @@ function QueryBuilder({
 						<ClayTooltipProvider>
 							<ClayButton
 								aria-label={Liferay.Language.get(
-									'add-query-fragment'
+									'add-query-element'
 								)}
 								displayType="primary"
 								monospaced
 								onClick={onToggleSidebar}
 								small
 								title={Liferay.Language.get(
-									'add-query-fragment'
+									'add-query-element'
 								)}
 							>
 								<ClayIcon symbol="plus" />
@@ -163,16 +163,16 @@ function QueryBuilder({
 				</ClayLayout.Col>
 			</ClayLayout.Row>
 
-			{selectedFragments.length === 0 ? (
+			{selectedElements.length === 0 ? (
 				<div className="sheet">
-					<div className="selected-fragments-empty-text">
+					<div className="selected-elements-empty-text">
 						{Liferay.Language.get(
-							'add-fragments-to-optimize-the-search-results-for-your-use-cases'
+							'add-elements-to-optimize-the-search-results-for-your-use-cases'
 						)}
 					</div>
 				</div>
 			) : (
-				_renderSelectedFragments()
+				_renderSelectedElements()
 			)}
 
 			<ClayLayout.Row
@@ -240,7 +240,7 @@ function QueryBuilder({
 										frameworkConfig.apply_indexer_clauses
 									}
 									description={Liferay.Language.get(
-										'compose-fragments-on-top-of-liferay-default-search-clauses'
+										'compose-elements-on-top-of-liferay-default-search-clauses'
 									)}
 									imagePath={`${contextPath}/images/liferay-default-clauses.svg`}
 									onChange={() =>
@@ -259,7 +259,7 @@ function QueryBuilder({
 										!frameworkConfig.apply_indexer_clauses
 									}
 									description={Liferay.Language.get(
-										'compose-fragments-from-the-ground-up'
+										'compose-elements-from-the-ground-up'
 									)}
 									imagePath={`${contextPath}/images/custom-clauses.svg`}
 									onChange={() =>
@@ -282,14 +282,14 @@ function QueryBuilder({
 }
 
 QueryBuilder.propTypes = {
-	deleteFragment: PropTypes.func,
+	deleteElement: PropTypes.func,
 	entityJSON: PropTypes.object,
 	frameworkConfig: PropTypes.object,
 	onFrameworkConfigChange: PropTypes.func,
 	onToggleSidebar: PropTypes.func,
 	searchableAssetTypes: PropTypes.arrayOf(PropTypes.string),
-	selectedFragments: PropTypes.arrayOf(PropTypes.object),
-	updateFragment: PropTypes.func,
+	selectedElements: PropTypes.arrayOf(PropTypes.object),
+	updateElement: PropTypes.func,
 };
 
 export default React.memo(QueryBuilder);

@@ -66,10 +66,10 @@ public class BlueprintJSONUtil {
 		return jsonObject.getJSONObject(key);
 	}
 
-	public static String[] getSelectedFragmentsSection(Blueprint blueprint)
+	public static String[] getSelectedElementsSection(Blueprint blueprint)
 		throws JSONException {
 
-		JSONArray jsonArray = _getFragmentSectionJSONArray(blueprint);
+		JSONArray jsonArray = _getElementSectionJSONArray(blueprint);
 
 		if (jsonArray == null) {
 			return new String[0];
@@ -88,17 +88,17 @@ public class BlueprintJSONUtil {
 		return array;
 	}
 
-	private static JSONArray _getFragmentSectionJSONArray(Blueprint blueprint)
+	private static JSONArray _getElementSectionJSONArray(Blueprint blueprint)
 		throws JSONException {
 
 		if ((blueprint == null) ||
-			Validator.isBlank(blueprint.getSelectedFragments())) {
+			Validator.isBlank(blueprint.getSelectedElements())) {
 
 			return null;
 		}
 
 		JSONArray jsonArray = JSONFactoryUtil.createJSONArray(
-			blueprint.getSelectedFragments());
+			blueprint.getSelectedElements());
 
 		if (jsonArray == null) {
 			return null;

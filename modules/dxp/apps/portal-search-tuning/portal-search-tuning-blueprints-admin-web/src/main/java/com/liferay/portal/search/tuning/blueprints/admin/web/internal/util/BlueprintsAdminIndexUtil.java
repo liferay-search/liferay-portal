@@ -143,12 +143,10 @@ public class BlueprintsAdminIndexUtil {
 			_queries.term(Field.TYPE, BlueprintTypes.BLUEPRINT));
 	}
 
-	private static void _addFragmentTypeFilterClause(
-		BooleanQuery booleanQuery) {
-
+	private static void _addElementTypeFilterClause(BooleanQuery booleanQuery) {
 		TermsQuery termsQuery = _queries.terms(Field.TYPE + "_sortable");
 
-		termsQuery.addValues(_getFragmentTypes());
+		termsQuery.addValues(_getElementTypes());
 
 		booleanQuery.addFilterQueryClauses(termsQuery);
 	}
@@ -208,19 +206,19 @@ public class BlueprintsAdminIndexUtil {
 		).build();
 	}
 
+	private static Object[] _getElementTypes() {
+		return new Object[] {
+			String.valueOf(BlueprintTypes.AGGREGATION_ELEMENT),
+			String.valueOf(BlueprintTypes.FACET_ELEMENT),
+			String.valueOf(BlueprintTypes.QUERY_ELEMENT),
+			String.valueOf(BlueprintTypes.SUGGESTER_ELEMENT)
+		};
+	}
+
 	private static long _getEntryClassPK(SearchHit searchHit) {
 		Document document = searchHit.getDocument();
 
 		return document.getLong(Field.ENTRY_CLASS_PK);
-	}
-
-	private static Object[] _getFragmentTypes() {
-		return new Object[] {
-			String.valueOf(BlueprintTypes.AGGREGATION_FRAGMENT),
-			String.valueOf(BlueprintTypes.FACET_FRAGMENT),
-			String.valueOf(BlueprintTypes.QUERY_FRAGMENT),
-			String.valueOf(BlueprintTypes.SUGGESTER_FRAGMENT)
-		};
 	}
 
 	private static String _getKeywords(HttpServletRequest httpServletRequest) {
@@ -239,7 +237,7 @@ public class BlueprintsAdminIndexUtil {
 			_addBlueprintTypeFilterClause(booleanQuery);
 		}
 		else {
-			_addFragmentTypeFilterClause(booleanQuery);
+			_addElementTypeFilterClause(booleanQuery);
 		}
 
 		_addStatusFilterClause(booleanQuery, status);

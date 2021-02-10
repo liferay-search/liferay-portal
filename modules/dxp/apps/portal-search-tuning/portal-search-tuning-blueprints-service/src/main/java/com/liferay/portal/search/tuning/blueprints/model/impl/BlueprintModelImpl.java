@@ -91,7 +91,7 @@ public class BlueprintModelImpl
 		{"statusByUserId", Types.BIGINT}, {"statusByUserName", Types.VARCHAR},
 		{"statusDate", Types.TIMESTAMP}, {"title", Types.VARCHAR},
 		{"description", Types.VARCHAR}, {"configuration", Types.CLOB},
-		{"selectedFragments", Types.CLOB}, {"type_", Types.INTEGER}
+		{"selectedElements", Types.CLOB}, {"type_", Types.INTEGER}
 	};
 
 	public static final Map<String, Integer> TABLE_COLUMNS_MAP =
@@ -114,12 +114,12 @@ public class BlueprintModelImpl
 		TABLE_COLUMNS_MAP.put("title", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("description", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("configuration", Types.CLOB);
-		TABLE_COLUMNS_MAP.put("selectedFragments", Types.CLOB);
+		TABLE_COLUMNS_MAP.put("selectedElements", Types.CLOB);
 		TABLE_COLUMNS_MAP.put("type_", Types.INTEGER);
 	}
 
 	public static final String TABLE_SQL_CREATE =
-		"create table Blueprint (mvccVersion LONG default 0 not null,uuid_ VARCHAR(75) null,blueprintId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,status INTEGER,statusByUserId LONG,statusByUserName VARCHAR(75) null,statusDate DATE null,title STRING null,description STRING null,configuration TEXT null,selectedFragments TEXT null,type_ INTEGER)";
+		"create table Blueprint (mvccVersion LONG default 0 not null,uuid_ VARCHAR(75) null,blueprintId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,status INTEGER,statusByUserId LONG,statusByUserName VARCHAR(75) null,statusDate DATE null,title STRING null,description STRING null,configuration TEXT null,selectedElements TEXT null,type_ INTEGER)";
 
 	public static final String TABLE_SQL_DROP = "drop table Blueprint";
 
@@ -224,7 +224,7 @@ public class BlueprintModelImpl
 		model.setTitle(soapModel.getTitle());
 		model.setDescription(soapModel.getDescription());
 		model.setConfiguration(soapModel.getConfiguration());
-		model.setSelectedFragments(soapModel.getSelectedFragments());
+		model.setSelectedElements(soapModel.getSelectedElements());
 		model.setType(soapModel.getType());
 
 		return model;
@@ -437,10 +437,10 @@ public class BlueprintModelImpl
 			"configuration",
 			(BiConsumer<Blueprint, String>)Blueprint::setConfiguration);
 		attributeGetterFunctions.put(
-			"selectedFragments", Blueprint::getSelectedFragments);
+			"selectedElements", Blueprint::getSelectedElements);
 		attributeSetterBiConsumers.put(
-			"selectedFragments",
-			(BiConsumer<Blueprint, String>)Blueprint::setSelectedFragments);
+			"selectedElements",
+			(BiConsumer<Blueprint, String>)Blueprint::setSelectedElements);
 		attributeGetterFunctions.put("type", Blueprint::getType);
 		attributeSetterBiConsumers.put(
 			"type", (BiConsumer<Blueprint, Integer>)Blueprint::setType);
@@ -980,22 +980,22 @@ public class BlueprintModelImpl
 
 	@JSON
 	@Override
-	public String getSelectedFragments() {
-		if (_selectedFragments == null) {
+	public String getSelectedElements() {
+		if (_selectedElements == null) {
 			return "";
 		}
 		else {
-			return _selectedFragments;
+			return _selectedElements;
 		}
 	}
 
 	@Override
-	public void setSelectedFragments(String selectedFragments) {
+	public void setSelectedElements(String selectedElements) {
 		if (_columnOriginalValues == Collections.EMPTY_MAP) {
 			_setColumnOriginalValues();
 		}
 
-		_selectedFragments = selectedFragments;
+		_selectedElements = selectedElements;
 	}
 
 	@JSON
@@ -1267,7 +1267,7 @@ public class BlueprintModelImpl
 		blueprintImpl.setTitle(getTitle());
 		blueprintImpl.setDescription(getDescription());
 		blueprintImpl.setConfiguration(getConfiguration());
-		blueprintImpl.setSelectedFragments(getSelectedFragments());
+		blueprintImpl.setSelectedElements(getSelectedElements());
 		blueprintImpl.setType(getType());
 
 		blueprintImpl.resetOriginalValues();
@@ -1449,12 +1449,12 @@ public class BlueprintModelImpl
 			blueprintCacheModel.configuration = null;
 		}
 
-		blueprintCacheModel.selectedFragments = getSelectedFragments();
+		blueprintCacheModel.selectedElements = getSelectedElements();
 
-		String selectedFragments = blueprintCacheModel.selectedFragments;
+		String selectedElements = blueprintCacheModel.selectedElements;
 
-		if ((selectedFragments != null) && (selectedFragments.length() == 0)) {
-			blueprintCacheModel.selectedFragments = null;
+		if ((selectedElements != null) && (selectedElements.length() == 0)) {
+			blueprintCacheModel.selectedElements = null;
 		}
 
 		blueprintCacheModel.type = getType();
@@ -1551,7 +1551,7 @@ public class BlueprintModelImpl
 	private String _description;
 	private String _descriptionCurrentLanguageId;
 	private String _configuration;
-	private String _selectedFragments;
+	private String _selectedElements;
 	private int _type;
 
 	public <T> T getColumnValue(String columnName) {
@@ -1599,7 +1599,7 @@ public class BlueprintModelImpl
 		_columnOriginalValues.put("title", _title);
 		_columnOriginalValues.put("description", _description);
 		_columnOriginalValues.put("configuration", _configuration);
-		_columnOriginalValues.put("selectedFragments", _selectedFragments);
+		_columnOriginalValues.put("selectedElements", _selectedElements);
 		_columnOriginalValues.put("type_", _type);
 	}
 
@@ -1657,7 +1657,7 @@ public class BlueprintModelImpl
 
 		columnBitmasks.put("configuration", 32768L);
 
-		columnBitmasks.put("selectedFragments", 65536L);
+		columnBitmasks.put("selectedElements", 65536L);
 
 		columnBitmasks.put("type_", 131072L);
 

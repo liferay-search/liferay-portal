@@ -115,18 +115,6 @@ public class CustomQueryBlueprintsTest {
 	}
 
 	@Test
-	public void testTextMatch() throws Exception {
-		_addCompanyBlueprint(readConfiguration());
-
-		List<String> expectedValues = new ArrayList<>();
-
-		expectedValues.add(_titles[2]);
-
-		_assertSearch(
-			"localized_title", "cafe", String.valueOf(expectedValues));
-	}
-
-	@Test
 	public void testMustBeClause() throws Exception {
 		_addCompanyBlueprint(readConfiguration());
 
@@ -149,6 +137,18 @@ public class CustomQueryBlueprintsTest {
 
 		_assertSearch(
 			"localized_title", "restaurant 1", String.valueOf(expectedValues));
+	}
+
+	@Test
+	public void testTextMatch() throws Exception {
+		_addCompanyBlueprint(readConfiguration());
+
+		List<String> expectedValues = new ArrayList<>();
+
+		expectedValues.add(_titles[2]);
+
+		_assertSearch(
+			"localized_title", "cafe", String.valueOf(expectedValues));
 	}
 
 	@Rule
@@ -196,6 +196,7 @@ public class CustomQueryBlueprintsTest {
 
 	private void _assertSearch(
 		String fieldName, String keywords, String expected) {
+
 		SearchResponse searchResponse = _searcher.search(
 			_searchRequestBuilderFactory.builder(
 			).addComplexQueryPart(

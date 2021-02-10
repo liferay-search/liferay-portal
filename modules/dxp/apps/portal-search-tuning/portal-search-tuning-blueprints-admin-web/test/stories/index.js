@@ -26,18 +26,18 @@ import BlueprintForm from '../../src/main/resources/META-INF/resources/js/edit_b
 import Sidebar from '../../src/main/resources/META-INF/resources/js/edit_blueprint/Sidebar';
 import QueryBuilder from '../../src/main/resources/META-INF/resources/js/edit_blueprint/tabs/QueryBuilder';
 import SelectAssetTypes from '../../src/main/resources/META-INF/resources/js/edit_blueprint/tabs/SelectAssetTypes';
-import FragmentForm from '../../src/main/resources/META-INF/resources/js/edit_fragment';
-import ConfigFragment from '../../src/main/resources/META-INF/resources/js/shared/ConfigFragment';
+import ElementForm from '../../src/main/resources/META-INF/resources/js/edit_element';
+import ConfigElement from '../../src/main/resources/META-INF/resources/js/shared/ConfigElement';
 import ErrorBoundary from '../../src/main/resources/META-INF/resources/js/shared/ErrorBoundary';
-import JSONFragment from '../../src/main/resources/META-INF/resources/js/shared/JSONFragment';
+import JSONElement from '../../src/main/resources/META-INF/resources/js/shared/JSONElement';
 import PageToolbar from '../../src/main/resources/META-INF/resources/js/shared/PageToolbar';
 import SearchInput from '../../src/main/resources/META-INF/resources/js/shared/SearchInput';
 import {
-	DEFAULT_EDIT_FRAGMENT,
+	DEFAULT_EDIT_ELEMENT,
 	DEFAULT_FRAMEWORK_CONFIGURATION,
 } from '../../src/main/resources/META-INF/resources/js/utils/data';
 import AddBlueprintModal from '../../src/main/resources/META-INF/resources/js/view_blueprints/AddBlueprintModal';
-import {SELECTED_FRAGMENTS} from '../js/mocks/data';
+import {SELECTED_ELEMENTS} from '../js/mocks/data';
 
 const {addDecorator, storiesOf} = StorybookReact;
 const {action} = StorybookAddonActions;
@@ -150,8 +150,8 @@ storiesOf('Pages|BlueprintForm', module)
 				blueprintType: 0,
 				entityJSON: ENTITY_JSON,
 				initialDescription: {},
-				initialSelectedFragmentsString: JSON.stringify({
-					query_configuration: SELECTED_FRAGMENTS,
+				initialSelectedElementsString: JSON.stringify({
+					query_configuration: SELECTED_ELEMENTS,
 				}),
 				initialTitle: {
 					'en-US': 'Test Title',
@@ -170,7 +170,7 @@ storiesOf('Pages|BlueprintForm', module)
 				blueprintType: 0,
 				entityJSON: ENTITY_JSON,
 				initialDescription: {},
-				initialSelectedFragmentsString: JSON.stringify({
+				initialSelectedElementsString: JSON.stringify({
 					query_configuration: [],
 				}),
 				initialTitle: {
@@ -182,7 +182,7 @@ storiesOf('Pages|BlueprintForm', module)
 			}}
 		/>
 	))
-	.add('default fragment', () => (
+	.add('default element', () => (
 		<BlueprintForm
 			context={CONTEXT}
 			props={{
@@ -200,11 +200,11 @@ storiesOf('Pages|BlueprintForm', module)
 		/>
 	));
 
-storiesOf('Pages|FragmentForm', module).add('default', () => (
-	<FragmentForm
+storiesOf('Pages|ElementForm', module).add('default', () => (
+	<ElementForm
 		context={CONTEXT}
 		props={{
-			initialConfigurationString: JSON.stringify(DEFAULT_EDIT_FRAGMENT),
+			initialConfigurationString: JSON.stringify(DEFAULT_EDIT_ELEMENT),
 			initialDescription: {'en-US': 'Description'},
 			initialTitle: {
 				'en-US': 'Test Title',
@@ -258,32 +258,32 @@ storiesOf('Components|AddBlueprintModal', module)
 		/>
 	));
 
-storiesOf('Components|ConfigFragment', module)
+storiesOf('Components|ConfigElement', module)
 	.addDecorator(withBlueprintsClass)
 	.addDecorator(withBuilderClass)
 	.addDecorator(withContainer)
-	.add('ConfigFragment', () => (
-		<ConfigFragment
-			deleteFragment={action('deleteFragment')}
-			fragmentTemplateJSON={SELECTED_FRAGMENTS[0].fragmentTemplateJSON}
-			uiConfigurationJSON={SELECTED_FRAGMENTS[0].uiConfigurationJSON}
-			uiConfigurationValues={SELECTED_FRAGMENTS[0].uiConfigurationValues}
-			updateFragment={action('updateFragment')}
+	.add('ConfigElement', () => (
+		<ConfigElement
+			deleteElement={action('deleteElement')}
+			elementTemplateJSON={SELECTED_ELEMENTS[0].elementTemplateJSON}
+			uiConfigurationJSON={SELECTED_ELEMENTS[0].uiConfigurationJSON}
+			uiConfigurationValues={SELECTED_ELEMENTS[0].uiConfigurationValues}
+			updateElement={action('updateElement')}
 		/>
 	));
 
-storiesOf('Components|Fragment', module)
+storiesOf('Components|Element', module)
 	.addDecorator(withBlueprintsClass)
 	.addDecorator(withBuilderClass)
 	.addDecorator(withContainer)
-	.add('JSONFragment', () => (
-		<JSONFragment
-			deleteFragment={action('deleteFragment')}
-			description={SELECTED_FRAGMENTS[0].fragmentTemplateJSON.description}
+	.add('JSONElement', () => (
+		<JSONElement
+			deleteElement={action('deleteElement')}
+			description={SELECTED_ELEMENTS[0].elementTemplateJSON.description}
 			disabled={false}
-			fragmentTemplateJSON={SELECTED_FRAGMENTS[0].fragmentTemplateJSON}
-			icon={SELECTED_FRAGMENTS[0].fragmentTemplateJSON.icon}
-			title={SELECTED_FRAGMENTS[0].fragmentTemplateJSON.title}
+			elementTemplateJSON={SELECTED_ELEMENTS[0].elementTemplateJSON}
+			icon={SELECTED_ELEMENTS[0].elementTemplateJSON.icon}
+			title={SELECTED_ELEMENTS[0].elementTemplateJSON.title}
 			updateJSON={() => {}}
 		/>
 	));
@@ -309,11 +309,11 @@ storiesOf('Components|QueryBuilder', module)
 	.addDecorator(withContainer)
 	.add('QueryBuilder', () => (
 		<QueryBuilder
-			deleteFragment={action('buildFragment')}
+			deleteElement={action('buildElement')}
 			frameworkConfig={DEFAULT_FRAMEWORK_CONFIGURATION}
 			searchableAssetTypes={SEARCHABLE_ASSET_TYPES}
-			selectedFragments={SELECTED_FRAGMENTS}
-			updateFragment={action('updateFragment')}
+			selectedElements={SELECTED_ELEMENTS}
+			updateElement={action('updateElement')}
 		/>
 	));
 
@@ -341,7 +341,7 @@ storiesOf('Components|Sidebar', module)
 	.addDecorator(withBlueprintsClass)
 	.add('Sidebar', () => (
 		<Sidebar
-			addFragment={action('addFragment')}
-			queryFragments={SELECTED_FRAGMENTS}
+			addElement={action('addElement')}
+			queryElements={SELECTED_ELEMENTS}
 		/>
 	));

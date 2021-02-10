@@ -64,7 +64,7 @@ public class BlueprintServiceImpl extends BlueprintServiceBaseImpl {
 
 	public Blueprint addCompanyBlueprint(
 			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
-			String configuration, String selectedFragments, int type,
+			String configuration, String selectedElements, int type,
 			ServiceContext serviceContext)
 		throws PortalException {
 
@@ -78,12 +78,12 @@ public class BlueprintServiceImpl extends BlueprintServiceBaseImpl {
 
 		return blueprintLocalService.addBlueprint(
 			getUserId(), groupId, titleMap, descriptionMap, configuration,
-			selectedFragments, type, serviceContext);
+			selectedElements, type, serviceContext);
 	}
 
 	public Blueprint addGroupBlueprint(
 			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
-			String configuration, String selectedFragments, int type,
+			String configuration, String selectedElements, int type,
 			ServiceContext serviceContext)
 		throws PortalException {
 
@@ -97,7 +97,7 @@ public class BlueprintServiceImpl extends BlueprintServiceBaseImpl {
 
 		return blueprintLocalService.addBlueprint(
 			getUserId(), groupId, titleMap, descriptionMap, configuration,
-			selectedFragments, type, serviceContext);
+			selectedElements, type, serviceContext);
 	}
 
 	public Blueprint deleteBlueprint(long blueprintId) throws PortalException {
@@ -181,7 +181,7 @@ public class BlueprintServiceImpl extends BlueprintServiceBaseImpl {
 	public Blueprint updateBlueprint(
 			long blueprintId, Map<Locale, String> titleMap,
 			Map<Locale, String> descriptionMap, String configuration,
-			String selectedFragments, ServiceContext serviceContext)
+			String selectedElements, ServiceContext serviceContext)
 		throws PortalException {
 
 		Blueprint blueprint = _blueprintLocalService.getBlueprint(blueprintId);
@@ -194,7 +194,7 @@ public class BlueprintServiceImpl extends BlueprintServiceBaseImpl {
 
 		return _blueprintLocalService.updateBlueprint(
 			getUserId(), blueprintId, titleMap, descriptionMap, configuration,
-			selectedFragments, serviceContext);
+			selectedElements, serviceContext);
 	}
 
 	private long _getCompanyGroupId(ServiceContext serviceContext)

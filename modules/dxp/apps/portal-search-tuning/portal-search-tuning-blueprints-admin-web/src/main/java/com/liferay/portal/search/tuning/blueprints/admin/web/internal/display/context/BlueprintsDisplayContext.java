@@ -115,8 +115,8 @@ public abstract class BlueprintsDisplayContext {
 	protected final ThemeDisplay themeDisplay;
 
 	private String _getSearchType() {
-		if (BlueprintsAdminTabNames.FRAGMENTS.equals(tab)) {
-			return "fragments";
+		if (BlueprintsAdminTabNames.ELEMENTS.equals(tab)) {
+			return "elements";
 		}
 
 		return "blueprints";

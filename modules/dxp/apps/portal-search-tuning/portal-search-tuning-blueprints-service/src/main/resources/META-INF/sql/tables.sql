@@ -15,6 +15,6 @@ create table Blueprint (
 	title STRING null,
 	description STRING null,
 	configuration TEXT null,
-	selectedFragments TEXT null,
+	selectedElements TEXT null,
 	type_ INTEGER
 );

@@ -87,7 +87,7 @@ public class CopyBlueprintMVCActionCommand extends BaseMVCActionCommand {
 				_getTargetTitleMap(sourceBlueprint),
 				sourceBlueprint.getDescriptionMap(),
 				sourceBlueprint.getConfiguration(),
-				sourceBlueprint.getSelectedFragments(),
+				sourceBlueprint.getSelectedElements(),
 				sourceBlueprint.getType(), serviceContext);
 
 			sendRedirect(actionRequest, actionResponse);

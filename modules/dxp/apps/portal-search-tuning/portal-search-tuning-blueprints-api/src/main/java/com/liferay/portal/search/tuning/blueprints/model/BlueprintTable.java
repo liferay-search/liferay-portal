@@ -65,8 +65,8 @@ public class BlueprintTable extends BaseTable<BlueprintTable> {
 		"description", String.class, Types.VARCHAR, Column.FLAG_DEFAULT);
 	public final Column<BlueprintTable, Clob> configuration = createColumn(
 		"configuration", Clob.class, Types.CLOB, Column.FLAG_DEFAULT);
-	public final Column<BlueprintTable, Clob> selectedFragments = createColumn(
-		"selectedFragments", Clob.class, Types.CLOB, Column.FLAG_DEFAULT);
+	public final Column<BlueprintTable, Clob> selectedElements = createColumn(
+		"selectedElements", Clob.class, Types.CLOB, Column.FLAG_DEFAULT);
 	public final Column<BlueprintTable, Integer> type = createColumn(
 		"type_", Integer.class, Types.INTEGER, Column.FLAG_DEFAULT);
 

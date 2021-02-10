@@ -81,14 +81,14 @@ public class EditBlueprintMVCActionCommand extends BaseMVCActionCommand {
 			String configuration = ParamUtil.getString(
 				actionRequest, "configuration");
 
-			String selectedFragments = ParamUtil.getString(
-				actionRequest, "selectedFragments");
+			String selectedElements = ParamUtil.getString(
+				actionRequest, "selectedElements");
 
 			JSONObject jsonObject = JSONUtil.put("title", titleMap);
 
 			if (Constants.ADD.equals(cmd)) {
 				Blueprint blueprint = _blueprintService.addCompanyBlueprint(
-					titleMap, descriptionMap, configuration, selectedFragments,
+					titleMap, descriptionMap, configuration, selectedElements,
 					_blueprintsAdminRequestHelper.getTypeFromRequest(
 						actionRequest),
 					serviceContext);
@@ -103,7 +103,7 @@ public class EditBlueprintMVCActionCommand extends BaseMVCActionCommand {
 				_blueprintService.updateBlueprint(
 					_blueprintsAdminRequestHelper.getIdFromRequest(
 						actionRequest),
-					titleMap, descriptionMap, configuration, selectedFragments,
+					titleMap, descriptionMap, configuration, selectedElements,
 					serviceContext);
 			}
 

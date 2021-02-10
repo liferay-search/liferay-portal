@@ -33,7 +33,7 @@
 			"conditions": [
 			],
 			"description": {
-				"en_US": "Paste any Elasticsearch query body in the fragment as is"
+				"en_US": "Paste any Elasticsearch query body in the element as is"
 			},
 			"enabled": true,
 			"icon": "custom-field",

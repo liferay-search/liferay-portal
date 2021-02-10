@@ -3,7 +3,7 @@
 	padding-bottom: 40px;
 	padding-top: $pageToolbarHeight + 40px;
 
-	.configuration-fragment {
+	.configuration-element {
 		margin-bottom: 1rem;
 		padding: 0;
 
@@ -45,7 +45,7 @@
 		}
 	}
 
-	.selected-fragments-empty-text {
+	.selected-elements-empty-text {
 		color: $secondaryL1;
 		margin: 0.5rem auto 1.5rem;
 		padding: 16px 0;

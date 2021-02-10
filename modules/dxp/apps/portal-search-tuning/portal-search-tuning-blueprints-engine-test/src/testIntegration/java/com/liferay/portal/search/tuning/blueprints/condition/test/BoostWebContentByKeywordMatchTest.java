@@ -122,47 +122,47 @@ public class BoostWebContentByKeywordMatchTest {
 		_assertSearch(blueprint, null, "[coca cola, pepsi cola]", "cola", null);
 
 		String configurationString = _getConfigurationString(
-			_getQueryFragmentJSONObject(
+			_getQueryElementJSONObject(
 				articleId, 100, EvaluationType.ANY_WORD_IN.getjsonValue(),
 				"cola"));
 
-		String selectedFragmentString = _getSelectedFragmentString(
+		String selectedElementString = _getSelectedElementString(
 			articleId, 100, EvaluationType.ANY_WORD_IN.getjsonValue(), "cola");
 
 		_assertSearch(
 			blueprint, configurationString, "[pepsi cola, coca cola]", "cola",
-			selectedFragmentString);
+			selectedElementString);
 
 		configurationString = _getConfigurationString(
-			_getQueryFragmentJSONObject(
+			_getQueryElementJSONObject(
 				articleId, 100, EvaluationType.NOT_CONTAINS.getjsonValue(),
 				"cola"));
 
-		selectedFragmentString = _getSelectedFragmentString(
+		selectedElementString = _getSelectedElementString(
 			articleId, 100, EvaluationType.NOT_CONTAINS.getjsonValue(), "cola");
 
 		_assertSearch(
 			blueprint, configurationString, "[coca cola, pepsi cola]", "cola",
-			selectedFragmentString);
+			selectedElementString);
 	}
 
 	private void _assertSearch(
 			Blueprint blueprint, String configurationString, String expected,
-			String keywords, String selectedFragmentString)
+			String keywords, String selectedElementString)
 		throws Exception {
 
 		if (!Validator.isBlank(configurationString) &&
-			!Validator.isBlank(selectedFragmentString)) {
+			!Validator.isBlank(selectedElementString)) {
 
 			_blueprintService.updateBlueprint(
 				blueprint.getBlueprintId(), blueprint.getTitleMap(),
 				blueprint.getDescriptionMap(), configurationString,
-				selectedFragmentString, _serviceContext);
+				selectedElementString, _serviceContext);
 		}
 
 		SearchResponse searchResponse = _blueprintsEngineHelper.search(
-			_getBlueprintsAttributes(keywords), new Messages(),
-			blueprint.getBlueprintId());
+			blueprint.getBlueprintId(), _getBlueprintsAttributes(keywords),
+			new Messages());
 
 		DocumentsAssert.assertValues(
 			searchResponse.getRequestString(),
@@ -253,16 +253,16 @@ public class BoostWebContentByKeywordMatchTest {
 		).toString();
 	}
 
-	private JSONObject _getFragmentTemplateJSONObject() throws Exception {
+	private JSONObject _getElementTemplateJSONObject() throws Exception {
 		String boostWebContentsByKeywordMatchJsonString = StringUtil.read(
 			getClass(),
-			"/fragments/boost-web-contents-by-keyword-match-test.json");
+			"/elements/boost-web-contents-by-keyword-match-test.json");
 
 		return JSONFactoryUtil.createJSONObject(
 			boostWebContentsByKeywordMatchJsonString);
 	}
 
-	private JSONObject _getQueryFragmentJSONObject(
+	private JSONObject _getQueryElementJSONObject(
 		String articleId, int boost, String evaluationType, String keywords) {
 
 		return JSONUtil.put(
@@ -315,7 +315,7 @@ public class BoostWebContentByKeywordMatchTest {
 		);
 	}
 
-	private String _getSelectedFragmentString(
+	private String _getSelectedElementString(
 			String articleId, int boost, String evaluationType, String keywords)
 		throws Exception {
 
@@ -323,7 +323,7 @@ public class BoostWebContentByKeywordMatchTest {
 			"query_configuration",
 			_createJSONArray().put(
 				JSONUtil.put(
-					"fragmentOutput",
+					"elementOutput",
 					JSONUtil.put(
 						"category", "conditional"
 					).put(
@@ -375,11 +375,11 @@ public class BoostWebContentByKeywordMatchTest {
 							"en_US", "Boost Web Contents by Keyword Match")
 					)
 				).put(
-					"fragmentTemplateJSON",
-					_getFragmentTemplateJSONObject().get("fragmentTemplateJSON")
+					"elementTemplateJSON",
+					_getElementTemplateJSONObject().get("elementTemplateJSON")
 				).put(
 					"uiConfigurationJSON",
-					_getFragmentTemplateJSONObject().get("uiConfigurationJSON")
+					_getElementTemplateJSONObject().get("uiConfigurationJSON")
 				).put(
 					"uiConfigurationValues",
 					_getUIConfigurationValuesJSONObject(

@@ -34,8 +34,8 @@ import org.osgi.service.component.annotations.Reference;
 public class BlueprintsAdminFieldsUtil {
 
 	public static JSONArray getFieldsJSONArray(long companyId) {
-		List<FieldInfo> fields = _fieldMappingInfoProvider.getFieldInfosDeLocalized(
-			companyId);
+		List<FieldInfo> fields =
+			_fieldMappingInfoProvider.getFieldInfosDeLocalized(companyId);
 
 		JSONArray jsonArray = _jsonFactory.createJSONArray();
 
@@ -46,9 +46,9 @@ public class BlueprintsAdminFieldsUtil {
 		).forEach(
 			fieldInfo -> jsonArray.put(
 				JSONUtil.put(
-					"name", fieldInfo.getName()
-				).put(
 					"language_id_position", fieldInfo.getLanguageIdPosition()
+				).put(
+					"name", fieldInfo.getName()
 				).put(
 					"type", fieldInfo.getType()
 				))

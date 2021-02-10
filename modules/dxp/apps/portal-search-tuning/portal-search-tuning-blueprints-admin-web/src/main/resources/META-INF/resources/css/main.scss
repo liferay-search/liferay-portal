@@ -56,7 +56,7 @@
 }
 
 .portlet-blueprints-admin {
-	@import '_config_fragment';
+	@import '_config_element';
 	@import '_page_toolbar';
 
 	.blueprints-search-container {
@@ -88,10 +88,10 @@
 		margin-right: 16px;
 	}
 
-	.edit-fragment-root {
+	.edit-element-root {
 		height: calc(100vh - 96px);
 
-		@import '_fragment_form';
+		@import '_element_form';
 
 		.cursor-pointer {
 			cursor: pointer;

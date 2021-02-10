@@ -17,7 +17,6 @@ package com.liferay.portal.search.tuning.blueprints.admin.web.internal.portlet.a
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactory;
-import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.Log;
@@ -115,8 +114,8 @@ public class ExportBlueprintMVCResourceCommand extends BaseMVCResourceCommand {
 			).put(
 				"description", _mapToJSONObject(blueprint.getDescriptionMap())
 			).put(
-				"selected_fragments",
-				_jsonFactory.createJSONObject(blueprint.getSelectedFragments())
+				"selectedElements",
+				_jsonFactory.createJSONObject(blueprint.getSelectedElements())
 			).put(
 				"title", _mapToJSONObject(blueprint.getTitleMap())
 			)
@@ -144,7 +143,7 @@ public class ExportBlueprintMVCResourceCommand extends BaseMVCResourceCommand {
 	private String _buildResponseString(Blueprint blueprint)
 		throws JSONException {
 
-		if (blueprint.getType() == BlueprintTypes.QUERY_FRAGMENT) {
+		if (blueprint.getType() == BlueprintTypes.QUERY_ELEMENT) {
 			return _buildElementResponseString(blueprint);
 		}
 
@@ -165,7 +164,7 @@ public class ExportBlueprintMVCResourceCommand extends BaseMVCResourceCommand {
 	private JSONObject _mapToJSONObject(Map<Locale, String> map)
 		throws JSONException {
 
-		String jsonString = JSONFactoryUtil.looseSerialize(map);
+		String jsonString = _jsonFactory.looseSerialize(map);
 
 		return _jsonFactory.createJSONObject(jsonString);
 	}

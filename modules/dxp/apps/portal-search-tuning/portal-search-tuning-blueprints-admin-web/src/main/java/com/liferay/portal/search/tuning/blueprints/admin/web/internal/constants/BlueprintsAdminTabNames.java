@@ -23,14 +23,14 @@ public class BlueprintsAdminTabNames {
 
 	public static final String BLUEPRINTS = "blueprints";
 
-	public static final String FRAGMENTS = "fragments";
+	public static final String ELEMENTS = "elements";
 
 	public static final String getTabName(int blueprintType) {
 		if (blueprintType == BlueprintTypes.BLUEPRINT) {
 			return BLUEPRINTS;
 		}
 
-		return FRAGMENTS;
+		return ELEMENTS;
 	}
 
 }
