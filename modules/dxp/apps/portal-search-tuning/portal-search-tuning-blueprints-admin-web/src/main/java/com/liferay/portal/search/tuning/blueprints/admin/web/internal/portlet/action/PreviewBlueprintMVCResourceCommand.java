@@ -34,12 +34,14 @@ import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttribut
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributesBuilder;
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributesBuilderFactory;
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintsPortletKeys;
+import com.liferay.portal.search.tuning.blueprints.engine.constants.ReservedParameterNames;
 import com.liferay.portal.search.tuning.blueprints.engine.exception.BlueprintsEngineException;
 import com.liferay.portal.search.tuning.blueprints.engine.util.BlueprintsEngineHelper;
 import com.liferay.portal.search.tuning.blueprints.message.Messages;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.searchresponse.json.translator.SearchResponseJSONTranslator;
 import com.liferay.portal.search.tuning.blueprints.searchresponse.json.translator.constants.JSONKeys;
+import com.liferay.portal.search.tuning.blueprints.searchresponse.json.translator.constants.ResponseAttributeKeys;
 import com.liferay.portal.search.tuning.blueprints.service.BlueprintLocalService;
 import com.liferay.portal.search.tuning.blueprints.util.attributes.BlueprintsAttributesHelper;
 
@@ -131,6 +133,9 @@ public class PreviewBlueprintMVCResourceCommand extends BaseMVCResourceCommand {
 		BlueprintsAttributesBuilder blueprintsAttributesBuilder =
 			_blueprintsAttributesHelper.getBlueprintsRequestAttributesBuilder(
 				resourceRequest, blueprint);
+		
+		blueprintsAttributesBuilder.addAttribute(
+				ReservedParameterNames.EXPLAIN.getKey(), true);
 
 		return blueprintsAttributesBuilder.build();
 	}
@@ -143,6 +148,9 @@ public class PreviewBlueprintMVCResourceCommand extends BaseMVCResourceCommand {
 			_blueprintsAttributesHelper.getBlueprintsResponseAttributesBuilder(
 				resourceRequest, resourceResponse, blueprint,
 				blueprintsRequestAttributes);
+		
+		blueprintsAttributesBuilder.addAttribute(
+				ResponseAttributeKeys.INCLUDE_RESULT, true);
 
 		return blueprintsAttributesBuilder.build();
 	}
