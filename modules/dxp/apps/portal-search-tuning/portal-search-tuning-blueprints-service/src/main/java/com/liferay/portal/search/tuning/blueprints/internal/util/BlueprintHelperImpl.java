@@ -109,14 +109,13 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 			return _getDefaultSize().get();
 		}
 
-		Optional<Integer> optional = BlueprintJSONUtil.getValueAsIntegerOptional(
+		Optional<Integer> optional =
+			BlueprintJSONUtil.getValueAsIntegerOptional(
 				configurationJSONObjectOptional.get(),
 				"JSONObject/" + ParameterConfigurationKeys.SIZE.getJsonKey(),
 				"Object/" + SizeConfigurationKeys.DEFAULT.getJsonKey());
-		
-		optional.orElse(
-			_getDefaultSize().get()
-		);
+
+		return optional.orElse(_getDefaultSize().get());
 	}
 
 	@Override
@@ -287,13 +286,12 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 			return _getDefaultKeywordParameterName().get();
 		}
 
-		return BlueprintJSONUtil.getValueAsStringOptional(
+		Optional<String> optional = BlueprintJSONUtil.getValueAsStringOptional(
 			configurationJSONObjectOptional.get(),
 			"JSONObject/" + ParameterConfigurationKeys.KEYWORDS.getJsonKey(),
-			"Object/" + KeywordsConfigurationKeys.PARAMETER_NAME.getJsonKey()
-		).orElse(
-			_getDefaultKeywordParameterName().get()
-		);
+			"Object/" + KeywordsConfigurationKeys.PARAMETER_NAME.getJsonKey());
+
+		return optional.orElse(_getDefaultKeywordParameterName().get());
 	}
 
 	@Override
@@ -305,13 +303,12 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 			return _getDefaultPageParameterName().get();
 		}
 
-		return BlueprintJSONUtil.getValueAsStringOptional(
+		Optional<String> optional = BlueprintJSONUtil.getValueAsStringOptional(
 			configurationJSONObjectOptional.get(),
 			"JSONObject/" + ParameterConfigurationKeys.PAGE.getJsonKey(),
-			"Object/" + PageConfigurationKeys.PARAMETER_NAME.getJsonKey()
-		).orElse(
-			_getDefaultPageParameterName().get()
-		);
+			"Object/" + PageConfigurationKeys.PARAMETER_NAME.getJsonKey());
+
+		return optional.orElse(_getDefaultPageParameterName().get());
 	}
 
 	@Override
@@ -406,13 +403,12 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 			return _getDefaultSizeParameterName().get();
 		}
 
-		return BlueprintJSONUtil.getValueAsStringOptional(
+		Optional<String> optional = BlueprintJSONUtil.getValueAsStringOptional(
 			configurationJSONObjectOptional.get(),
 			"JSONObject/" + ParameterConfigurationKeys.SIZE.getJsonKey(),
-			"Object/" + SizeConfigurationKeys.PARAMETER_NAME.getJsonKey()
-		).orElse(
-			_getDefaultSizeParameterName().get()
-		);
+			"Object/" + SizeConfigurationKeys.PARAMETER_NAME.getJsonKey());
+
+		return optional.orElse(_getDefaultSizeParameterName().get());
 	}
 
 	@Override
