@@ -16,6 +16,7 @@ package com.liferay.portal.search.tuning.blueprints.util.attributes;
 
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributesBuilder;
+import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
@@ -26,10 +27,10 @@ import javax.portlet.PortletResponse;
 public interface BlueprintsAttributesHelper {
 
 	public BlueprintsAttributesBuilder getBlueprintsRequestAttributesBuilder(
-		PortletRequest portletRequest, long blueprintId);
+		PortletRequest portletRequest, Blueprint blueprint);
 
 	public BlueprintsAttributesBuilder getBlueprintsResponseAttributesBuilder(
 		PortletRequest portletRequest, PortletResponse portletResponse,
-		BlueprintsAttributes blueprintsRequestAttributes, long blueprintId);
+		Blueprint blueprint, BlueprintsAttributes blueprintsRequestAttributes);
 
 }
