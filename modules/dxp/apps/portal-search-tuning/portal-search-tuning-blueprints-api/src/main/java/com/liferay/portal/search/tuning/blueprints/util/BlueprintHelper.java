@@ -34,6 +34,8 @@ public interface BlueprintHelper {
 	public Optional<JSONArray> getCustomParameterConfigurationOptional(
 		Blueprint blueprint);
 
+	public int getDefaultSize(Blueprint blueprint);
+
 	public Optional<JSONArray> getDefaultSortConfigurationOptional(
 		Blueprint blueprint);
 
@@ -55,10 +57,9 @@ public interface BlueprintHelper {
 	public Optional<JSONObject> getJSONObjectConfigurationOptional(
 		Blueprint blueprint, String... paths);
 
-	public Optional<String> getKeywordsParameterNameOptional(
-		Blueprint blueprint);
+	public String getKeywordsParameterName(Blueprint blueprint);
 
-	public Optional<String> getPageParameterNameOptional(Blueprint blueprint);
+	public String getPageParameterName(Blueprint blueprint);
 
 	public Optional<JSONObject> getParameterConfigurationOptional(
 		Blueprint blueprint);
@@ -69,7 +70,7 @@ public interface BlueprintHelper {
 	public Optional<JSONArray> getSearchableAssetTypesOptional(
 		Blueprint blueprint);
 
-	public int getSize(Blueprint blueprint);
+	public String getSizeParameterName(Blueprint blueprint);
 
 	public Optional<JSONObject> getSortConfigurationOptional(
 		Blueprint blueprint);

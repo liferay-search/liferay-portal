@@ -16,7 +16,7 @@ package com.liferay.portal.search.tuning.blueprints.internal.util;
 
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONException;
-import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.Log;
@@ -28,14 +28,17 @@ import com.liferay.portal.search.tuning.blueprints.constants.json.keys.framework
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.parameter.KeywordsConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.parameter.PageConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.parameter.ParameterConfigurationKeys;
+import com.liferay.portal.search.tuning.blueprints.constants.json.keys.parameter.SizeConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.sort.SortConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.search.tuning.blueprints.util.BlueprintHelper;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Petteri Karttunen
@@ -95,6 +98,25 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 				"JSONArray/" + ParameterConfigurationKeys.CUSTOM.getJsonKey());
 
 		return _maybeJsonArrayOptional(jsonArrayOptional);
+	}
+
+	@Override
+	public int getDefaultSize(Blueprint blueprint) {
+		Optional<JSONObject> configurationJSONObjectOptional =
+			getParameterConfigurationOptional(blueprint);
+
+		if (!configurationJSONObjectOptional.isPresent()) {
+			return _getDefaultSize().get();
+		}
+
+		Optional<Integer> optional = BlueprintJSONUtil.getValueAsIntegerOptional(
+				configurationJSONObjectOptional.get(),
+				"JSONObject/" + ParameterConfigurationKeys.SIZE.getJsonKey(),
+				"Object/" + SizeConfigurationKeys.DEFAULT.getJsonKey());
+		
+		optional.orElse(
+			_getDefaultSize().get()
+		);
 	}
 
 	@Override
@@ -257,27 +279,39 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 	}
 
 	@Override
-	public Optional<String> getKeywordsParameterNameOptional(
-		Blueprint blueprint) {
-
+	public String getKeywordsParameterName(Blueprint blueprint) {
 		Optional<JSONObject> configurationJSONObjectOptional =
 			getParameterConfigurationOptional(blueprint);
+
+		if (!configurationJSONObjectOptional.isPresent()) {
+			return _getDefaultKeywordParameterName().get();
+		}
 
 		return BlueprintJSONUtil.getValueAsStringOptional(
 			configurationJSONObjectOptional.get(),
 			"JSONObject/" + ParameterConfigurationKeys.KEYWORDS.getJsonKey(),
-			"Object/" + KeywordsConfigurationKeys.PARAMETER_NAME.getJsonKey());
+			"Object/" + KeywordsConfigurationKeys.PARAMETER_NAME.getJsonKey()
+		).orElse(
+			_getDefaultKeywordParameterName().get()
+		);
 	}
 
 	@Override
-	public Optional<String> getPageParameterNameOptional(Blueprint blueprint) {
+	public String getPageParameterName(Blueprint blueprint) {
 		Optional<JSONObject> configurationJSONObjectOptional =
 			getParameterConfigurationOptional(blueprint);
+
+		if (!configurationJSONObjectOptional.isPresent()) {
+			return _getDefaultPageParameterName().get();
+		}
 
 		return BlueprintJSONUtil.getValueAsStringOptional(
 			configurationJSONObjectOptional.get(),
 			"JSONObject/" + ParameterConfigurationKeys.PAGE.getJsonKey(),
-			"Object/" + PageConfigurationKeys.PARAMETER_NAME.getJsonKey());
+			"Object/" + PageConfigurationKeys.PARAMETER_NAME.getJsonKey()
+		).orElse(
+			_getDefaultPageParameterName().get()
+		);
 	}
 
 	@Override
@@ -300,6 +334,30 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 
 		if ((parameterConfigurationJSONObject != null) &&
 			(parameterConfigurationJSONObject.length() > 0)) {
+
+			if (!parameterConfigurationJSONObject.has(
+					ParameterConfigurationKeys.KEYWORDS.getJsonKey())) {
+
+				parameterConfigurationJSONObject.put(
+					ParameterConfigurationKeys.KEYWORDS.getJsonKey(),
+					getDefaultKeywordParameterConfigurationJSONObject());
+			}
+
+			if (!parameterConfigurationJSONObject.has(
+					ParameterConfigurationKeys.PAGE.getJsonKey())) {
+
+				parameterConfigurationJSONObject.put(
+					ParameterConfigurationKeys.PAGE.getJsonKey(),
+					getDefaultPageParameterConfigurationJSONObject());
+			}
+
+			if (!parameterConfigurationJSONObject.has(
+					ParameterConfigurationKeys.SIZE.getJsonKey())) {
+
+				parameterConfigurationJSONObject.put(
+					ParameterConfigurationKeys.SIZE.getJsonKey(),
+					getDefaultSizeParameterConfigurationJSONObject());
+			}
 
 			return Optional.of(parameterConfigurationJSONObject);
 		}
@@ -340,22 +398,21 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 	}
 
 	@Override
-	public int getSize(Blueprint blueprint) {
+	public String getSizeParameterName(Blueprint blueprint) {
 		Optional<JSONObject> configurationJSONObjectOptional =
-			_getConfiguration(blueprint);
+			getParameterConfigurationOptional(blueprint);
 
 		if (!configurationJSONObjectOptional.isPresent()) {
-			return _DEFAULT_PAGE_SIZE;
+			return _getDefaultSizeParameterName().get();
 		}
 
-		Optional<Integer> sizeOptional =
-			BlueprintJSONUtil.getValueAsIntegerOptional(
-				configurationJSONObjectOptional.get(),
-				"JSONObject/" +
-					BlueprintKeys.ADVANCED_CONFIGURATION.getJsonKey(),
-				"Object/" + AdvancedConfigurationKeys.PAGE_SIZE.getJsonKey());
-
-		return sizeOptional.orElse(_DEFAULT_PAGE_SIZE);
+		return BlueprintJSONUtil.getValueAsStringOptional(
+			configurationJSONObjectOptional.get(),
+			"JSONObject/" + ParameterConfigurationKeys.SIZE.getJsonKey(),
+			"Object/" + SizeConfigurationKeys.PARAMETER_NAME.getJsonKey()
+		).orElse(
+			_getDefaultSizeParameterName().get()
+		);
 	}
 
 	@Override
@@ -422,28 +479,45 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 		);
 	}
 
+	protected JSONObject getDefaultKeywordParameterConfigurationJSONObject() {
+		return JSONUtil.put(
+			SizeConfigurationKeys.PARAMETER_NAME.getJsonKey(), "q");
+	}
+
+	protected JSONObject getDefaultPageParameterConfigurationJSONObject() {
+		return JSONUtil.put(
+			SizeConfigurationKeys.PARAMETER_NAME.getJsonKey(), "page");
+	}
+
 	protected JSONObject getDefaultParameterConfigurationJSONObject() {
-		JSONObject keywordsConfigurationJSONObject = JSONUtil.put(
-			KeywordsConfigurationKeys.PARAMETER_NAME.getJsonKey(), "q");
-
-		JSONObject pagingConfigurationJSONObject = JSONUtil.put(
-			KeywordsConfigurationKeys.PARAMETER_NAME.getJsonKey(), "page");
-
 		return JSONUtil.put(
 			ParameterConfigurationKeys.KEYWORDS.getJsonKey(),
-			keywordsConfigurationJSONObject
+			getDefaultKeywordParameterConfigurationJSONObject()
 		).put(
 			ParameterConfigurationKeys.PAGE.getJsonKey(),
-			pagingConfigurationJSONObject
+			getDefaultPageParameterConfigurationJSONObject()
+		).put(
+			ParameterConfigurationKeys.SIZE.getJsonKey(),
+			getDefaultSizeParameterConfigurationJSONObject()
+		);
+	}
+
+	protected JSONObject getDefaultSizeParameterConfigurationJSONObject() {
+		return JSONUtil.put(
+			SizeConfigurationKeys.PARAMETER_NAME.getJsonKey(), "size"
+		).put(
+			SizeConfigurationKeys.DEFAULT.getJsonKey(), 10
+		).put(
+			SizeConfigurationKeys.MAX_VALUE.getJsonKey(), 100
+		).put(
+			SizeConfigurationKeys.MIN_VALUE.getJsonKey(), 1
 		);
 	}
 
 	private Optional<JSONObject> _getConfiguration(Blueprint blueprint) {
 		try {
-			JSONObject configurationJSONObject =
-				JSONFactoryUtil.createJSONObject(blueprint.getConfiguration());
-
-			return Optional.of(configurationJSONObject);
+			return Optional.of(
+				_jsonFactory.createJSONObject(blueprint.getConfiguration()));
 		}
 		catch (JSONException jsonException) {
 			_log.error(
@@ -452,6 +526,27 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 		}
 
 		return Optional.empty();
+	}
+
+	private Supplier<String> _getDefaultKeywordParameterName() {
+		return () ->
+			getDefaultKeywordParameterConfigurationJSONObject().getString(
+				KeywordsConfigurationKeys.PARAMETER_NAME.getJsonKey());
+	}
+
+	private Supplier<String> _getDefaultPageParameterName() {
+		return () -> getDefaultPageParameterConfigurationJSONObject().getString(
+			PageConfigurationKeys.PARAMETER_NAME.getJsonKey());
+	}
+
+	private Supplier<Integer> _getDefaultSize() {
+		return () -> getDefaultSizeParameterConfigurationJSONObject().getInt(
+			SizeConfigurationKeys.DEFAULT.getJsonKey());
+	}
+
+	private Supplier<String> _getDefaultSizeParameterName() {
+		return () -> getDefaultSizeParameterConfigurationJSONObject().getString(
+			SizeConfigurationKeys.PARAMETER_NAME.getJsonKey());
 	}
 
 	private Optional<JSONArray> _maybeJsonArrayOptional(
@@ -467,9 +562,10 @@ public class BlueprintHelperImpl implements BlueprintHelper {
 		return Optional.empty();
 	}
 
-	private static final int _DEFAULT_PAGE_SIZE = 10;
-
 	private static final Log _log = LogFactoryUtil.getLog(
 		BlueprintHelperImpl.class);
+
+	@Reference
+	private JSONFactory _jsonFactory;
 
 }
