@@ -14,7 +14,13 @@ import React, {useState} from 'react';
 
 import CodeMirrorEditor from '../CodeMirrorEditor';
 
-function JSONInput({configKey, disabled, initialValue, onChange}) {
+function JSONInput({
+	configKey,
+	disabled,
+	initialValue,
+	label = Liferay.Language.get('json'),
+	onChange,
+}) {
 	const [value, setValue] = useState(
 		JSON.stringify(initialValue, null, '\t')
 	);
@@ -28,7 +34,7 @@ function JSONInput({configKey, disabled, initialValue, onChange}) {
 
 	return (
 		<div className={getCN('custom-json', {disabled})} onBlur={_handleBlur}>
-			<label>{Liferay.Language.get('json')}</label>
+			<label>{label}</label>
 
 			<CodeMirrorEditor onChange={setValue} value={value} />
 		</div>

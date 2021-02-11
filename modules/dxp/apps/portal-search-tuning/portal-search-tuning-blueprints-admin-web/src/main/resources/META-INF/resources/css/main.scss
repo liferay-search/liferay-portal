@@ -1,58 +1,14 @@
 @import '_variables';
 
-.blueprint-edit-title-modal .modal-body {
-	.form-check-card {
-		height: calc(100% - 1.5rem);
+@import '_utils';
 
-		&.selected {
-			.card {
-				box-shadow: 0 0 0 2px $primaryL2;
-
-				.card-item-first {
-					background-color: $primaryL4;
-				}
-			}
-		}
-
-		.card {
-			cursor: pointer;
-			height: 100%;
-		}
-
-		.card-item-first {
-			background-color: $lightBackground;
-		}
-
-		.card-subtitle {
-			line-height: 1.2rem;
-		}
-
-		.custom-checkbox {
-			display: block;
-			margin-bottom: 1rem;
-			position: relative;
-
-			.custom-control-input,
-			.custom-control-label {
-				left: 0;
-			}
-		}
-	}
-
-	.form-group:last-of-type {
-		margin-bottom: 0;
-	}
-}
+@import '_configuration_json_modal';
+@import '_edit_title_modal';
+@import '_searchable_assets_modal';
 
 .codemirror-editor-wrapper {
 	border: 1px solid $mainLighten74;
 	border-radius: 4px;
-}
-
-.configuration-json-modal {
-	.CodeMirror {
-		height: 600px;
-	}
 }
 
 .portlet-blueprints-admin {
@@ -75,10 +31,6 @@
 			background-color: $secondaryHover;
 		}
 
-		.italic {
-			font-style: italic;
-		}
-
 		.secondary {
 			color: $secondaryL1;
 		}
@@ -92,23 +44,5 @@
 		height: calc(100vh - 96px);
 
 		@import '_element_form';
-
-		.cursor-pointer {
-			cursor: pointer;
-		}
-	}
-}
-
-.portlet-blueprints-searchable-assets-modal {
-	.inline-scroller {
-		max-height: unset;
-	}
-
-	.component-text {
-		margin-left: 12px;
-
-		&.link-primary {
-			font-weight: 600;
-		}
 	}
 }

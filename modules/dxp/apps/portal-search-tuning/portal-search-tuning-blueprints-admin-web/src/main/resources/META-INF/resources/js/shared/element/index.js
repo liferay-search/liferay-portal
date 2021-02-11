@@ -41,13 +41,13 @@ function Element({
 	collapseAll,
 	uiConfigurationJSON,
 	uiConfigurationValues,
-	deleteFragment,
-	entityJSON,
+	deleteElement,
+	elementOutput,
 	elementTemplateJSON,
-	fragmentOutput,
+	entityJSON,
 	id,
 	initialUIConfigurationValues = {},
-	updateFragment = () => {},
+	updateElement = () => {},
 }) {
 	const {locale} = useContext(ThemeContext);
 	const [collapse, setCollapse] = useState(false);
@@ -62,11 +62,11 @@ function Element({
 	};
 
 	const _handleDelete = () => {
-		deleteFragment(id);
+		deleteElement(id);
 	};
 
 	const _handleChange = (key, value) => {
-		updateFragment(id, {
+		updateElement(id, {
 			uiConfigurationValues: {
 				...uiConfigurationValues,
 				[key]: value,
@@ -77,13 +77,13 @@ function Element({
 	const _handleToggle = () => {
 		const enabled = !elementTemplateJSON.enabled;
 
-		updateFragment(id, {
-			elementTemplateJSON: {
-				...elementTemplateJSON,
+		updateElement(id, {
+			elementOutput: {
+				...elementOutput,
 				enabled,
 			},
-			fragmentOutput: {
-				...fragmentOutput,
+			elementTemplateJSON: {
+				...elementTemplateJSON,
 				enabled,
 			},
 		});
@@ -135,6 +135,7 @@ function Element({
 						configKey={config.key}
 						disabled={disabled}
 						initialValue={uiConfigurationValues[config.key]}
+						label={config.label}
 						onChange={_handleChange}
 					/>
 				);
@@ -151,11 +152,13 @@ function Element({
 				return (
 					<NumberInput
 						configKey={config.key}
+						defaultValue={config.defaultValue}
 						disabled={disabled}
+						id={inputId}
+						initialValue={initialUIConfigurationValues[config.key]}
 						label={config.label}
 						onChange={_handleChange}
 						unit={config.unit}
-						value={uiConfigurationValues[config.key]}
 					/>
 				);
 			case INPUT_TYPES.FIELD:
@@ -184,10 +187,13 @@ function Element({
 				return (
 					<SliderInput
 						configKey={config.key}
+						defaultValue={config.defaultValue}
 						disabled={disabled}
 						id={inputId}
 						initialValue={initialUIConfigurationValues[config.key]}
 						label={config.label}
+						max={config.max}
+						min={config.min}
 						onChange={_handleChange}
 					/>
 				);
@@ -195,6 +201,7 @@ function Element({
 				return (
 					<TextInput
 						configKey={config.key}
+						defaultValue={config.defaultValue}
 						disabled={disabled}
 						id={inputId}
 						initialValue={initialUIConfigurationValues[config.key]}
@@ -207,7 +214,7 @@ function Element({
 
 	return (
 		<div
-			className={getCN('configuration-fragment-sheet', 'sheet', {
+			className={getCN('configuration-element-sheet', 'sheet', {
 				disabled: !elementTemplateJSON.enabled,
 			})}
 		>
@@ -244,7 +251,7 @@ function Element({
 						toggled={elementTemplateJSON.enabled}
 					/>
 
-					{(fragmentOutput || deleteFragment) && (
+					{(elementOutput || deleteElement) && (
 						<ClayDropDown
 							active={active}
 							alignmentPosition={3}
@@ -266,14 +273,14 @@ function Element({
 							}
 						>
 							<ClayDropDown.ItemList>
-								{fragmentOutput && (
+								{elementOutput && (
 									<PreviewModal
 										body={
 											<div className="configuration-json-modal">
 												<CodeMirrorEditor
 													readOnly
 													value={JSON.stringify(
-														fragmentOutput,
+														elementOutput,
 														null,
 														'\t'
 													)}
@@ -293,7 +300,7 @@ function Element({
 									</PreviewModal>
 								)}
 
-								{deleteFragment && (
+								{deleteElement && (
 									<ClayDropDown.Item onClick={_handleDelete}>
 										{Liferay.Language.get('remove')}
 									</ClayDropDown.Item>
@@ -395,15 +402,15 @@ function Element({
 
 Element.propTypes = {
 	collapseAll: PropTypes.bool,
-	deleteFragment: PropTypes.func,
+	deleteElement: PropTypes.func,
+	elementOutput: PropTypes.object,
 	elementTemplateJSON: PropTypes.object,
 	entityJSON: PropTypes.object,
-	fragmentOutput: PropTypes.object,
 	id: PropTypes.number,
 	initialUIConfigurationValues: PropTypes.object,
 	uiConfigurationJSON: PropTypes.arrayOf(PropTypes.object),
 	uiConfigurationValues: PropTypes.object,
-	updateFragment: PropTypes.func,
+	updateElement: PropTypes.func,
 };
 
 export default React.memo(Element);

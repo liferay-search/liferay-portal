@@ -14,8 +14,16 @@ import React, {useState} from 'react';
 
 import {replaceStr} from '../../utils/utils';
 
-function TextInput({configKey, disabled, id, initialValue, label, onChange}) {
-	const [value, setValue] = useState(initialValue);
+function TextInput({
+	configKey,
+	defaultValue = '',
+	disabled,
+	id,
+	initialValue,
+	label,
+	onChange,
+}) {
+	const [value, setValue] = useState(initialValue || defaultValue);
 
 	const _handleBlur = () => {
 		onChange(configKey, replaceStr(value, '"', ''));

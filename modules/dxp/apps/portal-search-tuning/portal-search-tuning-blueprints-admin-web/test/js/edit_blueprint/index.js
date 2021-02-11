@@ -55,7 +55,7 @@ function renderEditBlueprint(props) {
 					INITIAL_CONFIGURATION
 				),
 				initialDescription: {},
-				initialSelectedFragmentsString: JSON.stringify({
+				initialSelectedElementsString: JSON.stringify({
 					query_configuration: [],
 				}),
 				initialTitle: {
@@ -79,7 +79,7 @@ describe('EditBlueprint', () => {
 
 	it('renders the query elements', () => {
 		const {container} = renderEditBlueprint({
-			initialSelectedFragmentsString: JSON.stringify({
+			initialSelectedElementsString: JSON.stringify({
 				query_configuration: SELECTED_ELEMENTS,
 			}),
 		});

@@ -16,6 +16,7 @@ import React, {useCallback, useContext, useRef, useState} from 'react';
 import ErrorBoundary from '../shared/ErrorBoundary';
 import PageToolbar from '../shared/PageToolbar';
 import ThemeContext from '../shared/ThemeContext';
+import {CUSTOM_JSON_ELEMENT, QUERY_ELEMENTS} from '../utils/data';
 import {
 	convertToSelectedElement,
 	openErrorToast,
@@ -54,10 +55,10 @@ function EditBlueprintForm({
 	const [tab, setTab] = useState('query-builder');
 
 	const form = useRef();
-	const sidebarQueryFragments = useRef([
-		...QUERY_FRAGMENTS,
-		CUSTOM_JSON_FRAGMENT,
-		...queryFragments,
+	const sidebarQueryElements = useRef([
+		...QUERY_ELEMENTS,
+		CUSTOM_JSON_ELEMENT,
+		...queryElements,
 	]);
 
 	const elementIdCounter = useRef(1);
@@ -280,7 +281,7 @@ function EditBlueprintForm({
 				return (
 					<>
 						<Sidebar
-							elements={sidebarQueryFragments.current}
+							elements={sidebarQueryElements.current}
 							onAddElement={onAddElement}
 							onClose={() => setShowSidebar(false)}
 							visible={showSidebar}

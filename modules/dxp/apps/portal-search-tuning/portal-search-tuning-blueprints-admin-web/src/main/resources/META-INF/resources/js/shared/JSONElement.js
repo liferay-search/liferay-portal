@@ -13,6 +13,7 @@ import ClayButton from '@clayui/button';
 import ClayDropDown from '@clayui/drop-down';
 import ClayIcon from '@clayui/icon';
 import ClayList from '@clayui/list';
+import ClaySticker from '@clayui/sticker';
 import {PropTypes} from 'prop-types';
 import React, {useContext, useEffect, useMemo, useState} from 'react';
 
@@ -53,6 +54,14 @@ function JSONElement({
 				return (
 					<ClayList className="configuration-header-list">
 						<ClayList.Item flex>
+							<ClayList.ItemField>
+								<ClaySticker size="md">
+									<ClayIcon
+										symbol={elementTemplateJSON.icon}
+									/>
+								</ClaySticker>
+							</ClayList.ItemField>
+
 							<ClayList.ItemField expand>
 								{elementTemplateJSON.title && (
 									<ClayList.ItemTitle>
@@ -96,6 +105,7 @@ function JSONElement({
 									</ClayDropDown.Item>
 								</ClayDropDown.ItemList>
 							</ClayDropDown>
+
 							<ClayList.ItemField>
 								<ClayButton
 									aria-label={

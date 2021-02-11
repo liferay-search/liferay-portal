@@ -50,7 +50,7 @@ const FrameworkCard = ({
 			onClick={onChange}
 			selectable
 		>
-			<ClayRadio checked={checked} value={value}>
+			<ClayRadio checked={checked} onChange={onChange} value={value}>
 				<ClayCard.AspectRatio className="card-item-first">
 					<div className="aspect-ratio-item aspect-ratio-item-center-middle aspect-ratio-item-fluid">
 						<img alt={title} src={imagePath} />

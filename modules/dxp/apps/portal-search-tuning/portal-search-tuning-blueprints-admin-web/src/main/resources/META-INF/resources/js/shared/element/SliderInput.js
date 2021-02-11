@@ -17,15 +17,29 @@ import React, {useState} from 'react';
 
 import {toNumber} from '../../utils/utils';
 
-function SliderInput({configKey, disabled, initialValue, label, onChange}) {
+function SliderInput({
+	configKey,
+	defaultValue = 0,
+	disabled,
+	id,
+	initialValue,
+	label,
+	max,
+	min,
+	onChange,
+}) {
 	const [active, setActive] = useState(false);
-	const [value, setValue] = useState(initialValue);
+	const [value, setValue] = useState(initialValue || defaultValue);
 
 	const _handleBlur = () => {
-		onChange(configKey, value);
+		onChange(configKey, toNumber(value));
 	};
 
-	const _handleValueChange = (value) => {
+	const _handleInputChange = (event) => {
+		setValue(event.target.value);
+	};
+
+	const _handleSliderChange = (value) => {
 		setValue(value);
 	};
 
@@ -36,11 +50,11 @@ function SliderInput({configKey, disabled, initialValue, label, onChange}) {
 					<ClayInput
 						aria-label={label}
 						disabled={disabled}
+						id={id}
 						insetAfter
-						onChange={(event) => {
-							onChange(configKey, toNumber(event.target.value));
-						}}
-						type={'number'}
+						onBlur={_handleBlur}
+						onChange={_handleInputChange}
+						type="number"
 						value={value}
 					/>
 
@@ -49,9 +63,7 @@ function SliderInput({configKey, disabled, initialValue, label, onChange}) {
 							aria-label={Liferay.Language.get('slider')}
 							disabled={disabled}
 							displayType="unstyled"
-							onClick={() => {
-								setActive(!active);
-							}}
+							onClick={() => setActive(!active)}
 						>
 							<ClayIcon symbol="control-panel" />
 						</ClayButton>
@@ -62,11 +74,10 @@ function SliderInput({configKey, disabled, initialValue, label, onChange}) {
 			{active && (
 				<div className="slider-configuration">
 					<ClaySlider
-						id={configKey}
-						max={100}
-						min={-100}
+						max={max}
+						min={min}
 						onBlur={_handleBlur}
-						onValueChange={_handleValueChange}
+						onValueChange={_handleSliderChange}
 						value={value}
 					/>
 				</div>
