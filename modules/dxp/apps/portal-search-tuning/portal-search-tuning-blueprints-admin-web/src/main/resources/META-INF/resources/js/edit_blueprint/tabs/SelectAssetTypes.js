@@ -16,24 +16,53 @@ import ClayLink from '@clayui/link';
 import ClayManagementToolbar from '@clayui/management-toolbar';
 import ClayModal, {useModal} from '@clayui/modal';
 import ClayTable from '@clayui/table';
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 
 import {sub} from './../../utils/utils';
 
 function SelectAssetTypes({
+	onFrameworkConfigChange,
 	searchableAssetTypes,
-	selectedAssetTypes,
-	updateSelectedAssetTypes,
+	selectedAssetTypes = [],
 }) {
 	const [visible, setVisible] = useState(false);
 	const {observer, onClose} = useModal({
 		onClose: () => setVisible(false),
 	});
-	const [selected, setSelected] = useState(selectedAssetTypes);
+	const [modalSelectedAssetTypes, setModalSelectedAssetTypes] = useState(
+		selectedAssetTypes
+	);
 
-	useEffect(() => {
-		setSelected(selectedAssetTypes);
-	}, [selectedAssetTypes]);
+	const _handleDelete = (asset) => () => {
+		const newSelected = modalSelectedAssetTypes.filter(
+			(item) => item !== asset
+		);
+
+		onFrameworkConfigChange({
+			searchable_asset_types: newSelected,
+		});
+		setModalSelectedAssetTypes(newSelected);
+	};
+
+	const _handleModalDone = () => {
+		onClose();
+
+		onFrameworkConfigChange({
+			searchable_asset_types: searchableAssetTypes.filter((item) =>
+				modalSelectedAssetTypes.includes(item)
+			), // Keeps the list ordered the same as searchableAssetTypes
+		});
+	};
+
+	const _handleRowCheck = (asset) => () => {
+		const isSelected = modalSelectedAssetTypes.includes(asset);
+
+		setModalSelectedAssetTypes(
+			isSelected
+				? modalSelectedAssetTypes.filter((item) => item !== asset)
+				: [...modalSelectedAssetTypes, asset]
+		);
+	};
 
 	return (
 		<>
@@ -62,13 +91,7 @@ function SelectAssetTypes({
 										)}
 										className="secondary"
 										displayType="unstyled"
-										onClick={() => {
-											updateSelectedAssetTypes(
-												selectedAssetTypes.filter(
-													(item) => item !== asset
-												)
-											);
-										}}
+										onClick={_handleDelete(asset)}
 										small
 									>
 										<ClayIcon symbol="times" />
@@ -82,7 +105,7 @@ function SelectAssetTypes({
 
 			{visible && (
 				<ClayModal
-					className="modal-height-xl portlet-blueprints-searchable-assets-modal"
+					className="blueprint-searchable-assets-modal modal-height-xl"
 					observer={observer}
 					size="lg"
 				>
@@ -92,22 +115,27 @@ function SelectAssetTypes({
 
 					<ClayManagementToolbar
 						className={
-							selected.length > 0 && 'management-bar-primary'
+							modalSelectedAssetTypes.length > 0 &&
+							'management-bar-primary'
 						}
 					>
 						<div className="navbar-form navbar-form-autofit navbar-overlay">
 							<ClayManagementToolbar.ItemList>
 								<ClayManagementToolbar.Item>
 									<ClayCheckbox
-										checked={selected.length > 0}
+										checked={
+											modalSelectedAssetTypes.length > 0
+										}
 										indeterminate={
-											selected.length > 0 &&
-											selected.length !==
+											modalSelectedAssetTypes.length >
+												0 &&
+											modalSelectedAssetTypes.length !==
 												searchableAssetTypes.length
 										}
 										onChange={() =>
-											setSelected(
-												selected.length === 0
+											setModalSelectedAssetTypes(
+												modalSelectedAssetTypes.length ===
+													0
 													? searchableAssetTypes
 													: []
 											)
@@ -116,7 +144,7 @@ function SelectAssetTypes({
 								</ClayManagementToolbar.Item>
 
 								<ClayManagementToolbar.Item>
-									{selected.length > 0 ? (
+									{modalSelectedAssetTypes.length > 0 ? (
 										<>
 											<span className="component-text">
 												{sub(
@@ -124,7 +152,7 @@ function SelectAssetTypes({
 														'x-of-x-selected'
 													),
 													[
-														selected.length,
+														modalSelectedAssetTypes.length,
 														searchableAssetTypes.length,
 													],
 													false
@@ -135,7 +163,7 @@ function SelectAssetTypes({
 												className="component-text"
 												displayType="primary"
 												onClick={() => {
-													setSelected(
+													setModalSelectedAssetTypes(
 														searchableAssetTypes
 													);
 												}}
@@ -161,28 +189,26 @@ function SelectAssetTypes({
 						<ClayTable>
 							<ClayTable.Body>
 								{searchableAssetTypes.map((asset) => {
-									const isSelected = selected.includes(asset);
-									const toggleSelect = () =>
-										setSelected(
-											isSelected
-												? selected.filter(
-														(item) => item !== asset
-												  )
-												: [...selected, asset]
-										);
+									const isSelected = modalSelectedAssetTypes.includes(
+										asset
+									);
 
 									return (
 										<ClayTable.Row
 											active={isSelected}
+											className="cursor-pointer"
 											key={asset}
-											onClick={toggleSelect}
+											onClick={_handleRowCheck(asset)}
 										>
 											<ClayTable.Cell>
 												<ClayCheckbox
 													checked={isSelected}
-													onChange={toggleSelect}
+													onChange={_handleRowCheck(
+														asset
+													)}
 												/>
 											</ClayTable.Cell>
+
 											<ClayTable.Cell
 												expanded
 												headingTitle
@@ -205,17 +231,8 @@ function SelectAssetTypes({
 								>
 									{Liferay.Language.get('cancel')}
 								</ClayButton>
-								<ClayButton
-									onClick={() => {
-										onClose();
-										updateSelectedAssetTypes(
-											searchableAssetTypes.filter(
-												(item) =>
-													selected.includes(item)
-											)
-										);
-									}}
-								>
+
+								<ClayButton onClick={_handleModalDone}>
 									{Liferay.Language.get('done')}
 								</ClayButton>
 							</ClayButton.Group>

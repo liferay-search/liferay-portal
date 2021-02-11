@@ -217,15 +217,10 @@ function QueryBuilder({
 						</ClayPanel.Body>
 
 						<SelectAssetTypes
+							onFrameworkConfigChange={onFrameworkConfigChange}
 							searchableAssetTypes={searchableAssetTypes}
 							selectedAssetTypes={
 								frameworkConfig.searchable_asset_types
-							}
-							updateSelectedAssetTypes={(assets) =>
-								onFrameworkConfigChange({
-									...frameworkConfig,
-									searchable_asset_types: assets,
-								})
 							}
 						/>
 					</ClayPanel>
@@ -250,7 +245,6 @@ function QueryBuilder({
 									imagePath={`${contextPath}/images/liferay-default-clauses.svg`}
 									onChange={() =>
 										onFrameworkConfigChange({
-											...frameworkConfig,
 											apply_indexer_clauses: true,
 										})
 									}
@@ -269,7 +263,6 @@ function QueryBuilder({
 									imagePath={`${contextPath}/images/custom-clauses.svg`}
 									onChange={() =>
 										onFrameworkConfigChange({
-											...frameworkConfig,
 											apply_indexer_clauses: false,
 										})
 									}

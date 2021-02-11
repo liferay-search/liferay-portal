@@ -123,6 +123,10 @@ function EditBlueprintForm({
 		});
 	}, []);
 
+	const handleFrameworkChange = (value) => {
+		setFrameworkConfig({...frameworkConfig, ...value});
+	}
+
 	const handleSubmit = useCallback(
 		(event) => {
 			event.preventDefault();
@@ -289,9 +293,7 @@ function EditBlueprintForm({
 							initialSelectedElements={
 								initialSelectedElements['query_configuration']
 							}
-							onFrameworkConfigChange={(val) =>
-								setFrameworkConfig(val)
-							}
+							onFrameworkConfigChange={handleFrameworkChange}
 							onToggleSidebar={() => setShowSidebar(!showSidebar)}
 							searchableAssetTypes={searchableAssetTypes}
 							selectedElements={selectedQueryElements}
