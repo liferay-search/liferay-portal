@@ -15,22 +15,38 @@
 package com.liferay.portal.search.tuning.blueprints.condition.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.asset.kernel.model.AssetCategory;
+import com.liferay.asset.kernel.model.AssetVocabulary;
+import com.liferay.asset.kernel.service.AssetCategoryLocalServiceUtil;
+import com.liferay.asset.kernel.service.AssetVocabularyLocalServiceUtil;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.test.util.JournalTestUtil;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
+import com.liferay.portal.kernel.model.Role;
+import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.model.role.RoleConstants;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.portal.kernel.test.util.RoleTestUtil;
+import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.search.tuning.blueprints.constants.json.values.EvaluationType;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
+import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
+import com.liferay.segments.criteria.Criteria;
+import com.liferay.segments.criteria.CriteriaSerializer;
+import com.liferay.segments.criteria.contributor.SegmentsCriteriaContributor;
+import com.liferay.segments.model.SegmentsEntry;
+import com.liferay.segments.test.util.SegmentsTestUtil;
 
 import java.util.Collections;
 
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -40,7 +56,7 @@ import org.junit.runner.RunWith;
  * @author Wade Cao
  */
 @RunWith(Arquillian.class)
-public class BoostWebContentByKeywordMatchTest
+public class BoostContentInCategoryForAUserSegmentTest
 	extends BaseBoostConditionTestCase {
 
 	@ClassRule
@@ -50,8 +66,28 @@ public class BoostWebContentByKeywordMatchTest
 			new LiferayIntegrationTestRule(),
 			PermissionCheckerMethodTestRule.INSTANCE);
 
+	@Before
+	public void setUp() throws Exception {
+		super.setUp();
+	}
+
 	@Test
-	public void testAnyWordInCondition() throws Exception {
+	public void testContainsCondition() throws Exception {
+		Role role = RoleTestUtil.addRole(
+			"Customers", RoleConstants.TYPE_REGULAR);
+
+		User user = UserTestUtil.addGroupUser(group, role.getName());
+
+		SegmentsEntry segmentsEntry = _addSegmentsEntry(role);
+
+		AssetVocabulary assetVocabulary =
+			AssetVocabularyLocalServiceUtil.addDefaultVocabulary(
+				group.getGroupId());
+
+		AssetCategory assetCategory = AssetCategoryLocalServiceUtil.addCategory(
+			user.getUserId(), group.getGroupId(), "Promoted",
+			assetVocabulary.getVocabularyId(), serviceContext);
+
 		JournalTestUtil.addArticle(
 			group.getGroupId(), 0,
 			PortalUtil.getClassNameId(JournalArticle.class),
@@ -64,7 +100,10 @@ public class BoostWebContentByKeywordMatchTest
 			).build(),
 			LocaleUtil.getSiteDefault(), false, true, serviceContext);
 
-		JournalArticle journalArticle = JournalTestUtil.addArticle(
+		serviceContext.setAssetCategoryIds(
+			new long[] {assetCategory.getCategoryId()});
+
+		JournalTestUtil.addArticle(
 			group.getGroupId(), 0,
 			PortalUtil.getClassNameId(JournalArticle.class),
 			HashMapBuilder.put(
@@ -76,8 +115,6 @@ public class BoostWebContentByKeywordMatchTest
 			).build(),
 			LocaleUtil.getSiteDefault(), false, true, serviceContext);
 
-		String articleId = journalArticle.getArticleId();
-
 		Blueprint blueprint = addCompanyBlueprint(
 			Collections.singletonMap(
 				LocaleUtil.US, getClass().getName() + "Blueprint"),
@@ -88,27 +125,30 @@ public class BoostWebContentByKeywordMatchTest
 
 		String configurationString = _getConfigurationString(
 			_getQueryElementJSONObject(
-				articleId, 100, EvaluationType.ANY_WORD_IN.getjsonValue(),
-				"cola"));
+				1000, assetCategory.getCategoryId(),
+				EvaluationType.CONTAINS.getjsonValue(),
+				segmentsEntry.getSegmentsEntryId()));
 
 		String selectedElementString = _getSelectedElementString(
-			articleId, 100, EvaluationType.ANY_WORD_IN.getjsonValue(), "cola");
+			1000, assetCategory.getCategoryId(),
+			EvaluationType.CONTAINS.getjsonValue(),
+			segmentsEntry.getSegmentsEntryId());
 
 		assertSearch(
 			blueprint, configurationString, "[pepsi cola, coca cola]", "cola",
 			selectedElementString);
+	}
 
-		configurationString = _getConfigurationString(
-			_getQueryElementJSONObject(
-				articleId, 100, EvaluationType.NOT_CONTAINS.getjsonValue(),
-				"cola"));
+	private SegmentsEntry _addSegmentsEntry(Role role) throws Exception {
+		Criteria criteria = new Criteria();
 
-		selectedElementString = _getSelectedElementString(
-			articleId, 100, EvaluationType.NOT_CONTAINS.getjsonValue(), "cola");
+		_userSegmentsCriteriaContributor.contribute(
+			criteria, String.format("(roleId eq '%s')", role.getRoleId()),
+			Criteria.Conjunction.AND);
 
-		assertSearch(
-			blueprint, configurationString, "[coca cola, pepsi cola]", "cola",
-			selectedElementString);
+		return SegmentsTestUtil.addSegmentsEntry(
+			group.getGroupId(), CriteriaSerializer.serialize(criteria),
+			User.class.getName());
 	}
 
 	private String _getConfigurationString(JSONObject jsonObject) {
@@ -125,7 +165,7 @@ public class BoostWebContentByKeywordMatchTest
 	}
 
 	private JSONObject _getQueryElementJSONObject(
-		String articleId, int boost, String evaluationType, String keywords) {
+		int boost, long categoryId, String evaluationType, long segmentId) {
 
 		return JSONUtil.put(
 			"category", "conditional"
@@ -141,13 +181,14 @@ public class BoostWebContentByKeywordMatchTest
 					JSONUtil.put(
 						"query",
 						JSONUtil.put(
-							"terms",
+							"term",
 							JSONUtil.put(
-								"articleId_String_sortable",
-								createJSONArray().put(articleId)
-							).put(
-								"boost", boost
-							)))
+								"assetCategoryIds",
+								JSONUtil.put(
+									"boost", boost
+								).put(
+									"value", categoryId
+								))))
 				).put(
 					"type", "wrapper"
 				))
@@ -159,30 +200,33 @@ public class BoostWebContentByKeywordMatchTest
 					JSONUtil.put(
 						"evaluation_type", evaluationType
 					).put(
-						"parameter_name", "${keywords}"
+						"parameter_name", "${user.user_segment_entry_ids}"
 					).put(
-						"value", createJSONArray().put(keywords)
+						"value", segmentId
 					)))
 		).put(
 			"description",
 			JSONUtil.put(
-				"en_US", "Show selected Web Contents higher in the results")
+				"en_US",
+				"Boost contents in a category for users belonging to a user " +
+					"segment")
 		).put(
 			"enabled", true
 		).put(
 			"icon", "thumbs-up"
 		).put(
 			"title",
-			JSONUtil.put("en_US", "Boost Web Contents by Keyword Match")
+			JSONUtil.put(
+				"en_US", "Boost Contents in a Category for a User Segment")
 		);
 	}
 
 	private String _getSelectedElementString(
-			String articleId, int boost, String evaluationType, String keywords)
+			int boost, long categoryId, String evaluationType, long segmentId)
 		throws Exception {
 
 		JSONObject elementTemplateJSONObject = getElementTemplateJSONObject(
-			"/elements/boost-web-contents-by-keyword-match-test.json");
+			"/elements/boost-content-in-category-for-a-user-segment-test.json");
 
 		return JSONUtil.put(
 			"query_configuration",
@@ -203,13 +247,14 @@ public class BoostWebContentByKeywordMatchTest
 								JSONUtil.put(
 									"query",
 									JSONUtil.put(
-										"terms",
+										"term",
 										JSONUtil.put(
-											"articleId_String_sortable",
-											createJSONArray().put(articleId)
-										).put(
-											"boost", boost
-										)))
+											"assetCategoryIds",
+											JSONUtil.put(
+												"boost", boost
+											).put(
+												"value", categoryId
+											))))
 							).put(
 								"type", "wrapper"
 							))
@@ -221,15 +266,17 @@ public class BoostWebContentByKeywordMatchTest
 								JSONUtil.put(
 									"evaluation_type", evaluationType
 								).put(
-									"parameter_name", "${keywords}"
+									"parameter_name",
+									"${user.user_segment_entry_ids}"
 								).put(
-									"value", createJSONArray().put(keywords)
+									"value", createJSONArray().put(segmentId)
 								)))
 					).put(
 						"description",
 						JSONUtil.put(
 							"en_US",
-							"Show selected Web Contents higher in the results")
+							"Boost contents in a category for users " +
+								"belonging to a user segment")
 					).put(
 						"enabled", true
 					).put(
@@ -237,7 +284,8 @@ public class BoostWebContentByKeywordMatchTest
 					).put(
 						"title",
 						JSONUtil.put(
-							"en_US", "Boost Web Contents by Keyword Match")
+							"en_US",
+							"Boost Contents in a Category for a User Segment")
 					)
 				).put(
 					"elementTemplateJSON",
@@ -248,33 +296,27 @@ public class BoostWebContentByKeywordMatchTest
 				).put(
 					"uiConfigurationValues",
 					_getUIConfigurationValuesJSONObject(
-						articleId, boost, keywords)
+						categoryId, boost, segmentId)
 				))
 		).toString();
 	}
 
 	private JSONObject _getUIConfigurationValuesJSONObject(
-		String articleId, int boost, String keywords) {
+		long categoryId, int boost, long segmentId) {
 
 		return JSONUtil.put(
-			"article_ids",
-			createJSONArray().put(
-				JSONUtil.put(
-					"label", articleId
-				).put(
-					"value", articleId
-				))
+			"asset_category_id", categoryId
 		).put(
 			"boost", boost
 		).put(
-			"values",
-			createJSONArray().put(
-				JSONUtil.put(
-					"label", keywords
-				).put(
-					"value", keywords
-				))
+			"user_segment_id", segmentId
 		);
 	}
+
+	@Inject(
+		filter = "segments.criteria.contributor.key=user",
+		type = SegmentsCriteriaContributor.class
+	)
+	private SegmentsCriteriaContributor _userSegmentsCriteriaContributor;
 
 }

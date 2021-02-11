@@ -1,17 +1,48 @@
 {
-	"clause_configuration": [
+	"advanced_configuration": {
+	},
+	"aggregation_configuration": [
+	],
+	"facet_configuration": [
+	],
+	"framework_configuration": {
+		"apply_indexer_clauses": false
+	},
+	"parameter_configuration": {
+	},
+	"query_configuration": [
 		{
+			"category": "match",
 			"clauses": [
 				{
 					"context": "query",
 					"occur": "must",
 					"query": {
-						"query": "{\"term\": { \"screenName\" : \"user3\" }}"
+						"query": {
+							"match": {
+								"localized_title${context.language_id}": {
+									"boost": 2,
+									"operator": "or",
+									"query": "${keywords}"
+								}
+							}
+						}
 					},
 					"type": "wrapper"
 				}
 			],
-			"enabled": true
+			"conditions": [
+			],
+			"description": {
+				"en_US": "Search for a keyword for match"
+			},
+			"enabled": true,
+			"icon": "picture",
+			"title": {
+				"en_US": "Query match"
+			}
 		}
+	],
+	"sort_configuration": [
 	]
 }
