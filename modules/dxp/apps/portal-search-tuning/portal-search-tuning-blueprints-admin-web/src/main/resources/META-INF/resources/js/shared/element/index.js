@@ -9,7 +9,6 @@
  * distribution rights of the Software.
  */
 
-import ClayAlert from '@clayui/alert';
 import ClayButton from '@clayui/button';
 import ClayDropDown from '@clayui/drop-down';
 import {ClayToggle} from '@clayui/form';
@@ -22,7 +21,6 @@ import {PropTypes} from 'prop-types';
 import React, {useContext, useEffect, useState} from 'react';
 
 import {INPUT_TYPES} from '../../utils/inputTypes';
-import {validateUIConfigurationJSON} from '../../utils/utils';
 import CodeMirrorEditor from '../CodeMirrorEditor';
 import PreviewModal from '../PreviewModal';
 import ThemeContext from '../ThemeContext';
@@ -336,65 +334,45 @@ function Element({
 				</ClayList.Item>
 			</ClayList>
 
-			{!collapse && (
-				<>
-					{!validateUIConfigurationJSON(uiConfigurationJSON) && (
-						<ClayAlert
-							displayType="danger"
-							title={Liferay.Language.get('error')}
+			{!collapse && _hasConfigurationValues && (
+				<ClayList className="configuration-form-list">
+					{uiConfigurationJSON.map((config) => (
+						<ClayList.Item
+							className={config.type}
+							flex
+							key={config.key}
 						>
-							{Liferay.Language.get(
-								'an-error-is-preventing-one-or-more-fields-from-displaying'
+							{config.type !== INPUT_TYPES.JSON && (
+								<ClayList.ItemField className="list-item-label">
+									<label
+										htmlFor={_getInputId(id, config.key)}
+									>
+										{config.label}
+
+										{config.helpText && (
+											<ClayTooltipProvider>
+												<ClaySticker
+													displayType="unstyled"
+													size="sm"
+												>
+													<ClayIcon
+														data-tooltip-align="top"
+														symbol="info-circle"
+														title={config.helpText}
+													/>
+												</ClaySticker>
+											</ClayTooltipProvider>
+										)}
+									</label>
+								</ClayList.ItemField>
 							)}
-						</ClayAlert>
-					)}
 
-					{_hasConfigurationValues && (
-						<ClayList className="configuration-form-list">
-							{uiConfigurationJSON.map((config) => (
-								<ClayList.Item
-									className={config.type}
-									flex
-									key={config.key}
-								>
-									{config.type !== INPUT_TYPES.JSON && (
-										<ClayList.ItemField className="list-item-label">
-											<label
-												htmlFor={_getInputId(
-													id,
-													config.key
-												)}
-											>
-												{config.label}
-
-												{config.helpText && (
-													<ClayTooltipProvider>
-														<ClaySticker
-															displayType="unstyled"
-															size="sm"
-														>
-															<ClayIcon
-																data-tooltip-align="top"
-																symbol="info-circle"
-																title={
-																	config.helpText
-																}
-															/>
-														</ClaySticker>
-													</ClayTooltipProvider>
-												)}
-											</label>
-										</ClayList.ItemField>
-									)}
-
-									<ClayList.ItemField expand>
-										{_renderInput(config)}
-									</ClayList.ItemField>
-								</ClayList.Item>
-							))}
-						</ClayList>
-					)}
-				</>
+							<ClayList.ItemField expand>
+								{_renderInput(config)}
+							</ClayList.ItemField>
+						</ClayList.Item>
+					))}
+				</ClayList>
 			)}
 		</div>
 	);
