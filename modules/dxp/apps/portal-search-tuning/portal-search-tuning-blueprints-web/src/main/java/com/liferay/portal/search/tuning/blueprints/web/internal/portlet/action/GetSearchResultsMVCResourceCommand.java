@@ -109,26 +109,9 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 			SearchResponse searchResponse = _blueprintsEngineHelper.search(
 				blueprint, blueprintsRequestAttributes, messages);
 
-			BlueprintsAttributes blueprintsResponseAttributes =
-				_getBlueprintsResponseAttributes(
-					resourceRequest, resourceResponse,
-					blueprintsRequestAttributes, blueprint);
-
-			responseJSONObject = _searchResponseJSONTranslator.translate(
-				searchResponse, blueprint, blueprintsResponseAttributes,
-				_getResourceBundle(resourceRequest), messages);
-
-			if (_shouldAddDidYouMean(
-					blueprintsWebPortletPreferences,
-					searchResponse.getTotalHits()) &&
-				!Validator.isBlank(blueprintsRequestAttributes.getKeywords())) {
-
-				_addDidYouMean(
-					resourceRequest, blueprintsWebPortletPreferences,
-					blueprintsRequestAttributes.getKeywords(),
-					responseJSONObject);
-			}
-
+			responseJSONObject = _createResponseObject(resourceRequest, resourceResponse, searchResponse,
+					blueprint, blueprintsRequestAttributes, blueprintsWebPortletPreferences, messages);
+			
 			if (_shouldIndexQuery(
 					blueprintsWebPortletPreferences,
 					searchResponse.getTotalHits())) {
@@ -160,6 +143,34 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 
 		JSONPortletResponseUtil.writeJSON(
 			resourceRequest, resourceResponse, responseJSONObject);
+	}
+
+	private JSONObject _createResponseObject(ResourceRequest resourceRequest, ResourceResponse resourceResponse,
+			SearchResponse searchResponse, Blueprint blueprint, BlueprintsAttributes blueprintsRequestAttributes, 
+			BlueprintsWebPortletPreferences blueprintsWebPortletPreferences, Messages messages) throws PortalException {
+
+			BlueprintsAttributes blueprintsResponseAttributes =
+			_getBlueprintsResponseAttributes(
+				resourceRequest, resourceResponse, blueprint,
+				blueprintsRequestAttributes);
+
+			JSONObject responseJSONObject = _searchResponseJSONTranslator.translate(
+				searchResponse, blueprint, blueprintsResponseAttributes,
+				_getResourceBundle(resourceRequest), messages);
+	
+			if (_shouldAddDidYouMean(
+					blueprintsWebPortletPreferences,
+					searchResponse.getTotalHits()) &&
+				!Validator.isBlank(blueprintsRequestAttributes.getKeywords())) {
+	
+				_addDidYouMean(
+					resourceRequest, blueprintsWebPortletPreferences,
+					blueprintsRequestAttributes.getKeywords(),
+					responseJSONObject);
+			}
+			
+			return responseJSONObject;
+
 	}
 
 	private void _addDidYouMean(
@@ -221,7 +232,7 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 
 	private BlueprintsAttributes _getBlueprintsResponseAttributes(
 		ResourceRequest resourceRequest, ResourceResponse resourceResponse,
-		BlueprintsAttributes blueprintsRequestAttributes, Blueprint blueprint) {
+		Blueprint blueprint, BlueprintsAttributes blueprintsRequestAttributes) {
 
 		BlueprintsAttributesBuilder blueprintsAttributesBuilder =
 			_blueprintsAttributesHelper.getBlueprintsResponseAttributesBuilder(

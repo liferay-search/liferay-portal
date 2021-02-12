@@ -14,26 +14,13 @@
 
 package com.liferay.portal.search.tuning.blueprints.searchresponse.json.translator.internal.result.builder;
 
-import com.liferay.asset.kernel.model.AssetRenderer;
-import com.liferay.journal.model.JournalArticle;
-import com.liferay.journal.service.JournalArticleService;
-import com.liferay.petra.string.StringPool;
-import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
-import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.search.Field;
-import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.search.document.Document;
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
 import com.liferay.portal.search.tuning.blueprints.searchresponse.json.translator.internal.util.ResultUtil;
 import com.liferay.portal.search.tuning.blueprints.searchresponse.json.translator.spi.result.ResultBuilder;
-import com.liferay.wiki.model.WikiPage;
-
-import javax.portlet.PortletRequest;
-import javax.portlet.PortletResponse;
-import javax.portlet.WindowState;
 
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Petteri Karttunen
@@ -56,93 +43,5 @@ public class MBMessageResultBuilder
 
 		return ResultUtil.stripHTML(title, -1);
 	}
-
-	@Override
-	public String getViewURL(
-			Document document, BlueprintsAttributes blueprintsAttributes)
-		throws Exception {
-
-		PortletRequest portletRequest = getPortletRequest(blueprintsAttributes);
-		PortletResponse portletResponse = getPortletResponse(
-			blueprintsAttributes);
-
-		if ((portletRequest == null) || (portletResponse == null)) {
-			return StringPool.BLANK;
-		}
-
-		long classNameId = document.getLong(Field.CLASS_NAME_ID);
-
-		if (classNameId > 0) {
-			long classPK = document.getLong(Field.CLASS_PK);
-
-			boolean viewInContext = isViewInContext(blueprintsAttributes);
-
-			String className = _portal.getClassName(classNameId);
-
-			LiferayPortletRequest liferayPortletRequest =
-				_portal.getLiferayPortletRequest(portletRequest);
-
-			LiferayPortletResponse liferayPortletResponse =
-				_portal.getLiferayPortletResponse(portletResponse);
-
-			String journalArticleClassName = JournalArticle.class.getName();
-
-			String wikiPageClassName = WikiPage.class.getName();
-
-			if (className.equals(journalArticleClassName)) {
-				return _getJournalArticleCommentLink(
-					liferayPortletRequest, liferayPortletResponse, classPK,
-					viewInContext);
-			}
-			else if (className.equals(wikiPageClassName)) {
-				return _getWikiPageCommentLink(
-					liferayPortletRequest, liferayPortletResponse, classPK,
-					viewInContext);
-			}
-		}
-
-		return super.getViewURL(document, blueprintsAttributes);
-	}
-
-	private String _getJournalArticleCommentLink(
-			LiferayPortletRequest liferayPortletRequest,
-			LiferayPortletResponse liferayPortletResponse, long classPK,
-			boolean viewResultsInContext)
-		throws Exception {
-
-		if (viewResultsInContext) {
-			AssetRenderer<?> assetRenderer = getAssetRenderer(
-				JournalArticle.class.getName(), classPK);
-
-			return assetRenderer.getURLViewInContext(
-				liferayPortletRequest, liferayPortletResponse, null);
-		}
-
-		return null;
-	}
-
-	private String _getWikiPageCommentLink(
-			LiferayPortletRequest liferayPortletRequest,
-			LiferayPortletResponse liferayPortletResponse, long classPK,
-			boolean viewResultsInContext)
-		throws Exception {
-
-		AssetRenderer<?> assetRenderer = getAssetRenderer(
-			WikiPage.class.getName(), classPK);
-
-		if (viewResultsInContext) {
-			return assetRenderer.getURLViewInContext(
-				liferayPortletRequest, liferayPortletResponse, "");
-		}
-
-		return assetRenderer.getURLView(
-			liferayPortletResponse, WindowState.MAXIMIZED);
-	}
-
-	@Reference
-	private JournalArticleService _journalArticleService;
-
-	@Reference
-	private Portal _portal;
 
 }

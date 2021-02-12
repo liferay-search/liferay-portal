@@ -38,7 +38,6 @@ import java.text.SimpleDateFormat;
 
 import java.util.Date;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Optional;
 
 import javax.portlet.PortletRequest;
@@ -96,14 +95,6 @@ public abstract class BaseResultBuilder implements ResultBuilder {
 	}
 
 	@Override
-	public Map<String, String> getMetadata(
-			Document document, BlueprintsAttributes blueprintsAttributes)
-		throws Exception {
-
-		return null;
-	}
-
-	@Override
 	public String getThumbnail(
 			Document document, BlueprintsAttributes blueprintsAttributes)
 		throws Exception {
@@ -125,25 +116,6 @@ public abstract class BaseResultBuilder implements ResultBuilder {
 	@Override
 	public String getType(Document document) {
 		return document.getString(Field.ENTRY_CLASS_NAME);
-	}
-
-	@Override
-	public String getViewURL(
-			Document document, BlueprintsAttributes blueprintsAttributes)
-		throws Exception, PortalException {
-
-		PortletRequest portletRequest = getPortletRequest(blueprintsAttributes);
-		PortletResponse portletResponse = getPortletResponse(
-			blueprintsAttributes);
-
-		if ((portletRequest == null) || (portletResponse == null)) {
-			return StringPool.BLANK;
-		}
-
-		boolean viewInContext = isViewInContext(blueprintsAttributes);
-
-		return ResultUtil.getViewURL(
-			document, portletRequest, portletResponse, viewInContext);
 	}
 
 	protected String buildLocalizedSnippetFieldName(

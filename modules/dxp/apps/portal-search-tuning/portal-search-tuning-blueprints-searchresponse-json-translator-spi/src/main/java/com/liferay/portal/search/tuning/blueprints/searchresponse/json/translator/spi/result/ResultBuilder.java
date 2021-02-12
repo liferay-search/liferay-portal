@@ -17,8 +17,6 @@ package com.liferay.portal.search.tuning.blueprints.searchresponse.json.translat
 import com.liferay.portal.search.document.Document;
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
 
-import java.util.Map;
-
 /**
  * @author Petteri Karttunen
  */
@@ -32,10 +30,6 @@ public interface ResultBuilder {
 			Document document, BlueprintsAttributes blueprintsAttributes)
 		throws Exception;
 
-	public Map<String, String> getMetadata(
-			Document document, BlueprintsAttributes blueprintsAttributes)
-		throws Exception;
-
 	public String getThumbnail(
 			Document document, BlueprintsAttributes blueprintsAttributes)
 		throws Exception;
@@ -45,9 +39,5 @@ public interface ResultBuilder {
 		throws Exception;
 
 	public String getType(Document document) throws Exception;
-
-	public String getViewURL(
-			Document document, BlueprintsAttributes blueprintsAttributes)
-		throws Exception;
 
 }

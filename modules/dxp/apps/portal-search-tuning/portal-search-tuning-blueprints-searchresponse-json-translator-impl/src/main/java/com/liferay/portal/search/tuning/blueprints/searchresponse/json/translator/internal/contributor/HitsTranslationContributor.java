@@ -14,6 +14,8 @@
 
 package com.liferay.portal.search.tuning.blueprints.searchresponse.json.translator.internal.contributor;
 
+import com.liferay.asset.kernel.model.AssetEntry;
+import com.liferay.asset.kernel.service.AssetEntryLocalService;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONException;
@@ -84,18 +86,18 @@ public class HitsTranslationContributor implements JSONTranslationContributor {
 		cardinality = ReferenceCardinality.MULTIPLE,
 		policy = ReferencePolicy.DYNAMIC
 	)
-	protected void registerResultContributor(
-		HitContributor resultContributor, Map<String, Object> properties) {
+	protected void registerHitContributor(
+		HitContributor hitContributor, Map<String, Object> properties) {
 
-		String type = (String)properties.get("type");
+		String name = (String)properties.get("name");
 
-		if (Validator.isBlank(type)) {
+		if (Validator.isBlank(name)) {
 			if (_log.isWarnEnabled()) {
-				Class<?> clazz = resultContributor.getClass();
+				Class<?> clazz = hitContributor.getClass();
 
 				_log.warn(
-					"Unable to add result contributor " + clazz.getName() +
-						". Type property empty.");
+					"Unable to add hit contributor " + clazz.getName() +
+						". Name property empty.");
 			}
 
 			return;
@@ -105,31 +107,74 @@ public class HitsTranslationContributor implements JSONTranslationContributor {
 			properties.get("service.ranking"), 0);
 
 		ServiceComponentReference<HitContributor> serviceComponentReference =
-			new ServiceComponentReference<>(resultContributor, serviceRanking);
+			new ServiceComponentReference<>(hitContributor, serviceRanking);
 
-		if (_resultContributors.containsKey(type)) {
+		if (_hitContributors.containsKey(name)) {
 			ServiceComponentReference<HitContributor> previousReference =
-				_resultContributors.get(type);
+				_hitContributors.get(name);
 
 			if (previousReference.compareTo(serviceComponentReference) < 0) {
-				_resultContributors.put(type, serviceComponentReference);
+				_hitContributors.put(name, serviceComponentReference);
 			}
 		}
 		else {
-			_resultContributors.put(type, serviceComponentReference);
+			_hitContributors.put(name, serviceComponentReference);
 		}
 	}
 
-	protected void unregisterResultContributor(
+	protected void unregisterHitContributor(
 		HitContributor resultContributor, Map<String, Object> properties) {
 
-		String type = (String)properties.get("type");
+		String name = (String)properties.get("name");
 
-		if (Validator.isBlank(type)) {
+		if (Validator.isBlank(name)) {
 			return;
 		}
 
-		_resultContributors.remove(type);
+		_hitContributors.remove(name);
+	}
+
+	private void _addResultFields(
+			JSONObject hitJSONObject, SearchHit searchHit,
+			BlueprintsAttributes blueprintsAttributes,
+			ResourceBundle resourceBundle)
+		throws Exception {
+
+		Document document = searchHit.getDocument();
+
+		ResultBuilder resultBuilder = _resultBuilderFactory.getBuilder(
+			document.getString("entryClassName"));
+
+		hitJSONObject.put(
+			"assetEntryId", _getAssetEntryId(document)
+		).put(
+			"date", resultBuilder.getDate(document, blueprintsAttributes)
+		).put(
+			"description",
+			resultBuilder.getDescription(document, blueprintsAttributes)
+		).put(
+			"entryClassName", document.getString(Field.ENTRY_CLASS_NAME)
+		).put(
+			"entryClassPK", document.getString(Field.ENTRY_CLASS_PK)
+		).put(
+			"title", resultBuilder.getTitle(document, blueprintsAttributes)
+		);
+
+		_setType(
+			hitJSONObject, resultBuilder.getType(document), resourceBundle);
+
+		_setThumbnail(
+			hitJSONObject, resultBuilder, document, blueprintsAttributes);
+
+		_setUserPortrait(hitJSONObject, document, blueprintsAttributes);
+
+		_setAdditionalFields(hitJSONObject, document, blueprintsAttributes);
+
+		_setHightlightFields(hitJSONObject, searchHit, blueprintsAttributes);
+
+		_executeHitContributors(
+			hitJSONObject, document, resultBuilder, blueprintsAttributes,
+			resourceBundle);
 	}
 
 	private void _executeHitContributors(
@@ -138,16 +183,31 @@ public class HitsTranslationContributor implements JSONTranslationContributor {
 		ResourceBundle resourceBundle) {
 
 		for (Map.Entry<String, ServiceComponentReference<HitContributor>>
-				entry : _resultContributors.entrySet()) {
+				entry : _hitContributors.entrySet()) {
 
 			ServiceComponentReference<HitContributor> value = entry.getValue();
 
-			HitContributor resultContributor = value.getServiceComponent();
+			HitContributor hitContributor = value.getServiceComponent();
 
-			resultContributor.contribute(
+			hitContributor.contribute(
 				resultJSONObject, document, resultBuilder, blueprintsAttributes,
 				resourceBundle);
 		}
+	}
+
+	private Long _getAssetEntryId(Document document) {
+		try {
+			AssetEntry assetEntry = _assetEntryLocalService.getEntry(
+				document.getString(Field.ENTRY_CLASS_NAME),
+				document.getLong(Field.ENTRY_CLASS_PK));
+
+			return assetEntry.getEntryId();
+		}
+		catch (PortalException portalException) {
+			_log.error(portalException.getMessage(), portalException);
+		}
+
+		return null;
 	}
 
 	private JSONArray _getHitsJSONArray(
@@ -192,10 +252,9 @@ public class HitsTranslationContributor implements JSONTranslationContributor {
 				}
 
 				if (_includeResult(blueprintsAttributes)) {
-					hitJSONObject.put(
-						"result",
-						_getResultJSONObject(
-							searchHit, blueprintsAttributes, resourceBundle));
+					_addResultFields(
+						hitJSONObject, searchHit, blueprintsAttributes,
+						resourceBundle);
 				}
 
 				jsonArray.put(hitJSONObject);
@@ -209,49 +268,6 @@ public class HitsTranslationContributor implements JSONTranslationContributor {
 		}
 
 		return jsonArray;
-	}
-
-	private JSONObject _getResultJSONObject(
-			SearchHit searchHit, BlueprintsAttributes blueprintsAttributes,
-			ResourceBundle resourceBundle)
-		throws Exception {
-
-		Document document = searchHit.getDocument();
-
-		ResultBuilder resultBuilder = _resultBuilderFactory.getBuilder(
-			document.getString("entryClassName"));
-
-		JSONObject resultJSONObject = JSONUtil.put(
-			"date", resultBuilder.getDate(document, blueprintsAttributes)
-		).put(
-			"description",
-			resultBuilder.getDescription(document, blueprintsAttributes)
-		).put(
-			"metadata",
-			resultBuilder.getMetadata(document, blueprintsAttributes)
-		).put(
-			"title", resultBuilder.getTitle(document, blueprintsAttributes)
-		).put(
-			"viewURL", resultBuilder.getViewURL(document, blueprintsAttributes)
-		);
-
-		_setType(
-			resultJSONObject, resultBuilder.getType(document), resourceBundle);
-
-		_setThumbnail(
-			resultJSONObject, resultBuilder, document, blueprintsAttributes);
-
-		_setUserPortrait(resultJSONObject, document, blueprintsAttributes);
-
-		_setAdditionalFields(resultJSONObject, document, blueprintsAttributes);
-
-		_setHightlightFields(resultJSONObject, searchHit, blueprintsAttributes);
-
-		_executeHitContributors(
-			resultJSONObject, document, resultBuilder, blueprintsAttributes,
-			resourceBundle);
-
-		return resultJSONObject;
 	}
 
 	private boolean _includeDocument(
@@ -477,6 +493,12 @@ public class HitsTranslationContributor implements JSONTranslationContributor {
 		HitsTranslationContributor.class);
 
 	@Reference
+	private AssetEntryLocalService _assetEntryLocalService;
+
+	private volatile Map<String, ServiceComponentReference<HitContributor>>
+		_hitContributors = new ConcurrentHashMap<>();
+
+	@Reference
 	private JSONFactory _jsonFactory;
 
 	@Reference
@@ -484,9 +506,6 @@ public class HitsTranslationContributor implements JSONTranslationContributor {
 
 	@Reference
 	private ResultBuilderFactory _resultBuilderFactory;
-
-	private volatile Map<String, ServiceComponentReference<HitContributor>>
-		_resultContributors = new ConcurrentHashMap<>();
 
 	@Reference
 	private UserLocalService _userLocalService;

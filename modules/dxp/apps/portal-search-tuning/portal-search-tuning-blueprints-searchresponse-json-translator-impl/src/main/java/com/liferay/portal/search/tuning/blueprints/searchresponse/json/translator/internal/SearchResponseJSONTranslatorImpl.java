@@ -57,7 +57,7 @@ public class SearchResponseJSONTranslatorImpl
 
 		for (Map.Entry
 				<String, ServiceComponentReference<JSONTranslationContributor>>
-					entry : _responseContributors.entrySet()) {
+					entry : _jsonTranslationContributors.entrySet()) {
 
 			ServiceComponentReference<JSONTranslationContributor> value =
 				entry.getValue();
@@ -77,15 +77,15 @@ public class SearchResponseJSONTranslatorImpl
 		cardinality = ReferenceCardinality.MULTIPLE,
 		policy = ReferencePolicy.DYNAMIC
 	)
-	protected void registerResponseContributor(
-		JSONTranslationContributor responseContributor,
+	protected void registerJSONTranslationContributor(
+		JSONTranslationContributor jsonTranslationContributor,
 		Map<String, Object> properties) {
 
 		String name = (String)properties.get("name");
 
 		if (Validator.isBlank(name)) {
 			if (_log.isWarnEnabled()) {
-				Class<?> clazz = responseContributor.getClass();
+				Class<?> clazz = jsonTranslationContributor.getClass();
 
 				_log.warn(
 					"Unable to add response contributor " + clazz.getName() +
@@ -100,22 +100,23 @@ public class SearchResponseJSONTranslatorImpl
 
 		ServiceComponentReference<JSONTranslationContributor>
 			serviceComponentReference = new ServiceComponentReference<>(
-				responseContributor, serviceRanking);
+				jsonTranslationContributor, serviceRanking);
 
-		if (_responseContributors.containsKey(name)) {
+		if (_jsonTranslationContributors.containsKey(name)) {
 			ServiceComponentReference<JSONTranslationContributor>
-				previousReference = _responseContributors.get(name);
+				previousReference = _jsonTranslationContributors.get(name);
 
 			if (previousReference.compareTo(serviceComponentReference) < 0) {
-				_responseContributors.put(name, serviceComponentReference);
+				_jsonTranslationContributors.put(
+					name, serviceComponentReference);
 			}
 		}
 		else {
-			_responseContributors.put(name, serviceComponentReference);
+			_jsonTranslationContributors.put(name, serviceComponentReference);
 		}
 	}
 
-	protected void unregisterResponseContributor(
+	protected void unregisterJSONTranslationContributor(
 		JSONTranslationContributor responseContributor,
 		Map<String, Object> properties) {
 
@@ -125,7 +126,7 @@ public class SearchResponseJSONTranslatorImpl
 			return;
 		}
 
-		_responseContributors.remove(name);
+		_jsonTranslationContributors.remove(name);
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
@@ -139,6 +140,6 @@ public class SearchResponseJSONTranslatorImpl
 
 	private volatile Map
 		<String, ServiceComponentReference<JSONTranslationContributor>>
-			_responseContributors = new ConcurrentHashMap<>();
+			_jsonTranslationContributors = new ConcurrentHashMap<>();
 
 }
