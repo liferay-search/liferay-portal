@@ -155,7 +155,10 @@ function Element({
 						id={inputId}
 						initialValue={initialUIConfigurationValues[config.key]}
 						label={config.label}
+						max={config.max}
+						min={config.min}
 						onChange={_handleChange}
+						step={config.step}
 						unit={config.unit}
 					/>
 				);
@@ -193,6 +196,7 @@ function Element({
 						max={config.max}
 						min={config.min}
 						onChange={_handleChange}
+						step={config.step}
 					/>
 				);
 			default:

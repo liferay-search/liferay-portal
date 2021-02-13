@@ -51,7 +51,7 @@ export default {
 				'When Publications feature is enabled, search only contents on my current timeline',
 		},
 		enabled: true,
-		icon: 'thumbs-up',
+		icon: 'filter',
 		title: {
 			en_US: 'Publications Aware',
 		},

@@ -22,7 +22,10 @@ function NumberInput({
 	id,
 	initialValue,
 	label,
+	max,
+	min,
 	onChange,
+	step,
 	unit,
 }) {
 	const [value, setValue] = useState(initialValue || defaultValue);
@@ -48,8 +51,11 @@ function NumberInput({
 					aria-label={label}
 					disabled={disabled}
 					id={id}
+					max={max}
+					min={min}
 					onBlur={_handleBlur}
 					onChange={_handleChange}
+					step={step}
 					type="number"
 					value={value}
 				/>

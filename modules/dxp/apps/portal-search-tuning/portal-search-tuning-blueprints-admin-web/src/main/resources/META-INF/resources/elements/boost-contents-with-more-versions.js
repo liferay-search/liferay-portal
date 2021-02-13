@@ -53,6 +53,7 @@ export default {
 			defaultValue: 1.2,
 			key: 'factor',
 			label: 'Factor',
+			min: 0,
 			type: 'number',
 		},
 		{

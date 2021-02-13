@@ -27,6 +27,7 @@ function SliderInput({
 	max,
 	min,
 	onChange,
+	step,
 }) {
 	const [active, setActive] = useState(false);
 	const [value, setValue] = useState(initialValue || defaultValue);
@@ -54,6 +55,7 @@ function SliderInput({
 						insetAfter
 						onBlur={_handleBlur}
 						onChange={_handleInputChange}
+						step={step}
 						type="number"
 						value={value}
 					/>
@@ -78,6 +80,7 @@ function SliderInput({
 						min={min}
 						onBlur={_handleBlur}
 						onValueChange={_handleSliderChange}
+						step={step}
 						value={value}
 					/>
 				</div>
