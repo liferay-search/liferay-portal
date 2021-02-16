@@ -16,12 +16,7 @@ import React, {useCallback, useContext, useRef, useState} from 'react';
 import ErrorBoundary from '../shared/ErrorBoundary';
 import PageToolbar from '../shared/PageToolbar';
 import ThemeContext from '../shared/ThemeContext';
-import {
-	CUSTOM_JSON_ELEMENT,
-	DEFAULT_BASELINE_ELEMENTS,
-	DEFAULT_FRAMEWORK_CONFIGURATION,
-	QUERY_ELEMENTS,
-} from '../utils/data';
+import {CUSTOM_JSON_ELEMENT, QUERY_ELEMENTS} from '../utils/data';
 import {
 	convertToSelectedElement,
 	openErrorToast,
@@ -56,10 +51,15 @@ function EditBlueprintForm({
 }) {
 	const {namespace} = useContext(ThemeContext);
 
-	const [showSidebar, setShowSidebar] = useState(false);
+	const [showSidebar, setShowSidebar] = useState(true);
 	const [tab, setTab] = useState('query-builder');
 
 	const form = useRef();
+	const sidebarQueryElements = useRef([
+		...QUERY_ELEMENTS,
+		CUSTOM_JSON_ELEMENT,
+		...queryElements,
+	]);
 
 	const elementIdCounter = useRef(1);
 
@@ -86,8 +86,7 @@ function EditBlueprintForm({
 		JSON.stringify(initialConfiguration['facet_configuration'], null, '\t')
 	);
 	const [frameworkConfig, setFrameworkConfig] = useState(
-		initialConfiguration['framework_configuration'] ||
-			DEFAULT_FRAMEWORK_CONFIGURATION
+		initialConfiguration['framework_configuration']
 	);
 	const [parameterConfig, setParameterConfig] = useState(
 		JSON.stringify(
@@ -100,18 +99,12 @@ function EditBlueprintForm({
 		JSON.stringify(initialConfiguration['sort_configuration'], null, '\t')
 	);
 	const [selectedQueryElements, setSelectedQueryElements] = useState(
-		blueprintId !== '0'
-			? initialSelectedElements['query_configuration'].map(
-					(selectedElement) => ({
-						...selectedElement,
-						id: elementIdCounter.current++,
-					})
-			  )
-			: DEFAULT_BASELINE_ELEMENTS.map((element, idx) => {
-					elementIdCounter.current++;
-
-					return convertToSelectedElement(element, idx);
-			  })
+		initialSelectedElements['query_configuration'].map(
+			(selectedElement) => ({
+				...selectedElement,
+				id: elementIdCounter.current++,
+			})
+		)
 	);
 
 	const onAddElement = useCallback((element) => {
@@ -130,6 +123,10 @@ function EditBlueprintForm({
 			message: Liferay.Language.get('element-removed'),
 		});
 	}, []);
+
+	const handleFrameworkChange = (value) => {
+		setFrameworkConfig({...frameworkConfig, ...value});
+	}
 
 	const handleSubmit = useCallback(
 		(event) => {
@@ -284,23 +281,20 @@ function EditBlueprintForm({
 				return (
 					<>
 						<Sidebar
-							elements={[
-								...QUERY_ELEMENTS,
-								CUSTOM_JSON_ELEMENT,
-								...queryElements,
-							]}
+							elements={sidebarQueryElements.current}
 							onAddElement={onAddElement}
-							onToggleSidebar={() => setShowSidebar(!showSidebar)}
-							showSidebar={showSidebar}
+							onClose={() => setShowSidebar(false)}
+							visible={showSidebar}
 						/>
 
 						<QueryBuilder
 							deleteElement={deleteElement}
 							entityJSON={entityJSON}
 							frameworkConfig={frameworkConfig}
-							onFrameworkConfigChange={(val) =>
-								setFrameworkConfig(val)
+							initialSelectedElements={
+								initialSelectedElements['query_configuration']
 							}
+							onFrameworkConfigChange={handleFrameworkChange}
 							onToggleSidebar={() => setShowSidebar(!showSidebar)}
 							searchableAssetTypes={searchableAssetTypes}
 							selectedElements={selectedQueryElements}

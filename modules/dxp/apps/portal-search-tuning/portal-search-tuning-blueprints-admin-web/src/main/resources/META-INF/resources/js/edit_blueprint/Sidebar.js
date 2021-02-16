@@ -30,11 +30,17 @@ const EmptyListMessage = () => (
 	</div>
 );
 
-const QueryElementList = ({category, onAddElement, queryElements}) => {
+const DEFAULT_EXPANDED_LIST = ['match'];
+
+const QueryElementList = ({category, expand, onAddElement, queryElements}) => {
 	const {locale} = useContext(ThemeContext);
 
 	const [showAdd, setShowAdd] = useState(-1);
-	const [showList, setShowList] = useState(true);
+	const [showList, setShowList] = useState(expand);
+
+	useEffect(() => {
+		setShowList(expand);
+	}, [expand]);
 
 	return (
 		<>
@@ -134,7 +140,7 @@ const QueryElementList = ({category, onAddElement, queryElements}) => {
 	);
 };
 
-function Sidebar({elements = [], onAddElement, onToggleSidebar, showSidebar}) {
+function Sidebar({elements = [], onAddElement, onClose, visible}) {
 	const {locale} = useContext(ThemeContext);
 
 	const [loading, setLoading] = useState(true);
@@ -143,6 +149,7 @@ function Sidebar({elements = [], onAddElement, onToggleSidebar, showSidebar}) {
 
 	const [categories, setCategories] = useState([]);
 	const [categorizedElements, setCategorizedElements] = useState({});
+	const [expandAll, setExpandAll] = useState(false);
 
 	const categorizeElements = (elements) => {
 		const newCategories = [];
@@ -194,12 +201,13 @@ function Sidebar({elements = [], onAddElement, onToggleSidebar, showSidebar}) {
 
 			categorizeElements(newQueryElements);
 			setQueryElements(newQueryElements);
+			setExpandAll(!!value);
 		},
 		[elements, locale]
 	);
 
 	return (
-		<div className={getCN('sidebar', 'sidebar-light', {open: showSidebar})}>
+		<div className={getCN('sidebar', 'sidebar-light', {open: visible})}>
 			<div className="sidebar-header">
 				<h4 className="component-title">
 					<span className="text-truncate-inline">
@@ -212,7 +220,7 @@ function Sidebar({elements = [], onAddElement, onToggleSidebar, showSidebar}) {
 				<ClayButton
 					aria-label={Liferay.Language.get('close')}
 					displayType="unstyled"
-					onClick={onToggleSidebar}
+					onClick={onClose}
 					small
 				>
 					<ClayIcon symbol="times" />
@@ -231,6 +239,10 @@ function Sidebar({elements = [], onAddElement, onToggleSidebar, showSidebar}) {
 						{categories.map((category) => (
 							<QueryElementList
 								category={category}
+								expand={
+									expandAll ||
+									DEFAULT_EXPANDED_LIST.includes(category)
+								}
 								key={category}
 								onAddElement={onAddElement}
 								queryElements={categorizedElements[category]}
@@ -250,8 +262,8 @@ function Sidebar({elements = [], onAddElement, onToggleSidebar, showSidebar}) {
 Sidebar.propTypes = {
 	elements: PropTypes.arrayOf(PropTypes.object),
 	onAddElement: PropTypes.func,
-	onToggleSidebar: PropTypes.func,
-	showSidebar: PropTypes.bool,
+	onClose: PropTypes.func,
+	visible: PropTypes.bool,
 };
 
 export default React.memo(Sidebar);

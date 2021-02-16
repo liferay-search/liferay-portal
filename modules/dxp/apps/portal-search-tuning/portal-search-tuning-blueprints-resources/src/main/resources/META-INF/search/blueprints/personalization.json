@@ -223,19 +223,19 @@
 							"defaultValue": "expando__keyword__custom_fields__location_geolocation",
 							"helpText": "A geopoint field",
 							"key": "field",
-							"name": "Field",
+							"label": "Field",
 							"type": "text"
 						},
 						{
 							"defaultValue": 0.3,
 							"key": "decay",
-							"name": "Decay",
+							"label": "Decay",
 							"type": "number"
 						},
 						{
 							"defaultValue": 100,
 							"key": "scale",
-							"name": "Scale",
+							"label": "Scale",
 							"type": "number",
 							"unit": "km",
 							"unitSuffix": "km"
@@ -243,7 +243,7 @@
 						{
 							"defaultValue": 2,
 							"key": "boost",
-							"name": "Boost",
+							"label": "Boost",
 							"type": "slider"
 						}
 					],
@@ -347,7 +347,7 @@
 						{
 							"defaultValue": 20,
 							"key": "boost",
-							"name": "Boost",
+							"label": "Boost",
 							"type": "slider"
 						}
 					],
@@ -416,7 +416,7 @@
 						{
 							"defaultValue": 10,
 							"key": "boost",
-							"name": "Boost",
+							"label": "Boost",
 							"type": "slider"
 						}
 					],

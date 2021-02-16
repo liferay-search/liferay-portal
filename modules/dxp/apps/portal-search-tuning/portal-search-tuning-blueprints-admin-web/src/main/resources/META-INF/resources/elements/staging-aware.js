@@ -63,7 +63,7 @@ export default {
 				'Show only published contents on live sites, published and staged contents on staging sites',
 		},
 		enabled: true,
-		icon: 'thumbs-up',
+		icon: 'filter',
 		title: {
 			en_US: 'Staging Aware',
 		},

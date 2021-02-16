@@ -22,7 +22,7 @@ export default {
 							must: [
 								{
 									terms: {
-										entryClassName: [
+										entryClasslabel: [
 											'com.liferay.portal.kernel.model.Layout',
 											'com.liferay.journal.model.JournalArticle',
 										],
@@ -58,7 +58,7 @@ export default {
 		{
 			defaultValue: 20,
 			key: 'boost',
-			name: 'Boost',
+			label: 'Boost',
 			type: 'slider',
 		},
 	],

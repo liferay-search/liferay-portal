@@ -25,7 +25,7 @@ export default {
 										must_not: [
 											{
 												term: {
-													entryClassName: {
+													entryClasslabel: {
 														value:
 															'com.liferay.journal.model.JournalArticle',
 													},
@@ -39,7 +39,7 @@ export default {
 										must: [
 											{
 												term: {
-													entryClassName: {
+													entryClasslabel: {
 														value:
 															'com.liferay.journal.model.JournalArticle',
 													},

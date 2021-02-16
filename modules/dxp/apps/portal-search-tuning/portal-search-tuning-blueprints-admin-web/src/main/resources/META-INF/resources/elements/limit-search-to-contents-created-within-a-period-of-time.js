@@ -44,12 +44,12 @@ export default {
 	uiConfigurationJSON: [
 		{
 			key: 'start_date',
-			name: 'Create Date: From',
+			label: 'Create Date: From',
 			type: 'date',
 		},
 		{
 			key: 'end_date',
-			name: 'Create Date: To',
+			label: 'Create Date: To',
 			type: 'date',
 		},
 	],

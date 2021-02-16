@@ -18,47 +18,19 @@ import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.test.util.JournalTestUtil;
 import com.liferay.portal.kernel.json.JSONArray;
-import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
-import com.liferay.portal.kernel.model.Group;
-import com.liferay.portal.kernel.model.User;
-import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
-import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
-import com.liferay.portal.kernel.test.util.GroupTestUtil;
-import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
-import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
-import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.search.searcher.SearchResponse;
-import com.liferay.portal.search.test.util.DocumentsAssert;
-import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
-import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributesBuilder;
-import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributesBuilderFactory;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.BlueprintKeys;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.advanced.AdvancedConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.advanced.QueryProcessingConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.advanced.SourceConfigurationKeys;
-import com.liferay.portal.search.tuning.blueprints.constants.json.keys.framework.FrameworkConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.values.EvaluationType;
-import com.liferay.portal.search.tuning.blueprints.engine.constants.ReservedParameterNames;
-import com.liferay.portal.search.tuning.blueprints.engine.util.BlueprintsEngineHelper;
-import com.liferay.portal.search.tuning.blueprints.facets.constants.FacetsBlueprintContributorKeys;
-import com.liferay.portal.search.tuning.blueprints.message.Messages;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
-import com.liferay.portal.search.tuning.blueprints.service.BlueprintService;
-import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
 
 import java.util.Collections;
-import java.util.TimeZone;
 
-import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -68,7 +40,8 @@ import org.junit.runner.RunWith;
  * @author Wade Cao
  */
 @RunWith(Arquillian.class)
-public class BoostWebContentByKeywordMatchTest {
+public class BoostWebContentByKeywordMatchTest
+	extends BaseBoostConditionTestCase {
 
 	@ClassRule
 	@Rule
@@ -77,18 +50,10 @@ public class BoostWebContentByKeywordMatchTest {
 			new LiferayIntegrationTestRule(),
 			PermissionCheckerMethodTestRule.INSTANCE);
 
-	@Before
-	public void setUp() throws Exception {
-		_group = GroupTestUtil.addGroup();
-
-		_serviceContext = ServiceContextTestUtil.getServiceContext(
-			_group, TestPropsValues.getUserId());
-	}
-
 	@Test
 	public void testAnyWordInCondition() throws Exception {
 		JournalTestUtil.addArticle(
-			_group.getGroupId(), 0,
+			group.getGroupId(), 0,
 			PortalUtil.getClassNameId(JournalArticle.class),
 			HashMapBuilder.put(
 				LocaleUtil.US, "Coca Cola"
@@ -97,10 +62,10 @@ public class BoostWebContentByKeywordMatchTest {
 			HashMapBuilder.put(
 				LocaleUtil.US, "cola cola"
 			).build(),
-			LocaleUtil.getSiteDefault(), false, true, _serviceContext);
+			LocaleUtil.getSiteDefault(), false, true, serviceContext);
 
 		JournalArticle journalArticle = JournalTestUtil.addArticle(
-			_group.getGroupId(), 0,
+			group.getGroupId(), 0,
 			PortalUtil.getClassNameId(JournalArticle.class),
 			HashMapBuilder.put(
 				LocaleUtil.US, "Pepsi Cola"
@@ -109,17 +74,17 @@ public class BoostWebContentByKeywordMatchTest {
 			HashMapBuilder.put(
 				LocaleUtil.US, ""
 			).build(),
-			LocaleUtil.getSiteDefault(), false, true, _serviceContext);
+			LocaleUtil.getSiteDefault(), false, true, serviceContext);
 
 		String articleId = journalArticle.getArticleId();
 
-		Blueprint blueprint = _blueprintService.addCompanyBlueprint(
+		Blueprint blueprint = addCompanyBlueprint(
 			Collections.singletonMap(
 				LocaleUtil.US, getClass().getName() + "Blueprint"),
 			Collections.singletonMap(LocaleUtil.US, ""),
-			_getConfigurationString(null), "", 1, _serviceContext);
+			_getConfigurationString(null), "", 1);
 
-		_assertSearch(blueprint, null, "[coca cola, pepsi cola]", "cola", null);
+		assertSearch(blueprint, null, "[coca cola, pepsi cola]", "cola", null);
 
 		String configurationString = _getConfigurationString(
 			_getQueryElementJSONObject(
@@ -129,7 +94,7 @@ public class BoostWebContentByKeywordMatchTest {
 		String selectedElementString = _getSelectedElementString(
 			articleId, 100, EvaluationType.ANY_WORD_IN.getjsonValue(), "cola");
 
-		_assertSearch(
+		assertSearch(
 			blueprint, configurationString, "[pepsi cola, coca cola]", "cola",
 			selectedElementString);
 
@@ -141,125 +106,22 @@ public class BoostWebContentByKeywordMatchTest {
 		selectedElementString = _getSelectedElementString(
 			articleId, 100, EvaluationType.NOT_CONTAINS.getjsonValue(), "cola");
 
-		_assertSearch(
+		assertSearch(
 			blueprint, configurationString, "[coca cola, pepsi cola]", "cola",
 			selectedElementString);
 	}
 
-	private void _assertSearch(
-			Blueprint blueprint, String configurationString, String expected,
-			String keywords, String selectedElementString)
-		throws Exception {
-
-		if (!Validator.isBlank(configurationString) &&
-			!Validator.isBlank(selectedElementString)) {
-
-			_blueprintService.updateBlueprint(
-				blueprint.getBlueprintId(), blueprint.getTitleMap(),
-				blueprint.getDescriptionMap(), configurationString,
-				selectedElementString, _serviceContext);
-		}
-
-		SearchResponse searchResponse = _blueprintsEngineHelper.search(
-			blueprint.getBlueprintId(), _getBlueprintsAttributes(keywords),
-			new Messages());
-
-		DocumentsAssert.assertValues(
-			searchResponse.getRequestString(),
-			searchResponse.getDocumentsStream(), "localized_title_en_US",
-			expected);
-	}
-
-	private JSONArray _createJSONArray() {
-		return JSONFactoryUtil.createJSONArray();
-	}
-
-	private BlueprintsAttributes _getBlueprintsAttributes(String keywords)
-		throws Exception {
-
-		BlueprintsAttributesBuilder blueprintsAttributesBuilder =
-			_blueprintsAttributesBuilderFactory.builder();
-
-		blueprintsAttributesBuilder.companyId(
-			_group.getCompanyId()
-		).keywords(
-			keywords
-		).locale(
-			LocaleUtil.US
-		).userId(
-			_getUser().getUserId()
-		).addAttribute(
-			ReservedParameterNames.IP_ADDRESS.getKey(), "127.0.0.1"
-		).addAttribute(
-			ReservedParameterNames.PLID.getKey(), TestPropsValues.getPlid()
-		).addAttribute(
-			ReservedParameterNames.SCOPE_GROUP_ID.getKey(), _group.getGroupId()
-		).addAttribute(
-			ReservedParameterNames.TIMEZONE_ID.getKey(), _getTimeZoneID()
-		);
-
-		return blueprintsAttributesBuilder.build();
-	}
-
 	private String _getConfigurationString(JSONObject jsonObject) {
-		JSONArray jsonArray = _createJSONArray();
+		JSONArray jsonArray = createJSONArray();
 
 		if (jsonObject != null) {
 			jsonArray.put(jsonObject);
 		}
 
-		return JSONUtil.put(
-			BlueprintKeys.ADVANCED_CONFIGURATION.getJsonKey(),
-			JSONUtil.put(
-				AdvancedConfigurationKeys.QUERY_PROCESSING.getJsonKey(),
-				JSONUtil.put(
-					QueryProcessingConfigurationKeys.EXCLUDE_QUERY_CONTRIBUTORS.
-						getJsonKey(),
-					""
-				).put(
-					QueryProcessingConfigurationKeys.
-						EXCLUDE_QUERY_POST_PROCESSORS.getJsonKey(),
-					""
-				)
-			).put(
-				"source",
-				JSONUtil.put(
-					SourceConfigurationKeys.FETCH_SOURCE.getJsonKey(), true
-				).put(
-					SourceConfigurationKeys.SOURCE_EXCLUDES.getJsonKey(), ""
-				).put(
-					SourceConfigurationKeys.SOURCE_INCLUDES.getJsonKey(), ""
-				)
-			)
-		).put(
-			BlueprintKeys.AGGREGATION_CONFIGURATION.getJsonKey(),
-			_createJSONArray()
-		).put(
-			FacetsBlueprintContributorKeys.CONFIGURATION_SECTION,
-			_createJSONArray()
-		).put(
-			BlueprintKeys.FRAMEWORK_CONFIGURATION.getJsonKey(),
-			JSONUtil.put(
-				FrameworkConfigurationKeys.APPLY_INDEXER_CLAUSES.getJsonKey(),
-				true)
-		).put(
-			BlueprintKeys.PARAMETER_CONFIGURATION.getJsonKey(),
-			JSONUtil.put(null, null)
-		).put(
-			BlueprintKeys.QUERY_CONFIGURATION.getJsonKey(), jsonArray
-		).put(
-			BlueprintKeys.SORT_CONFIGURATION.getJsonKey(),
-			JSONUtil.put(null, null)
-		).toString();
-	}
+		JSONObject configurationJSONObject = getConfigurationJSONObject(
+			jsonArray);
 
-	private JSONObject _getElementTemplateJSONObject() throws Exception {
-		String boostWebContentsByKeywordMatchJsonString = StringUtil.read(
-			getClass(),
-			"/elements/boost-web-contents-by-keyword-match-test.json");
-
-		return JSONFactoryUtil.createJSONObject(
-			boostWebContentsByKeywordMatchJsonString);
+		return configurationJSONObject.toString();
 	}
 
 	private JSONObject _getQueryElementJSONObject(
@@ -269,7 +131,7 @@ public class BoostWebContentByKeywordMatchTest {
 			"category", "conditional"
 		).put(
 			"clauses",
-			_createJSONArray().put(
+			createJSONArray().put(
 				JSONUtil.put(
 					"context", "query"
 				).put(
@@ -282,7 +144,7 @@ public class BoostWebContentByKeywordMatchTest {
 							"terms",
 							JSONUtil.put(
 								"articleId_String_sortable",
-								_createJSONArray().put(articleId)
+								createJSONArray().put(articleId)
 							).put(
 								"boost", boost
 							)))
@@ -291,7 +153,7 @@ public class BoostWebContentByKeywordMatchTest {
 				))
 		).put(
 			"conditions",
-			_createJSONArray().put(
+			createJSONArray().put(
 				JSONUtil.put(
 					"configuration",
 					JSONUtil.put(
@@ -299,7 +161,7 @@ public class BoostWebContentByKeywordMatchTest {
 					).put(
 						"parameter_name", "${keywords}"
 					).put(
-						"value", _createJSONArray().put(keywords)
+						"value", createJSONArray().put(keywords)
 					)))
 		).put(
 			"description",
@@ -319,16 +181,19 @@ public class BoostWebContentByKeywordMatchTest {
 			String articleId, int boost, String evaluationType, String keywords)
 		throws Exception {
 
+		JSONObject elementTemplateJSONObject = getElementTemplateJSONObject(
+			"/elements/boost-web-contents-by-keyword-match-test.json");
+
 		return JSONUtil.put(
 			"query_configuration",
-			_createJSONArray().put(
+			createJSONArray().put(
 				JSONUtil.put(
 					"elementOutput",
 					JSONUtil.put(
 						"category", "conditional"
 					).put(
 						"clauses",
-						_createJSONArray().put(
+						createJSONArray().put(
 							JSONUtil.put(
 								"context", "query"
 							).put(
@@ -341,7 +206,7 @@ public class BoostWebContentByKeywordMatchTest {
 										"terms",
 										JSONUtil.put(
 											"articleId_String_sortable",
-											_createJSONArray().put(articleId)
+											createJSONArray().put(articleId)
 										).put(
 											"boost", boost
 										)))
@@ -350,7 +215,7 @@ public class BoostWebContentByKeywordMatchTest {
 							))
 					).put(
 						"conditions",
-						_createJSONArray().put(
+						createJSONArray().put(
 							JSONUtil.put(
 								"configuration",
 								JSONUtil.put(
@@ -358,7 +223,7 @@ public class BoostWebContentByKeywordMatchTest {
 								).put(
 									"parameter_name", "${keywords}"
 								).put(
-									"value", _createJSONArray().put(keywords)
+									"value", createJSONArray().put(keywords)
 								)))
 					).put(
 						"description",
@@ -376,10 +241,10 @@ public class BoostWebContentByKeywordMatchTest {
 					)
 				).put(
 					"elementTemplateJSON",
-					_getElementTemplateJSONObject().get("elementTemplateJSON")
+					elementTemplateJSONObject.get("elementTemplateJSON")
 				).put(
 					"uiConfigurationJSON",
-					_getElementTemplateJSONObject().get("uiConfigurationJSON")
+					elementTemplateJSONObject.get("uiConfigurationJSON")
 				).put(
 					"uiConfigurationValues",
 					_getUIConfigurationValuesJSONObject(
@@ -388,20 +253,12 @@ public class BoostWebContentByKeywordMatchTest {
 		).toString();
 	}
 
-	private String _getTimeZoneID() throws Exception {
-		User user = _getUser();
-
-		TimeZone timeZone = user.getTimeZone();
-
-		return timeZone.getID();
-	}
-
 	private JSONObject _getUIConfigurationValuesJSONObject(
 		String articleId, int boost, String keywords) {
 
 		return JSONUtil.put(
 			"article_ids",
-			_createJSONArray().put(
+			createJSONArray().put(
 				JSONUtil.put(
 					"label", articleId
 				).put(
@@ -411,7 +268,7 @@ public class BoostWebContentByKeywordMatchTest {
 			"boost", boost
 		).put(
 			"values",
-			_createJSONArray().put(
+			createJSONArray().put(
 				JSONUtil.put(
 					"label", keywords
 				).put(
@@ -419,24 +276,5 @@ public class BoostWebContentByKeywordMatchTest {
 				))
 		);
 	}
-
-	private User _getUser() throws Exception {
-		return TestPropsValues.getUser();
-	}
-
-	@Inject
-	private BlueprintsAttributesBuilderFactory
-		_blueprintsAttributesBuilderFactory;
-
-	@Inject
-	private BlueprintsEngineHelper _blueprintsEngineHelper;
-
-	@Inject
-	private BlueprintService _blueprintService;
-
-	@DeleteAfterTestRun
-	private Group _group;
-
-	private ServiceContext _serviceContext;
 
 }

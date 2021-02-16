@@ -1,10 +1,12 @@
 $controlMenuToolbarHeight: 56px;
+$navigationBarHeight: 56px;
 
 .sidebar {
 	background-color: $white;
 	display: flex;
 	flex-direction: column;
-	height: calc(100% - #{$controlMenuToolbarHeight});
+	height: calc(100% - #{$controlMenuToolbarHeight} - #{$navigationBarHeight});
+	margin-top: $navigationBarHeight;
 	min-width: 380px;
 	position: fixed;
 	right: 0;

@@ -184,15 +184,15 @@ export const toNumber = (str) => {
  * getDefaultValue({
  *  	defaultValue: 10,
  *  	key: 'config.title.boost',
- *  	name: 'Title Boost',
+ *  	label: 'Title Boost',
  *  	type: 'slider',
  *  })
  * => 10
  *
  * getDefaultValue({
  *  	key: 'config.lfr.enabled',
- *  	name: 'Enabled',
- *  	type: 'single-select',
+ *  	label: 'Enabled',
+ *  	type: 'select',
  *  	typeOptions: [
  *  		{
  *  			label: 'True',
@@ -213,7 +213,7 @@ export const getDefaultValue = (item) => {
 	const itemValue = item.defaultValue;
 
 	switch (item.type) {
-		case INPUT_TYPES.SINGLE_SELECT:
+		case INPUT_TYPES.SELECT:
 			return isNotEmpty(itemValue)
 				? itemValue
 				: item.typeOptions && item.typeOptions[0].value
@@ -231,7 +231,7 @@ export const getDefaultValue = (item) => {
 			return isNotEmpty(itemValue) &&
 				itemValue.length > 0 &&
 				itemValue.every(
-					(item) => isNotEmpty(item.id) && isNotEmpty(item.name)
+					(item) => isNotEmpty(item.value) && isNotEmpty(item.label)
 				)
 				? itemValue
 				: [];
@@ -245,7 +245,7 @@ export const getDefaultValue = (item) => {
 			return isNotEmpty(itemValue) && typeof itemValue == 'number'
 				? itemValue
 				: '';
-		case INPUT_TYPES.FIELD:
+		case INPUT_TYPES.FIELD_LIST:
 			return isNotEmpty(itemValue) &&
 				itemValue.every(
 					(item) =>
@@ -254,20 +254,15 @@ export const getDefaultValue = (item) => {
 				)
 				? itemValue
 				: [];
-		case INPUT_TYPES.SINGLE_FIELD:
+		case INPUT_TYPES.FIELD:
 			return isNotEmpty(itemValue) &&
-				itemValue.every(
-					(item) =>
-						isNotNullOrUndefined(item.field) &&
-						isNotNullOrUndefined(item.locale)
-				)
+				isNotNullOrUndefined(itemValue.field) &&
+				isNotNullOrUndefined(itemValue.locale)
 				? itemValue
-				: [
-						{
-							field: '',
-							locale: '',
-						},
-				  ];
+				: {
+						field: '',
+						locale: '',
+				  };
 		case INPUT_TYPES.JSON:
 			return isNotEmpty(itemValue) ? itemValue : {};
 		default:
@@ -283,19 +278,19 @@ export const getDefaultValue = (item) => {
  *  	[
  *  		{
  *  			defaultValue: 10,
- *  			key: 'config.title.boost',
- *  			name: 'Title Boost',
+ *  			key: 'boost',
+ *  			label: 'Boost',
  *  			type: 'slider',
  *  		},
  *  		{
  *  			defaultValue: 'en_US',
- *  			key: 'context.language_id',
- *  			name: 'Context Language',
+ *  			key: 'language',
+ *  			label: 'Language',
  *  			type: 'text',
  *  		}
  *  	]
  * )
- * => {context.title.boost: 10, context.language_id: 'en_US'}
+ * => {boost: 10, language: 'en_US'}
  *
  * @param {object} uiConfigurationJSON Object with UI configuration
  * @return {object}
@@ -331,15 +326,36 @@ export const replaceUIConfigurationValues = (
 		uiConfigurationJSON.map((config) => {
 			let configValue = uiConfigurationValues[config.key];
 
-			if (config.type === INPUT_TYPES.ENTITY) {
+			if (config.type === INPUT_TYPES.DATE) {
+				configValue = uiConfigurationValues[config.key]
+					? JSON.parse(
+							moment
+								.unix(uiConfigurationValues[config.key])
+								.format(
+									config.format
+										? config.format
+										: 'YYYYMMDDHHMMSS'
+								)
+					  )
+					: '';
+			}
+			else if (config.type === INPUT_TYPES.ENTITY) {
 				configValue = JSON.stringify(
 					uiConfigurationValues[config.key].map((item) => item.id)
 				);
 			}
-			else if (
-				config.type === INPUT_TYPES.FIELD ||
-				config.type === INPUT_TYPES.SINGLE_FIELD
-			) {
+			else if (config.type === INPUT_TYPES.FIELD) {
+				configValue = `${configValue.field}${
+					configValue.locale == '' || configValue.locale.includes('$')
+						? configValue.locale
+						: '_' + configValue.locale
+				}${
+					configValue.boost && JSON.parse(configValue.boost) > 1
+						? '^' + configValue.boost
+						: ''
+				}`;
+			}
+			else if (config.type === INPUT_TYPES.FIELD_LIST) {
 				const fields = uiConfigurationValues[config.key].map(
 					(item) =>
 						`${item.field}${
@@ -353,10 +369,17 @@ export const replaceUIConfigurationValues = (
 						}`
 				);
 
-				configValue =
-					config.type === INPUT_TYPES.FIELD
-						? JSON.stringify(fields)
-						: fields[0];
+				configValue = JSON.stringify(fields);
+			}
+			else if (config.type === INPUT_TYPES.JSON) {
+				configValue = JSON.stringify(uiConfigurationValues[config.key]);
+			}
+			else if (config.type === INPUT_TYPES.MULTISELECT) {
+				configValue = JSON.stringify(
+					uiConfigurationValues[config.key].map((item) =>
+						toNumber(item.value)
+					)
+				);
 			}
 			else if (config.type === INPUT_TYPES.NUMBER) {
 				const oldConfigValue = uiConfigurationValues[config.key];
@@ -370,39 +393,8 @@ export const replaceUIConfigurationValues = (
 						  )
 					: oldConfigValue;
 			}
-			else if (config.type === INPUT_TYPES.DATE) {
-				configValue = uiConfigurationValues[config.key]
-					? JSON.parse(
-							moment
-								.unix(uiConfigurationValues[config.key])
-								.format(
-									config.format
-										? config.format
-										: 'YYYYMMDDHHMMSS'
-								)
-					  )
-					: '';
-			}
-			else if (config.type === INPUT_TYPES.JSON) {
-				configValue = JSON.stringify(uiConfigurationValues[config.key]);
-			}
-			else if (config.type === INPUT_TYPES.MULTISELECT) {
-				configValue = JSON.stringify(
-					uiConfigurationValues[config.key].map((item) =>
-						toNumber(item.value)
-					)
-				);
-			}
 
-			// Check if key starts with 'config.' prefix to support keys with
-			// both the prefix or not
-
-			const key =
-				config.key &&
-				config.key.substring(0, CONFIG_PREFIX.length + 1) ===
-					`${CONFIG_PREFIX}.`
-					? config.key
-					: `${CONFIG_PREFIX}.${config.key}`;
+			let key = `\${${CONFIG_PREFIX}.${config.key}}`;
 
 			// Check whether to add quotes around output
 
@@ -410,18 +402,14 @@ export const replaceUIConfigurationValues = (
 				typeof configValue === 'number' ||
 				typeof configValue === 'boolean' ||
 				config.type === INPUT_TYPES.ENTITY ||
-				config.type === INPUT_TYPES.FIELD ||
+				config.type === INPUT_TYPES.FIELD_LIST ||
 				config.type === INPUT_TYPES.JSON ||
 				config.type === INPUT_TYPES.MULTISELECT
 			) {
-				flattenJSON = replaceStr(
-					flattenJSON,
-					`"$\{${key}}"`,
-					configValue
-				);
+				key = `"$\{${CONFIG_PREFIX}.${config.key}}"`;
 			}
 
-			flattenJSON = replaceStr(flattenJSON, `\${${key}}`, configValue);
+			flattenJSON = replaceStr(flattenJSON, key, configValue);
 		});
 
 		return JSON.parse(flattenJSON);
@@ -435,7 +423,7 @@ export const replaceUIConfigurationValues = (
  * form will use, by including the id, configuration values, and
  * element for submission.
  *
- * @param {object} `{uiConfigurationJSON, elementTemplateJSON}` Object with UI configuration
+ * @param {object} `{elementTemplateJSON, uiConfigurationJSON}` Object with UI configuration
  * and element template
  * @param {number} id ID number of element
  * @return {object}
@@ -472,7 +460,7 @@ const ENTITY_KEYS = [
  * Examples:
  * validateUIConfigurationJSON({
  *  	defaultValue: 10,
- *  	name: 'Title Boost',
+ *  	label: 'Title Boost',
  *  	type: 'slider'
  *  })
  * => false
@@ -480,7 +468,7 @@ const ENTITY_KEYS = [
  * validateUIConfigurationJSON({
  *  	defaultValue: 3,
  *  	key: 'context.timespan',
- *  	name: 'Time Span',
+ *  	label: 'Time Span',
  *  	type: 'number',
  *  	unit: 'days'
  *  }
@@ -496,13 +484,13 @@ export const validateUIConfigurationJSON = (uiConfigurationJSON) => {
 		}
 		else if (item.type === INPUT_TYPES.ENTITY) {
 			return (
-				isNotAllEmpty([item.key, item.name, item.className]) &&
+				isNotAllEmpty([item.key, item.label, item.className]) &&
 				ENTITY_KEYS.includes(item.className)
 			);
 		}
-		else if (item.type === INPUT_TYPES.SINGLE_SELECT) {
+		else if (item.type === INPUT_TYPES.SELECT) {
 			return (
-				isNotAllEmpty([item.key, item.name, item.typeOptions]) &&
+				isNotAllEmpty([item.key, item.label, item.typeOptions]) &&
 				item.typeOptions.length > 0 &&
 				item.typeOptions.every(
 					(option) =>
@@ -512,7 +500,7 @@ export const validateUIConfigurationJSON = (uiConfigurationJSON) => {
 			);
 		}
 		else {
-			return isNotAllEmpty([item.type, item.key, item.name]);
+			return isNotAllEmpty([item.type, item.key, item.label]);
 		}
 	});
 };

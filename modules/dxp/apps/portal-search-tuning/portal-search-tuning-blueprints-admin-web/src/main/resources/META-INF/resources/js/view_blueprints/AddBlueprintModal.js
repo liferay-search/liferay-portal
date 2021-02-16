@@ -50,7 +50,7 @@ const FrameworkCard = ({
 			onClick={onChange}
 			selectable
 		>
-			<ClayRadio checked={checked} value={value}>
+			<ClayRadio checked={checked} onChange={onChange} value={value}>
 				<ClayCard.AspectRatio className="card-item-first">
 					<div className="aspect-ratio-item aspect-ratio-item-center-middle aspect-ratio-item-fluid">
 						<img alt={title} src={imagePath} />
@@ -96,6 +96,7 @@ const AddBlueprintModal = ({
 	initialVisible,
 	namespace,
 	onFormSuccess,
+	searchableAssetTypesString,
 	submitButtonLabel = Liferay.Language.get('create'),
 	type,
 }) => {
@@ -130,6 +131,9 @@ const AddBlueprintModal = ({
 				framework_configuration: {
 					apply_indexer_clauses:
 						framework === FRAMEWORK_TYPES.DEFAULT,
+					searchable_asset_types: JSON.parse(
+						searchableAssetTypesString
+					),
 				},
 				parameter_configuration: DEFAULT_PARAMETER_CONFIGURATION,
 				query_configuration:

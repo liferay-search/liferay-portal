@@ -39,20 +39,18 @@ export default {
 	},
 	uiConfigurationJSON: [
 		{
-			defaultValue: [
-				{
-					field: '',
-					locale: '',
-				},
-			],
+			defaultValue: {
+				field: '',
+				locale: '',
+			},
 			key: 'field',
-			name: 'Field',
-			type: 'single-field',
+			label: 'Field',
+			type: 'field',
 		},
 		{
 			defaultValue: [],
 			key: 'values',
-			name: 'Values',
+			label: 'Values',
 			type: 'multiselect',
 		},
 	],

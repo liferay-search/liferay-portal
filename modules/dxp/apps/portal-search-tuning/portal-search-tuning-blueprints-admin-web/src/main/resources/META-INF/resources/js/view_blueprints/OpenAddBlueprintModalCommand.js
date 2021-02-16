@@ -52,6 +52,7 @@ function openAddBlueprintModal({
 	idFieldValue,
 	namespace,
 	onFormSuccess,
+	searchableAssetTypesString,
 	type,
 }) {
 	dispose();
@@ -69,6 +70,7 @@ function openAddBlueprintModal({
 			initialVisible
 			namespace={namespace}
 			onFormSuccess={onFormSuccess}
+			searchableAssetTypesString={searchableAssetTypesString}
 			type={type}
 		/>,
 		DEFAULT_RENDER_DATA,

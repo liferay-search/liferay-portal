@@ -49,13 +49,17 @@ export default {
 		{
 			defaultValue: 0.5,
 			key: 'decay',
-			name: 'Decay',
+			label: 'Decay',
+			max: 0.99,
+			min: 0.01,
+			step: 0.1,
 			type: 'number',
 		},
 		{
 			defaultValue: 0,
 			key: 'offset',
-			name: 'Offset',
+			label: 'Offset',
+			min: 0,
 			type: 'number',
 			unit: 'days',
 			unitSuffix: 'd',
@@ -63,7 +67,8 @@ export default {
 		{
 			defaultValue: 10,
 			key: 'scale',
-			name: 'Scale',
+			label: 'Scale',
+			min: 0,
 			type: 'number',
 			unit: 'days',
 			unitSuffix: 'd',
@@ -71,7 +76,7 @@ export default {
 		{
 			defaultValue: 2,
 			key: 'boost',
-			name: 'Boost',
+			label: 'Boost',
 			type: 'slider',
 		},
 	],

@@ -12,13 +12,13 @@
 import {fireEvent, render, waitForElement} from '@testing-library/react';
 import React from 'react';
 
-import ConfigElement from '../../../src/main/resources/META-INF/resources/js/shared/ConfigElement';
-import {SELECTED_ELEMENTS} from '../mocks/data';
+import Element from '../../../../src/main/resources/META-INF/resources/js/shared/element/index';
+import {SELECTED_ELEMENTS} from '../../mocks/data';
 
 import '@testing-library/jest-dom/extend-expect';
 
 jest.mock(
-	'../../../src/main/resources/META-INF/resources/js/shared/CodeMirrorEditor',
+	'../../../../src/main/resources/META-INF/resources/js/shared/CodeMirrorEditor',
 	() => ({onChange, value}) => (
 		<textarea aria-label="text-area" onChange={onChange} value={value} />
 	)
@@ -29,10 +29,13 @@ const updateElement = jest.fn();
 
 function renderElement(props) {
 	return render(
-		<ConfigElement
+		<Element
 			collapseAll={false}
 			deleteElement={deleteElement}
 			elementTemplateJSON={SELECTED_ELEMENTS[0].elementTemplateJSON}
+			initialUIConfigurationValues={
+				SELECTED_ELEMENTS[0].uiConfigurationValues
+			}
 			uiConfigurationJSON={SELECTED_ELEMENTS[0].uiConfigurationJSON}
 			uiConfigurationValues={SELECTED_ELEMENTS[0].uiConfigurationValues}
 			updateElement={updateElement}
@@ -41,7 +44,7 @@ function renderElement(props) {
 	);
 }
 
-describe('ConfigElement', () => {
+describe('Element', () => {
 	it('renders the element', () => {
 		const {container} = renderElement();
 

@@ -55,8 +55,8 @@ export default {
 				},
 			],
 			key: 'fields',
-			name: 'Fields',
-			type: 'field',
+			label: 'Fields',
+			type: 'field-list',
 			typeOptions: [
 				{
 					label: 'Title',
@@ -78,8 +78,8 @@ export default {
 		},
 		{
 			key: 'operator',
-			name: 'Operator',
-			type: 'single-select',
+			label: 'Operator',
+			type: 'select',
 			typeOptions: [
 				{
 					label: 'OR',
@@ -94,7 +94,7 @@ export default {
 		{
 			defaultValue: 1,
 			key: 'boost',
-			name: 'Boost',
+			label: 'Boost',
 			type: 'slider',
 		},
 	],

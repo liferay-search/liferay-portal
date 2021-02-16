@@ -56,8 +56,8 @@ export default {
 				},
 			],
 			key: 'fields',
-			name: 'Field',
-			type: 'field',
+			label: 'Field',
+			type: 'field-list',
 			typeOptions: [
 				{
 					label: 'Title',
@@ -80,8 +80,8 @@ export default {
 		{
 			defaultValue: 'best_fields',
 			key: 'type',
-			name: 'Match Type',
-			type: 'single-select',
+			label: 'Match Type',
+			type: 'select',
 			typeOptions: [
 				{
 					label: 'Best Fields',
@@ -112,7 +112,7 @@ export default {
 		{
 			defaultValue: 10,
 			key: 'boost',
-			name: 'Boost',
+			label: 'Boost',
 			type: 'slider',
 		},
 	],

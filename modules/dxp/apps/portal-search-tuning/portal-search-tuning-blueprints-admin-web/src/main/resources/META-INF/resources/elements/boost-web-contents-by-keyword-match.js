@@ -50,19 +50,19 @@ export default {
 		{
 			helpText: 'Add article IDs',
 			key: 'article_ids',
-			name: 'Article IDs',
+			label: 'Article IDs',
 			type: 'multiselect',
 		},
 		{
 			defaultValue: [],
 			key: 'values',
-			name: 'Keywords',
+			label: 'Keywords',
 			type: 'multiselect',
 		},
 		{
 			defaultValue: 20,
 			key: 'boost',
-			name: 'Boost',
+			label: 'Boost',
 			type: 'slider',
 		},
 	],

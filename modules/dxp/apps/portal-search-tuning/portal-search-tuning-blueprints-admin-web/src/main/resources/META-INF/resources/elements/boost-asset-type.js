@@ -42,8 +42,8 @@ export default {
 	uiConfigurationJSON: [
 		{
 			key: 'entry_class_name',
-			name: 'Asset Type',
-			type: 'single-select',
+			label: 'Asset Type',
+			type: 'select',
 			typeOptions: [
 				{
 					label: 'Blogs Entry',
@@ -116,7 +116,7 @@ export default {
 		{
 			defaultValue: 10,
 			key: 'boost',
-			name: 'Boost',
+			label: 'Boost',
 			type: 'slider',
 		},
 	],

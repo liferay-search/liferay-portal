@@ -22,6 +22,7 @@ class BlueprintEntriesManagementToolbarDefaultEventHandler extends DefaultEventH
 			dialogTitle: Liferay.Language.get('new-search-blueprint'),
 			formSubmitURL: itemData.editBlueprintURL,
 			namespace: this.namespace,
+			searchableAssetTypesString: itemData.searchableAssetTypesString,
 			spritemap: this.spritemap,
 			type: itemData.type,
 		});

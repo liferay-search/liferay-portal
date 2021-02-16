@@ -56,13 +56,13 @@ export default {
 		{
 			helpText: 'Add asset category ID',
 			key: 'asset_category_id',
-			name: 'Asset Category',
+			label: 'Asset Category',
 			type: 'number',
 		},
 		{
 			defaultValue: 30,
 			key: 'time_range',
-			name: 'Time range',
+			label: 'Time range',
 			type: 'number',
 			unit: 'days',
 			unitSuffix: 'd',
@@ -70,7 +70,7 @@ export default {
 		{
 			defaultValue: 20,
 			key: 'boost',
-			name: 'Boost',
+			label: 'Boost',
 			type: 'slider',
 		},
 	],

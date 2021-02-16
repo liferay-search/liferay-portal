@@ -51,13 +51,13 @@ export default {
 		{
 			helpText: 'Add asset category ID',
 			key: 'asset_category_id',
-			name: 'Asset Category',
+			label: 'Asset Category',
 			type: 'number',
 		},
 		{
 			key: 'time_of_day',
-			name: 'Time of Day',
-			type: 'single-select',
+			label: 'Time of Day',
+			type: 'select',
 			typeOptions: [
 				{
 					label: 'Morning (4am - 12am)',
@@ -80,7 +80,7 @@ export default {
 		{
 			defaultValue: 20,
 			key: 'boost',
-			name: 'Boost',
+			label: 'Boost',
 			type: 'slider',
 		},
 	],

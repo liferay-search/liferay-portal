@@ -8,6 +8,10 @@
 		label {
 			color: $secondaryL1;
 		}
+
+		.configuration-header-list .sticker {
+			color: $mainLighten52;
+		}
 	}
 
 	&:hover {
@@ -42,6 +46,11 @@
 		.list-group-title {
 			font-size: 1rem;
 		}
+
+		.sticker {
+			background-color: $lightBackground;
+			color: $mainLighten28;
+		}
 	}
 
 	.configuration-form-list {
@@ -74,7 +83,7 @@
 			&:hover {
 				.list-item-label {
 					.sticker {
-						display: inline-flex;
+						visibility: visible;
 					}
 				}
 			}
@@ -88,7 +97,7 @@
 				}
 
 				.sticker {
-					display: none;
+					visibility: hidden;
 
 					.lexicon-icon {
 						margin-top: -3px;
