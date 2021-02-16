@@ -14,13 +14,21 @@
 
 package com.liferay.portal.search.tuning.blueprints.searchresponse.json.translator.internal.result.builder;
 
+import com.liferay.document.library.kernel.service.DLAppService;
+import com.liferay.document.library.util.DLURLHelper;
+import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.search.Field;
-import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.search.document.Document;
 import com.liferay.portal.search.tuning.blueprints.attributes.BlueprintsAttributes;
 import com.liferay.portal.search.tuning.blueprints.searchresponse.json.translator.spi.result.ResultBuilder;
 
+import javax.portlet.PortletRequest;
+
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Petteri Karttunen
@@ -38,17 +46,27 @@ public class DLFileEntryResultBuilder
 			Document document, BlueprintsAttributes blueprintsAttributes)
 		throws Exception {
 
-		StringBundler sb = new StringBundler(7);
+		PortletRequest portletRequest = getPortletRequest(blueprintsAttributes);
 
-		sb.append("/documents/");
-		sb.append(document.getString(Field.SCOPE_GROUP_ID));
-		sb.append("/");
-		sb.append(document.getString(Field.FOLDER_ID));
-		sb.append("/");
-		sb.append(document.getString("path"));
-		sb.append("?imageThumbnail=1");
+		if (portletRequest == null) {
+			return StringPool.BLANK;
+		}
 
-		return sb.toString();
+		return _dlurlHelper.getThumbnailSrc(
+			_getFileEntry(document),
+			(ThemeDisplay)portletRequest.getAttribute(WebKeys.THEME_DISPLAY));
 	}
+
+	private FileEntry _getFileEntry(Document document) throws Exception {
+		long entryClassPK = document.getLong(Field.ENTRY_CLASS_PK);
+
+		return _dlAppService.getFileEntry(entryClassPK);
+	}
+
+	@Reference
+	private DLAppService _dlAppService;
+
+	@Reference
+	private DLURLHelper _dlurlHelper;
 
 }

@@ -45,7 +45,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Petteri Karttunen
  */
 @Component(
-	immediate = true, name = "dlfileentry-metadata",
+	immediate = true, property = "name=dlfileentry-metadata",
 	service = HitContributor.class
 )
 public class DLFileEntryMetadataHitContributor implements HitContributor {
@@ -58,7 +58,10 @@ public class DLFileEntryMetadataHitContributor implements HitContributor {
 
 		String entryClassName = document.getString(Field.ENTRY_CLASS_NAME);
 
-		if (!entryClassName.equals(DLFileEntry.class.getName())) {
+		if (!entryClassName.equals(DLFileEntry.class.getName()) ||
+			Validator.isBlank(document.getString("mimeType")) ||
+			Validator.isNull(document.getLong("size"))) {
+
 			return;
 		}
 
