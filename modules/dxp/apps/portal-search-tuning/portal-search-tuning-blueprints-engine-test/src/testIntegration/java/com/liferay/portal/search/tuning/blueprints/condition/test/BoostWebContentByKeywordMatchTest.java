@@ -17,7 +17,6 @@ package com.liferay.portal.search.tuning.blueprints.condition.test;
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.test.util.JournalTestUtil;
-import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
@@ -82,11 +81,11 @@ public class BoostWebContentByKeywordMatchTest
 			Collections.singletonMap(
 				LocaleUtil.US, getClass().getName() + "Blueprint"),
 			Collections.singletonMap(LocaleUtil.US, ""),
-			_getConfigurationString(null), "", 1);
+			getConfigurationString(null), "", 1);
 
 		assertSearch(blueprint, null, "[coca cola, pepsi cola]", "cola", null);
 
-		String configurationString = _getConfigurationString(
+		String configurationString = getConfigurationString(
 			_getQueryElementJSONObject(
 				articleId, 100, EvaluationType.ANY_WORD_IN.getjsonValue(),
 				"cola"));
@@ -98,7 +97,7 @@ public class BoostWebContentByKeywordMatchTest
 			blueprint, configurationString, "[pepsi cola, coca cola]", "cola",
 			selectedElementString);
 
-		configurationString = _getConfigurationString(
+		configurationString = getConfigurationString(
 			_getQueryElementJSONObject(
 				articleId, 100, EvaluationType.NOT_CONTAINS.getjsonValue(),
 				"cola"));
@@ -109,19 +108,6 @@ public class BoostWebContentByKeywordMatchTest
 		assertSearch(
 			blueprint, configurationString, "[coca cola, pepsi cola]", "cola",
 			selectedElementString);
-	}
-
-	private String _getConfigurationString(JSONObject jsonObject) {
-		JSONArray jsonArray = createJSONArray();
-
-		if (jsonObject != null) {
-			jsonArray.put(jsonObject);
-		}
-
-		JSONObject configurationJSONObject = getConfigurationJSONObject(
-			jsonArray);
-
-		return configurationJSONObject.toString();
 	}
 
 	private JSONObject _getQueryElementJSONObject(

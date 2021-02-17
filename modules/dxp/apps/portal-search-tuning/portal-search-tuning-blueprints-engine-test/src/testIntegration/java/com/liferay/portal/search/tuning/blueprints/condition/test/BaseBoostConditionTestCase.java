@@ -178,6 +178,19 @@ public abstract class BaseBoostConditionTestCase {
 		);
 	}
 
+	protected String getConfigurationString(JSONObject jsonObject) {
+		JSONArray jsonArray = createJSONArray();
+
+		if (jsonObject != null) {
+			jsonArray.put(jsonObject);
+		}
+
+		JSONObject configurationJSONObject = getConfigurationJSONObject(
+			jsonArray);
+
+		return configurationJSONObject.toString();
+	}
+
 	protected JSONObject getElementTemplateJSONObject(String resourceName)
 		throws Exception {
 
