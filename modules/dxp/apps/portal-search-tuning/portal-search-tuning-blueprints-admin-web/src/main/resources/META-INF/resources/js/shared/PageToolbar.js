@@ -151,7 +151,7 @@ export default function PageToolbar({
 	onSubmit,
 	tab,
 	tabs,
-	toolbarItem,
+	children,
 }) {
 	const {namespace} = useContext(ThemeContext);
 
@@ -263,9 +263,7 @@ export default function PageToolbar({
 							</div>
 						</ClayToolbar.Item>
 
-						{toolbarItem && (
-							<ClayToolbar.Item>{toolbarItem}</ClayToolbar.Item>
-						)}
+						{children}
 
 						<ClayToolbar.Item>
 							<ClayLink

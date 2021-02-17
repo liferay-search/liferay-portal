@@ -9,6 +9,10 @@
  * distribution rights of the Software.
  */
 
+import ClayBadge from '@clayui/badge';
+import ClayButton from '@clayui/button';
+import ClayToolbar from '@clayui/toolbar';
+import getCN from 'classnames';
 import {fetch, navigate} from 'frontend-js-web';
 import {PropTypes} from 'prop-types';
 import React, {useCallback, useContext, useRef, useState} from 'react';
@@ -23,6 +27,7 @@ import {
 	openSuccessToast,
 	replaceUIConfigurationValues,
 } from '../utils/utils';
+import Preview from './Preview';
 import Sidebar from './Sidebar';
 import QueryBuilder from './tabs/QueryBuilder';
 import Settings from './tabs/Settings';
@@ -47,11 +52,13 @@ function EditBlueprintForm({
 	queryElements = [],
 	redirectURL = '',
 	searchableAssetTypes,
+	searchResultsURL,
 	submitFormURL = '',
 }) {
 	const {namespace} = useContext(ThemeContext);
 
 	const [showSidebar, setShowSidebar] = useState(true);
+	const [showPreview, setShowPreview] = useState(false);
 	const [tab, setTab] = useState('query-builder');
 
 	const form = useRef();
@@ -107,6 +114,79 @@ function EditBlueprintForm({
 		)
 	);
 
+	const [previewInfo, setPreviewInfo] = useState(() => ({
+		data: {},
+		loading: false,
+	}));
+
+	const _handleFetchPreviewSearch = (value, delta, page) => {
+		if (value) {
+			setPreviewInfo((previewInfo) => ({
+				...previewInfo,
+				loading: true,
+			}));
+
+			const formData = new FormData(form.current);
+
+			try {
+				formData.append(
+					`${namespace}configuration`,
+					JSON.stringify({
+						advanced_configuration: JSON.parse(advancedConfig),
+						aggregation_configuration: JSON.parse(
+							aggregationConfig
+						),
+						facet_configuration: JSON.parse(facetConfig),
+						framework_configuration: frameworkConfig,
+						parameter_configuration: JSON.parse(parameterConfig),
+						query_configuration: selectedQueryElements.map(
+							(item) => item.elementOutput
+						),
+						sort_configuration: JSON.parse(sortConfig),
+					})
+				);
+			}
+			catch {
+				setPreviewInfo({
+					data: {
+						warning: [Liferay.Language.get('the-json-is-invalid')],
+					},
+					loading: false,
+				});
+
+				return;
+			}
+
+			formData.append(`${namespace}page`, page);
+			formData.append(`${namespace}q`, value);
+			formData.append(`${namespace}size`, delta);
+
+			return fetch(searchResultsURL, {
+				body: formData,
+				method: 'POST',
+			})
+				.then((response) => response.json())
+				.then((responseContent) => {
+					setPreviewInfo({
+						data: responseContent,
+						loading: false,
+					});
+				})
+				.catch(() => {
+					setTimeout(() => {
+						setPreviewInfo({
+							data: {
+								warning: [
+									Liferay.Language.get('the-json-is-invalid'),
+								],
+							},
+							loading: false,
+						});
+					}, 1000);
+				});
+		}
+	};
+
 	const onAddElement = useCallback((element) => {
 		setSelectedQueryElements((selectedElements) => [
 			convertToSelectedElement(element, elementIdCounter.current++),
@@ -126,7 +206,7 @@ function EditBlueprintForm({
 
 	const handleFrameworkChange = (value) => {
 		setFrameworkConfig({...frameworkConfig, ...value});
-	}
+	};
 
 	const handleSubmit = useCallback(
 		(event) => {
@@ -280,6 +360,13 @@ function EditBlueprintForm({
 			default:
 				return (
 					<>
+						<Preview
+							fetchResults={_handleFetchPreviewSearch}
+							onClose={() => setShowPreview(false)}
+							results={previewInfo}
+							visible={showPreview}
+						/>
+
 						<Sidebar
 							elements={sidebarQueryElements.current}
 							onAddElement={onAddElement}
@@ -295,7 +382,10 @@ function EditBlueprintForm({
 								initialSelectedElements['query_configuration']
 							}
 							onFrameworkConfigChange={handleFrameworkChange}
-							onToggleSidebar={() => setShowSidebar(!showSidebar)}
+							onToggleSidebar={() => {
+								setShowPreview(false);
+								setShowSidebar(!showSidebar);
+							}}
 							searchableAssetTypes={searchableAssetTypes}
 							selectedElements={selectedQueryElements}
 							updateElement={updateQueryElement}
@@ -316,7 +406,45 @@ function EditBlueprintForm({
 				onSubmit={handleSubmit}
 				tab={tab}
 				tabs={TABS}
-			/>
+			>
+				<ClayToolbar.Item>
+					<ClayButton
+						borderless
+						className={getCN({
+							active: showPreview,
+						})}
+						displayType="secondary"
+						onClick={() => {
+							setShowSidebar(false);
+							setShowPreview(!showPreview);
+						}}
+						small
+					>
+						{Liferay.Language.get('preview')}
+					</ClayButton>
+				</ClayToolbar.Item>
+
+				{previewInfo.data.warning && (
+					<ClayToolbar.Item>
+						<ClayButton
+							displayType="unstyled"
+							onClick={() => {
+								setShowSidebar(false);
+								setShowPreview(!showPreview);
+							}}
+						>
+							<ClayBadge
+								displayType="danger"
+								label={previewInfo.data.warning.length}
+								onClick={() => {
+									setShowSidebar(false);
+									setShowPreview(!showPreview);
+								}}
+							/>
+						</ClayButton>
+					</ClayToolbar.Item>
+				)}
+			</PageToolbar>
 
 			{_renderTabContent()}
 		</form>
@@ -333,6 +461,7 @@ EditBlueprintForm.propTypes = {
 	initialTitle: PropTypes.object,
 	queryElements: PropTypes.arrayOf(PropTypes.object),
 	redirectURL: PropTypes.string,
+	searchResultsURL: PropTypes.string,
 	searchableAssetTypes: PropTypes.arrayOf(PropTypes.string),
 	submitFormURL: PropTypes.string,
 };

@@ -54,6 +54,7 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.portlet.ResourceURL;
 import javax.portlet.WindowStateException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -122,6 +123,8 @@ public class EditBlueprintDisplayBuilder extends EditEntryDisplayBuilder {
 		).put(
 			"searchableAssetTypes", _getSearchableAssetTypesJSONArray()
 		).put(
+			"searchResultsURL", _getSearchResultsURL()
+		).put(
 			"submitFormURL",
 			getSubmitFormURL(BlueprintsAdminMVCCommandNames.EDIT_BLUEPRINT)
 		).build();
@@ -182,6 +185,15 @@ public class EditBlueprintDisplayBuilder extends EditEntryDisplayBuilder {
 		);
 
 		return jsonArray;
+	}
+
+	private String _getSearchResultsURL() {
+		ResourceURL resourceURL = renderResponse.createResourceURL();
+
+		resourceURL.setResourceID(
+			BlueprintsAdminMVCCommandNames.PREVIEW_BLUEPRINT);
+
+		return resourceURL.toString();
 	}
 
 	private JSONObject _getSelectEntityJSONObject(String className) {

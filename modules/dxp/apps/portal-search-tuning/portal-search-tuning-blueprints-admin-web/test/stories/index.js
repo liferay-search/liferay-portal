@@ -23,6 +23,7 @@ import '../../src/main/resources/META-INF/resources/css/main.scss';
 import ClayLayout from '@clayui/layout';
 
 import BlueprintForm from '../../src/main/resources/META-INF/resources/js/edit_blueprint';
+import Preview from '../../src/main/resources/META-INF/resources/js/edit_blueprint/Preview';
 import Sidebar from '../../src/main/resources/META-INF/resources/js/edit_blueprint/Sidebar';
 import QueryBuilder from '../../src/main/resources/META-INF/resources/js/edit_blueprint/tabs/QueryBuilder';
 import SelectAssetTypes from '../../src/main/resources/META-INF/resources/js/edit_blueprint/tabs/SelectAssetTypes';
@@ -32,10 +33,7 @@ import JSONElement from '../../src/main/resources/META-INF/resources/js/shared/J
 import PageToolbar from '../../src/main/resources/META-INF/resources/js/shared/PageToolbar';
 import SearchInput from '../../src/main/resources/META-INF/resources/js/shared/SearchInput';
 import Element from '../../src/main/resources/META-INF/resources/js/shared/element';
-import {
-	DEFAULT_EDIT_ELEMENT,
-	DEFAULT_FRAMEWORK_CONFIGURATION,
-} from '../../src/main/resources/META-INF/resources/js/utils/data';
+import {DEFAULT_EDIT_ELEMENT} from '../../src/main/resources/META-INF/resources/js/utils/data';
 import AddBlueprintModal from '../../src/main/resources/META-INF/resources/js/view_blueprints/AddBlueprintModal';
 import {
 	ENTITY_JSON,
@@ -131,12 +129,35 @@ storiesOf('Pages|BlueprintForm', module)
 			}}
 		/>
 	))
-	.add('default element', () => (
+	.add('check preview', () => (
 		<BlueprintForm
 			context={CONTEXT}
 			props={{
 				...BLUEPRINT_FORM_PROPS,
-				blueprintId: '0',
+				initialSelectedElementsString: JSON.stringify({
+					query_configuration: [],
+				}),
+				searchResultsURL:
+					'https://run.mocky.io/v3/4a515d48-1786-4b7a-8ddc-4389ca34b7ef',
+
+				//https://designer.mocky.io/manage/delete/4a515d48-1786-4b7a-8ddc-4389ca34b7ef/o1vgYZuRKTTe5s29ybeE88kCx57HEzf7TxKI
+
+			}}
+		/>
+	))
+	.add('check preview with errors', () => (
+		<BlueprintForm
+			context={CONTEXT}
+			props={{
+				...BLUEPRINT_FORM_PROPS,
+				initialSelectedElementsString: JSON.stringify({
+					query_configuration: [],
+				}),
+				searchResultsURL:
+					'https://run.mocky.io/v3/01b0bf73-9e80-42d3-b2c2-b9dc9df6eee5',
+
+				// https://designer.mocky.io/manage/delete/01b0bf73-9e80-42d3-b2c2-b9dc9df6eee5/xHtw3DQuZNsXJUKjh7ZZCHfnmRYfFEoX9P7S
+
 			}}
 		/>
 	));
@@ -287,6 +308,91 @@ storiesOf('Components|Sidebar', module)
 	.add('Sidebar', () => (
 		<Sidebar
 			addElement={action('addElement')}
-			queryElements={SELECTED_ELEMENTS}
+			elements={SELECTED_ELEMENTS}
+			visible={true}
+		/>
+	));
+
+storiesOf('Components|Preview', module)
+	.addDecorator(withBlueprintsClass)
+	.add('Preview', () => (
+		<Preview
+			fetchResults={action('fetchResults')}
+			results={{
+				data: {
+					facets: [],
+					hits: [
+						{
+							date: '2/1/21',
+							description:
+								'Nashville:36.1518409,-86.78478199999999',
+							score: 8.9909,
+							title: 'Watermark Restaurant',
+							type: 'Web Content Article',
+							viewURL: '',
+						},
+						{
+							date: '2/1/21',
+							description: 'New York:40.7573681,-73.9835798',
+							score: 8.1034,
+							title: "Connolly's Pub & Restaurant",
+							type: 'Web Content Article',
+							viewURL: '',
+						},
+						{
+							date: '2/1/21',
+							description: 'Los Angeles:34.1473282,-118.2556499',
+							score: 7.1239,
+							title: 'Olive Garden Italian Restaurant',
+							type: 'Web Content Article',
+							viewURL: '',
+						},
+						{
+							date: '2/1/21',
+							description:
+								'Nashville:36.1632246,-86.78046309999999',
+							score: 6.3239,
+							title:
+								"Puckett's Grocery & Restaurant - Downtown Nashville",
+							type: 'Web Content Article',
+							viewURL: '',
+						},
+						{
+							date: '2/1/21',
+							description: 'New York:40.757498,-73.986654',
+							score: 5.6567,
+							title:
+								"Carmine's Italian Restaurant - Times Square",
+							type: 'Web Content Article',
+							viewURL: '',
+						},
+					],
+					meta: {
+						executionTime: '0.061',
+						keywords: 'restaurant',
+						totalHits: 64,
+					},
+					pagination: {activePage: 1, totalPages: 7},
+					suggestions: {},
+				},
+				loading: false,
+			}}
+			visible={true}
+		/>
+	))
+	.add('Error', () => (
+		<Preview
+			fetchResults={action('fetchResults')}
+			results={{
+				data: {
+					warning: [
+						'Blueprint missing match clause',
+						'Blueprint has no proximity clause',
+						'Blueprint is missing a value',
+					],
+				},
+				loading: false,
+			}}
+			visible={true}
 		/>
 	));

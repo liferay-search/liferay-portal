@@ -20,49 +20,112 @@ $navigationBarHeight: 56px;
 		transition: transform ease 0.2s;
 	}
 
+	&.preview {
+		overflow-x: overlay;
+		width: 600px;
+
+		.btn:focus {
+			box-shadow: unset;
+		}
+
+		.sidebar-search {
+			border-bottom: 0;
+		}
+	}
+
 	.empty-list-message {
 		padding: 16px;
 		text-align: center;
 	}
 
-	.list-group {
-		margin-bottom: 0;
+	.try-search-message {
+		color: $secondary;
+		margin: 0.5rem auto 1.5rem;
+		padding: 16px 0;
+		text-align: center;
+		width: 340px;
+	}
 
-		.list-group-item {
-			border: 0;
+	.component-text {
+		margin-right: 16px;
+	}
 
-			&.hover {
-				background-color: $primaryL4;
-			}
+	.panel.text-danger {
+		margin: 0;
+		position: static;
 
-			.sticker {
-				background-color: $lightBackground;
-				color: $mainLighten28;
-			}
+		.panel-header {
+			background-color: $errorL2;
+			border-color: $errorL1;
+			border-radius: 0.25rem;
+			border-style: solid;
+			border-width: 0.0625rem;
+			color: $danger;
+			margin: 0 16px;
+			width: calc(100% - 32px);
+		}
+	}
 
-			.autofit-col:first-of-type {
-				padding-right: 0.5rem;
-			}
+	.preview-results-list {
+		.list-group {
+			margin-bottom: 16px;
 
-			.button-wrapper {
-				background-color: $primaryL4;
-				display: table;
-				height: 100%;
-				padding-left: 1rem;
-				position: absolute;
-				right: 0.5rem;
-
-				.add-element-button {
-					display: table-cell;
-					vertical-align: middle;
+			.list-group-item {
+				.sticker {
+					background-color: $infoL2;
+					color: $info;
+					width: 2.5rem;
 				}
 			}
+		}
+
+		.pagination-bar {
+			justify-content: flex-end;
 		}
 	}
 
 	.query-element-list {
 		overflow-y: scroll;
 		padding-bottom: 16px;
+
+		.list-group {
+			margin-bottom: 0;
+
+			.list-group-item {
+				border: 0;
+
+				&.hover {
+					background-color: $primaryL4;
+				}
+
+				.sticker {
+					background-color: $lightBackground;
+					color: $mainLighten28;
+				}
+
+				.autofit-col:first-of-type {
+					padding-right: 0.5rem;
+				}
+
+				.button-wrapper {
+					background-color: $primaryL4;
+					display: table;
+					height: 100%;
+					padding-left: 1rem;
+					position: absolute;
+					right: 0.5rem;
+
+					.add-fragment-button {
+						display: table-cell;
+						vertical-align: middle;
+					}
+				}
+			}
+		}
+	}
+
+	.shortcut-icon {
+		padding-left: 4px;
 	}
 
 	.sidebar-header {

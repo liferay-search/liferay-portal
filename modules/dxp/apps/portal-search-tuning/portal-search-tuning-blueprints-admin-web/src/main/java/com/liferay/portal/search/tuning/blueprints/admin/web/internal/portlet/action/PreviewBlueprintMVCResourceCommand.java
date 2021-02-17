@@ -133,9 +133,9 @@ public class PreviewBlueprintMVCResourceCommand extends BaseMVCResourceCommand {
 		BlueprintsAttributesBuilder blueprintsAttributesBuilder =
 			_blueprintsAttributesHelper.getBlueprintsRequestAttributesBuilder(
 				resourceRequest, blueprint);
-		
+
 		blueprintsAttributesBuilder.addAttribute(
-				ReservedParameterNames.EXPLAIN.getKey(), true);
+			ReservedParameterNames.EXPLAIN.getKey(), true);
 
 		return blueprintsAttributesBuilder.build();
 	}
@@ -148,9 +148,9 @@ public class PreviewBlueprintMVCResourceCommand extends BaseMVCResourceCommand {
 			_blueprintsAttributesHelper.getBlueprintsResponseAttributesBuilder(
 				resourceRequest, resourceResponse, blueprint,
 				blueprintsRequestAttributes);
-		
+
 		blueprintsAttributesBuilder.addAttribute(
-				ResponseAttributeKeys.INCLUDE_RESULT, true);
+			ResponseAttributeKeys.INCLUDE_RESULT, true);
 
 		return blueprintsAttributesBuilder.build();
 	}
