@@ -41,6 +41,7 @@ import {
 	INITIAL_CONFIGURATION,
 	SEARCHABLE_ASSET_TYPES,
 	SELECTED_ELEMENTS,
+	mockSearchResults,
 } from '../js/mocks/data';
 
 const {addDecorator, storiesOf} = StorybookReact;
@@ -112,9 +113,20 @@ storiesOf('Pages|BlueprintForm', module)
 			context={CONTEXT}
 			props={{
 				...BLUEPRINT_FORM_PROPS,
+				initialConfigurationString: JSON.stringify({
+					...INITIAL_CONFIGURATION,
+					query_configuration: SELECTED_ELEMENTS.map(
+						(item) => item.elementOutput
+					),
+				}),
 				initialSelectedElementsString: JSON.stringify({
 					query_configuration: SELECTED_ELEMENTS,
 				}),
+				searchResultsURL:
+					'https://run.mocky.io/v3/95b30f66-4522-418e-ba40-71eb1b5c1a03',
+
+				//https://designer.mocky.io/manage/delete/95b30f66-4522-418e-ba40-71eb1b5c1a03/f8ctzJrC4gglml9Sttuv62PA6Xjx33x3Faa3
+
 			}}
 		/>
 	))
@@ -126,26 +138,12 @@ storiesOf('Pages|BlueprintForm', module)
 				initialSelectedElementsString: JSON.stringify({
 					query_configuration: [],
 				}),
-			}}
-		/>
-	))
-	.add('check preview', () => (
-		<BlueprintForm
-			context={CONTEXT}
-			props={{
-				...BLUEPRINT_FORM_PROPS,
-				initialSelectedElementsString: JSON.stringify({
-					query_configuration: [],
-				}),
 				searchResultsURL:
-					'https://run.mocky.io/v3/4a515d48-1786-4b7a-8ddc-4389ca34b7ef',
-
-				//https://designer.mocky.io/manage/delete/4a515d48-1786-4b7a-8ddc-4389ca34b7ef/o1vgYZuRKTTe5s29ybeE88kCx57HEzf7TxKI
-
+					'https://run.mocky.io/v3/95b30f66-4522-418e-ba40-71eb1b5c1a03',
 			}}
 		/>
 	))
-	.add('check preview with errors', () => (
+	.add('preview with error messages', () => (
 		<BlueprintForm
 			context={CONTEXT}
 			props={{
@@ -319,62 +317,7 @@ storiesOf('Components|Preview', module)
 		<Preview
 			fetchResults={action('fetchResults')}
 			results={{
-				data: {
-					facets: [],
-					hits: [
-						{
-							date: '2/1/21',
-							description:
-								'Nashville:36.1518409,-86.78478199999999',
-							score: 8.9909,
-							title: 'Watermark Restaurant',
-							type: 'Web Content Article',
-							viewURL: '',
-						},
-						{
-							date: '2/1/21',
-							description: 'New York:40.7573681,-73.9835798',
-							score: 8.1034,
-							title: "Connolly's Pub & Restaurant",
-							type: 'Web Content Article',
-							viewURL: '',
-						},
-						{
-							date: '2/1/21',
-							description: 'Los Angeles:34.1473282,-118.2556499',
-							score: 7.1239,
-							title: 'Olive Garden Italian Restaurant',
-							type: 'Web Content Article',
-							viewURL: '',
-						},
-						{
-							date: '2/1/21',
-							description:
-								'Nashville:36.1632246,-86.78046309999999',
-							score: 6.3239,
-							title:
-								"Puckett's Grocery & Restaurant - Downtown Nashville",
-							type: 'Web Content Article',
-							viewURL: '',
-						},
-						{
-							date: '2/1/21',
-							description: 'New York:40.757498,-73.986654',
-							score: 5.6567,
-							title:
-								"Carmine's Italian Restaurant - Times Square",
-							type: 'Web Content Article',
-							viewURL: '',
-						},
-					],
-					meta: {
-						executionTime: '0.061',
-						keywords: 'restaurant',
-						totalHits: 64,
-					},
-					pagination: {activePage: 1, totalPages: 7},
-					suggestions: {},
-				},
+				data: mockSearchResults(),
 				loading: false,
 			}}
 			visible={true}

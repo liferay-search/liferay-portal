@@ -11,7 +11,6 @@
 
 import ClayButton from '@clayui/button';
 import ClayEmptyState from '@clayui/empty-state';
-import {ClayInput} from '@clayui/form';
 import ClayIcon from '@clayui/icon';
 import ClayLayout from '@clayui/layout';
 import ClayLink from '@clayui/link';
@@ -28,6 +27,7 @@ import React, {useEffect, useState} from 'react';
 
 import CodeMirrorEditor from '../shared/CodeMirrorEditor';
 import PreviewModal from '../shared/PreviewModal';
+import SearchInput from '../shared/SearchInput';
 import {sub} from './../utils/utils';
 
 const COLLAPSED_VIEW = ['type', 'description', 'date', 'userName'];
@@ -37,8 +37,14 @@ function Preview({fetchResults, onClose, results, visible}) {
 	const [activePage, setActivePage] = useState(1);
 	const [activeDelta, setActiveDelta] = useState(10);
 
+	const _handleFetch = () => {
+		if (value) {
+			fetchResults(value, activeDelta, activePage);
+		}
+	};
+
 	useEffect(() => {
-		fetchResults(value, activeDelta, activePage);
+		_handleFetch();
 	}, [activeDelta, activePage]); //eslint-disable-line
 
 	const _renderErrors = () => (
@@ -65,6 +71,36 @@ function Preview({fetchResults, onClose, results, visible}) {
 				</ClayTable>
 			</ClayPanel.Body>
 		</ClayPanel>
+	);
+
+	const _renderManagementBar = () => (
+		<ClayManagementToolbar>
+			<ClayManagementToolbar.ItemList>
+				{results.data.meta && (
+					<ClayManagementToolbar.Item>
+						<span className="component-text text-truncate-inline">
+							<span className="text-truncate">
+								{sub(Liferay.Language.get('x-results'), [
+									results.data.meta.totalHits,
+								])}
+							</span>
+						</span>
+					</ClayManagementToolbar.Item>
+				)}
+
+				<ClayManagementToolbar.Item>
+					<ClayButton
+						aria-label={Liferay.Language.get('refresh')}
+						disabled={!value || !results.data.meta}
+						displayType="secondary"
+						onClick={_handleFetch}
+						small
+					>
+						{Liferay.Language.get('refresh')}
+					</ClayButton>
+				</ClayManagementToolbar.Item>
+			</ClayManagementToolbar.ItemList>
+		</ClayManagementToolbar>
 	);
 
 	return (
@@ -97,84 +133,11 @@ function Preview({fetchResults, onClose, results, visible}) {
 				className="component-tbar sidebar-search tbar"
 			>
 				<div className="container-fluid">
-					<ClayInput.Group>
-						<ClayInput.GroupItem>
-							<ClayInput
-								aria-label={Liferay.Language.get('search')}
-								className="form-control input-group-inset input-group-inset-after"
-								onChange={(event) =>
-									setValue(event.target.value)
-								}
-								onKeyDown={(event) => {
-									if (event.key === 'Enter') {
-										event.preventDefault();
-
-										fetchResults(
-											value,
-											activeDelta,
-											activePage
-										);
-									}
-								}}
-								placeholder={Liferay.Language.get('search')}
-								type="text"
-								value={value}
-							/>
-
-							<ClayInput.GroupInsetItem after tag="span">
-								<ClayButton
-									displayType="unstyled"
-									onClick={() =>
-										fetchResults(
-											value,
-											activeDelta,
-											activePage
-										)
-									}
-									title={Liferay.Language.get('search')}
-								>
-									<ClayIcon symbol="search" />
-								</ClayButton>
-							</ClayInput.GroupInsetItem>
-						</ClayInput.GroupItem>
-					</ClayInput.Group>
+					<SearchInput onChange={setValue} onEnter={_handleFetch} />
 				</div>
 			</nav>
 
-			{results.data.warning ? (
-				_renderErrors()
-			) : (
-				<ClayManagementToolbar>
-					<ClayManagementToolbar.ItemList>
-						{results.data.meta && (
-							<ClayManagementToolbar.Item>
-								<span className="component-text text-truncate-inline">
-									<span className="text-truncate">
-										{sub(
-											Liferay.Language.get('x-results'),
-											[results.data.meta.totalHits]
-										)}
-									</span>
-								</span>
-							</ClayManagementToolbar.Item>
-						)}
-
-						<ClayManagementToolbar.Item>
-							<ClayButton
-								aria-label={Liferay.Language.get('refresh')}
-								disabled={!value || !results.data.meta}
-								displayType="secondary"
-								onClick={() =>
-									fetchResults(value, activeDelta, activePage)
-								}
-								small
-							>
-								{Liferay.Language.get('refresh')}
-							</ClayButton>
-						</ClayManagementToolbar.Item>
-					</ClayManagementToolbar.ItemList>
-				</ClayManagementToolbar>
-			)}
+			{results.data.warning ? _renderErrors() : _renderManagementBar()}
 
 			{!results.loading ? (
 				results.data.hits && results.data.hits.length ? (
@@ -200,9 +163,7 @@ function Preview({fetchResults, onClose, results, visible}) {
 								setActiveDelta(delta);
 								setActivePage(1);
 							}}
-							onPageChange={(page) => {
-								setActivePage(page);
-							}}
+							onPageChange={setActivePage}
 							totalItems={results.data.meta.totalHits}
 						/>
 					</div>
@@ -286,8 +247,8 @@ function ResultListItem({item}) {
 				<ClayButton
 					aria-label={
 						collapse
-							? Liferay.Language.get('collapse')
-							: Liferay.Language.get('expand')
+							? Liferay.Language.get('expand')
+							: Liferay.Language.get('collapse')
 					}
 					displayType="unstyled"
 					onClick={() => setCollapse(!collapse)}

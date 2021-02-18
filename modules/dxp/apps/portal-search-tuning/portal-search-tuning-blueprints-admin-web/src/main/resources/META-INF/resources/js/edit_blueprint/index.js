@@ -120,71 +120,67 @@ function EditBlueprintForm({
 	}));
 
 	const _handleFetchPreviewSearch = (value, delta, page) => {
-		if (value) {
-			setPreviewInfo((previewInfo) => ({
-				...previewInfo,
-				loading: true,
-			}));
+		setPreviewInfo((previewInfo) => ({
+			...previewInfo,
+			loading: true,
+		}));
 
-			const formData = new FormData(form.current);
+		const formData = new FormData(form.current);
 
-			try {
-				formData.append(
-					`${namespace}configuration`,
-					JSON.stringify({
-						advanced_configuration: JSON.parse(advancedConfig),
-						aggregation_configuration: JSON.parse(
-							aggregationConfig
-						),
-						facet_configuration: JSON.parse(facetConfig),
-						framework_configuration: frameworkConfig,
-						parameter_configuration: JSON.parse(parameterConfig),
-						query_configuration: selectedQueryElements.map(
-							(item) => item.elementOutput
-						),
-						sort_configuration: JSON.parse(sortConfig),
-					})
-				);
-			}
-			catch {
+		try {
+			formData.append(
+				`${namespace}configuration`,
+				JSON.stringify({
+					advanced_configuration: JSON.parse(advancedConfig),
+					aggregation_configuration: JSON.parse(aggregationConfig),
+					facet_configuration: JSON.parse(facetConfig),
+					framework_configuration: frameworkConfig,
+					parameter_configuration: JSON.parse(parameterConfig),
+					query_configuration: selectedQueryElements.map(
+						(item) => item.elementOutput
+					),
+					sort_configuration: JSON.parse(sortConfig),
+				})
+			);
+		}
+		catch {
+			setPreviewInfo({
+				data: {
+					warning: [Liferay.Language.get('the-json-is-invalid')],
+				},
+				loading: false,
+			});
+
+			return;
+		}
+
+		formData.append(`${namespace}page`, page);
+		formData.append(`${namespace}q`, value);
+		formData.append(`${namespace}size`, delta);
+
+		return fetch(searchResultsURL, {
+			body: formData,
+			method: 'POST',
+		})
+			.then((response) => response.json())
+			.then((responseContent) => {
 				setPreviewInfo({
-					data: {
-						warning: [Liferay.Language.get('the-json-is-invalid')],
-					},
+					data: responseContent,
 					loading: false,
 				});
-
-				return;
-			}
-
-			formData.append(`${namespace}page`, page);
-			formData.append(`${namespace}q`, value);
-			formData.append(`${namespace}size`, delta);
-
-			return fetch(searchResultsURL, {
-				body: formData,
-				method: 'POST',
 			})
-				.then((response) => response.json())
-				.then((responseContent) => {
+			.catch(() => {
+				setTimeout(() => {
 					setPreviewInfo({
-						data: responseContent,
+						data: {
+							warning: [
+								Liferay.Language.get('the-json-is-invalid'),
+							],
+						},
 						loading: false,
 					});
-				})
-				.catch(() => {
-					setTimeout(() => {
-						setPreviewInfo({
-							data: {
-								warning: [
-									Liferay.Language.get('the-json-is-invalid'),
-								],
-							},
-							loading: false,
-						});
-					}, 1000);
-				});
-		}
+				}, 1000);
+			});
 	};
 
 	const onAddElement = useCallback((element) => {

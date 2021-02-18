@@ -145,3 +145,37 @@ export const INITIAL_CONFIGURATION = {
 	query_configuration: [],
 	sort_configuration: {},
 };
+
+export const mockSearchResults = (itemsPerPage = 10) => {
+	const hits = [];
+
+	for (var i = 1; i <= itemsPerPage; i++) {
+		hits.push({
+			assetEntryId: i,
+			date: '2/1/21',
+			description:
+				'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+			entryClassName: 'com.liferay.journal.model.JournalArticle',
+			entryClassPK: `101${i}`,
+			id: `com.liferay.journal.model.JournalArticle_PORTLET_${i}`,
+			score: Math.random() * 100,
+			title: `Article Number ${i}`,
+			type: 'Web Content Article',
+			userName: 'Test Test',
+			viewURL: '',
+		});
+	}
+
+	return {
+		aggregations: {},
+		facets: [],
+		hits,
+		meta: {
+			executionTime: '0.061',
+			keywords: 'test',
+			totalHits: 75,
+		},
+		pagination: {activePage: 1, totalPages: 8},
+		suggest: {},
+	};
+};
