@@ -16,13 +16,10 @@ package com.liferay.portal.search.tuning.blueprints.condition.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.journal.model.JournalArticle;
-import com.liferay.journal.test.util.JournalTestUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
-import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.LocaleUtil;
-import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.search.tuning.blueprints.constants.json.values.EvaluationType;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
@@ -51,29 +48,8 @@ public class BoostWebContentByKeywordMatchTest
 
 	@Test
 	public void testAnyWordInCondition() throws Exception {
-		JournalTestUtil.addArticle(
-			group.getGroupId(), 0,
-			PortalUtil.getClassNameId(JournalArticle.class),
-			HashMapBuilder.put(
-				LocaleUtil.US, "Coca Cola"
-			).build(),
-			null,
-			HashMapBuilder.put(
-				LocaleUtil.US, "cola cola"
-			).build(),
-			LocaleUtil.getSiteDefault(), false, true, serviceContext);
-
-		JournalArticle journalArticle = JournalTestUtil.addArticle(
-			group.getGroupId(), 0,
-			PortalUtil.getClassNameId(JournalArticle.class),
-			HashMapBuilder.put(
-				LocaleUtil.US, "Pepsi Cola"
-			).build(),
-			null,
-			HashMapBuilder.put(
-				LocaleUtil.US, ""
-			).build(),
-			LocaleUtil.getSiteDefault(), false, true, serviceContext);
+		addJournalArticle("Coca Cola", "cola cola");
+		JournalArticle journalArticle = addJournalArticle("Pepsi Cola", "");
 
 		String articleId = journalArticle.getArticleId();
 

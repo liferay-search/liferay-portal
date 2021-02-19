@@ -19,18 +19,15 @@ import com.liferay.asset.kernel.model.AssetCategory;
 import com.liferay.asset.kernel.model.AssetVocabulary;
 import com.liferay.asset.kernel.service.AssetCategoryLocalServiceUtil;
 import com.liferay.asset.kernel.service.AssetVocabularyLocalServiceUtil;
-import com.liferay.journal.model.JournalArticle;
-import com.liferay.journal.test.util.JournalTestUtil;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
+import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
-import com.liferay.portal.kernel.test.util.TestPropsValues;
+import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.kernel.util.CalendarFactoryUtil;
 import com.liferay.portal.kernel.util.DateUtil;
-import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.LocaleUtil;
-import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.search.tuning.blueprints.constants.json.values.EvaluationType;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
@@ -65,36 +62,18 @@ public class BoostContentInCategoryForAPeriodOfTimeTest
 			AssetVocabularyLocalServiceUtil.addDefaultVocabulary(
 				group.getGroupId());
 
+		User user = UserTestUtil.addUser();
+
 		AssetCategory assetCategory = AssetCategoryLocalServiceUtil.addCategory(
-			TestPropsValues.getUserId(), group.getGroupId(), "Promoted",
+			user.getUserId(), group.getGroupId(), "Promoted",
 			assetVocabulary.getVocabularyId(), serviceContext);
 
-		JournalTestUtil.addArticle(
-			group.getGroupId(), 0,
-			PortalUtil.getClassNameId(JournalArticle.class),
-			HashMapBuilder.put(
-				LocaleUtil.US, "Coca Cola"
-			).build(),
-			null,
-			HashMapBuilder.put(
-				LocaleUtil.US, "cola cola"
-			).build(),
-			LocaleUtil.getSiteDefault(), false, true, serviceContext);
+		addJournalArticle("Coca Cola", "cola cola");
 
 		serviceContext.setAssetCategoryIds(
 			new long[] {assetCategory.getCategoryId()});
 
-		JournalTestUtil.addArticle(
-			group.getGroupId(), 0,
-			PortalUtil.getClassNameId(JournalArticle.class),
-			HashMapBuilder.put(
-				LocaleUtil.US, "Pepsi Cola"
-			).build(),
-			null,
-			HashMapBuilder.put(
-				LocaleUtil.US, ""
-			).build(),
-			LocaleUtil.getSiteDefault(), false, true, serviceContext);
+		addJournalArticle("Pepsi Cola", "");
 
 		Blueprint blueprint = addCompanyBlueprint(
 			Collections.singletonMap(

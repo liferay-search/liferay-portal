@@ -14,6 +14,8 @@
 
 package com.liferay.portal.search.tuning.blueprints.condition.test;
 
+import com.liferay.journal.model.JournalArticle;
+import com.liferay.journal.test.util.JournalTestUtil;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -25,7 +27,9 @@ import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
+import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.searcher.SearchResponse;
@@ -74,6 +78,22 @@ public abstract class BaseBoostConditionTestCase {
 		return blueprintService.addCompanyBlueprint(
 			titleMap, descriptionMap, configuration, selectedElements, type,
 			serviceContext);
+	}
+
+	protected JournalArticle addJournalArticle(String title, String content)
+		throws Exception {
+
+		return JournalTestUtil.addArticle(
+			group.getGroupId(), 0,
+			PortalUtil.getClassNameId(JournalArticle.class),
+			HashMapBuilder.put(
+				LocaleUtil.US, title
+			).build(),
+			null,
+			HashMapBuilder.put(
+				LocaleUtil.US, content
+			).build(),
+			LocaleUtil.getSiteDefault(), false, true, serviceContext);
 	}
 
 	protected void assertSearch(

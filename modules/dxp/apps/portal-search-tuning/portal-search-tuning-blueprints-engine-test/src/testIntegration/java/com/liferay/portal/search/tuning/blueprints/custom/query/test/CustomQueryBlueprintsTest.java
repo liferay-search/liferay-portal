@@ -36,6 +36,7 @@ import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.Constants;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -118,9 +119,7 @@ public class CustomQueryBlueprintsTest {
 	public void testMustBeClause() throws Exception {
 		_addCompanyBlueprint(readConfiguration());
 
-		List<String> expectedValues = new ArrayList<>();
-
-		expectedValues.add(_titles[2]);
+		List<String> expectedValues = ListUtil.fromArray(_titles[2]);
 
 		_assertSearch(
 			"localized_title", "restaurant 1", String.valueOf(expectedValues));
@@ -143,9 +142,7 @@ public class CustomQueryBlueprintsTest {
 	public void testTextMatch() throws Exception {
 		_addCompanyBlueprint(readConfiguration());
 
-		List<String> expectedValues = new ArrayList<>();
-
-		expectedValues.add(_titles[2]);
+		List<String> expectedValues = ListUtil.fromArray(_titles[2]);
 
 		_assertSearch(
 			"localized_title", "cafe", String.valueOf(expectedValues));
