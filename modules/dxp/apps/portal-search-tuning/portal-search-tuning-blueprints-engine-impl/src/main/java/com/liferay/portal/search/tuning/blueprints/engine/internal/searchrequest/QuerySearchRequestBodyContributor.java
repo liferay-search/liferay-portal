@@ -25,6 +25,7 @@ import com.liferay.portal.search.filter.ComplexQueryPartBuilderFactory;
 import com.liferay.portal.search.query.Queries;
 import com.liferay.portal.search.query.Query;
 import com.liferay.portal.search.rescore.RescoreBuilder;
+import com.liferay.portal.search.rescore.RescoreBuilderFactory;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.query.ClauseConfigurationKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.json.keys.query.ConditionConfigurationKeys;
@@ -168,17 +169,16 @@ public class QuerySearchRequestBodyContributor
 		SearchRequestBuilder searchRequestBuilder, Query query,
 		Integer windowSize) {
 
-		if (_rescoreBuilder == null) {
-			return;
-		}
+		RescoreBuilder rescoreBuilder =
+			_rescoreBuilderFactory.getRescoreBuilder();
 
-		_rescoreBuilder.query(query);
+		rescoreBuilder.query(query);
 
 		if (windowSize != null) {
-			_rescoreBuilder.windowSize(windowSize);
+			rescoreBuilder.windowSize(windowSize);
 		}
 
-		searchRequestBuilder.addRescore(_rescoreBuilder.build());
+		searchRequestBuilder.addRescore(rescoreBuilder.build());
 	}
 
 	private void _contribute(
@@ -622,7 +622,7 @@ public class QuerySearchRequestBodyContributor
 	private volatile Map<String, ServiceComponentReference<QueryContributor>>
 		_queryContributors = new ConcurrentHashMap<>();
 
-	@Reference(cardinality = ReferenceCardinality.OPTIONAL)
-	private RescoreBuilder _rescoreBuilder;
+	@Reference
+	private RescoreBuilderFactory _rescoreBuilderFactory;
 
 }

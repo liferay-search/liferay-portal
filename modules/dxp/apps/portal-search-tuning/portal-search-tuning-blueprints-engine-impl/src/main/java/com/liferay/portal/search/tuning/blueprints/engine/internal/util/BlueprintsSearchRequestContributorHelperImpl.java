@@ -47,11 +47,16 @@ public class BlueprintsSearchRequestContributorHelperImpl
 		if (!_blueprintsSearchRequestHelper.shouldApplyIndexerClauses(
 				blueprint)) {
 
+			String[] modelIndexerClassNames =
+				_blueprintsSearchRequestHelper.getModelIndexerClassNames(
+					blueprint, blueprintsAttributes.getCompanyId());
+
 			searchRequestBuilder.emptySearchEnabled(
 				true
+			).entryClassNames(
+				modelIndexerClassNames
 			).modelIndexerClassNames(
-				_blueprintsSearchRequestHelper.getModelIndexerClassNames(
-					blueprint, blueprintsAttributes.getCompanyId())
+				modelIndexerClassNames
 			).withSearchContext(
 				searchContext -> searchContext.setAttribute(
 					"search.full.query.suppress.indexer.provided.clauses",

@@ -14,8 +14,6 @@
 
 package com.liferay.portal.search.tuning.blueprints.engine.internal.util;
 
-import com.liferay.asset.kernel.AssetRendererFactoryRegistryUtil;
-import com.liferay.asset.kernel.model.AssetRendererFactory;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.Log;
@@ -42,7 +40,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Stream;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -131,7 +128,7 @@ public class BlueprintsSearchRequestHelper {
 			}
 		}
 
-		return _getSearchableAssetTypes(companyId);
+		return new String[0];
 	}
 
 	public boolean shouldApplyIndexerClauses(Blueprint blueprint) {
@@ -213,23 +210,6 @@ public class BlueprintsSearchRequestHelper {
 		}
 
 		return new ArrayList<>();
-	}
-
-	private String[] _getSearchableAssetTypes(long companyId) {
-		List<AssetRendererFactory<?>> assetRendererFactories =
-			AssetRendererFactoryRegistryUtil.getAssetRendererFactories(
-				companyId, false);
-
-		Stream<AssetRendererFactory<?>> stream =
-			assetRendererFactories.stream();
-
-		return stream.filter(
-			item -> item.isSearchable()
-		).map(
-			AssetRendererFactory::getClassName
-		).toArray(
-			String[]::new
-		);
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
