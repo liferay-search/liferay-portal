@@ -18,11 +18,9 @@ export default {
 				occur: 'should',
 				query: {
 					query: {
-						term: {
-							assetCategoryIds: {
-								boost: '${config.boost}',
-								value: '${config.asset_category_id}',
-							},
+						terms: {
+							assetCategoryIds: '${config.asset_category_ids}',
+							boost: '${config.boost}',
 						},
 					},
 				},
@@ -41,10 +39,11 @@ export default {
 	},
 	uiConfigurationJSON: [
 		{
-			helpText: 'Add asset category ID',
-			key: 'asset_category_id',
-			label: 'Asset Category',
-			type: 'number',
+			helpText: 'Add asset category IDs',
+			defaultValue: [],
+			key: 'asset_category_ids',
+			label: 'Asset Categories',
+			type: 'multiselect',
 		},
 		{
 			defaultValue: 10,

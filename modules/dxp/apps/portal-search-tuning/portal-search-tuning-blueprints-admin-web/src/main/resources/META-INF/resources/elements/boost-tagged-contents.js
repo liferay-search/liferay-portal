@@ -18,11 +18,9 @@ export default {
 				occur: 'should',
 				query: {
 					query: {
-						term: {
-							'assetTagNames.raw': {
-								boost: '${config.boost}',
-								value: '${config.asset_tag}',
-							},
+						terms: {
+							'assetTagNames.raw': '${config.asset_tags}',
+							boost: '${config.boost}',
 						},
 					},
 				},
@@ -31,7 +29,7 @@ export default {
 		],
 		conditions: [],
 		description: {
-			en_US: 'Boost contents having a given tag',
+			en_US: 'Boost contents having at least one of the given tags',
 		},
 		enabled: true,
 		icon: 'thumbs-up',
@@ -41,10 +39,10 @@ export default {
 	},
 	uiConfigurationJSON: [
 		{
-			helpText: 'Add asset tag value',
-			key: 'asset_tag',
-			label: 'Asset Tag',
-			type: 'text',
+			defaultValue: [],
+			key: 'asset_tags',
+			label: 'Asset Tags',
+			type: 'multiselect',
 		},
 		{
 			defaultValue: 5,
