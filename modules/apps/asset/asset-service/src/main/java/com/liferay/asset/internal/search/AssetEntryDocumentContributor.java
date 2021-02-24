@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.portal.search.internal.spi.model.index.contributor;
+package com.liferay.asset.internal.search;
 
 import com.liferay.asset.kernel.model.AssetEntry;
 import com.liferay.asset.kernel.model.AssetRendererFactory;
