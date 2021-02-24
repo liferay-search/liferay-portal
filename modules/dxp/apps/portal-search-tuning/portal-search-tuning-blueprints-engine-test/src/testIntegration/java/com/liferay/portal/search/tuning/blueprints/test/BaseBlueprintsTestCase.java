@@ -12,11 +12,13 @@
  *
  */
 
-package com.liferay.portal.search.tuning.blueprints.condition.test;
+package com.liferay.portal.search.tuning.blueprints.test;
 
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.test.util.JournalTestUtil;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
@@ -60,7 +62,7 @@ import org.junit.Before;
 /**
  * @author Wade Cao
  */
-public abstract class BaseBoostConditionTestCase {
+public abstract class BaseBlueprintsTestCase {
 
 	@Before
 	public void setUp() throws Exception {
@@ -68,6 +70,11 @@ public abstract class BaseBoostConditionTestCase {
 
 		serviceContext = ServiceContextTestUtil.getServiceContext(
 			group, TestPropsValues.getUserId());
+
+		serviceContext.setAddGroupPermissions(true);
+		serviceContext.setAddGuestPermissions(true);
+
+		user = TestPropsValues.getUser();
 	}
 
 	protected Blueprint addCompanyBlueprint(
@@ -80,12 +87,28 @@ public abstract class BaseBoostConditionTestCase {
 			serviceContext);
 	}
 
-	protected JournalArticle addJournalArticle(String title, String content)
+	protected Blueprint addGroupBlueprint(
+			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
+			String configuration, String selectedElements, int type)
+		throws Exception {
+
+		return blueprintService.addGroupBlueprint(
+			titleMap, descriptionMap, configuration, selectedElements, type,
+			serviceContext);
+	}
+
+	protected JournalArticle addJournalArticle(long groupId, String title)
+		throws Exception {
+
+		return addJournalArticle(groupId, title, "");
+	}
+
+	protected JournalArticle addJournalArticle(
+			long groupId, String title, String content)
 		throws Exception {
 
 		return JournalTestUtil.addArticle(
-			group.getGroupId(), 0,
-			PortalUtil.getClassNameId(JournalArticle.class),
+			groupId, 0, PortalUtil.getClassNameId(JournalArticle.class),
 			HashMapBuilder.put(
 				LocaleUtil.US, title
 			).build(),
@@ -96,24 +119,35 @@ public abstract class BaseBoostConditionTestCase {
 			LocaleUtil.getSiteDefault(), false, true, serviceContext);
 	}
 
+	protected JournalArticle addJournalArticle(String title, String content)
+		throws Exception {
+
+		return addJournalArticle(group.getGroupId(), title, content);
+	}
+
 	protected void assertSearch(
 			Blueprint blueprint, String configurationString, String expected,
 			String keywords, String selectedElementString)
 		throws Exception {
 
-		if (!Validator.isBlank(configurationString) &&
-			!Validator.isBlank(selectedElementString)) {
-
-			blueprint = blueprintService.updateBlueprint(
-				blueprint.getBlueprintId(), blueprint.getTitleMap(),
-				blueprint.getDescriptionMap(), configurationString,
-				selectedElementString, serviceContext);
-		}
-
-		SearchResponse searchResponse = blueprintsEngineHelper.search(
-			blueprint, getBlueprintsAttributes(keywords), new Messages());
+		SearchResponse searchResponse = _getSearchResponse(
+			blueprint, configurationString, keywords, selectedElementString);
 
 		DocumentsAssert.assertValues(
+			searchResponse.getRequestString(),
+			searchResponse.getDocumentsStream(), "localized_title_en_US",
+			expected);
+	}
+
+	protected void assertSearchIgnoreRelevance(
+			Blueprint blueprint, String configurationString, String expected,
+			String keywords, String selectedElementString)
+		throws Exception {
+
+		SearchResponse searchResponse = _getSearchResponse(
+			blueprint, configurationString, keywords, selectedElementString);
+
+		DocumentsAssert.assertValuesIgnoreRelevance(
 			searchResponse.getRequestString(),
 			searchResponse.getDocumentsStream(), "localized_title_en_US",
 			expected);
@@ -136,7 +170,7 @@ public abstract class BaseBoostConditionTestCase {
 		).locale(
 			LocaleUtil.US
 		).userId(
-			getUser().getUserId()
+			user.getUserId()
 		).addAttribute(
 			ParameterConfigurationKeys.PAGE.getJsonKey(), 1
 		).addAttribute(
@@ -222,15 +256,9 @@ public abstract class BaseBoostConditionTestCase {
 	}
 
 	protected String getTimeZoneID() throws Exception {
-		User user = getUser();
-
 		TimeZone timeZone = user.getTimeZone();
 
 		return timeZone.getID();
-	}
-
-	protected User getUser() throws Exception {
-		return TestPropsValues.getUser();
 	}
 
 	@Inject
@@ -247,5 +275,24 @@ public abstract class BaseBoostConditionTestCase {
 	protected Group group;
 
 	protected ServiceContext serviceContext;
+	protected User user;
+
+	private SearchResponse _getSearchResponse(
+			Blueprint blueprint, String configurationString, String keywords,
+			String selectedElementString)
+		throws Exception, JSONException, PortalException {
+
+		if (!Validator.isBlank(configurationString) &&
+			!Validator.isBlank(selectedElementString)) {
+
+			blueprint = blueprintService.updateBlueprint(
+				blueprint.getBlueprintId(), blueprint.getTitleMap(),
+				blueprint.getDescriptionMap(), configurationString,
+				selectedElementString, serviceContext);
+		}
+
+		return blueprintsEngineHelper.search(
+			blueprint, getBlueprintsAttributes(keywords), new Messages());
+	}
 
 }

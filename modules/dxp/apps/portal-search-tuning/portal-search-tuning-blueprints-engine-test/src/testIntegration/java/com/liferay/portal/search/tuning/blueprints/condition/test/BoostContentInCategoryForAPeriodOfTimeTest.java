@@ -30,6 +30,7 @@ import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.search.tuning.blueprints.constants.json.values.EvaluationType;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
+import com.liferay.portal.search.tuning.blueprints.test.BaseBlueprintsTestCase;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
 
@@ -47,7 +48,7 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Arquillian.class)
 public class BoostContentInCategoryForAPeriodOfTimeTest
-	extends BaseBoostConditionTestCase {
+	extends BaseBlueprintsTestCase {
 
 	@ClassRule
 	@Rule

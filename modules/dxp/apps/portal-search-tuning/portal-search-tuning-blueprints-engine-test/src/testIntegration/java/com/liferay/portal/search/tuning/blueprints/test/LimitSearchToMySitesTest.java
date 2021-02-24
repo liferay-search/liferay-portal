@@ -12,25 +12,23 @@
  *
  */
 
-package com.liferay.portal.search.tuning.blueprints.condition.test;
+package com.liferay.portal.search.tuning.blueprints.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
-import com.liferay.asset.kernel.model.AssetTag;
-import com.liferay.asset.test.util.AssetTestUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
+import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.model.GroupConstants;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
-import com.liferay.portal.kernel.test.rule.DataGuard;
+import com.liferay.portal.kernel.test.util.GroupTestUtil;
+import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
-import com.liferay.portal.search.test.util.SearchTestRule;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
-import com.liferay.portal.search.tuning.blueprints.test.BaseBlueprintsTestCase;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
 
 import java.util.Collections;
 
-import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -39,9 +37,8 @@ import org.junit.runner.RunWith;
 /**
  * @author Wade Cao
  */
-@DataGuard(scope = DataGuard.Scope.METHOD)
 @RunWith(Arquillian.class)
-public class BoostTagsMatchTest extends BaseBlueprintsTestCase {
+public class LimitSearchToMySitesTest extends BaseBlueprintsTestCase {
 
 	@ClassRule
 	@Rule
@@ -50,70 +47,56 @@ public class BoostTagsMatchTest extends BaseBlueprintsTestCase {
 			new LiferayIntegrationTestRule(),
 			PermissionCheckerMethodTestRule.INSTANCE);
 
-	@Before
-	public void setUp() throws Exception {
-		super.setUp();
-
-		addJournalArticle("Coca Cola", "cola cola");
-
-		AssetTag assetTag = AssetTestUtil.addTag(group.getGroupId(), "cola");
-
-		serviceContext.setAssetTagNames(new String[] {assetTag.getName()});
-
-		addJournalArticle("Pepsi Cola", "");
-	}
-
 	@Test
-	public void testKeywoardMatchToAssetTagName() throws Exception {
+	public void testSearchWithLimitSearchToMyGroups() throws Exception {
+		Group groupA = GroupTestUtil.addGroup(
+			GroupConstants.DEFAULT_PARENT_GROUP_ID, "SiteA", serviceContext);
+		Group groupB = GroupTestUtil.addGroup(
+			GroupConstants.DEFAULT_PARENT_GROUP_ID, "SiteB", serviceContext);
+
+		user = UserTestUtil.addUser(groupA.getGroupId(), groupB.getGroupId());
+
+		serviceContext.setUserId(user.getUserId());
+
+		addJournalArticle(groupA.getGroupId(), "cola coca");
+		addJournalArticle(groupB.getGroupId(), "cola pepsi");
+
 		String configurationString = getConfigurationString(
-			_getQueryElementJSONObject(100));
+			_getQueryElementJSONObject());
 
 		Blueprint blueprint = addCompanyBlueprint(
 			Collections.singletonMap(
 				LocaleUtil.US, getClass().getName() + "Blueprint"),
 			Collections.singletonMap(LocaleUtil.US, ""), configurationString,
-			_getSelectedElementString(100), 1);
+			_getSelectedElementString(), 1);
 
-		assertSearch(blueprint, null, "[pepsi cola, coca cola]", "cola", null);
+		assertSearchIgnoreRelevance(
+			blueprint, null, "[cola coca, cola pepsi]", "cola", null);
+
+		user = UserTestUtil.addUser(groupA.getGroupId());
+
+		assertSearchIgnoreRelevance(
+			blueprint, null, "[cola coca]", "cola", null);
 	}
 
-	@Test
-	public void testKeywoardMatchWithoutAssetTagName() throws Exception {
-		Blueprint blueprint = addCompanyBlueprint(
-			Collections.singletonMap(
-				LocaleUtil.US, getClass().getName() + "Blueprint"),
-			Collections.singletonMap(LocaleUtil.US, ""),
-			getConfigurationString(null), "", 1);
-
-		assertSearch(blueprint, null, "[coca cola, pepsi cola]", "cola", null);
-	}
-
-	@Rule
-	public SearchTestRule searchTestRule = new SearchTestRule();
-
-	private JSONObject _getQueryElementJSONObject(int boost) {
+	private JSONObject _getQueryElementJSONObject() {
 		return JSONUtil.put(
-			"category", "boost"
+			"category", "filter"
 		).put(
 			"clauses",
 			createJSONArray().put(
 				JSONUtil.put(
 					"context", "query"
 				).put(
-					"occur", "should"
+					"occur", "filter"
 				).put(
 					"query",
 					JSONUtil.put(
 						"query",
 						JSONUtil.put(
-							"term",
+							"terms",
 							JSONUtil.put(
-								"assetTagNames.raw",
-								JSONUtil.put(
-									"boost", boost
-								).put(
-									"value", "${keywords}"
-								))))
+								"scopeGroupId", "${user.user_group_ids}")))
 				).put(
 					"type", "wrapper"
 				))
@@ -122,20 +105,19 @@ public class BoostTagsMatchTest extends BaseBlueprintsTestCase {
 		).put(
 			"description",
 			JSONUtil.put(
-				"en_US",
-				"Boost contents having an exact keyword match to a tag")
+				"en_US", "Limit search scope to the sites user is member of")
 		).put(
 			"enabled", true
 		).put(
 			"icon", "thumbs-up"
 		).put(
-			"title", JSONUtil.put("en_US", "Boost Tags Match")
+			"title", JSONUtil.put("en_US", "Limit Search to My Sites")
 		);
 	}
 
-	private String _getSelectedElementString(int boost) throws Exception {
+	private String _getSelectedElementString() throws Exception {
 		JSONObject elementTemplateJSONObject = getElementTemplateJSONObject(
-			"/elements/boost-tags-match-test.json");
+			"/elements/limit-search-to-my-sites-test.json");
 
 		return JSONUtil.put(
 			"query_configuration",
@@ -143,45 +125,42 @@ public class BoostTagsMatchTest extends BaseBlueprintsTestCase {
 				JSONUtil.put(
 					"elementOutput",
 					JSONUtil.put(
-						"category", "boost"
+						"category", "filter"
 					).put(
 						"clauses",
 						createJSONArray().put(
 							JSONUtil.put(
 								"context", "query"
 							).put(
-								"occur", "should"
+								"occur", "filter"
 							).put(
 								"query",
 								JSONUtil.put(
 									"query",
 									JSONUtil.put(
-										"term",
+										"terms",
 										JSONUtil.put(
-											"assetTagNames.raw",
-											JSONUtil.put(
-												"boost", boost
-											).put(
-												"value", "${keywords}"
-											)))
-								).put(
-									"type", "wrapper"
-								)
+											"scopeGroupId",
+											"${user.user_group_ids}")))
+							).put(
+								"type", "wrapper"
 							))
 					).put(
-						"conditions", createJSONArray()
+						"conditions",
+						createJSONArray().put(
+							JSONUtil.put("configuration", createJSONArray()))
 					).put(
 						"description",
 						JSONUtil.put(
 							"en_US",
-							"Boost contents having an exact keyword match to " +
-								"a tag")
+							"Limit search scope to the sites user is member of")
 					).put(
 						"enabled", true
 					).put(
-						"icon", "thumbs-up"
+						"icon", "filter"
 					).put(
-						"title", JSONUtil.put("en_US", "Boost Tags Match")
+						"title",
+						JSONUtil.put("en_US", "Limit Search to My Sites")
 					)
 				).put(
 					"elementTemplateJSON",
@@ -190,7 +169,7 @@ public class BoostTagsMatchTest extends BaseBlueprintsTestCase {
 					"uiConfigurationJSON",
 					elementTemplateJSONObject.get("uiConfigurationJSON")
 				).put(
-					"uiConfigurationValues", JSONUtil.put("boost", boost)
+					"uiConfigurationValues", JSONUtil.put(null, null)
 				))
 		).toString();
 	}

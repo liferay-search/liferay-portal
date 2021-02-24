@@ -30,6 +30,7 @@ import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.search.tuning.blueprints.constants.json.values.EvaluationType;
 import com.liferay.portal.search.tuning.blueprints.model.Blueprint;
+import com.liferay.portal.search.tuning.blueprints.test.BaseBlueprintsTestCase;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
@@ -51,7 +52,7 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Arquillian.class)
 public class BoostContentInCategoryForAUserSegmentTest
-	extends BaseBoostConditionTestCase {
+	extends BaseBlueprintsTestCase {
 
 	@ClassRule
 	@Rule
