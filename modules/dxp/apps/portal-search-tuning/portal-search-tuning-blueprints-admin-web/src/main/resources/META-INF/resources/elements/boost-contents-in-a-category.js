@@ -39,8 +39,8 @@ export default {
 	},
 	uiConfigurationJSON: [
 		{
-			helpText: 'Add asset category IDs',
 			defaultValue: [],
+			helpText: 'Add asset category IDs',
 			key: 'asset_category_ids',
 			label: 'Asset Categories',
 			type: 'multiselect',

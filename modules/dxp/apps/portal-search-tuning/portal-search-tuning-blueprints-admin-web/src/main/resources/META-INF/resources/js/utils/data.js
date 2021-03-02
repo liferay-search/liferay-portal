@@ -64,6 +64,22 @@ export const CUSTOM_JSON_ELEMENT = {
 };
 
 export const DEFAULT_ADVANCED_CONFIGURATION = {
+	highlighting: {
+		enabled: true,
+		fields: [
+			{
+				field: 'localized_title${context.language_id}',
+				fragment_size: 50,
+				number_of_fragments: 3,
+			},
+			{
+				field: 'content${context.language_id}',
+			},
+		],
+		fragment_size: 100,
+		number_of_fragments: 5,
+		require_field_match: true,
+	},
 	query_processing: {
 		exclude_query_contributors: '',
 		exclude_query_post_processors: '',

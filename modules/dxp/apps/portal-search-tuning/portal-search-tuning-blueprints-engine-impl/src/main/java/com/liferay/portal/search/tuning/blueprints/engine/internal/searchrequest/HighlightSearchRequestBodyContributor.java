@@ -62,10 +62,49 @@ public class HighlightSearchRequestBodyContributor
 		HighlightBuilder highlightBuilder, JSONArray fieldsJSONArray) {
 
 		for (int i = 0; i < fieldsJSONArray.length(); i++) {
+			JSONObject fieldJSONObject = fieldsJSONArray.getJSONObject(i);
+
+			if (!fieldJSONObject.has(
+					HighlightingConfigurationKeys.FIELD.getJsonKey())) {
+
+				continue;
+			}
+
 			FieldConfigBuilder fieldConfigBuilder =
 				_highlights.fieldConfigBuilder();
 
-			fieldConfigBuilder.field(fieldsJSONArray.getString(i));
+			fieldConfigBuilder.field(
+				fieldJSONObject.getString(
+					HighlightingConfigurationKeys.FIELD.getJsonKey()));
+
+			if (fieldJSONObject.has(
+					HighlightingConfigurationKeys.FRAGMENT_OFFSET.
+						getJsonKey())) {
+
+				fieldConfigBuilder.fragmentOffset(
+					fieldJSONObject.getInt(
+						HighlightingConfigurationKeys.FRAGMENT_OFFSET.
+							getJsonKey()));
+			}
+
+			if (fieldJSONObject.has(
+					HighlightingConfigurationKeys.FRAGMENT_SIZE.getJsonKey())) {
+
+				fieldConfigBuilder.fragmentSize(
+					fieldJSONObject.getInt(
+						HighlightingConfigurationKeys.FRAGMENT_SIZE.
+							getJsonKey()));
+			}
+
+			if (fieldJSONObject.has(
+					HighlightingConfigurationKeys.NUMBER_OF_FRAGMENTS.
+						getJsonKey())) {
+
+				fieldConfigBuilder.numFragments(
+					fieldJSONObject.getInt(
+						HighlightingConfigurationKeys.NUMBER_OF_FRAGMENTS.
+							getJsonKey()));
+			}
 
 			highlightBuilder.addFieldConfig(fieldConfigBuilder.build());
 		}
@@ -95,11 +134,13 @@ public class HighlightSearchRequestBodyContributor
 		}
 
 		if (configurationJSONObject.has(
-				HighlightingConfigurationKeys.SNIPPET_SIZE.getJsonKey())) {
+				HighlightingConfigurationKeys.NUMBER_OF_FRAGMENTS.
+					getJsonKey())) {
 
 			highlightBuilder.numOfFragments(
 				configurationJSONObject.getInt(
-					HighlightingConfigurationKeys.SNIPPET_SIZE.getJsonKey()));
+					HighlightingConfigurationKeys.NUMBER_OF_FRAGMENTS.
+						getJsonKey()));
 		}
 
 		if (configurationJSONObject.has(
@@ -122,6 +163,8 @@ public class HighlightSearchRequestBodyContributor
 		}
 
 		// TODO: https://issues.liferay.com/browse/LPS-121365
+
+		// searchRequestBuilder.setHightlight(highlightBuilder.build());
 
 	}
 

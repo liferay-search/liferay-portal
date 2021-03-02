@@ -22,8 +22,10 @@ import java.util.stream.Stream;
  */
 public enum HighlightingConfigurationKeys {
 
-	ENABLED("enabled"), FIELDS("fields"), FRAGMENT_SIZE("fragment_size"),
-	REQUIRE_FIELD_MATCH("require_field_match"), SNIPPET_SIZE("snippet_size");
+	ENABLED("enabled"), FIELD("field"), FIELDS("fields"),
+	FRAGMENT_OFFSET("fragment_offset"), FRAGMENT_SIZE("fragment_size"),
+	NUMBER_OF_FRAGMENTS("number_of_fragments"),
+	REQUIRE_FIELD_MATCH("require_field_match");
 
 	public static final HighlightingConfigurationKeys findByJsonKey(
 		String jsonKey) {
