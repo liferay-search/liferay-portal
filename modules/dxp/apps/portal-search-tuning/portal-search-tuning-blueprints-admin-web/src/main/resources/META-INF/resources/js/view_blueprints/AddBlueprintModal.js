@@ -28,10 +28,15 @@ import {
 	DEFAULT_SORT_CONFIGURATION,
 } from '../utils/data';
 import {FRAMEWORK_TYPES} from '../utils/frameworkTypes';
-import {convertToSelectedElement} from '../utils/utils';
+import {getElementOutput, getUIConfigurationValues} from '../utils/utils';
 
 const DEFAULT_SELECTED_BASELINE_ELEMENTS = DEFAULT_BASELINE_ELEMENTS.map(
-	(element, idx) => convertToSelectedElement(element, idx)
+	(element) => ({
+		...element,
+		uiConfigurationValues: getUIConfigurationValues(
+			element.uiConfigurationJSON
+		),
+	})
 );
 
 const FrameworkCard = ({
@@ -140,7 +145,7 @@ const AddBlueprintModal = ({
 					framework === FRAMEWORK_TYPES.CUSTOM &&
 					includeBaselineElements
 						? DEFAULT_SELECTED_BASELINE_ELEMENTS.map(
-								(element) => element.elementOutput
+								getElementOutput
 						  )
 						: [],
 				sort_configuration: DEFAULT_SORT_CONFIGURATION,

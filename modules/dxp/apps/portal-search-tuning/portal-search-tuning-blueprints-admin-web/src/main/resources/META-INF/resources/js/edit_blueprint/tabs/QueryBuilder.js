@@ -24,6 +24,7 @@ import React, {useContext, useState} from 'react';
 import JSONElement from '../../shared/JSONElement';
 import ThemeContext from '../../shared/ThemeContext';
 import Element from '../../shared/element/index';
+import {getElementOutput} from '../../utils/utils';
 import SelectAssetTypes from './SelectAssetTypes';
 
 const FrameworkListItem = ({
@@ -71,14 +72,17 @@ function QueryBuilder({
 
 	const _hasMustClause =
 		!!frameworkConfig.apply_indexer_clauses ||
-		selectedElements.some(
-			(element) =>
-				element.elementOutput.clauses &&
-				element.elementOutput.clauses[0] &&
-				element.elementOutput.clauses[0].occur &&
-				element.elementOutput.clauses[0].occur === 'must' &&
-				element.elementOutput.enabled
-		);
+		selectedElements.some((element) => {
+			const elementOutput = getElementOutput(element);
+
+			return (
+				elementOutput.clauses &&
+				elementOutput.clauses[0] &&
+				elementOutput.clauses[0].occur &&
+				elementOutput.clauses[0].occur === 'must' &&
+				elementOutput.enabled
+			);
+		});
 
 	const _renderSelectedElements = () => {
 		return (
@@ -102,7 +106,6 @@ function QueryBuilder({
 					return element.uiConfigurationJSON ? (
 						<Element
 							collapseAll={collapseAll}
-							elementOutput={element.elementOutput}
 							elementTemplateJSON={element.elementTemplateJSON}
 							entityJSON={entityJSON}
 							id={element.id}

@@ -15,6 +15,7 @@ import React from 'react';
 import EditBlueprint from '../../../src/main/resources/META-INF/resources/js/edit_blueprint/index';
 const Utils = require('../../../src/main/resources/META-INF/resources/js/utils/utils');
 import {
+	ELEMENT_OUTPUTS,
 	ENTITY_JSON,
 	INDEX_FIELDS,
 	INITIAL_CONFIGURATION,
@@ -79,6 +80,10 @@ describe('EditBlueprint', () => {
 
 	it('renders the query elements', () => {
 		const {container} = renderEditBlueprint({
+			initialConfigurationString: JSON.stringify({
+				...INITIAL_CONFIGURATION,
+				query_configuration: ELEMENT_OUTPUTS,
+			}),
 			initialSelectedElementsString: JSON.stringify({
 				query_configuration: SELECTED_ELEMENTS,
 			}),
@@ -115,6 +120,10 @@ describe('EditBlueprint', () => {
 			getAllByLabelText,
 			getAllByText,
 		} = renderEditBlueprint({
+			initialConfigurationString: JSON.stringify({
+				...INITIAL_CONFIGURATION,
+				query_configuration: ELEMENT_OUTPUTS,
+			}),
 			initialSelectedElementsString: JSON.stringify({
 				query_configuration: SELECTED_ELEMENTS,
 			}),

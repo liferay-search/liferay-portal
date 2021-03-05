@@ -10,7 +10,10 @@
  */
 
 import {QUERY_ELEMENTS} from '../../../src/main/resources/META-INF/resources/js/utils/data';
-import {convertToSelectedElement} from '../../../src/main/resources/META-INF/resources/js/utils/utils';
+import {
+	getElementOutput,
+	getUIConfigurationValues,
+} from '../../../src/main/resources/META-INF/resources/js/utils/utils';
 
 export const ENTITY_JSON = {
 	'com.liferay.asset.kernel.model.AssetTag': {
@@ -119,9 +122,15 @@ export const SEARCHABLE_ASSET_TYPES = [
 	'com.liferay.knowledge.base.model.KBArticle',
 ];
 
-export const SELECTED_ELEMENTS = QUERY_ELEMENTS.map((element, index) => {
-	return convertToSelectedElement(element, index);
-});
+export const SELECTED_ELEMENTS = QUERY_ELEMENTS.map((element, index) => ({
+	...element,
+	id: index,
+	uiConfigurationValues: getUIConfigurationValues(
+		element.uiConfigurationJSON
+	),
+}));
+
+export const ELEMENT_OUTPUTS = SELECTED_ELEMENTS.map(getElementOutput);
 
 export const INITIAL_CONFIGURATION = {
 	advanced_configuration: {

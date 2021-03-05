@@ -39,7 +39,6 @@ import {
 	isNotEmpty,
 	openErrorToast,
 	renameKeys,
-	replaceUIConfigurationValues,
 	sub,
 } from '../utils/utils';
 
@@ -161,10 +160,6 @@ function EditElementForm({
 				<ErrorBoundary>
 					<Element
 						collapseAll={false}
-						elementOutput={replaceUIConfigurationValues(
-							previewUIConfigurationJSON,
-							previewElementTemplateJSON
-						)}
 						elementTemplateJSON={previewElementTemplateJSON}
 						uiConfigurationJSON={previewUIConfigurationJSON}
 						uiConfigurationValues={getUIConfigurationValues(

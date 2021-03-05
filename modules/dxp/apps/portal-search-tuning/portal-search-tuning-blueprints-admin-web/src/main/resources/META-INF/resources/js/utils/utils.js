@@ -313,13 +313,14 @@ export const getUIConfigurationValues = (uiConfigurationJSON) => {
  *
  * @param {object} uiConfigurationJSON Object with UI configuration
  * @param {object} elementTemplateJSON Actual element template for blueprint configuration
+ * @param {object} uiConfigurationValues Values that will replace the keys in uiConfigurationJSON
  * @return {object}
  */
-export const replaceUIConfigurationValues = (
-	uiConfigurationJSON,
+export const getElementOutput = ({
 	elementTemplateJSON,
-	uiConfigurationValues = getUIConfigurationValues(uiConfigurationJSON)
-) => {
+	uiConfigurationJSON,
+	uiConfigurationValues,
+}) => {
 	if (uiConfigurationJSON) {
 		let flattenJSON = JSON.stringify(elementTemplateJSON);
 
@@ -445,32 +446,6 @@ export const replaceUIConfigurationValues = (
 	}
 
 	return elementTemplateJSON;
-};
-
-/**
- * Function to package the initial data into a state that the blueprints
- * form will use, by including the id, configuration values, and
- * element for submission.
- *
- * @param {object} `{elementTemplateJSON, uiConfigurationJSON}` Object with UI configuration
- * and element template
- * @param {number} id ID number of element
- * @return {object}
- */
-export const convertToSelectedElement = (
-	{elementTemplateJSON, uiConfigurationJSON},
-	id = 0
-) => {
-	return {
-		elementOutput: replaceUIConfigurationValues(
-			uiConfigurationJSON,
-			elementTemplateJSON
-		),
-		elementTemplateJSON,
-		id,
-		uiConfigurationJSON,
-		uiConfigurationValues: getUIConfigurationValues(uiConfigurationJSON),
-	};
 };
 
 const ENTITY_KEYS = [

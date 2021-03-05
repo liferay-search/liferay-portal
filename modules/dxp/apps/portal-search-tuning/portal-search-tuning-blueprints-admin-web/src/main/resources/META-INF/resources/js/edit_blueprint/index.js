@@ -22,10 +22,10 @@ import PageToolbar from '../shared/PageToolbar';
 import ThemeContext from '../shared/ThemeContext';
 import {CUSTOM_JSON_ELEMENT, QUERY_ELEMENTS} from '../utils/data';
 import {
-	convertToSelectedElement,
+	getElementOutput,
+	getUIConfigurationValues,
 	openErrorToast,
 	openSuccessToast,
-	replaceUIConfigurationValues,
 } from '../utils/utils';
 import Preview from './Preview';
 import Sidebar from './Sidebar';
@@ -140,7 +140,7 @@ function EditBlueprintForm({
 					framework_configuration: frameworkConfig,
 					parameter_configuration: JSON.parse(parameterConfig),
 					query_configuration: selectedQueryElements.map(
-						(item) => item.elementOutput
+						getElementOutput
 					),
 					sort_configuration: JSON.parse(sortConfig),
 				})
@@ -198,7 +198,13 @@ function EditBlueprintForm({
 
 	const _handleAddElement = useCallback((element) => {
 		setSelectedQueryElements((selectedElements) => [
-			convertToSelectedElement(element, elementIdCounter.current++),
+			{
+				...element,
+				id: elementIdCounter.current++,
+				uiConfigurationValues: getUIConfigurationValues(
+					element.uiConfigurationJSON
+				),
+			},
 			...selectedElements,
 		]);
 	}, []);
@@ -237,7 +243,7 @@ function EditBlueprintForm({
 						framework_configuration: frameworkConfig,
 						parameter_configuration: JSON.parse(parameterConfig),
 						query_configuration: selectedQueryElements.map(
-							(item) => item.elementOutput
+							getElementOutput
 						),
 						sort_configuration: JSON.parse(sortConfig),
 					})
@@ -248,7 +254,6 @@ function EditBlueprintForm({
 					JSON.stringify({
 						query_configuration: selectedQueryElements.map(
 							(item) => ({
-								elementOutput: item.elementOutput,
 								elementTemplateJSON: item.elementTemplateJSON,
 								uiConfigurationJSON: item.uiConfigurationJSON,
 								uiConfigurationValues:
@@ -326,16 +331,6 @@ function EditBlueprintForm({
 				...selectedQueryElements[index],
 				...newElementValues,
 			};
-
-			// Update elementOutput when uiConfigurationValues changes
-
-			if (newElementValues.uiConfigurationValues) {
-				element.elementOutput = replaceUIConfigurationValues(
-					element.uiConfigurationJSON,
-					element.elementTemplateJSON,
-					newElementValues.uiConfigurationValues
-				);
-			}
 
 			return [
 				...selectedQueryElements.slice(0, index),

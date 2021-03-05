@@ -36,6 +36,7 @@ import Element from '../../src/main/resources/META-INF/resources/js/shared/eleme
 import {DEFAULT_EDIT_ELEMENT} from '../../src/main/resources/META-INF/resources/js/utils/data';
 import AddBlueprintModal from '../../src/main/resources/META-INF/resources/js/view_blueprints/AddBlueprintModal';
 import {
+	ELEMENT_OUTPUTS,
 	ENTITY_JSON,
 	INDEX_FIELDS,
 	INITIAL_CONFIGURATION,
@@ -115,9 +116,7 @@ storiesOf('Pages|BlueprintForm', module)
 				...BLUEPRINT_FORM_PROPS,
 				initialConfigurationString: JSON.stringify({
 					...INITIAL_CONFIGURATION,
-					query_configuration: SELECTED_ELEMENTS.map(
-						(item) => item.elementOutput
-					),
+					query_configuration: ELEMENT_OUTPUTS,
 				}),
 				initialSelectedElementsString: JSON.stringify({
 					query_configuration: SELECTED_ELEMENTS,

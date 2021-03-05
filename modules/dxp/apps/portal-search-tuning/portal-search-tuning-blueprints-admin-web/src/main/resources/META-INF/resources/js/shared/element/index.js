@@ -21,6 +21,7 @@ import {PropTypes} from 'prop-types';
 import React, {useContext, useEffect, useState} from 'react';
 
 import {INPUT_TYPES} from '../../utils/inputTypes';
+import {getElementOutput} from '../../utils/utils';
 import CodeMirrorEditor from '../CodeMirrorEditor';
 import PreviewModal from '../PreviewModal';
 import ThemeContext from '../ThemeContext';
@@ -37,7 +38,6 @@ import TextInput from './TextInput';
 
 function Element({
 	collapseAll,
-	elementOutput,
 	elementTemplateJSON,
 	entityJSON,
 	id,
@@ -77,10 +77,6 @@ function Element({
 		const enabled = !elementTemplateJSON.enabled;
 
 		onUpdateElement(id, {
-			elementOutput: {
-				...elementOutput,
-				enabled,
-			},
 			elementTemplateJSON: {
 				...elementTemplateJSON,
 				enabled,
@@ -261,63 +257,59 @@ function Element({
 						toggled={elementTemplateJSON.enabled}
 					/>
 
-					{(elementOutput || onDeleteElement) && (
-						<ClayDropDown
-							active={active}
-							alignmentPosition={3}
-							onActiveChange={setActive}
-							trigger={
-								<ClayList.ItemField>
-									<ClayButton
-										aria-label={Liferay.Language.get(
-											'dropdown'
-										)}
-										borderless
-										displayType="secondary"
-										monospaced
-										small
-									>
-										<ClayIcon symbol="ellipsis-v" />
-									</ClayButton>
-								</ClayList.ItemField>
-							}
-						>
-							<ClayDropDown.ItemList>
-								{elementOutput && (
-									<PreviewModal
-										body={
-											<div className="configuration-json-modal">
-												<CodeMirrorEditor
-													readOnly
-													value={JSON.stringify(
-														elementOutput,
-														null,
-														'\t'
-													)}
-												/>
-											</div>
-										}
-										size="lg"
-										title={Liferay.Language.get(
-											'element-json'
-										)}
-									>
-										<ClayDropDown.Item>
-											{Liferay.Language.get(
-												'view-element-json'
+					<ClayDropDown
+						active={active}
+						alignmentPosition={3}
+						onActiveChange={setActive}
+						trigger={
+							<ClayList.ItemField>
+								<ClayButton
+									aria-label={Liferay.Language.get(
+										'dropdown'
+									)}
+									borderless
+									displayType="secondary"
+									monospaced
+									small
+								>
+									<ClayIcon symbol="ellipsis-v" />
+								</ClayButton>
+							</ClayList.ItemField>
+						}
+					>
+						<ClayDropDown.ItemList>
+							<PreviewModal
+								body={
+									<div className="configuration-json-modal">
+										<CodeMirrorEditor
+											readOnly
+											value={JSON.stringify(
+												getElementOutput({
+													elementTemplateJSON,
+													uiConfigurationJSON,
+													uiConfigurationValues,
+												}),
+												null,
+												'\t'
 											)}
-										</ClayDropDown.Item>
-									</PreviewModal>
-								)}
+										/>
+									</div>
+								}
+								size="lg"
+								title={Liferay.Language.get('element-json')}
+							>
+								<ClayDropDown.Item>
+									{Liferay.Language.get('view-element-json')}
+								</ClayDropDown.Item>
+							</PreviewModal>
 
-								{onDeleteElement && (
-									<ClayDropDown.Item onClick={_handleDelete}>
-										{Liferay.Language.get('remove')}
-									</ClayDropDown.Item>
-								)}
-							</ClayDropDown.ItemList>
-						</ClayDropDown>
-					)}
+							{onDeleteElement && (
+								<ClayDropDown.Item onClick={_handleDelete}>
+									{Liferay.Language.get('remove')}
+								</ClayDropDown.Item>
+							)}
+						</ClayDropDown.ItemList>
+					</ClayDropDown>
 
 					{_hasConfigurationValues && (
 						<ClayList.ItemField>
@@ -392,7 +384,6 @@ function Element({
 
 Element.propTypes = {
 	collapseAll: PropTypes.bool,
-	elementOutput: PropTypes.object,
 	elementTemplateJSON: PropTypes.object,
 	entityJSON: PropTypes.object,
 	id: PropTypes.number,
