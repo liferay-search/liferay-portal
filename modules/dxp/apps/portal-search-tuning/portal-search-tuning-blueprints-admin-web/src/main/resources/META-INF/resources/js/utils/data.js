@@ -45,7 +45,6 @@ import LIMIT_SEARCH_TO_PUBLISHED_CONTENTS from '../../elements/limit-search-to-p
 import LIMIT_SEARCH_TO_THE_CURRENT_SITE from '../../elements/limit-search-to-the-current-site';
 import LIMIT_SEARCH_TO_THESE_SITES from '../../elements/limit-search-to-these-sites';
 import PASTE_AN_ELASTICSEARCH_QUERY from '../../elements/paste-an-elasticsearch-query';
-import PUBLICATIONS_AWARE from '../../elements/publications-aware';
 import SCHEDULING_AWARE from '../../elements/scheduling-aware';
 import SEARCH_WITH_LUCENE_SYNTAX from '../../elements/search-with-lucene-syntax';
 import STAGING_AWARE from '../../elements/staging-aware';
@@ -94,7 +93,6 @@ export const DEFAULT_ADVANCED_CONFIGURATION = {
 export const DEFAULT_BASELINE_ELEMENTS = [
 	TEXT_MATCH_OVER_MULTIPLE_FIELDS,
 	STAGING_AWARE,
-	PUBLICATIONS_AWARE,
 	SCHEDULING_AWARE,
 	LIMIT_SEARCH_TO_HEAD_VERSION,
 	LIMIT_SEARCH_TO_PUBLISHED_CONTENTS,
@@ -114,7 +112,6 @@ export const QUERY_ELEMENTS = [
 	SEARCH_WITH_LUCENE_SYNTAX,
 	FILTER_BY_EXACT_TERMS_MATCH,
 	STAGING_AWARE,
-	PUBLICATIONS_AWARE,
 	SCHEDULING_AWARE,
 	LIMIT_SEARCH_TO_PUBLISHED_CONTENTS,
 	LIMIT_SEARCH_TO_HEAD_VERSION,

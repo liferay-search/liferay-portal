@@ -159,9 +159,9 @@ function Preview({loading, onClose, onFetchResults, results, visible}) {
 						<ClayEmptyState />
 					</div>
 				) : (
-					<div className="try-search-message">
+					<div className="search-message">
 						{Liferay.Language.get(
-							'try-a-search-to-see-how-your-blueprint-influences-your-search-results'
+							'perform-a-search-to-preview-your-blueprints-search-results'
 						)}
 					</div>
 				)
@@ -262,13 +262,10 @@ function ResultListItem({item}) {
 			<ClayList.ItemField>
 				<PreviewModal
 					body={
-						<CodeMirrorEditor
-							readOnly
-							value={JSON.stringify(item.explanation, null, '\t')}
-						/>
+						<CodeMirrorEditor readOnly value={item.explanation} />
 					}
 					size="lg"
-					title={Liferay.Language.get('explanation-of-score')}
+					title={Liferay.Language.get('score-explanation')}
 				>
 					<ClayButton className="score" displayType="unstyled" small>
 						{item.score.toFixed(2)}

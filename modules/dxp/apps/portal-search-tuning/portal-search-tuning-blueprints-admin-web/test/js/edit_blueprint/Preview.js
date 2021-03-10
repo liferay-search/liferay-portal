@@ -53,9 +53,7 @@ describe('Preview', () => {
 			results: {},
 		});
 
-		getByText(
-			'try-a-search-to-see-how-your-blueprint-influences-your-search-results'
-		);
+		getByText('perform-a-search-to-preview-your-blueprints-search-results');
 	});
 
 	it('renders the loading icon', () => {

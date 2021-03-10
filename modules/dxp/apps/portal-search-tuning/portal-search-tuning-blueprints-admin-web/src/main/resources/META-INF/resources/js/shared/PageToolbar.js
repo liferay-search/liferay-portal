@@ -17,6 +17,7 @@ import ClayLink from '@clayui/link';
 import ClayModal, {useModal} from '@clayui/modal';
 import ClayNavigationBar from '@clayui/navigation-bar';
 import ClayToolbar from '@clayui/toolbar';
+import {ClayTooltipProvider} from '@clayui/tooltip';
 import PropTypes from 'prop-types';
 import React, {useContext, useRef, useState} from 'react';
 
@@ -238,22 +239,28 @@ export default function PageToolbar({
 									monospaced={false}
 									onClick={_handleClickEdit('description')}
 								>
-									<div className="blueprint-description text-truncate">
-										{description[DEFAULT_LOCALE] ? (
-											description[DEFAULT_LOCALE]
-										) : (
-											<span className="blueprint-description-blank">
-												{Liferay.Language.get(
-													'no-description'
-												)}
-											</span>
-										)}
+									<ClayTooltipProvider>
+										<div
+											className="blueprint-description text-truncate"
+											data-tooltip-align="bottom"
+											title={description[DEFAULT_LOCALE]}
+										>
+											{description[DEFAULT_LOCALE] ? (
+												description[DEFAULT_LOCALE]
+											) : (
+												<span className="blueprint-description-blank">
+													{Liferay.Language.get(
+														'no-description'
+													)}
+												</span>
+											)}
 
-										<ClayIcon
-											className="blueprint-heading-edit-icon"
-											symbol="pencil"
-										/>
-									</div>
+											<ClayIcon
+												className="blueprint-heading-edit-icon"
+												symbol="pencil"
+											/>
+										</div>
+									</ClayTooltipProvider>
 								</ClayButton>
 
 								{_renderLocalizedInputs(

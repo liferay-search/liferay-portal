@@ -185,7 +185,7 @@ function QueryBuilder({
 					<div className="sheet">
 						<div className="selected-elements-empty-text">
 							{Liferay.Language.get(
-								'add-elements-to-optimize-the-search-results-for-your-use-cases'
+								'add-elements-to-optimize-search-results-for-your-use-cases'
 							)}
 						</div>
 					</div>
@@ -206,11 +206,12 @@ function QueryBuilder({
 					<ClayPanel.Group flush>
 						<ClayPanel
 							className="searchable-asset-types"
+							collapsable
+							defaultExpanded
 							displayTitle={Liferay.Language.get(
 								'searchable-asset-types'
 							)}
 							displayType="unstyled"
-							expanded
 							showCollapseIcon
 						>
 							<ClayPanel.Body>
@@ -220,33 +221,34 @@ function QueryBuilder({
 									)}
 								</div>
 
-								<div className="sheet-text">
-									{Liferay.Language.get(
-										'please-note-that-blueprints-selected-framework-determines-whether-the-asset-types-default-clause-is-used'
-									)}
-								</div>
+								<SelectAssetTypes
+									onFrameworkConfigChange={
+										onFrameworkConfigChange
+									}
+									searchableAssetTypes={searchableAssetTypes}
+									selectedAssetTypes={
+										frameworkConfig.searchable_asset_types
+									}
+								/>
 							</ClayPanel.Body>
-
-							<SelectAssetTypes
-								onFrameworkConfigChange={
-									onFrameworkConfigChange
-								}
-								searchableAssetTypes={searchableAssetTypes}
-								selectedAssetTypes={
-									frameworkConfig.searchable_asset_types
-								}
-							/>
 						</ClayPanel>
 					</ClayPanel.Group>
 
 					<ClayPanel.Group flush>
 						<ClayPanel
+							collapsable
+							defaultExpanded
 							displayTitle={Liferay.Language.get('framework')}
 							displayType="unstyled"
-							expanded
 							showCollapseIcon
 						>
 							<ClayPanel.Body>
+								<div className="sheet-text">
+									{Liferay.Language.get(
+										'please-note-that-blueprints-selected-framework-determines-whether-the-asset-types-default-clause-is-used'
+									)}
+								</div>
+
 								<ClayList>
 									<FrameworkListItem
 										checked={

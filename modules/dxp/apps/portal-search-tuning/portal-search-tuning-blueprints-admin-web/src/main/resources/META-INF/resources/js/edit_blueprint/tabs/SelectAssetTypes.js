@@ -48,9 +48,7 @@ function SelectAssetTypes({
 		onClose();
 
 		onFrameworkConfigChange({
-			searchable_asset_types: searchableAssetTypes.filter((item) =>
-				modalSelectedAssetTypes.includes(item)
-			), // Keeps the list ordered the same as searchableAssetTypes
+			searchable_asset_types: modalSelectedAssetTypes,
 		});
 	};
 
@@ -78,7 +76,7 @@ function SelectAssetTypes({
 			{selectedAssetTypes.length > 0 && (
 				<ClayTable>
 					<ClayTable.Body>
-						{selectedAssetTypes.map((asset) => (
+						{selectedAssetTypes.sort().map((asset) => (
 							<ClayTable.Row key={asset}>
 								<ClayTable.Cell expanded headingTitle>
 									{asset}
@@ -175,9 +173,7 @@ function SelectAssetTypes({
 										</>
 									) : (
 										<span className="component-text">
-											{Liferay.Language.get(
-												'select-items'
-											)}
+											{Liferay.Language.get('select-all')}
 										</span>
 									)}
 								</ClayManagementToolbar.Item>
@@ -188,7 +184,7 @@ function SelectAssetTypes({
 					<ClayModal.Body scrollable>
 						<ClayTable>
 							<ClayTable.Body>
-								{searchableAssetTypes.map((asset) => {
+								{searchableAssetTypes.sort().map((asset) => {
 									const isSelected = modalSelectedAssetTypes.includes(
 										asset
 									);

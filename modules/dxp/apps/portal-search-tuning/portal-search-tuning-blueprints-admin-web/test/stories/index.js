@@ -152,9 +152,9 @@ storiesOf('Pages|BlueprintForm', module)
 					query_configuration: [],
 				}),
 				searchResultsURL:
-					'https://run.mocky.io/v3/fb22dc3f-532b-489a-bf7a-741223a40e13',
+					'https://run.mocky.io/v3/5db6f9e6-2d66-4b74-8105-01a70b3a0b3c',
 
-				// https://designer.mocky.io/manage/delete/fb22dc3f-532b-489a-bf7a-741223a40e13/2Wox2XTXmh4lvpvTYVaV1oo4eRSmWgXCKOCK
+				// https://designer.mocky.io/manage/delete/5db6f9e6-2d66-4b74-8105-01a70b3a0b3c/Sv0oPKexG9Yy1N7G5dj4Ou7Kw8bgcAGU40k8
 
 			}}
 		/>
@@ -316,27 +316,23 @@ storiesOf('Components|Preview', module)
 	.addDecorator(withBlueprintsClass)
 	.add('Preview', () => (
 		<Preview
+			loading={false}
 			onFetchResults={action('onFetchResults')}
-			results={{
-				data: mockSearchResults(),
-				loading: false,
-			}}
+			results={mockSearchResults()}
 			visible={true}
 		/>
 	))
 	.add('Error', () => (
 		<Preview
+			loading={false}
 			onFetchResults={action('onFetchResults')}
 			results={{
-				data: {
-					errors: [
-						{
-							msg: 'The JSON is invalid',
-							severity: 'ERROR',
-						},
-					],
-				},
-				loading: false,
+				errors: [
+					{
+						msg: 'The JSON is invalid',
+						severity: 'ERROR',
+					},
+				],
 			}}
 			visible={true}
 		/>
