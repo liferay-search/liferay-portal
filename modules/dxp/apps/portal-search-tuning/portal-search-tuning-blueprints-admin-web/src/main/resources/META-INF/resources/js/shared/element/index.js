@@ -299,12 +299,12 @@ function Element({
 										}
 										size="lg"
 										title={Liferay.Language.get(
-											'query-json'
+											'element-json'
 										)}
 									>
 										<ClayDropDown.Item>
 											{Liferay.Language.get(
-												'view-query-json'
+												'view-element-json'
 											)}
 										</ClayDropDown.Item>
 									</PreviewModal>
