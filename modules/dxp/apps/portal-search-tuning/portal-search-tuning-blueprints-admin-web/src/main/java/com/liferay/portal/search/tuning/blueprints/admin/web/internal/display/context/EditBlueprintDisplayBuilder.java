@@ -39,6 +39,7 @@ import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminMVCCommandNames;
+import com.liferay.portal.search.tuning.blueprints.admin.web.internal.util.BlueprintsAdminComponentUtil;
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.util.BlueprintsAdminFieldsUtil;
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintTypes;
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintsPortletKeys;
@@ -117,7 +118,16 @@ public class EditBlueprintDisplayBuilder extends EditEntryDisplayBuilder {
 			BlueprintsAdminFieldsUtil.getFieldsJSONArray(
 				themeDisplay.getCompanyId())
 		).put(
+			"keywordQueryContributors",
+			BlueprintsAdminComponentUtil.getKeywordQueryContributors()
+		).put(
+			"modelPrefilterContributors",
+			BlueprintsAdminComponentUtil.getModelPrefilterContributors()
+		).put(
 			"queryElements", _getQueryElementsJSONArray()
+		).put(
+			"queryPrefilterContributors",
+			BlueprintsAdminComponentUtil.getQueryPrefilterContributors()
 		).put(
 			"redirectURL", getRedirect()
 		).put(
