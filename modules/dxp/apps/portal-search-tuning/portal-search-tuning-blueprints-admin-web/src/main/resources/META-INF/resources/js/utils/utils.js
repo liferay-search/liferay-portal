@@ -311,9 +311,9 @@ export const getUIConfigurationValues = (uiConfigurationJSON) => {
 /**
  * Function for replacing the ${variable_name} with actual value.
  *
- * @param {object} uiConfigurationJSON Object with UI configuration
- * @param {object} elementTemplateJSON Actual element template for blueprint configuration
- * @param {object} uiConfigurationValues Values that will replace the keys in uiConfigurationJSON
+ * @param {object} _.uiConfigurationJSON Object with UI configuration
+ * @param {object} _.elementTemplateJSON Actual element template for blueprint configuration
+ * @param {object} _.uiConfigurationValues Values that will replace the keys in uiConfigurationJSON
  * @return {object}
  */
 export const getElementOutput = ({
