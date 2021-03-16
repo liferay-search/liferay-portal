@@ -74,6 +74,10 @@
 			justify-content: center;
 		}
 
+		.panel-collapse.show:not(.collapsing):not(.collapse) {
+			height: 100% !important; // Fixes panel body height when adding or removing asset types
+		}
+
 		.panel-body {
 			.sheet-text {
 				font-size: 14px;
