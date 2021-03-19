@@ -17,24 +17,24 @@ package com.liferay.portal.search.indexer.clauses.test;
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.blogs.model.BlogsEntry;
 import com.liferay.blogs.service.BlogsEntryLocalService;
+import com.liferay.change.tracking.model.CTCollection;
+import com.liferay.change.tracking.service.CTCollectionLocalService;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.service.JournalArticleLocalService;
 import com.liferay.journal.test.util.search.JournalArticleBlueprintBuilder;
 import com.liferay.journal.test.util.search.JournalArticleContent;
 import com.liferay.journal.test.util.search.JournalArticleSearchFixture;
 import com.liferay.journal.test.util.search.JournalArticleTitle;
-import com.liferay.message.boards.constants.MBCategoryConstants;
-import com.liferay.message.boards.constants.MBMessageConstants;
-import com.liferay.message.boards.model.MBMessage;
-import com.liferay.message.boards.service.MBMessageLocalService;
+import com.liferay.petra.lang.SafeClosable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.search.BaseIndexer;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.Indexer;
-import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
@@ -53,14 +53,17 @@ import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.users.admin.test.util.search.GroupBlueprint;
 import com.liferay.users.admin.test.util.search.GroupSearchFixture;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 
 /**
@@ -68,7 +71,7 @@ import org.junit.runner.RunWith;
  * @author André de Oliveira
  */
 @RunWith(Arquillian.class)
-public class IndexerClausesTest {
+public class IndexerClausesChangeTrackingTest {
 
 	@ClassRule
 	@Rule
@@ -83,10 +86,11 @@ public class IndexerClausesTest {
 		GroupSearchFixture groupSearchFixture = new GroupSearchFixture();
 
 		JournalArticleSearchFixture journalArticleSearchFixture =
-			new JournalArticleSearchFixture(journalArticleLocalService);
+			new JournalArticleSearchFixture(_journalArticleLocalService);
 
 		_blogsEntries = blogsEntrySearchFixture.getBlogsEntries();
 		_blogsEntrySearchFixture = blogsEntrySearchFixture;
+		_ctCollection = addCTCollection();
 		_group = groupSearchFixture.addGroup(new GroupBlueprint());
 		_groups = groupSearchFixture.getGroups();
 		_journalArticles = journalArticleSearchFixture.getJournalArticles();
@@ -98,20 +102,41 @@ public class IndexerClausesTest {
 	public void testBaseIndexer() throws Exception {
 		Assert.assertTrue(journalArticleIndexer instanceof BaseIndexer);
 
-		addJournalArticle("Gamma Article");
-		addJournalArticle("Omega Article");
+		JournalArticle journalArticle = addJournalArticle("Gamma Article");
 
-		Consumer<SearchRequestBuilder> consumer =
-			searchRequestBuilder -> searchRequestBuilder.modelIndexerClasses(
+		assertSearch(
+			getSearchRequestBuilder(
+			).modelIndexerClasses(
 				JournalArticle.class
 			).queryString(
 				"gamma"
-			);
+			),
+			Arrays.asList("Gamma Article"));
 
-		assertSearch("[Gamma Article]", consumer);
+		try (SafeClosable safeClosable =
+				CTCollectionThreadLocal.setCTCollectionId(
+					_ctCollection.getCtCollectionId())) {
+
+			updateJournalArticleTitle(journalArticle);
+
+			assertSearch(
+				getSearchRequestBuilder(
+				).modelIndexerClasses(
+					JournalArticle.class
+				).queryString(
+					"gamma"
+				),
+				Collections.emptyList());
+		}
+
 		assertSearch(
-			"[Gamma Article, Omega Article]", withoutIndexerClauses(),
-			consumer);
+			getSearchRequestBuilder(
+			).modelIndexerClasses(
+				JournalArticle.class
+			).queryString(
+				"gamma"
+			),
+			Arrays.asList("Gamma Article"));
 	}
 
 	@Test
@@ -120,48 +145,101 @@ public class IndexerClausesTest {
 			"class com.liferay.portal.search.internal.indexer.DefaultIndexer",
 			String.valueOf(blogsEntryIndexer.getClass()));
 
-		addBlogsEntry("Gamma Blog");
-		addBlogsEntry("Omega Blog");
+		BlogsEntry blogsEntry = addBlogsEntry("Gamma Blog");
 
-		Consumer<SearchRequestBuilder> consumer =
-			searchRequestBuilder -> searchRequestBuilder.modelIndexerClasses(
+		assertSearch(
+			getSearchRequestBuilder(
+			).modelIndexerClasses(
 				BlogsEntry.class
 			).queryString(
 				"gamma"
-			);
+			),
+			Arrays.asList("Gamma Blog"));
 
-		assertSearch("[Gamma Blog]", consumer);
+		try (SafeClosable safeClosable =
+				CTCollectionThreadLocal.setCTCollectionId(
+					_ctCollection.getCtCollectionId())) {
+
+			updateBlogsEntryTitle(blogsEntry);
+
+			assertSearch(
+				getSearchRequestBuilder(
+				).modelIndexerClasses(
+					BlogsEntry.class
+				).queryString(
+					"gamma"
+				),
+				Collections.emptyList());
+		}
+
+		addBlogsEntry("Gamma Blog");
+
 		assertSearch(
-			"[Gamma Blog, Omega Blog]", withoutIndexerClauses(), consumer);
+			getSearchRequestBuilder(
+			).modelIndexerClasses(
+				BlogsEntry.class
+			).queryString(
+				"gamma"
+			),
+			Arrays.asList("Gamma Blog"));
 	}
 
 	@Test
 	public void testFacetedSearcher() throws Exception {
-		addBlogsEntry("Gamma Blog");
-		addBlogsEntry("Omega Blog");
-		addJournalArticle("Gamma Article");
-		addJournalArticle("Omega Article");
-		addMessage("Gamma Message");
-		addMessage("Omega Message");
+		BlogsEntry blogsEntry = addBlogsEntry("Gamma Blog");
+		JournalArticle journalArticle = addJournalArticle("Gamma Article");
 
-		Consumer<SearchRequestBuilder> consumer =
-			searchRequestBuilder -> searchRequestBuilder.modelIndexerClasses(
+		assertSearch(
+			getSearchRequestBuilder(
+			).modelIndexerClasses(
 				BlogsEntry.class, JournalArticle.class
 			).queryString(
 				"gamma"
-			);
+			),
+			Arrays.asList("Gamma Article", "Gamma Blog"));
 
-		assertSearch("[Gamma Article, Gamma Blog]", consumer);
+		try (SafeClosable safeClosable =
+				CTCollectionThreadLocal.setCTCollectionId(
+					_ctCollection.getCtCollectionId())) {
+
+			updateJournalArticleTitle(journalArticle);
+			updateBlogsEntryTitle(blogsEntry);
+
+			assertSearch(
+				getSearchRequestBuilder(
+				).modelIndexerClasses(
+					JournalArticle.class
+				).queryString(
+					"gamma"
+				),
+				Collections.emptyList());
+		}
+
 		assertSearch(
-			"[Gamma Article, Gamma Blog, Omega Article, Omega Blog]",
-			withoutIndexerClauses(), consumer);
+			getSearchRequestBuilder(
+			).modelIndexerClasses(
+				BlogsEntry.class, JournalArticle.class
+			).queryString(
+				"gamma"
+			),
+			Arrays.asList("Gamma Article", "Gamma Blog"));
 	}
 
 	@Rule
 	public SearchTestRule searchTestRule = new SearchTestRule();
 
+	@Rule
+	public TestName testName = new TestName();
+
 	protected BlogsEntry addBlogsEntry(String title) throws Exception {
 		return _blogsEntrySearchFixture.addBlogsEntry(_group, _user, title);
+	}
+
+	protected CTCollection addCTCollection() throws PortalException {
+		return _ctCollectionLocalService.addCTCollection(
+			TestPropsValues.getCompanyId(), TestPropsValues.getUserId(),
+			RandomTestUtil.randomString(),
+			IndexerClausesChangeTrackingTest.class.getName());
 	}
 
 	protected JournalArticle addJournalArticle(String title) {
@@ -189,27 +267,17 @@ public class IndexerClausesTest {
 			).build());
 	}
 
-	protected MBMessage addMessage(String title) throws Exception {
-		return mbMessageLocalService.addMessage(
-			null, _user.getUserId(), RandomTestUtil.randomString(),
-			_group.getGroupId(), MBCategoryConstants.DEFAULT_PARENT_CATEGORY_ID,
-			0L, MBMessageConstants.DEFAULT_PARENT_MESSAGE_ID, title,
-			RandomTestUtil.randomString(), MBMessageConstants.DEFAULT_FORMAT,
-			null, false, 0.0, false, _createServiceContext());
-	}
-
 	protected void assertSearch(
-		String expected, Consumer<SearchRequestBuilder>... consumers) {
+		SearchRequestBuilder searchRequestBuilder,
+		Collection<String> expectedValues) {
 
 		SearchResponse searchResponse = searcher.search(
-			getSearchRequestBuilder(
-			).withSearchRequestBuilder(
-				consumers
-			).build());
+			searchRequestBuilder.build());
 
 		DocumentsAssert.assertValuesIgnoreRelevance(
 			searchResponse.getRequestString(),
-			searchResponse.getDocumentsStream(), _TITLE_EN_US, expected);
+			searchResponse.getDocumentsStream(), _TITLE_EN_US,
+			expectedValues.stream());
 	}
 
 	protected SearchRequestBuilder getSearchRequestBuilder() {
@@ -223,10 +291,22 @@ public class IndexerClausesTest {
 		);
 	}
 
-	protected Consumer<SearchRequestBuilder> withoutIndexerClauses() {
-		return searchRequestBuilder -> searchRequestBuilder.withSearchContext(
-			searchContext -> searchContext.setAttribute(
-				"search.full.query.suppress.indexer.provided.clauses", true));
+	protected void updateBlogsEntryTitle(BlogsEntry blogsEntry)
+		throws PortalException {
+
+		blogsEntryLocalService.updateEntry(
+			blogsEntry.getUserId(), blogsEntry.getEntryId(),
+			RandomTestUtil.randomString(), blogsEntry.getContent(),
+			ServiceContextTestUtil.getServiceContext(_group.getGroupId()));
+	}
+
+	protected void updateJournalArticleTitle(JournalArticle journalArticle)
+		throws Exception {
+
+		journalArticle.setTitleMap(
+			RandomTestUtil.randomLocaleStringMap(LocaleUtil.US));
+
+		_journalArticleSearchFixture.updateArticle(journalArticle);
 	}
 
 	@Inject(filter = "indexer.class.name=com.liferay.blogs.model.BlogsEntry")
@@ -239,21 +319,10 @@ public class IndexerClausesTest {
 	protected Indexer<JournalArticle> journalArticleIndexer;
 
 	@Inject
-	protected JournalArticleLocalService journalArticleLocalService;
-
-	@Inject
-	protected MBMessageLocalService mbMessageLocalService;
-
-	@Inject
 	protected Searcher searcher;
 
 	@Inject
 	protected SearchRequestBuilderFactory searchRequestBuilderFactory;
-
-	private ServiceContext _createServiceContext() throws Exception {
-		return ServiceContextTestUtil.getServiceContext(
-			_group.getGroupId(), _user.getUserId());
-	}
 
 	private static final String _TITLE_EN_US = StringBundler.concat(
 		Field.TITLE, StringPool.UNDERLINE, LocaleUtil.US);
@@ -262,14 +331,23 @@ public class IndexerClausesTest {
 	private List<BlogsEntry> _blogsEntries;
 
 	private BlogsEntrySearchFixture _blogsEntrySearchFixture;
+
+	//@DeleteAfterTestRun
+	private CTCollection _ctCollection;
+
+	@Inject
+	private CTCollectionLocalService _ctCollectionLocalService;
+
 	private Group _group;
 
 	@DeleteAfterTestRun
 	private List<Group> _groups;
 
-	@DeleteAfterTestRun
-	private List<JournalArticle> _journalArticles;
+	@Inject
+	private JournalArticleLocalService _journalArticleLocalService;
 
+	//@DeleteAfterTestRun
+	private List<JournalArticle> _journalArticles;
 	private JournalArticleSearchFixture _journalArticleSearchFixture;
 	private User _user;
 
