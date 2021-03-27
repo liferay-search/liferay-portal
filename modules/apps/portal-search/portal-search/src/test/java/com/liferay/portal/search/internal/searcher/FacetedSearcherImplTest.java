@@ -27,7 +27,9 @@ import com.liferay.portal.search.internal.expando.ExpandoQueryContributorHelper;
 import com.liferay.portal.search.internal.indexer.AddSearchKeywordsQueryContributorHelper;
 import com.liferay.portal.search.internal.indexer.PostProcessSearchQueryContributorHelper;
 import com.liferay.portal.search.internal.indexer.PreFilterContributorHelper;
+import com.liferay.portal.search.internal.legacy.searcher.SearchRequestBuilderFactoryImpl;
 import com.liferay.portal.search.internal.test.util.DocumentFixture;
+import com.liferay.portal.search.legacy.searcher.SearchRequestBuilderFactory;
 import com.liferay.registry.BasicRegistryImpl;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
@@ -136,7 +138,19 @@ public class FacetedSearcherImplTest {
 			addSearchKeywordsQueryContributorHelper,
 			expandoQueryContributorHelper, indexerRegistry, indexSearcherHelper,
 			postProcessSearchQueryContributorHelper, preFilterContributorHelper,
-			searchableAssetClassNamesProvider);
+			searchableAssetClassNamesProvider,
+			createSearchRequestBuilderFactory());
+	}
+
+	protected SearchRequestBuilderFactory createSearchRequestBuilderFactory() {
+		SearchRequestBuilderFactoryImpl searchRequestBuilderFactoryImpl =
+			new SearchRequestBuilderFactoryImpl();
+
+		searchRequestBuilderFactoryImpl.setSearchRequestBuilderFactory(
+			new com.liferay.portal.search.internal.searcher.
+				SearchRequestBuilderFactoryImpl());
+
+		return searchRequestBuilderFactoryImpl;
 	}
 
 	@Mock
