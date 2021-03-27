@@ -24,8 +24,6 @@ import com.liferay.portal.kernel.search.SearchException;
 import com.liferay.portal.kernel.search.SearchResultPermissionFilter;
 import com.liferay.portal.kernel.search.SearchResultPermissionFilterFactory;
 import com.liferay.portal.kernel.search.SearchResultPermissionFilterSearcher;
-import com.liferay.portal.kernel.search.filter.BooleanFilter;
-import com.liferay.portal.kernel.search.generic.MatchAllQuery;
 import com.liferay.portal.kernel.search.hits.HitsProcessorRegistry;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
@@ -141,14 +139,6 @@ public class IndexerSearcherImpl<T extends BaseModel<?>>
 			_modelSearchSettings.getSearchEngineId());
 
 		Query fullQuery = _indexerQueryBuilder.getQuery(searchContext);
-
-		if (!fullQuery.hasChildren()) {
-			BooleanFilter preBooleanFilter = fullQuery.getPreBooleanFilter();
-
-			fullQuery = new MatchAllQuery();
-
-			fullQuery.setPreBooleanFilter(preBooleanFilter);
-		}
 
 		fullQuery.setQueryConfig(searchContext.getQueryConfig());
 

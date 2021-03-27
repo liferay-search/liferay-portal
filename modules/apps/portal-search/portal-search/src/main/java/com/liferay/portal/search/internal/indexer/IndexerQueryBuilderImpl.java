@@ -29,6 +29,7 @@ import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.search.filter.BooleanFilter;
 import com.liferay.portal.kernel.search.generic.BooleanQueryImpl;
 import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.indexer.IndexerQueryBuilder;
 import com.liferay.portal.search.internal.expando.ExpandoQueryContributorHelper;
@@ -126,6 +127,10 @@ public class IndexerQueryBuilderImpl<T extends BaseModel<?>>
 
 	protected void addSearchTermsFromModel(
 		BooleanQuery booleanQuery, SearchContext searchContext) {
+
+		if (shouldSuppressIndexerProvidedClauses(searchContext)) {
+			return;
+		}
 
 		contribute(
 			_modelKeywordQueryContributorsHolder.getAll(), booleanQuery,
@@ -240,6 +245,14 @@ public class IndexerQueryBuilderImpl<T extends BaseModel<?>>
 					throw new SystemException(exception);
 				}
 			});
+	}
+
+	protected boolean shouldSuppressIndexerProvidedClauses(
+		SearchContext searchContext) {
+
+		return GetterUtil.getBoolean(
+			searchContext.getAttribute(
+				"search.full.query.suppress.indexer.provided.clauses"));
 	}
 
 	private void _add(
