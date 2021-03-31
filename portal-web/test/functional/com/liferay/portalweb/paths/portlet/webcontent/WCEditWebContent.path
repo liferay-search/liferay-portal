@@ -61,6 +61,16 @@
 	<td></td>
 </tr>
 <tr>
+	<td>GEOLOCATION_LEAFLET_MARKER_DRAG_HANDLE</td>
+	<td>//div[contains(@class,'leaflet-marker-pane')]/img[contains(@class,'draggable')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>GEOLOCATION_ZOOM_OUT</td>
+	<td>//div[contains(@class,'leaflet-control-zoom')]/a[contains(@class,'zoom-out')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>GRID_OPTION</td>
 	<td>//legend[normalize-space(text())='${key_fieldFieldLabel}']//following-sibling::div//tbody/tr[${key_row}]/td[${key_column}]//input</td>
 	<td></td>
