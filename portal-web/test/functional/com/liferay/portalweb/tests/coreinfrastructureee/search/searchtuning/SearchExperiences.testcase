@@ -1,0 +1,739 @@
+@component-name = "portal-search"
+definition {
+
+	property portal.release = "true";
+	property portal.suite.search.engine = "elasticsearch7";
+	property portal.upstream = "true";
+	property testray.main.component.name = "Search Experiences";
+
+	setUp {
+		TestCase.setUpPortalInstance();
+
+		User.firstLoginPG();
+	}
+
+	tearDown {
+		var testPortalInstance = PropsUtil.get("test.portal.instance");
+
+		if ("${testPortalInstance}" == "true") {
+			PortalInstances.tearDownCP();
+		}
+		else {
+			BlogsEntry.tearDownCP();
+
+			JSONUser.tearDownNonAdminUsers();
+
+			WebContent.tearDownCP();
+
+			SearchExperiences.deleteAllBlueprints();
+
+			Page.tearDownCP();
+		}
+	}
+
+	test AddCopyAndDeleteBlueprint {
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		for (var title : list "Blueprint 1,Blueprint 2") {
+			SearchExperiences.addBlueprint(name = "${title}");
+
+			PortletEntry.save();
+		}
+
+		LexiconEntry.gotoEntryMenuItem(
+			menuItem = "Copy",
+			rowEntry = "Blueprint 2");
+
+		LexiconEntry.viewEntryName(rowEntry = "Blueprint 2 (Copy)");
+
+		SearchExperiences.deleteBlueprint(name = "Blueprint 1");
+
+		LexiconEntry.viewNoEntry(rowEntry = "Blueprint 1");
+	}
+
+	test AssertNonAdminsCannotAccessSearchExperiencePortlet {
+		property custom.properties = "jsonws.web.service.paths.excludes=";
+
+		JSONWebcontent.addWebContent(
+			content = "Los Angeles",
+			groupName = "Guest",
+			title = "Java Cafe");
+
+		for (var userNumber : list "1,2") {
+			JSONUser.addUser(
+				userEmailAddress = "userea${userNumber}@liferay.com",
+				userFirstName = "userfn${userNumber}",
+				userLastName = "userln${userNumber}",
+				userScreenName = "usersn${userNumber}");
+
+			JSONUser.setFirstPassword(
+				agreeToTermsAndAnswerReminderQuery = "true",
+				requireReset = "false",
+				userEmailAddress = "userea${userNumber}@liferay.com");
+		}
+
+		JSONRole.assignRoleToUser(
+			roleTitle = "Administrator",
+			userEmailAddress = "userea1@liferay.com");
+
+		User.logoutPG();
+
+		User.loginUserPG(
+			password = "test",
+			userEmailAddress = "userea1@liferay.com");
+
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		SearchExperiences.addBlueprint(name = "Los Angeles Boost");
+
+		Search.openSearchPage();
+
+		SearchPortlets.addWidgets(searchPortletList = "Blueprints Options");
+
+		SearchExperiences.selectBlueprintFromOptionsWidget(name = "Los Angeles Boost");
+
+		SearchPortlets.searchEmbedded(searchTerm = "cafe");
+
+		SearchResultPortlet.viewSearchResults(
+			searchAssetTitle = "Cafe",
+			searchAssetType = "Web Content Article");
+
+		User.logoutPG();
+
+		User.loginUserPG(
+			password = "test",
+			userEmailAddress = "userea2@liferay.com");
+
+		AssertElementNotPresent(locator1 = "ControlMenu#APPLICATIONS_MENU_ICON");
+
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		Portlet.viewNoPermissionPG();
+
+		Search.openSearchPage();
+
+		SearchPortlets.searchEmbedded(searchTerm = "cafe");
+
+		SearchResultPortlet.viewSearchResults(
+			searchAssetTitle = "Cafe",
+			searchAssetType = "Web Content Article");
+	}
+
+	test BoostSearchRankingForAssetType {
+		JSONWebcontent.addWebContent(
+			content = "Liferay",
+			groupName = "Guest",
+			title = "Liferay Web Content");
+
+		JSONBlog.addEntry(
+			entryContent = "Liferay Liferay",
+			entryTitle = "Liferay Blogs Entry");
+
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		SearchExperiences.addBlueprint(name = "My Blueprint");
+
+		Search.openSearchPage();
+
+		SearchPortlets.addWidgets(searchPortletList = "Blueprints Options");
+
+		SearchExperiences.selectBlueprintFromOptionsWidget(name = "My Blueprint");
+
+		SearchPortlets.searchEmbedded(searchTerm = "liferay");
+
+		SearchResultPortlet.viewSearchResultsSpecificOrder(resultsList = "Liferay Blogs Entry,Liferay Web Content");
+
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		SearchExperiences.editBlueprint(name = "My Blueprint");
+
+		SearchExperiences.addQueryElement(
+			assetType = "Web Content Article",
+			element = "Boost Asset Type",
+			numberBoost = "1000");
+
+		PortletEntry.save();
+
+		Search.openSearchPage();
+
+		SearchPortlets.searchEmbedded(searchTerm = "liferay");
+
+		SearchResultPortlet.viewSearchResultsSpecificOrder(resultsList = "Liferay Web Content,Liferay Blogs Entry");
+	}
+
+	test BoostWithCustomElasticsearchQuery {
+		ApplicationsMenu.gotoPortlet(
+			category = "Configuration",
+			panel = "Control Panel",
+			portlet = "Custom Fields");
+
+		CustomFields.addCP(
+			customFieldName = "location",
+			customFieldType = "Geolocation",
+			resourceName = "Web Content Article");
+
+		WebContentNavigator.openToAddBasicArticle(siteURLKey = "guest");
+
+		Click(locator1 = "TextInput#TITLE");
+
+		PortletEntry.inputTitle(title = "Close Location");
+
+		Panel.expandPanel(panel = "Categorization");
+
+		Click(locator1 = "WCEditWebContent#GEOLOCATION_ZOOM_OUT");
+
+		DragAndDrop.javaScriptDragAndDropToObject(
+			locator1 = "WCEditWebContent#GEOLOCATION_LEAFLET_MARKER_DRAG_HANDLE",
+			locator2 = "WCEditWebContent#GEOLOCATION_ZOOM_OUT");
+
+		PortletEntry.publish();
+
+		WebContentNavigator.openToAddBasicArticle(siteURLKey = "guest");
+
+		Click(locator1 = "TextInput#TITLE");
+
+		PortletEntry.inputTitle(title = "Closest Location");
+
+		PortletEntry.publish();
+
+		WebContentNavigator.openToAddBasicArticle(siteURLKey = "guest");
+
+		Click(locator1 = "TextInput#TITLE");
+
+		PortletEntry.inputTitle(title = "Closer Location");
+
+		Panel.expandPanel(panel = "Categorization");
+
+		DragAndDrop.javaScriptDragAndDropToObject(
+			locator1 = "WCEditWebContent#GEOLOCATION_LEAFLET_MARKER_DRAG_HANDLE",
+			locator2 = "WCEditWebContent#GEOLOCATION_ZOOM_OUT");
+
+		PortletEntry.publish();
+
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		SearchExperiences.addBlueprint(name = "The Closer to Liferay, the Better");
+
+		SearchExperiences.addQueryElement(element = "Filter by Exact Terms Match");
+
+		Type(
+			key_fieldLabel = "Field",
+			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_TEXT_FIELD",
+			value1 = "ddmStructureKey");
+
+		Type(
+			key_fieldLabel = "Values",
+			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_TEXT_FIELD",
+			value1 = "BASIC-WEB-CONTENT");
+
+		var elasticsearchQueryJSON = '''
+{
+	"function_score": {
+		"gauss": {
+			"expando__keyword__custom_fields__location_geolocation": {
+				"origin": {
+					"lat": "33.99742",
+					"lon": "-117.81451"
+				},
+				"scale": "1000km",
+				"decay": 0.3
+			}
+		},
+		"boost": 100
+	}
+}
+		''';
+
+		SearchExperiences.addQueryElement(
+			elasticsearchQuery = "${elasticsearchQueryJSON}",
+			element = "Paste any Elasticsearch query");
+
+		PortletEntry.save();
+
+		Search.openSearchPage();
+
+		SearchPortlets.addWidgets(searchPortletList = "Blueprints Options");
+
+		SearchExperiences.selectBlueprintFromOptionsWidget(name = "The Closer to Liferay, the Better");
+
+		SearchPortlets.searchEmbedded(searchTerm = "location");
+
+		SearchResultPortlet.viewSearchResultsSpecificOrder(resultsList = "Closest Location,Closer Location,Close Location");
+	}
+
+	test CreateBaselineClausesBlueprint {
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		SearchExperiences.addBlueprint(
+			baselineClauses = "true",
+			name = "Baseline Clauses Blueprint");
+
+		VerifyElementPresent(locator1 = "Message#SUCCESS");
+
+		AssertElementNotPresent(locator1 = "SearchExperiences#BLUEPRINTS_EMPTY_QUERY_BUILDER");
+
+		Navigator.gotoBack();
+
+		LexiconEntry.viewEntryName(rowEntry = "Baseline Clauses Blueprint");
+	}
+
+	@priority = "4"
+	test HideWebContentViaCustomElement {
+		JSONWebcontent.addWebContent(
+			content = "",
+			groupName = "Guest",
+			title = "Content");
+
+		JSONWebcontent.addWebContent(
+			assetTagNames = "test",
+			content = "",
+			groupName = "Guest",
+			title = "Test Content");
+
+		JSONWebcontent.addWebContent(
+			assetTagNames = "experimental",
+			content = "",
+			groupName = "Guest",
+			title = "Experimental Content");
+
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		var elementTemplateJSON = '''
+{
+	"category": "hide",
+	"clauses": [
+		{
+			"context": "query",
+			"occur": "filter",
+			"query": {
+				"wrapper":{
+					"query": {
+						"bool": {
+							"must_not": [
+								{
+									"term": {
+										"assetTagNames.raw": {
+											"value": "${configuration.tag1}"
+										}
+									}
+								},
+								{
+									"term": {
+										"assetTagNames.raw": {
+											"value": "${configuration.tag2}"
+										}
+									}
+								}
+							]
+						}
+					}
+				}
+			}
+		}
+	],
+	"conditions": {},
+	"description": {
+		"en_US": "Hide content with multiple specific tags"
+	},
+	"enabled": true,
+	"icon": "hidden",
+	"title": {
+		"en_US": "Hide Content with Multiple Tags"
+	}
+}
+		''';
+
+		var uiConfigurationJSON = '''
+{
+	"fieldSets": [
+		{
+			"fields": [
+				{
+					"defaultValue": "",
+					"name": "tag1",
+					"label": "Tag 1",
+					"type": "text"
+				},
+				{
+					"defaultValue": "",
+					"name": "tag2",
+					"label": "Tag 2",
+					"type": "text"
+				}
+			]
+		}
+	]
+}
+		''';
+
+		SearchExperiences.createElement(
+			elementTemplateJSON = "${elementTemplateJSON}",
+			name = "Hide Content with Multiple Tags",
+			uiConfigurationJSON = "${uiConfigurationJSON}");
+
+		Navigator.gotoNavItem(navItem = "Blueprints");
+
+		SearchExperiences.addBlueprint(name = "Hide Test and Experimental Content");
+
+		SearchExperiences.addQueryElement(
+			element = "Hide Content with Multiple Tags",
+			tag1 = "test",
+			tag2 = "experimental");
+
+		PortletEntry.save();
+
+		Search.openSearchPage();
+
+		SearchPortlets.addWidgets(searchPortletList = "Blueprints Options");
+
+		SearchExperiences.selectBlueprintFromOptionsWidget(name = "Hide Test and Experimental Content");
+
+		SearchPortlets.searchEmbedded(searchTerm = "Content");
+
+		SearchResultPortlet.viewSearchResults(
+			searchAssetTitle = "Content",
+			searchAssetType = "Web Content Article");
+
+		SearchResultPortlet.viewSearchResultNotPresent(
+			searchAssetTitle = "Test Content",
+			searchAssetType = "Web Content Article");
+
+		SearchResultPortlet.viewSearchResultNotPresent(
+			searchAssetTitle = "Experimental Content",
+			searchAssetType = "Web Content Article");
+	}
+
+	test SearchBlueprintsByTitleAndDescription {
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		SearchExperiences.addBlueprint(
+			description = "Blueprint Test Description",
+			name = "Test Blueprint - Adminicle");
+
+		Navigator.gotoBack();
+
+		SearchExperiences.addBlueprint(
+			description = "Serendipitous Blueprint Test Description",
+			name = "Test Blueprint - Aid");
+
+		Navigator.gotoBack();
+
+		Search.searchCP(searchTerm = "Adminicle");
+
+		LexiconEntry.viewEntryName(rowEntry = "Test Blueprint - Adminicle");
+
+		LexiconEntry.viewNoEntry(rowEntry = "Test Blueprint - Aid");
+
+		Search.searchCP(searchTerm = "Serendipitous");
+
+		LexiconEntry.viewEntryName(rowEntry = "Test Blueprint - Aid");
+
+		LexiconEntry.viewNoEntry(rowEntry = "Test Blueprint - Adminicle");
+
+		Search.clearSearchResult();
+
+		LexiconEntry.viewEntryName(rowEntry = "Test Blueprint - Adminicle");
+
+		LexiconEntry.viewEntryName(rowEntry = "Test Blueprint - Aid");
+	}
+
+	test SortBlueprints {
+		SearchExperiences.deleteAllBlueprints();
+
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		for (var blueprintNumber : list "1,3,2") {
+			SearchExperiences.addBlueprint(name = "Blueprint ${blueprintNumber}");
+
+			PortletEntry.save();
+		}
+
+		ManagementBar.setFilterAndOrder(orderBy = "Title");
+
+		LexiconEntry.viewEntriesSpecificOrder(entryList = "Blueprint 1,Blueprint 2,Blueprint 3");
+
+		ManagementBar.setFilterAndOrder(orderBy = "Created");
+
+		LexiconEntry.viewEntriesSpecificOrder(entryList = "Blueprint 2,Blueprint 3,Blueprint 1");
+
+		SearchExperiences.editBlueprint(name = "Blueprint 1");
+
+		SearchExperiences.addQueryElement(element = "Boost Asset Type");
+
+		PortletEntry.save();
+
+		ManagementBar.setFilterAndOrder(orderBy = "Modified");
+
+		LexiconEntry.viewEntriesSpecificOrder(entryList = "Blueprint 1,Blueprint 2,Blueprint 3");
+
+		ManagementBar.toggleViewOrder();
+
+		LexiconEntry.viewEntriesSpecificOrder(entryList = "Blueprint 3,Blueprint 2,Blueprint 1");
+	}
+
+	test ViewAssetDetailsViaBlueprintsPreview {
+		JSONBlog.addEntry(
+			entryContent = "banana, red apple, blueberry!",
+			entryTitle = "Liferay Blogs Entry Apple");
+
+		JSONWebcontent.addWebContent(
+			content = "red apple, citrus-orange",
+			groupName = "Guest",
+			title = "Web Content Article Apple");
+
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		SearchExperiences.addBlueprint(name = "My Blueprint");
+
+		Click(locator1 = "Button#PREVIEW");
+
+		SearchExperiences.searchBlueprintsPreview(searchTerm = "Apple");
+
+		Click(
+			key_searchAssetTitle = "Liferay Blogs Entry Apple",
+			locator1 = "SearchResults#ASSET_ENTRY_TABLE_TITLE");
+
+		var siteName = TestCase.getSiteName(siteName = "${siteName}");
+
+		SelectWindow(locator1 = "title=View Result - ${siteName}");
+
+		AssertTextEquals(
+			locator1 = "Portlet#H4_COMPONENT_TITLE",
+			value1 = "Liferay Blogs Entry Apple");
+
+		AssertTextEquals(
+			locator1 = "PageEditor#CONTENT_PAGE_TEXT_CONTENT",
+			value1 = "banana, red apple, blueberry!");
+
+		Close.closeAndSelectWindow(locator1 = "title=Edit Blueprint - ${siteName}");
+
+		Click(
+			key_searchAssetTitle = "Web Content Article Apple",
+			locator1 = "SearchResults#ASSET_ENTRY_TABLE_TITLE");
+
+		SelectWindow(locator1 = "title=View Result - ${siteName}");
+
+		AssertTextEquals(
+			locator1 = "Portlet#H4_COMPONENT_TITLE",
+			value1 = "Web Content Article Apple");
+
+		AssertTextEquals(
+			locator1 = "WCD#WEB_CONTENT_CONTENT",
+			value1 = "red apple, citrus-orange");
+	}
+
+	test ViewBlueprintsConfigJSONValidation {
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		SearchExperiences.addBlueprint(name = "My Blueprint");
+
+		Navigator.gotoNavTab(navTab = "Settings");
+
+		var aggregationConfigurationJSON = '''
+{
+	"cardinality-test": {
+		"cardinality": {
+			"precision_threshold": "3000",
+			"field": "assetTagNames.raw"
+		}
+	}
+}
+		''';
+
+		Type.typeCodeMirrorEditor(
+			key_configurationField = "Aggregation Configuration",
+			locator1 = "SearchExperiences#BLUEPRINTS_SETTINGS_CONFIGURATION_EDITOR",
+			value1 = "${aggregationConfigurationJSON}");
+
+		PortletEntry.save();
+
+		AssertTextEquals.assertPartialText(
+			locator1 = "Modal#HEADER",
+			value1 = "Warning");
+
+		Alert.viewErrorMessage(errorMessage = "expected type: Number, found: String (Aggregation Configuration)");
+
+		Button.clickCancel();
+
+		Navigator.gotoBack();
+
+		SearchExperiences.editBlueprint(name = "My Blueprint");
+
+		Navigator.gotoNavTab(navTab = "Settings");
+
+		AssertTextNotPresent(value1 = "cardinality-test");
+
+		Type.typeCodeMirrorEditor(
+			key_configurationField = "Aggregation Configuration",
+			locator1 = "SearchExperiences#BLUEPRINTS_SETTINGS_CONFIGURATION_EDITOR",
+			value1 = "${aggregationConfigurationJSON}");
+
+		PortletEntry.save();
+
+		Button.click(button = "Continue To Save");
+
+		SearchExperiences.editBlueprint(name = "My Blueprint");
+
+		Navigator.gotoNavTab(navTab = "Settings");
+
+		AssertTextPresent(value1 = "cardinality-test");
+	}
+
+	test ViewCustomElementsJSONValidation {
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		Navigator.gotoNavItem(navItem = "Elements");
+
+		var elementTemplateJSON = '''
+{
+	"title": {
+		"en_US": "My Element"
+	}
+}
+		''';
+
+		var uiConfigurationJSON = '''
+{
+	"fieldSets": [
+		{
+			"fields": [
+				{
+					"label": "Boost",
+					"type": "thisTypeDoesNotExist"
+				}
+			]
+		}
+	]
+}
+		''';
+
+		SearchExperiences.createElement(
+			elementTemplateJSON = "${elementTemplateJSON}",
+			name = "My Element",
+			uiConfigurationJSON = "${uiConfigurationJSON}");
+
+		AssertTextEquals.assertPartialText(
+			locator1 = "Modal#HEADER",
+			value1 = "Warning");
+
+		Alert.viewErrorMessage(errorMessage = "thisTypeDoesNotExist is not a valid enum value");
+
+		Button.clickCancel();
+
+		Navigator.gotoBack();
+
+		SearchExperiences.editElement(name = "My Element");
+
+		AssertTextNotPresent(value1 = "thisTypeDoesNotExist");
+
+		Type.typeCodeMirrorEditor(
+			locator1 = "SearchExperiences#CUSTOM_ELEMENT_TEMPLATE_EDITOR",
+			value1 = "${elementTemplateJSON}");
+
+		Type.typeCodeMirrorEditor(
+			locator1 = "SearchExperiences#CUSTOM_ELEMENT_UI_CONFIGURATION_EDITOR",
+			value1 = "${uiConfigurationJSON}");
+
+		PortletEntry.save();
+
+		Button.click(button = "Continue To Save");
+
+		SearchExperiences.editElement(name = "My Element");
+
+		AssertTextPresent(value1 = "thisTypeDoesNotExist");
+	}
+
+	test ViewExpandedAndCollapsedBlueprintsPreviewEntry {
+		JSONWebcontent.addWebContent(
+			content = "",
+			groupName = "Guest",
+			title = "Apple");
+
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		SearchExperiences.addBlueprint(name = "My Blueprint");
+
+		Click(locator1 = "Button#PREVIEW");
+
+		SearchExperiences.searchBlueprintsPreview(searchTerm = "Apple");
+
+		Click(locator1 = "SearchExperiences#BLUEPRINTS_PREVIEW_EXPAND_ENTRY_BUTTON");
+
+		AssertTextEquals.assertPartialText(
+			key_fieldName = "ddmStructureKey",
+			locator1 = "SearchExperiences#BLUEPRINTS_PREVIEW_ENTRY_FIELD_VALUE",
+			value1 = "BASIC-WEB-CONTENT");
+
+		Click(locator1 = "SearchExperiences#BLUEPRINTS_PREVIEW_COLLAPSE_ENTRY_BUTTON");
+
+		AssertTextEquals.assertPartialText(
+			key_fieldName = "type",
+			locator1 = "SearchExperiences#BLUEPRINTS_PREVIEW_ENTRY_FIELD_VALUE",
+			value1 = "Web Content Article");
+	}
+
+	test ViewRawResponseViaBlueprintsPreview {
+		JSONWebcontent.addWebContent(
+			content = "WC Content",
+			groupName = "Guest",
+			title = "Apple");
+
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		SearchExperiences.addBlueprint(name = "Score Explanation Blueprint");
+
+		Click(locator1 = "Button#PREVIEW");
+
+		SearchExperiences.searchBlueprintsPreview(searchTerm = "Apple");
+
+		Click(
+			key_text = "View Raw Response",
+			locator1 = "Button#ANY");
+
+		AssertTextEquals(
+			locator1 = "Modal#HEADER",
+			value1 = "Raw Response");
+
+		AssertVisible(
+			key_searchExplanation = "hits",
+			locator1 = "SearchExperiences#BLUEPRINTS_PREVIEW_RAW_RESPONSE_EXPLANATION");
+
+		SelectFrameTop();
+
+		Click(locator1 = "SearchExperiences#BLUEPRINTS_DOWNLOAD_RAW_RESPONSE");
+
+		SearchExperiences.viewDownloadedRawResponse();
+
+		Click(locator1 = "Button#COPY");
+
+		SearchExperiences.viewCopiedRawResponse();
+	}
+
+	test ViewSearchResultsScoreViaBlueprintsPreview {
+		JSONWebcontent.addWebContent(
+			content = "WC Content",
+			groupName = "Guest",
+			title = "Apple");
+
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		SearchExperiences.addBlueprint(name = "Score Explanation Blueprint");
+
+		Click(locator1 = "Button#PREVIEW");
+
+		SearchExperiences.searchBlueprintsPreview(searchTerm = "Apple");
+
+		Click(
+			key_searchAssetTitle = "Apple",
+			locator1 = "SearchExperiences#BLUEPRINTS_PREVIEW_SCORE");
+
+		AssertTextEquals(
+			locator1 = "Modal#HEADER",
+			value1 = "Score Explanation");
+
+		AssertVisible(
+			key_searchExplanation = "PerFieldSimilarity",
+			locator1 = "SearchExperiences#BLUEPRINTS_PREVIEW_SCORE_EXPLANATION");
+	}
+
+}

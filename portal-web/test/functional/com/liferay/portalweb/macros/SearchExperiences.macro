@@ -1,0 +1,215 @@
+definition {
+
+	macro addBlueprint {
+		Click(locator1 = "Button#PLUS");
+
+		PortletEntry.inputTitle(title = "${name}");
+
+		if (isSet(description)) {
+			PortletEntry.inputDescription(description = "${description}");
+		}
+
+		if (isSet(baselineClauses)) {
+			LexiconCard.clickCard(card = "Baseline Clauses");
+		}
+		else {
+			LexiconCard.clickCard(card = "All Clauses");
+		}
+
+		Button.click(button = "Create");
+	}
+
+	macro addQueryElement {
+		AssertElementPresent(locator1 = "SearchExperiences#BLUEPRINTS_ADD_QUERY_ELEMENTS_HEADER");
+
+		if (IsElementPresent(locator1 = "SearchExperiences#BLUEPRINTS_ADD_QUERY_ELEMENTS_SEARCH_CLEAR")) {
+			Click(locator1 = "SearchExperiences#BLUEPRINTS_ADD_QUERY_ELEMENTS_SEARCH_CLEAR");
+		}
+
+		Type.sendKeysApplicationSearch(
+			locator1 = "SearchExperiences#BLUEPRINTS_ADD_QUERY_ELEMENTS_SEARCH_BAR",
+			value1 = "${element}");
+
+		MouseOver(
+			key_elementName = "${element}",
+			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_ELEMENT_ADD_NAME");
+
+		Click.clickNoMouseOverNoWaitForVisible(
+			key_elementName = "${element}",
+			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_ELEMENT_ADD_BUTTON");
+
+		if (isSet(assetType)) {
+			Click(locator1 = "SearchExperiences#BLUEPRINTS_QUERY_BUILDER_ASSET_TYPE_DROPDOWN");
+
+			Click(
+				locator1 = "SearchExperiences#BLUEPRINTS_QUERY_BUILDER_ASSET_TYPE_OPTION",
+				sortOption = "${assetType}");
+		}
+
+		if (isSet(elasticsearchQuery)) {
+			Type.typeCodeMirrorEditor(
+				locator1 = "SearchExperiences#BLUEPRINTS_ELASTICSEARCH_QUERY_JSON_EDITOR",
+				value1 = "${elasticsearchQuery}");
+		}
+
+		if (isSet(numberBoost)) {
+			Type(
+				key_fieldLabel = "Boost",
+				locator1 = "SearchExperiences#BLUEPRINTS_QUERY_BUILDER_NUMBER_FIELD",
+				value1 = "${numberBoost}");
+		}
+
+		if (isSet(tag1)) {
+			Type(
+				key_fieldLabel = "Tag 1",
+				locator1 = "SearchExperiences#BLUEPRINTS_QUERY_TEXT_FIELD",
+				value1 = "${tag1}");
+		}
+
+		if (isSet(tag2)) {
+			Type(
+				key_fieldLabel = "Tag 2",
+				locator1 = "SearchExperiences#BLUEPRINTS_QUERY_TEXT_FIELD",
+				value1 = "${tag2}");
+		}
+	}
+
+	macro createElement {
+		Navigator.gotoNavItem(navItem = "Elements");
+
+		Click(locator1 = "Button#PLUS");
+
+		PortletEntry.inputTitle(title = "${name}");
+
+		Button.click(button = "Create");
+
+		Type.typeCodeMirrorEditor(
+			locator1 = "SearchExperiences#CUSTOM_ELEMENT_TEMPLATE_EDITOR",
+			value1 = "${elementTemplateJSON}");
+
+		Type.typeCodeMirrorEditor(
+			locator1 = "SearchExperiences#CUSTOM_ELEMENT_UI_CONFIGURATION_EDITOR",
+			value1 = "${uiConfigurationJSON}");
+
+		PortletEntry.save();
+	}
+
+	macro deleteAllBlueprints {
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		LexiconEntry.changeDisplayStyle(displayStyle = "list");
+
+		if (IsElementNotPresent(locator1 = "Message#EMPTY_INFO")) {
+			PortletEntry.selectAll();
+
+			Click(locator1 = "ManagementBar#ELLIPSIS_ICON");
+
+			MenuItem.clickNoError(menuItem = "Delete");
+
+			AssertConfirm(value1 = "Are you sure you want to delete selected Blueprints?");
+
+			VerifyElementPresent(locator1 = "Message#SUCCESS");
+		}
+	}
+
+	macro deleteBlueprint {
+		LexiconEntry.delete(rowEntry = "${name}");
+	}
+
+	macro editBlueprint {
+		LexiconEntry.gotoEntry(rowEntry = "${name}");
+	}
+
+	macro editElement {
+		Navigator.gotoNavItem(navItem = "Elements");
+
+		LexiconEntry.gotoEntry(rowEntry = "${name}");
+	}
+
+	macro openSearchExperiencesAdmin {
+		if (!(isSet(siteURLKey))) {
+			var siteURLKey = "guest";
+		}
+
+		Navigator.openWithAppendToBaseURL(urlAppend = "group/${siteURLKey}/~/control_panel/manage?p_p_id=com_liferay_search_experiences_blueprints_web_internal_portlet_BlueprintsAdminPortlet");
+	}
+
+	macro searchBlueprintsPreview {
+		Type(
+			locator1 = "SearchExperiences#BLUEPRINTS_PREVIEW_SEARCH_BAR",
+			value1 = "${searchTerm}");
+
+		var browserType = PropsUtil.get("browser.type");
+
+		if ("${browserType}" == "safari") {
+			Click(locator1 = "Icon#BASIC_SEARCH");
+		}
+		else {
+			KeyPress(
+				locator1 = "SearchExperiences#BLUEPRINTS_PREVIEW_SEARCH_BAR",
+				value1 = "\RETURN");
+		}
+
+		WaitForLiferayEvent.initializeLiferayEventLog();
+	}
+
+	macro selectBlueprintFromOptionsWidget {
+		Portlet.gotoPortletOptions(
+			portletName = "Blueprints Options",
+			portletOption = "Configuration");
+
+		SelectFrame(locator1 = "IFrame#CONFIGURATION");
+
+		Button.clickSelect();
+
+		SelectFrameTop();
+
+		SelectFrame(
+			key_title = "Select Blueprint",
+			locator1 = "IFrame#MODAL_ANY");
+
+		var key_blueprintName = "${name}";
+
+		AssertClick(
+			locator1 = "SearchExperiences#BLUEPRINTS_OPTIONS_WIDGET_CHOOSE",
+			value1 = "Choose");
+
+		SelectFrameTop();
+
+		SelectFrame(locator1 = "IFrame#CONFIGURATION");
+
+		Button.clickSave();
+
+		Alert.viewSuccessMessage();
+
+		IFrame.closeFrame();
+	}
+
+	macro viewCopiedRawResponse {
+		WebContentNavigator.openToAddBasicArticle(siteURLKey = "guest");
+
+		SelectFrame.selectFrameNoLoading(locator1 = "CKEditor#BODY_FIELD_IFRAME_2");
+
+		Click(locator1 = "CKEditor#BODY");
+
+		RobotType.robotTypeShortcut(locator1 = "Ctrl + v");
+
+		WaitForElementPresent(
+			key_text = "hits",
+			locator1 = "CKEditor#BODY_TEXT");
+	}
+
+	macro viewDownloadedRawResponse {
+		var tempDir = PropsUtil.get("output.dir.name");
+
+		var fileContent = FileUtil.read("${tempDir}/raw_response.json");
+
+		if (contains("${fileContent}", "hits")) {
+			echo("File raw_response.json contains text "hits"");
+		}
+		else {
+			fail("File raw_response.json does not contain text "hits"");
+		}
+	}
+
+}
