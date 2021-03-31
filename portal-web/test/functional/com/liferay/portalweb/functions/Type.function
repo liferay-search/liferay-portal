@@ -188,6 +188,20 @@ definition {
 		selenium.assertLiferayErrors();
 	}
 
+	function typeCodeMirrorEditor {
+		WaitForSPARefresh();
+
+		selenium.waitForElementPresent();
+
+		selenium.mouseOver();
+
+		selenium.typeCodeMirrorEditor();
+
+		selenium.assertJavaScriptErrors();
+
+		selenium.assertLiferayErrors();
+	}
+
 	function typeCodeMirrorEditorNoError {
 		WaitForSPARefresh();
 
