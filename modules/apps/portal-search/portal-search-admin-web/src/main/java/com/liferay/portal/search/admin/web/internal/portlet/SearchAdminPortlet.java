@@ -16,6 +16,7 @@ package com.liferay.portal.search.admin.web.internal.portlet;
 
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
+import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.util.Http;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
@@ -28,6 +29,7 @@ import com.liferay.portal.search.admin.web.internal.display.context.SearchAdminD
 import com.liferay.portal.search.admin.web.internal.display.context.SearchEngineDisplayBuilder;
 import com.liferay.portal.search.engine.SearchEngineInformation;
 import com.liferay.portal.search.index.IndexInformation;
+import com.liferay.portal.search.index.IndexNameBuilder;
 
 import java.io.IOException;
 
@@ -77,7 +79,8 @@ public class SearchAdminPortlet extends MVCPortlet {
 
 		SearchAdminDisplayBuilder searchAdminDisplayBuilder =
 			new SearchAdminDisplayBuilder(
-				_language, _portal, renderRequest, renderResponse);
+				_companyLocalService, _indexNameBuilder, _language, _portal,
+				renderRequest, renderResponse);
 
 		searchAdminDisplayBuilder.setIndexInformation(indexInformation);
 
@@ -140,7 +143,13 @@ public class SearchAdminPortlet extends MVCPortlet {
 	protected volatile SearchEngineInformation searchEngineInformation;
 
 	@Reference
+	private CompanyLocalService _companyLocalService;
+
+	@Reference
 	private Http _http;
+
+	@Reference
+	private IndexNameBuilder _indexNameBuilder;
 
 	@Reference
 	private Language _language;

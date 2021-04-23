@@ -14,12 +14,21 @@
 
 package com.liferay.portal.search.admin.web.internal.display.context;
 
+import com.liferay.frontend.taglib.clay.servlet.taglib.util.MultiselectItem;
+import com.liferay.frontend.taglib.clay.servlet.taglib.util.MultiselectItemListBuilder;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.NavigationItemList;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.language.Language;
+import com.liferay.portal.kernel.model.Company;
+import com.liferay.portal.kernel.model.CompanyConstants;
+import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.search.index.IndexInformation;
+import com.liferay.portal.search.index.IndexNameBuilder;
 
+import java.util.List;
 import java.util.Objects;
 
 import javax.portlet.RenderRequest;
@@ -27,13 +36,17 @@ import javax.portlet.RenderResponse;
 
 /**
  * @author Adam Brandizzi
+ * @author Tibor Lipusz
  */
 public class SearchAdminDisplayBuilder {
 
 	public SearchAdminDisplayBuilder(
-		Language language, Portal portal, RenderRequest renderRequest,
-		RenderResponse renderResponse) {
+		CompanyLocalService companyLocalService,
+		IndexNameBuilder indexNameBuilder, Language language, Portal portal,
+		RenderRequest renderRequest, RenderResponse renderResponse) {
 
+		_companyLocalService = companyLocalService;
+		_indexNameBuilder = indexNameBuilder;
 		_language = language;
 		_portal = portal;
 		_renderRequest = renderRequest;
@@ -56,6 +69,8 @@ public class SearchAdminDisplayBuilder {
 				navigationItemList, "field-mappings", selectedTab);
 		}
 
+		searchAdminDisplayContext.setVirtualInstanceMultiselectItems(
+			buildVirtualInstanceMultiselectItems());
 		searchAdminDisplayContext.setNavigationItemList(navigationItemList);
 		searchAdminDisplayContext.setSelectedTab(selectedTab);
 
@@ -79,6 +94,56 @@ public class SearchAdminDisplayBuilder {
 					_language.get(
 						_portal.getHttpServletRequest(_renderRequest), label));
 			});
+	}
+
+	protected List<MultiselectItem> buildVirtualInstanceMultiselectItems() {
+		List<Company> companies = _companyLocalService.getCompanies();
+
+		List<MultiselectItem> virtualInstanceMultiselectItems =
+			MultiselectItemListBuilder.add(
+				multiselectItem -> {
+					StringBundler sb = new StringBundler(5);
+
+					sb.append(
+						_language.get(
+							_portal.getHttpServletRequest(_renderRequest),
+							"system"));
+					sb.append(StringPool.SPACE);
+					sb.append(StringPool.OPEN_PARENTHESIS);
+					sb.append(
+						_indexNameBuilder.getIndexName(
+							CompanyConstants.SYSTEM));
+					sb.append(StringPool.CLOSE_PARENTHESIS);
+
+					multiselectItem.setLabel(sb.toString());
+
+					multiselectItem.setValue(
+						String.valueOf(CompanyConstants.SYSTEM));
+				}
+			).build();
+
+		companies.forEach(
+			company -> {
+				MultiselectItem multiselectItem = new MultiselectItem();
+
+				StringBundler sb = new StringBundler(5);
+
+				sb.append(company.getWebId());
+				sb.append(StringPool.SPACE);
+				sb.append(StringPool.OPEN_PARENTHESIS);
+				sb.append(
+					_indexNameBuilder.getIndexName(company.getCompanyId()));
+				sb.append(StringPool.CLOSE_PARENTHESIS);
+
+				multiselectItem.setLabel(sb.toString());
+
+				multiselectItem.setValue(
+					String.valueOf(company.getCompanyId()));
+
+				virtualInstanceMultiselectItems.add(multiselectItem);
+			});
+
+		return virtualInstanceMultiselectItems;
 	}
 
 	protected String getSelectedTab() {
@@ -109,7 +174,9 @@ public class SearchAdminDisplayBuilder {
 		return false;
 	}
 
+	private final CompanyLocalService _companyLocalService;
 	private IndexInformation _indexInformation;
+	private final IndexNameBuilder _indexNameBuilder;
 	private final Language _language;
 	private final Portal _portal;
 	private final RenderRequest _renderRequest;

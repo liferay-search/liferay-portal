@@ -14,10 +14,14 @@
 
 package com.liferay.portal.search.admin.web.internal.display.context;
 
+import com.liferay.frontend.taglib.clay.servlet.taglib.util.MultiselectItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.NavigationItemList;
+
+import java.util.List;
 
 /**
  * @author Adam Brandizzi
+ * @author Tibor Lipusz
  */
 public class SearchAdminDisplayContext {
 
@@ -29,6 +33,10 @@ public class SearchAdminDisplayContext {
 		return _selectedTab;
 	}
 
+	public List<MultiselectItem> getVirtualInstanceMultiselectItems() {
+		return _virtualInstanceMultiselectItems;
+	}
+
 	public void setNavigationItemList(NavigationItemList navigationItemList) {
 		_navigationItemList = navigationItemList;
 	}
@@ -37,7 +45,14 @@ public class SearchAdminDisplayContext {
 		_selectedTab = selectedTab;
 	}
 
+	public void setVirtualInstanceMultiselectItems(
+		List<MultiselectItem> virtualInstanceMultiselectItem) {
+
+		_virtualInstanceMultiselectItems = virtualInstanceMultiselectItem;
+	}
+
 	private NavigationItemList _navigationItemList;
 	private String _selectedTab;
+	private List<MultiselectItem> _virtualInstanceMultiselectItems;
 
 }

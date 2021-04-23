@@ -29,11 +29,14 @@ page import="com.liferay.portal.kernel.backgroundtask.BackgroundTaskManagerUtil"
 page import="com.liferay.portal.kernel.backgroundtask.constants.BackgroundTaskConstants" %><%@
 page import="com.liferay.portal.kernel.backgroundtask.display.BackgroundTaskDisplay" %><%@
 page import="com.liferay.portal.kernel.backgroundtask.display.BackgroundTaskDisplayFactoryUtil" %><%@
+page import="com.liferay.portal.kernel.language.LanguageUtil" %><%@
 page import="com.liferay.portal.kernel.model.CompanyConstants" %><%@
 page import="com.liferay.portal.kernel.search.Indexer" %><%@
 page import="com.liferay.portal.kernel.search.IndexerClassNameComparator" %><%@
 page import="com.liferay.portal.kernel.search.IndexerRegistryUtil" %><%@
 page import="com.liferay.portal.kernel.util.ParamUtil" %><%@
+page import="com.liferay.portal.kernel.util.WebKeys" %><%@
+page import="com.liferay.portal.search.admin.web.internal.display.context.SearchAdminDisplayContext" %><%@
 page import="com.liferay.product.navigation.control.menu.constants.ProductNavigationControlMenuCategoryKeys" %>
 
 <%@ page import="java.io.Serializable" %>
@@ -65,6 +68,8 @@ page import="java.util.Map" %>
 	<aui:input name="redirect" type="hidden" value="<%= redirectURL %>" />
 
 	<%
+	SearchAdminDisplayContext searchAdminDisplayContext = (SearchAdminDisplayContext)request.getAttribute(WebKeys.PORTLET_DISPLAY_CONTEXT);
+
 	Map<String, BackgroundTaskDisplay> classNameToBackgroundTaskDisplayMap = new HashMap<>();
 
 	List<BackgroundTask> reindexPortalBackgroundTasks = BackgroundTaskManagerUtil.getBackgroundTasks(CompanyConstants.SYSTEM, "com.liferay.portal.search.internal.background.task.ReindexPortalBackgroundTaskExecutor", BackgroundTaskConstants.STATUS_IN_PROGRESS);
@@ -86,6 +91,15 @@ page import="java.util.Map" %>
 		cssClass="container-form-lg search-admin-index-actions-container sheet-lg"
 		id='<%= liferayPortletResponse.getNamespace() + "adminSearchAdminIndexActionsPanel" %>'
 	>
+		<clay:multiselect
+			helpText='<%= LanguageUtil.get(request, "virtual-instances-help-text") %>'
+			id='<%= liferayPortletResponse.getNamespace() + "companyIds" %>'
+			inputName='<%= liferayPortletResponse.getNamespace() + "companyIds" %>'
+			label='<%= LanguageUtil.get(request, "virtual-instances") %>'
+			selectedMultiselectItems="<%= searchAdminDisplayContext.getVirtualInstanceMultiselectItems() %>"
+			sourceMultiselectItems="<%= searchAdminDisplayContext.getVirtualInstanceMultiselectItems() %>"
+		/>
+
 		<ul class="list-group">
 			<li class="list-group-item list-group-item-flex">
 				<div class="autofit-col autofit-col-expand">
