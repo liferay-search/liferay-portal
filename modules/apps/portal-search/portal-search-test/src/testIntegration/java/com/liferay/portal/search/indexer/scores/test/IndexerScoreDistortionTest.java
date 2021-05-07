@@ -64,6 +64,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -121,6 +122,9 @@ public class IndexerScoreDistortionTest {
 
 		addBlogsEntry(title);
 		addFileEntry(title);
+		
+		TimeUnit.SECONDS.sleep(3);
+		
 		addJournalArticle(title, locale);
 		addMessage(title);
 		addWikiPage(title);
