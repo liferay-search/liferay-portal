@@ -74,6 +74,12 @@ definition {
 				sortOption = "${assetType}");
 		}
 
+		if (isSet(elasticsearchQuery)) {
+			Type.typeCodeMirrorEditorNoError(
+				locator1 = "SearchTuning#BLUEPRINTS_ELASTICSEACH_QUERY_JSON",
+				value1 = "${elasticsearchQuery}");
+		}
+
 		if (isSet(numberBoost)) {
 			Type(
 				key_fieldLabel = "Boost",
