@@ -155,6 +155,145 @@ definition {
 			locator1 = "SearchTuning#BLUEPRINTS_PREVIEW_SCORE_EXPLANATION");
 	}
 
+	test BoostWithElasticsearchQuery {
+		var elasticsearchQueryJSON = '''
+{
+	"function_score": {
+		"gauss": {
+			"expando__keyword__custom_fields__location_geolocation": {
+				"origin": {
+					"lat": "33.99742",
+					"lon": "-117.81451"
+				},
+				"scale": "1000km",
+				"decay": 0.3
+			}
+		},
+		"boost": 100
+	}
+}
+			''';
+
+		ApplicationsMenu.gotoPortlet(
+			category = "Search Tuning",
+			panel = "Applications",
+			portlet = "Search Experiences");
+
+		Click(locator1 = "Button#PLUS");
+
+		PortletEntry.inputTitle(title = "The Closer to Liferay, the Better");
+
+		LexiconCard.clickCard(card = "Custom Clauses");
+
+		Click.clickNoWaitForVisible(
+			key_card = "Custom Clauses",
+			locator1 = "Card#CARD_CHECKBOX");
+
+		Button.click(button = "Create");
+
+		Type.sendKeysApplicationSearch(
+			locator1 = "SearchTuning#BLUEPRINTS_FRAGMENT_QUERY_SEARCH_BAR",
+			value1 = "Filter by Exact Terms Match");
+
+		MouseOver(
+			key_fragmentName = "Filter by Exact Terms Match",
+			locator1 = "SearchTuning#BLUEPRINTS_QUERY_FRAGMENT_NAME");
+
+		Click.clickNoMouseOverNoWaitForVisible(
+			key_fragmentName = "Filter by Exact Terms Match",
+			locator1 = "SearchTuning#BLUEPRINTS_ADD_QUERY_FRAGMENT");
+
+		Type(
+			key_fieldLabel = "Field",
+			locator1 = "SearchTuning#BLUEPRINTS_QUERY_TEXT_FIELD",
+			value1 = "ddmStructureKey");
+
+		Type(
+			key_fieldLabel = "Values",
+			locator1 = "SearchTuning#BLUEPRINTS_QUERY_TEXT_FIELD",
+			value1 = "BASIC-WEB-CONTENT");
+
+		Click(locator1 = "SearchTuning#BLUEPRINTS_CLEAR_BUTTON");
+
+		SearchBlueprints.addQueryElements(
+			elasticsearchQuery = "${elasticsearchQueryJSON}",
+			fragment = "Paste any Elasticsearch query");
+
+		var blueprintsID = SearchBlueprints.findBlueprintID(name = "The Closer to Liferay, the Better");
+
+		SitePages.openPagesAdmin(siteURLKey = "guest");
+
+		ContentPages.addPage(pageName = "Reactive Widget");
+
+		PageEditor.addWidget(portletName = "Blueprints Search");
+
+		SearchBlueprints.configureSearchBlueprintsWidget(searchBlueprintID = "${blueprintsID}");
+
+		PageEditor.clickPublish();
+
+		ApplicationsMenu.gotoPortlet(
+			category = "Configuration",
+			panel = "Control Panel",
+			portlet = "Custom Fields");
+
+		CustomFields.addCP(
+			customFieldName = "location",
+			customFieldType = "Geolocation",
+			resourceName = "Web Content Article");
+
+		Navigator.openURL();
+
+		ProductMenu.gotoPortlet(
+			category = "Content &amp; Data",
+			portlet = "Web Content");
+
+		WebContentNavigator.gotoAddCP();
+
+		Click(locator1 = "TextInput#TITLE");
+
+		PortletEntry.inputTitle(title = "Closest Location");
+
+		PortletEntry.publish();
+
+		WebContentNavigator.gotoAddCP();
+
+		Click(locator1 = "TextInput#TITLE");
+
+		PortletEntry.inputTitle(title = "Closer Location");
+
+		Panel.expandPanel(panel = "Categorization");
+
+		DragAndDrop.javaScriptDragAndDropToObject(
+			locator1 = "WCEditWebContent#GEOLOCATION_LEAFLET_MARKER_DRAG_HANDLE",
+			locator2 = "WCEditWebContent#GEOLOCATION_ZOOM_OUT");
+
+		PortletEntry.publish();
+
+		WebContentNavigator.gotoAddCP();
+
+		Click(locator1 = "TextInput#TITLE");
+
+		PortletEntry.inputTitle(title = "Close Location");
+
+		Panel.expandPanel(panel = "Categorization");
+
+		Click(locator1 = "WCEditWebContent#GEOLOCATION_ZOOM_OUT");
+
+		DragAndDrop.javaScriptDragAndDropToObject(
+			locator1 = "WCEditWebContent#GEOLOCATION_LEAFLET_MARKER_DRAG_HANDLE",
+			locator2 = "WCEditWebContent#GEOLOCATION_ZOOM_OUT");
+
+		PortletEntry.publish();
+
+		var portalURL = PropsUtil.get("portal.url");
+
+		Navigator.openSpecificURL(url = "${portalURL}/web/guest/reactive-widget");
+
+		SearchBlueprints.searchReactiveSearchWidget(searchTerm = "location");
+
+		SearchBlueprints.viewBlueprintsSearchResultsSpecificOrder(resultsList = "Closest Location,Closer Location,Close Location");
+	}
+
 	test CreateBoostAssetType {
 		SearchBlueprints.addBlueprint(name = "My Blueprint");
 
