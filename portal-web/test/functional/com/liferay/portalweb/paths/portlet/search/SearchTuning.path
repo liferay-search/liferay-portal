@@ -50,6 +50,16 @@
 	<td></td>
 </tr>
 <tr>
+	<td>BLUEPRINTS_CLEAR_BUTTON</td>
+	<td>//button[contains(@title,'Clear')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_ELASTICSEACH_QUERY_JSON</td>
+	<td>//div[contains(@class,'custom-json')]//div[contains(@class,'CodeMirror cm-s-default')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>BLUEPRINTS_FRAGMENT_QUERY_SEARCH_BAR</td>
 	<td>//div[contains(@class,'open')]//input[contains(@placeholder,'Search')]</td>
 	<td></td>
