@@ -11,7 +11,7 @@
 <!--BLUEPRINTS-->
 <tr>
 	<td>BLUEPRINTS_ADD_QUERY_FRAGMENT</td>
-	<td>//div[contains(@class,'query-element-list')]//*[normalize-space(text())='${key_fragmentName}']/../../..//button[contains(@class,'btn-secondary')]</td>
+	<td>//div[contains(@class,'element-list')]//*[normalize-space(text())='${key_fragmentName}']/../../..//button[contains(@class,'btn-secondary')]</td>
 	<td></td>
 </tr>
 <tr>
