@@ -397,28 +397,29 @@ definition {
 			"context": "query",
 			"occur": "filter",
 			"query": {
-				"query": {
-					"bool": {
-						"must_not": [
-							{
-								"term": {
-									"assetTagNames.raw": {
-										"value": "${configuration.tag1}"
+				"wrapper":{
+					"query": {
+						"bool": {
+							"must_not": [
+								{
+									"term": {
+										"assetTagNames.raw": {
+											"value": "${configuration.tag1}"
+										}
+									}
+								},
+								{
+									"term": {
+										"assetTagNames.raw": {
+											"value": "${configuration.tag2}"
+										}
 									}
 								}
-							},
-							{
-								"term": {
-									"assetTagNames.raw": {
-										"value": "${configuration.tag2}"
-									}
-								}
-							}
-						]
+							]
+						}
 					}
 				}
-			},
-			"type": "wrapper"
+			}
 		}
 	],
 	"conditions": [],
