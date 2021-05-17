@@ -125,20 +125,24 @@ public class ProxyConfig {
 			return true;
 		}
 
+		protected boolean isNotNonProxyHost() {
+			return Stream.of(
+				_networkHostAddresses
+			).allMatch(
+				host -> !_http.isNonProxyHost(_http.getDomain(host))
+			);
+		}
+
 		protected boolean shouldApplyConfig() {
 			if (hasHostAndPort()) {
-				return true;
+				return isNotNonProxyHost();
 			}
 
 			if (!_http.hasProxyConfig()) {
 				return false;
 			}
 
-			return Stream.of(
-				_networkHostAddresses
-			).allMatch(
-				host -> !_http.isNonProxyHost(host)
-			);
+			return isNotNonProxyHost();
 		}
 
 		protected boolean shouldApplyCredentials() {
