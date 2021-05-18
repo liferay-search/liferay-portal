@@ -53,7 +53,8 @@ public class SearchBarPortletDestinationUtil {
 			offset = 1;
 		}
 
-		if (destination.regionMatches(
+		if (((destination.length() + offset) == friendlyURL.length()) &&
+			destination.regionMatches(
 				0, friendlyURL, offset, friendlyURL.length() - offset)) {
 
 			return true;
