@@ -196,8 +196,10 @@ test {
 }
 
 test {
-	if (project.hasProperty('excludeTests')) {
-		exclude project.property('excludeTests')
+	filter {
+		if (project.hasProperty('excludeTests')) {
+			excludeTestsMatching project.property('excludeTests')
+		}
 	}
 }
 
