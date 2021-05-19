@@ -40,61 +40,71 @@ public class DefaultSearchLayoutPrototypeCustomizer
 
 	@Override
 	public void customize(Layout layout) throws Exception {
-
 		String portletInstanceId = PortletIdCodec.generateInstanceId();
 
 		addBorderlessPortlet(
-			layout, PortletIdCodec.encode(
+			layout,
+			PortletIdCodec.encode(
 				SearchBarPortletKeys.SEARCH_BAR, portletInstanceId),
 			"column-1");
 
 		addBorderlessPortlet(
-			layout, PortletIdCodec.encode(
+			layout,
+			PortletIdCodec.encode(
 				SuggestionsPortletKeys.SUGGESTIONS, portletInstanceId),
 			"column-1");
 
 		addBorderlessPortlet(
-			layout, PortletIdCodec.encode(
+			layout,
+			PortletIdCodec.encode(
 				SearchResultsPortletKeys.SEARCH_RESULTS, portletInstanceId),
 			"column-3");
 
 		addBorderlessPortlet(
-			layout, PortletIdCodec.encode(
+			layout,
+			PortletIdCodec.encode(
 				SearchOptionsPortletKeys.SEARCH_OPTIONS, portletInstanceId),
 			"column-3");
 
 		addBorderlessPortlet(
-			layout, PortletIdCodec.encode(
+			layout,
+			PortletIdCodec.encode(
 				SiteFacetPortletKeys.SITE_FACET, portletInstanceId),
 			"column-2");
 
 		addBorderlessPortlet(
-			layout, PortletIdCodec.encode(
+			layout,
+			PortletIdCodec.encode(
 				TypeFacetPortletKeys.TYPE_FACET, portletInstanceId),
 			"column-2");
 
 		addBorderlessPortlet(
-			layout, PortletIdCodec.encode(
+			layout,
+			PortletIdCodec.encode(
 				TagFacetPortletKeys.TAG_FACET, portletInstanceId),
 			"column-2");
 
 		addBorderlessPortlet(
-			layout, PortletIdCodec.encode(
+			layout,
+			PortletIdCodec.encode(
 				CategoryFacetPortletKeys.CATEGORY_FACET, portletInstanceId),
 			"column-2");
 
 		addBorderlessPortlet(
-			layout, PortletIdCodec.encode(
+			layout,
+			PortletIdCodec.encode(
 				FolderFacetPortletKeys.FOLDER_FACET, portletInstanceId),
 			"column-2");
 
 		addBorderlessPortlet(
-			layout, PortletIdCodec.encode(
+			layout,
+			PortletIdCodec.encode(
 				UserFacetPortletKeys.USER_FACET, portletInstanceId),
 			"column-2");
 
 		addBorderlessPortlet(
-			layout, PortletIdCodec.encode(
+			layout,
+			PortletIdCodec.encode(
 				ModifiedFacetPortletKeys.MODIFIED_FACET, portletInstanceId),
 			"column-2");
 	}
