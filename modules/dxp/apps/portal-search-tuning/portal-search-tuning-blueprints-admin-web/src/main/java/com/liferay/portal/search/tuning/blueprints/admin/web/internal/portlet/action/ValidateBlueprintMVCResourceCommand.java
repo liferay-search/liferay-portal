@@ -14,6 +14,7 @@
 
 package com.liferay.portal.search.tuning.blueprints.admin.web.internal.portlet.action;
 
+import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -59,7 +60,7 @@ public class ValidateBlueprintMVCResourceCommand
 			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
 		throws Exception {
 
-		JSONObject responseJSONObject = null;
+		JSONObject responseJSONObject = _jsonFactory.createJSONObject();
 
 		try {
 			Blueprint blueprint = _getBlueprint(resourceRequest);
@@ -110,5 +111,8 @@ public class ValidateBlueprintMVCResourceCommand
 
 	@Reference
 	private BlueprintValidator _blueprintValidator;
+
+	@Reference
+	private JSONFactory _jsonFactory;
 
 }

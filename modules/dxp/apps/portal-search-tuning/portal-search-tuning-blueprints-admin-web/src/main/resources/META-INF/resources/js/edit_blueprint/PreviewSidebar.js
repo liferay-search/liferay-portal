@@ -199,18 +199,20 @@ function PreviewSidebar({
 				</div>
 			</nav>
 
-			{results.warnings &&
-				!!results.warnings.length &&
-				results.warnings.map((warning, index) => (
-					<ClayAlert
-						displayType="warning"
-						key={index}
-						title={Liferay.Language.get('warning')}
-						variant="stripe"
-					>
-						{warning.msg}
-					</ClayAlert>
-				))}
+			{!!results?.warnings?.length && (
+				<div className="warning-container">
+					{results.warnings.map((warning, index) => (
+						<ClayAlert
+							displayType="warning"
+							key={index}
+							title={Liferay.Language.get('warning')}
+							variant="stripe"
+						>
+							{warning.msg}
+						</ClayAlert>
+					))}
+				</div>
+			)}
 
 			{results.meta &&
 				(!results.errors || !results.errors.length) &&

@@ -10,6 +10,10 @@
 @import '_preview_modal';
 @import '_searchable_assets_modal';
 
+// Components Used In Modals
+
+@import '_error_list_item';
+
 .portlet-blueprints-admin {
 	// Shared
 
@@ -22,7 +26,6 @@
 	@import '_builder';
 	@import '_edit_element';
 	@import '_element';
-	@import '_error_list_item';
 	@import '_import_blueprint';
 	@import '_page_toolbar';
 	@import '_preview_sidebar';

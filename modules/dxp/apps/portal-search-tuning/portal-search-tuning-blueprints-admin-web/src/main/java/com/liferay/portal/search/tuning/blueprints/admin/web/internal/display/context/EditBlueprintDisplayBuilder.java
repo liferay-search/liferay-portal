@@ -150,6 +150,8 @@ public class EditBlueprintDisplayBuilder extends EditEntryDisplayBuilder {
 			getSubmitFormURL(
 				BlueprintsAdminMVCCommandNames.EDIT_BLUEPRINT,
 				_blueprint != null)
+		).put(
+			"validateBlueprintURL", _getValidateBlueprintURL()
 		).build();
 
 		if (_blueprint != null) {
@@ -269,6 +271,15 @@ public class EditBlueprintDisplayBuilder extends EditEntryDisplayBuilder {
 		).setWindowState(
 			LiferayWindowState.POP_UP
 		).build();
+	}
+
+	private String _getValidateBlueprintURL() {
+		ResourceURL resourceURL = renderResponse.createResourceURL();
+
+		resourceURL.setResourceID(
+			BlueprintsAdminMVCCommandNames.VALIDATE_BLUEPRINT);
+
+		return resourceURL.toString();
 	}
 
 	private void _setPageTitle(EntryDisplayContext entryDisplayContext) {

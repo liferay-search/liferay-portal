@@ -20,6 +20,7 @@ import React, {useContext, useRef, useState} from 'react';
 
 import ErrorBoundary from '../shared/ErrorBoundary';
 import PageToolbar from '../shared/PageToolbar';
+import SubmitWarningModal from '../shared/SubmitWarningModal';
 import ThemeContext from '../shared/ThemeContext';
 import {CUSTOM_JSON_ELEMENT} from '../utils/data';
 import {INPUT_TYPES} from '../utils/inputTypes';
@@ -62,15 +63,18 @@ function EditBlueprintForm({
 	searchableAssetTypes,
 	searchResultsURL,
 	submitFormURL = '',
+	validateBlueprintURL,
 }) {
 	const {namespace} = useContext(ThemeContext);
 
+	const [errors, setErrors] = useState([]);
 	const [previewInfo, setPreviewInfo] = useState(() => ({
 		loading: false,
 		results: {},
 	}));
 	const [showSidebar, setShowSidebar] = useState(true);
 	const [showPreview, setShowPreview] = useState(false);
+	const [showSubmitWarningModal, setShowSubmitWarningModal] = useState(false);
 	const [tab, setTab] = useState('query-builder');
 
 	const form = useRef();
@@ -139,7 +143,7 @@ function EditBlueprintForm({
 		});
 	};
 
-	const _handleFormikSubmit = (values) => {
+	const _handleFormikSubmit = async (values) => {
 		const formData = new FormData();
 
 		_appendTitleAndDescription(formData);
@@ -190,29 +194,49 @@ function EditBlueprintForm({
 		formData.append(`${namespace}blueprintId`, blueprintId);
 		formData.append(`${namespace}redirect`, redirectURL);
 
-		return fetch(submitFormURL, {
-			body: formData,
-			method: 'POST',
-		})
-			.then((response) => response.json())
-			.then((responseContent) => {
-				if (
-					Object.prototype.hasOwnProperty.call(
-						responseContent,
-						'errors'
-					)
-				) {
-					responseContent.errors.forEach((message) =>
-						openErrorToast({message})
-					);
+		try {
+
+			// If the warning modal is already open, assume the form was submitted
+			// using the "Continue To Save" action and should skip the schema
+			// validation step.
+
+			if (!showSubmitWarningModal) {
+				const validateErrors = await fetch(validateBlueprintURL, {
+					body: formData,
+					method: 'POST',
+				}).then((response) => response.json());
+
+				if (validateErrors.errors?.length) {
+					setErrors(validateErrors.errors);
+					setShowSubmitWarningModal(true);
+
+					return;
 				}
-				else {
-					navigate(redirectURL);
-				}
-			})
-			.catch(() => {
-				openErrorToast();
-			});
+			}
+
+			const responseContent = await fetch(submitFormURL, {
+				body: formData,
+				method: 'POST',
+			}).then((response) => response.json());
+
+			if (
+				Object.prototype.hasOwnProperty.call(responseContent, 'errors')
+			) {
+				responseContent.errors.forEach((message) =>
+					openErrorToast({message})
+				);
+			}
+			else {
+				navigate(redirectURL);
+			}
+		}
+		catch (error) {
+			openErrorToast();
+
+			if (process.env.NODE_ENV === 'development') {
+				console.error(error);
+			}
+		}
 	};
 
 	const _handleFormikValidate = (values) => {
@@ -505,6 +529,20 @@ function EditBlueprintForm({
 		}
 	};
 
+	const _handleSubmit = (event) => {
+		event.preventDefault();
+
+		formik.handleSubmit();
+
+		if (!formik.isValid) {
+			openErrorToast({
+				message: Liferay.Language.get(
+					'unable-to-save-due-to-invalid-or-missing-configuration-values'
+				),
+			});
+		}
+	};
+
 	const _renderTabContent = () => {
 		switch (tab) {
 			case 'settings':
@@ -579,25 +617,21 @@ function EditBlueprintForm({
 
 	return (
 		<form ref={form}>
+			<SubmitWarningModal
+				errors={errors}
+				isSubmitting={formik.isSubmitting}
+				onClose={() => setShowSubmitWarningModal(false)}
+				onSubmit={_handleSubmit}
+				visible={showSubmitWarningModal}
+			/>
+
 			<PageToolbar
 				initialDescription={initialDescription}
 				initialTitle={initialTitle}
 				isSubmitting={formik.isSubmitting}
 				onCancel={redirectURL}
 				onChangeTab={setTab}
-				onSubmit={(event) => {
-					event.preventDefault();
-
-					formik.handleSubmit();
-
-					if (!formik.isValid) {
-						openErrorToast({
-							message: Liferay.Language.get(
-								'unable-to-save-due-to-invalid-or-missing-configuration-values'
-							),
-						});
-					}
-				}}
+				onSubmit={_handleSubmit}
 				tab={tab}
 				tabs={TABS}
 			>
