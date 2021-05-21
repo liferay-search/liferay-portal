@@ -343,5 +343,4 @@ PageToolbar.propTypes = {
 	onSubmit: PropTypes.func.isRequired,
 	tab: PropTypes.string,
 	tabs: PropTypes.object,
-	toolbarItem: PropTypes.element,
 };
