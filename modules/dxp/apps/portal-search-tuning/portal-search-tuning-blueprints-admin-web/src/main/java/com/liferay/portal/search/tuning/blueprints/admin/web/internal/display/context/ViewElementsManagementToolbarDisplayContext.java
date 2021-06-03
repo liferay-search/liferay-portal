@@ -136,6 +136,11 @@ public class ViewElementsManagementToolbarDisplayContext
 		).build();
 	}
 
+	@Override
+	public Boolean isDisabled() {
+		return false;
+	}
+
 	private PortletURL _getFilterURL(Boolean hidden) {
 		return PortletURLBuilder.create(
 			getPortletURL()
