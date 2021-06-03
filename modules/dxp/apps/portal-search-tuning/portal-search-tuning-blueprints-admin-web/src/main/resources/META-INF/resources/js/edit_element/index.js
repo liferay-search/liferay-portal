@@ -41,16 +41,7 @@ import {
 	renameKeys,
 	sub,
 } from '../utils/utils';
-
-const ELEMENT_CLASSNAME_SUFFIX = 'Parameter';
-
-const elementClassNameRegex = new RegExp(
-	`([\\w\\.]+\\.)(\\w+)(${ELEMENT_CLASSNAME_SUFFIX})`
-);
-
-function extractType(className = '') {
-	return className.split(elementClassNameRegex)[2];
-}
+import SidebarPanel from './SidebarPanel';
 
 function EditElementForm({
 	elementId,
@@ -92,9 +83,8 @@ function EditElementForm({
 	);
 
 	useEffect(() => {
-
 		// Workaround to force a re-render so `elementTemplateJSONRef` will be
-		// defined when calling `_onVariableClick`
+		// defined when calling `_handleVariableClick`
 
 		setShowSidebar(true);
 	}, []);
@@ -107,8 +97,7 @@ function EditElementForm({
 					entry[key]
 				);
 			});
-		}
-		else if (typeof entry == 'string') {
+		} else if (typeof entry == 'string') {
 			formData.append(
 				`${namespace}${name}_${defaultLocale.replace('-', '_')}`,
 				entry
@@ -140,96 +129,7 @@ function EditElementForm({
 		[predefinedVariables]
 	);
 
-	function _onVariableClick(variable) {
-		const doc = elementTemplateJSONRef.current.getDoc();
-		const cursor = doc.getCursor();
-
-		doc.replaceRange(variable, cursor);
-	}
-
-	function _renderPreviewBody() {
-		let previewElementTemplateJSON = {};
-		let previewUIConfigurationJSON = {};
-
-		try {
-			previewElementTemplateJSON = JSON.parse(elementTemplateJSON);
-			previewUIConfigurationJSON = JSON.parse(uiConfigurationJSON);
-		}
-		catch (e) {
-			return (
-				<ClayEmptyState
-					description={Liferay.Language.get(
-						'json-may-be-incorrect-and-we-were-unable-to-load-a-preview-of-the-configuration'
-					)}
-					imgSrc="/o/admin-theme/images/states/empty_state.gif"
-					title={Liferay.Language.get('unable-to-load-preview')}
-				/>
-			);
-		}
-
-		return (
-			<div className="portlet-blueprints-admin">
-				<ErrorBoundary>
-					<Element
-						collapseAll={false}
-						elementTemplateJSON={previewElementTemplateJSON}
-						uiConfigurationJSON={previewUIConfigurationJSON}
-						uiConfigurationValues={getUIConfigurationValues(
-							previewUIConfigurationJSON
-						)}
-					/>
-				</ErrorBoundary>
-			</div>
-		);
-	}
-
-	const _validateConfigKeys = (
-		elementTemplateJSON,
-		parseUIConfigurationJSON
-	) => {
-		const regex = new RegExp(`\\$\\{${CONFIG_PREFIX}.([\\w\\d_]+)\\}`, 'g');
-
-		const elementKeys = [...elementTemplateJSON.matchAll(regex)].map(
-			(item) => item[1]
-		);
-
-		const uiConfigKeys = parseUIConfigurationJSON.fieldSets
-			? parseUIConfigurationJSON.fieldSets.reduce((acc, curr) => {
-
-					// Find names within each fields array
-
-					const configKeys = curr.fields
-						? curr.fields.map((item) => item.name)
-						: [];
-
-					return [...acc, ...configKeys];
-			  }, [])
-			: [];
-
-		const missingKeys = elementKeys.filter(
-			(item) => !uiConfigKeys.includes(item)
-		);
-
-		if (missingKeys.length > 0) {
-			throw sub(
-				Liferay.Language.get(
-					'the-following-configuration-key-is-missing-x'
-				),
-				[missingKeys.join(', ')]
-			);
-		}
-	};
-
-	const _validateJSON = (text, name) => {
-		try {
-			return JSON.parse(text);
-		}
-		catch {
-			throw sub(Liferay.Language.get('x-is-invalid'), [name]);
-		}
-	};
-
-	const handleSubmit = (event) => {
+	const _handleSubmit = (event) => {
 		event.preventDefault();
 
 		setIsSubmitting(true);
@@ -277,8 +177,7 @@ function EditElementForm({
 					uiConfigurationJSON: parseUIConfigurationJSON,
 				})
 			);
-		}
-		catch (error) {
+		} catch (error) {
 			openErrorToast({
 				message: error,
 			});
@@ -309,8 +208,7 @@ function EditElementForm({
 					);
 
 					setIsSubmitting(false);
-				}
-				else {
+				} else {
 					navigate(redirectURL);
 				}
 			})
@@ -319,6 +217,92 @@ function EditElementForm({
 
 				setIsSubmitting(false);
 			});
+	};
+
+	function _handleVariableClick(variable) {
+		const doc = elementTemplateJSONRef.current.getDoc();
+		const cursor = doc.getCursor();
+
+		doc.replaceRange(variable, cursor);
+	}
+
+	function _renderPreviewBody() {
+		let previewElementTemplateJSON = {};
+		let previewUIConfigurationJSON = {};
+
+		try {
+			previewElementTemplateJSON = JSON.parse(elementTemplateJSON);
+			previewUIConfigurationJSON = JSON.parse(uiConfigurationJSON);
+		} catch (e) {
+			return (
+				<ClayEmptyState
+					description={Liferay.Language.get(
+						'json-may-be-incorrect-and-we-were-unable-to-load-a-preview-of-the-configuration'
+					)}
+					imgSrc="/o/admin-theme/images/states/empty_state.gif"
+					title={Liferay.Language.get('unable-to-load-preview')}
+				/>
+			);
+		}
+
+		return (
+			<div className="portlet-blueprints-admin">
+				<ErrorBoundary>
+					<Element
+						collapseAll={false}
+						elementTemplateJSON={previewElementTemplateJSON}
+						uiConfigurationJSON={previewUIConfigurationJSON}
+						uiConfigurationValues={getUIConfigurationValues(
+							previewUIConfigurationJSON
+						)}
+					/>
+				</ErrorBoundary>
+			</div>
+		);
+	}
+
+	const _validateConfigKeys = (
+		elementTemplateJSON,
+		parseUIConfigurationJSON
+	) => {
+		const regex = new RegExp(`\\$\\{${CONFIG_PREFIX}.([\\w\\d_]+)\\}`, 'g');
+
+		const elementKeys = [...elementTemplateJSON.matchAll(regex)].map(
+			(item) => item[1]
+		);
+
+		const uiConfigKeys = parseUIConfigurationJSON.fieldSets
+			? parseUIConfigurationJSON.fieldSets.reduce((acc, curr) => {
+					// Find names within each fields array
+
+					const configKeys = curr.fields
+						? curr.fields.map((item) => item.name)
+						: [];
+
+					return [...acc, ...configKeys];
+			  }, [])
+			: [];
+
+		const missingKeys = elementKeys.filter(
+			(item) => !uiConfigKeys.includes(item)
+		);
+
+		if (missingKeys.length > 0) {
+			throw sub(
+				Liferay.Language.get(
+					'the-following-configuration-key-is-missing-x'
+				),
+				[missingKeys.join(', ')]
+			);
+		}
+	};
+
+	const _validateJSON = (text, name) => {
+		try {
+			return JSON.parse(text);
+		} catch {
+			throw sub(Liferay.Language.get('x-is-invalid'), [name]);
+		}
 	};
 
 	return (
@@ -368,7 +352,7 @@ function EditElementForm({
 								<ClayToolbar.Item>
 									<ClayButton
 										disabled={isSubmitting}
-										onClick={handleSubmit}
+										onClick={_handleSubmit}
 										small
 										type="submit"
 									>
@@ -470,12 +454,12 @@ function EditElementForm({
 																expand={
 																	expandAllVariables
 																}
-																handleClick={
-																	_onVariableClick
-																}
 																item={item}
 																key={
 																	item.categoryName
+																}
+																onVariableClick={
+																	_handleVariableClick
 																}
 																parameterDefinitions={
 																	item.parameterDefinitions
@@ -568,59 +552,6 @@ EditElementForm.propTypes = {
 	submitFormURL: PropTypes.string,
 	type: PropTypes.number,
 };
-
-function SidebarPanel({
-	categoryName,
-	expand,
-	handleClick,
-	parameterDefinitions,
-}) {
-	const [showList, setShowList] = useState(false);
-
-	useEffect(() => {
-		setShowList(expand);
-	}, [expand]);
-
-	return (
-		<div>
-			<ClayButton
-				className="panel-header sidebar-dt"
-				displayType="unstyled"
-				onClick={() => setShowList(!showList)}
-			>
-				<span>{categoryName}</span>
-
-				<span className="sidebar-arrow">
-					<ClayIcon
-						symbol={showList ? 'angle-down' : 'angle-right'}
-					/>
-				</span>
-			</ClayButton>
-
-			{showList &&
-				parameterDefinitions.map((entry) => (
-					<dd className="sidebar-dd" key={entry.variable}>
-						<ClayTooltipProvider>
-							<ClayButton
-								className="nav-link"
-								displayType="unstyled"
-								onClick={() => handleClick(entry.variable)}
-								title={`${Liferay.Language.get(
-									'type'
-								)}: ${extractType(
-									entry.className
-								)}\n${Liferay.Language.get('variable')}: ${
-									entry.variable
-								}`}
-							>
-								{entry.description}
-							</ClayButton>
-						</ClayTooltipProvider>
-					</dd>
-				))}
-		</div>
-	);
-}
 
 export default function ({context, props}) {
 	return (
