@@ -34,19 +34,19 @@
 				<c:when test="<%= BlueprintEntryPermission.contains(permissionChecker, entry, ActionKeys.UPDATE) %>">
 					<h4>
 						<aui:a href="<%= editEntryURL %>">
-							<%= entry.getTitle(locale) %>
+							<%= HtmlUtil.escape(entry.getTitle(locale)) %>
 						</aui:a>
 					</h4>
 				</c:when>
 				<c:otherwise>
 					<h4>
-						<%= entry.getTitle(locale) %>
+						<%= HtmlUtil.escape(entry.getTitle(locale)) %>
 					</h4>
 				</c:otherwise>
 			</c:choose>
 
-			<h5 class="text-default text-truncate-inline" title="<%= entry.getDescription(locale) %>">
-				<%= (entry.getDescription(locale).length() > 300) ? entry.getDescription(locale).substring(0, 300).concat("...") : entry.getDescription(locale) %>
+			<h5 class="text-default text-truncate-inline" title="<%= HtmlUtil.escape(entry.getDescription(locale)) %>">
+				<%= (entry.getDescription(locale).length() > 300) ? HtmlUtil.escape(entry.getDescription(locale).substring(0, 300).concat("...")) : HtmlUtil.escape(entry.getDescription(locale)) %>
 			</h5>
 
 			<%
@@ -77,13 +77,13 @@
 					cssClass="table-cell-expand table-cell-minw-200 table-title"
 					href="<%= editEntryURL %>"
 					name="title"
-					value="<%= entry.getTitle(locale) %>"
+					value="<%= HtmlUtil.escape(entry.getTitle(locale)) %>"
 				/>
 
 				<liferay-ui:search-container-column-text
 					cssClass="table-cell-expand table-cell-minw-200"
 					name="description"
-					value="<%= entry.getDescription(locale) %>"
+					value="<%= HtmlUtil.escape(entry.getDescription(locale)) %>"
 				/>
 
 				<liferay-ui:search-container-column-text
@@ -96,13 +96,13 @@
 				<liferay-ui:search-container-column-text
 					cssClass="table-cell-expand table-cell-minw-200 table-title"
 					name="title"
-					value="<%= entry.getTitle(locale) %>"
+					value="<%= HtmlUtil.escape(entry.getTitle(locale)) %>"
 				/>
 
 				<liferay-ui:search-container-column-text
 					cssClass="table-cell-expand table-cell-minw-200"
 					name="description"
-					value="<%= entry.getDescription(locale) %>"
+					value="<%= HtmlUtil.escape(entry.getDescription(locale)) %>"
 				/>
 
 				<liferay-ui:search-container-column-text
