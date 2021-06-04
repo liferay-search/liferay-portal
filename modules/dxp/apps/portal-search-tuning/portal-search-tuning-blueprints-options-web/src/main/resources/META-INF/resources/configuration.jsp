@@ -28,6 +28,7 @@ page import="com.liferay.portal.kernel.portlet.LiferayWindowState" %><%@
 page import="com.liferay.portal.kernel.portlet.PortletProvider" %><%@
 page import="com.liferay.portal.kernel.portlet.PortletProviderUtil" %><%@
 page import="com.liferay.portal.kernel.util.Constants" %><%@
+page import="com.liferay.portal.kernel.util.HtmlUtil" %><%@
 page import="com.liferay.portal.kernel.util.PortalUtil" %><%@
 page import="com.liferay.portal.kernel.util.PrefsParamUtil" %><%@
 page import="com.liferay.portal.kernel.util.Validator" %><%@
@@ -82,7 +83,7 @@ BlueprintsOptionsPortletPreferences blueprintsOptionsPortletPreferences = new Bl
 							}
 							%>
 
-							<input class="form-control" id="<%= liferayPortletResponse.getNamespace() + "blueprintName" %>" name="<%= liferayPortletResponse.getNamespace() + "blueprintName" %>" readonly="readonly" value="<%= Validator.isNotNull(blueprint) ? blueprint.getTitle(locale) : StringPool.BLANK %>" />
+							<input class="form-control" id="<%= liferayPortletResponse.getNamespace() + "blueprintName" %>" name="<%= liferayPortletResponse.getNamespace() + "blueprintName" %>" readonly="readonly" value="<%= Validator.isNotNull(blueprint) ? HtmlUtil.escape(blueprint.getTitle(locale)) : StringPool.BLANK %>" />
 						</div>
 
 						<div class="input-group-item input-group-item-shrink">
