@@ -32,6 +32,7 @@ import CodeMirrorEditor from '../shared/CodeMirrorEditor';
 import ErrorBoundary from '../shared/ErrorBoundary';
 import PreviewModal from '../shared/PreviewModal';
 import SearchInput from '../shared/SearchInput';
+import SubmitWarningModal from '../shared/SubmitWarningModal';
 import ThemeContext from '../shared/ThemeContext';
 import Element from '../shared/element/index';
 import {CONFIG_PREFIX} from '../utils/constants';
@@ -52,6 +53,7 @@ function EditElementForm({
 	redirectURL,
 	submitFormURL,
 	type,
+	validateElementURL,
 }) {
 	const {defaultLocale, namespace} = useContext(ThemeContext);
 
@@ -60,8 +62,10 @@ function EditElementForm({
 	const form = useRef();
 	const elementTemplateJSONRef = useRef();
 
+	const [errors, setErrors] = useState([]);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [showSidebar, setShowSidebar] = useState(false);
+	const [showSubmitWarningModal, setShowSubmitWarningModal] = useState(false);
 	const [expandAllVariables, setExpandAllVariables] = useState(false);
 
 	const [variables, setVariables] = useState(predefinedVariables);
@@ -83,6 +87,7 @@ function EditElementForm({
 	);
 
 	useEffect(() => {
+
 		// Workaround to force a re-render so `elementTemplateJSONRef` will be
 		// defined when calling `_handleVariableClick`
 
@@ -97,7 +102,8 @@ function EditElementForm({
 					entry[key]
 				);
 			});
-		} else if (typeof entry == 'string') {
+		}
+		else if (typeof entry == 'string') {
 			formData.append(
 				`${namespace}${name}_${defaultLocale.replace('-', '_')}`,
 				entry
@@ -129,7 +135,7 @@ function EditElementForm({
 		[predefinedVariables]
 	);
 
-	const _handleSubmit = (event) => {
+	const _handleSubmit = async (event) => {
 		event.preventDefault();
 
 		setIsSubmitting(true);
@@ -177,7 +183,8 @@ function EditElementForm({
 					uiConfigurationJSON: parseUIConfigurationJSON,
 				})
 			);
-		} catch (error) {
+		}
+		catch (error) {
 			openErrorToast({
 				message: error,
 			});
@@ -190,6 +197,53 @@ function EditElementForm({
 		formData.append(`${namespace}elementId`, elementId);
 		formData.append(`${namespace}redirect`, redirectURL);
 		formData.append(`${namespace}elementType`, type);
+
+		try {
+
+			// If the warning modal is already open, assume the form was submitted
+			// using the "Continue To Save" action and should skip the schema
+			// validation step.
+
+			if (!showSubmitWarningModal) {
+				const validateErrors = await fetch(validateElementURL, {
+					body: formData,
+					method: 'POST',
+				}).then((response) => response.json());
+
+				if (validateErrors.errors?.length) {
+					setErrors(validateErrors.errors);
+					setShowSubmitWarningModal(true);
+					setIsSubmitting(false);
+
+					return;
+				}
+			}
+
+			const responseContent = await fetch(submitFormURL, {
+				body: formData,
+				method: 'POST',
+			}).then((response) => response.json());
+
+			if (
+				Object.prototype.hasOwnProperty.call(responseContent, 'errors')
+			) {
+				responseContent.errors.forEach((message) =>
+					openErrorToast({message})
+				);
+
+				setIsSubmitting(false);
+			}
+			else {
+				navigate(redirectURL);
+			}
+		}
+		catch (error) {
+			openErrorToast();
+
+			if (process.env.NODE_ENV === 'development') {
+				console.error(error);
+			}
+		}
 
 		return fetch(submitFormURL, {
 			body: formData,
@@ -208,7 +262,8 @@ function EditElementForm({
 					);
 
 					setIsSubmitting(false);
-				} else {
+				}
+				else {
 					navigate(redirectURL);
 				}
 			})
@@ -233,7 +288,8 @@ function EditElementForm({
 		try {
 			previewElementTemplateJSON = JSON.parse(elementTemplateJSON);
 			previewUIConfigurationJSON = JSON.parse(uiConfigurationJSON);
-		} catch (e) {
+		}
+		catch (e) {
 			return (
 				<ClayEmptyState
 					description={Liferay.Language.get(
@@ -273,6 +329,7 @@ function EditElementForm({
 
 		const uiConfigKeys = parseUIConfigurationJSON.fieldSets
 			? parseUIConfigurationJSON.fieldSets.reduce((acc, curr) => {
+
 					// Find names within each fields array
 
 					const configKeys = curr.fields
@@ -300,7 +357,8 @@ function EditElementForm({
 	const _validateJSON = (text, name) => {
 		try {
 			return JSON.parse(text);
-		} catch {
+		}
+		catch {
 			throw sub(Liferay.Language.get('x-is-invalid'), [name]);
 		}
 	};
@@ -308,6 +366,17 @@ function EditElementForm({
 	return (
 		<>
 			<form ref={form}>
+				<SubmitWarningModal
+					errors={errors}
+					isSubmitting={isSubmitting}
+					message={Liferay.Language.get(
+						'the-element-configuration-has-errors-that-may-cause-unexpected-results'
+					)}
+					onClose={() => setShowSubmitWarningModal(false)}
+					onSubmit={_handleSubmit}
+					visible={showSubmitWarningModal}
+				/>
+
 				<div className="page-toolbar-root">
 					<ClayToolbar light>
 						<ClayLayout.ContainerFluid>

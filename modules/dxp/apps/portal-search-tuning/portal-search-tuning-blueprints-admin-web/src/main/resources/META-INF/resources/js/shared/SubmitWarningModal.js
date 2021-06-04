@@ -13,11 +13,12 @@ import ClayButton from '@clayui/button';
 import ClayModal, {useModal} from '@clayui/modal';
 import React from 'react';
 
-import ErrorListItem from '../edit_blueprint/ErrorListItem';
+import ErrorListItem from './ErrorListItem';
 
 const SubmitWarningModal = ({
 	errors,
 	isSubmitting,
+	message,
 	onClose = () => {},
 	onSubmit = () => {},
 	visible,
@@ -37,11 +38,7 @@ const SubmitWarningModal = ({
 			</ClayModal.Header>
 
 			<ClayModal.Body>
-				<p>
-					{Liferay.Language.get(
-						'the-blueprint-configuration-has-errors-that-may-result-in-unexpected-results.-use-the-preview-panel-to-review-these-errors'
-					)}
-				</p>
+				<p>{message}</p>
 
 				{errors.map((error, index) => (
 					<ErrorListItem item={error} key={index} />

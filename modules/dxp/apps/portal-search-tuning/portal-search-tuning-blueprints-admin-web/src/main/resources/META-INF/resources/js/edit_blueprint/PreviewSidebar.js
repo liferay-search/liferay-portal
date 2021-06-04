@@ -23,11 +23,11 @@ import getCN from 'classnames';
 import PropTypes from 'prop-types';
 import React, {useState} from 'react';
 
+import ErrorListItem from '../shared/ErrorListItem';
 import {PreviewModalWithCopyDownload} from '../shared/PreviewModal';
 import SearchInput from '../shared/SearchInput';
 import useDidUpdateEffect from '../utils/useDidUpdateEffect';
 import {sub} from '../utils/utils';
-import ErrorListItem from './ErrorListItem';
 import ResultListItem from './ResultListItem';
 
 const DELTAS = [10, 20, 30, 50];

@@ -33,6 +33,7 @@ import java.util.Optional;
 
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.portlet.ResourceURL;
 
 /**
  * @author Kevin Tan
@@ -134,6 +135,8 @@ public class EditElementDisplayBuilder extends EditEntryDisplayBuilder {
 				BlueprintsAdminMVCCommandNames.EDIT_ELEMENT, _element != null)
 		).put(
 			"type", _getType()
+		).put(
+			"validateElementURL", _getValidateElementURL()
 		).build();
 
 		if (_element != null) {
@@ -157,6 +160,15 @@ public class EditElementDisplayBuilder extends EditEntryDisplayBuilder {
 		}
 
 		return BlueprintsAdminRequestUtil.getElementType(renderRequest);
+	}
+
+	private String _getValidateElementURL() {
+		ResourceURL resourceURL = renderResponse.createResourceURL();
+
+		resourceURL.setResourceID(
+				BlueprintsAdminMVCCommandNames.VALIDATE_ELEMENT);
+
+		return resourceURL.toString();
 	}
 
 	private void _setPageTitle(EntryDisplayContext entryDisplayContext) {

@@ -620,6 +620,9 @@ function EditBlueprintForm({
 			<SubmitWarningModal
 				errors={errors}
 				isSubmitting={formik.isSubmitting}
+				message={Liferay.Language.get(
+					'the-blueprint-configuration-has-errors-that-may-cause-unexpected-results.-use-the-preview-panel-to-review-these-errors'
+				)}
 				onClose={() => setShowSubmitWarningModal(false)}
 				onSubmit={_handleSubmit}
 				visible={showSubmitWarningModal}
