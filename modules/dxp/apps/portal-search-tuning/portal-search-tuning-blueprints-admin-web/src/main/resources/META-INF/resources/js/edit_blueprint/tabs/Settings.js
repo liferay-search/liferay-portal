@@ -53,10 +53,16 @@ function Settings({
 
 	return (
 		<ClayLayout.ContainerFluid className="builder" size="xl">
-			<div className="content-shift sheet">
+			<div className="content-shift settings-tab sheet">
 				<h2 className="sheet-title">
 					{Liferay.Language.get('settings')}
 				</h2>
+
+				<div className="sheet-text">
+					{Liferay.Language.get(
+						'enter-additional-blueprints-configuration-settings-below-refer-to-the-documentation-for-help'
+					)}
+				</div>
 
 				<ClayForm.Group>
 					<label htmlFor="aggregation-configuration">
