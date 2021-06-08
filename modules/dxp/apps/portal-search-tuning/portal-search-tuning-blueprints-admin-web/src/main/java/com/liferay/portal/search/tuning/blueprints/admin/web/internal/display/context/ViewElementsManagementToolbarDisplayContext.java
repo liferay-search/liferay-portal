@@ -58,15 +58,6 @@ public class ViewElementsManagementToolbarDisplayContext
 	public List<DropdownItem> getActionDropdownItems() {
 		return DropdownItemListBuilder.add(
 			dropdownItem -> {
-				dropdownItem.putData("action", "deleteEntries");
-
-				dropdownItem.setLabel(
-					LanguageUtil.get(httpServletRequest, "delete"));
-
-				dropdownItem.setQuickAction(true);
-			}
-		).add(
-			dropdownItem -> {
 				dropdownItem.putData("action", "hideEntries");
 
 				dropdownItem.setLabel(
@@ -80,6 +71,15 @@ public class ViewElementsManagementToolbarDisplayContext
 
 				dropdownItem.setLabel(
 					LanguageUtil.get(httpServletRequest, "show"));
+
+				dropdownItem.setQuickAction(true);
+			}
+		).add(
+			dropdownItem -> {
+				dropdownItem.putData("action", "deleteEntries");
+
+				dropdownItem.setLabel(
+					LanguageUtil.get(httpServletRequest, "delete"));
 
 				dropdownItem.setQuickAction(true);
 			}
