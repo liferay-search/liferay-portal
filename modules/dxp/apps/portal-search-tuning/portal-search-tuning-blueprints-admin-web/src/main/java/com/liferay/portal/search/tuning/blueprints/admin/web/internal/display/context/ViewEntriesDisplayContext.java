@@ -32,6 +32,8 @@ import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.
 import com.liferay.portal.search.tuning.blueprints.admin.web.internal.constants.BlueprintsAdminWebKeys;
 import com.liferay.portal.search.tuning.blueprints.constants.BlueprintsPortletKeys;
 
+import java.util.Objects;
+
 import javax.portlet.PortletException;
 import javax.portlet.PortletURL;
 
@@ -103,8 +105,18 @@ public abstract class ViewEntriesDisplayContext<R> {
 	}
 
 	protected String getOrderByType() {
-		return ParamUtil.getString(
-			liferayPortletRequest, "orderByType", "desc");
+		String orderByType = ParamUtil.getString(
+			liferayPortletRequest, "orderByType");
+
+		if (Validator.isNotNull(orderByType)) {
+			return orderByType;
+		}
+
+		if (Objects.equals(getOrderByCol(), Field.TITLE)) {
+			return "asc";
+		}
+
+		return "desc";
 	}
 
 	protected SearchContainer<R> getSearchContainer()
