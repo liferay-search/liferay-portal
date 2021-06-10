@@ -1,0 +1,488 @@
+{
+	"$id": "http://example.com/root.json",
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"additionalProperties": false,
+	"definitions": {
+		"field": {
+			"additionalProperties": false,
+			"allOf": [
+				{
+					"if": {
+						"properties": {
+							"type": {
+								"const": "select"
+							}
+						}
+					},
+					"then": {
+						"$ref": "#/definitions/fieldSelect"
+					}
+				},
+				{
+					"if": {
+						"properties": {
+							"type": {
+								"const": "checkbox"
+							}
+						}
+					},
+					"then": {
+						"$ref": "#/definitions/fieldCheckbox"
+					}
+				},
+				{
+					"if": {
+						"properties": {
+							"type": {
+								"const": "colorPalette"
+							}
+						}
+					},
+					"then": {
+						"$ref": "#/definitions/fieldColorPalette"
+					}
+				},
+				{
+					"if": {
+						"properties": {
+							"type": {
+								"const": "colorPicker"
+							}
+						}
+					},
+					"then": {
+						"$ref": "#/definitions/fieldColorPicker"
+					}
+				},
+				{
+					"if": {
+						"properties": {
+							"type": {
+								"const": "collectionSelector"
+							}
+						}
+					},
+					"then": {
+						"$ref": "#/definitions/fieldCollectionSelector"
+					}
+				},
+				{
+					"if": {
+						"properties": {
+							"type": {
+								"const": "itemSelector"
+							}
+						}
+					},
+					"then": {
+						"$ref": "#/definitions/fieldItemSelector"
+					}
+				},
+				{
+					"if": {
+						"properties": {
+							"type": {
+								"const": "text"
+							}
+						}
+					},
+					"then": {
+						"$ref": "#/definitions/fieldText"
+					}
+				}
+			],
+			"properties": {
+				"dataType": {
+					"enum": [
+						"double",
+						"int",
+						"object",
+						"string"
+					],
+					"title": "The Datatype Schema",
+					"type": "string"
+				},
+				"defaultValue": {
+					"title": "The DefaultValue Schema",
+					"type": [
+						"boolean",
+						"object",
+						"string"
+					]
+				},
+				"description": {
+					"default": "",
+					"title": "The Description Schema",
+					"type": "string"
+				},
+				"label": {
+					"default": "",
+					"title": "The Label Schema",
+					"type": "string"
+				},
+				"localizable": {
+					"default": false,
+					"title": "The Localizable Schema",
+					"type": "boolean"
+				},
+				"name": {
+					"minLength": 1,
+					"pattern": "^[A-Za-z0-9]+$",
+					"title": "The Name Schema",
+					"type": "string"
+				},
+				"type": {
+					"enum": [
+						"categoryTreeNodeSelector",
+						"checkbox",
+						"colorPalette",
+						"colorPicker",
+						"collectionSelector",
+						"itemSelector",
+						"navigationMenuSelector",
+						"select",
+						"text"
+					],
+					"title": "The Type Schema",
+					"type": "string"
+				},
+				"typeOptions": {
+					"title": "The TypeOptions Schema",
+					"type": "object"
+				}
+			},
+			"required": [
+				"name",
+				"type"
+			],
+			"title": "The Items Schema",
+			"type": "object"
+		},
+		"fieldCheckbox": {
+			"properties": {
+				"defaultValue": {
+					"enum": [
+						"false",
+						"true",
+						false,
+						true
+					],
+					"title": "The DefaultValue Schema",
+					"type": [
+						"boolean",
+						"string"
+					]
+				}
+			}
+		},
+		"fieldCollectionSelector": {
+			"properties": {
+				"typeOptions": {
+					"additionalProperties": false,
+					"properties": {
+						"itemSubtype": {
+							"title": "The ItemSubtype Schema",
+							"type": "string"
+						},
+						"itemType": {
+							"title": "The ItemType Schema",
+							"type": "string"
+						}
+					},
+					"title": "The Typeoptions Schema",
+					"type": "object"
+				}
+			}
+		},
+		"fieldColorPalette": {
+			"properties": {
+				"defaultValue": {
+					"anyOf": [
+						{
+							"additionalProperties": false,
+							"properties": {
+								"color": {
+									"title": "The Color Schema",
+									"type": "string"
+								}
+							},
+							"required": [
+								"color"
+							],
+							"title": "The DefaultValue Schema"
+						},
+						{
+							"additionalProperties": false,
+							"properties": {
+								"cssClass": {
+									"title": "The CssClass Schema",
+									"type": "string"
+								},
+								"rgbValue": {
+									"title": "The RgbValue Schema",
+									"type": "string"
+								}
+							},
+							"required": [
+								"cssClass",
+								"rgbValue"
+							],
+							"title": "The DefaultValue Schema"
+						}
+					]
+				}
+			}
+		},
+		"fieldColorPicker": {
+			"properties": {
+				"defaultValue": {
+					"title": "The DefaultValue schema",
+					"type": "string"
+				}
+			}
+		},
+		"fieldItemSelector": {
+			"properties": {
+				"defaultValue": {
+					"additionalProperties": false,
+					"properties": {
+						"className": {
+							"title": "The ClassName Schema",
+							"type": "string"
+						},
+						"classNameId": {
+							"title": "The ClassNameId Schema",
+							"type": "string"
+						},
+						"classPK": {
+							"title": "The ClassPK Schema",
+							"type": "string"
+						}
+					},
+					"required": [
+						"className",
+						"classPK"
+					],
+					"title": "The DefaultValue Schema"
+				},
+				"typeOptions": {
+					"additionalProperties": false,
+					"properties": {
+						"className": {
+							"title": "The ClassName Schema",
+							"type": "string"
+						},
+						"enableSelectTemplate": {
+							"title": "The EnableSelectTemplate Schema",
+							"type": "boolean"
+						},
+						"itemSubtype": {
+							"title": "The ItemSubtype Schema",
+							"type": "string"
+						},
+						"itemType": {
+							"title": "The ItemType Schema",
+							"type": "string"
+						},
+						"mimeTypes": {
+							"title": "The MimeTypes Schema",
+							"type": "array"
+						}
+					},
+					"title": "The Typeoptions Schema",
+					"type": "object"
+				}
+			}
+		},
+		"fieldSelect": {
+			"properties": {
+				"typeOptions": {
+					"additionalProperties": false,
+					"properties": {
+						"validValues": {
+							"items": {
+								"additionalProperties": false,
+								"not": {
+									"type": "null"
+								},
+								"properties": {
+									"label": {
+										"title": "The Label Schema",
+										"type": "string"
+									},
+									"value": {
+										"title": "The Value Schema",
+										"type": "string"
+									}
+								},
+								"required": [
+									"value"
+								],
+								"title": "The Validvalue Schema",
+								"type": "object"
+							},
+							"minItems": 1,
+							"title": "The Validvalues Schema",
+							"type": "array"
+						}
+					},
+					"required": [
+						"validValues"
+					],
+					"title": "The Typeoptions Schema",
+					"type": "object"
+				}
+			},
+			"required": [
+				"defaultValue",
+				"typeOptions"
+			]
+		},
+		"fieldSet": {
+			"$id": "#/properties/fieldSets/items",
+			"additionalProperties": false,
+			"properties": {
+				"configurationRole": {
+					"default": "",
+					"enum": [
+						"style"
+					],
+					"title": "The Configuration Role Schema",
+					"type": "string"
+				},
+				"fields": {
+					"items": {
+						"$ref": "#/definitions/field"
+					},
+					"title": "The Fields Schema",
+					"type": "array"
+				},
+				"label": {
+					"default": "",
+					"title": "The Label Schema",
+					"type": "string"
+				}
+			},
+			"required": [
+				"fields"
+			],
+			"title": "The Items Schema",
+			"type": "object"
+		},
+		"fieldText": {
+			"properties": {
+				"typeOptions": {
+					"additionalProperties": false,
+					"properties": {
+						"placeholder": {
+							"title": "The Placeholder Schema",
+							"type": "string"
+						},
+						"validation": {
+							"anyOf": [
+								{
+									"additionalProperties": false,
+									"properties": {
+										"errorMessage": {
+											"title": "The ErrorMessage Schema",
+											"type": "string"
+										},
+										"max": {
+											"title": "The Max Schema",
+											"type": "number"
+										},
+										"min": {
+											"title": "The Min Schema",
+											"type": "number"
+										},
+										"type": {
+											"const": "number"
+										}
+									}
+								},
+								{
+									"additionalProperties": false,
+									"properties": {
+										"errorMessage": {
+											"title": "The ErrorMessage Schema",
+											"type": "string"
+										},
+										"maxLength": {
+											"title": "The MaxLength Schema",
+											"type": "number"
+										},
+										"minLength": {
+											"title": "The MaxLength Schema",
+											"type": "number"
+										},
+										"type": {
+											"enum": [
+												"email",
+												"url",
+												"text"
+											]
+										}
+									}
+								},
+								{
+									"additionalProperties": false,
+									"properties": {
+										"errorMessage": {
+											"title": "The ErrorMessage Schema",
+											"type": "string"
+										},
+										"regexp": {
+											"title": "The RegExp Schema",
+											"type": "string"
+										},
+										"type": {
+											"const": "pattern"
+										}
+									},
+									"required": [
+										"regexp"
+									]
+								}
+							],
+							"properties": {
+								"type": {
+									"enum": [
+										"email",
+										"number",
+										"pattern",
+										"text",
+										"url"
+									],
+									"title": "The Type Schema",
+									"type": "string"
+								}
+							},
+							"required": [
+								"type"
+							],
+							"title": "The Validation Schema",
+							"type": "object"
+						}
+					},
+					"title": "The Typeoptions Schema",
+					"type": "object"
+				}
+			}
+		}
+	},
+	"properties": {
+		"fieldSets": {
+			"$id": "#/properties/fieldSets",
+			"items": {
+				"$ref": "#/definitions/fieldSet"
+			},
+			"title": "The Fieldsets Schema",
+			"type": "array"
+		}
+	},
+	"required": [
+		"fieldSets"
+	],
+	"title": "Fragment configuration",
+	"type": "object"
+}

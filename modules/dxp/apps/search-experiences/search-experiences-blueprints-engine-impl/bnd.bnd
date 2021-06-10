@@ -1,0 +1,3 @@
+Bundle-Name: Liferay Search Experiences Blueprints Engine Implementation
+Bundle-SymbolicName: com.liferay.search.experiences.blueprints.engine.impl
+Bundle-Version: 1.0.0

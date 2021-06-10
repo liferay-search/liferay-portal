@@ -1,0 +1,6 @@
+Bundle-Name: Liferay Search Experiences Search Response JSON Translator API
+Bundle-SymbolicName: com.liferay.search.experiences.searchresponse.json.translator.api
+Bundle-Version: 1.0.0
+Export-Package:\
+	com.liferay.search.experiences.searchresponse.json.translator,\
+	com.liferay.search.experiences.searchresponse.json.translator.constants

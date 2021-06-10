@@ -1,0 +1,45 @@
+{
+	"elementTemplateJSON": {
+		"category": "boost",
+		"clauses": [
+			{
+				"context": "query",
+				"occur": "should",
+				"query": {
+					"wrapper": {
+						"query": {
+							"terms": {
+								"boost": "${configuration.boost}",
+								"groupId": "${user.user_group_ids}"
+							}
+						}
+					}
+				}
+			}
+		],
+		"conditions": {
+		},
+		"description": {
+			"en_US": "Boost contents on sites I'm a member of"
+		},
+		"enabled": true,
+		"icon": "thumbs-up",
+		"title": {
+			"en_US": "Boost Contents on My Sites"
+		}
+	},
+	"uiConfigurationJSON": {
+		"fieldSets": [
+			{
+				"fields": [
+					{
+						"defaultValue": 10,
+						"label": "Boost",
+						"name": "boost",
+						"type": "slider"
+					}
+				]
+			}
+		]
+	}
+}
