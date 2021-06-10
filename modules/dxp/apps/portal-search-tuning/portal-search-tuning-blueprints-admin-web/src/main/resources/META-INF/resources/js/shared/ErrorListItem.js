@@ -23,6 +23,20 @@ const ERROR_OMIT_KEYS = [
 	'severity',
 ];
 
+const CONFIGURATION_FIELD_NAME = {
+	advanced_configuration: Liferay.Language.get('advanced-configuration'),
+	aggregation_configuration: Liferay.Language.get(
+		'aggregation-configuration'
+	),
+	elementTemplateJSON: Liferay.Language.get('element-template'),
+	facet_configuration: Liferay.Language.get('facet-configuration'),
+	highlight_configuration: Liferay.Language.get('highlight-configuration'),
+	parameter_configuration: Liferay.Language.get('parameter-configuration'),
+	query_configuration: Liferay.Language.get('query-configuration'),
+	sort_configuration: Liferay.Language.get('sort-configuration'),
+	uiConfigurationJSON: Liferay.Language.get('ui-configuration'),
+};
+
 // Types from portal-search-tuning-blueprints-api/src/main/java/com/liferay/portal/search/tuning/blueprints/message/Severity.java
 
 const SEVERITY_DISPLAY_TYPE = {
@@ -58,7 +72,13 @@ function ErrorListItem({item, onFocusElement}) {
 					{item.localizedMessage || Liferay.Language.get('error')}
 				</span>
 
-				<span className="description">{item.msg}</span>
+				<span className="description">{`${item.msg} ${
+					CONFIGURATION_FIELD_NAME[item.rootConfiguration]
+						? '(' +
+						  CONFIGURATION_FIELD_NAME[item.rootConfiguration] +
+						  ')'
+						: ''
+				}`}</span>
 			</span>
 
 			{!!item.elementId && (
