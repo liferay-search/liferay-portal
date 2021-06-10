@@ -73,8 +73,8 @@ function Settings({
 				</ClayForm.Group>
 
 				<ClayForm.Group>
-					<label htmlFor="facets-configuration">
-						{Liferay.Language.get('facets-configuration')}
+					<label htmlFor="facet-configuration">
+						{Liferay.Language.get('facet-configuration')}
 					</label>
 
 					{_renderEditor('facetConfig', facetConfig)}
