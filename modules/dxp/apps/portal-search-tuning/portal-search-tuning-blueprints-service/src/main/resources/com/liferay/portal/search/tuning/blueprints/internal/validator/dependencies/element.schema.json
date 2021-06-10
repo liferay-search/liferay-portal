@@ -9,7 +9,7 @@
 					"$ref": "aggregation_configuration.schema.json#/definitions/aggregations"
 				},
 				"uiConfigurationJSON": {
-					"type": "object"
+					"$ref": "ui_configuration.schema.json"
 				}
 			},
 			"required": [
@@ -24,7 +24,7 @@
 					"$ref": "facet_configuration.schema.json#/definitions/facets"
 				},
 				"uiConfigurationJSON": {
-					"type": "object"
+					"$ref": "ui_configuration.schema.json"
 				}
 			},
 			"required": [
@@ -39,7 +39,7 @@
 					"$ref": "query_configuration.schema.json"
 				},
 				"uiConfigurationJSON": {
-					"type": "object"
+					"$ref": "ui_configuration.schema.json"
 				}
 			},
 			"required": [
@@ -54,7 +54,7 @@
 					"type": "object"
 				},
 				"uiConfigurationJSON": {
-					"type": "object"
+					"$ref": "ui_configuration.schema.json"
 				}
 			},
 			"required": [
