@@ -1,0 +1,4 @@
+Bundle-Name: Liferay Search Experiences Predict Suggestions SPI
+Bundle-SymbolicName: com.liferay.search.experiences.predict.suggestions.spi
+Bundle-Version: 1.0.0
+Export-Package: com.liferay.search.experiences.predict.suggestions.spi.provider

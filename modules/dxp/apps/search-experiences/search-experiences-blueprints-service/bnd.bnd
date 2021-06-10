@@ -1,0 +1,6 @@
+Bundle-Name: Liferay Search Experiences Blueprints Service
+Bundle-SymbolicName: com.liferay.search.experiences.blueprints.service
+Bundle-Version: 1.0.0
+Liferay-Require-SchemaVersion: 1.0.0
+Liferay-Service: true
+-dsannotations-options: inherit

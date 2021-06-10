@@ -1,0 +1,59 @@
+{
+	"blueprint-payload": {
+		"configuration": {
+			"advanced_configuration": {
+			},
+			"aggregation_configuration": {
+			},
+			"facet_configuration": {
+			},
+			"framework_configuration": {
+				"apply_indexer_clauses": true,
+				"searchable_asset_types": [
+					"com.liferay.blogs.model.BlogsEntry",
+					"com.liferay.bookmarks.model.BookmarksEntry",
+					"com.liferay.bookmarks.model.BookmarksFolder",
+					"com.liferay.calendar.model.CalendarBooking",
+					"com.liferay.commerce.product.model.CPDefinition",
+					"com.liferay.document.library.kernel.model.DLFileEntry",
+					"com.liferay.document.library.kernel.model.DLFolder",
+					"com.liferay.dynamic.data.lists.model.DDLRecord",
+					"com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecord",
+					"com.liferay.journal.model.JournalArticle",
+					"com.liferay.journal.model.JournalFolder",
+					"com.liferay.knowledge.base.model.KBArticle",
+					"com.liferay.message.boards.model.MBMessage",
+					"com.liferay.portal.kernel.model.Layout",
+					"com.liferay.portal.kernel.model.User",
+					"com.liferay.wiki.model.WikiPage"
+				]
+			},
+			"highlight_configuration": {
+			},
+			"parameter_configuration": {
+			},
+			"query_configuration": [
+			],
+			"sort_configuration": [
+				{
+					"_score": {
+						"order": "desc"
+					}
+				},
+				{
+					"modified_sortable": "desc"
+				}
+			]
+		},
+		"description": {
+			"en_US": "Sort configuration test"
+		},
+		"selectedElements": {
+			"query_configuration": [
+			]
+		},
+		"title": {
+			"en_US": "Sorts Test"
+		}
+	}
+}

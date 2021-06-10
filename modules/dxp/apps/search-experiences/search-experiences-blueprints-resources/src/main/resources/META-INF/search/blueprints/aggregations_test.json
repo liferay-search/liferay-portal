@@ -1,0 +1,800 @@
+{
+  "blueprint-payload": {
+    "configuration": {
+      "highlight_configuration": {},
+      "parameter_configuration": {},
+      "sort_configuration": [],
+      "aggregation_configuration": {
+        "sampler-test": {
+          "sampler": {
+            "description": "(Not currently supported by ES adapter) Bucket: Limit the shard sample size for sub aggregation to 200 ",
+            "shard_size": 200,
+            "enabled": false
+          },
+          "aggs": {
+            "keywords": {
+              "significant_terms": {
+                "field": "assetTagNames.raw"
+              }
+            }
+          }
+        },
+        "histogram-test": {
+          "histogram": {
+            "hard_bounds": {
+              "min": 10,
+              "max": 50
+            },
+            "field": "content_en_US_length_sortable",
+            "offset": 1,
+            "missing": 1,
+            "description": "Bucket: Histogram of content lengths",
+            "interval": 10,
+            "keyed": true,
+            "min_doc_count": 1,
+            "enabled": true,
+            "script": {},
+            "order": {
+              "_count": "asc"
+            }
+          }
+        },
+        "top_hits-test-outer": {
+          "terms": {
+            "field": "assetTagNames.raw",
+            "size": 3,
+            "description": "Metrics: Top Hits",
+            "enabled": true
+          },
+          "aggs": {
+            "top-hits-test-inner": {
+              "top_hits": {
+                "explain": true,
+                "highlight": {
+                  "fields": {
+                    "content${context.language_id}": {},
+                    "title${context.language_id}": {}
+                  },
+                  "require_field_match": true,
+                  "fragment_size": 50,
+                  "snippet_size": 10
+                },
+                "doc_value_fields": [
+                  "articleId"
+                ],
+                "size": 3,
+                "track_scores": false,
+                "from": 0,
+                "_source": {
+                  "includes": [
+                    "title_en_US",
+                    "articleId"
+                  ]
+                },
+                "version": false
+              }
+            }
+          }
+        },
+        "significant_text-test": {
+          "significant_text": {
+            "field": "title_en_US",
+            "description": "(Not currently supported by ES adapter) Bucket: Significant text",
+            "enabled": false
+          }
+        },
+        "avg_bucket-test": {
+          "avg_bucket": {
+            "gap_policy": "skip",
+            "buckets_path": "avg_bucket-test-source>avg_bucket-content_lengths"
+          }
+        },
+        "nested-test": {
+          "nested": {
+            "path": "ddmFieldArray",
+            "description": "Bucket: Number of unique nested field values",
+            "enabled": true
+          },
+          "aggs": {
+            "nested-terms": {
+              "terms": {
+                "field": "ddmFieldArray.ddmFieldName"
+              }
+            }
+          }
+        },
+        "geohash_grid-test": {
+          "geohash_grid": {
+            "field": "expando__keyword__custom_fields__location_geolocation",
+            "size": 10000,
+            "precision": 3,
+            "description": "Bucket: Geo grid",
+            "shard_size": 100,
+            "enabled": true
+          }
+        },
+        "max_bucket-source": {
+          "date_histogram": {
+            "date_histogram_interval": "minute",
+            "field": "modified",
+            "description": "Pipeline: Max bucket",
+            "enabled": true
+          },
+          "aggs": {
+            "content_lengths": {
+              "sum": {
+                "field": "content_en_US_length_sortable"
+              }
+            }
+          }
+        },
+        "stats_bucket-test": {
+          "stats_bucket": {
+            "buckets_path": "stats_bucket-source>content_lengths"
+          }
+        },
+        "diversified_sampler-test": {
+          "diversified_sampler": {
+            "field": "userName",
+            "max_docs_per_value": 3,
+            "missing": 1,
+            "description": "(Not currently supported by ES adapter) Bucket: Diversified sampler",
+            "shard_size": 200,
+            "execution_hint": "",
+            "enabled": false
+          },
+          "aggs": {
+            "keywords": {
+              "significant_terms": {
+                "field": "assetTagNames.raw"
+              }
+            }
+          }
+        },
+        "stats-test": {
+          "stats": {
+            "field": "content_en_US_length_sortable",
+            "missing": 1,
+            "description": "Metrics: statistics for content length",
+            "enabled": true,
+            "script": {}
+          }
+        },
+        "geo_centroid-test": {
+          "geo_centroid": {
+            "field": "expando__keyword__custom_fields__location_geolocation",
+            "description": "Metrics: weighted centroid from all coordinate values for a geo field",
+            "enabled": true
+          }
+        },
+        "terms-test": {
+          "terms": {
+            "shard_min_doc_count": 1,
+            "field": "assetTagNames.raw",
+            "size": 10,
+            "missing": "N/A",
+            "description": "Bucket: most frequent tags",
+            "exclude": [
+              "establishment"
+            ],
+            "shard_size": 1,
+            "enabled": true
+          }
+        },
+        "serial_differencing-test": {
+          "date_histogram": {
+            "date_histogram_interval": "minute",
+            "field": "modified",
+            "description": "Pipeline: Serial differencing",
+            "enabled": true
+          },
+          "aggs": {
+            "content_lengths": {
+              "sum": {
+                "field": "content_en_US_length_sortable"
+              }
+            },
+            "serial_differencing": {
+              "serial_differencing": {
+                "lag": 30,
+                "buckets_path": "content_lengths"
+              }
+            }
+          }
+        },
+        "min-test": {
+          "min": {
+            "field": "content_en_US_length_sortable",
+            "missing": 1,
+            "description": "Metrics: min value for content length",
+            "enabled": true,
+            "script": {}
+          }
+        },
+        "cumulative_sum-test": {
+          "date_histogram": {
+            "date_histogram_interval": "minute",
+            "field": "modified",
+            "description": "Pipeline: Cumulative sum",
+            "enabled": true
+          },
+          "aggs": {
+            "content_lengths": {
+              "sum": {
+                "field": "content_en_US_length_sortable"
+              }
+            },
+            "cumulative_sum": {
+              "cumulative_sum": {
+                "buckets_path": "content_lengths"
+              }
+            }
+          }
+        },
+        "reverse_nested-test": {
+          "nested": {
+            "path": "ddmFieldArray",
+            "description": "Bucket: Show tag counts for A terms aggregation test",
+            "enabled": true
+          },
+          "aggs": {
+            "reverse_nested-top_field_names": {
+              "terms": {
+                "field": "ddmFieldArray.ddmFieldName"
+              },
+              "aggs": {
+                "reverse_nested-tags_to_content": {
+                  "reverse_nested": {},
+                  "aggs": {
+                    "reverse_nested-tags_per_content": {
+                      "terms": {
+                        "field": "assetTagNames.raw"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "sum_bucket-source": {
+          "date_histogram": {
+            "date_histogram_interval": "minute",
+            "field": "modified",
+            "description": "Pipeline: Sum bucket",
+            "enabled": true
+          },
+          "aggs": {
+            "content_lengths": {
+              "sum": {
+                "field": "content_en_US_length_sortable"
+              }
+            }
+          }
+        },
+        "moving_function-test": {
+          "date_histogram": {
+            "date_histogram_interval": "minute",
+            "field": "modified",
+            "description": "Pipeline: Moving function",
+            "enabled": true
+          },
+          "aggs": {
+            "content_lengths": {
+              "sum": {
+                "field": "content_en_US_length_sortable"
+              }
+            },
+            "moving_function": {
+              "moving_function": {
+                "buckets_path": "content_lengths",
+                "window": 10,
+                "script": "MovingFunctions.unweightedAvg(values)"
+              }
+            }
+          }
+        },
+        "date_histogram-test": {
+          "date_histogram": {
+            "date_histogram_interval": "minute",
+            "field": "modified",
+            "offset": "+1s",
+            "missing": 20200503000000,
+            "description": "Bucket: Histogram of modification dates",
+            "keyed": true,
+            "min_doc_count": 1,
+            "enabled": true,
+            "script": {},
+            "extended_bounds": {},
+            "order": {
+              "_count": "asc"
+            }
+          }
+        },
+        "range-test": {
+          "range": {
+            "field": "content_en_US_length_sortable",
+            "ranges": [
+              {
+                "to": 15
+              },
+              {
+                "from": 15,
+                "to": 25
+              },
+              {
+                "from": 25
+              }
+            ],
+            "missing": 1,
+            "description": "Bucket: Content length ranges",
+            "keyed": true,
+            "enabled": true,
+            "script": {}
+          }
+        },
+        "significant_terms-test": {
+          "significant_terms": {
+            "field": "assetTagNames.raw",
+            "description": "(Not currently supported by ES adapter) Bucket: Significant terms",
+            "enabled": false
+          }
+        },
+        "percentiles_bucket-source": {
+          "date_histogram": {
+            "date_histogram_interval": "minute",
+            "field": "modified",
+            "description": "Pipeline: Percentiles bucket",
+            "enabled": true
+          },
+          "aggs": {
+            "content_lengths": {
+              "sum": {
+                "field": "content_en_US_length_sortable"
+              }
+            }
+          }
+        },
+        "stats_bucket-source": {
+          "date_histogram": {
+            "date_histogram_interval": "minute",
+            "field": "modified",
+            "description": "Pipeline: Stats bucket",
+            "enabled": true
+          },
+          "aggs": {
+            "content_lengths": {
+              "sum": {
+                "field": "content_en_US_length_sortable"
+              }
+            }
+          }
+        },
+        "scripted_metric-test": {
+          "scripted_metric": {
+            "init_script": "state.lengths = []",
+            "map_script": "state.lengths.add(doc.content_en_US_length_sortable.value)",
+            "combine_script": "int length = 0; for (t in state.lengths) { length += t } return length",
+            "description": "Metrics: scripted metric",
+            "params": {},
+            "reduce_script": "int length = 0; for (a in states) { length += a } return length",
+            "enabled": true
+          }
+        },
+        "avg_bucket-test-source": {
+          "date_histogram": {
+            "date_histogram_interval": "minute",
+            "field": "modified"
+          },
+          "aggs": {
+            "avg_bucket-content_lengths": {
+              "sum": {
+                "field": "content_en_US_length_sortable"
+              }
+            }
+          }
+        },
+        "sum-test": {
+          "sum": {
+            "field": "content_en_US_length_sortable",
+            "missing": 1,
+            "description": "Metrics: sum of all content lengths:",
+            "enabled": true,
+            "script": {}
+          }
+        },
+        "bucket_script-test": {
+          "date_histogram": {
+            "date_histogram_interval": "minute",
+            "field": "modified",
+            "description": "Pipeline: the percentage content of restaurant-tagged content lengths of all content lenghts",
+            "enabled": true
+          },
+          "aggs": {
+            "content_lengths": {
+              "sum": {
+                "field": "content_en_US_length_sortable"
+              }
+            },
+            "restaurants": {
+              "filter": {
+                "term": {
+                  "assetTagNames.raw": "restaurant"
+                }
+              },
+              "aggs": {
+                "restaurant_content_lengths": {
+                  "sum": {
+                    "field": "content_en_US_length_sortable"
+                  }
+                }
+              }
+            },
+            "bucket_script": {
+              "bucket_script": {
+                "buckets_path": {
+                  "restaurantContentLengths": "restaurants>restaurant_content_lengths",
+                  "totalContentLengths": "content_lengths"
+                },
+                "script": "params.restaurantContentLengths / params.totalContentLengths * 100"
+              }
+            }
+          }
+        },
+        "avg-test": {
+          "avg": {
+            "field": "content_en_US_length_sortable",
+            "missing": 1,
+            "description": "Metrics: average content length",
+            "enabled": true,
+            "script": {}
+          }
+        },
+        "max-test": {
+          "max": {
+            "field": "content_en_US_length_sortable",
+            "missing": 1,
+            "description": "Metrics: max value for content length",
+            "enabled": true,
+            "script": {}
+          }
+        },
+        "max_bucket-test": {
+          "max_bucket": {
+            "buckets_path": "max_bucket-source>content_lengths"
+          }
+        },
+        "percentiles_bucket-test": {
+          "percentiles_bucket": {
+            "buckets_path": "percentiles_bucket-source>content_lengths",
+            "percents": [
+              25,
+              50,
+              75
+            ]
+          }
+        },
+        "value_count-test": {
+          "value_count": {
+            "field": "assetTagNames.raw",
+            "description": "Metrics: count of asset tag name values",
+            "enabled": true,
+            "script": {}
+          }
+        },
+        "extended_stats-test": {
+          "extended_stats": {
+            "field": "content_en_US_length_sortable",
+            "sigma": 3
+          }
+        },
+        "extended_stats_bucket-test": {
+          "date_histogram": {
+            "description": "Pipeline: Extended stats",
+            "enabled": true,
+            "field": "modified",
+            "date_histogram_interval": "minute"
+          },
+          "aggs": {
+            "content_lengths": {
+              "sum": {
+                "field": "content_en_US_length_sortable"
+              }
+            },
+            "extended_length_stats": {
+              "extended_stats": {
+                "buckets_path": "extended_stats-test>content_lengths"
+              }
+            }
+          }
+        },
+        "cardinality-test": {
+          "cardinality": {
+            "precision_threshold": 3000,
+            "field": "assetTagNames.raw",
+            "missing": "N/A",
+            "description": "Metrics: number of unique asset tag names",
+            "enabled": true,
+            "script": {}
+          }
+        },
+        "geo_distance-test": {
+          "geo_distance": {
+            "unit": "mi",
+            "field": "expando__keyword__custom_fields__location_geolocation",
+            "ranges": [
+              {
+                "to": 8500,
+                "key": "a"
+              },
+              {
+                "from": 8500,
+                "to": 11000,
+                "key": "b"
+              },
+              {
+                "from": 11000,
+                "key": "c"
+              }
+            ],
+            "distance_type": "plane",
+            "origin": "41.8781,87.6298",
+            "description": "Bucket: rings around Chicago",
+            "keyed": true,
+            "enabled": true
+          }
+        },
+        "bucket_selector-test": {
+          "date_histogram": {
+            "date_histogram_interval": "minute",
+            "field": "modified",
+            "description": "Pipeline: Bucket selector",
+            "enabled": true
+          },
+          "aggs": {
+            "bucket_selector": {
+              "bucket_selector": {
+                "buckets_path": {
+                  "sumAllLengths": "content_lengths"
+                },
+                "script": "params.sumAllLengths > 140"
+              }
+            },
+            "content_lengths": {
+              "sum": {
+                "field": "content_en_US_length_sortable"
+              }
+            }
+          }
+        },
+        "bucket_sort-test": {
+          "date_histogram": {
+            "date_histogram_interval": "minute",
+            "field": "modified",
+            "description": "Pipeline: Bucket sort",
+            "enabled": true
+          },
+          "aggs": {
+            "total_content_lengths": {
+              "sum": {
+                "field": "content_en_US_length_sortable"
+              }
+            },
+            "bucket_sort": {
+              "bucket_sort": {
+                "size": 3,
+                "from": 0,
+                "sort": [
+                  {
+                    "total_content_lengths": {
+                      "order": "desc"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "global-test": {
+          "global": {
+            "description": "Bucket: Global",
+            "enabled": true
+          },
+          "aggs": {
+            "avg_content_length": {
+              "avg": {
+                "field": "content_en_US_length_sortable"
+              }
+            }
+          }
+        },
+        "sum_bucket-test": {
+          "sum_bucket": {
+            "buckets_path": "sum_bucket-source>content_lengths"
+          }
+        },
+        "percentiles-test": {
+          "percentiles": {
+            "field": "content_en_US_length_sortable",
+            "hdr": {
+              "number_of_significant_value_digits": 3
+            },
+            "missing": 0,
+            "description": "Metrics: content lengths by percentiles",
+            "percents": [
+              25,
+              50,
+              75,
+              99
+            ],
+            "keyed": false,
+            "enabled": true,
+            "script": {}
+          }
+        },
+        "min_bucket-test": {
+          "max_bucket": {
+            "buckets_path": "min_bucket-source>content_lengths"
+          }
+        },
+        "geo_bounds-test": {
+          "geo_bounds": {
+            "field": "expando__keyword__custom_fields__location_geolocation",
+            "description": "Metrics: geo bounding box containing all the geo values for the location field",
+            "wrap_longitude": true,
+            "enabled": true
+          }
+        },
+        "missing-test": {
+          "missing": {
+            "field": "price",
+            "description": "Bucket: Number of documents missing the field 'price'",
+            "enabled": true
+          }
+        },
+        "date_range-test": {
+          "date_range": {
+            "field": "modified",
+            "ranges": [
+              {
+                "from": "20200503000000",
+                "to": "20210503000000",
+                "key": "old-ones"
+              },
+              {
+                "from": "20210503000000",
+                "to": "20220503000000",
+                "key": "new-ones"
+              }
+            ],
+            "format": "yyyyMMddHHmmss",
+            "missing": 20200503000000,
+            "description": "Bucket: Contents modified within given time ranges",
+            "keyed": true,
+            "min_doc_count": 1,
+            "enabled": true,
+            "script": {}
+          }
+        },
+        "filter-test": {
+          "filter": {
+            "term": {
+              "entryClassName": "com.liferay.journal.model.JournalArticle"
+            }
+          },
+          "aggs": {
+            "avg_content_length": {
+              "avg": {
+                "field": "content_en_US_length_sortable"
+              }
+            }
+          }
+        },
+        "percentile_ranks-test": {
+          "percentile_ranks": {
+            "field": "content_en_US_length_sortable",
+            "hdr": {
+              "number_of_significant_value_digits": 3
+            },
+            "values": [
+              10,
+              20,
+              30,
+              40,
+              50
+            ],
+            "missing": 0,
+            "description": "Metrics: How many percent of content lengths are below the given values",
+            "keyed": false,
+            "enabled": true,
+            "script": {}
+          }
+        },
+        "filters-test": {
+          "filters": {
+            "other_bucket": true,
+            "other_bucket_key": "other_messages",
+            "description": "Bucket: document counts by content type",
+            "filters": {
+              "blog-entries": {
+                "term": {
+                  "entryClassName": "com.liferay.blogs.model.BlogsEntry;"
+                }
+              },
+              "journal-articles": {
+                "term": {
+                  "entryClassName": "com.liferay.journal.model.JournalArticle"
+                }
+              }
+            },
+            "enabled": true
+          }
+        },
+        "min_bucket-source": {
+          "date_histogram": {
+            "date_histogram_interval": "minute",
+            "field": "modified",
+            "description": "Pipeline: Min bucket",
+            "enabled": true
+          },
+          "aggs": {
+            "content_lengths": {
+              "sum": {
+                "field": "content_en_US_length_sortable"
+              }
+            }
+          }
+        },
+        "weighted_avg_count-test": {
+          "weighted_avg": {
+            "description": "Metrics: Weighted average of content length by version count",
+            "weight": {
+              "field": "versionCount_sortable",
+              "missing": 1,
+              "script": {}
+            },
+            "value": {
+              "field": "content_en_US_length_sortable",
+              "missing": 1,
+              "script": {}
+            },
+            "enabled": true
+          }
+        }
+      },
+      "facet_configuration": {},
+      "framework_configuration": {
+        "searchable_asset_types": [
+          "com.liferay.blogs.model.BlogsEntry",
+          "com.liferay.bookmarks.model.BookmarksEntry",
+          "com.liferay.bookmarks.model.BookmarksFolder",
+          "com.liferay.calendar.model.CalendarBooking",
+          "com.liferay.commerce.product.model.CPDefinition",
+          "com.liferay.document.library.kernel.model.DLFileEntry",
+          "com.liferay.document.library.kernel.model.DLFolder",
+          "com.liferay.dynamic.data.lists.model.DDLRecord",
+          "com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecord",
+          "com.liferay.journal.model.JournalArticle",
+          "com.liferay.journal.model.JournalFolder",
+          "com.liferay.knowledge.base.model.KBArticle",
+          "com.liferay.message.boards.model.MBMessage",
+          "com.liferay.portal.kernel.model.Layout",
+          "com.liferay.portal.kernel.model.User",
+          "com.liferay.wiki.model.WikiPage"
+        ],
+        "apply_indexer_clauses": true
+      },
+      "query_configuration": [],
+      "advanced_configuration": {}
+    },
+    "description": {
+      "en_US": "All supported aggregations test"
+    },
+    "selectedElements": {
+      "query_configuration": []
+    },
+    "title": {
+      "en_US": "Aggregations Test"
+    }
+  }
+}

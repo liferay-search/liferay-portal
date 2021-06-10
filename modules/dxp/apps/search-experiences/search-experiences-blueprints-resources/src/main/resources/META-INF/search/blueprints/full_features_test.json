@@ -1,0 +1,1537 @@
+{
+  "blueprint-payload": {
+    "configuration": {
+      "highlight_configuration": {
+        "number_of_fragments": 10,
+        "pre_tags": [
+          "<liferay-hl>"
+        ],
+        "fragment_offset": 10,
+        "post_tags": [
+          "</liferay-hl>"
+        ],
+        "fields": {
+          "content${context.language_id}": {},
+          "title${context.language_id}": {}
+        },
+        "require_field_match": true,
+        "type": "unified",
+        "fragment_size": 100
+      },
+      "parameter_configuration": {
+        "keywords": {
+          "parameter_name": "q"
+        },
+        "size": {
+          "min_value": 5,
+          "default": 10,
+          "parameter_name": "size",
+          "max_value": 50
+        },
+        "custom": [],
+        "page": {
+          "parameter_name": "page"
+        },
+        "sort": {
+          "_geo_distance": {
+            "unit": "km",
+            "field": "expando__keyword__custom_fields__location_geolocation",
+            "distance_type": "arc",
+            "locations": [
+              [
+                "${ipstack.latitude}",
+                "${ipstack.longitude}"
+              ]
+            ],
+            "label": "Geodistance",
+            "parameter_name": "sort4",
+            "type": "geo_distance",
+            "order": "asc"
+          },
+          "modified_sortable": {
+            "label": "modified",
+            "parameter_name": "sort3"
+          },
+          "_score": {
+            "label": "score",
+            "parameter_name": "sort1"
+          },
+          "localized_title${context.language_id}_sortable": {
+            "label": "title",
+            "parameter_name": "sort2"
+          }
+        }
+      },
+      "sort_configuration": [
+        {
+          "_score": {
+            "order": "desc"
+          }
+        },
+        {
+          "modified_sortable": "desc"
+        }
+      ],
+      "aggregation_configuration": {
+        "cardinality-test": {
+          "cardinality": {
+            "precision_threshold": 3000,
+            "field": "assetTagNames.raw",
+            "description": "Number of unique asset tag names"
+          }
+        }
+      },
+      "facet_configuration": {
+        "site": {
+          "site": {
+            "field": "scopeGroupId",
+            "label": "site",
+            "parameter_name": "site"
+          }
+        },
+        "create-date": {
+          "date_range": {
+            "field": "createDate",
+            "multi_value": false,
+            "filter_mode": "pre",
+            "label": "create-date",
+            "parameter_name": "created",
+            "parameters": {
+              "ranges": [
+                {
+                  "from": "${time.current_date|modifier=-1h,dateFormat=yyyyMMddhhmmss}",
+                  "label": "last-hour",
+                  "to": ""
+                },
+                {
+                  "from": "${time.current_date|modifier=-1d,dateFormat=yyyyMMddhhmmss}",
+                  "label": "last-day",
+                  "to": ""
+                },
+                {
+                  "from": "${time.current_date|modifier=-1W,dateFormat=yyyyMMddhhmmss}",
+                  "label": "last-week",
+                  "to": ""
+                },
+                {
+                  "from": "${time.current_date|modifier=-1M,dateFormat=yyyyMMddhhmmss}",
+                  "label": "last-month",
+                  "to": ""
+                },
+                {
+                  "from": "${time.current_date|modifier=-1y,dateFormat=yyyyMMddhhmmss}",
+                  "label": "last-year",
+                  "to": ""
+                }
+              ],
+              "date_format": "yyyyMMddhhmmss"
+            }
+          }
+        },
+        "folder": {
+          "folder": {
+            "field": "folderId",
+            "label": "folder",
+            "parameter_name": "folder"
+          }
+        },
+        "file-format": {
+          "term_map": {
+            "field": "extension",
+            "multi_value": true,
+            "multi_value_operator": "and",
+            "size": 50,
+            "name": "file-format",
+            "filter_mode": "pre",
+            "label": "file-format",
+            "parameter_name": "extension",
+            "frequency_threshold": "1",
+            "parameters": {
+              "map": [
+                {
+                  "values": [
+                    "png",
+                    "gif",
+                    "jpeg",
+                    "jpg",
+                    "tiff"
+                  ],
+                  "key": "image"
+                }
+              ]
+            }
+          }
+        },
+        "web-content-type": {
+          "ddm_structure_name": {
+            "field": "ddmStructureKey",
+            "label": "web-content-type",
+            "parameter_name": "web-content-type"
+          }
+        },
+        "modified": {
+          "date_range": {
+            "field": "modified",
+            "multi_value": false,
+            "parameter_name": "modified",
+            "aggregation_name": "blueprints-modified",
+            "parameters": {
+              "ranges": [
+                {
+                  "from": "${time.current_date|modifier=-1h,dateFormat=yyyyMMddhhmmss}",
+                  "label": "last-hour",
+                  "to": ""
+                },
+                {
+                  "from": "${time.current_date|modifier=-1d,dateFormat=yyyyMMddhhmmss}",
+                  "label": "last-day",
+                  "to": ""
+                },
+                {
+                  "from": "${time.current_date|modifier=-1w,dateFormat=yyyyMMddhhmmss}",
+                  "label": "last-week",
+                  "to": ""
+                },
+                {
+                  "from": "${time.current_date|modifier=-1M,dateFormat=yyyyMMddhhmmss}",
+                  "label": "last-month",
+                  "to": ""
+                },
+                {
+                  "from": "${time.current_date|modifier=-1y,dateFormat=yyyyMMddhhmmss}",
+                  "label": "last-year",
+                  "to": ""
+                }
+              ],
+              "date_format": "yyyyMMddhhmmss"
+            }
+          }
+        },
+        "tag": {
+          "terms": {
+            "field": "assetTagNames.raw",
+            "label": "tag",
+            "parameter_name": "tag"
+          }
+        },
+        "category": {
+          "category": {
+            "field": "assetCategoryIds",
+            "label": "category",
+            "parameter_name": "category"
+          }
+        },
+        "type": {
+          "terms": {
+            "field": "entryClassName",
+            "label": "type",
+            "parameter_name": "type"
+          }
+        },
+        "category_tree": {
+          "category_tree": {
+            "field": "assetCategoryIds",
+            "multi_value_operator": "or",
+            "filter_mode": "post",
+            "label": "Category Tree",
+            "parameter_name": "item",
+            "parameters": {
+              "root_vocabulary_id": 12345
+            },
+            "enabled": false
+          }
+        },
+        "document-type": {
+          "document_type": {
+            "field": "fileEntryTypeId",
+            "label": "document-type",
+            "parameter_name": "documentType"
+          }
+        },
+        "user": {
+          "terms": {
+            "field": "userName",
+            "label": "user",
+            "parameter_name": "user"
+          }
+        }
+      },
+      "framework_configuration": {
+        "apply_indexer_clauses": false
+      },
+      "query_configuration": [
+        {
+          "clauses": [
+            {
+              "occur": "must",
+              "query": {
+                "wrapper": {
+                  "query": {
+                    "simple_query_string": {
+                      "default_operator": "or",
+                      "query": "${keywords}",
+                      "boost": 1,
+                      "fields": [
+                        "localized_title${context.language_id}^2",
+                        "content${context.language_id}^2"
+                      ]
+                    }
+                  }
+                }
+              },
+              "context": "query"
+            }
+          ],
+          "icon": "picture",
+          "description": {
+            "en_US": "Enable searching using the Lucene syntax"
+          },
+          "category": "match",
+          "conditions": {},
+          "title": {
+            "en_US": "Search with the Lucene Syntax"
+          },
+          "enabled": true
+        },
+        {
+          "clauses": [
+            {
+              "occur": "must",
+              "query": {
+                "wrapper": {
+                  "query": {
+                    "multi_match": {
+                      "fuzziness": "AUTO",
+                      "query": "${keywords}",
+                      "boost": 1,
+                      "fields": [
+                        "localized_title${context.language_id}^2",
+                        "content${context.language_id}^1",
+                        "description${context.language_id}^1",
+                        "name${context.language_id}^1",
+                        "title${context.language_id}^1"
+                      ],
+                      "type": "best_fields",
+                      "operator": "or"
+                    }
+                  }
+                }
+              },
+              "context": "query"
+            }
+          ],
+          "icon": "picture",
+          "description": {
+            "en_US": "Search for a text match over multiple text fields"
+          },
+          "category": "match",
+          "conditions": {},
+          "title": {
+            "en_US": "Text Match Over Multiple Fields"
+          },
+          "enabled": true
+        },
+        {
+          "clauses": [
+            {
+              "occur": "filter",
+              "query": {
+                "wrapper": {
+                  "query": {
+                    "bool": {
+                      "should": [
+                        {
+                          "bool": {
+                            "must_not": [
+                              {
+                                "term": {
+                                  "entryClassName": "com.liferay.portal.kernel.model.User"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "bool": {
+                            "must": [
+                              {
+                                "term": {
+                                  "defaultUser": false
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              "context": "query"
+            }
+          ],
+          "icon": "hidden",
+          "description": {
+            "en_US": "Hide the instance default user account from being searched"
+          },
+          "category": "hide",
+          "conditions": {},
+          "title": {
+            "en_US": "Hide Default User"
+          },
+          "enabled": true
+        },
+        {
+          "clauses": [
+            {
+              "occur": "filter",
+              "query": {
+                "wrapper": {
+                  "query": {
+                    "bool": {
+                      "should": [
+                        {
+                          "bool": {
+                            "must_not": [
+                              {
+                                "exists": {
+                                  "field": "hidden"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "bool": {
+                            "must": [
+                              {
+                                "term": {
+                                  "hidden": false
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              "context": "query"
+            }
+          ],
+          "icon": "hidden",
+          "description": {
+            "en_US": "Hide assets which are marked not searchable"
+          },
+          "category": "hide",
+          "conditions": {},
+          "title": {
+            "en_US": "Hide Hidden Contents"
+          },
+          "enabled": true
+        },
+        {
+          "clauses": [
+            {
+              "occur": "filter",
+              "query": {
+                "wrapper": {
+                  "query": {
+                    "bool": {
+                      "should": [
+                        {
+                          "bool": {
+                            "must_not": [
+                              {
+                                "exists": {
+                                  "field": "discussion"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "bool": {
+                            "must": [
+                              {
+                                "term": {
+                                  "discussion": false
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              "context": "query"
+            }
+          ],
+          "icon": "hidden",
+          "description": {
+            "en_US": "Do not search for comments"
+          },
+          "category": "hide",
+          "conditions": {},
+          "title": {
+            "en_US": "Hide Comments"
+          },
+          "enabled": true
+        },
+        {
+          "clauses": [
+            {
+              "occur": "filter",
+              "query": {
+                "wrapper": {
+                  "query": {
+                    "bool": {
+                      "should": [
+                        {
+                          "bool": {
+                            "must_not": [
+                              {
+                                "term": {
+                                  "entryClasslabel": {
+                                    "value": "com.liferay.journal.model.JournalArticle"
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "bool": {
+                            "must": [
+                              {
+                                "term": {
+                                  "entryClasslabel": {
+                                    "value": "com.liferay.journal.model.JournalArticle"
+                                  }
+                                }
+                              },
+                              {
+                                "term": {
+                                  "head": {
+                                    "value": true
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              "context": "query"
+            }
+          ],
+          "icon": "filter",
+          "description": {
+            "en_US": "Show only the latest HEAD version of Web Content articles"
+          },
+          "category": "filter",
+          "conditions": {},
+          "title": {
+            "en_US": "Limit Search to HEAD Version"
+          },
+          "enabled": true
+        },
+        {
+          "clauses": [
+            {
+              "occur": "filter",
+              "query": {
+                "wrapper": {
+                  "query": {
+                    "term": {
+                      "status": 0
+                    }
+                  }
+                }
+              },
+              "context": "query"
+            }
+          ],
+          "icon": "filter",
+          "description": {
+            "en_US": "Limit search to contents that have been published"
+          },
+          "category": "filter",
+          "conditions": {},
+          "title": {
+            "en_US": "Limit Search to Published Contents"
+          },
+          "enabled": true
+        },
+        {
+          "clauses": [
+            {
+              "occur": "filter",
+              "query": {
+                "wrapper": {
+                  "query": {
+                    "bool": {
+                      "should": [
+                        {
+                          "bool": {
+                            "must_not": [
+                              {
+                                "exists": {
+                                  "field": "displayDate"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "bool": {
+                            "must_not": [
+                              {
+                                "exists": {
+                                  "field": "expirationDate"
+                                }
+                              }
+                            ],
+                            "must": [
+                              {
+                                "range": {
+                                  "displayDate_sortable": {
+                                    "include_lower": true,
+                                    "include_upper": true,
+                                    "from": "-9223372036854775808",
+                                    "to": "${time.current_date|dateFormat=timestamp}"
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "bool": {
+                            "must": [
+                              {
+                                "range": {
+                                  "displayDate_sortable": {
+                                    "include_lower": true,
+                                    "include_upper": true,
+                                    "from": "-9223372036854775808",
+                                    "to": "${time.current_date|dateFormat=timestamp}"
+                                  }
+                                }
+                              },
+                              {
+                                "range": {
+                                  "expirationDate_sortable": {
+                                    "include_lower": true,
+                                    "include_upper": true,
+                                    "from": "${time.current_date|dateFormat=timestamp}",
+                                    "to": "9223372036854775807"
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              "context": "query"
+            }
+          ],
+          "icon": "filter",
+          "description": {
+            "en_US": "Show only contents with a valid display date"
+          },
+          "category": "filter",
+          "conditions": {},
+          "title": {
+            "en_US": "Scheduling Aware"
+          },
+          "enabled": true
+        },
+        {
+          "clauses": [
+            {
+              "occur": "filter",
+              "query": {
+                "wrapper": {
+                  "query": {
+                    "bool": {
+                      "should": [
+                        {
+                          "bool": {
+                            "must_not": [
+                              {
+                                "exists": {
+                                  "field": "stagingGroup"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "bool": {
+                            "must": [
+                              {
+                                "term": {
+                                  "stagingGroup": false
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              "context": "query"
+            }
+          ],
+          "icon": "filter",
+          "description": {
+            "en_US": "Show only published contents on live sites, published and staged contents on staging sites"
+          },
+          "category": "filter",
+          "conditions": {
+            "equals": {
+              "parameter_name": "${context.is_staging_group}",
+              "value": false
+            }
+          },
+          "title": {
+            "en_US": "Staging Aware"
+          },
+          "enabled": true
+        },
+        {
+          "clauses": [
+            {
+              "occur": "filter",
+              "query": {
+                "wrapper": {
+                  "query": {
+                    "bool": {
+                      "should": [
+                        {
+                          "bool": {
+                            "must_not": [
+                              {
+                                "exists": {
+                                  "field": "ctCollectionId"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "term": {
+                            "ctCollectionId": {
+                              "value": "${context.ct_collection_id}"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              "context": "query"
+            }
+          ],
+          "icon": "filter",
+          "description": {
+            "en_US": "When Publications feature is enabled, search only contents on my current timeline"
+          },
+          "category": "filter",
+          "title": {
+            "en_US": "Publications Aware"
+          },
+          "enabled": true
+        }
+      ],
+      "advanced_configuration": {
+        "query_processing": {
+          "exclude_query_post_processors": "",
+          "exclude_query_contributors": ""
+        },
+        "source": {
+          "source_includes": [
+            "articleId",
+            "entryClassName",
+            "entryClassPK",
+            "localized_title${context.language_id}",
+            "title${context.language_id}",
+            "content${context.language_id}",
+            "modified",
+            "createDate"
+          ],
+          "fetch_source": true,
+          "source_excludes": []
+        }
+      }
+    },
+    "description": {
+      "en_US": "A sample Blueprint for the Blueprints Blade sample widget featuring custom facets and dynamic sort configuration with geo sorting. Geolocation field has to be configured and data provider be enabled in Blueprints configuration to take advantage of location features."
+    },
+    "selectedElements": {
+      "query_configuration": [
+        {
+          "elementTemplateJSON": {
+            "clauses": [
+              {
+                "occur": "must",
+                "query": {
+                  "wrapper": {
+                    "query": {
+                      "simple_query_string": {
+                        "default_operator": "${configuration.operator}",
+                        "query": "${keywords}",
+                        "boost": "${configuration.boost}",
+                        "fields": "${configuration.fields}"
+                      }
+                    }
+                  }
+                },
+                "context": "query"
+              }
+            ],
+            "icon": "picture",
+            "description": {
+              "en_US": "Enable searching using the Lucene syntax"
+            },
+            "category": "match",
+            "conditions": {},
+            "title": {
+              "en_US": "Search with the Lucene Syntax"
+            },
+            "enabled": true
+          },
+          "uiConfigurationValues": {
+            "boost": 1,
+            "fields": [
+              {
+                "field": "localized_title",
+                "boost": "2",
+                "locale": "${context.language_id}"
+              },
+              {
+                "field": "content",
+                "boost": "2",
+                "locale": "${context.language_id}"
+              }
+            ],
+            "operator": "or"
+          },
+          "uiConfigurationJSON": {
+            "fieldSets": [
+              {
+                "fields": [
+                  {
+                    "defaultValue": [
+                      {
+                        "field": "localized_title",
+                        "boost": "2",
+                        "locale": "${context.language_id}"
+                      },
+                      {
+                        "field": "content",
+                        "boost": "2",
+                        "locale": "${context.language_id}"
+                      }
+                    ],
+                    "name": "fields",
+                    "typeOptions": {
+                      "boost": true
+                    },
+                    "label": "Fields",
+                    "type": "fieldMappingList"
+                  },
+                  {
+                    "name": "operator",
+                    "typeOptions": {
+                      "options": [
+                        {
+                          "label": "OR",
+                          "value": "or"
+                        },
+                        {
+                          "label": "AND",
+                          "value": "and"
+                        }
+                      ]
+                    },
+                    "label": "Operator",
+                    "type": "select"
+                  },
+                  {
+                    "defaultValue": 1,
+                    "name": "boost",
+                    "typeOptions": {
+                      "min": 0
+                    },
+                    "label": "Boost",
+                    "type": "number"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "elementTemplateJSON": {
+            "clauses": [
+              {
+                "occur": "must",
+                "query": {
+                  "wrapper": {
+                    "query": {
+                      "multi_match": {
+                        "fuzziness": "${configuration.fuzziness}",
+                        "query": "${keywords}",
+                        "boost": "${configuration.boost}",
+                        "fields": "${configuration.fields}",
+                        "type": "${configuration.type}",
+                        "operator": "${configuration.operator}"
+                      }
+                    }
+                  }
+                },
+                "context": "query"
+              }
+            ],
+            "icon": "picture",
+            "description": {
+              "en_US": "Search for a text match over multiple text fields"
+            },
+            "category": "match",
+            "conditions": {},
+            "title": {
+              "en_US": "Text Match Over Multiple Fields"
+            },
+            "enabled": true
+          },
+          "uiConfigurationValues": {
+            "fuzziness": "AUTO",
+            "boost": 1,
+            "fields": [
+              {
+                "field": "localized_title",
+                "boost": "2",
+                "locale": "${context.language_id}"
+              },
+              {
+                "field": "content",
+                "boost": "1",
+                "locale": "${context.language_id}"
+              },
+              {
+                "languageIdPosition": 11,
+                "field": "description",
+                "boost": "1",
+                "locale": "${context.language_id}"
+              },
+              {
+                "languageIdPosition": 4,
+                "field": "name",
+                "boost": "1",
+                "locale": "${context.language_id}"
+              },
+              {
+                "languageIdPosition": 5,
+                "field": "title",
+                "boost": "1",
+                "locale": "${context.language_id}"
+              }
+            ],
+            "type": "best_fields",
+            "operator": "or"
+          },
+          "uiConfigurationJSON": {
+            "fieldSets": [
+              {
+                "fields": [
+                  {
+                    "defaultValue": [
+                      {
+                        "field": "localized_title",
+                        "boost": "2",
+                        "locale": "${context.language_id}"
+                      },
+                      {
+                        "field": "content",
+                        "boost": "1",
+                        "locale": "${context.language_id}"
+                      }
+                    ],
+                    "name": "fields",
+                    "typeOptions": {
+                      "boost": true
+                    },
+                    "label": "Fields",
+                    "type": "fieldMappingList"
+                  },
+                  {
+                    "defaultValue": "or",
+                    "name": "operator",
+                    "typeOptions": {
+                      "options": [
+                        {
+                          "label": "OR",
+                          "value": "or"
+                        },
+                        {
+                          "label": "AND",
+                          "value": "and"
+                        }
+                      ]
+                    },
+                    "label": "Operator",
+                    "type": "select"
+                  },
+                  {
+                    "defaultValue": "best_fields",
+                    "name": "type",
+                    "typeOptions": {
+                      "options": [
+                        {
+                          "label": "Best Fields",
+                          "value": "best_fields"
+                        },
+                        {
+                          "label": "Most Fields",
+                          "value": "most_fields"
+                        },
+                        {
+                          "label": "Cross Fields",
+                          "value": "cross_fields"
+                        },
+                        {
+                          "label": "Phrase",
+                          "value": "phrase"
+                        },
+                        {
+                          "label": "Phrase Prefix",
+                          "value": "phrase_prefix"
+                        },
+                        {
+                          "label": "Boolean Prefix",
+                          "value": "bool_prefix"
+                        }
+                      ]
+                    },
+                    "label": "Match Type",
+                    "type": "select"
+                  },
+                  {
+                    "name": "fuzziness",
+                    "typeOptions": {
+                      "options": [
+                        {
+                          "label": "Auto",
+                          "value": "AUTO"
+                        },
+                        {
+                          "label": "0",
+                          "value": "0"
+                        },
+                        {
+                          "label": "1",
+                          "value": "1"
+                        },
+                        {
+                          "label": "2",
+                          "value": "2"
+                        }
+                      ]
+                    },
+                    "label": "Fuzziness",
+                    "type": "select"
+                  },
+                  {
+                    "defaultValue": 1,
+                    "name": "boost",
+                    "typeOptions": {
+                      "min": 0
+                    },
+                    "label": "Boost",
+                    "type": "number"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "elementTemplateJSON": {
+            "clauses": [
+              {
+                "occur": "filter",
+                "query": {
+                  "wrapper": {
+                    "query": {
+                      "bool": {
+                        "should": [
+                          {
+                            "bool": {
+                              "must_not": [
+                                {
+                                  "term": {
+                                    "entryClassName": "com.liferay.portal.kernel.model.User"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "bool": {
+                              "must": [
+                                {
+                                  "term": {
+                                    "defaultUser": false
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "context": "query"
+              }
+            ],
+            "icon": "hidden",
+            "description": {
+              "en_US": "Hide the instance default user account from being searched"
+            },
+            "category": "hide",
+            "conditions": {},
+            "title": {
+              "en_US": "Hide Default User"
+            },
+            "enabled": true
+          },
+          "uiConfigurationValues": {},
+          "uiConfigurationJSON": {}
+        },
+        {
+          "elementTemplateJSON": {
+            "clauses": [
+              {
+                "occur": "filter",
+                "query": {
+                  "wrapper": {
+                    "query": {
+                      "bool": {
+                        "should": [
+                          {
+                            "bool": {
+                              "must_not": [
+                                {
+                                  "exists": {
+                                    "field": "hidden"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "bool": {
+                              "must": [
+                                {
+                                  "term": {
+                                    "hidden": false
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "context": "query"
+              }
+            ],
+            "icon": "hidden",
+            "description": {
+              "en_US": "Hide assets which are marked not searchable"
+            },
+            "category": "hide",
+            "conditions": {},
+            "title": {
+              "en_US": "Hide Hidden Contents"
+            },
+            "enabled": true
+          },
+          "uiConfigurationValues": {},
+          "uiConfigurationJSON": {}
+        },
+        {
+          "elementTemplateJSON": {
+            "clauses": [
+              {
+                "occur": "filter",
+                "query": {
+                  "wrapper": {
+                    "query": {
+                      "bool": {
+                        "should": [
+                          {
+                            "bool": {
+                              "must_not": [
+                                {
+                                  "exists": {
+                                    "field": "discussion"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "bool": {
+                              "must": [
+                                {
+                                  "term": {
+                                    "discussion": false
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "context": "query"
+              }
+            ],
+            "icon": "hidden",
+            "description": {
+              "en_US": "Do not search for comments"
+            },
+            "category": "hide",
+            "conditions": {},
+            "title": {
+              "en_US": "Hide Comments"
+            },
+            "enabled": true
+          },
+          "uiConfigurationValues": {},
+          "uiConfigurationJSON": {}
+        },
+        {
+          "elementTemplateJSON": {
+            "clauses": [
+              {
+                "occur": "filter",
+                "query": {
+                  "wrapper": {
+                    "query": {
+                      "bool": {
+                        "should": [
+                          {
+                            "bool": {
+                              "must_not": [
+                                {
+                                  "term": {
+                                    "entryClasslabel": {
+                                      "value": "com.liferay.journal.model.JournalArticle"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "bool": {
+                              "must": [
+                                {
+                                  "term": {
+                                    "entryClasslabel": {
+                                      "value": "com.liferay.journal.model.JournalArticle"
+                                    }
+                                  }
+                                },
+                                {
+                                  "term": {
+                                    "head": {
+                                      "value": true
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "context": "query"
+              }
+            ],
+            "icon": "filter",
+            "description": {
+              "en_US": "Show only the latest HEAD version of Web Content articles"
+            },
+            "category": "filter",
+            "conditions": {},
+            "title": {
+              "en_US": "Limit Search to HEAD Version"
+            },
+            "enabled": true
+          },
+          "uiConfigurationValues": {},
+          "uiConfigurationJSON": {}
+        },
+        {
+          "elementTemplateJSON": {
+            "clauses": [
+              {
+                "occur": "filter",
+                "query": {
+                  "wrapper": {
+                    "query": {
+                      "term": {
+                        "status": 0
+                      }
+                    }
+                  }
+                },
+                "context": "query"
+              }
+            ],
+            "icon": "filter",
+            "description": {
+              "en_US": "Limit search to contents that have been published"
+            },
+            "category": "filter",
+            "conditions": {},
+            "title": {
+              "en_US": "Limit Search to Published Contents"
+            },
+            "enabled": true
+          },
+          "uiConfigurationValues": {},
+          "uiConfigurationJSON": {}
+        },
+        {
+          "elementTemplateJSON": {
+            "clauses": [
+              {
+                "occur": "filter",
+                "query": {
+                  "wrapper": {
+                    "query": {
+                      "bool": {
+                        "should": [
+                          {
+                            "bool": {
+                              "must_not": [
+                                {
+                                  "exists": {
+                                    "field": "displayDate"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "bool": {
+                              "must_not": [
+                                {
+                                  "exists": {
+                                    "field": "expirationDate"
+                                  }
+                                }
+                              ],
+                              "must": [
+                                {
+                                  "range": {
+                                    "displayDate_sortable": {
+                                      "include_lower": true,
+                                      "include_upper": true,
+                                      "from": "-9223372036854775808",
+                                      "to": "${time.current_date|dateFormat=timestamp}"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "bool": {
+                              "must": [
+                                {
+                                  "range": {
+                                    "displayDate_sortable": {
+                                      "include_lower": true,
+                                      "include_upper": true,
+                                      "from": "-9223372036854775808",
+                                      "to": "${time.current_date|dateFormat=timestamp}"
+                                    }
+                                  }
+                                },
+                                {
+                                  "range": {
+                                    "expirationDate_sortable": {
+                                      "include_lower": true,
+                                      "include_upper": true,
+                                      "from": "${time.current_date|dateFormat=timestamp}",
+                                      "to": "9223372036854775807"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "context": "query"
+              }
+            ],
+            "icon": "filter",
+            "description": {
+              "en_US": "Show only contents with a valid display date"
+            },
+            "category": "filter",
+            "conditions": {},
+            "title": {
+              "en_US": "Scheduling Aware"
+            },
+            "enabled": true
+          },
+          "uiConfigurationValues": {},
+          "uiConfigurationJSON": {}
+        },
+        {
+          "elementTemplateJSON": {
+            "clauses": [
+              {
+                "occur": "filter",
+                "query": {
+                  "wrapper": {
+                    "query": {
+                      "bool": {
+                        "should": [
+                          {
+                            "bool": {
+                              "must_not": [
+                                {
+                                  "exists": {
+                                    "field": "stagingGroup"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "bool": {
+                              "must": [
+                                {
+                                  "term": {
+                                    "stagingGroup": false
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "context": "query"
+              }
+            ],
+            "icon": "filter",
+            "description": {
+              "en_US": "Show only published contents on live sites, published and staged contents on staging sites"
+            },
+            "category": "filter",
+            "conditions": {
+              "equals": {
+                "parameter_name": "${context.is_staging_group}",
+                "value": false
+              }
+            },
+            "title": {
+              "en_US": "Staging Aware"
+            },
+            "enabled": true
+          },
+          "uiConfigurationValues": {},
+          "uiConfigurationJSON": {}
+        },
+        {
+          "elementTemplateJSON": {
+            "clauses": [
+              {
+                "occur": "filter",
+                "query": {
+                  "wrapper": {
+                    "query": {
+                      "bool": {
+                        "should": [
+                          {
+                            "bool": {
+                              "must_not": [
+                                {
+                                  "exists": {
+                                    "field": "ctCollectionId"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "term": {
+                              "ctCollectionId": {
+                                "value": "${context.ct_collection_id}"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "context": "query"
+              }
+            ],
+            "icon": "filter",
+            "description": {
+              "en_US": "When Publications feature is enabled, search only contents on my current timeline"
+            },
+            "category": "filter",
+            "title": {
+              "en_US": "Publications Aware"
+            },
+            "enabled": true
+          },
+          "uiConfigurationValues": {},
+          "uiConfigurationJSON": {}
+        }
+      ]
+    },
+    "title": {
+      "en_US": "Full Feature Test"
+    }
+  }
+}
