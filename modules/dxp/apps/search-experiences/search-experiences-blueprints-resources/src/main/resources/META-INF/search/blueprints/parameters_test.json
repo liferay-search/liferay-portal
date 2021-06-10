@@ -1,0 +1,94 @@
+{
+	"blueprint-payload": {
+		"configuration": {
+			"advanced_configuration": {
+			},
+			"aggregation_configuration": {
+			},
+			"facet_configuration": {
+			},
+			"framework_configuration": {
+				"apply_indexer_clauses": true,
+				"searchable_asset_types": [
+					"com.liferay.blogs.model.BlogsEntry",
+					"com.liferay.bookmarks.model.BookmarksEntry",
+					"com.liferay.bookmarks.model.BookmarksFolder",
+					"com.liferay.calendar.model.CalendarBooking",
+					"com.liferay.commerce.product.model.CPDefinition",
+					"com.liferay.document.library.kernel.model.DLFileEntry",
+					"com.liferay.document.library.kernel.model.DLFolder",
+					"com.liferay.dynamic.data.lists.model.DDLRecord",
+					"com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecord",
+					"com.liferay.journal.model.JournalArticle",
+					"com.liferay.journal.model.JournalFolder",
+					"com.liferay.knowledge.base.model.KBArticle",
+					"com.liferay.message.boards.model.MBMessage",
+					"com.liferay.portal.kernel.model.Layout",
+					"com.liferay.portal.kernel.model.User",
+					"com.liferay.wiki.model.WikiPage"
+				]
+			},
+			"highlight_configuration": {
+			},
+			"parameter_configuration": {
+				"custom": [
+				],
+				"keywords": {
+					"parameter_name": "q"
+				},
+				"page": {
+					"parameter_name": "page"
+				},
+				"size": {
+					"default": 10,
+					"max_value": 50,
+					"min_value": 5,
+					"parameter_name": "size"
+				},
+				"sort": {
+					"_geo_distance": {
+						"distance_type": "arc",
+						"field": "expando__keyword__custom_fields__location_geolocation",
+						"label": "Geodistance",
+						"locations": [
+							[
+								"${ipstack.latitude}",
+								"${ipstack.longitude}"
+							]
+						],
+						"order": "asc",
+						"parameter_name": "sort4",
+						"type": "geo_distance",
+						"unit": "km"
+					},
+					"_score": {
+						"label": "score",
+						"parameter_name": "sort1"
+					},
+					"localized_title${context.language_id}_sortable": {
+						"label": "title",
+						"parameter_name": "sort2"
+					},
+					"modified_sortable": {
+						"label": "modified",
+						"parameter_name": "sort3"
+					}
+				}
+			},
+			"query_configuration": [
+			],
+			"sort_configuration": [
+			]
+		},
+		"description": {
+			"en_US": "Parameter configuration test"
+		},
+		"selectedElements": {
+			"query_configuration": [
+			]
+		},
+		"title": {
+			"en_US": "Parameters Test"
+		}
+	}
+}

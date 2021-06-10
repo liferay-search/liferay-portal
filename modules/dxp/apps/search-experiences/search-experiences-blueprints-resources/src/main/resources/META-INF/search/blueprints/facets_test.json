@@ -1,0 +1,217 @@
+{
+  "blueprint-payload": {
+    "configuration": {
+      "highlight_configuration": {},
+      "parameter_configuration": {},
+      "sort_configuration": [],
+      "aggregation_configuration": {},
+      "facet_configuration": {
+        "site": {
+          "site": {
+            "field": "scopeGroupId",
+            "label": "site",
+            "parameter_name": "site"
+          }
+        },
+        "create-date": {
+          "date_range": {
+            "field": "createDate",
+            "multi_value": false,
+            "filter_mode": "pre",
+            "label": "create-date",
+            "parameter_name": "created",
+            "parameters": {
+              "ranges": [
+                {
+                  "from": "${time.current_date|modifier=-1h,dateFormat=yyyyMMddhhmmss}",
+                  "label": "last-hour",
+                  "to": ""
+                },
+                {
+                  "from": "${time.current_date|modifier=-1d,dateFormat=yyyyMMddhhmmss}",
+                  "label": "last-day",
+                  "to": ""
+                },
+                {
+                  "from": "${time.current_date|modifier=-1W,dateFormat=yyyyMMddhhmmss}",
+                  "label": "last-week",
+                  "to": ""
+                },
+                {
+                  "from": "${time.current_date|modifier=-1M,dateFormat=yyyyMMddhhmmss}",
+                  "label": "last-month",
+                  "to": ""
+                },
+                {
+                  "from": "${time.current_date|modifier=-1y,dateFormat=yyyyMMddhhmmss}",
+                  "label": "last-year",
+                  "to": ""
+                }
+              ],
+              "date_format": "yyyyMMddhhmmss"
+            }
+          }
+        },
+        "folder": {
+          "folder": {
+            "field": "folderId",
+            "label": "folder",
+            "parameter_name": "folder"
+          }
+        },
+        "file-format": {
+          "term_map": {
+            "field": "extension",
+            "multi_value": true,
+            "multi_value_operator": "and",
+            "size": 50,
+            "name": "file-format",
+            "filter_mode": "pre",
+            "label": "file-format",
+            "parameter_name": "extension",
+            "frequency_threshold": "1",
+            "parameters": {
+              "map": [
+                {
+                  "values": [
+                    "png",
+                    "gif",
+                    "jpeg",
+                    "jpg",
+                    "tiff"
+                  ],
+                  "key": "image"
+                }
+              ]
+            }
+          }
+        },
+        "web-content-type": {
+          "ddm_structure_name": {
+            "field": "ddmStructureKey",
+            "label": "web-content-type",
+            "parameter_name": "web-content-type"
+          }
+        },
+        "modified": {
+          "date_range": {
+            "field": "modified",
+            "multi_value": false,
+            "parameter_name": "modified",
+            "aggregation_name": "blueprints-modified",
+            "parameters": {
+              "ranges": [
+                {
+                  "from": "${time.current_date|modifier=-1h,dateFormat=yyyyMMddhhmmss}",
+                  "label": "last-hour",
+                  "to": ""
+                },
+                {
+                  "from": "${time.current_date|modifier=-1d,dateFormat=yyyyMMddhhmmss}",
+                  "label": "last-day",
+                  "to": ""
+                },
+                {
+                  "from": "${time.current_date|modifier=-1w,dateFormat=yyyyMMddhhmmss}",
+                  "label": "last-week",
+                  "to": ""
+                },
+                {
+                  "from": "${time.current_date|modifier=-1M,dateFormat=yyyyMMddhhmmss}",
+                  "label": "last-month",
+                  "to": ""
+                },
+                {
+                  "from": "${time.current_date|modifier=-1y,dateFormat=yyyyMMddhhmmss}",
+                  "label": "last-year",
+                  "to": ""
+                }
+              ],
+              "date_format": "yyyyMMddhhmmss"
+            }
+          }
+        },
+        "tag": {
+          "terms": {
+            "field": "assetTagNames.raw",
+            "label": "tag",
+            "parameter_name": "tag"
+          }
+        },
+        "category": {
+          "category": {
+            "field": "assetCategoryIds",
+            "label": "category",
+            "parameter_name": "category"
+          }
+        },
+        "type": {
+          "terms": {
+            "field": "entryClassName",
+            "label": "type",
+            "parameter_name": "type"
+          }
+        },
+        "category_tree": {
+          "category_tree": {
+            "field": "assetCategoryIds",
+            "multi_value_operator": "or",
+            "filter_mode": "post",
+            "label": "Category Tree",
+            "parameter_name": "item",
+            "parameters": {
+              "root_vocabulary_id": 12345
+            },
+            "enabled": false
+          }
+        },
+        "document-type": {
+          "document_type": {
+            "field": "fileEntryTypeId",
+            "label": "document-type",
+            "parameter_name": "documentType"
+          }
+        },
+        "user": {
+          "terms": {
+            "field": "userName",
+            "label": "user",
+            "parameter_name": "user"
+          }
+        }
+      },
+      "framework_configuration": {
+        "searchable_asset_types": [
+          "com.liferay.blogs.model.BlogsEntry",
+          "com.liferay.bookmarks.model.BookmarksEntry",
+          "com.liferay.bookmarks.model.BookmarksFolder",
+          "com.liferay.calendar.model.CalendarBooking",
+          "com.liferay.commerce.product.model.CPDefinition",
+          "com.liferay.document.library.kernel.model.DLFileEntry",
+          "com.liferay.document.library.kernel.model.DLFolder",
+          "com.liferay.dynamic.data.lists.model.DDLRecord",
+          "com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecord",
+          "com.liferay.journal.model.JournalArticle",
+          "com.liferay.journal.model.JournalFolder",
+          "com.liferay.knowledge.base.model.KBArticle",
+          "com.liferay.message.boards.model.MBMessage",
+          "com.liferay.portal.kernel.model.Layout",
+          "com.liferay.portal.kernel.model.User",
+          "com.liferay.wiki.model.WikiPage"
+        ],
+        "apply_indexer_clauses": true
+      },
+      "query_configuration": [],
+      "advanced_configuration": {}
+    },
+    "description": {
+      "en_US": "All supported facets configuration test"
+    },
+    "selectedElements": {
+      "query_configuration": []
+    },
+    "title": {
+      "en_US": "Facets Test"
+    }
+  }
+}

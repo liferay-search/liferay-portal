@@ -1,0 +1,9 @@
+Bundle-Name: Liferay Search Experiences Predict Suggestions API
+Bundle-SymbolicName: com.liferay.search.experiences.predict.suggestions.api
+Bundle-Version: 1.0.0
+Export-Package:\
+	com.liferay.search.experiences.predict.suggestions.attributes,\
+	com.liferay.search.experiences.predict.suggestions.constants,\
+	com.liferay.search.experiences.predict.suggestions.spellcheck,\
+	com.liferay.search.experiences.predict.suggestions.suggestion,\
+	com.liferay.search.experiences.predict.suggestions.typeahead
