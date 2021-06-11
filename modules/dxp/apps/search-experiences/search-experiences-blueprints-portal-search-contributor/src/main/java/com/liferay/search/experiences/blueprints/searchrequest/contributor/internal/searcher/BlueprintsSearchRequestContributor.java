@@ -19,10 +19,7 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.search.SearchContext;
-import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.GetterUtil;
-import com.liferay.portal.search.filter.ComplexQueryPartBuilderFactory;
-import com.liferay.portal.search.index.IndexNameBuilder;
 import com.liferay.portal.search.searcher.SearchRequest;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.searcher.SearchRequestBuilderFactory;
@@ -36,7 +33,6 @@ import com.liferay.search.experiences.blueprints.engine.exception.BlueprintsEngi
 import com.liferay.search.experiences.blueprints.engine.util.BlueprintsSearchRequestContributorHelper;
 import com.liferay.search.experiences.blueprints.message.Message;
 import com.liferay.search.experiences.blueprints.message.Messages;
-import com.liferay.search.experiences.blueprints.service.BlueprintService;
 import com.liferay.search.experiences.blueprints.util.BlueprintHelper;
 
 import java.util.List;
@@ -92,13 +88,6 @@ public class BlueprintsSearchRequestContributor
 			_log.error(
 				blueprintsEngineException.getMessage(),
 				blueprintsEngineException);
-
-			List<Message> errorMessages =
-				blueprintsEngineException.getMessages();
-
-			Stream<Message> stream = errorMessages.stream();
-
-			stream.forEach(message -> _log.error(message));
 		}
 		catch (PortalException portalException) {
 			_log.error(portalException.getMessage(), portalException);
@@ -287,22 +276,10 @@ public class BlueprintsSearchRequestContributor
 		_blueprintsAttributesBuilderFactory;
 
 	@Reference
-	private BlueprintService _blueprintService;
-
-	@Reference
 	private BlueprintsSearchRequestContributorHelper
 		_blueprintsSearchRequestContributorHelper;
 
 	@Reference
-	private ComplexQueryPartBuilderFactory _complexQueryPartBuilderFactory;
-
-	@Reference
-	private IndexNameBuilder _indexNameBuilder;
-
-	@Reference
 	private SearchRequestBuilderFactory _searchRequestBuilderFactory;
-
-	@Reference
-	private UserLocalService _userLocalService;
 
 }
