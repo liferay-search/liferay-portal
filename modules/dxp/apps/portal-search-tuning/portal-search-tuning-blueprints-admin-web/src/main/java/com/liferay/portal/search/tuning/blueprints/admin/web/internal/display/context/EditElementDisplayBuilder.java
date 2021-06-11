@@ -166,7 +166,7 @@ public class EditElementDisplayBuilder extends EditEntryDisplayBuilder {
 		ResourceURL resourceURL = renderResponse.createResourceURL();
 
 		resourceURL.setResourceID(
-				BlueprintsAdminMVCCommandNames.VALIDATE_ELEMENT);
+			BlueprintsAdminMVCCommandNames.VALIDATE_ELEMENT);
 
 		return resourceURL.toString();
 	}
