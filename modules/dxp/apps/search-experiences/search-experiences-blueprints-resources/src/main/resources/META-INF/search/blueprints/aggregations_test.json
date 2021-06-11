@@ -5,20 +5,6 @@
       "parameter_configuration": {},
       "sort_configuration": [],
       "aggregation_configuration": {
-        "sampler-test": {
-          "sampler": {
-            "description": "(Not currently supported by ES adapter) Bucket: Limit the shard sample size for sub aggregation to 200 ",
-            "shard_size": 200,
-            "enabled": false
-          },
-          "aggs": {
-            "keywords": {
-              "significant_terms": {
-                "field": "assetTagNames.raw"
-              }
-            }
-          }
-        },
         "histogram-test": {
           "histogram": {
             "hard_bounds": {
@@ -26,28 +12,91 @@
               "max": 50
             },
             "field": "content_en_US_length_sortable",
-            "offset": 1,
-            "missing": 1,
-            "description": "Bucket: Histogram of content lengths",
             "interval": 10,
             "keyed": true,
             "min_doc_count": 1,
-            "enabled": true,
-            "script": {},
             "order": {
               "_count": "asc"
             }
           }
         },
-        "top_hits-test-outer": {
-          "terms": {
-            "field": "assetTagNames.raw",
-            "size": 3,
-            "description": "Metrics: Top Hits",
+        "significant_text-test": {
+          "significant_text": {
+            "field": "title_en_US",
+            "enabled": false
+          }
+        },
+        "avg_bucket-test": {
+          "avg_bucket": {
+            "gap_policy": "skip",
+            "buckets_path": "pipeline_test_parent>content_lengths"
+          }
+        },
+        "sum-test": {
+          "sum": {
+            "field": "content_en_US_length_sortable",
+            "description": "Sum of all content lengths:"
+          }
+        },
+        "bucket_script-test": {
+          "date_histogram": {
+            "date_histogram_interval": "minute",
+            "field": "modified",
+            "description": "Modifications histogram"
+          },
+          "aggs": {
+            "content_lengths": {
+              "sum": {
+                "field": "content_en_US_length_sortable"
+              }
+            },
+            "restaurants": {
+              "filter": {
+                "term": {
+                  "assetTagNames.raw": "restaurant"
+                }
+              },
+              "aggs": {
+                "restaurant_content_lengths": {
+                  "sum": {
+                    "field": "content_en_US_length_sortable"
+                  }
+                }
+              }
+            },
+            "bucket_script": {
+              "bucket_script": {
+                "buckets_path": {
+                  "restaurantContentLengths": "restaurants>restaurant_content_lengths",
+                  "totalContentLengths": "content_lengths"
+                },
+                "description": "Percentage content of restaurant-tagged content lengths of all content lenghts",
+                "script": "params.restaurantContentLengths / params.totalContentLengths * 100"
+              }
+            }
+          }
+        },
+        "nested-test": {
+          "nested": {
+            "path": "ddmFieldArray",
+            "description": "Number of unique nested field values",
             "enabled": true
           },
           "aggs": {
-            "top-hits-test-inner": {
+            "nested-terms": {
+              "terms": {
+                "field": "ddmFieldArray.ddmFieldName"
+              }
+            }
+          }
+        },
+        "top_hits-test": {
+          "terms": {
+            "field": "assetTagNames.raw",
+            "size": 3
+          },
+          "aggs": {
+            "top-hits": {
               "top_hits": {
                 "explain": true,
                 "highlight": {
@@ -76,397 +125,33 @@
             }
           }
         },
-        "significant_text-test": {
-          "significant_text": {
-            "field": "title_en_US",
-            "description": "(Not currently supported by ES adapter) Bucket: Significant text",
-            "enabled": false
-          }
-        },
-        "avg_bucket-test": {
-          "avg_bucket": {
-            "gap_policy": "skip",
-            "buckets_path": "avg_bucket-test-source>avg_bucket-content_lengths"
-          }
-        },
-        "nested-test": {
-          "nested": {
-            "path": "ddmFieldArray",
-            "description": "Bucket: Number of unique nested field values",
-            "enabled": true
-          },
-          "aggs": {
-            "nested-terms": {
-              "terms": {
-                "field": "ddmFieldArray.ddmFieldName"
-              }
-            }
-          }
-        },
         "geohash_grid-test": {
           "geohash_grid": {
             "field": "expando__keyword__custom_fields__location_geolocation",
             "size": 10000,
             "precision": 3,
-            "description": "Bucket: Geo grid",
-            "shard_size": 100,
-            "enabled": true
-          }
-        },
-        "max_bucket-source": {
-          "date_histogram": {
-            "date_histogram_interval": "minute",
-            "field": "modified",
-            "description": "Pipeline: Max bucket",
-            "enabled": true
-          },
-          "aggs": {
-            "content_lengths": {
-              "sum": {
-                "field": "content_en_US_length_sortable"
-              }
-            }
-          }
-        },
-        "stats_bucket-test": {
-          "stats_bucket": {
-            "buckets_path": "stats_bucket-source>content_lengths"
-          }
-        },
-        "diversified_sampler-test": {
-          "diversified_sampler": {
-            "field": "userName",
-            "max_docs_per_value": 3,
-            "missing": 1,
-            "description": "(Not currently supported by ES adapter) Bucket: Diversified sampler",
-            "shard_size": 200,
-            "execution_hint": "",
-            "enabled": false
-          },
-          "aggs": {
-            "keywords": {
-              "significant_terms": {
-                "field": "assetTagNames.raw"
-              }
-            }
-          }
-        },
-        "stats-test": {
-          "stats": {
-            "field": "content_en_US_length_sortable",
-            "missing": 1,
-            "description": "Metrics: statistics for content length",
-            "enabled": true,
-            "script": {}
-          }
-        },
-        "geo_centroid-test": {
-          "geo_centroid": {
-            "field": "expando__keyword__custom_fields__location_geolocation",
-            "description": "Metrics: weighted centroid from all coordinate values for a geo field",
-            "enabled": true
-          }
-        },
-        "terms-test": {
-          "terms": {
-            "shard_min_doc_count": 1,
-            "field": "assetTagNames.raw",
-            "size": 10,
-            "missing": "N/A",
-            "description": "Bucket: most frequent tags",
-            "exclude": [
-              "establishment"
-            ],
-            "shard_size": 1,
-            "enabled": true
-          }
-        },
-        "serial_differencing-test": {
-          "date_histogram": {
-            "date_histogram_interval": "minute",
-            "field": "modified",
-            "description": "Pipeline: Serial differencing",
-            "enabled": true
-          },
-          "aggs": {
-            "content_lengths": {
-              "sum": {
-                "field": "content_en_US_length_sortable"
-              }
-            },
-            "serial_differencing": {
-              "serial_differencing": {
-                "lag": 30,
-                "buckets_path": "content_lengths"
-              }
-            }
-          }
-        },
-        "min-test": {
-          "min": {
-            "field": "content_en_US_length_sortable",
-            "missing": 1,
-            "description": "Metrics: min value for content length",
-            "enabled": true,
-            "script": {}
-          }
-        },
-        "cumulative_sum-test": {
-          "date_histogram": {
-            "date_histogram_interval": "minute",
-            "field": "modified",
-            "description": "Pipeline: Cumulative sum",
-            "enabled": true
-          },
-          "aggs": {
-            "content_lengths": {
-              "sum": {
-                "field": "content_en_US_length_sortable"
-              }
-            },
-            "cumulative_sum": {
-              "cumulative_sum": {
-                "buckets_path": "content_lengths"
-              }
-            }
-          }
-        },
-        "reverse_nested-test": {
-          "nested": {
-            "path": "ddmFieldArray",
-            "description": "Bucket: Show tag counts for A terms aggregation test",
-            "enabled": true
-          },
-          "aggs": {
-            "reverse_nested-top_field_names": {
-              "terms": {
-                "field": "ddmFieldArray.ddmFieldName"
-              },
-              "aggs": {
-                "reverse_nested-tags_to_content": {
-                  "reverse_nested": {},
-                  "aggs": {
-                    "reverse_nested-tags_per_content": {
-                      "terms": {
-                        "field": "assetTagNames.raw"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "sum_bucket-source": {
-          "date_histogram": {
-            "date_histogram_interval": "minute",
-            "field": "modified",
-            "description": "Pipeline: Sum bucket",
-            "enabled": true
-          },
-          "aggs": {
-            "content_lengths": {
-              "sum": {
-                "field": "content_en_US_length_sortable"
-              }
-            }
-          }
-        },
-        "moving_function-test": {
-          "date_histogram": {
-            "date_histogram_interval": "minute",
-            "field": "modified",
-            "description": "Pipeline: Moving function",
-            "enabled": true
-          },
-          "aggs": {
-            "content_lengths": {
-              "sum": {
-                "field": "content_en_US_length_sortable"
-              }
-            },
-            "moving_function": {
-              "moving_function": {
-                "buckets_path": "content_lengths",
-                "window": 10,
-                "script": "MovingFunctions.unweightedAvg(values)"
-              }
-            }
-          }
-        },
-        "date_histogram-test": {
-          "date_histogram": {
-            "date_histogram_interval": "minute",
-            "field": "modified",
-            "offset": "+1s",
-            "missing": 20200503000000,
-            "description": "Bucket: Histogram of modification dates",
-            "keyed": true,
-            "min_doc_count": 1,
-            "enabled": true,
-            "script": {},
-            "extended_bounds": {},
-            "order": {
-              "_count": "asc"
-            }
-          }
-        },
-        "range-test": {
-          "range": {
-            "field": "content_en_US_length_sortable",
-            "ranges": [
-              {
-                "to": 15
-              },
-              {
-                "from": 15,
-                "to": 25
-              },
-              {
-                "from": 25
-              }
-            ],
-            "missing": 1,
-            "description": "Bucket: Content length ranges",
-            "keyed": true,
-            "enabled": true,
-            "script": {}
-          }
-        },
-        "significant_terms-test": {
-          "significant_terms": {
-            "field": "assetTagNames.raw",
-            "description": "(Not currently supported by ES adapter) Bucket: Significant terms",
-            "enabled": false
-          }
-        },
-        "percentiles_bucket-source": {
-          "date_histogram": {
-            "date_histogram_interval": "minute",
-            "field": "modified",
-            "description": "Pipeline: Percentiles bucket",
-            "enabled": true
-          },
-          "aggs": {
-            "content_lengths": {
-              "sum": {
-                "field": "content_en_US_length_sortable"
-              }
-            }
-          }
-        },
-        "stats_bucket-source": {
-          "date_histogram": {
-            "date_histogram_interval": "minute",
-            "field": "modified",
-            "description": "Pipeline: Stats bucket",
-            "enabled": true
-          },
-          "aggs": {
-            "content_lengths": {
-              "sum": {
-                "field": "content_en_US_length_sortable"
-              }
-            }
-          }
-        },
-        "scripted_metric-test": {
-          "scripted_metric": {
-            "init_script": "state.lengths = []",
-            "map_script": "state.lengths.add(doc.content_en_US_length_sortable.value)",
-            "combine_script": "int length = 0; for (t in state.lengths) { length += t } return length",
-            "description": "Metrics: scripted metric",
-            "params": {},
-            "reduce_script": "int length = 0; for (a in states) { length += a } return length",
-            "enabled": true
-          }
-        },
-        "avg_bucket-test-source": {
-          "date_histogram": {
-            "date_histogram_interval": "minute",
-            "field": "modified"
-          },
-          "aggs": {
-            "avg_bucket-content_lengths": {
-              "sum": {
-                "field": "content_en_US_length_sortable"
-              }
-            }
-          }
-        },
-        "sum-test": {
-          "sum": {
-            "field": "content_en_US_length_sortable",
-            "missing": 1,
-            "description": "Metrics: sum of all content lengths:",
-            "enabled": true,
-            "script": {}
-          }
-        },
-        "bucket_script-test": {
-          "date_histogram": {
-            "date_histogram_interval": "minute",
-            "field": "modified",
-            "description": "Pipeline: the percentage content of restaurant-tagged content lengths of all content lenghts",
-            "enabled": true
-          },
-          "aggs": {
-            "content_lengths": {
-              "sum": {
-                "field": "content_en_US_length_sortable"
-              }
-            },
-            "restaurants": {
-              "filter": {
-                "term": {
-                  "assetTagNames.raw": "restaurant"
-                }
-              },
-              "aggs": {
-                "restaurant_content_lengths": {
-                  "sum": {
-                    "field": "content_en_US_length_sortable"
-                  }
-                }
-              }
-            },
-            "bucket_script": {
-              "bucket_script": {
-                "buckets_path": {
-                  "restaurantContentLengths": "restaurants>restaurant_content_lengths",
-                  "totalContentLengths": "content_lengths"
-                },
-                "script": "params.restaurantContentLengths / params.totalContentLengths * 100"
-              }
-            }
+            "shard_size": 100
           }
         },
         "avg-test": {
           "avg": {
             "field": "content_en_US_length_sortable",
-            "missing": 1,
-            "description": "Metrics: average content length",
-            "enabled": true,
-            "script": {}
+            "missing": 1
           }
         },
         "max-test": {
           "max": {
-            "field": "content_en_US_length_sortable",
-            "missing": 1,
-            "description": "Metrics: max value for content length",
-            "enabled": true,
-            "script": {}
+            "field": "content_en_US_length_sortable"
           }
         },
         "max_bucket-test": {
           "max_bucket": {
-            "buckets_path": "max_bucket-source>content_lengths"
+            "buckets_path": "pipeline_test_parent>content_lengths"
           }
         },
         "percentiles_bucket-test": {
           "percentiles_bucket": {
-            "buckets_path": "percentiles_bucket-source>content_lengths",
+            "buckets_path": "pipeline_test_parent>content_lengths",
             "percents": [
               25,
               50,
@@ -477,45 +162,46 @@
         "value_count-test": {
           "value_count": {
             "field": "assetTagNames.raw",
-            "description": "Metrics: count of asset tag name values",
-            "enabled": true,
-            "script": {}
+            "description": "Number of asset tag name values"
+          }
+        },
+        "stats_bucket-test": {
+          "stats_bucket": {
+            "buckets_path": "pipeline_test_parent>content_lengths",
+            "description": "Stats of the content lengths by modification per minute"
+          }
+        },
+        "stats-test": {
+          "stats": {
+            "field": "content_en_US_length_sortable",
+            "description": "Statistics for content length"
+          }
+        },
+        "geo_centroid-test": {
+          "geo_centroid": {
+            "field": "expando__keyword__custom_fields__location_geolocation"
+          }
+        },
+        "extended_stat_bucket-test": {
+          "extended_stats_bucket": {
+            "buckets_path": "pipeline_test_parent>content_lengths"
           }
         },
         "extended_stats-test": {
           "extended_stats": {
-            "field": "content_en_US_length_sortable",
-            "sigma": 3
+            "sigma": 3,
+            "field": "content_en_US_length_sortable"
           }
         },
-        "extended_stats_bucket-test": {
-          "date_histogram": {
-            "description": "Pipeline: Extended stats",
-            "enabled": true,
-            "field": "modified",
-            "date_histogram_interval": "minute"
-          },
-          "aggs": {
-            "content_lengths": {
-              "sum": {
-                "field": "content_en_US_length_sortable"
-              }
-            },
-            "extended_length_stats": {
-              "extended_stats": {
-                "buckets_path": "extended_stats-test>content_lengths"
-              }
-            }
-          }
-        },
-        "cardinality-test": {
-          "cardinality": {
-            "precision_threshold": 3000,
+        "terms-test": {
+          "terms": {
+            "shard_min_doc_count": 1,
             "field": "assetTagNames.raw",
-            "missing": "N/A",
-            "description": "Metrics: number of unique asset tag names",
-            "enabled": true,
-            "script": {}
+            "size": 10,
+            "exclude": [
+              "establishment"
+            ],
+            "shard_size": 1
           }
         },
         "geo_distance-test": {
@@ -537,19 +223,20 @@
                 "key": "c"
               }
             ],
-            "distance_type": "plane",
             "origin": "41.8781,87.6298",
-            "description": "Bucket: rings around Chicago",
-            "keyed": true,
-            "enabled": true
+            "keyed": true
+          }
+        },
+        "cardinality-test": {
+          "cardinality": {
+            "field": "assetTagNames.raw"
           }
         },
         "bucket_selector-test": {
           "date_histogram": {
             "date_histogram_interval": "minute",
             "field": "modified",
-            "description": "Pipeline: Bucket selector",
-            "enabled": true
+            "description": "Modifications histogram"
           },
           "aggs": {
             "bucket_selector": {
@@ -567,89 +254,200 @@
             }
           }
         },
-        "bucket_sort-test": {
+        "serial_differencing-test": {
           "date_histogram": {
             "date_histogram_interval": "minute",
             "field": "modified",
-            "description": "Pipeline: Bucket sort",
-            "enabled": true
+            "description": "Modifications histogram"
           },
           "aggs": {
-            "total_content_lengths": {
+            "content_lengths": {
               "sum": {
                 "field": "content_en_US_length_sortable"
               }
             },
-            "bucket_sort": {
-              "bucket_sort": {
-                "size": 3,
-                "from": 0,
-                "sort": [
-                  {
-                    "total_content_lengths": {
-                      "order": "desc"
+            "serial_differencing": {
+              "serial_differencing": {
+                "lag": 30,
+                "buckets_path": "content_lengths"
+              }
+            }
+          }
+        },
+        "min-test": {
+          "min": {
+            "field": "content_en_US_length_sortable"
+          }
+        },
+        "cumulative_sum-test": {
+          "date_histogram": {
+            "date_histogram_interval": "minute",
+            "field": "modified",
+            "description": "Modifications histogram"
+          },
+          "aggs": {
+            "content_lengths": {
+              "sum": {
+                "field": "content_en_US_length_sortable"
+              }
+            },
+            "cumulative_sum": {
+              "cumulative_sum": {
+                "buckets_path": "content_lengths"
+              }
+            }
+          }
+        },
+        "reverse_nested-test": {
+          "nested": {
+            "path": "ddmFieldArray"
+          },
+          "aggs": {
+            "reverse_nested-top_field_names": {
+              "terms": {
+                "field": "ddmFieldArray.ddmFieldName"
+              },
+              "aggs": {
+                "reverse_nested-tags_to_content": {
+                  "reverse_nested": {},
+                  "aggs": {
+                    "reverse_nested-tags_per_content": {
+                      "terms": {
+                        "field": "assetTagNames.raw"
+                      }
                     }
                   }
-                ]
+                }
               }
             }
           }
         },
         "global-test": {
-          "global": {
-            "description": "Bucket: Global",
-            "enabled": true
+          "global": {}
+        },
+        "derivate_test": {
+          "date_histogram": {
+            "date_histogram_interval": "minute",
+            "field": "modified",
+            "description": "Modifications histogram"
           },
           "aggs": {
-            "avg_content_length": {
-              "avg": {
+            "content_lengths": {
+              "sum": {
                 "field": "content_en_US_length_sortable"
               }
+            },
+            "derivative": {
+              "derivative": {
+                "buckets_path": "content_lengths"
+              }
+            }
+          }
+        },
+        "moving_function-test": {
+          "date_histogram": {
+            "date_histogram_interval": "minute",
+            "field": "modified",
+            "description": "Modifications histogram"
+          },
+          "aggs": {
+            "content_lengths": {
+              "sum": {
+                "field": "content_en_US_length_sortable"
+              }
+            },
+            "moving_function": {
+              "moving_function": {
+                "buckets_path": "content_lengths",
+                "window": 10,
+                "script": "MovingFunctions.unweightedAvg(values)"
+              }
+            }
+          }
+        },
+        "date_histogram-test": {
+          "date_histogram": {
+            "date_histogram_interval": "minute",
+            "field": "modified",
+            "keyed": true,
+            "min_doc_count": 1,
+            "order": {
+              "_count": "asc"
             }
           }
         },
         "sum_bucket-test": {
           "sum_bucket": {
-            "buckets_path": "sum_bucket-source>content_lengths"
+            "buckets_path": "pipeline_test_parent>content_lengths",
+            "description": "Sum of the content lengths by modification per minute"
+          }
+        },
+        "range-test": {
+          "range": {
+            "field": "content_en_US_length_sortable",
+            "ranges": [
+              {
+                "to": 15
+              },
+              {
+                "from": 15,
+                "to": 25
+              },
+              {
+                "from": 25
+              }
+            ],
+            "missing": 1,
+            "description": "Content length ranges",
+            "keyed": true,
+            "enabled": true
+          }
+        },
+        "significant_terms-test": {
+          "significant_terms": {
+            "field": "assetTagNames.raw",
+            "enabled": false
           }
         },
         "percentiles-test": {
           "percentiles": {
             "field": "content_en_US_length_sortable",
-            "hdr": {
-              "number_of_significant_value_digits": 3
-            },
-            "missing": 0,
-            "description": "Metrics: content lengths by percentiles",
             "percents": [
               25,
               50,
               75,
               99
-            ],
-            "keyed": false,
-            "enabled": true,
-            "script": {}
+            ]
           }
         },
         "min_bucket-test": {
           "max_bucket": {
-            "buckets_path": "min_bucket-source>content_lengths"
+            "buckets_path": "pipeline_test_parent>content_lengths"
+          }
+        },
+        "pipeline_test_parent": {
+          "date_histogram": {
+            "date_histogram_interval": "minute",
+            "field": "modified",
+            "description": "Modifications histogram"
+          },
+          "aggs": {
+            "content_lengths": {
+              "sum": {
+                "field": "content_en_US_length_sortable"
+              }
+            }
+          }
+        },
+        "missing-test": {
+          "missing": {
+            "field": "price"
           }
         },
         "geo_bounds-test": {
           "geo_bounds": {
             "field": "expando__keyword__custom_fields__location_geolocation",
-            "description": "Metrics: geo bounding box containing all the geo values for the location field",
-            "wrap_longitude": true,
-            "enabled": true
-          }
-        },
-        "missing-test": {
-          "missing": {
-            "field": "price",
-            "description": "Bucket: Number of documents missing the field 'price'",
-            "enabled": true
+            "wrap_longitude": true
           }
         },
         "date_range-test": {
@@ -668,12 +466,8 @@
               }
             ],
             "format": "yyyyMMddHHmmss",
-            "missing": 20200503000000,
-            "description": "Bucket: Contents modified within given time ranges",
             "keyed": true,
-            "min_doc_count": 1,
-            "enabled": true,
-            "script": {}
+            "min_doc_count": 1
           }
         },
         "filter-test": {
@@ -693,28 +487,30 @@
         "percentile_ranks-test": {
           "percentile_ranks": {
             "field": "content_en_US_length_sortable",
-            "hdr": {
-              "number_of_significant_value_digits": 3
-            },
             "values": [
               10,
               20,
               30,
               40,
               50
-            ],
-            "missing": 0,
-            "description": "Metrics: How many percent of content lengths are below the given values",
-            "keyed": false,
-            "enabled": true,
-            "script": {}
+            ]
+          }
+        },
+        "scripted_metric-test": {
+          "scripted_metric": {
+            "init_script": "state.lengths = []",
+            "map_script": "state.lengths.add(doc.content_en_US_length_sortable.value)",
+            "combine_script": "int length = 0; for (t in state.lengths) { length += t } return length",
+            "description": "Metrics: scripted metric",
+            "params": {},
+            "reduce_script": "int length = 0; for (a in states) { length += a } return length",
+            "enabled": true
           }
         },
         "filters-test": {
           "filters": {
             "other_bucket": true,
             "other_bucket_key": "other_messages",
-            "description": "Bucket: document counts by content type",
             "filters": {
               "blog-entries": {
                 "term": {
@@ -726,39 +522,18 @@
                   "entryClassName": "com.liferay.journal.model.JournalArticle"
                 }
               }
-            },
-            "enabled": true
-          }
-        },
-        "min_bucket-source": {
-          "date_histogram": {
-            "date_histogram_interval": "minute",
-            "field": "modified",
-            "description": "Pipeline: Min bucket",
-            "enabled": true
-          },
-          "aggs": {
-            "content_lengths": {
-              "sum": {
-                "field": "content_en_US_length_sortable"
-              }
             }
           }
         },
-        "weighted_avg_count-test": {
+        "weighted_avg-test": {
           "weighted_avg": {
-            "description": "Metrics: Weighted average of content length by version count",
+            "description": "Weighted average of content length by version count",
             "weight": {
-              "field": "versionCount_sortable",
-              "missing": 1,
-              "script": {}
+              "field": "versionCount_sortable"
             },
             "value": {
-              "field": "content_en_US_length_sortable",
-              "missing": 1,
-              "script": {}
-            },
-            "enabled": true
+              "field": "content_en_US_length_sortable"
+            }
           }
         }
       },
@@ -784,14 +559,863 @@
         ],
         "apply_indexer_clauses": true
       },
-      "query_configuration": [],
+      "query_configuration": [
+        {
+          "clauses": [
+            {
+              "occur": "should",
+              "query": {
+                "wrapper": {
+                  "query": {
+                    "terms": {
+                      "assetTagNames.raw": [
+                        "helsinki university"
+                      ],
+                      "boost": 50
+                    }
+                  }
+                }
+              },
+              "context": "query"
+            }
+          ],
+          "icon": "thumbs-up",
+          "description": {
+            "en_US": "Boost contents having at least one of the given tags"
+          },
+          "category": "boost",
+          "conditions": {},
+          "title": {
+            "en_US": "Boost Tagged Contents"
+          },
+          "enabled": true
+        },
+        {
+          "clauses": [
+            {
+              "occur": "must",
+              "query": {
+                "wrapper": {
+                  "query": {
+                    "multi_match": {
+                      "fuzziness": "AUTO",
+                      "query": "${keywords}",
+                      "minimum_should_match": "1",
+                      "boost": 1,
+                      "fields": [
+                        "content${context.language_id}^1"
+                      ],
+                      "type": "best_fields",
+                      "operator": "or"
+                    }
+                  }
+                }
+              },
+              "context": "query"
+            }
+          ],
+          "icon": "picture",
+          "description": {
+            "en_US": "Search for a text match over multiple text fields"
+          },
+          "category": "match",
+          "conditions": {},
+          "title": {
+            "en_US": "Text Match Over Multiple Fields"
+          },
+          "enabled": true
+        },
+        {
+          "clauses": [
+            {
+              "occur": "must",
+              "query": {
+                "wrapper": {
+                  "query": {
+                    "multi_match": {
+                      "fuzziness": "AUTO",
+                      "query": "${keywords}",
+                      "minimum_should_match": "1",
+                      "boost": 10,
+                      "fields": [
+                        "localized_title${context.language_id}^2"
+                      ],
+                      "type": "best_fields",
+                      "operator": "or"
+                    }
+                  }
+                }
+              },
+              "context": "query"
+            }
+          ],
+          "icon": "picture",
+          "description": {
+            "en_US": "Search for a text match over multiple text fields"
+          },
+          "category": "match",
+          "conditions": {},
+          "title": {
+            "en_US": "Text Match Over Multiple Fields"
+          },
+          "enabled": true
+        },
+        {
+          "clauses": [
+            {
+              "occur": "should",
+              "query": {
+                "wrapper": {
+                  "query": {
+                    "multi_match": {
+                      "query": "${keywords}",
+                      "boost": 20,
+                      "fields": [
+                        "localized_title${context.language_id}^2",
+                        "content${context.language_id}^1"
+                      ],
+                      "type": "best_fields",
+                      "operator": "and"
+                    }
+                  }
+                }
+              },
+              "context": "query"
+            }
+          ],
+          "icon": "thumbs-up",
+          "description": {
+            "en_US": "Boost contents matching all the words in the search phrase"
+          },
+          "category": "boost",
+          "conditions": {},
+          "title": {
+            "en_US": "Boost All Keywords Match"
+          },
+          "enabled": true
+        },
+        {
+          "clauses": [
+            {
+              "occur": "should",
+              "query": {
+                "wrapper": {
+                  "query": {
+                    "multi_match": {
+                      "query": "${keywords}",
+                      "boost": 20,
+                      "fields": [
+                        "localized_title${context.language_id}^2",
+                        "content${context.language_id}^1"
+                      ],
+                      "type": "bool_prefix",
+                      "operator": "and"
+                    }
+                  }
+                }
+              },
+              "context": "query"
+            }
+          ],
+          "icon": "thumbs-up",
+          "description": {
+            "en_US": "Boost contents matching all the words in the search phrase"
+          },
+          "category": "boost",
+          "conditions": {},
+          "title": {
+            "en_US": "Boost All Keywords Match"
+          },
+          "enabled": true
+        }
+      ],
       "advanced_configuration": {}
     },
     "description": {
       "en_US": "All supported aggregations test"
     },
     "selectedElements": {
-      "query_configuration": []
+      "query_configuration": [
+        {
+          "elementTemplateJSON": {
+            "clauses": [
+              {
+                "occur": "should",
+                "query": {
+                  "wrapper": {
+                    "query": {
+                      "terms": {
+                        "assetTagNames.raw": "${configuration.asset_tags}",
+                        "boost": "${configuration.boost}"
+                      }
+                    }
+                  }
+                },
+                "context": "query"
+              }
+            ],
+            "icon": "thumbs-up",
+            "description": {
+              "en_US": "Boost contents having at least one of the given tags"
+            },
+            "category": "boost",
+            "conditions": {},
+            "title": {
+              "en_US": "Boost Tagged Contents"
+            },
+            "enabled": true
+          },
+          "uiConfigurationValues": {
+            "asset_tags": [
+              {
+                "label": "helsinki university",
+                "value": "helsinki university"
+              }
+            ],
+            "boost": 50
+          },
+          "uiConfigurationJSON": {
+            "fieldSets": [
+              {
+                "fields": [
+                  {
+                    "name": "asset_tags",
+                    "label": "Asset Tags",
+                    "type": "multiselect"
+                  },
+                  {
+                    "defaultValue": 5,
+                    "name": "boost",
+                    "typeOptions": {
+                      "min": 0
+                    },
+                    "label": "Boost",
+                    "type": "number"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "elementTemplateJSON": {
+            "clauses": [
+              {
+                "occur": "must",
+                "query": {
+                  "wrapper": {
+                    "query": {
+                      "multi_match": {
+                        "fuzziness": "${configuration.fuzziness}",
+                        "query": "${keywords}",
+                        "minimum_should_match": "${configuration.minimum_should_match}",
+                        "boost": "${configuration.boost}",
+                        "fields": "${configuration.fields}",
+                        "type": "${configuration.type}",
+                        "operator": "${configuration.operator}",
+                        "slop": "${configuration.slop}"
+                      }
+                    }
+                  }
+                },
+                "context": "query"
+              }
+            ],
+            "icon": "picture",
+            "description": {
+              "en_US": "Search for a text match over multiple text fields"
+            },
+            "category": "match",
+            "conditions": {},
+            "title": {
+              "en_US": "Text Match Over Multiple Fields"
+            },
+            "enabled": true
+          },
+          "uiConfigurationValues": {
+            "fuzziness": "AUTO",
+            "minimum_should_match": "1",
+            "boost": 1,
+            "fields": [
+              {
+                "field": "content",
+                "boost": "1",
+                "locale": "${context.language_id}"
+              }
+            ],
+            "type": "best_fields",
+            "operator": "or",
+            "slop": null
+          },
+          "uiConfigurationJSON": {
+            "fieldSets": [
+              {
+                "fields": [
+                  {
+                    "defaultValue": [
+                      {
+                        "field": "localized_title",
+                        "boost": "2",
+                        "locale": "${context.language_id}"
+                      },
+                      {
+                        "field": "content",
+                        "boost": "1",
+                        "locale": "${context.language_id}"
+                      }
+                    ],
+                    "name": "fields",
+                    "typeOptions": {
+                      "boost": true
+                    },
+                    "label": "Fields",
+                    "type": "fieldMappingList"
+                  },
+                  {
+                    "defaultValue": "or",
+                    "name": "operator",
+                    "typeOptions": {
+                      "options": [
+                        {
+                          "label": "OR",
+                          "value": "or"
+                        },
+                        {
+                          "label": "AND",
+                          "value": "and"
+                        }
+                      ]
+                    },
+                    "label": "Operator",
+                    "type": "select"
+                  },
+                  {
+                    "defaultValue": "best_fields",
+                    "name": "type",
+                    "typeOptions": {
+                      "options": [
+                        {
+                          "label": "Best Fields",
+                          "value": "best_fields"
+                        },
+                        {
+                          "label": "Most Fields",
+                          "value": "most_fields"
+                        },
+                        {
+                          "label": "Cross Fields",
+                          "value": "cross_fields"
+                        },
+                        {
+                          "label": "Phrase",
+                          "value": "phrase"
+                        },
+                        {
+                          "label": "Phrase Prefix",
+                          "value": "phrase_prefix"
+                        },
+                        {
+                          "label": "Boolean Prefix",
+                          "value": "bool_prefix"
+                        }
+                      ]
+                    },
+                    "label": "Match Type",
+                    "type": "select"
+                  },
+                  {
+                    "helpText": "Only use fuzziness with the following match types: most fields, best fields, bool prefix.",
+                    "defaultValue": "AUTO",
+                    "name": "fuzziness",
+                    "typeOptions": {
+                      "nullable": true,
+                      "options": [
+                        {
+                          "label": "Auto",
+                          "value": "AUTO"
+                        },
+                        {
+                          "label": "0",
+                          "value": "0"
+                        },
+                        {
+                          "label": "1",
+                          "value": "1"
+                        },
+                        {
+                          "label": "2",
+                          "value": "2"
+                        }
+                      ]
+                    },
+                    "label": "Fuzziness",
+                    "type": "select"
+                  },
+                  {
+                    "defaultValue": "1",
+                    "name": "minimum_should_match",
+                    "typeOptions": {
+                      "nullable": true
+                    },
+                    "label": "Minimum Should Match",
+                    "type": "text"
+                  },
+                  {
+                    "helpText": "Only use slop with the following match types: phrase, phrase prefix.",
+                    "defaultValue": null,
+                    "name": "slop",
+                    "typeOptions": {
+                      "min": 0,
+                      "nullable": true,
+                      "step": 1
+                    },
+                    "label": "Slop",
+                    "type": "number"
+                  },
+                  {
+                    "defaultValue": 1,
+                    "name": "boost",
+                    "typeOptions": {
+                      "min": 0
+                    },
+                    "label": "Boost",
+                    "type": "number"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "elementTemplateJSON": {
+            "clauses": [
+              {
+                "occur": "must",
+                "query": {
+                  "wrapper": {
+                    "query": {
+                      "multi_match": {
+                        "fuzziness": "${configuration.fuzziness}",
+                        "query": "${keywords}",
+                        "minimum_should_match": "${configuration.minimum_should_match}",
+                        "boost": "${configuration.boost}",
+                        "fields": "${configuration.fields}",
+                        "type": "${configuration.type}",
+                        "operator": "${configuration.operator}",
+                        "slop": "${configuration.slop}"
+                      }
+                    }
+                  }
+                },
+                "context": "query"
+              }
+            ],
+            "icon": "picture",
+            "description": {
+              "en_US": "Search for a text match over multiple text fields"
+            },
+            "category": "match",
+            "conditions": {},
+            "title": {
+              "en_US": "Text Match Over Multiple Fields"
+            },
+            "enabled": true
+          },
+          "uiConfigurationValues": {
+            "fuzziness": "AUTO",
+            "minimum_should_match": "1",
+            "boost": 10,
+            "fields": [
+              {
+                "field": "localized_title",
+                "boost": "2",
+                "locale": "${context.language_id}"
+              }
+            ],
+            "type": "best_fields",
+            "operator": "or",
+            "slop": null
+          },
+          "uiConfigurationJSON": {
+            "fieldSets": [
+              {
+                "fields": [
+                  {
+                    "defaultValue": [
+                      {
+                        "field": "localized_title",
+                        "boost": "2",
+                        "locale": "${context.language_id}"
+                      },
+                      {
+                        "field": "content",
+                        "boost": "1",
+                        "locale": "${context.language_id}"
+                      }
+                    ],
+                    "name": "fields",
+                    "typeOptions": {
+                      "boost": true
+                    },
+                    "label": "Fields",
+                    "type": "fieldMappingList"
+                  },
+                  {
+                    "defaultValue": "or",
+                    "name": "operator",
+                    "typeOptions": {
+                      "options": [
+                        {
+                          "label": "OR",
+                          "value": "or"
+                        },
+                        {
+                          "label": "AND",
+                          "value": "and"
+                        }
+                      ]
+                    },
+                    "label": "Operator",
+                    "type": "select"
+                  },
+                  {
+                    "defaultValue": "best_fields",
+                    "name": "type",
+                    "typeOptions": {
+                      "options": [
+                        {
+                          "label": "Best Fields",
+                          "value": "best_fields"
+                        },
+                        {
+                          "label": "Most Fields",
+                          "value": "most_fields"
+                        },
+                        {
+                          "label": "Cross Fields",
+                          "value": "cross_fields"
+                        },
+                        {
+                          "label": "Phrase",
+                          "value": "phrase"
+                        },
+                        {
+                          "label": "Phrase Prefix",
+                          "value": "phrase_prefix"
+                        },
+                        {
+                          "label": "Boolean Prefix",
+                          "value": "bool_prefix"
+                        }
+                      ]
+                    },
+                    "label": "Match Type",
+                    "type": "select"
+                  },
+                  {
+                    "helpText": "Only use fuzziness with the following match types: most fields, best fields, bool prefix.",
+                    "defaultValue": "AUTO",
+                    "name": "fuzziness",
+                    "typeOptions": {
+                      "nullable": true,
+                      "options": [
+                        {
+                          "label": "Auto",
+                          "value": "AUTO"
+                        },
+                        {
+                          "label": "0",
+                          "value": "0"
+                        },
+                        {
+                          "label": "1",
+                          "value": "1"
+                        },
+                        {
+                          "label": "2",
+                          "value": "2"
+                        }
+                      ]
+                    },
+                    "label": "Fuzziness",
+                    "type": "select"
+                  },
+                  {
+                    "defaultValue": "1",
+                    "name": "minimum_should_match",
+                    "typeOptions": {
+                      "nullable": true
+                    },
+                    "label": "Minimum Should Match",
+                    "type": "text"
+                  },
+                  {
+                    "helpText": "Only use slop with the following match types: phrase, phrase prefix.",
+                    "defaultValue": null,
+                    "name": "slop",
+                    "typeOptions": {
+                      "min": 0,
+                      "nullable": true,
+                      "step": 1
+                    },
+                    "label": "Slop",
+                    "type": "number"
+                  },
+                  {
+                    "defaultValue": 1,
+                    "name": "boost",
+                    "typeOptions": {
+                      "min": 0
+                    },
+                    "label": "Boost",
+                    "type": "number"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "elementTemplateJSON": {
+            "clauses": [
+              {
+                "occur": "should",
+                "query": {
+                  "wrapper": {
+                    "query": {
+                      "multi_match": {
+                        "query": "${keywords}",
+                        "boost": "${configuration.boost}",
+                        "fields": "${configuration.fields}",
+                        "type": "${configuration.type}",
+                        "operator": "and"
+                      }
+                    }
+                  }
+                },
+                "context": "query"
+              }
+            ],
+            "icon": "thumbs-up",
+            "description": {
+              "en_US": "Boost contents matching all the words in the search phrase"
+            },
+            "category": "boost",
+            "conditions": {},
+            "title": {
+              "en_US": "Boost All Keywords Match"
+            },
+            "enabled": true
+          },
+          "uiConfigurationValues": {
+            "boost": 20,
+            "fields": [
+              {
+                "field": "localized_title",
+                "boost": 2,
+                "locale": "${context.language_id}"
+              },
+              {
+                "field": "content",
+                "boost": 1,
+                "locale": "${context.language_id}"
+              }
+            ],
+            "type": "best_fields"
+          },
+          "uiConfigurationJSON": {
+            "fieldSets": [
+              {
+                "fields": [
+                  {
+                    "defaultValue": [
+                      {
+                        "field": "localized_title",
+                        "boost": 2,
+                        "locale": "${context.language_id}"
+                      },
+                      {
+                        "field": "content",
+                        "boost": 1,
+                        "locale": "${context.language_id}"
+                      }
+                    ],
+                    "name": "fields",
+                    "typeOptions": {
+                      "boost": true
+                    },
+                    "label": "Field",
+                    "type": "fieldMappingList"
+                  },
+                  {
+                    "defaultValue": "best_fields",
+                    "name": "type",
+                    "typeOptions": {
+                      "options": [
+                        {
+                          "label": "Best Fields",
+                          "value": "best_fields"
+                        },
+                        {
+                          "label": "Most Fields",
+                          "value": "most_fields"
+                        },
+                        {
+                          "label": "Cross Fields",
+                          "value": "cross_fields"
+                        },
+                        {
+                          "label": "Phrase",
+                          "value": "phrase"
+                        },
+                        {
+                          "label": "Phrase Prefix",
+                          "value": "phrase_prefix"
+                        },
+                        {
+                          "label": "Boolean Prefix",
+                          "value": "bool_prefix"
+                        }
+                      ]
+                    },
+                    "label": "Match Type",
+                    "type": "select"
+                  },
+                  {
+                    "defaultValue": 10,
+                    "name": "boost",
+                    "typeOptions": {
+                      "min": 0
+                    },
+                    "label": "Boost",
+                    "type": "number"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "elementTemplateJSON": {
+            "clauses": [
+              {
+                "occur": "should",
+                "query": {
+                  "wrapper": {
+                    "query": {
+                      "multi_match": {
+                        "query": "${keywords}",
+                        "boost": "${configuration.boost}",
+                        "fields": "${configuration.fields}",
+                        "type": "${configuration.type}",
+                        "operator": "and"
+                      }
+                    }
+                  }
+                },
+                "context": "query"
+              }
+            ],
+            "icon": "thumbs-up",
+            "description": {
+              "en_US": "Boost contents matching all the words in the search phrase"
+            },
+            "category": "boost",
+            "conditions": {},
+            "title": {
+              "en_US": "Boost All Keywords Match"
+            },
+            "enabled": true
+          },
+          "uiConfigurationValues": {
+            "boost": 20,
+            "fields": [
+              {
+                "field": "localized_title",
+                "boost": 2,
+                "locale": "${context.language_id}"
+              },
+              {
+                "field": "content",
+                "boost": 1,
+                "locale": "${context.language_id}"
+              }
+            ],
+            "type": "bool_prefix"
+          },
+          "uiConfigurationJSON": {
+            "fieldSets": [
+              {
+                "fields": [
+                  {
+                    "defaultValue": [
+                      {
+                        "field": "localized_title",
+                        "boost": 2,
+                        "locale": "${context.language_id}"
+                      },
+                      {
+                        "field": "content",
+                        "boost": 1,
+                        "locale": "${context.language_id}"
+                      }
+                    ],
+                    "name": "fields",
+                    "typeOptions": {
+                      "boost": true
+                    },
+                    "label": "Field",
+                    "type": "fieldMappingList"
+                  },
+                  {
+                    "defaultValue": "best_fields",
+                    "name": "type",
+                    "typeOptions": {
+                      "options": [
+                        {
+                          "label": "Best Fields",
+                          "value": "best_fields"
+                        },
+                        {
+                          "label": "Most Fields",
+                          "value": "most_fields"
+                        },
+                        {
+                          "label": "Cross Fields",
+                          "value": "cross_fields"
+                        },
+                        {
+                          "label": "Phrase",
+                          "value": "phrase"
+                        },
+                        {
+                          "label": "Phrase Prefix",
+                          "value": "phrase_prefix"
+                        },
+                        {
+                          "label": "Boolean Prefix",
+                          "value": "bool_prefix"
+                        }
+                      ]
+                    },
+                    "label": "Match Type",
+                    "type": "select"
+                  },
+                  {
+                    "defaultValue": 10,
+                    "name": "boost",
+                    "typeOptions": {
+                      "min": 0
+                    },
+                    "label": "Boost",
+                    "type": "number"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
     },
     "title": {
       "en_US": "Aggregations Test"
