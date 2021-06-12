@@ -9,6 +9,13 @@
  * distribution rights of the Software.
  */
 
+export const ACTIVE = 'active';
+export const ALL = 'all';
+export const INACTIVE = 'inactive';
+
+export const ASCENDING = 'asc';
+export const DESCENDING = 'desc';
+
 export const CONFIG_PREFIX = 'configuration';
 
 export const ELEMENT_PREFIX = {
