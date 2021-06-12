@@ -34,6 +34,7 @@ import {
 } from '../utils/validation';
 import AddElementSidebar from './AddElementSidebar';
 import PreviewSidebar from './PreviewSidebar';
+import ClauseContributors from './tabs/ClauseContributors';
 import QueryBuilder from './tabs/QueryBuilder';
 import Settings from './tabs/Settings';
 
@@ -42,6 +43,7 @@ import Settings from './tabs/Settings';
 /* eslint-disable sort-keys */
 const TABS = {
 	'query-builder': Liferay.Language.get('query-builder'),
+	'clause-contributors': Liferay.Language.get('clause-contributors'),
 	settings: Liferay.Language.get('settings'),
 };
 /* eslint-enable sort-keys */
@@ -54,7 +56,10 @@ function EditBlueprintForm({
 	initialSelectedElementsString = '{}',
 	indexFields,
 	initialTitle = {},
+	keywordQueryContributors,
+	modelPrefilterContributors,
 	queryElements = [],
+	queryPrefilterContributors,
 	redirectURL = '',
 	searchableAssetTypes,
 	searchResultsURL,
@@ -554,6 +559,25 @@ function EditBlueprintForm({
 						setFieldValue={formik.setFieldValue}
 						sortConfig={formik.values.sortConfig}
 						touched={formik.touched}
+					/>
+				);
+			case 'clause-contributors':
+				return (
+					<ClauseContributors
+						initialContributors={[
+							{
+								label: 'KeywordQueryContributor',
+								value: keywordQueryContributors.sort(),
+							},
+							{
+								label: 'ModelPrefilterContributor',
+								value: modelPrefilterContributors.sort(),
+							},
+							{
+								label: 'QueryPrefilterContributor',
+								value: queryPrefilterContributors.sort(),
+							},
+						]}
 					/>
 				);
 			default:
