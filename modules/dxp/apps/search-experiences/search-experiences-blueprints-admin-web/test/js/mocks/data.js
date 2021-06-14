@@ -9,11 +9,12 @@
  * distribution rights of the Software.
  */
 
-import {QUERY_ELEMENTS} from '../../../src/main/resources/META-INF/resources/js/utils/data';
 import {
 	getElementOutput,
 	getUIConfigurationValues,
 } from '../../../src/main/resources/META-INF/resources/js/utils/utils';
+import PASTE_AN_ELASTICSEARCH_QUERY from './elements/paste-an-elasticsearch-query';
+import TEXT_MATCH_OVER_MULTIPLE_FIELDS from './elements/text-match-over-multiple-fields';
 
 export const ENTITY_JSON = {
 	'com.liferay.asset.kernel.model.AssetTag': {
@@ -104,6 +105,11 @@ export const INDEX_FIELDS = [
 		name: 'path',
 		type: 'keyword',
 	},
+];
+
+export const QUERY_ELEMENTS = [
+	TEXT_MATCH_OVER_MULTIPLE_FIELDS,
+	PASTE_AN_ELASTICSEARCH_QUERY,
 ];
 
 export const SEARCHABLE_ASSET_TYPES = [
