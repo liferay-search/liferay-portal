@@ -67,8 +67,8 @@ describe('AddElementSidebar', () => {
 	it('displays the add button when hovering over an element item', () => {
 		const {container, queryAllByText} = renderAddElementSidebar();
 
-		fireEvent.mouseOver(container.querySelectorAll('.list-group-title')[1]);
+		fireEvent.mouseOver(container.querySelectorAll('.list-group-title')[0]);
 
-		expect(queryAllByText('add')[1]).toBeVisible();
+		expect(queryAllByText('add')[0]).toBeVisible();
 	});
 });
