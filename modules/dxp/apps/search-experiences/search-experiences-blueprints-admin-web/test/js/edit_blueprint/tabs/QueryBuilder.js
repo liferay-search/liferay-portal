@@ -88,6 +88,6 @@ describe('QueryBuilder', () => {
 
 		expect(
 			container.querySelectorAll('.configuration-form-list').length
-		).toBe(29);
+		).toBe(SELECTED_ELEMENTS.length);
 	});
 });
