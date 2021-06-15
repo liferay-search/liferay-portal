@@ -9,11 +9,6 @@
  * distribution rights of the Software.
  */
 
-/**
- * Keep these in sync with the elements in
- * search-experiences-blueprints-resources/
- * src/main/resources/META-INF/search/elements
- */
 export default {
 	elementTemplateJSON: {
 		category: 'hide',
@@ -30,8 +25,9 @@ export default {
 										bool: {
 											must_not: [
 												{
-													exists: {
-														field: 'discussion',
+													term: {
+														entryClassName:
+															'com.liferay.portal.kernel.model.User',
 													},
 												},
 											],
@@ -42,7 +38,7 @@ export default {
 											must: [
 												{
 													term: {
-														discussion: false,
+														defaultUser: false,
 													},
 												},
 											],
@@ -57,12 +53,12 @@ export default {
 		],
 		conditions: {},
 		description: {
-			en_US: 'Do not search for comments',
+			en_US: 'Hide the instance default user account from being searched',
 		},
 		enabled: true,
 		icon: 'hidden',
 		title: {
-			en_US: 'Hide Comments',
+			en_US: 'Hide Default User',
 		},
 	},
 	uiConfigurationJSON: {},

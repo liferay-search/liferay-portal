@@ -9,11 +9,6 @@
  * distribution rights of the Software.
  */
 
-/**
- * Keep these in sync with the elements in
- * search-experiences-blueprints-resources/
- * src/main/resources/META-INF/search/elements
- */
 export default {
 	elementTemplateJSON: {
 		category: 'filter',
@@ -24,22 +19,51 @@ export default {
 				query: {
 					wrapper: {
 						query: {
-							term: {
-								mimeType: 'application_pdf',
+							bool: {
+								should: [
+									{
+										bool: {
+											must_not: [
+												{
+													exists: {
+														field: 'stagingGroup',
+													},
+												},
+											],
+										},
+									},
+									{
+										bool: {
+											must: [
+												{
+													term: {
+														stagingGroup: false,
+													},
+												},
+											],
+										},
+									},
+								],
 							},
 						},
 					},
 				},
 			},
 		],
-		conditions: {},
+		conditions: {
+			equals: {
+				parameter_name: '${context.is_staging_group}',
+				value: false,
+			},
+		},
 		description: {
-			en_US: 'Limit search to PDF files',
+			en_US:
+				'Show only published contents on live sites, published and staged contents on staging sites',
 		},
 		enabled: true,
 		icon: 'filter',
 		title: {
-			en_US: 'Limit Search to PDF files',
+			en_US: 'Staging Aware',
 		},
 	},
 	uiConfigurationJSON: {},
