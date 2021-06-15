@@ -9,24 +9,18 @@
  * distribution rights of the Software.
  */
 
-/**
- * Keep these in sync with the elements in
- * search-experiences-blueprints-resources/
- * src/main/resources/META-INF/search/elements
- */
 export default {
 	elementTemplateJSON: {
-		category: 'boost',
+		category: 'filter',
 		clauses: [
 			{
 				context: 'query',
-				occur: 'should',
+				occur: 'filter',
 				query: {
 					wrapper: {
 						query: {
-							terms: {
-								boost: '${configuration.boost}',
-								groupId: '${user.user_group_ids}',
+							term: {
+								status: 0,
 							},
 						},
 					},
@@ -35,29 +29,13 @@ export default {
 		],
 		conditions: {},
 		description: {
-			en_US: "Boost contents on sites I'm a member of",
+			en_US: 'Limit search to contents that have been published',
 		},
 		enabled: true,
-		icon: 'thumbs-up',
+		icon: 'filter',
 		title: {
-			en_US: 'Boost Contents on My Sites',
+			en_US: 'Limit Search to Published Contents',
 		},
 	},
-	uiConfigurationJSON: {
-		fieldSets: [
-			{
-				fields: [
-					{
-						defaultValue: 10,
-						label: 'Boost',
-						name: 'boost',
-						type: 'number',
-						typeOptions: {
-							min: 0,
-						},
-					},
-				],
-			},
-		],
-	},
+	uiConfigurationJSON: {},
 };
