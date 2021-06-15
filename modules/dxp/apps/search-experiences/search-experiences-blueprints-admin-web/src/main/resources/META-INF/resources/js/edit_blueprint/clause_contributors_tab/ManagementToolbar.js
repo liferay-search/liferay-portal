@@ -22,7 +22,7 @@ import getCN from 'classnames';
 import React, {useState} from 'react';
 
 import {ALL, ASCENDING} from '../../utils/constants';
-import {sub} from '../../utils/utils';
+import {sub} from '../../utils/language';
 
 function ManagementToolbar({
 	allItems,
