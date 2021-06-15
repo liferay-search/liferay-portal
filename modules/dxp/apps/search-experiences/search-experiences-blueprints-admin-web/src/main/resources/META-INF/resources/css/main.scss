@@ -17,18 +17,19 @@
 .portlet-blueprints-admin {
 	// Shared
 
+	@import '_builder';
 	@import '_sidebar';
 
 	// Components
 
 	@import '_add_element_sidebar';
 	@import '_blueprints_search_container';
-	@import '_builder';
-	@import '_clause_contributor';
+	@import '_clause_contributors_tab';
 	@import '_edit_element';
 	@import '_element';
 	@import '_import_blueprint';
 	@import '_page_toolbar';
 	@import '_preview_sidebar';
+	@import '_query_builder_tab';
 	@import '_result_list_item';
 }

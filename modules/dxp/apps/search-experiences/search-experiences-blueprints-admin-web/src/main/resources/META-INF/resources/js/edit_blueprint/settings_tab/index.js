@@ -16,7 +16,7 @@ import React from 'react';
 
 import CodeMirrorEditor from '../../shared/CodeMirrorEditor';
 
-function Settings({
+function SettingsTab({
 	advancedConfig,
 	aggregationConfig,
 	errors,
@@ -53,7 +53,7 @@ function Settings({
 
 	return (
 		<ClayLayout.ContainerFluid className="builder" size="xl">
-			<div className="content-shift settings-tab sheet">
+			<div className="builder-content-shift sheet">
 				<h2 className="sheet-title">
 					{Liferay.Language.get('settings')}
 				</h2>
@@ -116,4 +116,4 @@ function Settings({
 	);
 }
 
-export default React.memo(Settings);
+export default React.memo(SettingsTab);
