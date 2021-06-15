@@ -1,0 +1,72 @@
+.clause-contributors-tab {
+	.clause-contributor-table {
+		padding-top: calc(#{$pageToolbarHeight} + #{$managementBarHeight});
+
+		&.subnav-open {
+			padding-top: calc(
+				#{$pageToolbarHeight} + #{$managementBarHeight} + #{$subNavBarHeight}
+			);
+		}
+	}
+
+	.clause-content-shift {
+		margin-left: auto;
+		margin-right: calc(50% - #{$clauseMaxWidth} / 2);
+		max-width: $clauseMaxWidth;
+		transition: margin-right ease 0.2s;
+	}
+
+	.management-bar {
+		border-bottom: 1px solid $mainLighten74;
+		margin-top: $pageToolbarHeight;
+		position: fixed;
+		width: 100%;
+		z-index: 970;
+
+		.reset-to-baseline {
+			margin-left: 8px;
+		}
+	}
+
+	.subnav-tbar {
+		margin-top: calc(#{$pageToolbarHeight} + #{$managementBarHeight});
+		position: fixed;
+		width: 100%;
+		z-index: 970;
+
+		.component-label {
+			margin-right: 8px;
+		}
+	}
+
+	.table {
+		.table-divider td {
+			text-transform: none;
+		}
+
+		.classname-cell {
+			max-width: 500px;
+		}
+	}
+}
+
+@media (min-width: calc(#{$clauseMinWidth} + #{$previewSidebarWidth})) {
+	.open-preview .clause-content-shift {
+		margin-right: calc(
+			max(
+				50% - (#{$clauseMaxWidth} / 2),
+				#{$previewSidebarWidth} - (50vw - 50%) + 24px
+			)
+		);
+
+		.table {
+			.table-cell-expand {
+				min-width: unset;
+			}
+
+			.classname-cell {
+				max-width: 264px;
+			}
+		}
+	}
+}

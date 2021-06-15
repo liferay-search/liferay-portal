@@ -34,9 +34,9 @@ import {
 } from '../utils/validation';
 import AddElementSidebar from './AddElementSidebar';
 import PreviewSidebar from './PreviewSidebar';
-import ClauseContributors from './clause_contributors';
-import QueryBuilder from './query_builder';
-import Settings from './settings';
+import ClauseContributorsTab from './clause_contributors_tab';
+import QueryBuilderTab from './query_builder_tab';
+import SettingsTab from './settings_tab';
 
 // Tabs in display order
 
@@ -548,7 +548,7 @@ function EditBlueprintForm({
 		switch (tab) {
 			case 'settings':
 				return (
-					<Settings
+					<SettingsTab
 						advancedConfig={formik.values.advancedConfig}
 						aggregationConfig={formik.values.aggregationConfig}
 						errors={formik.errors}
@@ -563,7 +563,7 @@ function EditBlueprintForm({
 				);
 			case 'clause-contributors':
 				return (
-					<ClauseContributors
+					<ClauseContributorsTab
 						initialContributors={[
 							{
 								label: 'KeywordQueryContributor',
@@ -600,7 +600,7 @@ function EditBlueprintForm({
 								'open-sidebar': showSidebar,
 							})}
 						>
-							<QueryBuilder
+							<QueryBuilderTab
 								entityJSON={entityJSON}
 								errors={formik.errors.selectedQueryElements}
 								frameworkConfig={formik.values.frameworkConfig}
@@ -686,6 +686,9 @@ function EditBlueprintForm({
 			</PageToolbar>
 
 			<PreviewSidebar
+				className={getCN({
+					'shift-down': tab === 'clause-contributors',
+				})}
 				loading={previewInfo.loading}
 				onFetchResults={_handleFetchPreviewSearch}
 				onFocusElement={_handleFocusElement}

@@ -11,6 +11,7 @@
 
 import {ClayCheckbox, ClayToggle} from '@clayui/form';
 import ClayTable from '@clayui/table';
+import getCN from 'classnames';
 import React, {useEffect, useState} from 'react';
 
 import {
@@ -22,7 +23,7 @@ import {
 } from '../../utils/constants';
 import ManagementToolbar from './ManagementToolbar';
 
-function ClauseContributors({initialContributors}) {
+function ClauseContributorsTab({initialContributors}) {
 	const [category, setCategory] = useState(ALL);
 	const [contributors, setContributors] = useState(initialContributors);
 	const [enabled, setEnabled] = useState([]);
@@ -151,7 +152,7 @@ function ClauseContributors({initialContributors}) {
 	}, [enabled, category, keyword, sortDirection, status]); //eslint-disable-line
 
 	return (
-		<div className="clause-contributor-tab">
+		<div className="clause-contributors-tab">
 			<ManagementToolbar
 				allItems={contributors.reduce(
 					(acc, curr) => [...curr.value, ...acc],
@@ -176,142 +177,158 @@ function ClauseContributors({initialContributors}) {
 				status={status}
 			/>
 
-			<div className="container-fluid container-fluid-max-xl">
+			<div
+				className={getCN(
+					'container-fluid',
+					'container-fluid-max-xl',
+					'clause-contributor-table',
+					{
+						'subnav-open':
+							!!keyword || status !== ALL || category !== ALL,
+					}
+				)}
+			>
 				<div className="container-view">
-					<ClayTable>
-						<ClayTable.Head>
-							<ClayTable.Row>
-								<ClayTable.Cell headingCell />
-								<ClayTable.Cell expanded headingCell>
-									{Liferay.Language.get('title')}
-								</ClayTable.Cell>
-								<ClayTable.Cell
-									className="table-cell-maxw-500"
-									headingCell
-								>
-									{Liferay.Language.get('class-name')}
-								</ClayTable.Cell>
-								<ClayTable.Cell expanded headingCell>
-									{Liferay.Language.get('description')}
-								</ClayTable.Cell>
-								<ClayTable.Cell
-									className="table-cell-expand-smallest"
-									headingCell
-								>
-									{Liferay.Language.get('enabled')}
-								</ClayTable.Cell>
-							</ClayTable.Row>
-						</ClayTable.Head>
-
-						<ClayTable.Body>
-							{contributors.map((contributor) => (
-								<React.Fragment key={contributor.label}>
-									<ClayTable.Row
-										divider={true}
-										key={contributor.label}
+					<div className="clause-content-shift">
+						<ClayTable>
+							<ClayTable.Head>
+								<ClayTable.Row>
+									<ClayTable.Cell headingCell />
+									<ClayTable.Cell expanded headingCell>
+										{Liferay.Language.get('title')}
+									</ClayTable.Cell>
+									<ClayTable.Cell
+										className="classname-cell"
+										expanded
+										headingCell
 									>
-										<ClayTable.Cell colSpan="9">
-											{contributor.label}
-										</ClayTable.Cell>
-									</ClayTable.Row>
+										{Liferay.Language.get('class-name')}
+									</ClayTable.Cell>
+									<ClayTable.Cell expanded headingCell>
+										{Liferay.Language.get('description')}
+									</ClayTable.Cell>
+									<ClayTable.Cell
+										className="table-cell-expand-smallest"
+										headingCell
+									>
+										{Liferay.Language.get('enabled')}
+									</ClayTable.Cell>
+								</ClayTable.Row>
+							</ClayTable.Head>
 
-									{contributor.value.map((item) => (
+							<ClayTable.Body>
+								{contributors.map((contributor) => (
+									<React.Fragment key={contributor.label}>
 										<ClayTable.Row
-											active={selected.includes(item)}
-											key={item}
+											divider={true}
+											key={contributor.label}
 										>
-											<ClayTable.Cell>
-												<ClayCheckbox
-													checked={selected.includes(
-														item
-													)}
-													onChange={() =>
-														setSelected(
-															selected.includes(
-																item
+											<ClayTable.Cell colSpan="9">
+												{contributor.label}
+											</ClayTable.Cell>
+										</ClayTable.Row>
+
+										{contributor.value.map((item) => (
+											<ClayTable.Row
+												active={selected.includes(item)}
+												key={item}
+											>
+												<ClayTable.Cell>
+													<ClayCheckbox
+														checked={selected.includes(
+															item
+														)}
+														onChange={() =>
+															setSelected(
+																selected.includes(
+																	item
+																)
+																	? selected.filter(
+																			(
+																				name
+																			) =>
+																				name !==
+																				item
+																	  )
+																	: [
+																			...selected,
+																			item,
+																	  ]
 															)
-																? selected.filter(
-																		(
-																			name
-																		) =>
-																			name !==
-																			item
-																  )
-																: [
-																		...selected,
-																		item,
-																  ]
-														)
-													}
-												/>
-											</ClayTable.Cell>
+														}
+													/>
+												</ClayTable.Cell>
 
-											<ClayTable.Cell
-												expanded
-												headingTitle
-											>
-												{item
-													.split('.')
-													.slice(-1)[0]
-													.split(/([A-Z][a-z]+)/g)
-													.join(' ')}
-											</ClayTable.Cell>
+												<ClayTable.Cell
+													expanded
+													headingTitle
+												>
+													{item
+														.split('.')
+														.slice(-1)[0]
+														.split(/([A-Z][a-z]+)/g)
+														.join(' ')}
+												</ClayTable.Cell>
 
-											<ClayTable.Cell
-												className="table-cell-maxw-500"
-												expanded
-											>
-												{item}
-											</ClayTable.Cell>
+												<ClayTable.Cell
+													className="classname-cell"
+													expanded
+												>
+													{item}
+												</ClayTable.Cell>
 
-											<ClayTable.Cell expanded>
-												This contributor is used to xyz.
-											</ClayTable.Cell>
+												<ClayTable.Cell expanded>
+													This contributor is used to
+													xyz.
+												</ClayTable.Cell>
 
-											<ClayTable.Cell className="table-cell-expand-smallest">
-												<ClayToggle
-													label={
-														enabled.includes(item)
-															? Liferay.Language.get(
-																	'on'
-															  )
-															: Liferay.Language.get(
-																	'off'
-															  )
-													}
-													onToggle={() =>
-														setEnabled(
+												<ClayTable.Cell className="table-cell-expand-smallest">
+													<ClayToggle
+														label={
 															enabled.includes(
 																item
 															)
-																? enabled.filter(
-																		(
-																			name
-																		) =>
-																			name !==
-																			item
+																? Liferay.Language.get(
+																		'on'
 																  )
-																: [
-																		...enabled,
-																		item,
-																  ]
-														)
-													}
-													toggled={enabled.includes(
-														item
-													)}
-												/>
-											</ClayTable.Cell>
-										</ClayTable.Row>
-									))}
-								</React.Fragment>
-							))}
-						</ClayTable.Body>
-					</ClayTable>
+																: Liferay.Language.get(
+																		'off'
+																  )
+														}
+														onToggle={() =>
+															setEnabled(
+																enabled.includes(
+																	item
+																)
+																	? enabled.filter(
+																			(
+																				name
+																			) =>
+																				name !==
+																				item
+																	  )
+																	: [
+																			...enabled,
+																			item,
+																	  ]
+															)
+														}
+														toggled={enabled.includes(
+															item
+														)}
+													/>
+												</ClayTable.Cell>
+											</ClayTable.Row>
+										))}
+									</React.Fragment>
+								))}
+							</ClayTable.Body>
+						</ClayTable>
+					</div>
 				</div>
 			</div>
 		</div>
 	);
 }
 
-export default React.memo(ClauseContributors);
+export default React.memo(ClauseContributorsTab);

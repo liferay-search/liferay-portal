@@ -33,6 +33,7 @@ import ResultListItem from './ResultListItem';
 const DELTAS = [10, 20, 30, 50];
 
 function PreviewSidebar({
+	className,
 	loading,
 	onFetchResults,
 	onFocusElement,
@@ -167,9 +168,15 @@ function PreviewSidebar({
 
 	return (
 		<div
-			className={getCN('preview-sidebar', 'sidebar', 'sidebar-light', {
-				open: visible,
-			})}
+			className={getCN(
+				'preview-sidebar',
+				'sidebar',
+				'sidebar-light',
+				className,
+				{
+					open: visible,
+				}
+			)}
 		>
 			<div className="sidebar-header">
 				<h4 className="component-title">
@@ -247,6 +254,7 @@ PreviewSidebar.propTypes = {
 	onFocusElement: PropTypes.func,
 	onToggle: PropTypes.func,
 	results: PropTypes.object,
+	tab: PropTypes.string,
 	visible: PropTypes.bool,
 };
 

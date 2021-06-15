@@ -56,7 +56,7 @@ const FrameworkListItem = ({
 	);
 };
 
-function QueryBuilder({
+function QueryBuilderTab({
 	entityJSON,
 	errors = [],
 	frameworkConfig,
@@ -150,8 +150,11 @@ function QueryBuilder({
 	};
 
 	return (
-		<ClayLayout.ContainerFluid className="builder" size="xl">
-			<div className="content-shift">
+		<ClayLayout.ContainerFluid
+			className="builder query-builder-tab"
+			size="xl"
+		>
+			<div className="builder-content-shift">
 				<ClayLayout.Row
 					className="configuration-header"
 					justify="between"
@@ -307,7 +310,7 @@ function QueryBuilder({
 	);
 }
 
-QueryBuilder.propTypes = {
+QueryBuilderTab.propTypes = {
 	entityJSON: PropTypes.object,
 	errors: PropTypes.arrayOf(PropTypes.object),
 	frameworkConfig: PropTypes.object,
@@ -325,4 +328,4 @@ QueryBuilder.propTypes = {
 	touched: PropTypes.arrayOf(PropTypes.object),
 };
 
-export default React.memo(QueryBuilder);
+export default React.memo(QueryBuilderTab);
