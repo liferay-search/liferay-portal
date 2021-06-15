@@ -34,9 +34,9 @@ import {
 } from '../utils/validation';
 import AddElementSidebar from './AddElementSidebar';
 import PreviewSidebar from './PreviewSidebar';
-import ClauseContributors from './tabs/ClauseContributors';
-import QueryBuilder from './tabs/QueryBuilder';
-import Settings from './tabs/Settings';
+import ClauseContributors from './clause_contributors';
+import QueryBuilder from './query_builder';
+import Settings from './settings';
 
 // Tabs in display order
 
