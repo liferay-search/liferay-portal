@@ -12,7 +12,7 @@
 import {fireEvent, render} from '@testing-library/react';
 import React from 'react';
 
-import QueryBuilder from '../../../../src/main/resources/META-INF/resources/js/edit_blueprint/tabs/QueryBuilder';
+import QueryBuilder from '../../../../src/main/resources/META-INF/resources/js/edit_blueprint/query_builder_tab';
 import {SEARCHABLE_ASSET_TYPES, SELECTED_ELEMENTS} from '../../mocks/data';
 
 import '@testing-library/jest-dom/extend-expect';
