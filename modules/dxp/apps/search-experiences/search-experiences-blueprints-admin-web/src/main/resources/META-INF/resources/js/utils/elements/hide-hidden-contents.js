@@ -9,11 +9,6 @@
  * distribution rights of the Software.
  */
 
-/**
- * Keep these in sync with the elements in
- * search-experiences-blueprints-resources/
- * src/main/resources/META-INF/search/elements
- */
 export default {
 	elementTemplateJSON: {
 		category: 'hide',
@@ -25,13 +20,27 @@ export default {
 					wrapper: {
 						query: {
 							bool: {
-								must_not: [
+								should: [
 									{
-										term: {
-											assetCategoryIds: {
-												value:
-													'${configuration.asset_category_id}',
-											},
+										bool: {
+											must_not: [
+												{
+													exists: {
+														field: 'hidden',
+													},
+												},
+											],
+										},
+									},
+									{
+										bool: {
+											must: [
+												{
+													term: {
+														hidden: false,
+													},
+												},
+											],
 										},
 									},
 								],
@@ -43,26 +52,13 @@ export default {
 		],
 		conditions: {},
 		description: {
-			en_US: 'Hide contents in a category',
+			en_US: 'Hide assets which are marked not searchable',
 		},
 		enabled: true,
 		icon: 'hidden',
 		title: {
-			en_US: 'Hide Contents in a Category',
+			en_US: 'Hide Hidden Contents',
 		},
 	},
-	uiConfigurationJSON: {
-		fieldSets: [
-			{
-				fields: [
-					{
-						helpText: 'Add asset category ID',
-						label: 'Asset Category',
-						name: 'asset_category_id',
-						type: 'number',
-					},
-				],
-			},
-		],
-	},
+	uiConfigurationJSON: {},
 };

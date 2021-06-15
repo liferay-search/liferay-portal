@@ -9,14 +9,9 @@
  * distribution rights of the Software.
  */
 
-/**
- * Keep these in sync with the elements in
- * search-experiences-blueprints-resources/
- * src/main/resources/META-INF/search/elements
- */
 export default {
 	elementTemplateJSON: {
-		category: 'filter',
+		category: 'hide',
 		clauses: [
 			{
 				context: 'query',
@@ -24,8 +19,31 @@ export default {
 				query: {
 					wrapper: {
 						query: {
-							term: {
-								scopeGroupId: '${context.scope_group_id}',
+							bool: {
+								should: [
+									{
+										bool: {
+											must_not: [
+												{
+													exists: {
+														field: 'discussion',
+													},
+												},
+											],
+										},
+									},
+									{
+										bool: {
+											must: [
+												{
+													term: {
+														discussion: false,
+													},
+												},
+											],
+										},
+									},
+								],
 							},
 						},
 					},
@@ -34,12 +52,12 @@ export default {
 		],
 		conditions: {},
 		description: {
-			en_US: 'Limit search to the current site',
+			en_US: 'Do not search for comments',
 		},
 		enabled: true,
-		icon: 'filter',
+		icon: 'hidden',
 		title: {
-			en_US: 'Limit Search to the Current Site',
+			en_US: 'Hide Comments',
 		},
 	},
 	uiConfigurationJSON: {},

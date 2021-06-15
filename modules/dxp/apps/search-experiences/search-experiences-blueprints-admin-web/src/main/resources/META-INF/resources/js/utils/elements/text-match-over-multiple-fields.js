@@ -9,26 +9,25 @@
  * distribution rights of the Software.
  */
 
-/**
- * Keep these in sync with the elements in
- * search-experiences-blueprints-resources/
- * src/main/resources/META-INF/search/elements
- */
 export default {
 	elementTemplateJSON: {
-		category: 'boost',
+		category: 'match',
 		clauses: [
 			{
 				context: 'query',
-				occur: 'should',
+				occur: 'must',
 				query: {
 					wrapper: {
 						query: {
 							multi_match: {
 								boost: '${configuration.boost}',
 								fields: '${configuration.fields}',
-								operator: 'and',
+								fuzziness: '${configuration.fuzziness}',
+								minimum_should_match:
+									'${configuration.minimum_should_match}',
+								operator: '${configuration.operator}',
 								query: '${keywords}',
+								slop: '${configuration.slop}',
 								type: '${configuration.type}',
 							},
 						},
@@ -38,12 +37,12 @@ export default {
 		],
 		conditions: {},
 		description: {
-			en_US: 'Boost contents matching all the words in the search phrase',
+			en_US: 'Search for a text match over multiple text fields',
 		},
 		enabled: true,
-		icon: 'thumbs-up',
+		icon: 'picture',
 		title: {
-			en_US: 'Boost All Keywords Match',
+			en_US: 'Text Match Over Multiple Fields',
 		},
 	},
 	uiConfigurationJSON: {
@@ -53,21 +52,39 @@ export default {
 					{
 						defaultValue: [
 							{
-								boost: 2,
+								boost: '2',
 								field: 'localized_title',
 								locale: '${context.language_id}',
 							},
 							{
-								boost: 1,
+								boost: '1',
 								field: 'content',
 								locale: '${context.language_id}',
 							},
 						],
-						label: 'Field',
+						label: 'Fields',
 						name: 'fields',
 						type: 'fieldMappingList',
 						typeOptions: {
 							boost: true,
+						},
+					},
+					{
+						defaultValue: 'or',
+						label: 'Operator',
+						name: 'operator',
+						type: 'select',
+						typeOptions: {
+							options: [
+								{
+									label: 'OR',
+									value: 'or',
+								},
+								{
+									label: 'AND',
+									value: 'and',
+								},
+							],
 						},
 					},
 					{
@@ -105,7 +122,58 @@ export default {
 						},
 					},
 					{
-						defaultValue: 10,
+						defaultValue: 'AUTO',
+						helpText:
+							'Only use fuzziness with the following match types: most fields, best fields, bool prefix.',
+						label: 'Fuzziness',
+						name: 'fuzziness',
+						type: 'select',
+						typeOptions: {
+							nullable: true,
+							options: [
+								{
+									label: 'Auto',
+									value: 'AUTO',
+								},
+								{
+									label: '0',
+									value: '0',
+								},
+								{
+									label: '1',
+									value: '1',
+								},
+								{
+									label: '2',
+									value: '2',
+								},
+							],
+						},
+					},
+					{
+						defaultValue: '1',
+						label: 'Minimum Should Match',
+						name: 'minimum_should_match',
+						type: 'text',
+						typeOptions: {
+							nullable: true,
+						},
+					},
+					{
+						defaultValue: null,
+						helpText:
+							'Only use slop with the following match types: phrase, phrase prefix.',
+						label: 'Slop',
+						name: 'slop',
+						type: 'number',
+						typeOptions: {
+							min: 0,
+							nullable: true,
+							step: 1,
+						},
+					},
+					{
+						defaultValue: 1,
 						label: 'Boost',
 						name: 'boost',
 						type: 'number',

@@ -9,14 +9,9 @@
  * distribution rights of the Software.
  */
 
-/**
- * Keep these in sync with the elements in
- * search-experiences-blueprints-resources/
- * src/main/resources/META-INF/search/elements
- */
 export default {
 	elementTemplateJSON: {
-		category: 'hide',
+		category: 'filter',
 		clauses: [
 			{
 				context: 'query',
@@ -31,8 +26,10 @@ export default {
 											must_not: [
 												{
 													term: {
-														entryClassName:
-															'com.liferay.portal.kernel.model.User',
+														entryClasslabel: {
+															value:
+																'com.liferay.journal.model.JournalArticle',
+														},
 													},
 												},
 											],
@@ -43,7 +40,17 @@ export default {
 											must: [
 												{
 													term: {
-														defaultUser: false,
+														entryClasslabel: {
+															value:
+																'com.liferay.journal.model.JournalArticle',
+														},
+													},
+												},
+												{
+													term: {
+														head: {
+															value: true,
+														},
 													},
 												},
 											],
@@ -58,12 +65,12 @@ export default {
 		],
 		conditions: {},
 		description: {
-			en_US: 'Hide the instance default user account from being searched',
+			en_US: 'Show only the latest HEAD version of Web Content articles',
 		},
 		enabled: true,
-		icon: 'hidden',
+		icon: 'filter',
 		title: {
-			en_US: 'Hide Default User',
+			en_US: 'Limit Search to HEAD Version',
 		},
 	},
 	uiConfigurationJSON: {},
