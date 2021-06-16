@@ -161,16 +161,17 @@ function ClauseContributorsTab({initialContributors}) {
 				category={category}
 				filterItems={filterItems}
 				keyword={keyword}
+				onApplyBaseline={() => setEnabled([])}
 				onChangeKeyword={(value) => setKeyword(value)}
 				onClearCategory={() => setCategory(ALL)}
 				onClearStatus={() => setStatus(ALL)}
-				onClickReverseSortDirection={() =>
+				onReverseSort={() =>
 					setSortDirection(
 						sortDirection === ASCENDING ? DESCENDING : ASCENDING
 					)
 				}
-				onClickTurnOff={_handleTurnOff}
-				onClickTurnOn={_handleTurnOn}
+				onTurnOff={_handleTurnOff}
+				onTurnOn={_handleTurnOn}
 				selected={selected}
 				setSelected={setSelected}
 				sortDirection={sortDirection}
