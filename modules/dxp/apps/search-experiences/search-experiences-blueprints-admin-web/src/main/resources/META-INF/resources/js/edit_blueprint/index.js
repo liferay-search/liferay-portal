@@ -24,12 +24,8 @@ import SubmitWarningModal from '../shared/SubmitWarningModal';
 import ThemeContext from '../shared/ThemeContext';
 import {CUSTOM_JSON_ELEMENT} from '../utils/data';
 import {INPUT_TYPES} from '../utils/inputTypes';
-import {
-	getElementOutput,
-	getUIConfigurationValues,
-	openErrorToast,
-	openSuccessToast,
-} from '../utils/utils';
+import {openErrorToast, openSuccessToast} from '../utils/toasts';
+import {getElementOutput, getUIConfigurationValues} from '../utils/utils';
 import {
 	validateBoost,
 	validateJSON,

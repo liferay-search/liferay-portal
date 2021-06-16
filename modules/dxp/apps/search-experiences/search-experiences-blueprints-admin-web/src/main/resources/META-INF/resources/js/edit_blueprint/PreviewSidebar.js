@@ -26,8 +26,8 @@ import React, {useState} from 'react';
 import ErrorListItem from '../shared/ErrorListItem';
 import {PreviewModalWithCopyDownload} from '../shared/PreviewModal';
 import SearchInput from '../shared/SearchInput';
+import {sub} from '../utils/language';
 import useDidUpdateEffect from '../utils/useDidUpdateEffect';
-import {sub} from '../utils/utils';
 import ResultListItem from './ResultListItem';
 
 const DELTAS = [10, 20, 30, 50];
