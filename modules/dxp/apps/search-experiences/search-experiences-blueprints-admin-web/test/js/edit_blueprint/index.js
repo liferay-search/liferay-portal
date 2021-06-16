@@ -13,7 +13,7 @@ import {fireEvent, render, within} from '@testing-library/react';
 import React from 'react';
 
 import EditBlueprint from '../../../src/main/resources/META-INF/resources/js/edit_blueprint/index';
-const Utils = require('../../../src/main/resources/META-INF/resources/js/utils/utils');
+const Toasts = require('../../../src/main/resources/META-INF/resources/js/utils/toasts');
 import {
 	ELEMENT_OUTPUTS,
 	ENTITY_JSON,
@@ -34,7 +34,7 @@ jest.mock(
 
 // Prevents "TypeError: Liferay.component is not a function" error on openToast
 
-Utils.openSuccessToast = jest.fn();
+Toasts.openSuccessToast = jest.fn();
 
 function renderEditBlueprint(props) {
 	return render(
