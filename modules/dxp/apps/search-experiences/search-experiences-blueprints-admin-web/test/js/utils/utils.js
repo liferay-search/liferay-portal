@@ -9,7 +9,6 @@
  * distribution rights of the Software.
  */
 
-import {renameKeys} from '../../../src/main/resources/META-INF/resources/js/utils/language';
 import {
 	getDefaultValue,
 	getElementOutput,
@@ -81,16 +80,6 @@ describe('utils', () => {
 					'en_US'
 				)
 			).toEqual('title_en_US');
-		});
-	});
-
-	describe('renameKeys', () => {
-		it('replaces the string for locale', () => {
-			expect(
-				renameKeys({'en-US': 'Hello', 'zh-CN': 'Ni Hao'}, (str) =>
-					str.replace('-', '_')
-				)
-			).toEqual({en_US: 'Hello', zh_CN: 'Ni Hao'});
 		});
 	});
 
