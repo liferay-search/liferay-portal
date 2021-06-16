@@ -23,23 +23,26 @@ import React, {useState} from 'react';
 
 import {ALL, ASCENDING} from '../../utils/constants';
 import {sub} from '../../utils/language';
+import ApplyBaselineModal from './ApplyBaselineModal';
 
 function ManagementToolbar({
 	allItems,
 	category,
 	filterItems,
 	keyword,
+	onApplyBaseline,
 	onChangeKeyword,
 	onClearCategory,
 	onClearStatus,
-	onClickReverseSortDirection,
-	onClickTurnOff,
-	onClickTurnOn,
+	onReverseSort,
+	onTurnOff,
+	onTurnOn,
 	selected,
 	setSelected,
 	sortDirection,
 	status,
 }) {
+	const [showModal, setShowModal] = useState(false);
 	const [value, setValue] = useState('');
 
 	return (
@@ -123,7 +126,7 @@ function ManagementToolbar({
 								<ClayButtonGroup spaced>
 									<ClayButton
 										displayType="secondary"
-										onClick={onClickTurnOff}
+										onClick={onTurnOff}
 										small
 									>
 										{Liferay.Language.get('turn-off')}
@@ -131,7 +134,7 @@ function ManagementToolbar({
 
 									<ClayButton
 										displayType="secondary"
-										onClick={onClickTurnOn}
+										onClick={onTurnOn}
 										small
 									>
 										{Liferay.Language.get('turn-on')}
@@ -176,7 +179,7 @@ function ManagementToolbar({
 									)}
 									className="nav-link nav-link-monospaced"
 									displayType="unstyled"
-									onClick={onClickReverseSortDirection}
+									onClick={onReverseSort}
 								>
 									<ClayIcon
 										symbol={
@@ -229,11 +232,19 @@ function ManagementToolbar({
 
 						<ClayManagementToolbar.ItemList>
 							<ClayManagementToolbar.Item>
+								<ApplyBaselineModal
+									onClose={() => setShowModal(false)}
+									onSubmit={() => {
+										setShowModal(false);
+										onApplyBaseline();
+									}}
+									visible={showModal}
+								/>
 								<span className="navbar-breakpoint-down-d-none">
 									<ClayButton
 										className="reset-to-baseline"
 										displayType="secondary"
-										onClick={() => {}}
+										onClick={() => setShowModal(true)}
 									>
 										{Liferay.Language.get(
 											'reset-to-baseline'
@@ -245,7 +256,7 @@ function ManagementToolbar({
 									<ClayButton
 										className="reset-to-baseline"
 										displayType="secondary"
-										onClick={() => {}}
+										onClick={() => setShowModal(true)}
 										small
 									>
 										{Liferay.Language.get('reset')}
