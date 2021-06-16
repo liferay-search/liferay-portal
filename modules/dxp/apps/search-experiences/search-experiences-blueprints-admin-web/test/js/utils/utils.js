@@ -9,13 +9,13 @@
  * distribution rights of the Software.
  */
 
+import {renameKeys} from '../../../src/main/resources/META-INF/resources/js/utils/language';
 import {
 	getDefaultValue,
 	getElementOutput,
 	getUIConfigurationValues,
 	isDefined,
 	isEmpty,
-	renameKeys,
 	replaceStr,
 } from '../../../src/main/resources/META-INF/resources/js/utils/utils';
 

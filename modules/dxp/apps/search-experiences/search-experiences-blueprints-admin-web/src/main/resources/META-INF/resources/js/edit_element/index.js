@@ -36,12 +36,9 @@ import SubmitWarningModal from '../shared/SubmitWarningModal';
 import ThemeContext from '../shared/ThemeContext';
 import Element from '../shared/element/index';
 import {CONFIG_PREFIX} from '../utils/constants';
-import {
-	getUIConfigurationValues,
-	openErrorToast,
-	renameKeys,
-	sub,
-} from '../utils/utils';
+import {renameKeys, sub} from '../utils/language';
+import {openErrorToast} from '../utils/toasts';
+import {getUIConfigurationValues} from '../utils/utils';
 import SidebarPanel from './SidebarPanel';
 
 function EditElementForm({
