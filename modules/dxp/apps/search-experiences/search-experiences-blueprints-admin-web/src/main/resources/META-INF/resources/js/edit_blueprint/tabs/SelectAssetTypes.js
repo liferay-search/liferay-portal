@@ -18,7 +18,7 @@ import ClayModal, {useModal} from '@clayui/modal';
 import ClayTable from '@clayui/table';
 import React, {useState} from 'react';
 
-import {sub} from './../../utils/utils';
+import {sub} from './../../utils/language';
 
 function SelectAssetTypes({
 	onFrameworkConfigChange,

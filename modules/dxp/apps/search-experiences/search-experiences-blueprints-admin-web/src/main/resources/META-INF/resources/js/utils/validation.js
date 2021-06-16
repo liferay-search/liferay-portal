@@ -11,7 +11,8 @@
 
 import {ERROR_MESSAGES} from './errorMessages';
 import {INPUT_TYPES} from './inputTypes';
-import {isDefined, sub} from './utils';
+import {sub} from './language';
+import {isDefined} from './utils';
 
 export const validateBoost = (configValue, type) => {
 	if (configValue === null) {
