@@ -34,9 +34,9 @@ import {
 } from '../utils/validation';
 import AddElementSidebar from './AddElementSidebar';
 import PreviewSidebar from './PreviewSidebar';
-import ClauseContributorsTab from './clause_contributors_tab';
-import QueryBuilderTab from './query_builder_tab';
-import SettingsTab from './settings_tab';
+import ClauseContributorsTab from './clause_contributors_tab/index';
+import QueryBuilderTab from './query_builder_tab/index';
+import SettingsTab from './settings_tab/index';
 
 // Tabs in display order
 
@@ -564,7 +564,15 @@ function EditBlueprintForm({
 			case 'clause-contributors':
 				return (
 					<ClauseContributorsTab
-						initialContributors={[
+						clauseContributors={
+							formik.values.frameworkConfig['clause_contributors']
+						}
+						enableNewClauseContributors={
+							formik.values.frameworkConfig[
+								'enable_new_clause_contributors'
+							]
+						}
+						initialClauseContributorsList={[
 							{
 								label: 'KeywordQueryContributor',
 								value: keywordQueryContributors.sort(),
@@ -578,6 +586,12 @@ function EditBlueprintForm({
 								value: queryPrefilterContributors.sort(),
 							},
 						]}
+						onFrameworkConfigClauseChange={(value) =>
+							formik.setFieldValue('frameworkConfig', {
+								...formik.values.frameworkConfig,
+								clause_contributors: value,
+							})
+						}
 					/>
 				);
 			default:
