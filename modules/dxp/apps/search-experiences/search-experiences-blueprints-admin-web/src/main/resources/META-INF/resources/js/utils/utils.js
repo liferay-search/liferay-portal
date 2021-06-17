@@ -455,3 +455,104 @@ export const getUIConfigurationValues = (uiConfigurationJSON) => {
 
 	return {};
 };
+
+/**
+ * Function for returning an object of clause contributors with enabled/
+ * disabled state.
+ *
+ * Example:
+ * getClauseContributorsState([
+ *			{
+ *				label: 'KeywordQueryContributor',
+ *				value: [
+ *							'com.liferay.account.internal.search.spi.model.query.contributor.AccountEntryKeywordQueryContributor',
+ *							'com.liferay.account.internal.search.spi.model.query.contributor.AccountGroupKeywordQueryContributor',
+ *							'com.liferay.address.internal.search.spi.model.query.contributor.AddressKeywordQueryContributor'
+ *						],
+ *			}
+ *		],
+ *		{
+ *			KeywordQueryContributor: {
+ *					'com.liferay.account.internal.search.spi.model.query.contributor.AccountEntryKeywordQueryContributor': true,
+ *					'com.liferay.account.internal.search.spi.model.query.contributor.AccountGroupKeywordQueryContributor': false,
+ *				},
+ *		},
+ *		true
+ *	);
+ * => {com.liferay.account.internal.search.spi.model.query.contributor.AccountEntryKeywordQueryContributor: true,
+ *		com.liferay.account.internal.search.spi.model.query.contributor.AccountGroupKeywordQueryContributor: false,
+ *		com.liferay.address.internal.search.spi.model.query.contributor.AddressKeywordQueryContributor: true}
+ *
+ * @param {Array} initialClauseContributorsList Array of clause contributors,
+ * defined by label (String) and value (Array)
+ * @param {object} clauseContributors object from framework configuration
+ * that tracks whether clause is enabled/disabled
+ * @param {boolean} enableNewClauseContributors When true, sets all clauses
+ * not accounted for in clauseContributors to enabled
+ * @return {object}
+ */
+export const getClauseContributorsState = (
+	initialClauseContributorsList,
+	clauseContributors = {},
+	enableNewClauseContributors = false
+) => {
+	return initialClauseContributorsList.reduce((acc, {label, value}) => {
+		const obj = {};
+
+		value.forEach((item) => {
+			obj[item] = isDefined(clauseContributors[label]?.[item])
+				? clauseContributors[label][item]
+				: enableNewClauseContributors;
+		});
+
+		return {...obj, ...acc};
+	}, {});
+};
+
+/**
+ * Function for packaging the clause contributors for framework configuration
+ *
+ * Example:
+ * getFrameworkConfigClauseContributors([
+ *			{
+ *				label: 'KeywordQueryContributor',
+ *				value: [
+ *							'com.liferay.account.internal.search.spi.model.query.contributor.AccountEntryKeywordQueryContributor',
+ *							'com.liferay.account.internal.search.spi.model.query.contributor.AccountGroupKeywordQueryContributor',
+ *							'com.liferay.address.internal.search.spi.model.query.contributor.AddressKeywordQueryContributor'
+ *						],
+ *			}
+ *		],
+ *		{
+ *			'com.liferay.account.internal.search.spi.model.query.contributor.AccountEntryKeywordQueryContributor': true,
+ *			'com.liferay.account.internal.search.spi.model.query.contributor.AccountGroupKeywordQueryContributor': false,
+ *			'com.liferay.address.internal.search.spi.model.query.contributor.AddressKeywordQueryContributor': true
+ *		},
+ *	);
+ * => {
+ *		"KeywordQueryContributor": {
+ *			"com.liferay.account.internal.search.spi.model.query.contributor.AccountEntryKeywordQueryContributor": true,
+ *			"com.liferay.account.internal.search.spi.model.query.contributor.AccountGroupKeywordQueryContributor": false,
+ *			"com.liferay.address.internal.search.spi.model.query.contributor.AddressKeywordQueryContributor": true
+ *		}
+ *	}
+ *
+ * @param {Array} initialClauseContributorsList Array of clause contributors,
+ * defined by label (String) and value (Array)
+ * @param {object} enabled object that tracks whether clause is enabled/disabled
+ * @return {object}
+ */
+export const getFrameworkConfigClauseContributors = (
+	initialClauseContributorsList,
+	enabled
+) => {
+	return initialClauseContributorsList.reduce((acc, {label, value}) => {
+		const obj = {};
+
+		value.forEach((item) => {
+			obj[item] = enabled[item];
+		});
+
+		return {[`${label}`]: obj, ...acc};
+	}, {});
+};

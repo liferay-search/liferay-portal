@@ -18,6 +18,7 @@ import ClayLabel from '@clayui/label';
 import ClayManagementToolbar, {
 	ClayResultsBar,
 } from '@clayui/management-toolbar';
+import {ClayTooltipProvider} from '@clayui/tooltip';
 import getCN from 'classnames';
 import React, {useState} from 'react';
 
@@ -31,13 +32,12 @@ function ManagementToolbar({
 	filterItems,
 	keyword,
 	onApplyBaseline,
-	onChangeKeyword,
 	onClearCategory,
 	onClearStatus,
 	onReverseSort,
-	onTurnOff,
-	onTurnOn,
+	onUpdateEnabled,
 	selected,
+	setKeyword,
 	setSelected,
 	sortDirection,
 	status,
@@ -46,15 +46,16 @@ function ManagementToolbar({
 	const [value, setValue] = useState('');
 
 	return (
-		<>
+		<div className="clause-contributors-navbars">
 			<ClayManagementToolbar
-				className={getCN({
+				className={getCN('clause-contributors-management-bar', {
 					'management-bar-primary': selected.length > 0,
 				})}
 			>
 				<ClayManagementToolbar.ItemList>
 					<ClayManagementToolbar.Item>
 						<ClayCheckbox
+							aria-label={Liferay.Language.get('checkbox')}
 							checked={
 								allItems.length > 0 &&
 								selected.length === allItems.length
@@ -126,7 +127,7 @@ function ManagementToolbar({
 								<ClayButtonGroup spaced>
 									<ClayButton
 										displayType="secondary"
-										onClick={onTurnOff}
+										onClick={() => onUpdateEnabled(false)}
 										small
 									>
 										{Liferay.Language.get('turn-off')}
@@ -134,7 +135,7 @@ function ManagementToolbar({
 
 									<ClayButton
 										displayType="secondary"
-										onClick={onTurnOn}
+										onClick={() => onUpdateEnabled(true)}
 										small
 									>
 										{Liferay.Language.get('turn-on')}
@@ -146,103 +147,110 @@ function ManagementToolbar({
 				) : (
 					<>
 						<ClayManagementToolbar.ItemList>
-							<ClayDropDownWithItems
-								items={filterItems}
-								trigger={
-									<ClayButton
-										className="nav-link"
-										displayType="unstyled"
-									>
-										<span className="navbar-breakpoint-down-d-none">
-											<span className="navbar-text-truncate">
-												{Liferay.Language.get(
-													'filter-and-order'
-												)}
-											</span>
-
-											<ClayIcon
-												className="inline-item inline-item-after"
-												symbol="caret-bottom"
-											/>
-										</span>
-										<span className="navbar-breakpoint-d-none">
-											<ClayIcon symbol="filter" />
-										</span>
-									</ClayButton>
-								}
-							/>
-
 							<ClayManagementToolbar.Item>
-								<ClayButton
-									aria-label={Liferay.Language.get(
-										'reverse-sort-direction'
-									)}
-									className="nav-link nav-link-monospaced"
-									displayType="unstyled"
-									onClick={onReverseSort}
-								>
-									<ClayIcon
-										symbol={
-											sortDirection === ASCENDING
-												? 'order-list-down'
-												: 'order-list-up'
-										}
-									/>
-								</ClayButton>
+								<ClayDropDownWithItems
+									items={filterItems}
+									trigger={
+										<ClayButton
+											className="nav-link"
+											displayType="unstyled"
+										>
+											<span className="navbar-breakpoint-down-d-none">
+												<span className="navbar-text-truncate">
+													{Liferay.Language.get(
+														'filter-and-order'
+													)}
+												</span>
+
+												<ClayIcon
+													className="inline-item inline-item-after"
+													symbol="caret-bottom"
+												/>
+											</span>
+											<span className="navbar-breakpoint-d-none">
+												<ClayIcon symbol="filter" />
+											</span>
+										</ClayButton>
+									}
+								/>
+
+								<ClayTooltipProvider>
+									<ClayButton
+										className="nav-link nav-link-monospaced"
+										data-tooltip-align="bottom"
+										displayType="unstyled"
+										onClick={onReverseSort}
+										title={Liferay.Language.get(
+											'reverse-sort-direction'
+										)}
+									>
+										<ClayIcon
+											symbol={
+												sortDirection === ASCENDING
+													? 'order-list-down'
+													: 'order-list-up'
+											}
+										/>
+									</ClayButton>
+								</ClayTooltipProvider>
 							</ClayManagementToolbar.Item>
 						</ClayManagementToolbar.ItemList>
 
 						<ClayManagementToolbar.ItemList expand>
-							<ClayInput.Group className="navbar-form">
-								<ClayInput.GroupItem>
-									<ClayInput
-										aria-label={Liferay.Language.get(
-											'search'
-										)}
-										className="input-group-inset input-group-inset-after"
-										onChange={(event) =>
-											setValue(event.target.value)
-										}
-										onKeyDown={(event) => {
-											if (event.key === 'Enter') {
-												event.preventDefault();
-
-												onChangeKeyword(value);
+							<ClayManagementToolbar.Item className="search">
+								<ClayInput.Group>
+									<ClayInput.GroupItem>
+										<ClayInput
+											aria-label={Liferay.Language.get(
+												'search'
+											)}
+											className="input-group-inset input-group-inset-after"
+											onChange={(event) =>
+												setValue(event.target.value)
 											}
-										}}
-										placeholder={Liferay.Language.get(
-											'search'
-										)}
-										type="text"
-										value={value}
-									/>
+											onKeyDown={(event) => {
+												if (event.key === 'Enter') {
+													event.preventDefault();
 
-									<ClayInput.GroupInsetItem after tag="span">
-										<ClayButtonWithIcon
-											displayType="unstyled"
-											onClick={() =>
-												onChangeKeyword(value)
-											}
-											symbol="search"
+													setKeyword(value);
+												}
+											}}
+											placeholder={Liferay.Language.get(
+												'search'
+											)}
+											type="text"
+											value={value}
 										/>
-									</ClayInput.GroupInsetItem>
-								</ClayInput.GroupItem>
-							</ClayInput.Group>
+
+										<ClayInput.GroupInsetItem
+											after
+											tag="span"
+										>
+											<ClayButtonWithIcon
+												aria-label={Liferay.Language.get(
+													'search'
+												)}
+												displayType="unstyled"
+												onClick={() =>
+													setKeyword(value)
+												}
+												symbol="search"
+											/>
+										</ClayInput.GroupInsetItem>
+									</ClayInput.GroupItem>
+								</ClayInput.Group>
+							</ClayManagementToolbar.Item>
 						</ClayManagementToolbar.ItemList>
 
 						<ClayManagementToolbar.ItemList>
 							<ClayManagementToolbar.Item>
 								<ApplyBaselineModal
 									onClose={() => setShowModal(false)}
-									onSubmit={() => {
-										setShowModal(false);
-										onApplyBaseline();
-									}}
+									onSubmit={onApplyBaseline}
 									visible={showModal}
 								/>
 								<span className="navbar-breakpoint-down-d-none">
 									<ClayButton
-										className="reset-to-baseline"
 										displayType="secondary"
 										onClick={() => setShowModal(true)}
 									>
@@ -251,10 +259,8 @@ function ManagementToolbar({
 										)}
 									</ClayButton>
 								</span>
-
 								<span className="navbar-breakpoint-d-none">
 									<ClayButton
-										className="reset-to-baseline"
 										displayType="secondary"
 										onClick={() => setShowModal(true)}
 										small
@@ -313,7 +319,7 @@ function ManagementToolbar({
 							displayType="unstyled"
 							onClick={() => {
 								setValue('');
-								onChangeKeyword('');
+								setKeyword('');
 								onClearCategory();
 								onClearStatus();
 							}}
@@ -323,7 +329,7 @@ function ManagementToolbar({
 					</ClayResultsBar.Item>
 				</ClayResultsBar>
 			)}
-		</>
+		</div>
 	);
 }
 
