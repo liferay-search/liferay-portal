@@ -21,60 +21,51 @@ import {
 	DESCENDING,
 	INACTIVE,
 } from '../../utils/constants';
+import {
+	getClauseContributorsState,
+	getFrameworkConfigClauseContributors,
+} from '../../utils/utils';
 import ManagementToolbar from './ManagementToolbar';
 
-function ClauseContributorsTab({initialContributors}) {
+function ClauseContributorsTab({
+	baselineClauseContributors,
+	clauseContributors,
+	enableNewClauseContributors,
+	initialClauseContributorsList,
+	onFrameworkConfigClauseChange,
+}) {
 	const [category, setCategory] = useState(ALL);
-	const [contributors, setContributors] = useState(initialContributors);
-	const [enabled, setEnabled] = useState([]);
+	const [contributors, setContributors] = useState(
+		initialClauseContributorsList
+	);
+	const [enabled, setEnabled] = useState(
+		getClauseContributorsState(
+			initialClauseContributorsList,
+			clauseContributors,
+			enableNewClauseContributors
+		)
+	);
 	const [keyword, setKeyword] = useState('');
 	const [selected, setSelected] = useState([]);
 	const [status, setStatus] = useState(ALL);
 	const [sortDirection, setSortDirection] = useState(DESCENDING);
-
-	const _isSearchVisible = (item) => {
-		if (keyword) {
-			return keyword
-				.split(' ')
-				.every((word) =>
-					item.toLowerCase().includes(word.toLowerCase())
-				);
-		}
-		else {
-			return true;
-		}
-	};
-
-	const _isStatusVisible = (item) => {
-		if (status === ALL) {
-			return true;
-		}
-
-		if (status === ACTIVE) {
-			return enabled.includes(item);
-		}
-
-		if (status === INACTIVE) {
-			return !enabled.includes(item);
-		}
-	};
 
 	const filterItems = [
 		{
 			items: [
 				{
 					active: status === ALL,
-					label: Liferay.Language.get('all'),
+					label: ALL,
 					onClick: () => setStatus(ALL),
 				},
 				{
 					active: status === ACTIVE,
-					label: Liferay.Language.get('active'),
+					label: ACTIVE,
 					onClick: () => setStatus(ACTIVE),
 				},
 				{
 					active: status === INACTIVE,
-					label: Liferay.Language.get('inactive'),
+					label: INACTIVE,
 					onClick: () => setStatus(INACTIVE),
 				},
 			],
@@ -86,10 +77,10 @@ function ClauseContributorsTab({initialContributors}) {
 			items: [
 				{
 					active: category === ALL,
-					label: Liferay.Language.get('all'),
+					label: ALL,
 					onClick: () => setCategory(ALL),
 				},
-				...initialContributors.map((contributor) => ({
+				...initialClauseContributorsList.map((contributor) => ({
 					active: category === contributor.label,
 					label: contributor.label,
 					onClick: () => setCategory(contributor.label),
@@ -112,25 +103,58 @@ function ClauseContributorsTab({initialContributors}) {
 		},
 	];
 
-	const _handleTurnOff = () => {
-		setEnabled(enabled.filter((item) => !selected.includes(item)));
+	const _handleApplyBaseline = () => {
+		setEnabled(
+			getClauseContributorsState(
+				initialClauseContributorsList,
+				baselineClauseContributors,
+				enableNewClauseContributors
+			)
+		);
+	};
 
+	const _handleUpdateEnabled = (value) => {
+		const newEnabled = {};
+
+		selected.forEach((item) => {
+			newEnabled[item] = value;
+		});
+
+		setEnabled({...enabled, ...newEnabled});
 		setSelected([]);
 	};
 
-	const _handleTurnOn = () => {
-		setEnabled([
-			...enabled,
-			...selected.filter((item) => !enabled.includes(item)),
-		]);
+	const _isSearchVisible = (item) => {
+		if (keyword) {
+			return keyword
+				.split(' ')
+				.every((word) =>
+					item.toLowerCase().includes(word.toLowerCase())
+				);
+		}
+		else {
+			return true;
+		}
+	};
 
-		setSelected([]);
+	const _isStatusVisible = (item) => {
+		if (status === ALL) {
+			return true;
+		}
+
+		if (status === ACTIVE) {
+			return enabled[item];
+		}
+
+		if (status === INACTIVE) {
+			return !enabled[item];
+		}
 	};
 
 	useEffect(() => {
 		const newContributors = [];
 
-		initialContributors.forEach(({label, value}) => {
+		initialClauseContributorsList.forEach(({label, value}) => {
 			if (category === ALL || category === label) {
 				newContributors.push({
 					label,
@@ -151,6 +175,15 @@ function ClauseContributorsTab({initialContributors}) {
 		setContributors(newContributors);
 	}, [enabled, category, keyword, sortDirection, status]); //eslint-disable-line
 
+	useEffect(() => {
+		onFrameworkConfigClauseChange(
+			getFrameworkConfigClauseContributors(
+				initialClauseContributorsList,
+				enabled
+			)
+		);
+	}, [enabled]); //eslint-disable-line
+
 	return (
 		<div className="clause-contributors-tab">
 			<ManagementToolbar
@@ -161,8 +194,7 @@ function ClauseContributorsTab({initialContributors}) {
 				category={category}
 				filterItems={filterItems}
 				keyword={keyword}
-				onApplyBaseline={() => setEnabled([])}
-				onChangeKeyword={(value) => setKeyword(value)}
+				onApplyBaseline={_handleApplyBaseline}
 				onClearCategory={() => setCategory(ALL)}
 				onClearStatus={() => setStatus(ALL)}
 				onReverseSort={() =>
@@ -170,9 +202,9 @@ function ClauseContributorsTab({initialContributors}) {
 						sortDirection === ASCENDING ? DESCENDING : ASCENDING
 					)
 				}
-				onTurnOff={_handleTurnOff}
-				onTurnOn={_handleTurnOn}
+				onUpdateEnabled={_handleUpdateEnabled}
 				selected={selected}
+				setKeyword={setKeyword}
 				setSelected={setSelected}
 				sortDirection={sortDirection}
 				status={status}
@@ -182,7 +214,7 @@ function ClauseContributorsTab({initialContributors}) {
 				className={getCN(
 					'container-fluid',
 					'container-fluid-max-xl',
-					'clause-contributor-table',
+					'clause-contributors-table',
 					{
 						'subnav-open':
 							!!keyword || status !== ALL || category !== ALL,
@@ -236,6 +268,9 @@ function ClauseContributorsTab({initialContributors}) {
 											>
 												<ClayTable.Cell>
 													<ClayCheckbox
+														aria-label={Liferay.Language.get(
+															'checkbox'
+														)}
 														checked={selected.includes(
 															item
 														)}
@@ -286,9 +321,7 @@ function ClauseContributorsTab({initialContributors}) {
 												<ClayTable.Cell className="table-cell-expand-smallest">
 													<ClayToggle
 														label={
-															enabled.includes(
-																item
-															)
+															enabled[item]
 																? Liferay.Language.get(
 																		'on'
 																  )
@@ -297,26 +330,14 @@ function ClauseContributorsTab({initialContributors}) {
 																  )
 														}
 														onToggle={() =>
-															setEnabled(
-																enabled.includes(
+															setEnabled({
+																...enabled,
+																[item]: !enabled[
 																	item
-																)
-																	? enabled.filter(
-																			(
-																				name
-																			) =>
-																				name !==
-																				item
-																	  )
-																	: [
-																			...enabled,
-																			item,
-																	  ]
-															)
+																],
+															})
 														}
-														toggled={enabled.includes(
-															item
-														)}
+														toggled={enabled[item]}
 													/>
 												</ClayTable.Cell>
 											</ClayTable.Row>

@@ -47,7 +47,13 @@ const ApplyBaselineModal = ({
 						>
 							{Liferay.Language.get('cancel')}
 						</ClayButton>
-						<ClayButton displayType="primary" onClick={onSubmit}>
+						<ClayButton
+							displayType="primary"
+							onClick={() => {
+								onSubmit();
+								handleClose();
+							}}
+						>
 							{Liferay.Language.get('apply')}
 						</ClayButton>
 					</ClayButton.Group>
