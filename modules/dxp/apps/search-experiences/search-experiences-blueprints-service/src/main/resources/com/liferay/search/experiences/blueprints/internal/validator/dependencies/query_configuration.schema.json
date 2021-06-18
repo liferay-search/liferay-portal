@@ -313,7 +313,8 @@
               "filter",
               "must",
               "must_not",
-              "should"
+              "should",
+              "${configuration.occur}"
             ]
           }
         },
