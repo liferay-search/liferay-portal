@@ -349,7 +349,7 @@
 			"type": "array"
 		}
 	},
-	"required": ["fieldSets"],
+	"required": [],
 	"title": "Element UI Configuration",
 	"type": "object"
 }
