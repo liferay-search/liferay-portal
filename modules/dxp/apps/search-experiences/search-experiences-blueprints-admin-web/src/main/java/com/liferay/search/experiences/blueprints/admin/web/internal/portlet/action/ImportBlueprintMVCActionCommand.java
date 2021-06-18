@@ -42,10 +42,14 @@ import com.liferay.search.experiences.blueprints.admin.web.internal.constants.Bl
 import com.liferay.search.experiences.blueprints.admin.web.internal.constants.BlueprintsAdminWebKeys;
 import com.liferay.search.experiences.blueprints.admin.web.internal.handler.BlueprintExceptionRequestHandler;
 import com.liferay.search.experiences.blueprints.constants.BlueprintsPortletKeys;
+import com.liferay.search.experiences.blueprints.exception.BlueprintValidationException;
+import com.liferay.search.experiences.blueprints.exception.ElementValidationException;
 import com.liferay.search.experiences.blueprints.importer.BlueprintsImporter;
+import com.liferay.search.experiences.blueprints.message.Message;
 
 import java.io.InputStream;
 
+import java.util.List;
 import java.util.Objects;
 
 import javax.portlet.ActionRequest;
@@ -197,9 +201,25 @@ public class ImportBlueprintMVCActionCommand extends BaseMVCActionCommand {
 				actionRequest, actionResponse,
 				JSONUtil.put("redirectURL", redirect));
 		}
+		catch (BlueprintValidationException blueprintValidationException) {
+			_log.error(
+				blueprintValidationException.getMessage(),
+				blueprintValidationException);
+			_logValidationMessages(blueprintValidationException.getMessages());
+		}
+		catch (ElementValidationException elementValidationException) {
+			_log.error(
+				elementValidationException.getMessage(),
+				elementValidationException);
+			_logValidationMessages(elementValidationException.getMessages());
+		}
 		catch (Exception exception) {
 			throw new PortalException(exception);
 		}
+	}
+
+	private void _logValidationMessages(List<Message> messages) {
+		messages.forEach(message -> _log.error(message.toString()));
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

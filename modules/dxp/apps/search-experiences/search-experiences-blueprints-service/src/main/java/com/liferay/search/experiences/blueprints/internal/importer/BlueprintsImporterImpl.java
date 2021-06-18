@@ -46,7 +46,7 @@ public class BlueprintsImporterImpl implements BlueprintsImporter {
 	@Override
 	public void importBlueprint(
 			long companyId, long groupId, long userId, JSONObject jsonObject)
-		throws PortalException {
+		throws BlueprintValidationException, PortalException {
 
 		if (!_validateBlueprint(jsonObject)) {
 			throw new BlueprintValidationException("Invalid Blueprint syntax");
@@ -61,7 +61,7 @@ public class BlueprintsImporterImpl implements BlueprintsImporter {
 	public void importElement(
 			long companyId, long groupId, long userId, JSONObject jsonObject,
 			boolean readOnly)
-		throws PortalException {
+		throws ElementValidationException, PortalException {
 
 		if (!_validateElement(jsonObject)) {
 			throw new ElementValidationException("Invalid Element syntax");
