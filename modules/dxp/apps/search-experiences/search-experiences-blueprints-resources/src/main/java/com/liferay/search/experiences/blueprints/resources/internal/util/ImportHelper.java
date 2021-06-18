@@ -77,7 +77,7 @@ public class ImportHelper {
 
 	private void _importElement(
 			long companyId, long groupId, long userId, JSONObject jsonObject)
-		throws BlueprintValidationException, PortalException {
+		throws ElementValidationException, PortalException {
 
 		_blueprintsImporter.importElement(
 			companyId, groupId, userId, jsonObject, true);
@@ -116,7 +116,7 @@ public class ImportHelper {
 					companyId, groupId, userId, _getJSONObject(url));
 			}
 			catch (BlueprintValidationException blueprintValidationException) {
-				_log.error(
+				_log.error(url + ": " +
 					blueprintValidationException.getMessage(),
 					blueprintValidationException);
 				_logValidationMessages(
@@ -144,7 +144,7 @@ public class ImportHelper {
 				_importElement(companyId, groupId, userId, _getJSONObject(url));
 			}
 			catch (ElementValidationException elementValidationException) {
-				_log.error(
+				_log.error(url + ": " +
 					elementValidationException.getMessage(),
 					elementValidationException);
 				_logValidationMessages(
