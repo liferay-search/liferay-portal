@@ -21,11 +21,15 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.search.experiences.blueprints.exception.BlueprintValidationException;
+import com.liferay.search.experiences.blueprints.exception.ElementValidationException;
 import com.liferay.search.experiences.blueprints.importer.BlueprintsImporter;
+import com.liferay.search.experiences.blueprints.message.Message;
 
 import java.net.URL;
 
 import java.util.Enumeration;
+import java.util.List;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
@@ -64,27 +68,19 @@ public class ImportHelper {
 	}
 
 	private void _importBlueprint(
-		long companyId, long groupId, long userId, JSONObject jsonObject) {
+			long companyId, long groupId, long userId, JSONObject jsonObject)
+		throws BlueprintValidationException, PortalException {
 
-		try {
-			_blueprintsImporter.importBlueprint(
-				companyId, groupId, userId, jsonObject);
-		}
-		catch (PortalException portalException) {
-			throw new RuntimeException(portalException);
-		}
+		_blueprintsImporter.importBlueprint(
+			companyId, groupId, userId, jsonObject);
 	}
 
 	private void _importElement(
-		long companyId, long groupId, long userId, JSONObject jsonObject) {
+			long companyId, long groupId, long userId, JSONObject jsonObject)
+		throws BlueprintValidationException, PortalException {
 
-		try {
-			_blueprintsImporter.importElement(
-				companyId, groupId, userId, jsonObject, true);
-		}
-		catch (PortalException portalException) {
-			throw new RuntimeException(portalException);
-		}
+		_blueprintsImporter.importElement(
+			companyId, groupId, userId, jsonObject, true);
 	}
 
 	private Enumeration<URL> _listBlueprints() {
@@ -99,6 +95,10 @@ public class ImportHelper {
 		return bundle.findEntries(_ELEMENTS_PATH, "*.json", false);
 	}
 
+	private void _logValidationMessages(List<Message> messages) {
+		messages.forEach(message -> _log.error(message.toString()));
+	}
+
 	private void _processBlueprintResources(
 		long companyId, long groupId, long userId) {
 
@@ -108,16 +108,23 @@ public class ImportHelper {
 			return;
 		}
 
-		try {
-			while (urlEnumeration.hasMoreElements()) {
-				URL url = urlEnumeration.nextElement();
+		while (urlEnumeration.hasMoreElements()) {
+			URL url = urlEnumeration.nextElement();
 
+			try {
 				_importBlueprint(
 					companyId, groupId, userId, _getJSONObject(url));
 			}
-		}
-		catch (PortalException portalException) {
-			_log.error(portalException.getMessage(), portalException);
+			catch (BlueprintValidationException blueprintValidationException) {
+				_log.error(
+					blueprintValidationException.getMessage(),
+					blueprintValidationException);
+				_logValidationMessages(
+					blueprintValidationException.getMessages());
+			}
+			catch (PortalException portalException) {
+				_log.error(portalException.getMessage(), portalException);
+			}
 		}
 	}
 
@@ -130,15 +137,22 @@ public class ImportHelper {
 			return;
 		}
 
-		try {
-			while (urlEnumeration.hasMoreElements()) {
-				URL url = urlEnumeration.nextElement();
+		while (urlEnumeration.hasMoreElements()) {
+			URL url = urlEnumeration.nextElement();
 
+			try {
 				_importElement(companyId, groupId, userId, _getJSONObject(url));
 			}
-		}
-		catch (PortalException portalException) {
-			_log.error(portalException.getMessage(), portalException);
+			catch (ElementValidationException elementValidationException) {
+				_log.error(
+					elementValidationException.getMessage(),
+					elementValidationException);
+				_logValidationMessages(
+					elementValidationException.getMessages());
+			}
+			catch (PortalException portalException) {
+				_log.error(portalException.getMessage(), portalException);
+			}
 		}
 	}
 

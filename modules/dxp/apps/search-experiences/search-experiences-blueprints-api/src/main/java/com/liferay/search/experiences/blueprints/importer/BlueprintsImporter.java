@@ -16,6 +16,8 @@ package com.liferay.search.experiences.blueprints.importer;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.search.experiences.blueprints.exception.BlueprintValidationException;
+import com.liferay.search.experiences.blueprints.exception.ElementValidationException;
 
 /**
  * @author Petteri Karttunen
@@ -24,11 +26,11 @@ public interface BlueprintsImporter {
 
 	public void importBlueprint(
 			long companyId, long groupId, long userId, JSONObject jsonObject)
-		throws PortalException;
+		throws BlueprintValidationException, PortalException;
 
 	public void importElement(
 			long companyId, long groupId, long userId, JSONObject jsonObject,
 			boolean readOnly)
-		throws PortalException;
+		throws ElementValidationException, PortalException;
 
 }
