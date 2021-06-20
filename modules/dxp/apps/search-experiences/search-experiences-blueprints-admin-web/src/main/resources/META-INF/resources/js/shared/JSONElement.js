@@ -20,6 +20,10 @@ import {PropTypes} from 'prop-types';
 import React, {useContext, useEffect, useState} from 'react';
 
 import JSONInput from '../shared/element/JSONInput';
+import {
+	getElementDescriptionLocalized,
+	getElementTitleLocalized,
+} from './../utils/language';
 import ThemeContext from './ThemeContext';
 
 function JSONElement({
@@ -67,15 +71,19 @@ function JSONElement({
 					<ClayList.ItemField expand>
 						{elementTemplateJSON.title && (
 							<ClayList.ItemTitle>
-								{elementTemplateJSON.title[locale] ||
-									elementTemplateJSON.title}
+								{getElementTitleLocalized(
+									elementTemplateJSON,
+									locale
+								)}
 							</ClayList.ItemTitle>
 						)}
 
 						{elementTemplateJSON.description && (
 							<ClayList.ItemText subtext={true}>
-								{elementTemplateJSON.description[locale] ||
-									elementTemplateJSON.description}
+								{getElementDescriptionLocalized(
+									elementTemplateJSON,
+									locale
+								)}
 							</ClayList.ItemText>
 						)}
 					</ClayList.ItemField>
