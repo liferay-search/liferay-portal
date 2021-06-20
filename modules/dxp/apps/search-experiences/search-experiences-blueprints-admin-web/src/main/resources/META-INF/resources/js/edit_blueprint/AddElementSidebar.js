@@ -21,6 +21,10 @@ import React, {useCallback, useContext, useEffect, useState} from 'react';
 
 import SearchInput from '../shared/SearchInput';
 import ThemeContext from '../shared/ThemeContext';
+import {
+	getElementDescriptionLocalized,
+	getElementTitleLocalized,
+} from './../utils/language';
 
 const DEFAULT_CATEGORY = 'other';
 const DEFAULT_EXPANDED_LIST = ['match'];
@@ -86,9 +90,10 @@ const ElementList = ({category, elements, expand, onAddElement}) => {
 
 									<ClayList.ItemField expand>
 										<ClayList.ItemTitle>
-											{elementTemplateJSON.title[
+											{getElementTitleLocalized(
+												elementTemplateJSON,
 												locale
-											] || elementTemplateJSON.title}
+											)}
 										</ClayList.ItemTitle>
 
 										{elementTemplateJSON.description &&
@@ -98,9 +103,10 @@ const ElementList = ({category, elements, expand, onAddElement}) => {
 												<ClayList.ItemText
 													subtext={true}
 												>
-													{elementTemplateJSON
-														.description[locale] ||
-														elementTemplateJSON.description}
+													{getElementDescriptionLocalized(
+														elementTemplateJSON,
+														locale
+													)}
 												</ClayList.ItemText>
 											)}
 									</ClayList.ItemField>
