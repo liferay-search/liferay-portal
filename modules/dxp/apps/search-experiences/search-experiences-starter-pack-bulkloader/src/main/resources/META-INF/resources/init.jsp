@@ -21,7 +21,8 @@ taglib uri="http://liferay.com/tld/clay" prefix="clay" %><%@
 taglib uri="http://liferay.com/tld/theme" prefix="liferay-theme" %><%@
 taglib uri="http://liferay.com/tld/ui" prefix="liferay-ui" %>
 
-<%@ page import="com.liferay.search.experiences.starter.pack.bulkloader.internal.constants.ImportTypeKeys" %><%@
+<%@ page import="com.liferay.portal.kernel.util.ParamUtil" %><%@
+page import="com.liferay.search.experiences.starter.pack.bulkloader.internal.constants.ImportTypeKeys" %><%@
 page import="com.liferay.search.experiences.starter.pack.bulkloader.internal.constants.MVCActionCommandNames" %>
 
 <liferay-theme:defineObjects />
