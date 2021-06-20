@@ -16,6 +16,10 @@
 
 <%@ include file="/init.jsp" %>
 
+<%
+String type = ParamUtil.getString(request, "type");
+%>
+
 <portlet:actionURL name="<%= MVCActionCommandNames.IMPORT %>" var="importActionURL" />
 
 <div class="container-md">
@@ -30,7 +34,8 @@
 				<aui:option label="wikipedia-articles" value="<%= ImportTypeKeys.WIKIPEDIA_ARTICLES %>" />
 			</aui:select>
 
-			<div class="hide" id="<portlet:namespace />wikifields">
+			<div class="<%= type.equals(ImportTypeKeys.WIKIPEDIA_ARTICLES) ? "" : "hide" %>" id="<portlet:namespace />wikifields">
+				<aui:input label="wiki-language" name="wikiLanguage" value="en" />
 				<aui:input label="wiki-articles" name="wikiArticles" />
 				<aui:input label="count-of-articles" name="count" value="100" />
 
