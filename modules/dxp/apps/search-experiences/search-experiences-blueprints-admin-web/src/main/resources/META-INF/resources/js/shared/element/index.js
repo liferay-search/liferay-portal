@@ -24,6 +24,10 @@ import {INPUT_TYPES} from '../../utils/inputTypes';
 import {getElementOutput, isDefined, isEmpty} from '../../utils/utils';
 import {PreviewModalWithCopyDownload} from '../PreviewModal';
 import ThemeContext from '../ThemeContext';
+import {
+	getElementDescriptionLocalized,
+	getElementTitleLocalized,
+} from './../../utils/language';
 import DateInput from './DateInput';
 import FieldInput from './FieldInput';
 import FieldListInput from './FieldListInput';
@@ -267,19 +271,19 @@ function Element({
 					<ClayList.ItemField expand>
 						{elementTemplateJSON.title && (
 							<ClayList.ItemTitle>
-								{elementTemplateJSON.title[locale] ||
-									(typeof elementTemplateJSON.title ==
-										'string' &&
-										elementTemplateJSON.title)}
+								{getElementTitleLocalized(
+									elementTemplateJSON,
+									locale
+								)}
 							</ClayList.ItemTitle>
 						)}
 
 						{_hasDescription && (
 							<ClayList.ItemText subtext={true}>
-								{elementTemplateJSON.description[locale] ||
-									(typeof elementTemplateJSON.description ==
-										'string' &&
-										elementTemplateJSON.description)}
+								{getElementDescriptionLocalized(
+									elementTemplateJSON,
+									locale
+								)}
 							</ClayList.ItemText>
 						)}
 					</ClayList.ItemField>
