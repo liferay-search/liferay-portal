@@ -12,9 +12,9 @@
  *
  */
 
-package com.liferay.search.experiences.predict.suggestions.spi.provider;
+package com.liferay.search.experiences.predict.suggestions.spi.post.processor;
 
-import com.liferay.search.experiences.predict.suggestions.attributes.SuggestionsAttributes;
+import com.liferay.search.experiences.predict.suggestions.attributes.SuggestionAttributes;
 import com.liferay.search.experiences.predict.suggestions.suggestion.Suggestion;
 
 import java.util.List;
@@ -22,11 +22,10 @@ import java.util.List;
 /**
  * @author Petteri Karttunen
  */
-public interface SpellCheckDataProvider {
+public interface TypeaheadPostProcessor {
 
-	public List<Suggestion> getSuggestions(
-		SuggestionsAttributes suggestionsAttributes);
-
-	public int getWeight();
+	public void process(
+		List<Suggestion<String>> suggestions,
+		SuggestionAttributes suggestionAttributes);
 
 }
