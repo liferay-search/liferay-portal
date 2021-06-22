@@ -14,27 +14,46 @@
 
 package com.liferay.search.experiences.predict.suggestions.attributes;
 
+import com.liferay.search.experiences.predict.suggestions.data.provider.DataProviderSettings;
+
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * @author Petteri Karttunen
  */
-public interface SuggestionsAttributes {
+public interface SuggestionAttributes {
 
-	public Optional<Object> getAttributeOptional(String key);
+	public Object getAttribute(String key);
 
 	public Map<String, Object> getAttributes();
 
 	public Long getCompanyId();
 
+	public DataProviderSettings getDataProviderSettings(String key);
+
+	public List<String> getExcludedDataProviders();
+
+	public List<String> getExcludedPostProcessors();
+
 	public Long getGroupId();
+
+	public List<String> getIncludedDataProviders();
+
+	public List<String> getIncludedPostProcessors();
+
+	public String getIPAddress();
 
 	public String getKeywords();
 
-	public String getLanguageId();
+	public Locale getLocale();
+
+	public Long getPlid();
 
 	public Integer getSize();
+
+	public String getTimezoneId();
 
 	public Long getUserId();
 
