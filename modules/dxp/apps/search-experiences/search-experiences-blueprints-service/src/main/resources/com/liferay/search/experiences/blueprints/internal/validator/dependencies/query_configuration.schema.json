@@ -309,13 +309,7 @@
           },
           "occur": {
             "type": "string",
-            "enum": [
-              "filter",
-              "must",
-              "must_not",
-              "should",
-              "${configuration.occur}"
-            ]
+            "pattern": "^(filter|must|must_not|should|\\$\\{.+\\})$"
           }
         },
         "type": "object"
