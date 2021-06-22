@@ -89,7 +89,7 @@ public class FieldTypeaheadDataProvider implements TypeaheadDataProvider {
 	private void _addDisplayFieldSuggestion(
 		List<Suggestion<String>> suggestions, SearchHit searchHit,
 		Map<String, Map<String, Float>> nestedFieldMap, String displayField,
-		String keywords) {
+		String keywords, String sanitizerRegexp) {
 
 		String value = null;
 
@@ -104,7 +104,7 @@ public class FieldTypeaheadDataProvider implements TypeaheadDataProvider {
 			value = document.getString(displayField);
 		}
 
-		value = _sanitize(value);
+		value = _sanitize(value, sanitizerRegexp);
 
 		suggestions.add(
 			new Suggestion<String>(
@@ -113,13 +113,13 @@ public class FieldTypeaheadDataProvider implements TypeaheadDataProvider {
 
 	private void _addDocumentFieldSuggestion(
 		List<Suggestion<String>> suggestions, String value, float score,
-		String keywords, int wordCount) {
+		String keywords, String sanitizerRegexp, int wordCount) {
 
 		if (Validator.isBlank(value)) {
 			return;
 		}
 
-		value = _sanitize(value);
+		value = _sanitize(value, sanitizerRegexp);
 
 		value = _findDocumentFieldMatch(value, keywords);
 
@@ -135,7 +135,8 @@ public class FieldTypeaheadDataProvider implements TypeaheadDataProvider {
 
 	private void _addDocumentFieldSuggestions(
 		List<Suggestion<String>> suggestions, SearchHit searchHit,
-		Map<String, Float> fieldMap, String keywords, int wordCount) {
+		Map<String, Float> fieldMap, String keywords, String sanitizerRegexp,
+		int wordCount) {
 
 		Document document = searchHit.getDocument();
 
@@ -144,28 +145,30 @@ public class FieldTypeaheadDataProvider implements TypeaheadDataProvider {
 		keySet.forEach(
 			fieldName -> _addDocumentFieldSuggestion(
 				suggestions, document.getString(fieldName),
-				searchHit.getScore(), keywords, wordCount));
+				searchHit.getScore(), keywords, sanitizerRegexp, wordCount));
 	}
 
 	private void _addFieldMatchSuggestions(
 		List<Suggestion<String>> suggestions, SearchHit searchHit,
 		Map<String, Float> fieldMap,
 		Map<String, Map<String, Float>> nestedFieldMap, String keywords,
-		int wordCount) {
+		String sanitizerRegexp, int wordCount) {
 
 		_addDocumentFieldSuggestions(
-			suggestions, searchHit, fieldMap, keywords, wordCount);
+			suggestions, searchHit, fieldMap, keywords, sanitizerRegexp,
+			wordCount);
 
 		if (!MapUtil.isEmpty(nestedFieldMap)) {
 			_addNestedFieldSuggestions(
-				suggestions, searchHit, nestedFieldMap, keywords, wordCount);
+				suggestions, searchHit, nestedFieldMap, keywords,
+				sanitizerRegexp, wordCount);
 		}
 	}
 
 	private void _addHighlighterSuggestions(
 		List<Suggestion<String>> suggestions, SearchHit searchHit,
 		Map<String, Map<String, Float>> nestedFieldMap, String keywords,
-		int wordCount) {
+		String sanitizerRegexp, int wordCount) {
 
 		Map<String, HighlightField> highlightFieldsMap =
 			searchHit.getHighlightFieldsMap();
@@ -173,24 +176,26 @@ public class FieldTypeaheadDataProvider implements TypeaheadDataProvider {
 		if (MapUtil.isNotEmpty(highlightFieldsMap)) {
 			_addHighlightFieldSuggestions(
 				suggestions, highlightFieldsMap, searchHit.getScore(), keywords,
-				wordCount);
+				sanitizerRegexp, wordCount);
 		}
 
 		if (!MapUtil.isEmpty(nestedFieldMap)) {
 			_addNestedFieldSuggestions(
-				suggestions, searchHit, nestedFieldMap, keywords, wordCount);
+				suggestions, searchHit, nestedFieldMap, keywords,
+				sanitizerRegexp, wordCount);
 		}
 	}
 
 	private void _addHighlightFieldSuggestion(
 		List<Suggestion<String>> suggestions, HighlightField highlightField,
-		float score, String keywords, int wordCount) {
+		float score, String keywords, String sanitizerRegexp, int wordCount) {
 
 		List<String> fragments = highlightField.getFragments();
 
 		fragments.forEach(
 			fragment -> {
-				String value = _trim(_sanitize(fragment), wordCount);
+				String value = _trim(
+					_sanitize(fragment, sanitizerRegexp), wordCount);
 
 				suggestions.add(
 					new Suggestion<String>(
@@ -201,32 +206,35 @@ public class FieldTypeaheadDataProvider implements TypeaheadDataProvider {
 	private void _addHighlightFieldSuggestions(
 		List<Suggestion<String>> suggestions,
 		Map<String, HighlightField> highlightFieldsMap, float score,
-		String keywords, int wordCount) {
+		String keywords, String sanitizerRegexp, int wordCount) {
 
 		Set<Entry<String, HighlightField>> entrySet =
 			highlightFieldsMap.entrySet();
 
 		entrySet.forEach(
 			entry -> _addHighlightFieldSuggestion(
-				suggestions, entry.getValue(), score, keywords, wordCount));
+				suggestions, entry.getValue(), score, keywords, sanitizerRegexp,
+				wordCount));
 	}
 
 	private void _addNestedFieldSuggestions(
 		List<Suggestion<String>> suggestions, SearchHit searchHit,
 		Map<String, Map<String, Float>> nestedFieldMap, String keywords,
-		int wordCount) {
+		String sanitizerRegexp, int wordCount) {
 
 		Set<Entry<String, Map<String, Float>>> entrySet =
 			nestedFieldMap.entrySet();
 
 		entrySet.forEach(
 			entry -> _addNestedPathSuggestions(
-				suggestions, searchHit, entry.getValue(), keywords, wordCount));
+				suggestions, searchHit, entry.getValue(), keywords,
+				sanitizerRegexp, wordCount));
 	}
 
 	private void _addNestedPathSuggestions(
 		List<Suggestion<String>> suggestions, SearchHit searchHit,
-		Map<String, Float> nestedFieldMap, String keywords, int wordCount) {
+		Map<String, Float> nestedFieldMap, String keywords,
+		String sanitizerRegexp, int wordCount) {
 
 		Document document = searchHit.getDocument();
 
@@ -235,7 +243,7 @@ public class FieldTypeaheadDataProvider implements TypeaheadDataProvider {
 		keySet.forEach(
 			fieldName -> _addDocumentFieldSuggestion(
 				suggestions, _getNestedFieldValue(document, fieldName),
-				searchHit.getScore(), keywords, wordCount));
+				searchHit.getScore(), keywords, sanitizerRegexp, wordCount));
 	}
 
 	private String _findDocumentFieldMatch(String fieldValue, String keywords) {
@@ -251,7 +259,7 @@ public class FieldTypeaheadDataProvider implements TypeaheadDataProvider {
 			return fieldValue.substring(idx);
 		}
 
-		String[] keywordArr = keywords.split(_splitter);
+		String[] keywordArr = keywords.split(_tokenSplitter);
 
 		for (String keyword : keywordArr) {
 			if (keyword.length() < 2) {
@@ -308,7 +316,8 @@ public class FieldTypeaheadDataProvider implements TypeaheadDataProvider {
 
 	private List<Suggestion<String>> _getDisplayFieldTypeSuggestions(
 		List<SearchHit> hits, DataProviderSettings dataProviderSettings,
-		Map<String, Map<String, Float>> nestedFieldMap, String keywords) {
+		Map<String, Map<String, Float>> nestedFieldMap, String keywords,
+		String sanitizerRegexp) {
 
 		List<Suggestion<String>> suggestions = new ArrayList<>();
 
@@ -322,8 +331,8 @@ public class FieldTypeaheadDataProvider implements TypeaheadDataProvider {
 
 		hits.forEach(
 			searchHit -> _addDisplayFieldSuggestion(
-				suggestions, searchHit, nestedFieldMap, displayField,
-				keywords));
+				suggestions, searchHit, nestedFieldMap, displayField, keywords,
+				sanitizerRegexp));
 
 		return suggestions;
 	}
@@ -342,14 +351,14 @@ public class FieldTypeaheadDataProvider implements TypeaheadDataProvider {
 	private List<Suggestion<String>> _getFieldMatchTypeSuggestions(
 		List<SearchHit> hits, Map<String, Float> fieldMap,
 		Map<String, Map<String, Float>> nestedFieldMap, String keywords,
-		int wordCount) {
+		String sanitizerRegexp, int wordCount) {
 
 		List<Suggestion<String>> suggestions = new ArrayList<>();
 
 		hits.forEach(
 			searchHit -> _addFieldMatchSuggestions(
 				suggestions, searchHit, fieldMap, nestedFieldMap, keywords,
-				wordCount));
+				sanitizerRegexp, wordCount));
 
 		return suggestions;
 	}
@@ -380,13 +389,14 @@ public class FieldTypeaheadDataProvider implements TypeaheadDataProvider {
 
 	private List<Suggestion<String>> _getHightlighterTypeSuggestions(
 		List<SearchHit> hits, Map<String, Map<String, Float>> nestedFieldMap,
-		String keywords, int wordCount) {
+		String keywords, String sanitizerRegexp, int wordCount) {
 
 		List<Suggestion<String>> suggestions = new ArrayList<>();
 
 		hits.forEach(
 			searchHit -> _addHighlighterSuggestions(
-				suggestions, searchHit, nestedFieldMap, keywords, wordCount));
+				suggestions, searchHit, nestedFieldMap, keywords,
+				sanitizerRegexp, wordCount));
 
 		return suggestions;
 	}
@@ -429,6 +439,8 @@ public class FieldTypeaheadDataProvider implements TypeaheadDataProvider {
 			return new ArrayList<>();
 		}
 
+		String sanitizerRegExp = _getSanitizerRegExp(dataProviderSettings);
+
 		int wordCount = _getWordCount(
 			suggestionAttributes, dataProviderSettings);
 
@@ -437,18 +449,30 @@ public class FieldTypeaheadDataProvider implements TypeaheadDataProvider {
 		if (type.equals("displayField")) {
 			return _getDisplayFieldTypeSuggestions(
 				hits, dataProviderSettings, nestedFieldMap,
-				suggestionAttributes.getKeywords());
+				suggestionAttributes.getKeywords(), sanitizerRegExp);
 		}
 		else if (type.equals("highlighter")) {
 			return _getHightlighterTypeSuggestions(
 				hits, nestedFieldMap, suggestionAttributes.getKeywords(),
-				wordCount);
+				sanitizerRegExp, wordCount);
 		}
 		else {
 			return _getFieldMatchTypeSuggestions(
 				hits, fieldMap, nestedFieldMap,
-				suggestionAttributes.getKeywords(), wordCount);
+				suggestionAttributes.getKeywords(), sanitizerRegExp, wordCount);
 		}
+	}
+
+	private String _getSanitizerRegExp(
+		DataProviderSettings dataProviderSettings) {
+
+		if (dataProviderSettings == null) {
+			return _defaultSanitizerRegExp;
+		}
+
+		return GetterUtil.getString(
+			dataProviderSettings.getAttribute("sanitizerRegExp"),
+			_defaultSanitizerRegExp);
 	}
 
 	private String _getType(DataProviderSettings dataProviderSettings) {
@@ -475,8 +499,8 @@ public class FieldTypeaheadDataProvider implements TypeaheadDataProvider {
 		return keywordCount + aheadCount;
 	}
 
-	private String _sanitize(String s) {
-		s = s.replaceAll("[\"\\[\\]\\{\\}\\(\\),(\\. )]", " ");
+	private String _sanitize(String s, String sanitizerRegexp) {
+		s = s.replaceAll(sanitizerRegexp, " ");
 
 		return StringUtil.toLowerCase(s);
 	}
@@ -485,7 +509,7 @@ public class FieldTypeaheadDataProvider implements TypeaheadDataProvider {
 		StringBundler sb = new StringBundler();
 
 		if (!Validator.isBlank(value)) {
-			String[] words = value.split(_splitter);
+			String[] words = value.split(_tokenSplitter);
 
 			if (words.length > wordCount) {
 				int counter = 0;
@@ -514,7 +538,9 @@ public class FieldTypeaheadDataProvider implements TypeaheadDataProvider {
 		return sb.toString();
 	}
 
-	private static String _splitter = "(\\s+)";
+	private static String _defaultSanitizerRegExp =
+		"[\"\\[\\]\\{\\}\\(\\),(\\. )]";
+	private static String _tokenSplitter = "(\\s+)";
 
 	private String _key;
 
