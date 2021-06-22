@@ -17,7 +17,7 @@
 													"must_not": [
 														{
 															"term": {
-																"entryClasslabel": {
+																"entryClassName": {
 																	"value": "com.liferay.journal.model.JournalArticle"
 																}
 															}
@@ -30,7 +30,7 @@
 													"must": [
 														{
 															"term": {
-																"entryClasslabel": {
+																"entryClassName": {
 																	"value": "com.liferay.journal.model.JournalArticle"
 																}
 															}
