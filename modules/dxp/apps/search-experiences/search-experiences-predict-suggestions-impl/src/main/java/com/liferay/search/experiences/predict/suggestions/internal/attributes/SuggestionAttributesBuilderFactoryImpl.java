@@ -14,23 +14,21 @@
 
 package com.liferay.search.experiences.predict.suggestions.internal.attributes;
 
-import com.liferay.search.experiences.predict.suggestions.attributes.SuggestionsAttributesBuilder;
-import com.liferay.search.experiences.predict.suggestions.attributes.SuggestionsAttributesBuilderFactory;
+import com.liferay.search.experiences.predict.suggestions.attributes.SuggestionAttributesBuilder;
+import com.liferay.search.experiences.predict.suggestions.attributes.SuggestionAttributesBuilderFactory;
 
 import org.osgi.service.component.annotations.Component;
 
 /**
  * @author Petteri Karttunen
  */
-@Component(
-	immediate = true, service = SuggestionsAttributesBuilderFactory.class
-)
-public class SuggestionsAttributesBuilderFactoryImpl
-	implements SuggestionsAttributesBuilderFactory {
+@Component(immediate = true, service = SuggestionAttributesBuilderFactory.class)
+public class SuggestionAttributesBuilderFactoryImpl
+	implements SuggestionAttributesBuilderFactory {
 
 	@Override
-	public SuggestionsAttributesBuilder builder() {
-		return new SuggestionsAttributesBuilderImpl();
+	public SuggestionAttributesBuilder builder() {
+		return new SuggestionAttributesBuilderImpl();
 	}
 
 }
