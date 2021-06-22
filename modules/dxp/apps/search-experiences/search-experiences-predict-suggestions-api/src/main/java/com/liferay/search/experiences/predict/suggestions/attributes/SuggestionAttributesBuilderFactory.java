@@ -12,13 +12,16 @@
  *
  */
 
-package com.liferay.search.experiences.predict.suggestions.constants;
+package com.liferay.search.experiences.predict.suggestions.attributes;
+
+import org.osgi.annotation.versioning.ProviderType;
 
 /**
  * @author Petteri Karttunen
  */
-public enum SuggestionsSortMode {
+@ProviderType
+public interface SuggestionAttributesBuilderFactory {
 
-	SCORE, TEXT
+	public SuggestionAttributesBuilder builder();
 
 }

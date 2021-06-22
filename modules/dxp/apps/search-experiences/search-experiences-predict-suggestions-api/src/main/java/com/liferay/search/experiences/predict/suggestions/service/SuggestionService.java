@@ -12,9 +12,9 @@
  *
  */
 
-package com.liferay.search.experiences.predict.suggestions.typeahead;
+package com.liferay.search.experiences.predict.suggestions.service;
 
-import com.liferay.search.experiences.predict.suggestions.attributes.SuggestionsAttributes;
+import com.liferay.search.experiences.predict.suggestions.attributes.SuggestionAttributes;
 import com.liferay.search.experiences.predict.suggestions.suggestion.Suggestion;
 
 import java.util.List;
@@ -22,9 +22,9 @@ import java.util.List;
 /**
  * @author Petteri Karttunen
  */
-public interface TypeaheadService {
+public interface SuggestionService {
 
-	public List<Suggestion> getSuggestions(
-		SuggestionsAttributes suggestionsAttributes);
+	public <T> List<Suggestion<T>> getSuggestions(
+		SuggestionAttributes suggestionAttributes);
 
 }
