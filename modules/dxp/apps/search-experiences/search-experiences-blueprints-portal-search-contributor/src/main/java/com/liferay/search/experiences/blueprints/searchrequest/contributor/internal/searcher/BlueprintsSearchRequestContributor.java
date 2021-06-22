@@ -31,14 +31,11 @@ import com.liferay.search.experiences.blueprints.engine.constants.ReservedParame
 import com.liferay.search.experiences.blueprints.engine.constants.SearchContextAttributeKeys;
 import com.liferay.search.experiences.blueprints.engine.exception.BlueprintsEngineException;
 import com.liferay.search.experiences.blueprints.engine.util.BlueprintsSearchRequestContributorHelper;
-import com.liferay.search.experiences.blueprints.message.Message;
 import com.liferay.search.experiences.blueprints.message.Messages;
 import com.liferay.search.experiences.blueprints.util.BlueprintHelper;
 
-import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
-import java.util.stream.Stream;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
