@@ -63,8 +63,6 @@ public class WikipediaImporter {
 			return;
 		}
 
-		List<String> importedTitles = new ArrayList<>();
-
 		String wikiLanguage = ParamUtil.getString(
 			portletRequest, "wikiLanguage", "en");
 
@@ -72,7 +70,7 @@ public class WikipediaImporter {
 
 		_importWikipediaArticles(
 			portletRequest, articleList, userIds, groupIds, languageId,
-			wikiLanguage, 0, count, importedTitles);
+			wikiLanguage, 0, count, new ArrayList<>());
 	}
 
 	private void _addArticleLinks(
