@@ -14,7 +14,7 @@
 
 package com.liferay.search.experiences.predict.suggestions.spi.provider;
 
-import com.liferay.search.experiences.predict.suggestions.attributes.SuggestionsAttributes;
+import com.liferay.search.experiences.predict.suggestions.attributes.SuggestionAttributes;
 import com.liferay.search.experiences.predict.suggestions.suggestion.Suggestion;
 
 import java.util.List;
@@ -24,9 +24,7 @@ import java.util.List;
  */
 public interface TypeaheadDataProvider {
 
-	public List<Suggestion> getSuggestions(
-		SuggestionsAttributes suggestionsAttributes);
-
-	public int getWeight();
+	public List<Suggestion<String>> getSuggestions(
+		SuggestionAttributes suggestionAttributes);
 
 }
