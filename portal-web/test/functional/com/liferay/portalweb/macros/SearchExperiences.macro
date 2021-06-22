@@ -185,4 +185,31 @@ definition {
 		IFrame.closeFrame();
 	}
 
+	macro viewCopiedRawResponse {
+		WebContentNavigator.openToAddBasicArticle(siteURLKey = "guest");
+
+		SelectFrame.selectFrameNoLoading(locator1 = "CKEditor#BODY_FIELD_IFRAME_2");
+
+		Click(locator1 = "CKEditor#BODY");
+
+		RobotType.robotTypeShortcut(locator1 = "Ctrl + v");
+
+		WaitForElementPresent(
+			key_text = "hits",
+			locator1 = "CKEditor#BODY_TEXT");
+	}
+
+	macro viewDownloadedRawResponse {
+		var tempDir = PropsUtil.get("output.dir.name");
+
+		var fileContent = FileUtil.read("${tempDir}/raw_response.json");
+
+		if (contains("${fileContent}", "hits")) {
+			echo("File raw_response.json contains text "hits"");
+		}
+		else {
+			fail("File raw_response.json does not contains text "hits"");
+		}
+	}
+
 }

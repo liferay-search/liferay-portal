@@ -25,8 +25,18 @@
 	<td></td>
 </tr>
 <tr>
+	<td>BLUEPRINTS_DOWNLOAD_RAW_RESPONSE</td>
+	<td>//a[contains(@class,'link-outline') and contains(.,'Download')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>BLUEPRINTS_ELASTICSEARCH_QUERY_JSON_EDITOR</td>
 	<td>//div[contains(@class,'custom-json')]//div[contains(@class,'CodeMirror cm-s-default')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_PREVIEW_RAW_RESPONSE_EXPLANATION</td>
+	<td>xpath=(//span[contains(@class,'cm-string') and text()='"${key_searchExplanation}"'])[1]</td>
 	<td></td>
 </tr>
 <tr>

@@ -506,6 +506,43 @@ definition {
 			value1 = "red apple, citrus-orange");
 	}
 
+	test ViewRawResponseViaBlueprintsPreview {
+		JSONWebcontent.addWebContent(
+			content = "WC Content",
+			groupName = "Guest",
+			title = "Apple");
+
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		SearchExperiences.addBlueprint(name = "Score Explanation Blueprint");
+
+		Click(locator1 = "Button#PREVIEW");
+
+		SearchExperiences.searchBlueprintsPreview(searchTerm = "Apple");
+
+		Click(
+			key_text = "View Raw Response",
+			locator1 = "Button#ANY");
+
+		AssertTextEquals(
+			locator1 = "Modal#HEADER",
+			value1 = "Raw Response");
+
+		AssertVisible(
+			key_searchExplanation = "hits",
+			locator1 = "SearchExperiences#BLUEPRINTS_PREVIEW_RAW_RESPONSE_EXPLANATION");
+
+		SelectFrameTop();
+
+		Click(locator1 = "SearchExperiences#BLUEPRINTS_DOWNLOAD_RAW_RESPONSE");
+
+		SearchExperiences.viewDownloadedRawResponse();
+
+		Click(locator1 = "Button#COPY");
+
+		SearchExperiences.viewCopiedRawResponse();
+	}
+
 	test ViewSearchResultsScoreViaBlueprintsPreview {
 		JSONWebcontent.addWebContent(
 			content = "WC Content",
