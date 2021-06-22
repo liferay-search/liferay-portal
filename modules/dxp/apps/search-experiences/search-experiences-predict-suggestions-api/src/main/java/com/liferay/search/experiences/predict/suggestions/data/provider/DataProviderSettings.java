@@ -12,7 +12,7 @@
  *
  */
 
-package com.liferay.search.experiences.predict.suggestions.suggestion;
+package com.liferay.search.experiences.predict.suggestions.data.provider;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,19 +20,14 @@ import java.util.Map;
 /**
  * @author Petteri Karttunen
  */
-public class Suggestion<T> {
+public class DataProviderSettings {
 
-	public Suggestion(T payload, float score) {
-		_payload = payload;
-		_score = score;
-	}
-
-	public void addAttribute(String key, String value) {
+	public void addAttribute(String key, Object value) {
 		if (_attributes == null) {
 			_attributes = new HashMap<>();
 		}
 
-		_attributes.put(key, value);
+		_attributes.putIfAbsent(key, value);
 	}
 
 	public Object getAttribute(String key) {
@@ -43,37 +38,24 @@ public class Suggestion<T> {
 		return _attributes.get(key);
 	}
 
-	public Map<String, String> getAttributes() {
-		return _attributes;
+	public Integer getTimeout() {
+		return _timeout;
 	}
 
-	public T getPayload() {
-		return _payload;
+	public Float getWeight() {
+		return _weight;
 	}
 
-	public String getProvider() {
-		return _provider;
+	public void setTimeout(int timeout) {
+		_timeout = timeout;
 	}
 
-	public float getScore() {
-		return _score;
+	public void setWeight(float weight) {
+		_weight = weight;
 	}
 
-	public void setPayload(T payload) {
-		_payload = payload;
-	}
-
-	public void setProvider(String provider) {
-		_provider = provider;
-	}
-
-	public void setScore(float score) {
-		_score = score;
-	}
-
-	private Map<String, String> _attributes;
-	private T _payload;
-	private String _provider;
-	private float _score;
+	private Map<String, Object> _attributes;
+	private Integer _timeout;
+	private Float _weight;
 
 }
