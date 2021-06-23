@@ -21,6 +21,7 @@ import {
 	DESCENDING,
 	INACTIVE,
 } from '../../utils/constants';
+import {DEFAULT_BASELINE_CLAUSE_CONTRIBUTORS} from '../../utils/data';
 import {
 	getClauseContributorsState,
 	getFrameworkConfigClauseContributors,
@@ -28,7 +29,6 @@ import {
 import ManagementToolbar from './ManagementToolbar';
 
 function ClauseContributorsTab({
-	baselineClauseContributors,
 	clauseContributors,
 	enableNewClauseContributors,
 	initialClauseContributorsList,
@@ -107,8 +107,7 @@ function ClauseContributorsTab({
 		setEnabled(
 			getClauseContributorsState(
 				initialClauseContributorsList,
-				baselineClauseContributors,
-				enableNewClauseContributors
+				DEFAULT_BASELINE_CLAUSE_CONTRIBUTORS
 			)
 		);
 	};
@@ -152,11 +151,10 @@ function ClauseContributorsTab({
 	};
 
 	useEffect(() => {
-		const newContributors = [];
-
-		initialClauseContributorsList.forEach(({label, value}) => {
-			if (category === ALL || category === label) {
-				newContributors.push({
+		setContributors(
+			initialClauseContributorsList
+				.filter(({label}) => category === ALL || category === label)
+				.map(({label, value}) => ({
 					label,
 					value: value
 						.filter(
@@ -168,11 +166,8 @@ function ClauseContributorsTab({
 								? a.localeCompare(b)
 								: b.localeCompare(a)
 						),
-				});
-			}
-		});
-
-		setContributors(newContributors);
+				}))
+		);
 	}, [enabled, category, keyword, sortDirection, status]); //eslint-disable-line
 
 	useEffect(() => {

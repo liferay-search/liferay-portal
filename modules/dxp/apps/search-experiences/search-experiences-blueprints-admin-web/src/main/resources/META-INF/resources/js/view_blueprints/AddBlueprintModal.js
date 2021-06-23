@@ -12,11 +12,10 @@
 import ClayAlert from '@clayui/alert';
 import ClayButton from '@clayui/button';
 import ClayCard from '@clayui/card';
-import {ClayCheckbox, ClayRadio} from '@clayui/form';
+import {ClayRadio} from '@clayui/form';
 import ClayIcon from '@clayui/icon';
 import ClayLayout from '@clayui/layout';
 import ClayModal, {useModal} from '@clayui/modal';
-import {ClayTooltipProvider} from '@clayui/tooltip';
 import {useIsMounted} from '@liferay/frontend-js-react-web';
 import getCN from 'classnames';
 import {fetch, navigate} from 'frontend-js-web';
@@ -24,13 +23,18 @@ import React, {useState} from 'react';
 
 import {
 	DEFAULT_ADVANCED_CONFIGURATION,
+	DEFAULT_BASELINE_CLAUSE_CONTRIBUTORS,
 	DEFAULT_BASELINE_ELEMENTS,
 	DEFAULT_HIGHLIGHT_CONFIGURATION,
 	DEFAULT_PARAMETER_CONFIGURATION,
 	DEFAULT_SORT_CONFIGURATION,
 } from '../utils/data';
 import {FRAMEWORK_TYPES} from '../utils/frameworkTypes';
-import {getElementOutput, getUIConfigurationValues} from '../utils/utils';
+import {
+	getElementOutput,
+	getFrameworkConfigClauseContributors,
+	getUIConfigurationValues,
+} from '../utils/utils';
 
 const DEFAULT_SELECTED_BASELINE_ELEMENTS = DEFAULT_BASELINE_ELEMENTS.map(
 	(element) => ({
@@ -101,22 +105,37 @@ const AddBlueprintModal = ({
 	dialogTitle,
 	formSubmitURL,
 	initialVisible,
+	keywordQueryContributorsString,
+	modelPrefilterContributorsString,
 	namespace,
 	onFormSuccess,
+	queryPrefilterContributorsString,
 	searchableAssetTypesString,
 	submitButtonLabel = Liferay.Language.get('create'),
 	type,
 }) => {
 	const isMounted = useIsMounted();
 	const [errorMessage, setErrorMessage] = useState();
-	const [framework, setFramework] = useState(FRAMEWORK_TYPES.DEFAULT);
+	const [framework, setFramework] = useState(FRAMEWORK_TYPES.ALL);
 	const [loadingResponse, setLoadingResponse] = useState(false);
 	const [visible, setVisible] = useState(initialVisible);
 	const [inputValue, setInputValue] = useState('');
 	const [descriptionInputValue, setDescriptionInputValue] = useState('');
-	const [includeBaselineElements, setIncludeBaselineElements] = useState(
-		true
-	);
+
+	const initialClauseContributorsList = [
+		{
+			label: 'KeywordQueryContributor',
+			value: JSON.parse(keywordQueryContributorsString).sort(),
+		},
+		{
+			label: 'ModelPrefilterContributor',
+			value: JSON.parse(modelPrefilterContributorsString).sort(),
+		},
+		{
+			label: 'QueryPrefilterContributor',
+			value: JSON.parse(queryPrefilterContributorsString).sort(),
+		},
+	];
 
 	const handleFormError = (responseContent) => {
 		setErrorMessage(responseContent.error || '');
@@ -136,8 +155,19 @@ const AddBlueprintModal = ({
 				aggregation_configuration: {},
 				facet_configuration: {},
 				framework_configuration: {
-					apply_indexer_clauses:
-						framework === FRAMEWORK_TYPES.DEFAULT,
+					clause_contributors:
+						framework === FRAMEWORK_TYPES.ALL
+							? getFrameworkConfigClauseContributors(
+									initialClauseContributorsList,
+									{},
+									true
+							  )
+							: getFrameworkConfigClauseContributors(
+									initialClauseContributorsList,
+									DEFAULT_BASELINE_CLAUSE_CONTRIBUTORS,
+									false,
+									true
+							  ),
 					searchable_asset_types: JSON.parse(
 						searchableAssetTypesString
 					),
@@ -145,8 +175,7 @@ const AddBlueprintModal = ({
 				highlight_configuration: DEFAULT_HIGHLIGHT_CONFIGURATION,
 				parameter_configuration: DEFAULT_PARAMETER_CONFIGURATION,
 				query_configuration:
-					framework === FRAMEWORK_TYPES.CUSTOM &&
-					includeBaselineElements
+					framework === FRAMEWORK_TYPES.BASELINE
 						? DEFAULT_SELECTED_BASELINE_ELEMENTS.map(
 								getElementOutput
 						  )
@@ -159,8 +188,7 @@ const AddBlueprintModal = ({
 			`${namespace}selectedElements`,
 			JSON.stringify({
 				query_configuration:
-					framework === FRAMEWORK_TYPES.CUSTOM &&
-					includeBaselineElements
+					framework === FRAMEWORK_TYPES.BASELINE
 						? DEFAULT_SELECTED_BASELINE_ELEMENTS
 						: [],
 			})
@@ -320,7 +348,7 @@ const AddBlueprintModal = ({
 								className="control-label"
 								htmlFor={`${namespace}framework`}
 							>
-								{Liferay.Language.get('framework')}
+								{Liferay.Language.get('start-with')}
 
 								<span className="reference-mark">
 									<ClayIcon symbol="asterisk" />
@@ -331,75 +359,42 @@ const AddBlueprintModal = ({
 								<ClayLayout.Col size={6}>
 									<FrameworkCard
 										checked={
-											framework ===
-											FRAMEWORK_TYPES.DEFAULT
+											framework === FRAMEWORK_TYPES.ALL
 										}
 										description={Liferay.Language.get(
-											'compose-elements-on-top-of-liferay-default-search-clauses'
+											'select-this-option-to-modify-liferays-default-search-behavior-all-search-clauses-will-be-enabled-this-can-be-changed-later'
 										)}
-										imagePath={`${contextPath}/images/liferay-default-clauses.svg`}
+										imagePath={`${contextPath}/images/all-clauses.svg`}
 										onChange={() =>
-											setFramework(
-												FRAMEWORK_TYPES.DEFAULT
-											)
+											setFramework(FRAMEWORK_TYPES.ALL)
 										}
 										title={Liferay.Language.get(
-											'liferay-default-clauses'
+											'all-clauses'
 										)}
-										value={FRAMEWORK_TYPES.DEFAULT}
+										value={FRAMEWORK_TYPES.ALL}
 									/>
 								</ClayLayout.Col>
 
 								<ClayLayout.Col size={6}>
 									<FrameworkCard
 										checked={
-											framework === FRAMEWORK_TYPES.CUSTOM
+											framework ===
+											FRAMEWORK_TYPES.BASELINE
 										}
 										description={Liferay.Language.get(
-											'compose-elements-from-the-ground-up'
+											'select-this-option-to-build-your-own-custom-search-behavior-a-minimal-set-of-common-search-clauses-will-be-enabled-this-canbe-changed-later'
 										)}
-										imagePath={`${contextPath}/images/custom-clauses.svg`}
+										imagePath={`${contextPath}/images/baseline-clauses.svg`}
 										onChange={() =>
-											setFramework(FRAMEWORK_TYPES.CUSTOM)
+											setFramework(
+												FRAMEWORK_TYPES.BASELINE
+											)
 										}
 										title={Liferay.Language.get(
-											'custom-clauses'
+											'baseline-clauses'
 										)}
-										value={FRAMEWORK_TYPES.CUSTOM}
-									>
-										<ClayTooltipProvider>
-											<div
-												data-tooltip-align="top"
-												onClick={(event) => {
-													event.stopPropagation();
-												}}
-												title={Liferay.Language.get(
-													'baseline-elements-emulate-the-behavior-of-liferay-default-clauses'
-												)}
-											>
-												<ClayCheckbox
-													aria-label={Liferay.Language.get(
-														'include-baseline-elements'
-													)}
-													checked={
-														includeBaselineElements
-													}
-													disabled={
-														framework !==
-														FRAMEWORK_TYPES.CUSTOM
-													}
-													label={Liferay.Language.get(
-														'include-baseline-elements'
-													)}
-													onChange={() =>
-														setIncludeBaselineElements(
-															!includeBaselineElements
-														)
-													}
-												/>
-											</div>
-										</ClayTooltipProvider>
-									</FrameworkCard>
+										value={FRAMEWORK_TYPES.BASELINE}
+									/>
 								</ClayLayout.Col>
 							</ClayLayout.Row>
 						</div>
