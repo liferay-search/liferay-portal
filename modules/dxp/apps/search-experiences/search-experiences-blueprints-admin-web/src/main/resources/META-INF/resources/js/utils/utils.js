@@ -483,18 +483,15 @@ export const getUIConfigurationValues = (uiConfigurationJSON) => {
  *		com.liferay.account.internal.search.spi.model.query.contributor.AccountGroupKeywordQueryContributor: false,
  *		com.liferay.address.internal.search.spi.model.query.contributor.AddressKeywordQueryContributor: true}
  *
- * @param {Array} initialClauseContributorsList Array of clause contributors,
- * defined by label (String) and value (Array)
- * @param {object} clauseContributors object from framework configuration
- * that tracks whether clause is enabled/disabled
- * @param {boolean} enableNewClauseContributors When true, sets all clauses
- * not accounted for in clauseContributors to enabled
+ * @param {Array} initialClauseContributorsList Array of clause contributors, includes label (String) and value (Array)
+ * @param {object} clauseContributors Object that tracks whether clause is enabled/disabled
+ * @param {boolean} defaultState When true, sets all clauses not accounted for in clauseContributors to enabled
  * @return {object}
  */
 export const getClauseContributorsState = (
 	initialClauseContributorsList,
 	clauseContributors = {},
-	enableNewClauseContributors = false
+	defaultState = false
 ) => {
 	return initialClauseContributorsList.reduce((acc, {label, value}) => {
 		const obj = {};
@@ -502,7 +499,7 @@ export const getClauseContributorsState = (
 		value.forEach((item) => {
 			obj[item] = isDefined(clauseContributors[label]?.[item])
 				? clauseContributors[label][item]
-				: enableNewClauseContributors;
+				: defaultState;
 		});
 
 		return {...obj, ...acc};
@@ -537,20 +534,27 @@ export const getClauseContributorsState = (
  *		}
  *	}
  *
- * @param {Array} initialClauseContributorsList Array of clause contributors,
- * defined by label (String) and value (Array)
- * @param {object} enabled object that tracks whether clause is enabled/disabled
+ * @param {Array} initialClauseContributorsList Array of clause contributors, includes label (String) and value (Array)
+ * @param {object} clauseContributors Object that tracks whether clause is enabled/disabled
+ * @param {boolean} defaultState When true, sets all clauses not accounted for in clauseContributors to enabled
+ * @param {boolean} groupedByLabel When true, indicates that clauseContributors is grouped by labels
  * @return {object}
  */
 export const getFrameworkConfigClauseContributors = (
 	initialClauseContributorsList,
-	enabled
+	clauseContributors = {},
+	defaultState = false,
+	groupedByLabel = false
 ) => {
 	return initialClauseContributorsList.reduce((acc, {label, value}) => {
 		const obj = {};
 
 		value.forEach((item) => {
-			obj[item] = enabled[item];
+			const enabled = groupedByLabel
+				? clauseContributors[label]?.[item]
+				: clauseContributors[item];
+
+			obj[item] = isDefined(enabled) ? enabled : defaultState;
 		});
 
 		return {[`${label}`]: obj, ...acc};

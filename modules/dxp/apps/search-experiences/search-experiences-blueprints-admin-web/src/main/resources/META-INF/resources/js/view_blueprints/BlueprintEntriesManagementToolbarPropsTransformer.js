@@ -24,7 +24,13 @@ export default function propsTransformer({
 			defaultLocale: itemData.defaultLocale,
 			dialogTitle: Liferay.Language.get('new-search-blueprint'),
 			formSubmitURL: itemData.editBlueprintURL,
+			keywordQueryContributorsString:
+				itemData.keywordQueryContributorsString,
+			modelPrefilterContributorsString:
+				itemData.modelPrefilterContributorsString,
 			namespace: portletNamespace,
+			queryPrefilterContributorsString:
+				itemData.queryPrefilterContributorsString,
 			searchableAssetTypesString: itemData.searchableAssetTypesString,
 			type: itemData.type,
 		});
