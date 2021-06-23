@@ -14,8 +14,10 @@
 
 package com.liferay.search.experiences.predict.misspellings.web.internal.util;
 
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.search.query.BooleanQuery;
 import com.liferay.portal.search.query.Queries;
+import com.liferay.portal.search.query.TermsQuery;
 import com.liferay.search.experiences.predict.misspellings.web.internal.index.MisspellingSetFields;
 
 import org.osgi.service.component.annotations.Component;
@@ -27,11 +29,16 @@ import org.osgi.service.component.annotations.Reference;
 @Component(immediate = true, service = MisspellingsQueryHelper.class)
 public class MisspellingsQueryHelper {
 
-	public void addGroupFilterClause(BooleanQuery booleanQuery, long groupId) {
+	public void addGroupFilterClause(
+		BooleanQuery booleanQuery, long... groupIds) {
+
 		BooleanQuery groupQuery = _queries.booleanQuery();
 
-		groupQuery.addShouldQueryClauses(
-			_queries.term(MisspellingSetFields.GROUP_ID, groupId));
+		TermsQuery termsQuery = _queries.terms(MisspellingSetFields.GROUP_ID);
+
+		termsQuery.addValues(ArrayUtil.toStringArray(groupIds));
+
+		groupQuery.addShouldQueryClauses(termsQuery);
 
 		groupQuery.addShouldQueryClauses(
 			_queries.term(MisspellingSetFields.GROUP_ID, "*"));
@@ -40,12 +47,15 @@ public class MisspellingsQueryHelper {
 	}
 
 	public void addLanguageFilterClause(
-		BooleanQuery booleanQuery, String languageId) {
+		BooleanQuery booleanQuery, Object... languageIds) {
 
 		BooleanQuery languageQuery = _queries.booleanQuery();
 
-		languageQuery.addShouldQueryClauses(
-			_queries.term(MisspellingSetFields.LANGUAGE_ID, languageId));
+		TermsQuery termsQuery = _queries.terms(MisspellingSetFields.GROUP_ID);
+
+		termsQuery.addValues(languageIds);
+
+		languageQuery.addShouldQueryClauses(termsQuery);
 
 		languageQuery.addShouldQueryClauses(
 			_queries.term(MisspellingSetFields.LANGUAGE_ID, "*"));

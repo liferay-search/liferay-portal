@@ -2,7 +2,6 @@ Bundle-Name: Liferay Search Experiences Predict Misspellings API
 Bundle-SymbolicName: com.liferay.search.experiences.predict.misspellings.api
 Bundle-Version: 1.0.0
 Export-Package:\
-	com.liferay.search.experiences.predict.misspellings.configuration,\
 	com.liferay.search.experiences.predict.misspellings.index,\
 	com.liferay.search.experiences.predict.misspellings.index.name,\
 	com.liferay.search.experiences.predict.misspellings.processor,\
