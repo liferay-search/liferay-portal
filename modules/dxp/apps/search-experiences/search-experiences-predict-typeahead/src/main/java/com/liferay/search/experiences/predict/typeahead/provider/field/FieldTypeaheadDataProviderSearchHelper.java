@@ -17,6 +17,7 @@ package com.liferay.search.experiences.predict.typeahead.provider.field;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.MapUtil;
+import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.highlight.FieldConfig;
@@ -30,6 +31,7 @@ import com.liferay.portal.search.query.NestedQuery;
 import com.liferay.portal.search.query.Operator;
 import com.liferay.portal.search.query.Queries;
 import com.liferay.portal.search.query.Query;
+import com.liferay.portal.search.query.TermsQuery;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.searcher.SearchRequestBuilderFactory;
 import com.liferay.portal.search.searcher.SearchResponse;
@@ -104,14 +106,11 @@ public class FieldTypeaheadDataProviderSearchHelper {
 			dataProviderSettings.getAttribute("sourceGroupIds"));
 
 		if (groupIds.length != 0) {
-			BooleanQuery groupsQuery = _queries.booleanQuery();
+			TermsQuery termsQuery = _queries.terms(Field.SCOPE_GROUP_ID);
 
-			for (long groupId : groupIds) {
-				groupsQuery.addShouldQueryClauses(
-					_queries.term(Field.SCOPE_GROUP_ID, groupId));
-			}
+			termsQuery.addValues(SetUtil.fromArray(groupIds));
 
-			booleanQuery.addFilterQueryClauses(groupsQuery);
+			booleanQuery.addFilterQueryClauses(termsQuery);
 		}
 		else {
 			booleanQuery.addFilterQueryClauses(
