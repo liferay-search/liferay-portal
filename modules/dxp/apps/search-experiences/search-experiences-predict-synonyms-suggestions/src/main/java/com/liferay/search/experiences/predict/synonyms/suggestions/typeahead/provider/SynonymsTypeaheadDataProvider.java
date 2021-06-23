@@ -14,7 +14,9 @@
 
 package com.liferay.search.experiences.predict.synonyms.suggestions.typeahead.provider;
 
-import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.SetUtil;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.document.Document;
 import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
 import com.liferay.portal.search.engine.adapter.search.SearchSearchRequest;
@@ -27,16 +29,15 @@ import com.liferay.portal.search.query.Queries;
 import com.liferay.portal.search.query.Query;
 import com.liferay.portal.search.tuning.synonyms.index.name.SynonymSetIndexName;
 import com.liferay.portal.search.tuning.synonyms.index.name.SynonymSetIndexNameBuilder;
-import com.liferay.search.experiences.predict.suggestions.attributes.SuggestionsAttributes;
+import com.liferay.search.experiences.predict.suggestions.attributes.SuggestionAttributes;
+import com.liferay.search.experiences.predict.suggestions.data.provider.DataProviderSettings;
 import com.liferay.search.experiences.predict.suggestions.spi.provider.TypeaheadDataProvider;
 import com.liferay.search.experiences.predict.suggestions.suggestion.Suggestion;
-import com.liferay.search.experiences.predict.synonyms.suggestions.configuration.SynonymSuggestionsConfiguration;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import org.osgi.service.component.annotations.Activate;
@@ -48,122 +49,148 @@ import org.osgi.service.component.annotations.Reference;
  * @author Petteri Karttunen
  */
 @Component(
-	configurationPid = "com.liferay.search.experiences.blueprints.synonyms.suggestions.configuration.SynonymSuggestionsConfiguration",
-	immediate = true, property = "name=synonyms",
+	immediate = true, property = "data.provider.key=synonyms",
 	service = TypeaheadDataProvider.class
 )
 public class SynonymsTypeaheadDataProvider implements TypeaheadDataProvider {
 
-	@Override
-	public List<Suggestion> getSuggestions(
-		SuggestionsAttributes suggestionsAttributes) {
+	public List<Suggestion<String>> getSuggestions(
+		SuggestionAttributes suggestionAttributes) {
 
-		if (!_synonymsTypeaheadDataProviderConfiguration.
-				enableTypeaheadDataProvider()) {
+		DataProviderSettings dataProviderSettings = _getDataProviderSettings(
+			suggestionAttributes);
 
-			return new ArrayList<>();
-		}
+		SearchSearchResponse searchSearchResponse = _search(
+			suggestionAttributes, dataProviderSettings);
 
-		SearchHits searchHits = _search(
-			_getQuery(suggestionsAttributes), suggestionsAttributes);
-
-		if (searchHits.getTotalHits() == 0) {
-			return new ArrayList<>();
-		}
-
-		return _getResults(
-			searchHits.getSearchHits(), suggestionsAttributes.getKeywords());
-	}
-
-	@Override
-	public int getWeight() {
-		return _synonymsTypeaheadDataProviderConfiguration.
-			typeaheadDataProviderWeight();
+		return _getSuggestions(
+			searchSearchResponse, suggestionAttributes.getKeywords());
 	}
 
 	@Activate
 	@Modified
 	protected void activate(Map<String, Object> properties) {
-		_synonymsTypeaheadDataProviderConfiguration =
-			ConfigurableUtil.createConfigurable(
-				SynonymSuggestionsConfiguration.class, properties);
+		_key = GetterUtil.getString(properties.get("data.provider.key"));
 	}
 
 	private void _addSearchClauses(
-		BooleanQuery booleanQuery,
-		SuggestionsAttributes suggestionsAttributes) {
-
-		Set<String> fields = new HashSet<>();
-
-		fields.add("synonyms");
+		BooleanQuery booleanQuery, SuggestionAttributes suggestionAttributes,
+		DataProviderSettings dataProviderSettings) {
 
 		MultiMatchQuery multiMatchQuery = _queries.multiMatch(
-			suggestionsAttributes.getKeywords(), fields);
+			suggestionAttributes.getKeywords(), SetUtil.fromString("synonyms"));
 
-		multiMatchQuery.setFuzziness("1");
-		multiMatchQuery.setPrefixLength(2);
+		multiMatchQuery.setFuzziness(_getFuzziness(dataProviderSettings));
+		multiMatchQuery.setPrefixLength(_getPrefixLength(dataProviderSettings));
 		multiMatchQuery.setType(MultiMatchQuery.Type.BOOL_PREFIX);
 
 		booleanQuery.addMustQueryClauses(multiMatchQuery);
 	}
 
-	private Query _getQuery(SuggestionsAttributes suggestionsAttributes) {
+	private void _addSuggestion(
+		List<Suggestion<String>> suggestions, SearchHit searchHit,
+		String keywords) {
+
+		Document document = searchHit.getDocument();
+
+		String values = document.getString("synonyms");
+
+		String[] arr = values.split(",");
+
+		Stream<String> stream = Arrays.stream(arr);
+
+		String s = StringUtil.toLowerCase(keywords);
+
+		stream.filter(
+			synonym -> !synonym.startsWith(s)
+		).forEach(
+			synonym -> suggestions.add(
+				new Suggestion<String>(synonym, searchHit.getScore()))
+		);
+	}
+
+	private DataProviderSettings _getDataProviderSettings(
+		SuggestionAttributes suggestionAttributes) {
+
+		return suggestionAttributes.getDataProviderSettings(_key);
+	}
+
+	private String _getFuzziness(DataProviderSettings dataProviderSettings) {
+		if (dataProviderSettings == null) {
+			return _DEFAULT_FUZZINESS;
+		}
+
+		return GetterUtil.getString(
+			dataProviderSettings.getAttribute("fuzziness"), _DEFAULT_FUZZINESS);
+	}
+
+	private int _getPrefixLength(DataProviderSettings dataProviderSettings) {
+		if (dataProviderSettings == null) {
+			return _DEFAULT_PREFIX_LENGTH;
+		}
+
+		return GetterUtil.getInteger(
+			dataProviderSettings.getAttribute("prefixLength"),
+			_DEFAULT_PREFIX_LENGTH);
+	}
+
+	private Query _getQuery(
+		SuggestionAttributes suggestionAttributes,
+		DataProviderSettings dataProviderSettings) {
+
 		BooleanQuery booleanQuery = _queries.booleanQuery();
 
-		_addSearchClauses(booleanQuery, suggestionsAttributes);
+		_addSearchClauses(
+			booleanQuery, suggestionAttributes, dataProviderSettings);
 
 		return booleanQuery;
 	}
 
-	private List<Suggestion> _getResults(
-		List<SearchHit> searchHits, String keywords) {
+	private List<Suggestion<String>> _getSuggestions(
+		SearchSearchResponse searchSearchResponse, String keywords) {
 
-		List<Suggestion> suggestions = new ArrayList<>();
+		SearchHits searchHits = searchSearchResponse.getSearchHits();
 
-		Stream<SearchHit> stream = searchHits.stream();
+		List<Suggestion<String>> suggestions = new ArrayList<>();
 
-		stream.forEach(
-			searchHit -> {
-				Document document = searchHit.getDocument();
+		if (searchHits.getTotalHits() == 0) {
+			return suggestions;
+		}
 
-				String values = document.getString("synonyms");
+		List<SearchHit> hits = searchHits.getSearchHits();
 
-				String[] arr = values.split(",");
-
-				for (String s : arr) {
-					if (s.equals(keywords)) {
-						continue;
-					}
-
-					suggestions.add(
-						new Suggestion(s, searchHit.getScore(), "synonyms"));
-				}
-			});
+		hits.forEach(
+			searchHit -> _addSuggestion(suggestions, searchHit, keywords));
 
 		return suggestions;
 	}
 
-	private SearchHits _search(
-		Query query, SuggestionsAttributes suggestionsAttributes) {
+	private SearchSearchResponse _search(
+		SuggestionAttributes suggestionAttributes,
+		DataProviderSettings dataProviderSettings) {
 
 		SearchSearchRequest searchSearchRequest = new SearchSearchRequest();
 
 		SynonymSetIndexName synonymSetIndexName =
 			_synonymSetIndexNameBuilder.getSynonymSetIndexName(
-				suggestionsAttributes.getCompanyId());
+				suggestionAttributes.getCompanyId());
 
 		searchSearchRequest.setFetchSource(true);
 		searchSearchRequest.setIndexNames(synonymSetIndexName.getIndexName());
 		searchSearchRequest.setPreferLocalCluster(false);
-		searchSearchRequest.setQuery(query);
-		searchSearchRequest.setSize(suggestionsAttributes.getSize());
+		searchSearchRequest.setQuery(
+			_getQuery(suggestionAttributes, dataProviderSettings));
+		searchSearchRequest.setSize(suggestionAttributes.getSize());
 		searchSearchRequest.setStart(0);
 
-		SearchSearchResponse searchSearchResponse =
-			_searchEngineAdapter.execute(searchSearchRequest);
-
-		return searchSearchResponse.getSearchHits();
+		return _searchEngineAdapter.execute(searchSearchRequest);
 	}
+
+	private static final String _DEFAULT_FUZZINESS = "1";
+
+	private static final int _DEFAULT_PREFIX_LENGTH = 2;
+
+	private volatile String _key;
 
 	@Reference
 	private Queries _queries;
@@ -173,8 +200,5 @@ public class SynonymsTypeaheadDataProvider implements TypeaheadDataProvider {
 
 	@Reference
 	private SynonymSetIndexNameBuilder _synonymSetIndexNameBuilder;
-
-	private volatile SynonymSuggestionsConfiguration
-		_synonymsTypeaheadDataProviderConfiguration;
 
 }
