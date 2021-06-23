@@ -30,7 +30,6 @@ import ManagementToolbar from './ManagementToolbar';
 
 function ClauseContributorsTab({
 	clauseContributors,
-	enableNewClauseContributors,
 	initialClauseContributorsList,
 	onFrameworkConfigClauseChange,
 }) {
@@ -41,8 +40,7 @@ function ClauseContributorsTab({
 	const [enabled, setEnabled] = useState(
 		getClauseContributorsState(
 			initialClauseContributorsList,
-			clauseContributors,
-			enableNewClauseContributors
+			clauseContributors
 		)
 	);
 	const [keyword, setKeyword] = useState('');

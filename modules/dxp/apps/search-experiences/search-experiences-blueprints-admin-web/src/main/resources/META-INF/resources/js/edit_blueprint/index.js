@@ -567,11 +567,6 @@ function EditBlueprintForm({
 						clauseContributors={
 							formik.values.frameworkConfig['clause_contributors']
 						}
-						enableNewClauseContributors={
-							formik.values.frameworkConfig[
-								'enable_new_clause_contributors'
-							]
-						}
 						initialClauseContributorsList={[
 							{
 								label: 'KeywordQueryContributor',
