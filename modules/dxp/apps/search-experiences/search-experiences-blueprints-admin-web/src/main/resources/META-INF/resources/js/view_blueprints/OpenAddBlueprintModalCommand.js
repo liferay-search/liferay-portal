@@ -50,8 +50,11 @@ function openAddBlueprintModal({
 	formSubmitURL,
 	idFieldName,
 	idFieldValue,
+	keywordQueryContributorsString,
+	modelPrefilterContributorsString,
 	namespace,
 	onFormSuccess,
+	queryPrefilterContributorsString,
 	searchableAssetTypesString,
 	type,
 }) {
@@ -68,8 +71,11 @@ function openAddBlueprintModal({
 			idFieldName={idFieldName}
 			idFieldValue={idFieldValue}
 			initialVisible
+			keywordQueryContributorsString={keywordQueryContributorsString}
+			modelPrefilterContributorsString={modelPrefilterContributorsString}
 			namespace={namespace}
 			onFormSuccess={onFormSuccess}
+			queryPrefilterContributorsString={queryPrefilterContributorsString}
 			searchableAssetTypesString={searchableAssetTypesString}
 			type={type}
 		/>,
