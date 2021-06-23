@@ -222,18 +222,15 @@ function ClauseContributorsTab({
 							<ClayTable.Head>
 								<ClayTable.Row>
 									<ClayTable.Cell headingCell />
-									<ClayTable.Cell expanded headingCell>
-										{Liferay.Language.get('title')}
-									</ClayTable.Cell>
 									<ClayTable.Cell
-										className="classname-cell"
+										className="table-cell-expand-small"
 										expanded
 										headingCell
 									>
-										{Liferay.Language.get('class-name')}
+										{Liferay.Language.get('title')}
 									</ClayTable.Cell>
 									<ClayTable.Cell expanded headingCell>
-										{Liferay.Language.get('description')}
+										{Liferay.Language.get('class-name')}
 									</ClayTable.Cell>
 									<ClayTable.Cell
 										className="table-cell-expand-smallest"
@@ -301,16 +298,8 @@ function ClauseContributorsTab({
 														.join(' ')}
 												</ClayTable.Cell>
 
-												<ClayTable.Cell
-													className="classname-cell"
-													expanded
-												>
-													{item}
-												</ClayTable.Cell>
-
 												<ClayTable.Cell expanded>
-													This contributor is used to
-													xyz.
+													{item}
 												</ClayTable.Cell>
 
 												<ClayTable.Cell className="table-cell-expand-smallest">
