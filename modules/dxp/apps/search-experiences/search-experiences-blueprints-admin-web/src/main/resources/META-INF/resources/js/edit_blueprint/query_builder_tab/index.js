@@ -11,50 +11,18 @@
 
 import ClayAlert from '@clayui/alert';
 import ClayButton from '@clayui/button';
-import {ClayRadio} from '@clayui/form';
 import ClayIcon from '@clayui/icon';
 import ClayLayout from '@clayui/layout';
-import ClayList from '@clayui/list';
 import ClayPanel from '@clayui/panel';
-import ClaySticker from '@clayui/sticker';
 import {ClayTooltipProvider} from '@clayui/tooltip';
 import {PropTypes} from 'prop-types';
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 
 import JSONElement from '../../shared/JSONElement';
-import ThemeContext from '../../shared/ThemeContext';
 import Element from '../../shared/element/index';
 import {ELEMENT_PREFIX} from '../../utils/constants';
 import {getElementOutput} from '../../utils/utils';
 import SelectAssetTypes from './SelectAssetTypes';
-
-const FrameworkListItem = ({
-	checked,
-	description,
-	imagePath,
-	onChange,
-	title,
-}) => {
-	return (
-		<ClayList.Item flex>
-			<ClayList.ItemField>
-				<ClayRadio checked={checked} onChange={onChange} />
-			</ClayList.ItemField>
-
-			<ClayList.ItemField>
-				<ClaySticker className="framework-icon" size="xl">
-					<ClaySticker.Image alt="placeholder" src={imagePath} />
-				</ClaySticker>
-			</ClayList.ItemField>
-
-			<ClayList.ItemField className="framework-text" expand>
-				<ClayList.ItemTitle>{title}</ClayList.ItemTitle>
-
-				<ClayList.ItemText>{description}</ClayList.ItemText>
-			</ClayList.ItemField>
-		</ClayList.Item>
-	);
-};
 
 function QueryBuilderTab({
 	entityJSON,
@@ -73,19 +41,16 @@ function QueryBuilderTab({
 	setFieldValue,
 	touched = [],
 }) {
-	const {contextPath} = useContext(ThemeContext);
 	const [collapseAll, setCollapseAll] = useState(false);
 
-	const _hasMustClause =
-		!!frameworkConfig.apply_indexer_clauses ||
-		selectedElements.some((element) => {
-			const elementOutput = getElementOutput(element);
+	const _hasMustClause = selectedElements.some((element) => {
+		const elementOutput = getElementOutput(element);
 
-			return (
-				elementOutput.clauses?.[0]?.occur === 'must' &&
-				elementOutput.enabled
-			);
-		});
+		return (
+			elementOutput.clauses?.[0]?.occur === 'must' &&
+			elementOutput.enabled
+		);
+	});
 
 	const _renderSelectedElements = () => {
 		return (
@@ -246,61 +211,6 @@ function QueryBuilderTab({
 										frameworkConfig.searchable_asset_types
 									}
 								/>
-							</ClayPanel.Body>
-						</ClayPanel>
-					</ClayPanel.Group>
-
-					<ClayPanel.Group flush>
-						<ClayPanel
-							collapsable
-							displayTitle={Liferay.Language.get('framework')}
-							displayType="unstyled"
-							showCollapseIcon
-						>
-							<ClayPanel.Body>
-								<div className="sheet-text">
-									{Liferay.Language.get(
-										'please-note-that-blueprints-selected-framework-determines-whether-the-asset-types-default-clause-is-used'
-									)}
-								</div>
-
-								<ClayList>
-									<FrameworkListItem
-										checked={
-											frameworkConfig.apply_indexer_clauses
-										}
-										description={Liferay.Language.get(
-											'compose-elements-on-top-of-liferay-default-search-clauses'
-										)}
-										imagePath={`${contextPath}/images/liferay-default-clauses.svg`}
-										onChange={() =>
-											onFrameworkConfigChange({
-												apply_indexer_clauses: true,
-											})
-										}
-										title={Liferay.Language.get(
-											'liferay-default-clauses'
-										)}
-									/>
-
-									<FrameworkListItem
-										checked={
-											!frameworkConfig.apply_indexer_clauses
-										}
-										description={Liferay.Language.get(
-											'compose-elements-from-the-ground-up'
-										)}
-										imagePath={`${contextPath}/images/custom-clauses.svg`}
-										onChange={() =>
-											onFrameworkConfigChange({
-												apply_indexer_clauses: false,
-											})
-										}
-										title={Liferay.Language.get(
-											'custom-clauses'
-										)}
-									/>
-								</ClayList>
 							</ClayPanel.Body>
 						</ClayPanel>
 					</ClayPanel.Group>

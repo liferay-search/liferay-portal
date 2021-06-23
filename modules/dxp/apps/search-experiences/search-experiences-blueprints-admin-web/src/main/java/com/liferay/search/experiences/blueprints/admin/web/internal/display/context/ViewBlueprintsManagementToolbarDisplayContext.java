@@ -25,6 +25,7 @@ import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.search.experiences.blueprints.admin.web.internal.constants.BlueprintsAdminMVCCommandNames;
 import com.liferay.search.experiences.blueprints.admin.web.internal.security.permission.resource.BlueprintsAdminPermission;
 import com.liferay.search.experiences.blueprints.admin.web.internal.util.BlueprintsAdminAssetUtil;
+import com.liferay.search.experiences.blueprints.admin.web.internal.util.BlueprintsAdminComponentUtil;
 import com.liferay.search.experiences.blueprints.constants.BlueprintsActionKeys;
 import com.liferay.search.experiences.blueprints.model.Blueprint;
 
@@ -76,7 +77,29 @@ public class ViewBlueprintsManagementToolbarDisplayContext
 						Constants.ADD));
 
 				dropdownItem.putData(
-					"searchableAssetTypesString", _getSearchableAssetTypes());
+					"searchableAssetTypesString",
+					_convertListToString(
+						Arrays.asList(
+							BlueprintsAdminAssetUtil.getSearchableAssetNames(
+								themeDisplay.getCompanyId()))));
+
+				dropdownItem.putData(
+					"keywordQueryContributorsString",
+					_convertListToString(
+						BlueprintsAdminComponentUtil.
+							getKeywordQueryContributors()));
+
+				dropdownItem.putData(
+					"modelPrefilterContributorsString",
+					_convertListToString(
+						BlueprintsAdminComponentUtil.
+							getModelPrefilterContributors()));
+
+				dropdownItem.putData(
+					"queryPrefilterContributorsString",
+					_convertListToString(
+						BlueprintsAdminComponentUtil.
+							getQueryPrefilterContributors()));
 
 				dropdownItem.setLabel(
 					LanguageUtil.get(httpServletRequest, "add-blueprint"));
@@ -84,12 +107,8 @@ public class ViewBlueprintsManagementToolbarDisplayContext
 		).build();
 	}
 
-	private String _getSearchableAssetTypes() {
-		List<String> list = Arrays.asList(
-			BlueprintsAdminAssetUtil.getSearchableAssetNames(
-				themeDisplay.getCompanyId()));
-
-		Stream<String> stream = list.stream();
+	private String _convertListToString(List<String> arrayListItems) {
+		Stream<String> stream = arrayListItems.stream();
 
 		return stream.collect(Collectors.joining("\",\"", "[\"", "\"]"));
 	}

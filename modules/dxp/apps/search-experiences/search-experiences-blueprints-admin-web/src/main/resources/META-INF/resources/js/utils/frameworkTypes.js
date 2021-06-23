@@ -10,6 +10,6 @@
  */
 
 export const FRAMEWORK_TYPES = {
-	CUSTOM: 'custom',
-	DEFAULT: 'default',
+	ALL: 'all',
+	BASELINE: 'baseline',
 };
