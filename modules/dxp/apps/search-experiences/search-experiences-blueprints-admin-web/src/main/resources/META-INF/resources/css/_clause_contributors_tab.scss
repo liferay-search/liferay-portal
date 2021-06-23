@@ -39,13 +39,8 @@
 
 .clause-content-shift {
 	margin-left: auto;
-	margin-right: calc(50% - #{$clauseMaxWidth} / 2);
 	max-width: $clauseMaxWidth;
 	transition: margin-right ease 0.2s;
-
-	.classname-cell {
-		max-width: 500px;
-	}
 }
 
 @media (min-width: calc(#{$clauseMinWidth} + #{$previewSidebarWidth})) {
@@ -56,13 +51,5 @@
 				#{$previewSidebarWidth} - (50vw - 50%) + 24px
 			)
 		);
-
-		.table-cell-expand {
-			min-width: unset;
-		}
-
-		.classname-cell {
-			max-width: 264px;
-		}
 	}
 }
