@@ -68,45 +68,24 @@ export function sub(langKey, args, join = true) {
 	return join ? keyArray.join('') : keyArray;
 }
 
-export function getElementDescriptionLocalized(jsonObject, locale) {
-	if (jsonObject.description[locale]) {
-		return jsonObject.description[locale];
+/**
+ * Used for getting the element title and description. Titles and descriptions
+ * handle both string `'title'` and a localized object `{'en_US': 'Title'}`.
+ * @param {string|Object} value
+ * @param {string} locale
+ */
+export function getLocalizedText(value, locale) {
+	if (value[locale]) {
+		return value[locale];
 	}
-	else if (
-		typeof jsonObject.description === 'string' ||
-		jsonObject.description instanceof String
-	) {
-		return jsonObject.description;
+	else if (typeof value === 'string' || value instanceof String) {
+		return value;
 	}
-	else if (
-		jsonObject.description[Liferay.ThemeDisplay.getDefaultLanguageId()]
-	) {
-		return jsonObject.description[
-			Liferay.ThemeDisplay.getDefaultLanguageId()
-		];
+	else if (value[Liferay.ThemeDisplay.getDefaultLanguageId()]) {
+		return value[Liferay.ThemeDisplay.getDefaultLanguageId()];
 	}
-	else if (Object.keys(jsonObject.description).length > 0) {
-		return jsonObject.description[Object.keys(jsonObject.description)[0]];
-	}
-
-	return '';
-}
-
-export function getElementTitleLocalized(jsonObject, locale) {
-	if (jsonObject.title[locale]) {
-		return jsonObject.title[locale];
-	}
-	else if (
-		typeof jsonObject.title === 'string' ||
-		jsonObject.title instanceof String
-	) {
-		return jsonObject.title;
-	}
-	else if (jsonObject.title[Liferay.ThemeDisplay.getDefaultLanguageId()]) {
-		return jsonObject.title[Liferay.ThemeDisplay.getDefaultLanguageId()];
-	}
-	else if (Object.keys(jsonObject.title).length > 0) {
-		return jsonObject.title[Object.keys(jsonObject.title)[0]];
+	else if (Object.keys(value).length > 0) {
+		return value[Object.keys(value)[0]];
 	}
 
 	return '';

@@ -21,10 +21,7 @@ import React, {useCallback, useContext, useEffect, useState} from 'react';
 
 import SearchInput from '../shared/SearchInput';
 import ThemeContext from '../shared/ThemeContext';
-import {
-	getElementDescriptionLocalized,
-	getElementTitleLocalized,
-} from './../utils/language';
+import {getLocalizedText} from './../utils/language';
 
 const DEFAULT_CATEGORY = 'other';
 const DEFAULT_EXPANDED_LIST = ['match'];
@@ -72,6 +69,15 @@ const ElementList = ({category, elements, expand, onAddElement}) => {
 				<ClayList>
 					{elements.map(
 						({elementTemplateJSON, uiConfigurationJSON}, index) => {
+							const description = getLocalizedText(
+								elementTemplateJSON.description,
+								locale
+							);
+							const title = getLocalizedText(
+								elementTemplateJSON.title,
+								locale
+							);
+
 							return (
 								<ClayList.Item
 									className="element-item"
@@ -89,26 +95,17 @@ const ElementList = ({category, elements, expand, onAddElement}) => {
 									</ClayList.ItemField>
 
 									<ClayList.ItemField expand>
-										<ClayList.ItemTitle>
-											{getElementTitleLocalized(
-												elementTemplateJSON,
-												locale
-											)}
-										</ClayList.ItemTitle>
+										{title && (
+											<ClayList.ItemTitle>
+												{title}
+											</ClayList.ItemTitle>
+										)}
 
-										{elementTemplateJSON.description &&
-											Object.keys(
-												elementTemplateJSON.description
-											).length > 0 && (
-												<ClayList.ItemText
-													subtext={true}
-												>
-													{getElementDescriptionLocalized(
-														elementTemplateJSON,
-														locale
-													)}
-												</ClayList.ItemText>
-											)}
+										{description && (
+											<ClayList.ItemText subtext={true}>
+												{description}
+											</ClayList.ItemText>
+										)}
 									</ClayList.ItemField>
 
 									<ClayList.ItemField>
