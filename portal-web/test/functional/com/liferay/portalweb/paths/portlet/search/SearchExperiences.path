@@ -42,6 +42,16 @@
 	<td></td>
 </tr>
 <tr>
+	<td>BLUEPRINTS_PREVIEW_ENTRY_FIELD_VALUE</td>
+	<td>//div[contains(@class,'row')]/div[contains(.,'${key_fieldValue}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_PREVIEW_EXPAND_ENTRY_BUTTON</td>
+	<td>//button[contains(@aria-label,'Expand')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>BLUEPRINTS_PREVIEW_RAW_RESPONSE_EXPLANATION</td>
 	<td>xpath=(//span[contains(@class,'cm-string') and text()='"${key_searchExplanation}"'])[1]</td>
 	<td></td>

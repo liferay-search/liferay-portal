@@ -643,6 +643,33 @@ definition {
 			value1 = "red apple, citrus-orange");
 	}
 
+	test ViewCollapsedAndExpandedViaBlueprintsPreview {
+		JSONWebcontent.addWebContent(
+			content = "",
+			groupName = "Guest",
+			title = "Apple");
+
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		SearchExperiences.addBlueprint(name = "My Blueprint");
+
+		Click(locator1 = "Button#PREVIEW");
+
+		SearchExperiences.searchBlueprintsPreview(searchTerm = "Apple");
+
+		AssertTextEquals.assertPartialText(
+			key_fieldValue = "Web Content Article",
+			locator1 = "SearchExperiences#BLUEPRINTS_PREVIEW_ENTRY_FIELD_VALUE",
+			value1 = "Web Content Article");
+
+		Click(locator1 = "SearchExperiences#BLUEPRINTS_PREVIEW_EXPAND_ENTRY_BUTTON");
+
+		AssertTextEquals.assertPartialText(
+			key_fieldValue = "BASIC-WEB-CONTENT",
+			locator1 = "SearchExperiences#BLUEPRINTS_PREVIEW_ENTRY_FIELD_VALUE",
+			value1 = "BASIC-WEB-CONTENT");
+	}
+
 	test ViewRawResponseViaBlueprintsPreview {
 		JSONWebcontent.addWebContent(
 			content = "WC Content",
