@@ -14,14 +14,42 @@
  */
 --%>
 
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
+<%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet" %>
+
 <%@ taglib uri="http://liferay.com/tld/aui" prefix="aui" %><%@
 taglib uri="http://liferay.com/tld/theme" prefix="liferay-theme" %><%@
 taglib uri="http://liferay.com/tld/ui" prefix="liferay-ui" %>
 
+<%@ page import="com.liferay.portal.kernel.util.HtmlUtil" %><%@
+page import="com.liferay.portal.kernel.util.PrefsParamUtil" %><%@
+page import="com.liferay.search.experiences.blueprints.exception.NoSuchBlueprintException" %><%@
+page import="com.liferay.search.experiences.blueprints.model.Blueprint" %><%@
+page import="com.liferay.search.experiences.blueprints.service.BlueprintLocalServiceUtil" %>
+
 <liferay-theme:defineObjects />
+
+<portlet:defineObjects />
+
+<%
+long blueprintId = PrefsParamUtil.getLong(portletPreferences, request, "blueprintId");
+
+Blueprint blueprint = null;
+
+try {
+	blueprint = BlueprintLocalServiceUtil.getBlueprint(blueprintId);
+}
+catch (NoSuchBlueprintException noSuchBlueprintException) {
+}
+%>
 
 <div class="alert alert-info text-center">
 	<aui:a href="javascript:;" onClick="<%= portletDisplay.getURLConfigurationJS() %>">
 		<liferay-ui:message key="blueprints-options-help" />
+
+		<c:if test="<%= blueprint != null %>">
+			<liferay-ui:message arguments="<%= HtmlUtil.escape(blueprint.getTitle(locale)) %>" key="blueprint-x" />
+		</c:if>
 	</aui:a>
 </div>
