@@ -10,8 +10,10 @@
  */
 
 import {
+	getClauseContributorsState,
 	getDefaultValue,
 	getElementOutput,
+	getFrameworkConfigClauseContributors,
 	getUIConfigurationValues,
 	isDefined,
 	isEmpty,
@@ -999,6 +1001,66 @@ describe('utils', () => {
 				enabled: true,
 				icon: 'custom-field',
 				title: 'Custom JSON Element',
+			});
+		});
+	});
+
+	describe('getClauseContributorsState', () => {
+		it('collects the enabled/disabled states of all clauses', () => {
+			expect(
+				getClauseContributorsState(
+					[
+						{
+							label: 'KeywordQueryContributor',
+							value: [
+								'com.liferay.account.internal.search.spi.model.query.contributor.AccountEntryKeywordQueryContributor',
+								'com.liferay.account.internal.search.spi.model.query.contributor.AccountGroupKeywordQueryContributor',
+								'com.liferay.address.internal.search.spi.model.query.contributor.AddressKeywordQueryContributor',
+							],
+						},
+					],
+					{
+						KeywordQueryContributor: {
+							'com.liferay.account.internal.search.spi.model.query.contributor.AccountEntryKeywordQueryContributor': true,
+							'com.liferay.account.internal.search.spi.model.query.contributor.AccountGroupKeywordQueryContributor': false,
+						},
+					},
+					true
+				)
+			).toEqual({
+				'com.liferay.account.internal.search.spi.model.query.contributor.AccountEntryKeywordQueryContributor': true,
+				'com.liferay.account.internal.search.spi.model.query.contributor.AccountGroupKeywordQueryContributor': false,
+				'com.liferay.address.internal.search.spi.model.query.contributor.AddressKeywordQueryContributor': true,
+			});
+		});
+	});
+
+	describe('getClauseContributorsState', () => {
+		it('collects the enabled/disabled states of all clauses', () => {
+			expect(
+				getFrameworkConfigClauseContributors(
+					[
+						{
+							label: 'KeywordQueryContributor',
+							value: [
+								'com.liferay.account.internal.search.spi.model.query.contributor.AccountEntryKeywordQueryContributor',
+								'com.liferay.account.internal.search.spi.model.query.contributor.AccountGroupKeywordQueryContributor',
+								'com.liferay.address.internal.search.spi.model.query.contributor.AddressKeywordQueryContributor',
+							],
+						},
+					],
+					{
+						'com.liferay.account.internal.search.spi.model.query.contributor.AccountEntryKeywordQueryContributor': true,
+						'com.liferay.account.internal.search.spi.model.query.contributor.AccountGroupKeywordQueryContributor': false,
+						'com.liferay.address.internal.search.spi.model.query.contributor.AddressKeywordQueryContributor': true,
+					}
+				)
+			).toEqual({
+				KeywordQueryContributor: {
+					'com.liferay.account.internal.search.spi.model.query.contributor.AccountEntryKeywordQueryContributor': true,
+					'com.liferay.account.internal.search.spi.model.query.contributor.AccountGroupKeywordQueryContributor': false,
+					'com.liferay.address.internal.search.spi.model.query.contributor.AddressKeywordQueryContributor': true,
+				},
 			});
 		});
 	});

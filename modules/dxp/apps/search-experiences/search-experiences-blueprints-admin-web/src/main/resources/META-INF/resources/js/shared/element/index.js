@@ -21,13 +21,10 @@ import {PropTypes} from 'prop-types';
 import React, {useContext, useEffect, useState} from 'react';
 
 import {INPUT_TYPES} from '../../utils/inputTypes';
-import {getElementOutput, isDefined, isEmpty} from '../../utils/utils';
+import {getElementOutput, isDefined} from '../../utils/utils';
 import {PreviewModalWithCopyDownload} from '../PreviewModal';
 import ThemeContext from '../ThemeContext';
-import {
-	getElementDescriptionLocalized,
-	getElementTitleLocalized,
-} from './../../utils/language';
+import {getLocalizedText} from './../../utils/language';
 import DateInput from './DateInput';
 import FieldInput from './FieldInput';
 import FieldListInput from './FieldListInput';
@@ -59,8 +56,15 @@ function Element({
 	uiConfigurationValues,
 }) {
 	const {locale} = useContext(ThemeContext);
+
 	const [collapse, setCollapse] = useState(false);
 	const [active, setActive] = useState(false);
+
+	const description = getLocalizedText(
+		elementTemplateJSON.description,
+		locale
+	);
+	const title = getLocalizedText(elementTemplateJSON.title, locale);
 
 	useEffect(() => {
 		setCollapse(collapseAll);
@@ -84,10 +88,6 @@ function Element({
 			!elementTemplateJSON.enabled
 		);
 	};
-
-	const _hasDescription =
-		!isEmpty(elementTemplateJSON.description) ||
-		!isEmpty(elementTemplateJSON.description[locale]);
 
 	const _hasConfigurationValues =
 		Array.isArray(uiConfigurationJSON?.fieldSets) &&
@@ -269,21 +269,13 @@ function Element({
 					</ClayList.ItemField>
 
 					<ClayList.ItemField expand>
-						{elementTemplateJSON.title && (
-							<ClayList.ItemTitle>
-								{getElementTitleLocalized(
-									elementTemplateJSON,
-									locale
-								)}
-							</ClayList.ItemTitle>
+						{title && (
+							<ClayList.ItemTitle>{title}</ClayList.ItemTitle>
 						)}
 
-						{_hasDescription && (
+						{description && (
 							<ClayList.ItemText subtext={true}>
-								{getElementDescriptionLocalized(
-									elementTemplateJSON,
-									locale
-								)}
+								{description}
 							</ClayList.ItemText>
 						)}
 					</ClayList.ItemField>

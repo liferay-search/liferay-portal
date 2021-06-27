@@ -34,14 +34,16 @@ import {
 } from '../utils/validation';
 import AddElementSidebar from './AddElementSidebar';
 import PreviewSidebar from './PreviewSidebar';
-import QueryBuilder from './tabs/QueryBuilder';
-import Settings from './tabs/Settings';
+import ClauseContributorsTab from './clause_contributors_tab/index';
+import QueryBuilderTab from './query_builder_tab/index';
+import SettingsTab from './settings_tab/index';
 
 // Tabs in display order
 
 /* eslint-disable sort-keys */
 const TABS = {
 	'query-builder': Liferay.Language.get('query-builder'),
+	'clause-contributors': Liferay.Language.get('clause-contributors'),
 	settings: Liferay.Language.get('settings'),
 };
 /* eslint-enable sort-keys */
@@ -54,7 +56,10 @@ function EditBlueprintForm({
 	initialSelectedElementsString = '{}',
 	indexFields,
 	initialTitle = {},
+	keywordQueryContributors,
+	modelPrefilterContributors,
 	queryElements = [],
+	queryPrefilterContributors,
 	redirectURL = '',
 	searchableAssetTypes,
 	searchResultsURL,
@@ -543,7 +548,7 @@ function EditBlueprintForm({
 		switch (tab) {
 			case 'settings':
 				return (
-					<Settings
+					<SettingsTab
 						advancedConfig={formik.values.advancedConfig}
 						aggregationConfig={formik.values.aggregationConfig}
 						errors={formik.errors}
@@ -554,6 +559,34 @@ function EditBlueprintForm({
 						setFieldValue={formik.setFieldValue}
 						sortConfig={formik.values.sortConfig}
 						touched={formik.touched}
+					/>
+				);
+			case 'clause-contributors':
+				return (
+					<ClauseContributorsTab
+						clauseContributors={
+							formik.values.frameworkConfig['clause_contributors']
+						}
+						initialClauseContributorsList={[
+							{
+								label: 'KeywordQueryContributor',
+								value: keywordQueryContributors.sort(),
+							},
+							{
+								label: 'ModelPrefilterContributor',
+								value: modelPrefilterContributors.sort(),
+							},
+							{
+								label: 'QueryPrefilterContributor',
+								value: queryPrefilterContributors.sort(),
+							},
+						]}
+						onFrameworkConfigClauseChange={(value) =>
+							formik.setFieldValue('frameworkConfig', {
+								...formik.values.frameworkConfig,
+								clause_contributors: value,
+							})
+						}
 					/>
 				);
 			default:
@@ -576,7 +609,7 @@ function EditBlueprintForm({
 								'open-sidebar': showSidebar,
 							})}
 						>
-							<QueryBuilder
+							<QueryBuilderTab
 								entityJSON={entityJSON}
 								errors={formik.errors.selectedQueryElements}
 								frameworkConfig={formik.values.frameworkConfig}
@@ -662,6 +695,9 @@ function EditBlueprintForm({
 			</PageToolbar>
 
 			<PreviewSidebar
+				className={getCN({
+					'shift-down': tab === 'clause-contributors',
+				})}
 				loading={previewInfo.loading}
 				onFetchResults={_handleFetchPreviewSearch}
 				onFocusElement={_handleFocusElement}

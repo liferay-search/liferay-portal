@@ -1,0 +1,55 @@
+.clause-contributors-tab {
+	.clause-contributors-navbars {
+		margin-top: $pageToolbarHeight;
+		position: fixed;
+		width: 100%;
+		z-index: 970;
+
+		.management-bar {
+			border-bottom: 1px solid $mainLighten74;
+
+			.search {
+				padding-left: 12px;
+				padding-right: 16px;
+				width: 100%;
+			}
+		}
+
+		.subnav-tbar {
+			.component-label {
+				margin-right: 8px;
+			}
+		}
+	}
+
+	.clause-contributors-table {
+		padding-top: calc(#{$pageToolbarHeight} + #{$managementBarHeight});
+
+		&.subnav-open {
+			padding-top: calc(
+				#{$pageToolbarHeight} + #{$managementBarHeight} + #{$subNavBarHeight}
+			);
+		}
+
+		.table-divider td {
+			text-transform: none;
+		}
+	}
+}
+
+.clause-content-shift {
+	margin-left: auto;
+	max-width: $clauseMaxWidth;
+	transition: margin-right ease 0.2s;
+}
+
+@media (min-width: calc(#{$clauseMinWidth} + #{$previewSidebarWidth})) {
+	.open-preview .clause-content-shift {
+		margin-right: calc(
+			max(
+				50% - (#{$clauseMaxWidth} / 2),
+				#{$previewSidebarWidth} - (50vw - 50%) + 24px
+			)
+		);
+	}
+}

@@ -20,10 +20,7 @@ import {PropTypes} from 'prop-types';
 import React, {useContext, useEffect, useState} from 'react';
 
 import JSONInput from '../shared/element/JSONInput';
-import {
-	getElementDescriptionLocalized,
-	getElementTitleLocalized,
-} from './../utils/language';
+import {getLocalizedText} from './../utils/language';
 import ThemeContext from './ThemeContext';
 
 function JSONElement({
@@ -44,6 +41,12 @@ function JSONElement({
 
 	const [active, setActive] = useState(false);
 	const [collapse, setCollapse] = useState(collapseAll);
+
+	const description = getLocalizedText(
+		elementTemplateJSON.description,
+		locale
+	);
+	const title = getLocalizedText(elementTemplateJSON.title, locale);
 
 	useEffect(() => {
 		setCollapse(collapseAll);
@@ -69,21 +72,13 @@ function JSONElement({
 					</ClayList.ItemField>
 
 					<ClayList.ItemField expand>
-						{elementTemplateJSON.title && (
-							<ClayList.ItemTitle>
-								{getElementTitleLocalized(
-									elementTemplateJSON,
-									locale
-								)}
-							</ClayList.ItemTitle>
+						{title && (
+							<ClayList.ItemTitle>{title}</ClayList.ItemTitle>
 						)}
 
-						{elementTemplateJSON.description && (
+						{description && (
 							<ClayList.ItemText subtext={true}>
-								{getElementDescriptionLocalized(
-									elementTemplateJSON,
-									locale
-								)}
+								{description}
 							</ClayList.ItemText>
 						)}
 					</ClayList.ItemField>

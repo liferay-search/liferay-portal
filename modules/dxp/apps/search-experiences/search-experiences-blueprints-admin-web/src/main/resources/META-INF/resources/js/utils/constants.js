@@ -9,6 +9,13 @@
  * distribution rights of the Software.
  */
 
+export const ACTIVE = Liferay.Language.get('active');
+export const ALL = Liferay.Language.get('all');
+export const INACTIVE = Liferay.Language.get('inactive');
+
+export const ASCENDING = Liferay.Language.get('ascending');
+export const DESCENDING = Liferay.Language.get('descending');
+
 export const CONFIG_PREFIX = 'configuration';
 
 export const ELEMENT_PREFIX = {

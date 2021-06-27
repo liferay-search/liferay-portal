@@ -32,10 +32,15 @@ $secondaryL1: #a7a9bc;
 $lightBackground: #f1f2f5;
 $white: #fff;
 
-$contentMaxWidth: 700px;
-$contentMinWidth: 500px;
+$builderMaxWidth: 700px;
+$builderMinWidth: 500px;
+$clauseMaxWidth: 1224px;
+$clauseMinWidth: 500px;
+
 $controlMenuToolbarHeight: 56px;
+$managementBarHeight: 64px;
 $navigationBarHeight: 56px;
-$pageToolbarHeight: 105px;
+$pageToolbarHeight: 104px; //navigationBarHeight + tabs navigation bar height
 $previewSidebarWidth: 600px;
 $sidebarWidth: 380px;
+$subNavBarHeight: 48px;
