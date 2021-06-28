@@ -16,7 +16,7 @@ import getCN from 'classnames';
 import {useFormik} from 'formik';
 import {fetch, navigate} from 'frontend-js-web';
 import {PropTypes} from 'prop-types';
-import React, {useContext, useRef, useState} from 'react';
+import React, {useCallback, useContext, useRef, useState} from 'react';
 
 import ErrorBoundary from '../shared/ErrorBoundary';
 import PageToolbar from '../shared/PageToolbar';
@@ -530,6 +530,15 @@ function EditBlueprintForm({
 		}
 	};
 
+	const _handleFrameworkConfigChange = useCallback(
+		(value) =>
+			formik.setFieldValue('frameworkConfig', {
+				...formik.values.frameworkConfig,
+				...value,
+			}),
+		[formik]
+	);
+
 	const _handleSubmit = (event) => {
 		event.preventDefault();
 
@@ -581,12 +590,7 @@ function EditBlueprintForm({
 								value: queryPrefilterContributors.sort(),
 							},
 						]}
-						onFrameworkConfigClauseChange={(value) =>
-							formik.setFieldValue('frameworkConfig', {
-								...formik.values.frameworkConfig,
-								clause_contributors: value,
-							})
-						}
+						onFrameworkConfigChange={_handleFrameworkConfigChange}
 					/>
 				);
 			default:
@@ -620,11 +624,8 @@ function EditBlueprintForm({
 								onBlur={formik.handleBlur}
 								onChange={formik.handleChange}
 								onDeleteElement={_handleDeleteElement}
-								onFrameworkConfigChange={(value) =>
-									formik.setFieldValue('frameworkConfig', {
-										...formik.values.frameworkConfig,
-										...value,
-									})
+								onFrameworkConfigChange={
+									_handleFrameworkConfigChange
 								}
 								onToggleSidebar={() => {
 									setShowPreview(false);
