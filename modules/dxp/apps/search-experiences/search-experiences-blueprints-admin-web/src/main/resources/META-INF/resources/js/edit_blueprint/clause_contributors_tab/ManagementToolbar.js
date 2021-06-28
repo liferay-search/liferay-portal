@@ -46,7 +46,7 @@ function ManagementToolbar({
 	const [value, setValue] = useState('');
 
 	return (
-		<div className="clause-contributors-navbars">
+		<div className="clause-contributors-navbar">
 			<ClayManagementToolbar
 				className={getCN('clause-contributors-management-bar', {
 					'management-bar-primary': selected.length > 0,
