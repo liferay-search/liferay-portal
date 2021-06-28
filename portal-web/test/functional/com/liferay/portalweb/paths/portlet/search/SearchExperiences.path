@@ -60,6 +60,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>BLUEPRINTS_SETTINGS_CONFIGURATION_EDITOR</td>
+	<td>//label[text()='${key_configurationField}']/following-sibling::div//div[contains(@class,'CodeMirror cm-s-default')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>BLUEPRINTS_QUERY_BUILDER_ASSET_TYPE_DROPDOWN</td>
 	<td>//div/select[contains(@aria-label, "Asset Type")]</td>
 	<td></td>
