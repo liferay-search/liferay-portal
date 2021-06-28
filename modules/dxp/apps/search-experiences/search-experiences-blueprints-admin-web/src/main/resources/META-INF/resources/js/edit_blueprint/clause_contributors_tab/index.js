@@ -31,7 +31,7 @@ import ManagementToolbar from './ManagementToolbar';
 function ClauseContributorsTab({
 	clauseContributors,
 	initialClauseContributorsList,
-	onFrameworkConfigClauseChange,
+	onFrameworkConfigChange,
 }) {
 	const [category, setCategory] = useState(ALL);
 	const [contributors, setContributors] = useState(
@@ -102,12 +102,13 @@ function ClauseContributorsTab({
 	];
 
 	const _handleApplyBaseline = () => {
-		setEnabled(
-			getClauseContributorsState(
-				initialClauseContributorsList,
-				DEFAULT_BASELINE_CLAUSE_CONTRIBUTORS
-			)
+		const newEnabled = getClauseContributorsState(
+			initialClauseContributorsList,
+			DEFAULT_BASELINE_CLAUSE_CONTRIBUTORS
 		);
+
+		updateFrameworkConfig(newEnabled);
+		setEnabled(newEnabled);
 	};
 
 	const _handleUpdateEnabled = (value) => {
@@ -117,11 +118,12 @@ function ClauseContributorsTab({
 			newEnabled[item] = value;
 		});
 
+		updateFrameworkConfig({...enabled, ...newEnabled});
 		setEnabled({...enabled, ...newEnabled});
 		setSelected([]);
 	};
 
-	const _isSearchVisible = (item) => {
+	const _isSearchVisible = (item, keyword) => {
 		if (keyword) {
 			return keyword
 				.split(' ')
@@ -134,7 +136,7 @@ function ClauseContributorsTab({
 		}
 	};
 
-	const _isStatusVisible = (item) => {
+	const _isStatusVisible = (item, status, enabled) => {
 		if (status === ALL) {
 			return true;
 		}
@@ -148,6 +150,15 @@ function ClauseContributorsTab({
 		}
 	};
 
+	const updateFrameworkConfig = (enabled) => {
+		onFrameworkConfigChange({
+			clause_contributors: getFrameworkConfigClauseContributors(
+				initialClauseContributorsList,
+				enabled
+			),
+		});
+	};
+
 	useEffect(() => {
 		setContributors(
 			initialClauseContributorsList
@@ -157,7 +168,8 @@ function ClauseContributorsTab({
 					value: value
 						.filter(
 							(item) =>
-								_isStatusVisible(item) && _isSearchVisible(item)
+								_isStatusVisible(item, status, enabled) &&
+								_isSearchVisible(item, keyword)
 						)
 						.sort((a, b) =>
 							sortDirection === DESCENDING
@@ -166,16 +178,14 @@ function ClauseContributorsTab({
 						),
 				}))
 		);
-	}, [enabled, category, keyword, sortDirection, status]); //eslint-disable-line
-
-	useEffect(() => {
-		onFrameworkConfigClauseChange(
-			getFrameworkConfigClauseContributors(
-				initialClauseContributorsList,
-				enabled
-			)
-		);
-	}, [enabled]); //eslint-disable-line
+	}, [
+		enabled,
+		category,
+		keyword,
+		sortDirection,
+		status,
+		initialClauseContributorsList,
+	]);
 
 	return (
 		<div className="clause-contributors-tab">
@@ -311,14 +321,21 @@ function ClauseContributorsTab({
 																		'off'
 																  )
 														}
-														onToggle={() =>
-															setEnabled({
+														onToggle={() => {
+															const newEnabled = {
 																...enabled,
 																[item]: !enabled[
 																	item
 																],
-															})
-														}
+															};
+
+															updateFrameworkConfig(
+																newEnabled
+															);
+															setEnabled(
+																newEnabled
+															);
+														}}
 														toggled={enabled[item]}
 													/>
 												</ClayTable.Cell>
