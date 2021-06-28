@@ -512,6 +512,48 @@ definition {
 		AssertTextPresent(value1 = "cardinality-test");
 	}
 
+	test ValidateMalformedElementsJSON {
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		Navigator.gotoNavItem(navItem = "Elements");
+
+		Search.searchCP(searchTerm = "Boost");
+
+		LexiconEntry.gotoEntry(rowEntry = "Boost Contents on My Sites");
+
+		var uiConfigurationJSON = '''
+{
+	"fieldSets": [
+		{
+			"fields": [
+				{
+					"defaultValue": 20,
+					"name": "boost",
+					"typeOptions": {
+						"min": 0
+					},
+					"label": "Boost",
+					"type": "doesntexistexample"
+				}
+			]
+		}
+	]
+}
+			''';
+
+		Type.typeCodeMirrorEditor(
+			locator1 = "SearchExperiences#CUSTOM_ELEMENT_UI_CONFIGURATION_EDITOR",
+			value1 = "${uiConfigurationJSON}");
+
+		PortletEntry.save();
+
+		AssertTextEquals.assertPartialText(
+			locator1 = "Modal#BODY",
+			value1 = "The element configuration has errors that may cause unexpected results.");
+
+		Alert.viewErrorMessage(errorMessage = "Invalid value");
+	}
+
 	test ViewAssetDetailsViaBlueprintsPreview {
 		JSONBlog.addEntry(
 			entryContent = "banana, red apple, blueberry!",
