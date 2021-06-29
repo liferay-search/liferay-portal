@@ -14,7 +14,6 @@
 
 package com.liferay.search.experiences.predict.keyword.index.web.internal.util;
 
-import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
 import com.liferay.portal.search.engine.adapter.search.CountSearchRequest;
@@ -29,7 +28,6 @@ import com.liferay.search.experiences.content.analysis.constants.ModerationReaso
 import com.liferay.search.experiences.content.analysis.request.ContentAnalysisRequest;
 import com.liferay.search.experiences.content.analysis.response.ModerationAnalysisResponse;
 import com.liferay.search.experiences.content.analysis.service.ContentAnalysisService;
-import com.liferay.search.experiences.predict.keyword.index.configuration.KeywordIndexConfiguration;
 import com.liferay.search.experiences.predict.keyword.index.constants.KeywordEntryStatus;
 import com.liferay.search.experiences.predict.keyword.index.index.KeywordEntry;
 import com.liferay.search.experiences.predict.keyword.index.index.name.KeywordIndexName;
@@ -43,22 +41,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Petteri Karttunen
  */
-@Component(
-	configurationPid = "com.liferay.search.experiences.blueprints.keyword.index.configuration.KeywordIndexConfiguration",
-	immediate = true, service = KeywordIndexHelper.class
-)
+@Component(immediate = true, service = KeywordIndexHelper.class)
 public class KeywordIndexHelperImpl implements KeywordIndexHelper {
 
 	@Override
@@ -174,10 +166,6 @@ public class KeywordIndexHelperImpl implements KeywordIndexHelper {
 	public void indexKeywords(
 		long companyId, long groupId, String languageId, String keywords) {
 
-		if (!_keywordIndexConfiguration.enableKeywordIndexing()) {
-			return;
-		}
-
 		Optional<String> queryStringIdOptional =
 			_keywordIndexReader.fetchIdOptional(
 				_keywordIndexNameBuilder.getKeywordIndexName(companyId),
@@ -230,13 +218,6 @@ public class KeywordIndexHelperImpl implements KeywordIndexHelper {
 			_keywordIndexWriter.addReport(
 				keywordIndexName, keywordEntryId, moderationReason, reporter);
 		}
-	}
-
-	@Activate
-	@Modified
-	protected void activate(Map<String, Object> properties) {
-		_keywordIndexConfiguration = ConfigurableUtil.createConfigurable(
-			KeywordIndexConfiguration.class, properties);
 	}
 
 	private void _deleteCompanyKeywordEntries(
@@ -354,8 +335,6 @@ public class KeywordIndexHelperImpl implements KeywordIndexHelper {
 
 	@Reference
 	private DocumentToKeywordEntryTranslator _documentToKeywordEntryTranslator;
-
-	private volatile KeywordIndexConfiguration _keywordIndexConfiguration;
 
 	@Reference
 	private KeywordIndexNameBuilder _keywordIndexNameBuilder;
