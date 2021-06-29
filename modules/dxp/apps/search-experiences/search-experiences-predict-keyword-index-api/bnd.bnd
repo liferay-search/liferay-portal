@@ -2,7 +2,6 @@ Bundle-Name: Liferay Search Experiences Predict Keyword Index API
 Bundle-SymbolicName: com.liferay.search.experiences.predict.keyword.index.api
 Bundle-Version: 1.0.0
 Export-Package:\
-	com.liferay.search.experiences.predict.keyword.index.configuration,\
 	com.liferay.search.experiences.predict.keyword.index.constants,\
 	com.liferay.search.experiences.predict.keyword.index.index,\
 	com.liferay.search.experiences.predict.keyword.index.index.name,\
