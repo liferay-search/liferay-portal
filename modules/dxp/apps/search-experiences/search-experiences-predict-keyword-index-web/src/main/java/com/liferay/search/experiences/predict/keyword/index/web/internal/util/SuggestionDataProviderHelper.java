@@ -15,6 +15,9 @@
 package com.liferay.search.experiences.predict.keyword.index.web.internal.util;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.language.Language;
+import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.search.document.Document;
 import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
 import com.liferay.portal.search.engine.adapter.search.SearchSearchRequest;
@@ -26,17 +29,20 @@ import com.liferay.portal.search.query.Queries;
 import com.liferay.portal.search.query.Query;
 import com.liferay.portal.search.query.RangeTermQuery;
 import com.liferay.portal.search.query.TermQuery;
+import com.liferay.portal.search.query.TermsQuery;
 import com.liferay.search.experiences.predict.keyword.index.constants.KeywordEntryStatus;
 import com.liferay.search.experiences.predict.keyword.index.index.name.KeywordIndexName;
 import com.liferay.search.experiences.predict.keyword.index.index.name.KeywordIndexNameBuilder;
 import com.liferay.search.experiences.predict.keyword.index.web.internal.index.KeywordEntryFields;
-import com.liferay.search.experiences.predict.suggestions.attributes.SuggestionsAttributes;
-import com.liferay.search.experiences.predict.suggestions.suggestion.Suggestion;
+import com.liferay.search.experiences.predict.suggestions.attributes.SuggestionAttributes;
+import com.liferay.search.experiences.predict.suggestions.constants.SuggestionConstants;
+import com.liferay.search.experiences.predict.suggestions.data.provider.DataProviderSettings;
+import com.liferay.search.experiences.predict.suggestions.suggestion.SuggestionResponse;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -44,17 +50,37 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Petteri Karttunen
  */
-@Component(immediate = true, service = SuggestionsDataProviderHelper.class)
-public class SuggestionsDataProviderHelper {
+@Component(immediate = true, service = SuggestionDataProviderHelper.class)
+public class SuggestionDataProviderHelper {
 
 	public void addGroupFilterClause(
-		BooleanQuery booleanQuery,
-		SuggestionsAttributes suggestionsAttributes) {
+		BooleanQuery booleanQuery, SuggestionAttributes suggestionAttributes,
+		DataProviderSettings dataProviderSettings) {
 
-		booleanQuery.addFilterQueryClauses(
-			_queries.term(
-				KeywordEntryFields.GROUP_ID,
-				suggestionsAttributes.getGroupId()));
+		long[] groupIds;
+
+		if (dataProviderSettings == null) {
+			groupIds = new long[0];
+		}
+		else {
+			groupIds = GetterUtil.getLongValues(
+				dataProviderSettings.getAttribute(
+					SuggestionConstants.SOURCE_GROUP_IDS));
+		}
+
+		if (groupIds.length != 0) {
+			TermsQuery termsQuery = _queries.terms(KeywordEntryFields.GROUP_ID);
+
+			termsQuery.addValues(SetUtil.fromArray(groupIds));
+
+			booleanQuery.addFilterQueryClauses(termsQuery);
+		}
+		else {
+			booleanQuery.addFilterQueryClauses(
+				_queries.term(
+					KeywordEntryFields.GROUP_ID,
+					suggestionAttributes.getGroupId()));
+		}
 	}
 
 	public void addHitCountFilterClause(
@@ -70,12 +96,11 @@ public class SuggestionsDataProviderHelper {
 	}
 
 	public void addLanguageBoosterClause(
-		BooleanQuery booleanQuery,
-		SuggestionsAttributes suggestionsAttributes) {
+		BooleanQuery booleanQuery, SuggestionAttributes suggestionAttributes) {
 
 		TermQuery termQuery = _queries.term(
 			KeywordEntryFields.LANGUAGE_ID,
-			suggestionsAttributes.getLanguageId());
+			_language.getLanguageId(suggestionAttributes.getLocale()));
 
 		termQuery.setBoost(2.0F);
 
@@ -83,7 +108,9 @@ public class SuggestionsDataProviderHelper {
 	}
 
 	public void addLocalizedFields(
-		Map<String, Float> fieldsBoosts, String languageId) {
+		Map<String, Float> fieldsBoosts, Locale locale) {
+
+		String languageId = _language.getLanguageId(locale);
 
 		if (KeywordIndexUtil.isAnalyzedLanguage(languageId)) {
 			StringBundler sb = new StringBundler(3);
@@ -97,8 +124,7 @@ public class SuggestionsDataProviderHelper {
 	}
 
 	public void addStatusFilterClause(
-		BooleanQuery booleanQuery,
-		SuggestionsAttributes suggestionsAttributes) {
+		BooleanQuery booleanQuery, SuggestionAttributes suggestionAttributes) {
 
 		BooleanQuery statusQuery = _queries.booleanQuery();
 
@@ -113,48 +139,59 @@ public class SuggestionsDataProviderHelper {
 		booleanQuery.addFilterQueryClauses(statusQuery);
 	}
 
-	public List<Suggestion> getSuggestions(List<SearchHit> searchHits) {
-		List<Suggestion> suggestions = new ArrayList<>();
+	public List<SuggestionResponse<String>> getSuggestions(
+		SearchSearchResponse searchSearchResponse) {
 
-		Stream<SearchHit> stream = searchHits.stream();
+		SearchHits searchHits = searchSearchResponse.getSearchHits();
 
-		stream.forEach(
-			searchHit -> {
-				Document document = searchHit.getDocument();
+		List<SuggestionResponse<String>> suggestions = new ArrayList<>();
 
-				suggestions.add(
-					new Suggestion(
-						document.getString(KeywordEntryFields.CONTENT),
-						searchHit.getScore(), "keyword_index"));
-			});
+		if (searchHits.getTotalHits() == 0) {
+			return suggestions;
+		}
+
+		List<SearchHit> hits = searchHits.getSearchHits();
+
+		hits.forEach(searchHit -> _addSuggestion(suggestions, searchHit));
 
 		return suggestions;
 	}
 
-	public SearchHits search(
-		Query query, SuggestionsAttributes suggestionsAttributes) {
+	public SearchSearchResponse search(
+		SuggestionAttributes suggestionAttributes, Query query) {
 
 		SearchSearchRequest searchSearchRequest = new SearchSearchRequest();
 
 		KeywordIndexName keywordIndexName =
 			_keywordIndexNameBuilder.getKeywordIndexName(
-				suggestionsAttributes.getCompanyId());
+				suggestionAttributes.getCompanyId());
 
 		searchSearchRequest.setFetchSource(true);
 		searchSearchRequest.setIndexNames(keywordIndexName.getIndexName());
 		searchSearchRequest.setPreferLocalCluster(false);
 		searchSearchRequest.setQuery(query);
-		searchSearchRequest.setSize(suggestionsAttributes.getSize());
+		searchSearchRequest.setSize(suggestionAttributes.getSize());
 		searchSearchRequest.setStart(0);
 
-		SearchSearchResponse searchSearchResponse =
-			_searchEngineAdapter.execute(searchSearchRequest);
+		return _searchEngineAdapter.execute(searchSearchRequest);
+	}
 
-		return searchSearchResponse.getSearchHits();
+	private void _addSuggestion(
+		List<SuggestionResponse<String>> suggestions, SearchHit searchHit) {
+
+		Document document = searchHit.getDocument();
+
+		suggestions.add(
+			new SuggestionResponse<String>(
+				document.getString(KeywordEntryFields.CONTENT),
+				searchHit.getScore()));
 	}
 
 	@Reference
 	private KeywordIndexNameBuilder _keywordIndexNameBuilder;
+
+	@Reference
+	private Language _language;
 
 	@Reference
 	private Queries _queries;
