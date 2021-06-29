@@ -12,25 +12,29 @@
  *
  */
 
-package com.liferay.search.experiences.predict.keyword.index.web.internal.suggestions.typeahead.provider;
+package com.liferay.search.experiences.predict.keyword.index.web.internal.typeahead.provider;
 
-import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
+import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
-import com.liferay.portal.search.hits.SearchHits;
 import com.liferay.portal.search.query.BooleanQuery;
 import com.liferay.portal.search.query.MultiMatchQuery;
+import com.liferay.portal.search.query.Operator;
 import com.liferay.portal.search.query.Queries;
 import com.liferay.portal.search.query.Query;
-import com.liferay.search.experiences.predict.keyword.index.configuration.KeywordIndexConfiguration;
 import com.liferay.search.experiences.predict.keyword.index.index.name.KeywordIndexNameBuilder;
 import com.liferay.search.experiences.predict.keyword.index.web.internal.index.KeywordEntryFields;
-import com.liferay.search.experiences.predict.keyword.index.web.internal.util.SuggestionsDataProviderHelper;
-import com.liferay.search.experiences.predict.suggestions.attributes.SuggestionsAttributes;
+import com.liferay.search.experiences.predict.keyword.index.web.internal.util.SuggestionDataProviderHelper;
+import com.liferay.search.experiences.predict.suggestions.attributes.SuggestionAttributes;
+import com.liferay.search.experiences.predict.suggestions.constants.SuggestionConstants;
+import com.liferay.search.experiences.predict.suggestions.data.provider.DataProviderSettings;
 import com.liferay.search.experiences.predict.suggestions.spi.provider.TypeaheadDataProvider;
-import com.liferay.search.experiences.predict.suggestions.suggestion.Suggestion;
+import com.liferay.search.experiences.predict.suggestions.suggestion.SuggestionResponse;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -43,61 +47,55 @@ import org.osgi.service.component.annotations.Reference;
  * @author Petteri Karttunen
  */
 @Component(
-	configurationPid = "com.liferay.search.experiences.blueprints.keyword.index.configuration.KeywordIndexConfiguration",
-	immediate = true, property = "name=keyword_index",
+	immediate = true, property = "data.provider.key=keyword_index",
 	service = TypeaheadDataProvider.class
 )
 public class KeywordIndexTypeaheadDataProvider
 	implements TypeaheadDataProvider {
 
 	@Override
-	public List<Suggestion> getSuggestions(
-		SuggestionsAttributes suggestionsAttributes) {
+	public List<SuggestionResponse<String>> getSuggestions(
+		SuggestionAttributes suggestionAttributes) {
 
-		if (!_keywordIndexConfiguration.enableTypeaheadDataProvider()) {
-			return new ArrayList<>();
-		}
-
-		SearchHits searchHits = _suggestionsProviderHelper.search(
-			_getQuery(suggestionsAttributes), suggestionsAttributes);
-
-		if (searchHits.getTotalHits() == 0) {
-			return new ArrayList<>();
-		}
+		DataProviderSettings dataProviderSettings = _getDataProviderSettings(
+			suggestionAttributes);
 
 		return _suggestionsProviderHelper.getSuggestions(
-			searchHits.getSearchHits());
-	}
-
-	@Override
-	public int getWeight() {
-		return _keywordIndexConfiguration.typeaheadDataProviderWeight();
+			_suggestionsProviderHelper.search(
+				suggestionAttributes,
+				_getQuery(suggestionAttributes, dataProviderSettings)));
 	}
 
 	@Activate
 	@Modified
 	protected void activate(Map<String, Object> properties) {
-		_keywordIndexConfiguration = ConfigurableUtil.createConfigurable(
-			KeywordIndexConfiguration.class, properties);
+		_key = GetterUtil.getString(properties.get("data.provider.key"));
 	}
 
 	private void _addSearchClauses(
-		BooleanQuery booleanQuery,
-		SuggestionsAttributes suggestionsAttributes) {
+		BooleanQuery booleanQuery, SuggestionAttributes suggestionAttributes,
+		DataProviderSettings dataProviderSettings) {
 
 		MultiMatchQuery multiMatchQuery = _queries.multiMatch(
-			suggestionsAttributes.getKeywords(),
-			_getFields(suggestionsAttributes));
+			suggestionAttributes.getKeywords(),
+			_getFields(suggestionAttributes));
 
-		multiMatchQuery.setFuzziness("1");
-		multiMatchQuery.setPrefixLength(2);
+		multiMatchQuery.setFuzziness(_getFuzziness(dataProviderSettings));
+		multiMatchQuery.setOperator(_getOperator(dataProviderSettings));
+		multiMatchQuery.setPrefixLength(_getPrefixLength(dataProviderSettings));
 		multiMatchQuery.setType(MultiMatchQuery.Type.BOOL_PREFIX);
 
 		booleanQuery.addMustQueryClauses(multiMatchQuery);
 	}
 
+	private DataProviderSettings _getDataProviderSettings(
+		SuggestionAttributes suggestionAttributes) {
+
+		return suggestionAttributes.getDataProviderSettings(_key);
+	}
+
 	private Map<String, Float> _getFields(
-		SuggestionsAttributes suggestionsAttributes) {
+		SuggestionAttributes suggestionAttributes) {
 
 		Map<String, Float> fieldsBoosts = HashMapBuilder.put(
 			KeywordEntryFields.CONTENT, 1.0F
@@ -110,33 +108,105 @@ public class KeywordIndexTypeaheadDataProvider
 		).build();
 
 		_suggestionsProviderHelper.addLocalizedFields(
-			fieldsBoosts, suggestionsAttributes.getLanguageId());
+			fieldsBoosts, suggestionAttributes.getLocale());
 
 		return fieldsBoosts;
 	}
 
-	private Query _getQuery(SuggestionsAttributes suggestionsAttributes) {
+	private String _getFuzziness(DataProviderSettings dataProviderSettings) {
+		if (dataProviderSettings == null) {
+			return _DEFAULT_FUZZINESS;
+		}
+
+		return GetterUtil.getString(
+			dataProviderSettings.getAttribute(SuggestionConstants.FUZZINESS),
+			_DEFAULT_FUZZINESS);
+	}
+
+	private int _getHitcountThreshold(
+		DataProviderSettings dataProviderSettings) {
+
+		if (dataProviderSettings == null) {
+			return _DEFAULT_HITCOUNT_THRESHOLD;
+		}
+
+		return GetterUtil.getInteger(
+			SuggestionConstants.HITCOUNT_THRESHOLD,
+			_DEFAULT_HITCOUNT_THRESHOLD);
+	}
+
+	private Operator _getOperator(DataProviderSettings dataProviderSettings) {
+		if (dataProviderSettings == null) {
+			return _DEFAULT_OPERATOR;
+		}
+
+		try {
+			String operator = GetterUtil.getString(
+				dataProviderSettings.getAttribute(
+					SuggestionConstants.OPERATOR));
+
+			if (Validator.isBlank(operator)) {
+				return _DEFAULT_OPERATOR;
+			}
+
+			return Operator.valueOf(StringUtil.toUpperCase(operator));
+		}
+		catch (IllegalArgumentException illegalArgumentException) {
+			_log.error(
+				illegalArgumentException.getMessage(),
+				illegalArgumentException);
+		}
+
+		return _DEFAULT_OPERATOR;
+	}
+
+	private int _getPrefixLength(DataProviderSettings dataProviderSettings) {
+		if (dataProviderSettings == null) {
+			return _DEFAULT_PREFIX_LENGTH;
+		}
+
+		return GetterUtil.getInteger(
+			dataProviderSettings.getAttribute(
+				SuggestionConstants.PREFIX_LENGTH),
+			_DEFAULT_PREFIX_LENGTH);
+	}
+
+	private Query _getQuery(
+		SuggestionAttributes suggestionAttributes,
+		DataProviderSettings dataProviderSettings) {
+
 		BooleanQuery booleanQuery = _queries.booleanQuery();
 
 		_suggestionsProviderHelper.addGroupFilterClause(
-			booleanQuery, suggestionsAttributes);
-
-		_suggestionsProviderHelper.addStatusFilterClause(
-			booleanQuery, suggestionsAttributes);
+			booleanQuery, suggestionAttributes, dataProviderSettings);
 
 		_suggestionsProviderHelper.addHitCountFilterClause(
-			booleanQuery,
-			_keywordIndexConfiguration.typeAheadProviderHitCountThreshold());
+			booleanQuery, _getHitcountThreshold(dataProviderSettings));
 
-		_addSearchClauses(booleanQuery, suggestionsAttributes);
+		_suggestionsProviderHelper.addStatusFilterClause(
+			booleanQuery, suggestionAttributes);
 
 		_suggestionsProviderHelper.addLanguageBoosterClause(
-			booleanQuery, suggestionsAttributes);
+			booleanQuery, suggestionAttributes);
+
+		_addSearchClauses(
+			booleanQuery, suggestionAttributes, dataProviderSettings);
 
 		return booleanQuery;
 	}
 
-	private volatile KeywordIndexConfiguration _keywordIndexConfiguration;
+	private static final String _DEFAULT_FUZZINESS = "1";
+
+	private static final int _DEFAULT_HITCOUNT_THRESHOLD = 3;
+
+	private static final Operator _DEFAULT_OPERATOR = Operator.OR;
+
+	private static final int _DEFAULT_PREFIX_LENGTH = 2;
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		KeywordIndexTypeaheadDataProvider.class);
+
+	private volatile String _key;
 
 	@Reference
 	private KeywordIndexNameBuilder _keywordIndexNameBuilder;
@@ -148,6 +218,6 @@ public class KeywordIndexTypeaheadDataProvider
 	private SearchEngineAdapter _searchEngineAdapter;
 
 	@Reference
-	private SuggestionsDataProviderHelper _suggestionsProviderHelper;
+	private SuggestionDataProviderHelper _suggestionsProviderHelper;
 
 }
