@@ -16,6 +16,8 @@ package com.liferay.search.experiences.blueprints.engine.internal.executor;
 
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.rescore.Rescore;
 import com.liferay.portal.search.searcher.SearchRequest;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
@@ -77,6 +79,20 @@ public class SearchExecutorImpl implements SearchExecutor {
 			_queryPostProcessors, queryPostProcessor, properties);
 	}
 
+	private void _checkErrors(
+		SearchResponse searchResponse, Messages messages) {
+
+		String errorMessage = searchResponse.withSearchContextGet(
+			searchContext -> GetterUtil.getString(
+				searchContext.getAttribute("search.exception.message")));
+
+		if (!Validator.isBlank(errorMessage)) {
+			MessagesUtil.error(
+				messages, getClass().getName(), new Throwable(errorMessage),
+				null, null, null, "core.error.unknown-error");
+		}
+	}
+
 	private SearchResponse _execute(
 		SearchRequestBuilder searchRequestBuilder, ParameterData parameterData,
 		Blueprint blueprint, Messages messages) {
@@ -90,6 +106,8 @@ public class SearchExecutorImpl implements SearchExecutor {
 					"Request string: " + searchResponse.getRequestString());
 				_log.debug("Hits: " + searchResponse.getCount());
 			}
+
+			_checkErrors(searchResponse, messages);
 
 			_executeQueryPostProcessors(
 				searchResponse, parameterData, blueprint, messages);
