@@ -12,7 +12,7 @@
  *
  */
 
-package com.liferay.search.experiences.predict.misspellings.web.internal.suggestions.typeahead;
+package com.liferay.search.experiences.predict.misspellings.web.internal.typeahead.provider;
 
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.search.document.Document;
@@ -30,9 +30,10 @@ import com.liferay.search.experiences.predict.misspellings.index.name.Misspellin
 import com.liferay.search.experiences.predict.misspellings.web.internal.index.MisspellingSetFields;
 import com.liferay.search.experiences.predict.misspellings.web.internal.util.MisspellingsQueryHelper;
 import com.liferay.search.experiences.predict.suggestions.attributes.SuggestionAttributes;
+import com.liferay.search.experiences.predict.suggestions.constants.SuggestionConstants;
 import com.liferay.search.experiences.predict.suggestions.data.provider.DataProviderSettings;
 import com.liferay.search.experiences.predict.suggestions.spi.provider.TypeaheadDataProvider;
-import com.liferay.search.experiences.predict.suggestions.suggestion.Suggestion;
+import com.liferay.search.experiences.predict.suggestions.suggestion.SuggestionResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +56,7 @@ public class MisspellingsTypeaheadDataProvider
 	implements TypeaheadDataProvider {
 
 	@Override
-	public List<Suggestion<String>> getSuggestions(
+	public List<SuggestionResponse<String>> getSuggestions(
 		SuggestionAttributes suggestionAttributes) {
 
 		DataProviderSettings dataProviderSettings = _getDataProviderSettings(
@@ -120,12 +121,12 @@ public class MisspellingsTypeaheadDataProvider
 	}
 
 	private void _addSuggestion(
-		List<Suggestion<String>> suggestions, SearchHit searchHit) {
+		List<SuggestionResponse<String>> suggestions, SearchHit searchHit) {
 
 		Document document = searchHit.getDocument();
 
 		suggestions.add(
-			new Suggestion<String>(
+			new SuggestionResponse<String>(
 				document.getString(MisspellingSetFields.PHRASE),
 				searchHit.getScore()));
 	}
@@ -144,8 +145,8 @@ public class MisspellingsTypeaheadDataProvider
 		}
 
 		return GetterUtil.getStringValues(
-			dataProviderSettings.getAttribute("languageIds"));
-	}
+			dataProviderSettings.getAttribute(SuggestionConstants.LANGUAGE_IDS));
+	} 
 
 	private Query _getQuery(
 		SuggestionAttributes suggestionAttributes,
@@ -172,15 +173,15 @@ public class MisspellingsTypeaheadDataProvider
 		}
 
 		return GetterUtil.getLongValues(
-			dataProviderSettings.getAttribute("sourceGroupIds"));
+			dataProviderSettings.getAttribute(SuggestionConstants.SOURCE_GROUP_IDS));
 	}
 
-	private List<Suggestion<String>> _getSuggestions(
+	private List<SuggestionResponse<String>> _getSuggestions(
 		SearchSearchResponse searchSearchResponse) {
 
 		SearchHits searchHits = searchSearchResponse.getSearchHits();
 
-		List<Suggestion<String>> suggestions = new ArrayList<>();
+		List<SuggestionResponse<String>> suggestions = new ArrayList<>();
 
 		if (searchHits.getTotalHits() == 0) {
 			return suggestions;
