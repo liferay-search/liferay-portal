@@ -14,11 +14,11 @@
 
 package com.liferay.search.experiences.content.analysis.internal.service;
 
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.search.experiences.blueprints.util.component.ServiceComponentReference;
-import com.liferay.search.experiences.blueprints.util.component.ServiceComponentReferenceUtil;
 import com.liferay.search.experiences.content.analysis.request.ContentAnalysisRequest;
 import com.liferay.search.experiences.content.analysis.response.CategoryAnalysisResponse;
 import com.liferay.search.experiences.content.analysis.response.ModerationAnalysisResponse;
@@ -28,14 +28,13 @@ import com.liferay.search.experiences.content.analysis.spi.analyzer.ModerationAn
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Set;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.Deactivate;
 
 /**
  * @author Petteri Karttunen
@@ -47,20 +46,18 @@ public class ContentAnalysisServiceImpl implements ContentAnalysisService {
 	public Optional<List<CategoryAnalysisResponse>> analyzeCategories(
 		ContentAnalysisRequest contentAnalysisRequest) {
 
-		if (_categoryAnalyzers.size() == 0) {
+		if (_isEmptyServiceTrackerMap(_categoryAnalyzerServiceTrackerMap)) {
 			return Optional.empty();
 		}
 
 		List<CategoryAnalysisResponse> responses = new ArrayList<>();
 
-		for (Map.Entry<String, ServiceComponentReference<CategoryAnalyzer>>
-				entry : _categoryAnalyzers.entrySet()) {
+		Set<String> keySet = _categoryAnalyzerServiceTrackerMap.keySet();
 
-			try {
-				ServiceComponentReference<CategoryAnalyzer> value =
-					entry.getValue();
-
-				CategoryAnalyzer categoryAnalyzer = value.getServiceComponent();
+		keySet.forEach(
+			key -> {
+				CategoryAnalyzer categoryAnalyzer =
+					_categoryAnalyzerServiceTrackerMap.getService(key);
 
 				Optional<CategoryAnalysisResponse> optional =
 					categoryAnalyzer.analyze(contentAnalysisRequest);
@@ -75,18 +72,11 @@ public class ContentAnalysisServiceImpl implements ContentAnalysisService {
 
 						_log.debug(sb.toString());
 					}
-
-					continue;
 				}
-
-				responses.add(optional.get());
-			}
-			catch (IllegalArgumentException illegalArgumentException) {
-				_log.error(
-					illegalArgumentException.getMessage(),
-					illegalArgumentException);
-			}
-		}
+				else {
+					responses.add(optional.get());
+				}
+			});
 
 		return Optional.of(responses);
 	}
@@ -95,21 +85,18 @@ public class ContentAnalysisServiceImpl implements ContentAnalysisService {
 	public Optional<List<ModerationAnalysisResponse>> analyzeModeration(
 		ContentAnalysisRequest contentAnalysisRequest) {
 
-		if (_moderationAnalyzers.size() == 0) {
+		if (_isEmptyServiceTrackerMap(_moderationAnalyzerServiceTrackerMap)) {
 			return Optional.empty();
 		}
 
 		List<ModerationAnalysisResponse> responses = new ArrayList<>();
 
-		for (Map.Entry<String, ServiceComponentReference<ModerationAnalyzer>>
-				entry : _moderationAnalyzers.entrySet()) {
+		Set<String> keySet = _moderationAnalyzerServiceTrackerMap.keySet();
 
-			try {
-				ServiceComponentReference<ModerationAnalyzer> value =
-					entry.getValue();
-
+		keySet.forEach(
+			key -> {
 				ModerationAnalyzer moderationAnalyzer =
-					value.getServiceComponent();
+					_moderationAnalyzerServiceTrackerMap.getService(key);
 
 				Optional<ModerationAnalysisResponse> optional =
 					moderationAnalyzer.analyze(contentAnalysisRequest);
@@ -118,70 +105,51 @@ public class ContentAnalysisServiceImpl implements ContentAnalysisService {
 					if (_log.isDebugEnabled()) {
 						StringBundler sb = new StringBundler(3);
 
-						sb.append("Moderation analyzer ");
+						sb.append("Category analyzer ");
 						sb.append(moderationAnalyzer.getClass());
 						sb.append(" gave an empty response");
 
 						_log.debug(sb.toString());
 					}
-
-					continue;
 				}
-
-				responses.add(optional.get());
-			}
-			catch (IllegalArgumentException illegalArgumentException) {
-				_log.error(
-					illegalArgumentException.getMessage(),
-					illegalArgumentException);
-			}
-		}
+				else {
+					responses.add(optional.get());
+				}
+			});
 
 		return Optional.of(responses);
 	}
 
-	@Reference(
-		cardinality = ReferenceCardinality.MULTIPLE,
-		policy = ReferencePolicy.DYNAMIC
-	)
-	protected void registerCategoryAnalyzer(
-		CategoryAnalyzer categoryAnalyzer, Map<String, Object> properties) {
-
-		ServiceComponentReferenceUtil.addToMapByName(
-			_categoryAnalyzers, categoryAnalyzer, properties);
+	@Activate
+	protected void activate(BundleContext bundleContext) {
+		_categoryAnalyzerServiceTrackerMap =
+			ServiceTrackerMapFactory.openSingleValueMap(
+				bundleContext, CategoryAnalyzer.class, "name");
+		_moderationAnalyzerServiceTrackerMap =
+			ServiceTrackerMapFactory.openSingleValueMap(
+				bundleContext, ModerationAnalyzer.class, "name");
 	}
 
-	@Reference(
-		cardinality = ReferenceCardinality.MULTIPLE,
-		policy = ReferencePolicy.DYNAMIC
-	)
-	protected void registerModerationAnalyzer(
-		ModerationAnalyzer moderationAnalyzer, Map<String, Object> properties) {
-
-		ServiceComponentReferenceUtil.addToMapByName(
-			_moderationAnalyzers, moderationAnalyzer, properties);
+	@Deactivate
+	protected void deactivate() {
+		_categoryAnalyzerServiceTrackerMap.close();
+		_moderationAnalyzerServiceTrackerMap.close();
 	}
 
-	protected void unregisterCategoryAnalyzer(
-		CategoryAnalyzer categoryAnalyzer, Map<String, Object> properties) {
+	private boolean _isEmptyServiceTrackerMap(
+		ServiceTrackerMap<String, ?> serviceTrackerMap) {
 
-		ServiceComponentReferenceUtil.removeFromMapByName(
-			_categoryAnalyzers, categoryAnalyzer, properties);
-	}
+		Set<String> keySet = serviceTrackerMap.keySet();
 
-	protected void unregisterModerationAnalyzer(
-		ModerationAnalyzer moderationAnalyzer, Map<String, Object> properties) {
-
-		ServiceComponentReferenceUtil.removeFromMapByName(
-			_moderationAnalyzers, moderationAnalyzer, properties);
+		return keySet.isEmpty();
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		ContentAnalysisServiceImpl.class);
 
-	private volatile Map<String, ServiceComponentReference<CategoryAnalyzer>>
-		_categoryAnalyzers = new ConcurrentHashMap<>();
-	private volatile Map<String, ServiceComponentReference<ModerationAnalyzer>>
-		_moderationAnalyzers = new ConcurrentHashMap<>();
+	private ServiceTrackerMap<String, CategoryAnalyzer>
+		_categoryAnalyzerServiceTrackerMap;
+	private ServiceTrackerMap<String, ModerationAnalyzer>
+		_moderationAnalyzerServiceTrackerMap;
 
 }
