@@ -14,6 +14,8 @@
 
 package com.liferay.search.experiences.searchresponse.json.translator.internal;
 
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactory;
@@ -25,21 +27,19 @@ import com.liferay.search.experiences.blueprints.message.Message;
 import com.liferay.search.experiences.blueprints.message.Messages;
 import com.liferay.search.experiences.blueprints.model.Blueprint;
 import com.liferay.search.experiences.blueprints.service.BlueprintService;
-import com.liferay.search.experiences.blueprints.util.component.ServiceComponentReference;
-import com.liferay.search.experiences.blueprints.util.component.ServiceComponentReferenceUtil;
 import com.liferay.search.experiences.searchresponse.json.translator.SearchResponseJSONTranslator;
 import com.liferay.search.experiences.searchresponse.json.translator.constants.JSONKeys;
 import com.liferay.search.experiences.searchresponse.json.translator.spi.contributor.JSONTranslationContributor;
 
 import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Set;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 
 /**
  * @author Petteri Karttunen
@@ -61,20 +61,19 @@ public class SearchResponseJSONTranslatorImpl
 			return responseJSONObject;
 		}
 
-		for (Map.Entry
-				<String, ServiceComponentReference<JSONTranslationContributor>>
-					entry : _jsonTranslationContributors.entrySet()) {
+		Set<String> keySet =
+			_jsonTranslationContributorServiceTrackerMap.keySet();
 
-			ServiceComponentReference<JSONTranslationContributor> value =
-				entry.getValue();
+		keySet.forEach(
+			key -> {
+				JSONTranslationContributor jsonTranslationContributor =
+					_jsonTranslationContributorServiceTrackerMap.getService(
+						key);
 
-			JSONTranslationContributor responseContributor =
-				value.getServiceComponent();
-
-			responseContributor.contribute(
-				responseJSONObject, searchResponse, blueprint,
-				blueprintsAttributes, resourceBundle, messages);
-		}
+				jsonTranslationContributor.contribute(
+					responseJSONObject, searchResponse, blueprint,
+					blueprintsAttributes, resourceBundle, messages);
+			});
 
 		return responseJSONObject;
 	}
@@ -121,25 +120,16 @@ public class SearchResponseJSONTranslatorImpl
 		return responseJSONObject;
 	}
 
-	@Reference(
-		cardinality = ReferenceCardinality.MULTIPLE,
-		policy = ReferencePolicy.DYNAMIC
-	)
-	protected void registerJSONTranslationContributor(
-		JSONTranslationContributor jsonTranslationContributor,
-		Map<String, Object> properties) {
-
-		ServiceComponentReferenceUtil.addToMapByName(
-			_jsonTranslationContributors, jsonTranslationContributor,
-			properties);
+	@Activate
+	protected void activate(BundleContext bundleContext) {
+		_jsonTranslationContributorServiceTrackerMap =
+			ServiceTrackerMapFactory.openSingleValueMap(
+				bundleContext, JSONTranslationContributor.class, "name");
 	}
 
-	protected void unregisterJSONTranslationContributor(
-		JSONTranslationContributor responseContributor,
-		Map<String, Object> properties) {
-
-		ServiceComponentReferenceUtil.removeFromMapByName(
-			_jsonTranslationContributors, responseContributor, properties);
+	@Deactivate
+	protected void deactivate() {
+		_jsonTranslationContributorServiceTrackerMap.close();
 	}
 
 	@Reference
@@ -148,9 +138,8 @@ public class SearchResponseJSONTranslatorImpl
 	@Reference
 	private JSONFactory _jsonFactory;
 
-	private volatile Map
-		<String, ServiceComponentReference<JSONTranslationContributor>>
-			_jsonTranslationContributors = new ConcurrentHashMap<>();
+	private ServiceTrackerMap<String, JSONTranslationContributor>
+		_jsonTranslationContributorServiceTrackerMap;
 
 	@Reference
 	private Language _language;
