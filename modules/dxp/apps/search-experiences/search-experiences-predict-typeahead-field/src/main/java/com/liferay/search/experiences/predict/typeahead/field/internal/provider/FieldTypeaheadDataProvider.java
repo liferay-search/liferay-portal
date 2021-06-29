@@ -601,7 +601,7 @@ public class FieldTypeaheadDataProvider implements TypeaheadDataProvider {
 
 	private static final String _DEFAULT_TYPE = "highlighter";
 
-	private static final String _POST_SANITIZER_REGEXP = "[\\:\\;\\-]$";
+	private static final String _POST_SANITIZER_REGEXP = "[ \\:\\;\\-]$";
 
 	private static final String _TOKEN_SPLITTER = "(\\s+)";
 
