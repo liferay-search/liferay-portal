@@ -14,17 +14,16 @@
 
 package com.liferay.search.experiences.blueprints.engine.internal.sort;
 
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 import com.liferay.search.experiences.blueprints.engine.spi.sort.SortTranslator;
-import com.liferay.search.experiences.blueprints.util.component.ServiceComponentReference;
-import com.liferay.search.experiences.blueprints.util.component.ServiceComponentReferenceUtil;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Set;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.Deactivate;
 
 /**
  * @author Petteri Karttunen
@@ -36,41 +35,37 @@ public class SortTranslatorFactoryImpl implements SortTranslatorFactory {
 	public SortTranslator getTranslator(String name)
 		throws IllegalArgumentException {
 
-		ServiceComponentReference<SortTranslator> serviceComponentReference =
-			_sortTranslators.get(name);
+		SortTranslator sortTranslator =
+			_sortTranslatorServiceTrackerMap.getService(name);
 
-		if (serviceComponentReference == null) {
+		if (sortTranslator == null) {
 			throw new IllegalArgumentException(
 				"No registered translator  " + name);
 		}
 
-		return serviceComponentReference.getServiceComponent();
+		return sortTranslator;
 	}
 
 	@Override
 	public String[] getTranslatorNames() {
-		return ServiceComponentReferenceUtil.getComponentKeys(_sortTranslators);
+		Set<String> keySet = _sortTranslatorServiceTrackerMap.keySet();
+
+		return keySet.toArray(new String[0]);
 	}
 
-	@Reference(
-		cardinality = ReferenceCardinality.MULTIPLE,
-		policy = ReferencePolicy.DYNAMIC
-	)
-	protected void registerSortTranslator(
-		SortTranslator sortTranslator, Map<String, Object> properties) {
-
-		ServiceComponentReferenceUtil.addToMapByName(
-			_sortTranslators, sortTranslator, properties);
+	@Activate
+	protected void activate(BundleContext bundleContext) {
+		_sortTranslatorServiceTrackerMap =
+			ServiceTrackerMapFactory.openSingleValueMap(
+				bundleContext, SortTranslator.class, "name");
 	}
 
-	protected void unregisterSortTranslator(
-		SortTranslator sortTranslator, Map<String, Object> properties) {
-
-		ServiceComponentReferenceUtil.removeFromMapByName(
-			_sortTranslators, sortTranslator, properties);
+	@Deactivate
+	protected void deactivate() {
+		_sortTranslatorServiceTrackerMap.close();
 	}
 
-	private volatile Map<String, ServiceComponentReference<SortTranslator>>
-		_sortTranslators = new ConcurrentHashMap<>();
+	private ServiceTrackerMap<String, SortTranslator>
+		_sortTranslatorServiceTrackerMap;
 
 }

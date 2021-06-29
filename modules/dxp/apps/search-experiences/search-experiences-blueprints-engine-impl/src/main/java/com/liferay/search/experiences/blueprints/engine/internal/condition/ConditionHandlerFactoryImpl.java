@@ -14,17 +14,16 @@
 
 package com.liferay.search.experiences.blueprints.engine.internal.condition;
 
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 import com.liferay.search.experiences.blueprints.engine.spi.clause.ConditionHandler;
-import com.liferay.search.experiences.blueprints.util.component.ServiceComponentReference;
-import com.liferay.search.experiences.blueprints.util.component.ServiceComponentReferenceUtil;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Set;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.Deactivate;
 
 /**
  * @author Petteri Karttunen
@@ -36,42 +35,37 @@ public class ConditionHandlerFactoryImpl implements ConditionHandlerFactory {
 	public ConditionHandler getHandler(String name)
 		throws IllegalArgumentException {
 
-		ServiceComponentReference<ConditionHandler> serviceComponentReference =
-			_conditionHandlers.get(name);
+		ConditionHandler conditionHandler =
+			_conditionHandlerServiceTrackerMap.getService(name);
 
-		if (serviceComponentReference == null) {
+		if (conditionHandler == null) {
 			throw new IllegalArgumentException(
 				"No registered condition handler " + name);
 		}
 
-		return serviceComponentReference.getServiceComponent();
+		return conditionHandler;
 	}
 
 	@Override
 	public String[] getHandlerNames() {
-		return ServiceComponentReferenceUtil.getComponentKeys(
-			_conditionHandlers);
+		Set<String> keySet = _conditionHandlerServiceTrackerMap.keySet();
+
+		return keySet.toArray(new String[0]);
 	}
 
-	@Reference(
-		cardinality = ReferenceCardinality.MULTIPLE,
-		policy = ReferencePolicy.DYNAMIC
-	)
-	protected void registerConditionHandler(
-		ConditionHandler conditionHandler, Map<String, Object> properties) {
-
-		ServiceComponentReferenceUtil.addToMapByName(
-			_conditionHandlers, conditionHandler, properties);
+	@Activate
+	protected void activate(BundleContext bundleContext) {
+		_conditionHandlerServiceTrackerMap =
+			ServiceTrackerMapFactory.openSingleValueMap(
+				bundleContext, ConditionHandler.class, "name");
 	}
 
-	protected void unregisterConditionHandler(
-		ConditionHandler conditionHandler, Map<String, Object> properties) {
-
-		ServiceComponentReferenceUtil.removeFromMapByName(
-			_conditionHandlers, conditionHandler, properties);
+	@Deactivate
+	protected void deactivate() {
+		_conditionHandlerServiceTrackerMap.close();
 	}
 
-	private volatile Map<String, ServiceComponentReference<ConditionHandler>>
-		_conditionHandlers = new ConcurrentHashMap<>();
+	private ServiceTrackerMap<String, ConditionHandler>
+		_conditionHandlerServiceTrackerMap;
 
 }

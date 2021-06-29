@@ -14,6 +14,8 @@
 
 package com.liferay.search.experiences.blueprints.engine.internal.util;
 
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -36,21 +38,20 @@ import com.liferay.search.experiences.blueprints.message.Severity;
 import com.liferay.search.experiences.blueprints.model.Blueprint;
 import com.liferay.search.experiences.blueprints.service.BlueprintService;
 import com.liferay.search.experiences.blueprints.util.BlueprintHelper;
-import com.liferay.search.experiences.blueprints.util.component.ServiceComponentReference;
-import com.liferay.search.experiences.blueprints.util.component.ServiceComponentReferenceUtil;
 import com.liferay.search.experiences.blueprints.util.util.MessagesUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Set;
+import java.util.stream.Stream;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 
 /**
  * @author Petteri Karttunen
@@ -88,40 +89,31 @@ public class BlueprintsSearchRequestHelper {
 		List<String> excludedSearchRequestBodyContributors =
 			_getExcludedSearchRequestBodyContributors(parameterData);
 
-		for (Map.Entry
-				<String,
-				 ServiceComponentReference<SearchRequestBodyContributor>>
-					entry : _searchRequestBodyContributors.entrySet()) {
+		Set<String> keySet =
+			_searchRequestBodyContributorServiceTrackerMap.keySet();
 
-			try {
-				if (excludedSearchRequestBodyContributors.contains(
-						entry.getKey())) {
+		Stream<String> stream = keySet.stream();
 
-					continue;
-				}
-
-				ServiceComponentReference<SearchRequestBodyContributor> value =
-					entry.getValue();
-
+		stream.filter(
+			name -> excludedSearchRequestBodyContributors.contains(name)
+		).forEach(
+			name -> {
 				SearchRequestBodyContributor searchRequestBodyContributor =
-					value.getServiceComponent();
+					_searchRequestBodyContributorServiceTrackerMap.getService(
+						name);
 
-				searchRequestBodyContributor.contribute(
-					searchRequestBuilder, blueprint, parameterData, messages);
+				try {
+					searchRequestBodyContributor.contribute(
+						searchRequestBuilder, blueprint, parameterData,
+						messages);
+				}
+				catch (Exception exception) {
+					MessagesUtil.error(
+						messages, getClass().getName(), exception, null, null,
+						null, "core.error.unknown-error");
+				}
 			}
-			catch (IllegalStateException illegalStateException) {
-				MessagesUtil.error(
-					messages, getClass().getName(), illegalStateException, null,
-					null, null,
-					"core.error.error-in-executing-search-request-body-" +
-						"contributors");
-			}
-			catch (Exception exception) {
-				MessagesUtil.error(
-					messages, getClass().getName(), exception, null, null, null,
-					"core.error.unknown-error");
-			}
-		}
+		);
 	}
 
 	public String[] getModelIndexerClassNames(
@@ -197,26 +189,16 @@ public class BlueprintsSearchRequestHelper {
 		return _blueprintHelper.applyIndexerClauses(blueprint);
 	}
 
-	@Reference(
-		cardinality = ReferenceCardinality.MULTIPLE,
-		policy = ReferencePolicy.DYNAMIC
-	)
-	protected void registerSearchRequestBodyContributor(
-		SearchRequestBodyContributor searchRequestBodyContributor,
-		Map<String, Object> properties) {
-
-		ServiceComponentReferenceUtil.addToMapByName(
-			_searchRequestBodyContributors, searchRequestBodyContributor,
-			properties);
+	@Activate
+	protected void activate(BundleContext bundleContext) {
+		_searchRequestBodyContributorServiceTrackerMap =
+			ServiceTrackerMapFactory.openSingleValueMap(
+				bundleContext, SearchRequestBodyContributor.class, "name");
 	}
 
-	protected void unregisterSearchRequestBodyContributor(
-		SearchRequestBodyContributor searchRequestBodyContributor,
-		Map<String, Object> properties) {
-
-		ServiceComponentReferenceUtil.removeFromMapByName(
-			_searchRequestBodyContributors, searchRequestBodyContributor,
-			properties);
+	@Deactivate
+	protected void deactivate() {
+		_searchRequestBodyContributorServiceTrackerMap.close();
 	}
 
 	private List<String> _getExcludedSearchRequestBodyContributors(
@@ -255,8 +237,7 @@ public class BlueprintsSearchRequestHelper {
 	@Reference
 	private ParameterDataCreator _parameterDataCreator;
 
-	private volatile Map
-		<String, ServiceComponentReference<SearchRequestBodyContributor>>
-			_searchRequestBodyContributors = new ConcurrentHashMap<>();
+	private ServiceTrackerMap<String, SearchRequestBodyContributor>
+		_searchRequestBodyContributorServiceTrackerMap;
 
 }
