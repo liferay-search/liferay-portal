@@ -19,31 +19,28 @@ package com.liferay.search.experiences.starter.pack.blueprints.web.internal.cons
  */
 public class BlueprintsWebPortletPreferenceKeys {
 
-	public static final String DID_YOU_MEAN_ENABLED = "didYouMeanEnabled";
-
-	public static final String DID_YOU_MEAN_HITS_THRESHOLD =
-		"didYouMeanHitsThreshold";
-
 	public static final String KEYWORD_INDEXING_ENABLED =
 		"keywordIndexingEnabled";
 
 	public static final String KEYWORD_INDEXING_HITS_THRESHOLD =
 		"keywordIndexingHitsThreshold";
 
-	public static final String MAX_DID_YOU_MEAN_QUERY_SUGGESTIONS =
-		"maxDidYouMeanSuggestions";
-
-	public static final String MAX_TYPEAHEAD_SUGGESTIONS =
-		"maxTypeaheadSuggestions";
+	public static final String MAX_SPELL_CHECK_SUGGESTIONS =
+		"maxSpellCheckSuggestions";
 
 	public static final String MISSPELLINGS_ENABLED = "misspellingsEnabled";
 
 	public static final String SEARCH_BLUEPRINT_ID = "searchBlueprintId";
 
+	public static final String SPELL_CHECK_ENABLED = "spellCheckEnabled";
+
+	public static final String SPELL_CHECK_HITS_THRESHOLD =
+		"spellCheckHitsThreshold";
+
 	public static final String SUGGEST_MODE = "suggestMode";
 
-	public static final String TITLE_TYPEAHEAD_ENTRY_CLASS_NAMES =
-		"titleTypeaheadEntryClassNames";
+	public static final String TYPEAHEAD_CONFIGURATION =
+		"typeaheadConfiguration";
 
 	public static final String TYPEAHEAD_ENABLED = "typeaheadEnabled";
 

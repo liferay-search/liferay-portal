@@ -14,9 +14,7 @@
 
 package com.liferay.search.experiences.starter.pack.blueprints.web.internal.portlet.preferences;
 
-import com.liferay.document.library.kernel.model.DLFileEntry;
-import com.liferay.journal.model.JournalArticle;
-import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.search.experiences.starter.pack.blueprints.web.internal.constants.BlueprintsWebPortletPreferenceKeys;
 import com.liferay.search.experiences.starter.pack.blueprints.web.internal.util.PortletPreferencesHelper;
 
@@ -49,12 +47,6 @@ public class BlueprintsWebPortletPreferencesImpl
 	}
 
 	@Override
-	public int getDidYouMeanHitsThreshold() {
-		return _portletPreferencesHelper.getInteger(
-			BlueprintsWebPortletPreferenceKeys.DID_YOU_MEAN_HITS_THRESHOLD, 5);
-	}
-
-	@Override
 	public int getKeywordIndexingHitsThreshold() {
 		return _portletPreferencesHelper.getInteger(
 			BlueprintsWebPortletPreferenceKeys.KEYWORD_INDEXING_HITS_THRESHOLD,
@@ -62,37 +54,32 @@ public class BlueprintsWebPortletPreferencesImpl
 	}
 
 	@Override
-	public int getMaxDidYouMeanSuggestions() {
+	public int getMaxSpellCheckSuggestions() {
 		return _portletPreferencesHelper.getInteger(
-			BlueprintsWebPortletPreferenceKeys.
-				MAX_DID_YOU_MEAN_QUERY_SUGGESTIONS,
-			10);
+			BlueprintsWebPortletPreferenceKeys.MAX_SPELL_CHECK_SUGGESTIONS, 10);
 	}
 
 	@Override
-	public int getMaxTypeaheadSuggestions() {
+	public int getSpellCheckHitsThreshold() {
 		return _portletPreferencesHelper.getInteger(
-			BlueprintsWebPortletPreferenceKeys.MAX_TYPEAHEAD_SUGGESTIONS, 10);
+			BlueprintsWebPortletPreferenceKeys.SPELL_CHECK_HITS_THRESHOLD, 5);
 	}
 
 	@Override
-	public String getTitleTypeaheadEntryClassNames() {
-		StringBundler sb = new StringBundler(3);
-
-		sb.append(JournalArticle.class.getName());
-		sb.append(",");
-		sb.append(DLFileEntry.class.getName());
+	public String getTypeaheadConfiguration() {
+		String defaultConfiguration = StringBundler.concat(
+			"{\"size\":10,\"data_provider_configuration\":{\"field\":",
+			"{\"type\":\"highlighter\",\"offset\":2,\"weight\":1.0,",
+			"\"field_map\":{\"title_en_US\":1.0,\"content_en_US\":1.0},",
+			"\"nested_field_map\":{},\"entry_class_names\":[\"com.liferay.",
+			"journal.model.JournalArticle\",\"com.liferay.document.library.",
+			"kernel.model.DLFileEntry\"],\"termFilters\":",
+			"{}},\"synonyms\":{\"weight\":1.0},\"misspellings\":",
+			"{\"weight\":1.0}}}");
 
 		return _portletPreferencesHelper.getString(
-			BlueprintsWebPortletPreferenceKeys.
-				TITLE_TYPEAHEAD_ENTRY_CLASS_NAMES,
-			sb.toString());
-	}
-
-	@Override
-	public boolean isDidYouMeanEnabled() {
-		return _portletPreferencesHelper.getBoolean(
-			BlueprintsWebPortletPreferenceKeys.DID_YOU_MEAN_ENABLED, true);
+			BlueprintsWebPortletPreferenceKeys.TYPEAHEAD_CONFIGURATION,
+			defaultConfiguration);
 	}
 
 	@Override
@@ -105,6 +92,12 @@ public class BlueprintsWebPortletPreferencesImpl
 	public boolean isMisspellingsEnabled() {
 		return _portletPreferencesHelper.getBoolean(
 			BlueprintsWebPortletPreferenceKeys.MISSPELLINGS_ENABLED, true);
+	}
+
+	@Override
+	public boolean isSpellCheckEnabled() {
+		return _portletPreferencesHelper.getBoolean(
+			BlueprintsWebPortletPreferenceKeys.SPELL_CHECK_ENABLED, true);
 	}
 
 	@Override
