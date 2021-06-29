@@ -16,6 +16,8 @@ package com.liferay.search.experiences.searchresponse.json.translator.internal.c
 
 import com.liferay.asset.kernel.model.AssetEntry;
 import com.liferay.asset.kernel.service.AssetEntryLocalService;
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONException;
@@ -40,8 +42,6 @@ import com.liferay.portal.search.searcher.SearchResponse;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.search.experiences.blueprints.message.Messages;
 import com.liferay.search.experiences.blueprints.model.Blueprint;
-import com.liferay.search.experiences.blueprints.util.component.ServiceComponentReference;
-import com.liferay.search.experiences.blueprints.util.component.ServiceComponentReferenceUtil;
 import com.liferay.search.experiences.searchresponse.json.translator.constants.ResponseAttributeKeys;
 import com.liferay.search.experiences.searchresponse.json.translator.internal.result.ResultBuilderFactory;
 import com.liferay.search.experiences.searchresponse.json.translator.internal.util.ResultUtil;
@@ -56,13 +56,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 
 /**
  * @author Petteri Karttunen
@@ -86,22 +86,16 @@ public class HitsJSONTranslationContributor
 				searchResponse, blueprintsAttributes, resourceBundle));
 	}
 
-	@Reference(
-		cardinality = ReferenceCardinality.MULTIPLE,
-		policy = ReferencePolicy.DYNAMIC
-	)
-	protected void registerHitContributor(
-		HitContributor hitContributor, Map<String, Object> properties) {
-
-		ServiceComponentReferenceUtil.addToMapByName(
-			_hitContributors, hitContributor, properties);
+	@Activate
+	protected void activate(BundleContext bundleContext) {
+		_hitContributorServiceTrackerMap =
+			ServiceTrackerMapFactory.openSingleValueMap(
+				bundleContext, HitContributor.class, "name");
 	}
 
-	protected void unregisterHitContributor(
-		HitContributor hitContributor, Map<String, Object> properties) {
-
-		ServiceComponentReferenceUtil.removeFromMapByName(
-			_hitContributors, hitContributor, properties);
+	@Deactivate
+	protected void deactivate() {
+		_hitContributorServiceTrackerMap.close();
 	}
 
 	private void _addDefaultResultFields(
@@ -220,17 +214,17 @@ public class HitsJSONTranslationContributor
 		ResultBuilder resultBuilder, BlueprintsAttributes blueprintsAttributes,
 		ResourceBundle resourceBundle) {
 
-		for (Map.Entry<String, ServiceComponentReference<HitContributor>>
-				entry : _hitContributors.entrySet()) {
+		Set<String> keySet = _hitContributorServiceTrackerMap.keySet();
 
-			ServiceComponentReference<HitContributor> value = entry.getValue();
+		keySet.forEach(
+			key -> {
+				HitContributor hitContributor =
+					_hitContributorServiceTrackerMap.getService(key);
 
-			HitContributor hitContributor = value.getServiceComponent();
-
-			hitContributor.contribute(
-				hitJSONObject, document, resultBuilder, blueprintsAttributes,
-				resourceBundle);
-		}
+				hitContributor.contribute(
+					hitJSONObject, document, resultBuilder,
+					blueprintsAttributes, resourceBundle);
+			});
 	}
 
 	private int _findNthLastIndexOf(int nth, String c, String s) {
@@ -534,8 +528,8 @@ public class HitsJSONTranslationContributor
 	@Reference
 	private AssetEntryLocalService _assetEntryLocalService;
 
-	private volatile Map<String, ServiceComponentReference<HitContributor>>
-		_hitContributors = new ConcurrentHashMap<>();
+	private ServiceTrackerMap<String, HitContributor>
+		_hitContributorServiceTrackerMap;
 
 	@Reference
 	private JSONFactory _jsonFactory;
