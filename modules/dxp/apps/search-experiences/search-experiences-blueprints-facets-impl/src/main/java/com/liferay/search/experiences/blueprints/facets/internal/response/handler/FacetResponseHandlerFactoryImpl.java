@@ -14,17 +14,16 @@
 
 package com.liferay.search.experiences.blueprints.facets.internal.response.handler;
 
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 import com.liferay.search.experiences.blueprints.facets.spi.response.FacetResponseHandler;
-import com.liferay.search.experiences.blueprints.util.component.ServiceComponentReference;
-import com.liferay.search.experiences.blueprints.util.component.ServiceComponentReferenceUtil;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Set;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.Deactivate;
 
 /**
  * @author Petteri Karttunen
@@ -40,45 +39,37 @@ public class FacetResponseHandlerFactoryImpl
 	public FacetResponseHandler getHandler(String name)
 		throws IllegalArgumentException {
 
-		ServiceComponentReference<FacetResponseHandler>
-			serviceComponentReference = _facetResponseHandlers.get(name);
+		FacetResponseHandler facetResponseHandler =
+			_facetResponseHandlerServiceTrackerMap.getService(name);
 
-		if (serviceComponentReference == null) {
+		if (facetResponseHandler == null) {
 			throw new IllegalArgumentException(
 				"No registered facet response handler for " + name);
 		}
 
-		return serviceComponentReference.getServiceComponent();
+		return facetResponseHandler;
 	}
 
 	@Override
 	public String[] getHandlerNames() {
-		return ServiceComponentReferenceUtil.getComponentKeys(
-			_facetResponseHandlers);
+		Set<String> keySet = _facetResponseHandlerServiceTrackerMap.keySet();
+
+		return keySet.toArray(new String[0]);
 	}
 
-	@Reference(
-		cardinality = ReferenceCardinality.MULTIPLE,
-		policy = ReferencePolicy.DYNAMIC
-	)
-	protected void registerFacetResponseHandler(
-		FacetResponseHandler facetResponseHandler,
-		Map<String, Object> properties) {
-
-		ServiceComponentReferenceUtil.addToMapByName(
-			_facetResponseHandlers, facetResponseHandler, properties);
+	@Activate
+	protected void activate(BundleContext bundleContext) {
+		_facetResponseHandlerServiceTrackerMap =
+			ServiceTrackerMapFactory.openSingleValueMap(
+				bundleContext, FacetResponseHandler.class, "name");
 	}
 
-	protected void unregisterFacetResponseHandler(
-		FacetResponseHandler facetResponseHandler,
-		Map<String, Object> properties) {
-
-		ServiceComponentReferenceUtil.removeFromMapByName(
-			_facetResponseHandlers, facetResponseHandler, properties);
+	@Deactivate
+	protected void deactivate() {
+		_facetResponseHandlerServiceTrackerMap.close();
 	}
 
-	private volatile Map
-		<String, ServiceComponentReference<FacetResponseHandler>>
-			_facetResponseHandlers = new ConcurrentHashMap<>();
+	private ServiceTrackerMap<String, FacetResponseHandler>
+		_facetResponseHandlerServiceTrackerMap;
 
 }

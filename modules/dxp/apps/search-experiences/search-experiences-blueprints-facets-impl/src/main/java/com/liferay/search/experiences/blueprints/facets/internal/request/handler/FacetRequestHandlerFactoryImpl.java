@@ -14,20 +14,19 @@
 
 package com.liferay.search.experiences.blueprints.facets.internal.request.handler;
 
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.search.experiences.blueprints.facets.spi.request.FacetRequestHandler;
-import com.liferay.search.experiences.blueprints.util.component.ServiceComponentReference;
-import com.liferay.search.experiences.blueprints.util.component.ServiceComponentReferenceUtil;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Set;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.Deactivate;
 
 /**
  * @author Petteri Karttunen
@@ -43,11 +42,12 @@ public class FacetRequestHandlerFactoryImpl
 	public FacetRequestHandler getHandler(String name)
 		throws IllegalArgumentException {
 
-		ServiceComponentReference<FacetRequestHandler>
-			serviceComponentReference = _facetRequestHandlers.get(name);
+		FacetRequestHandler facetRequestHandler =
+			_facetRequestHandlerServiceTrackerMap.getService(name);
 
-		if (serviceComponentReference == null) {
-			serviceComponentReference = _facetRequestHandlers.get("terms");
+		if (facetRequestHandler == null) {
+			facetRequestHandler =
+				_facetRequestHandlerServiceTrackerMap.getService("terms");
 
 			if (_log.isWarnEnabled()) {
 				StringBundler sb = new StringBundler(3);
@@ -60,39 +60,32 @@ public class FacetRequestHandlerFactoryImpl
 			}
 		}
 
-		return serviceComponentReference.getServiceComponent();
+		return facetRequestHandler;
 	}
 
 	@Override
 	public String[] getHandlerNames() {
-		return ServiceComponentReferenceUtil.getComponentKeys(
-			_facetRequestHandlers);
+		Set<String> keySet = _facetRequestHandlerServiceTrackerMap.keySet();
+
+		return keySet.toArray(new String[0]);
 	}
 
-	@Reference(
-		cardinality = ReferenceCardinality.MULTIPLE,
-		policy = ReferencePolicy.DYNAMIC
-	)
-	protected void registerFacetRequestHandler(
-		FacetRequestHandler facetRequestHandler,
-		Map<String, Object> properties) {
-
-		ServiceComponentReferenceUtil.addToMapByName(
-			_facetRequestHandlers, facetRequestHandler, properties);
+	@Activate
+	protected void activate(BundleContext bundleContext) {
+		_facetRequestHandlerServiceTrackerMap =
+			ServiceTrackerMapFactory.openSingleValueMap(
+				bundleContext, FacetRequestHandler.class, "name");
 	}
 
-	protected void unregisterFacetRequestHandler(
-		FacetRequestHandler facetRequestHandler,
-		Map<String, Object> properties) {
-
-		ServiceComponentReferenceUtil.removeFromMapByName(
-			_facetRequestHandlers, facetRequestHandler, properties);
+	@Deactivate
+	protected void deactivate() {
+		_facetRequestHandlerServiceTrackerMap.close();
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		FacetRequestHandlerFactoryImpl.class);
 
-	private volatile Map<String, ServiceComponentReference<FacetRequestHandler>>
-		_facetRequestHandlers = new ConcurrentHashMap<>();
+	private ServiceTrackerMap<String, FacetRequestHandler>
+		_facetRequestHandlerServiceTrackerMap;
 
 }
