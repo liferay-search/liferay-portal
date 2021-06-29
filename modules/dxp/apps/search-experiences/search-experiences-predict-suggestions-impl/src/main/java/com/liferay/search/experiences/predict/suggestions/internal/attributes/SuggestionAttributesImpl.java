@@ -15,6 +15,8 @@
 package com.liferay.search.experiences.predict.suggestions.internal.attributes;
 
 import com.liferay.search.experiences.predict.suggestions.attributes.SuggestionAttributes;
+import com.liferay.search.experiences.predict.suggestions.constants.CombineScoreStrategy;
+import com.liferay.search.experiences.predict.suggestions.constants.SortStrategy;
 import com.liferay.search.experiences.predict.suggestions.data.provider.DataProviderSettings;
 
 import java.util.Collections;
@@ -28,14 +30,17 @@ import java.util.Map;
 public class SuggestionAttributesImpl implements SuggestionAttributes {
 
 	public SuggestionAttributesImpl(
-		Map<String, Object> attributes, Long companyId,
+		Map<String, Object> attributes,
+		CombineScoreStrategy combineScoreStrategy, Long companyId,
 		Map<String, DataProviderSettings> dataProviderSettings,
 		List<String> excludedDataProviders, List<String> excludedPostProcessors,
 		Long groupId, List<String> includedDataProviders,
 		List<String> includedPostProcessors, String ipAddress, String keywords,
-		Locale locale, long plid, int size, String timezoneId, Long userId) {
+		Locale locale, long plid, int size, SortStrategy sortStrategy,
+		String timezoneId, Long userId) {
 
 		_attributes = attributes;
+		_combineScoreStrategy = combineScoreStrategy;
 		_companyId = companyId;
 		_dataProviderSettings = dataProviderSettings;
 		_excludedDataProviders = excludedDataProviders;
@@ -48,6 +53,7 @@ public class SuggestionAttributesImpl implements SuggestionAttributes {
 		_locale = locale;
 		_plid = plid;
 		_size = size;
+		_sortStrategy = sortStrategy;
 		_timezoneId = timezoneId;
 		_userId = userId;
 	}
@@ -64,6 +70,11 @@ public class SuggestionAttributesImpl implements SuggestionAttributes {
 	@Override
 	public Map<String, Object> getAttributes() {
 		return _attributes;
+	}
+
+	@Override
+	public CombineScoreStrategy getCombineScoreStrategy() {
+		return _combineScoreStrategy;
 	}
 
 	@Override
@@ -147,6 +158,11 @@ public class SuggestionAttributesImpl implements SuggestionAttributes {
 	}
 
 	@Override
+	public SortStrategy getSortStrategy() {
+		return _sortStrategy;
+	}
+
+	@Override
 	public String getTimezoneId() {
 		return _timezoneId;
 	}
@@ -157,6 +173,7 @@ public class SuggestionAttributesImpl implements SuggestionAttributes {
 	}
 
 	private final Map<String, Object> _attributes;
+	private final CombineScoreStrategy _combineScoreStrategy;
 	private final Long _companyId;
 	private final Map<String, DataProviderSettings> _dataProviderSettings;
 	private final List<String> _excludedDataProviders;
@@ -169,6 +186,7 @@ public class SuggestionAttributesImpl implements SuggestionAttributes {
 	private final Locale _locale;
 	private final Long _plid;
 	private final Integer _size;
+	private final SortStrategy _sortStrategy;
 	private final String _timezoneId;
 	private final Long _userId;
 

@@ -16,6 +16,8 @@ package com.liferay.search.experiences.predict.suggestions.internal.attributes;
 
 import com.liferay.search.experiences.predict.suggestions.attributes.SuggestionAttributes;
 import com.liferay.search.experiences.predict.suggestions.attributes.SuggestionAttributesBuilder;
+import com.liferay.search.experiences.predict.suggestions.constants.CombineScoreStrategy;
+import com.liferay.search.experiences.predict.suggestions.constants.SortStrategy;
 import com.liferay.search.experiences.predict.suggestions.data.provider.DataProviderSettings;
 
 import java.util.Arrays;
@@ -58,14 +60,24 @@ public class SuggestionAttributesBuilderImpl
 	public SuggestionAttributes build() {
 		SuggestionAttributes suggestionAttributes =
 			new SuggestionAttributesImpl(
-				_attributes, _companyId, _dataProviderSettings,
-				_excludedDataProviders, _excludedPostProcessors, _groupId,
-				_includedDataProviders, _includedPostProcessors, _ipAddress,
-				_keywords, _locale, _plid, _size, _timezoneId, _userId);
+				_attributes, _combineScoreStrategy, _companyId,
+				_dataProviderSettings, _excludedDataProviders,
+				_excludedPostProcessors, _groupId, _includedDataProviders,
+				_includedPostProcessors, _ipAddress, _keywords, _locale, _plid,
+				_size, _sortStrategy, _timezoneId, _userId);
 
 		_validateSuggestionAttributes(suggestionAttributes);
 
 		return suggestionAttributes;
+	}
+
+	@Override
+	public SuggestionAttributesBuilder combineScoreStrategy(
+		CombineScoreStrategy combineScoreStrategy) {
+
+		_combineScoreStrategy = combineScoreStrategy;
+
+		return this;
 	}
 
 	@Override
@@ -154,6 +166,13 @@ public class SuggestionAttributesBuilderImpl
 	}
 
 	@Override
+	public SuggestionAttributesBuilder sortStrategy(SortStrategy sortStrategy) {
+		_sortStrategy = sortStrategy;
+
+		return this;
+	}
+
+	@Override
 	public SuggestionAttributesBuilder timezoneId(String timezoneId) {
 		_timezoneId = timezoneId;
 
@@ -182,6 +201,7 @@ public class SuggestionAttributesBuilderImpl
 	}
 
 	private Map<String, Object> _attributes;
+	private CombineScoreStrategy _combineScoreStrategy;
 	private Long _companyId;
 	private Map<String, DataProviderSettings> _dataProviderSettings;
 	private List<String> _excludedDataProviders;
@@ -194,6 +214,7 @@ public class SuggestionAttributesBuilderImpl
 	private Locale _locale;
 	private Long _plid;
 	private Integer _size;
+	private SortStrategy _sortStrategy;
 	private String _timezoneId;
 	private Long _userId;
 
