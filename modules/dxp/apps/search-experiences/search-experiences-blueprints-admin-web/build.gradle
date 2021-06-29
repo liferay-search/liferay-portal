@@ -22,10 +22,10 @@ dependencies {
 	compileOnly project(":core:petra:petra-lang")
 	compileOnly project(":core:petra:petra-sql-dsl-api")
 	compileOnly project(":core:petra:petra-string")
-	compileOnly project(":dxp:apps:portal-search-tuning:portal-search-tuning-web-api")
 	compileOnly project(":dxp:apps:search-experiences:search-experiences-blueprints-api")
 	compileOnly project(":dxp:apps:search-experiences:search-experiences-blueprints-engine-api")
 	compileOnly project(":dxp:apps:search-experiences:search-experiences-blueprints-fields-api")
 	compileOnly project(":dxp:apps:search-experiences:search-experiences-blueprints-util")
 	compileOnly project(":dxp:apps:search-experiences:search-experiences-searchresponse-json-translator-api")
+	compileOnly project(":dxp:apps:search-experiences:search-experiences-web-api")
 }
