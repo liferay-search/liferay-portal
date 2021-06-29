@@ -3,5 +3,4 @@ Bundle-SymbolicName: com.liferay.search.experiences.blueprints.util
 Bundle-Version: 1.0.0
 Export-Package:\
 	com.liferay.search.experiences.blueprints.util.attributes,\
-	com.liferay.search.experiences.blueprints.util.component,\
 	com.liferay.search.experiences.blueprints.util.util
