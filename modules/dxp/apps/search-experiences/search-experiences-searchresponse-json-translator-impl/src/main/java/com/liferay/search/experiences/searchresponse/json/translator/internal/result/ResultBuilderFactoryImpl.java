@@ -14,20 +14,17 @@
 
 package com.liferay.search.experiences.searchresponse.json.translator.internal.result;
 
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.search.experiences.blueprints.util.component.ServiceComponentReference;
-import com.liferay.search.experiences.blueprints.util.component.ServiceComponentReferenceUtil;
 import com.liferay.search.experiences.searchresponse.json.translator.internal.result.builder.DefaultResultBuilder;
 import com.liferay.search.experiences.searchresponse.json.translator.spi.result.ResultBuilder;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.Deactivate;
 
 /**
  * @author Petteri Karttunen
@@ -37,10 +34,10 @@ public class ResultBuilderFactoryImpl implements ResultBuilderFactory {
 
 	@Override
 	public ResultBuilder getBuilder(String className) {
-		ServiceComponentReference<ResultBuilder> serviceComponentReference =
-			_resultBuilders.get(className);
+		ResultBuilder resultBuilder =
+			_resultBuilderServiceTrackerMap.getService(className);
 
-		if (serviceComponentReference == null) {
+		if (resultBuilder == null) {
 			if (_log.isWarnEnabled()) {
 				_log.warn(
 					"Unable to find result builder for " + className +
@@ -50,31 +47,25 @@ public class ResultBuilderFactoryImpl implements ResultBuilderFactory {
 			return new DefaultResultBuilder();
 		}
 
-		return serviceComponentReference.getServiceComponent();
+		return resultBuilder;
 	}
 
-	@Reference(
-		cardinality = ReferenceCardinality.MULTIPLE,
-		policy = ReferencePolicy.DYNAMIC
-	)
-	protected void registerResultBuilder(
-		ResultBuilder resultBuilder, Map<String, Object> properties) {
-
-		ServiceComponentReferenceUtil.addToMapByProperty(
-			_resultBuilders, resultBuilder, properties, "model.class.name");
+	@Activate
+	protected void activate(BundleContext bundleContext) {
+		_resultBuilderServiceTrackerMap =
+			ServiceTrackerMapFactory.openSingleValueMap(
+				bundleContext, ResultBuilder.class, "model.class.name");
 	}
 
-	protected void unregisterResultBuilder(
-		ResultBuilder resultBuilder, Map<String, Object> properties) {
-
-		ServiceComponentReferenceUtil.removeFromMapByProperty(
-			_resultBuilders, resultBuilder, properties, "model.class.name");
+	@Deactivate
+	protected void deactivate() {
+		_resultBuilderServiceTrackerMap.close();
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		ResultBuilderFactoryImpl.class);
 
-	private volatile Map<String, ServiceComponentReference<ResultBuilder>>
-		_resultBuilders = new ConcurrentHashMap<>();
+	private ServiceTrackerMap<String, ResultBuilder>
+		_resultBuilderServiceTrackerMap;
 
 }

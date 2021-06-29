@@ -14,20 +14,19 @@
 
 package com.liferay.search.experiences.searchresponse.json.translator.internal.aggregation;
 
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.search.experiences.blueprints.util.component.ServiceComponentReference;
-import com.liferay.search.experiences.blueprints.util.component.ServiceComponentReferenceUtil;
 import com.liferay.search.experiences.searchresponse.json.translator.spi.aggregation.AggregationJSONTranslator;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Set;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.Deactivate;
 
 /**
  * @author Petteri Karttunen
@@ -40,12 +39,13 @@ public class AggregationJSONTranslatorFactoryImpl
 	public AggregationJSONTranslator getTranslator(String name)
 		throws IllegalArgumentException {
 
-		ServiceComponentReference<AggregationJSONTranslator>
-			serviceComponentReference = _aggregationJSONTranslators.get(name);
+		AggregationJSONTranslator aggregationJSONTranslator =
+			_aggregationJSONTranslatorServiceTrackerMap.getService(name);
 
-		if (serviceComponentReference == null) {
-			serviceComponentReference = _aggregationJSONTranslators.get(
-				"default");
+		if (aggregationJSONTranslator == null) {
+			aggregationJSONTranslator =
+				_aggregationJSONTranslatorServiceTrackerMap.getService(
+					"default");
 
 			if (_log.isWarnEnabled()) {
 				StringBundler sb = new StringBundler(3);
@@ -58,40 +58,33 @@ public class AggregationJSONTranslatorFactoryImpl
 			}
 		}
 
-		return serviceComponentReference.getServiceComponent();
+		return aggregationJSONTranslator;
 	}
 
 	@Override
 	public String[] getTranslatorNames() {
-		return ServiceComponentReferenceUtil.getComponentKeys(
-			_aggregationJSONTranslators);
+		Set<String> keySet =
+			_aggregationJSONTranslatorServiceTrackerMap.keySet();
+
+		return keySet.toArray(new String[0]);
 	}
 
-	@Reference(
-		cardinality = ReferenceCardinality.MULTIPLE,
-		policy = ReferencePolicy.DYNAMIC
-	)
-	protected void registerAggregationJSONTranslator(
-		AggregationJSONTranslator aggregationJSONTranslator,
-		Map<String, Object> properties) {
-
-		ServiceComponentReferenceUtil.addToMapByName(
-			_aggregationJSONTranslators, aggregationJSONTranslator, properties);
+	@Activate
+	protected void activate(BundleContext bundleContext) {
+		_aggregationJSONTranslatorServiceTrackerMap =
+			ServiceTrackerMapFactory.openSingleValueMap(
+				bundleContext, AggregationJSONTranslator.class, "name");
 	}
 
-	protected void unregisterAggregationJSONTranslator(
-		AggregationJSONTranslator aggregationJSONTranslator,
-		Map<String, Object> properties) {
-
-		ServiceComponentReferenceUtil.removeFromMapByName(
-			_aggregationJSONTranslators, aggregationJSONTranslator, properties);
+	@Deactivate
+	protected void deactivate() {
+		_aggregationJSONTranslatorServiceTrackerMap.close();
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		AggregationJSONTranslatorFactoryImpl.class);
 
-	private volatile Map
-		<String, ServiceComponentReference<AggregationJSONTranslator>>
-			_aggregationJSONTranslators = new ConcurrentHashMap<>();
+	private ServiceTrackerMap<String, AggregationJSONTranslator>
+		_aggregationJSONTranslatorServiceTrackerMap;
 
 }
