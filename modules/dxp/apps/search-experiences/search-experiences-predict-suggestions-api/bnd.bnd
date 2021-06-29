@@ -3,6 +3,7 @@ Bundle-SymbolicName: com.liferay.search.experiences.predict.suggestions.api
 Bundle-Version: 1.0.0
 Export-Package:\
 	com.liferay.search.experiences.predict.suggestions.attributes,\
+	com.liferay.search.experiences.predict.suggestions.constants,\
 	com.liferay.search.experiences.predict.suggestions.data.provider,\
 	com.liferay.search.experiences.predict.suggestions.service,\
 	com.liferay.search.experiences.predict.suggestions.suggestion
