@@ -14,6 +14,8 @@
 
 package com.liferay.search.experiences.predict.suggestions.attributes;
 
+import com.liferay.search.experiences.predict.suggestions.constants.CombineScoreStrategy;
+import com.liferay.search.experiences.predict.suggestions.constants.SortStrategy;
 import com.liferay.search.experiences.predict.suggestions.data.provider.DataProviderSettings;
 
 import java.util.Locale;
@@ -32,6 +34,9 @@ public interface SuggestionAttributesBuilder {
 		String key, DataProviderSettings dataProviderSettings);
 
 	public SuggestionAttributes build();
+
+	public SuggestionAttributesBuilder combineScoreStrategy(
+		CombineScoreStrategy combineScoreStrategy);
 
 	public SuggestionAttributesBuilder companyId(long companyId);
 
@@ -58,6 +63,8 @@ public interface SuggestionAttributesBuilder {
 	public SuggestionAttributesBuilder plid(long plid);
 
 	public SuggestionAttributesBuilder size(int size);
+
+	public SuggestionAttributesBuilder sortStrategy(SortStrategy sortStrategy);
 
 	public SuggestionAttributesBuilder timezoneId(String timeZoneId);
 
