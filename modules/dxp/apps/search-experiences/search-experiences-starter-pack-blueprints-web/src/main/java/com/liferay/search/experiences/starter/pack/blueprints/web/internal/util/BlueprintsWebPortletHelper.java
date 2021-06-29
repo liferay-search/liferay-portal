@@ -22,8 +22,8 @@ import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.search.experiences.blueprints.model.Blueprint;
 import com.liferay.search.experiences.blueprints.service.BlueprintService;
-import com.liferay.search.experiences.predict.suggestions.attributes.SuggestionsAttributesBuilder;
-import com.liferay.search.experiences.predict.suggestions.attributes.SuggestionsAttributesBuilderFactory;
+import com.liferay.search.experiences.predict.suggestions.attributes.SuggestionAttributesBuilder;
+import com.liferay.search.experiences.predict.suggestions.attributes.SuggestionAttributesBuilderFactory;
 import com.liferay.search.experiences.starter.pack.blueprints.web.internal.portlet.preferences.BlueprintsWebPortletPreferences;
 import com.liferay.search.experiences.starter.pack.blueprints.web.internal.portlet.preferences.BlueprintsWebPortletPreferencesImpl;
 
@@ -72,33 +72,48 @@ public class BlueprintsWebPortletHelper {
 		return blueprintsWebPortletPreferences.getBlueprintId();
 	}
 
-	public SuggestionsAttributesBuilder getSuggestionsAttributesBuilder(
-		PortletRequest portletRequest) {
+	public SuggestionAttributesBuilder getSuggestionAttributesBuilder(
+		PortletRequest portletRequest, String[] dataProviders, String keywords,
+		int size) {
 
 		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
-		HttpServletRequest httpServletRequest = _portal.getHttpServletRequest(
-			portletRequest);
-
-		TimeZone timeZone = themeDisplay.getTimeZone();
-
-		return _suggestionsAttributesBuilderFactory.builder(
+		return _suggestionAttributesBuilderFactory.builder(
 		).companyId(
 			themeDisplay.getCompanyId()
 		).groupId(
 			themeDisplay.getScopeGroupId()
-		).languageId(
-			themeDisplay.getLanguageId()
+		).ipAddress(
+			_getIPAddress(portletRequest)
+		).includedDataProviders(
+			dataProviders
+		).keywords(
+			keywords
+		).locale(
+			themeDisplay.getLocale()
+		).plid(
+			themeDisplay.getPlid()
+		).size(
+			size
+		).timezoneId(
+			_getTimezoneId(themeDisplay)
 		).userId(
 			themeDisplay.getUserId()
-		).addAttribute(
-			"ipAddress", httpServletRequest.getRemoteAddr()
-		).addAttribute(
-			"plid", themeDisplay.getPlid()
-		).addAttribute(
-			"timeZoneId", timeZone.getID()
 		);
+	}
+
+	private String _getIPAddress(PortletRequest portletRequest) {
+		HttpServletRequest httpServletRequest = _portal.getHttpServletRequest(
+			portletRequest);
+
+		return httpServletRequest.getRemoteAddr();
+	}
+
+	private String _getTimezoneId(ThemeDisplay themeDisplay) {
+		TimeZone timeZone = themeDisplay.getTimeZone();
+
+		return timeZone.getID();
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
@@ -111,7 +126,7 @@ public class BlueprintsWebPortletHelper {
 	private Portal _portal;
 
 	@Reference
-	private SuggestionsAttributesBuilderFactory
-		_suggestionsAttributesBuilderFactory;
+	private SuggestionAttributesBuilderFactory
+		_suggestionAttributesBuilderFactory;
 
 }

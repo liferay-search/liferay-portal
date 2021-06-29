@@ -42,9 +42,9 @@ import com.liferay.search.experiences.blueprints.model.Blueprint;
 import com.liferay.search.experiences.blueprints.util.attributes.BlueprintsAttributesHelper;
 import com.liferay.search.experiences.predict.keyword.index.util.KeywordIndexHelper;
 import com.liferay.search.experiences.predict.misspellings.processor.MisspellingsProcessor;
-import com.liferay.search.experiences.predict.suggestions.attributes.SuggestionsAttributes;
-import com.liferay.search.experiences.predict.suggestions.attributes.SuggestionsAttributesBuilder;
-import com.liferay.search.experiences.predict.suggestions.spellcheck.SpellCheckService;
+import com.liferay.search.experiences.predict.suggestions.attributes.SuggestionAttributes;
+import com.liferay.search.experiences.predict.suggestions.attributes.SuggestionAttributesBuilder;
+import com.liferay.search.experiences.predict.suggestions.service.SuggestionService;
 import com.liferay.search.experiences.predict.suggestions.suggestion.Suggestion;
 import com.liferay.search.experiences.searchresponse.json.translator.SearchResponseJSONTranslator;
 import com.liferay.search.experiences.searchresponse.json.translator.constants.JSONKeys;
@@ -58,7 +58,6 @@ import com.liferay.search.experiences.starter.pack.blueprints.web.internal.util.
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.stream.Stream;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.ResourceRequest;
@@ -140,7 +139,7 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 			resourceRequest, resourceResponse, responseJSONObject);
 	}
 
-	private void _addDidYouMean(
+	private void _addSpellCheckSuggestions(
 		ResourceRequest resourceRequest,
 		BlueprintsWebPortletPreferences blueprintsWebPortletPreferences,
 		String keywords, JSONObject responseJSONObject) {
@@ -149,28 +148,22 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 			return;
 		}
 
-		List<Suggestion> suggestions = _spellCheckService.getSuggestions(
-			_getDidYouMeanSuggestionsAttributes(
-				resourceRequest, keywords, blueprintsWebPortletPreferences));
+		List<Suggestion<String>> suggestions =
+			_spellCheckService.getSuggestions(
+				_getSpellCheckSuggestionAttributes(
+					resourceRequest, keywords,
+					blueprintsWebPortletPreferences));
 
 		if (suggestions.isEmpty()) {
 			return;
 		}
 
-		_addDidYouMeanSuggestions(responseJSONObject, suggestions);
-	}
-
-	private void _addDidYouMeanSuggestions(
-		JSONObject responseJSONObject, List<Suggestion> suggestions) {
-
 		JSONArray suggestionsJSONArray = _jsonFactory.createJSONArray();
 
-		Stream<Suggestion> stream = suggestions.stream();
+		suggestions.forEach(
+			suggestion -> suggestionsJSONArray.put(suggestion.getPayload()));
 
-		stream.forEach(
-			suggestion -> suggestionsJSONArray.put(suggestion.getText()));
-
-		responseJSONObject.put("didYouMean", suggestionsJSONArray);
+		responseJSONObject.put("spellCheck", suggestionsJSONArray);
 	}
 
 	private boolean _allowMisspellings(PortletRequest portletRequest) {
@@ -195,12 +188,12 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 			searchResponse, blueprint, blueprintsResponseAttributes,
 			_getResourceBundle(resourceRequest), messages);
 
-		if (_shouldAddDidYouMean(
+		if (_shouldAddSpellCheckSuggestions(
 				blueprintsWebPortletPreferences,
 				searchResponse.getTotalHits()) &&
 			!Validator.isBlank(blueprintsRequestAttributes.getKeywords())) {
 
-			_addDidYouMean(
+			_addSpellCheckSuggestions(
 				resourceRequest, blueprintsWebPortletPreferences,
 				blueprintsRequestAttributes.getKeywords(), responseJSONObject);
 		}
@@ -242,27 +235,24 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 		return blueprintsAttributesBuilder.build();
 	}
 
-	private SuggestionsAttributes _getDidYouMeanSuggestionsAttributes(
-		ResourceRequest resourceRequest, String keywords,
-		BlueprintsWebPortletPreferences blueprintsWebPortletPreferences) {
-
-		SuggestionsAttributesBuilder suggestionsAttributesBuilder =
-			_blueprintsWebPortletHelper.getSuggestionsAttributesBuilder(
-				resourceRequest);
-
-		return suggestionsAttributesBuilder.keywords(
-			keywords
-		).size(
-			blueprintsWebPortletPreferences.getMaxDidYouMeanSuggestions()
-		).build();
-	}
-
 	private ResourceBundle _getResourceBundle(ResourceRequest resourceRequest) {
 		ThemeDisplay themeDisplay = (ThemeDisplay)resourceRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
 		return ResourceBundleUtil.getBundle(
 			"content.Language", themeDisplay.getLocale(), getClass());
+	}
+
+	private SuggestionAttributes _getSpellCheckSuggestionAttributes(
+		ResourceRequest resourceRequest, String keywords,
+		BlueprintsWebPortletPreferences blueprintsWebPortletPreferences) {
+
+		SuggestionAttributesBuilder suggestionAttributesBuilder =
+			_blueprintsWebPortletHelper.getSuggestionAttributesBuilder(
+				resourceRequest, new String[] {"keyword_index"}, keywords,
+				blueprintsWebPortletPreferences.getMaxSpellCheckSuggestions());
+
+		return suggestionAttributesBuilder.build();
 	}
 
 	private void _indexKeyword(
@@ -308,14 +298,16 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 		return blueprintsAttributesBuilder2.build();
 	}
 
-	private boolean _shouldAddDidYouMean(
+	private boolean _shouldAddSpellCheckSuggestions(
 		BlueprintsWebPortletPreferences blueprintsWebPortletPreferences,
 		int hitCount) {
 
-		if (blueprintsWebPortletPreferences.isDidYouMeanEnabled() &&
-			(blueprintsWebPortletPreferences.getDidYouMeanHitsThreshold() >=
-				hitCount)) {
+		boolean enabled = blueprintsWebPortletPreferences.isSpellCheckEnabled();
 
+		int threshold =
+			blueprintsWebPortletPreferences.getSpellCheckHitsThreshold();
+
+		if (enabled && (threshold >= hitCount)) {
 			return true;
 		}
 
@@ -369,7 +361,10 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 	@Reference
 	private SearchResponseJSONTranslator _searchResponseJSONTranslator;
 
-	@Reference(cardinality = ReferenceCardinality.OPTIONAL)
-	private SpellCheckService _spellCheckService;
+	@Reference(
+		cardinality = ReferenceCardinality.OPTIONAL,
+		target = "(suggestion.type=spell_check)"
+	)
+	private SuggestionService _spellCheckService;
 
 }

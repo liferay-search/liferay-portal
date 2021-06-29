@@ -19,21 +19,19 @@
 <%
 PortletPreferences preferences = renderRequest.getPreferences();
 
-boolean didYouMeanEnabled = GetterUtil.getBoolean(preferences.getValue(BlueprintsWebPortletPreferenceKeys.DID_YOU_MEAN_ENABLED, "true"));
-
-int didYouMeanHitsThreshold = GetterUtil.getInteger(preferences.getValue(BlueprintsWebPortletPreferenceKeys.DID_YOU_MEAN_HITS_THRESHOLD, "5"));
-
-int maxDidYouMeanSuggestions = GetterUtil.getInteger(preferences.getValue(BlueprintsWebPortletPreferenceKeys.MAX_DID_YOU_MEAN_QUERY_SUGGESTIONS, "10"));
-
-int maxTypeaheadSuggestions = GetterUtil.getInteger(preferences.getValue(BlueprintsWebPortletPreferenceKeys.MAX_TYPEAHEAD_SUGGESTIONS, "10"));
-
-boolean misspellingsEnabled = GetterUtil.getBoolean(preferences.getValue(BlueprintsWebPortletPreferenceKeys.MISSPELLINGS_ENABLED, "true"));
-
 boolean keywordIndexingEnabled = GetterUtil.getBoolean(preferences.getValue(BlueprintsWebPortletPreferenceKeys.KEYWORD_INDEXING_ENABLED, "true"));
 
 int keywordIndexingHitsThreshold = GetterUtil.getInteger(preferences.getValue(BlueprintsWebPortletPreferenceKeys.KEYWORD_INDEXING_HITS_THRESHOLD, "3"));
 
-String titleTypeaheadEntryClassNames = preferences.getValue(BlueprintsWebPortletPreferenceKeys.TITLE_TYPEAHEAD_ENTRY_CLASS_NAMES, "com.liferay.journal.model.JournalArticle, com.liferay.document.library.kernel.model.DLFileEntry");
+int maxSpellCheckSuggestions = GetterUtil.getInteger(preferences.getValue(BlueprintsWebPortletPreferenceKeys.MAX_SPELL_CHECK_SUGGESTIONS, "10"));
+
+boolean misspellingsEnabled = GetterUtil.getBoolean(preferences.getValue(BlueprintsWebPortletPreferenceKeys.MISSPELLINGS_ENABLED, "true"));
+
+boolean spellCheckEnabled = GetterUtil.getBoolean(preferences.getValue(BlueprintsWebPortletPreferenceKeys.SPELL_CHECK_ENABLED, "true"));
+
+int spellCheckHitsThreshold = GetterUtil.getInteger(preferences.getValue(BlueprintsWebPortletPreferenceKeys.SPELL_CHECK_HITS_THRESHOLD, "5"));
+
+String typeaheadConfiguration = preferences.getValue(BlueprintsWebPortletPreferenceKeys.TYPEAHEAD_CONFIGURATION, "{\"size\":10,\"data_provider_configuration\":{\"field\":{\"type\":\"highlighter\",\"offset\":2,\"weight\":1.0,\"field_map\":{\"title_en_US\":1.0,\"content_en_US\":1.0},\"nested_field_map\":{},\"entry_class_names\":[\"com.liferay.journal.model.JournalArticle\",\"com.liferay.document.library.kernel.model.DLFileEntry\"],\"termFilters\":{}},\"synonyms\":{\"weight\":1.0},\"misspellings\":{\"weight\":1.0}}}");
 
 boolean typeaheadEnabled = GetterUtil.getBoolean(preferences.getValue(BlueprintsWebPortletPreferenceKeys.TYPEAHEAD_ENABLED, "true"));
 %>
@@ -60,8 +58,7 @@ boolean typeaheadEnabled = GetterUtil.getBoolean(preferences.getValue(Blueprints
 				<aui:input helpMessage="typeahead-enabled-help" id="typeaheadEnabled" label="enable-typeahead" name="preferences--typeaheadEnabled--" type="checkbox" value="<%= typeaheadEnabled %>" />
 
 				<div class="options-container <%= !typeaheadEnabled ? "hide" : StringPool.BLANK %>" id="<portlet:namespace />typeaheadOptionsContainer">
-					<aui:input label="maximum-number-of-typeahead-suggestions" name="preferences--maxTypeaheadSuggestions--" size="10" type="text" value="<%= maxTypeaheadSuggestions %>" />
-					<aui:input label="title-typeahead-entry-class-names" name="preferences--titleTypeaheadEntryClassNames--" size="10" type="text" value="<%= titleTypeaheadEntryClassNames %>" />
+					<aui:input label="typeahead-configuration" name="preferences--typeaheadConfiguration--" type="textarea" value="<%= typeaheadConfiguration %>" />
 				</div>
 
 				<hr />
@@ -70,12 +67,12 @@ boolean typeaheadEnabled = GetterUtil.getBoolean(preferences.getValue(Blueprints
 
 				<hr />
 
-				<aui:input helpMessage="did-you-mean-enabled-help" id="didYouMeanEnabled" label="enable-did-you-mean" name="preferences--didYouMeanEnabled--" type="checkbox" value="<%= didYouMeanEnabled %>" />
+				<aui:input helpMessage="spell-check-help" id="spellCheckEnabled" label="enable-spell-check" name="preferences--spellCheckEnabled--" type="checkbox" value="<%= spellCheckEnabled %>" />
 
-				<div class="options-container <%= !didYouMeanEnabled ? "hide" : StringPool.BLANK %>" id="<portlet:namespace />didYouMeanOptionsContainer">
-					<aui:input helpMessage="keyword-indexing-threshold-help" label="hits-threshold-for-showing-did-you-mean-suggestions" name="preferences--didYouMeanHitsThreshold--" size="10" type="text" value="<%= didYouMeanHitsThreshold %>" />
+				<div class="options-container <%= !spellCheckEnabled ? "hide" : StringPool.BLANK %>" id="<portlet:namespace />spellCheckOptionsContainer">
+					<aui:input helpMessage="spell-check-hits-threshold-help" label="hits-threshold-for-showing-did-you-mean-suggestions" name="preferences--spellCheckHitsThreshold--" size="10" type="text" value="<%= spellCheckHitsThreshold %>" />
 
-					<aui:input label="maximum-number-of-did-you-mean-suggestions" name="preferences--maxDidYouMeanSuggestions--" size="10" type="text" value="<%= maxDidYouMeanSuggestions %>" />
+					<aui:input label="maximum-number-of-spell-check-suggestions" name="preferences--maxSpellCheckSuggestions--" size="10" type="text" value="<%= maxSpellCheckSuggestions %>" />
 				</div>
 
 				<hr />
@@ -98,8 +95,8 @@ boolean typeaheadEnabled = GetterUtil.getBoolean(preferences.getValue(Blueprints
 
 <aui:script>
 	Liferay.Util.toggleBoxes(
-		'<portlet:namespace />didYouMeanEnabled',
-		'<portlet:namespace />didYouMeanOptionsContainer'
+		'<portlet:namespace />spellCheckEnabled',
+		'<portlet:namespace />spellCheckOptionsContainer'
 	);
 	Liferay.Util.toggleBoxes(
 		'<portlet:namespace />keywordIndexingEnabled',
