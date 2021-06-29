@@ -264,7 +264,7 @@ public class FieldTypeaheadDataProviderSearchHelper {
 		DataProviderSettings dataProviderSettings) {
 
 		return GetterUtil.getStringValues(
-			dataProviderSettings.getAttribute("entryClassNames"));
+			dataProviderSettings.getAttribute(SuggestionConstants.ENTRY_CLASS_NAMES));
 	}
 
 	private Query _getNestedSearchQuery(
