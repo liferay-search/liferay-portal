@@ -73,7 +73,7 @@ public class ElasticsearchQuerySuggester implements QuerySuggester {
 			return StringPool.BLANK;
 		}
 
-		List<String> words = getHighestRankedSuggestResults(
+		List<String> words = getHighestRankedSuggestedPhrases(
 			suggestSearchResult);
 
 		return StringUtil.merge(words, StringPool.SPACE);
@@ -162,7 +162,7 @@ public class ElasticsearchQuerySuggester implements QuerySuggester {
 			return StringPool.EMPTY_ARRAY;
 		}
 
-		List<String> keywordQueries = getHighestRankedSuggestResults(
+		List<String> keywordQueries = getHighestRankedSuggestedPhrases(
 			suggestSearchResult);
 
 		return keywordQueries.toArray(new String[0]);
@@ -248,29 +248,43 @@ public class ElasticsearchQuerySuggester implements QuerySuggester {
 		}
 	}
 
-	protected List<String> getHighestRankedSuggestResults(
+	protected List<String> getHighestRankedSuggestedPhrases(
 		SuggestSearchResult suggestSearchResult) {
 
-		List<String> texts = new ArrayList<>();
+		List<String> suggestedPhrase = new ArrayList<>();
 
-		List<SuggestSearchResult.Entry> suggestSearchResultEntries =
-			suggestSearchResult.getEntries();
+		boolean differentFromOriginal = false;
 
-		suggestSearchResultEntries.forEach(
-			suggestSearchResultEntry -> {
-				List<SuggestSearchResult.Entry.Option>
-					suggestSearchResultEntryOptions =
-						suggestSearchResultEntry.getOptions();
+		for (SuggestSearchResult.Entry suggestSearchResultEntry :
+				suggestSearchResult.getEntries()) {
 
-				for (SuggestSearchResult.Entry.Option
-						suggestSearchResultEntryOption :
-							suggestSearchResultEntryOptions) {
+			List<SuggestSearchResult.Entry.Option>
+				suggestSearchResultEntryOptions =
+					suggestSearchResultEntry.getOptions();
 
-					texts.add(suggestSearchResultEntryOption.getText());
-				}
-			});
+			if (suggestSearchResultEntryOptions.isEmpty()) {
+				suggestedPhrase.add(suggestSearchResultEntry.getText());
 
-		return texts;
+				continue;
+			}
+
+			if (!differentFromOriginal) {
+				differentFromOriginal = true;
+			}
+
+			for (SuggestSearchResult.Entry.Option
+					suggestSearchResultEntryOption :
+						suggestSearchResultEntryOptions) {
+
+				suggestedPhrase.add(suggestSearchResultEntryOption.getText());
+			}
+		}
+
+		if (!differentFromOriginal) {
+			return new ArrayList<>();
+		}
+
+		return suggestedPhrase;
 	}
 
 	protected Localization getLocalization() {
