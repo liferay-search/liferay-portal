@@ -9,7 +9,6 @@
  * distribution rights of the Software.
  */
 
-import ClayAlert from '@clayui/alert';
 import ClayButton from '@clayui/button';
 import ClayIcon from '@clayui/icon';
 import ClayLayout from '@clayui/layout';
@@ -21,7 +20,6 @@ import React, {useState} from 'react';
 import JSONElement from '../../shared/JSONElement';
 import Element from '../../shared/element/index';
 import {ELEMENT_PREFIX} from '../../utils/constants';
-import {getElementOutput} from '../../utils/utils';
 import SelectAssetTypes from './SelectAssetTypes';
 
 function QueryBuilderTab({
@@ -43,76 +41,50 @@ function QueryBuilderTab({
 }) {
 	const [collapseAll, setCollapseAll] = useState(false);
 
-	const _hasMustClause = selectedElements.some((element) => {
-		const elementOutput = getElementOutput(element);
-
-		return (
-			elementOutput.clauses?.[0]?.occur === 'must' &&
-			elementOutput.enabled
-		);
-	});
-
-	const _renderSelectedElements = () => {
-		return (
-			<>
-				{!_hasMustClause && (
-					<ClayAlert
-						displayType="warning"
-						title={Liferay.Language.get('warning')}
-					>
-						{Liferay.Language.get(
-							'there-are-no-match-clauses-in-your-configuration'
-						)}
-					</ClayAlert>
-				)}
-
-				{selectedElements.map((element, index) => {
-					return element.uiConfigurationJSON ? (
-						<Element
-							collapseAll={collapseAll}
-							elementTemplateJSON={element.elementTemplateJSON}
-							entityJSON={entityJSON}
-							error={errors[index]}
-							id={element.id}
-							index={index}
-							indexFields={indexFields}
-							isSubmitting={isSubmitting}
-							key={element.id}
-							onBlur={onBlur}
-							onChange={onChange}
-							onDeleteElement={onDeleteElement}
-							prefixedId={`${ELEMENT_PREFIX.QUERY}-${index}`}
-							setFieldTouched={setFieldTouched}
-							setFieldValue={setFieldValue}
-							touched={touched[index]}
-							uiConfigurationJSON={element.uiConfigurationJSON}
-							uiConfigurationValues={
-								element.uiConfigurationValues
-							}
-						/>
-					) : (
-						<JSONElement
-							collapseAll={collapseAll}
-							elementTemplateJSON={element.elementTemplateJSON}
-							error={errors[index]}
-							id={element.id}
-							index={index}
-							isSubmitting={isSubmitting}
-							key={element.id}
-							onDeleteElement={onDeleteElement}
-							prefixedId={`${ELEMENT_PREFIX.QUERY}-${index}`}
-							setFieldTouched={setFieldTouched}
-							setFieldValue={setFieldValue}
-							touched={touched[index]}
-							uiConfigurationValues={
-								element.uiConfigurationValues
-							}
-						/>
-					);
-				})}
-			</>
-		);
-	};
+	const _renderSelectedElements = () => (
+		<>
+			{selectedElements.map((element, index) => {
+				return element.uiConfigurationJSON ? (
+					<Element
+						collapseAll={collapseAll}
+						elementTemplateJSON={element.elementTemplateJSON}
+						entityJSON={entityJSON}
+						error={errors[index]}
+						id={element.id}
+						index={index}
+						indexFields={indexFields}
+						isSubmitting={isSubmitting}
+						key={element.id}
+						onBlur={onBlur}
+						onChange={onChange}
+						onDeleteElement={onDeleteElement}
+						prefixedId={`${ELEMENT_PREFIX.QUERY}-${index}`}
+						setFieldTouched={setFieldTouched}
+						setFieldValue={setFieldValue}
+						touched={touched[index]}
+						uiConfigurationJSON={element.uiConfigurationJSON}
+						uiConfigurationValues={element.uiConfigurationValues}
+					/>
+				) : (
+					<JSONElement
+						collapseAll={collapseAll}
+						elementTemplateJSON={element.elementTemplateJSON}
+						error={errors[index]}
+						id={element.id}
+						index={index}
+						isSubmitting={isSubmitting}
+						key={element.id}
+						onDeleteElement={onDeleteElement}
+						prefixedId={`${ELEMENT_PREFIX.QUERY}-${index}`}
+						setFieldTouched={setFieldTouched}
+						setFieldValue={setFieldValue}
+						touched={touched[index]}
+						uiConfigurationValues={element.uiConfigurationValues}
+					/>
+				);
+			})}
+		</>
+	);
 
 	return (
 		<ClayLayout.ContainerFluid
