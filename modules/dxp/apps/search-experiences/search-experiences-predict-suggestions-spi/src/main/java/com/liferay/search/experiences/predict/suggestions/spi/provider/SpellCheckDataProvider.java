@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * @author Petteri Karttunen
  */
-public interface TypeaheadDataProvider {
+public interface SpellCheckDataProvider {
 
 	public List<SuggestionResponse<String>> getSuggestions(
 		SuggestionAttributes suggestionAttributes);
