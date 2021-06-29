@@ -25,21 +25,19 @@ public interface BlueprintsWebPortletPreferences {
 
 	public Optional<Long> getBlueprintIdOptional();
 
-	public int getDidYouMeanHitsThreshold();
-
 	public int getKeywordIndexingHitsThreshold();
 
-	public int getMaxDidYouMeanSuggestions();
+	public int getMaxSpellCheckSuggestions();
 
-	public int getMaxTypeaheadSuggestions();
+	public int getSpellCheckHitsThreshold();
 
-	public String getTitleTypeaheadEntryClassNames();
-
-	public boolean isDidYouMeanEnabled();
+	public String getTypeaheadConfiguration();
 
 	public boolean isKeywordIndexingEnabled();
 
 	public boolean isMisspellingsEnabled();
+
+	public boolean isSpellCheckEnabled();
 
 	public boolean isTypeaheadEnabled();
 
