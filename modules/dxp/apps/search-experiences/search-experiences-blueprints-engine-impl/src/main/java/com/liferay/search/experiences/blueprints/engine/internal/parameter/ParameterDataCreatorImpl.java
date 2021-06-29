@@ -14,6 +14,8 @@
 
 package com.liferay.search.experiences.blueprints.engine.internal.parameter;
 
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -39,8 +41,6 @@ import com.liferay.search.experiences.blueprints.engine.spi.parameter.ParameterC
 import com.liferay.search.experiences.blueprints.message.Messages;
 import com.liferay.search.experiences.blueprints.model.Blueprint;
 import com.liferay.search.experiences.blueprints.util.BlueprintHelper;
-import com.liferay.search.experiences.blueprints.util.component.ServiceComponentReference;
-import com.liferay.search.experiences.blueprints.util.component.ServiceComponentReferenceUtil;
 import com.liferay.search.experiences.blueprints.util.util.MessagesUtil;
 
 import java.util.ArrayList;
@@ -49,12 +49,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 
 /**
  * @author Petteri Karttunen
@@ -121,59 +121,37 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 		Map<String, List<ParameterDefinition>> contributedParameterDefinitions =
 			new HashMap<>();
 
-		for (Map.Entry<String, ServiceComponentReference<ParameterContributor>>
-				entry : _parameterContributors.entrySet()) {
+		Set<String> keySet = _parameterContributorServiceTrackerMap.keySet();
 
-			ServiceComponentReference<ParameterContributor> value =
-				entry.getValue();
+		keySet.forEach(
+			name -> {
+				ParameterContributor parameterContributor =
+					_parameterContributorServiceTrackerMap.getService(name);
 
-			ParameterContributor parameterContributor =
-				value.getServiceComponent();
-
-			contributedParameterDefinitions.put(
-				parameterContributor.getCategoryNameKey(),
-				parameterContributor.getParameterDefinitions());
-		}
+				contributedParameterDefinitions.put(
+					parameterContributor.getCategoryNameKey(),
+					parameterContributor.getParameterDefinitions());
+			});
 
 		return contributedParameterDefinitions;
 	}
 
-	@Reference(
-		cardinality = ReferenceCardinality.MULTIPLE,
-		policy = ReferencePolicy.DYNAMIC
-	)
-	protected void registerKeywordsProcessor(
-		KeywordsProcessor keywordsProcessor, Map<String, Object> properties) {
+	@Activate
+	protected void activate(BundleContext bundleContext) {
+		_keywordsProcessorServiceTrackerMap =
+			ServiceTrackerMapFactory.openSingleValueMap(
+				bundleContext, KeywordsProcessor.class, "name");
 
-		ServiceComponentReferenceUtil.addToMapByName(
-			_keywordsProcessors, keywordsProcessor, properties);
+		_parameterContributorServiceTrackerMap =
+			ServiceTrackerMapFactory.openSingleValueMap(
+				bundleContext, ParameterContributor.class, "name");
 	}
 
-	@Reference(
-		cardinality = ReferenceCardinality.MULTIPLE,
-		policy = ReferencePolicy.DYNAMIC
-	)
-	protected void registerParameterContributor(
-		ParameterContributor parameterContributor,
-		Map<String, Object> properties) {
+	@Deactivate
+	protected void deactivate() {
+		_keywordsProcessorServiceTrackerMap.close();
 
-		ServiceComponentReferenceUtil.addToMapByName(
-			_parameterContributors, parameterContributor, properties);
-	}
-
-	protected void unregisterKeywordsProcessor(
-		KeywordsProcessor keywordsProcessor, Map<String, Object> properties) {
-
-		ServiceComponentReferenceUtil.removeFromMapByName(
-			_keywordsProcessors, keywordsProcessor, properties);
-	}
-
-	protected void unregisterParameterContributor(
-		ParameterContributor parameterContributor,
-		Map<String, Object> properties) {
-
-		ServiceComponentReferenceUtil.removeFromMapByName(
-			_parameterContributors, parameterContributor, properties);
+		_parameterContributorServiceTrackerMap.close();
 	}
 
 	private void _addCustomParameter(
@@ -329,13 +307,11 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 		String keywords, Blueprint blueprint,
 		BlueprintsAttributes blueprintsAttributes, Messages messages) {
 
-		for (Map.Entry<String, ServiceComponentReference<KeywordsProcessor>>
-				entry : _keywordsProcessors.entrySet()) {
+		Set<String> keySet = _keywordsProcessorServiceTrackerMap.keySet();
 
-			ServiceComponentReference<KeywordsProcessor> value =
-				entry.getValue();
-
-			KeywordsProcessor keywordsProcessor = value.getServiceComponent();
+		for (String name : keySet) {
+			KeywordsProcessor keywordsProcessor =
+				_keywordsProcessorServiceTrackerMap.getService(name);
 
 			keywords = keywordsProcessor.process(
 				keywords, blueprint, blueprintsAttributes, messages);
@@ -348,19 +324,17 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 		ParameterDataBuilder parameterDataBuilder, Blueprint blueprint,
 		BlueprintsAttributes blueprintsAttributes, Messages messages) {
 
-		for (Map.Entry<String, ServiceComponentReference<ParameterContributor>>
-				entry : _parameterContributors.entrySet()) {
+		Set<String> keySet = _parameterContributorServiceTrackerMap.keySet();
 
-			ServiceComponentReference<ParameterContributor> value =
-				entry.getValue();
+		keySet.forEach(
+			name -> {
+				ParameterContributor parameterContributor =
+					_parameterContributorServiceTrackerMap.getService(name);
 
-			ParameterContributor parameterContributor =
-				value.getServiceComponent();
-
-			parameterContributor.contribute(
-				parameterDataBuilder, blueprint, blueprintsAttributes,
-				messages);
-		}
+				parameterContributor.contribute(
+					parameterDataBuilder, blueprint, blueprintsAttributes,
+					messages);
+			});
 	}
 
 	private void _logParameters(ParameterData parameterData) {
@@ -384,14 +358,13 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 	@Reference
 	private BlueprintHelper _blueprintHelper;
 
-	private volatile Map<String, ServiceComponentReference<KeywordsProcessor>>
-		_keywordsProcessors = new ConcurrentHashMap<>();
+	private ServiceTrackerMap<String, KeywordsProcessor>
+		_keywordsProcessorServiceTrackerMap;
 
 	@Reference
 	private ParameterBuilderFactory _parameterBuilderFactory;
 
-	private volatile Map
-		<String, ServiceComponentReference<ParameterContributor>>
-			_parameterContributors = new ConcurrentHashMap<>();
+	private ServiceTrackerMap<String, ParameterContributor>
+		_parameterContributorServiceTrackerMap;
 
 }

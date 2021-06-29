@@ -14,17 +14,14 @@
 
 package com.liferay.search.experiences.blueprints.engine.internal.parameter;
 
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 import com.liferay.search.experiences.blueprints.engine.internal.parameter.builder.ParameterBuilder;
-import com.liferay.search.experiences.blueprints.util.component.ServiceComponentReference;
-import com.liferay.search.experiences.blueprints.util.component.ServiceComponentReferenceUtil;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.Deactivate;
 
 /**
  * @author Petteri Karttunen
@@ -36,36 +33,30 @@ public class ParameterBuilderFactoryImpl implements ParameterBuilderFactory {
 	public ParameterBuilder getBuilder(String name)
 		throws IllegalArgumentException {
 
-		ServiceComponentReference<ParameterBuilder> serviceComponentReference =
-			_parameterBuilders.get(name);
+		ParameterBuilder parameterBuilder =
+			_parameterBuilderServiceTrackerMap.getService(name);
 
-		if (serviceComponentReference == null) {
+		if (parameterBuilder == null) {
 			throw new IllegalArgumentException(
 				"No registered parameter builder " + name);
 		}
 
-		return serviceComponentReference.getServiceComponent();
+		return parameterBuilder;
 	}
 
-	@Reference(
-		cardinality = ReferenceCardinality.MULTIPLE,
-		policy = ReferencePolicy.DYNAMIC
-	)
-	protected void registerParameterBuilder(
-		ParameterBuilder parameterBuilder, Map<String, Object> properties) {
-
-		ServiceComponentReferenceUtil.addToMapByName(
-			_parameterBuilders, parameterBuilder, properties);
+	@Activate
+	protected void activate(BundleContext bundleContext) {
+		_parameterBuilderServiceTrackerMap =
+			ServiceTrackerMapFactory.openSingleValueMap(
+				bundleContext, ParameterBuilder.class, "name");
 	}
 
-	protected void unregisterParameterBuilder(
-		ParameterBuilder parameterBuilder, Map<String, Object> properties) {
-
-		ServiceComponentReferenceUtil.removeFromMapByName(
-			_parameterBuilders, parameterBuilder, properties);
+	@Deactivate
+	protected void deactivate() {
+		_parameterBuilderServiceTrackerMap.close();
 	}
 
-	private volatile Map<String, ServiceComponentReference<ParameterBuilder>>
-		_parameterBuilders = new ConcurrentHashMap<>();
+	private ServiceTrackerMap<String, ParameterBuilder>
+		_parameterBuilderServiceTrackerMap;
 
 }

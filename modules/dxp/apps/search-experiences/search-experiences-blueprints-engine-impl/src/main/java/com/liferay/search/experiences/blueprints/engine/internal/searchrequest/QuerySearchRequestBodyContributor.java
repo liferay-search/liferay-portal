@@ -14,6 +14,8 @@
 
 package com.liferay.search.experiences.blueprints.engine.internal.searchrequest;
 
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
@@ -38,18 +40,17 @@ import com.liferay.search.experiences.blueprints.engine.spi.searchrequest.Search
 import com.liferay.search.experiences.blueprints.message.Messages;
 import com.liferay.search.experiences.blueprints.model.Blueprint;
 import com.liferay.search.experiences.blueprints.util.BlueprintHelper;
-import com.liferay.search.experiences.blueprints.util.component.ServiceComponentReference;
-import com.liferay.search.experiences.blueprints.util.component.ServiceComponentReferenceUtil;
 import com.liferay.search.experiences.blueprints.util.util.MessagesUtil;
 
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Set;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 
 /**
  * @author Petteri Karttunen
@@ -78,22 +79,16 @@ public class QuerySearchRequestBodyContributor
 			searchRequestBuilder, parameterData, blueprint, messages);
 	}
 
-	@Reference(
-		cardinality = ReferenceCardinality.MULTIPLE,
-		policy = ReferencePolicy.DYNAMIC
-	)
-	protected void registerQueryContributor(
-		QueryContributor queryContributor, Map<String, Object> properties) {
-
-		ServiceComponentReferenceUtil.addToMapByName(
-			_queryContributors, queryContributor, properties);
+	@Activate
+	protected void activate(BundleContext bundleContext) {
+		_queryContributorServiceTrackerMap =
+			ServiceTrackerMapFactory.openSingleValueMap(
+				bundleContext, QueryContributor.class, "name");
 	}
 
-	protected void unregisterQueryContributor(
-		QueryContributor queryContributor, Map<String, Object> properties) {
-
-		ServiceComponentReferenceUtil.removeFromMapByName(
-			_queryContributors, queryContributor, properties);
+	@Deactivate
+	protected void deactivate() {
+		_queryContributorServiceTrackerMap.close();
 	}
 
 	private void _addPostFilterClause(
@@ -236,51 +231,50 @@ public class QuerySearchRequestBodyContributor
 			_log.debug("Processing query contributors");
 		}
 
-		if (_queryContributors.isEmpty()) {
+		Set<String> keySet = _queryContributorServiceTrackerMap.keySet();
+
+		if (keySet.isEmpty()) {
 			return;
 		}
 
-		for (Map.Entry<String, ServiceComponentReference<QueryContributor>>
-				entry : _queryContributors.entrySet()) {
+		keySet.forEach(
+			name -> {
+				QueryContributor queryContributor =
+					_queryContributorServiceTrackerMap.getService(name);
 
-			try {
-				ServiceComponentReference<QueryContributor> value =
-					entry.getValue();
+				try {
+					Optional<Query> queryOptional = queryContributor.build(
+						blueprint, parameterData, messages);
 
-				QueryContributor queryContributor = value.getServiceComponent();
+					if (!queryOptional.isPresent()) {
+						return;
+					}
 
-				Optional<Query> queryOptional = queryContributor.build(
-					blueprint, parameterData, messages);
+					ClauseContext clauseContext =
+						queryContributor.getClauseContext();
 
-				if (!queryOptional.isPresent()) {
-					continue;
+					if (clauseContext.equals(ClauseContext.POST_FILTER)) {
+						_addPostFilterClause(
+							searchRequestBuilder, queryOptional.get(),
+							queryContributor.getOccur());
+					}
+					else if (clauseContext.equals(ClauseContext.QUERY)) {
+						_addQueryClause(
+							searchRequestBuilder, queryOptional.get(),
+							queryContributor.getOccur());
+					}
+					else if (clauseContext.equals(ClauseContext.RESCORE)) {
+						_addRescoreClause(
+							searchRequestBuilder, queryOptional.get(),
+							queryContributor);
+					}
 				}
-
-				ClauseContext clauseContext =
-					queryContributor.getClauseContext();
-
-				if (clauseContext.equals(ClauseContext.POST_FILTER)) {
-					_addPostFilterClause(
-						searchRequestBuilder, queryOptional.get(),
-						queryContributor.getOccur());
+				catch (Exception exception) {
+					MessagesUtil.unknownError(
+						messages, getClass().getName(), exception, null, null,
+						null);
 				}
-				else if (clauseContext.equals(ClauseContext.QUERY)) {
-					_addQueryClause(
-						searchRequestBuilder, queryOptional.get(),
-						queryContributor.getOccur());
-				}
-				else if (clauseContext.equals(ClauseContext.RESCORE)) {
-					_addRescoreClause(
-						searchRequestBuilder, queryOptional.get(),
-						queryContributor);
-				}
-			}
-			catch (Exception exception) {
-				MessagesUtil.unknownError(
-					messages, getClass().getName(), exception, null, null,
-					null);
-			}
-		}
+			});
 	}
 
 	private ClauseContext _getClauseContext(JSONObject jsonObject) {
@@ -366,8 +360,8 @@ public class QuerySearchRequestBodyContributor
 	@Reference
 	private Queries _queries;
 
-	private volatile Map<String, ServiceComponentReference<QueryContributor>>
-		_queryContributors = new ConcurrentHashMap<>();
+	private ServiceTrackerMap<String, QueryContributor>
+		_queryContributorServiceTrackerMap;
 
 	@Reference
 	private RescoreBuilderFactory _rescoreBuilderFactory;

@@ -14,6 +14,8 @@
 
 package com.liferay.search.experiences.blueprints.engine.internal.executor;
 
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -30,18 +32,16 @@ import com.liferay.search.experiences.blueprints.engine.spi.query.QueryPostProce
 import com.liferay.search.experiences.blueprints.message.Messages;
 import com.liferay.search.experiences.blueprints.model.Blueprint;
 import com.liferay.search.experiences.blueprints.util.BlueprintHelper;
-import com.liferay.search.experiences.blueprints.util.component.ServiceComponentReference;
-import com.liferay.search.experiences.blueprints.util.component.ServiceComponentReferenceUtil;
 import com.liferay.search.experiences.blueprints.util.util.MessagesUtil;
 
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Set;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 
 /**
  * @author Petteri Karttunen
@@ -61,22 +61,16 @@ public class SearchExecutorImpl implements SearchExecutor {
 			searchRequestBuilder2, parameterData, blueprint, messages);
 	}
 
-	@Reference(
-		cardinality = ReferenceCardinality.MULTIPLE,
-		policy = ReferencePolicy.DYNAMIC
-	)
-	protected void registerQueryPostProcessor(
-		QueryPostProcessor queryPostProcessor, Map<String, Object> properties) {
-
-		ServiceComponentReferenceUtil.addToMapByName(
-			_queryPostProcessors, queryPostProcessor, properties);
+	@Activate
+	protected void activate(BundleContext bundleContext) {
+		_queryPostProcessorServiceTrackerMap =
+			ServiceTrackerMapFactory.openSingleValueMap(
+				bundleContext, QueryPostProcessor.class, "name");
 	}
 
-	protected void unregisterQueryPostProcessor(
-		QueryPostProcessor queryPostProcessor, Map<String, Object> properties) {
-
-		ServiceComponentReferenceUtil.removeFromMapByName(
-			_queryPostProcessors, queryPostProcessor, properties);
+	@Deactivate
+	protected void deactivate() {
+		_queryPostProcessorServiceTrackerMap.close();
 	}
 
 	private void _checkErrors(
@@ -131,21 +125,20 @@ public class SearchExecutorImpl implements SearchExecutor {
 			_log.debug("Executing query post processors");
 		}
 
-		if (_queryPostProcessors == null) {
+		Set<String> keySet = _queryPostProcessorServiceTrackerMap.keySet();
+
+		if (keySet.isEmpty()) {
 			return;
 		}
 
-		for (Map.Entry<String, ServiceComponentReference<QueryPostProcessor>>
-				entry : _queryPostProcessors.entrySet()) {
+		keySet.forEach(
+			name -> {
+				QueryPostProcessor queryPostProcessor =
+					_queryPostProcessorServiceTrackerMap.getService(name);
 
-			ServiceComponentReference<QueryPostProcessor> value =
-				entry.getValue();
-
-			QueryPostProcessor queryPostProcessor = value.getServiceComponent();
-
-			queryPostProcessor.process(
-				searchResponse, blueprint, parameterData, messages);
-		}
+				queryPostProcessor.process(
+					searchResponse, blueprint, parameterData, messages);
+			});
 	}
 
 	private SearchRequestBuilder _rescoreOrSort(
@@ -173,8 +166,8 @@ public class SearchExecutorImpl implements SearchExecutor {
 	@Reference
 	private BlueprintHelper _blueprintHelper;
 
-	private volatile Map<String, ServiceComponentReference<QueryPostProcessor>>
-		_queryPostProcessors = new ConcurrentHashMap<>();
+	private ServiceTrackerMap<String, QueryPostProcessor>
+		_queryPostProcessorServiceTrackerMap;
 
 	@Reference
 	private Searcher _searcher;

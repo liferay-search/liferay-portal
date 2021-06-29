@@ -14,17 +14,16 @@
 
 package com.liferay.search.experiences.blueprints.engine.internal.aggregation;
 
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 import com.liferay.search.experiences.blueprints.engine.spi.aggregation.AggregationTranslator;
-import com.liferay.search.experiences.blueprints.util.component.ServiceComponentReference;
-import com.liferay.search.experiences.blueprints.util.component.ServiceComponentReferenceUtil;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Set;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.Deactivate;
 
 /**
  * @author Petteri Karttunen
@@ -37,45 +36,37 @@ public class AggregationTranslatorFactoryImpl
 	public AggregationTranslator getTranslator(String name)
 		throws IllegalArgumentException {
 
-		ServiceComponentReference<AggregationTranslator>
-			serviceComponentReference = _aggregationTranslators.get(name);
+		AggregationTranslator aggregationTranslator =
+			_aggregationTranslatorServiceTrackerMap.getService(name);
 
-		if (serviceComponentReference == null) {
+		if (aggregationTranslator == null) {
 			throw new IllegalArgumentException(
 				"Unable to find aggregation translator " + name);
 		}
 
-		return serviceComponentReference.getServiceComponent();
+		return aggregationTranslator;
 	}
 
 	@Override
 	public String[] getTranslatorNames() {
-		return ServiceComponentReferenceUtil.getComponentKeys(
-			_aggregationTranslators);
+		Set<String> keySet = _aggregationTranslatorServiceTrackerMap.keySet();
+
+		return keySet.toArray(new String[0]);
 	}
 
-	@Reference(
-		cardinality = ReferenceCardinality.MULTIPLE,
-		policy = ReferencePolicy.DYNAMIC
-	)
-	protected void registerAggregationTranslator(
-		AggregationTranslator aggregationTranslator,
-		Map<String, Object> properties) {
-
-		ServiceComponentReferenceUtil.addToMapByName(
-			_aggregationTranslators, aggregationTranslator, properties);
+	@Activate
+	protected void activate(BundleContext bundleContext) {
+		_aggregationTranslatorServiceTrackerMap =
+			ServiceTrackerMapFactory.openSingleValueMap(
+				bundleContext, AggregationTranslator.class, "name");
 	}
 
-	protected void unregisterAggregationTranslator(
-		AggregationTranslator aggregationTranslator,
-		Map<String, Object> properties) {
-
-		ServiceComponentReferenceUtil.removeFromMapByName(
-			_aggregationTranslators, aggregationTranslator, properties);
+	@Deactivate
+	protected void deactivate() {
+		_aggregationTranslatorServiceTrackerMap.close();
 	}
 
-	private volatile Map
-		<String, ServiceComponentReference<AggregationTranslator>>
-			_aggregationTranslators = new ConcurrentHashMap<>();
+	private ServiceTrackerMap<String, AggregationTranslator>
+		_aggregationTranslatorServiceTrackerMap;
 
 }
