@@ -20,12 +20,11 @@ import java.util.Map;
 /**
  * @author Petteri Karttunen
  */
-public class Suggestion<T> {
+public class SuggestionResponse<T> {
 
-	public Suggestion(T payload, float score, String provider) {
+	public SuggestionResponse(T payload, float score) {
 		_payload = payload;
 		_score = score;
-		_provider = provider;
 	}
 
 	public void addAttribute(String key, String value) {
@@ -52,21 +51,12 @@ public class Suggestion<T> {
 		return _payload;
 	}
 
-	public String getProvider() {
-		return _provider;
-	}
-
 	public float getScore() {
 		return _score;
 	}
 
-	public void setScore(float score) {
-		_score = score;
-	}
-
 	private Map<String, String> _attributes;
 	private final T _payload;
-	private final String _provider;
-	private float _score;
+	private final float _score;
 
 }
