@@ -14,17 +14,16 @@
 
 package com.liferay.search.experiences.blueprints.engine.internal.clause;
 
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 import com.liferay.search.experiences.blueprints.engine.spi.clause.ClauseTranslator;
-import com.liferay.search.experiences.blueprints.util.component.ServiceComponentReference;
-import com.liferay.search.experiences.blueprints.util.component.ServiceComponentReferenceUtil;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Set;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.Deactivate;
 
 /**
  * @author Petteri Karttunen
@@ -36,42 +35,37 @@ public class ClauseTranslatorFactoryImpl implements ClauseTranslatorFactory {
 	public ClauseTranslator getTranslator(String name)
 		throws IllegalArgumentException {
 
-		ServiceComponentReference<ClauseTranslator> serviceComponentReference =
-			_clauseTranslators.get(name);
+		ClauseTranslator clauseTranslator =
+			_clauseTranslatorServiceTrackerMap.getService(name);
 
-		if (serviceComponentReference == null) {
+		if (clauseTranslator == null) {
 			throw new IllegalArgumentException(
 				"No registered clause translator " + name);
 		}
 
-		return serviceComponentReference.getServiceComponent();
+		return clauseTranslator;
 	}
 
 	@Override
 	public String[] getTranslatorNames() {
-		return ServiceComponentReferenceUtil.getComponentKeys(
-			_clauseTranslators);
+		Set<String> keySet = _clauseTranslatorServiceTrackerMap.keySet();
+
+		return keySet.toArray(new String[0]);
 	}
 
-	@Reference(
-		cardinality = ReferenceCardinality.MULTIPLE,
-		policy = ReferencePolicy.DYNAMIC
-	)
-	protected void registerClauseTranslator(
-		ClauseTranslator clauseTranslator, Map<String, Object> properties) {
-
-		ServiceComponentReferenceUtil.addToMapByName(
-			_clauseTranslators, clauseTranslator, properties);
+	@Activate
+	protected void activate(BundleContext bundleContext) {
+		_clauseTranslatorServiceTrackerMap =
+			ServiceTrackerMapFactory.openSingleValueMap(
+				bundleContext, ClauseTranslator.class, "name");
 	}
 
-	protected void unregisterClauseTranslator(
-		ClauseTranslator clauseTranslator, Map<String, Object> properties) {
-
-		ServiceComponentReferenceUtil.removeFromMapByName(
-			_clauseTranslators, clauseTranslator, properties);
+	@Deactivate
+	protected void deactivate() {
+		_clauseTranslatorServiceTrackerMap.close();
 	}
 
-	private volatile Map<String, ServiceComponentReference<ClauseTranslator>>
-		_clauseTranslators = new ConcurrentHashMap<>();
+	private ServiceTrackerMap<String, ClauseTranslator>
+		_clauseTranslatorServiceTrackerMap;
 
 }
