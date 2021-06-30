@@ -10,7 +10,7 @@ definition {
 		}
 
 		if (isSet(clauseOption)) {
-			LexiconCard.clickCard(card = "Custom Clauses");
+			LexiconCard.clickCard(card = "Baseline Clauses");
 		}
 		else {
 			LexiconCard.clickCard(card = "Liferay Default Clauses");

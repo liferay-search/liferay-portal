@@ -261,6 +261,16 @@ definition {
 		SearchResultPortlet.viewSearchResultsSpecificOrder(resultsList = "Closest Location,Closer Location,Close Location");
 	}
 
+	test CreateBaselineClauseBlueprint {
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		SearchExperiences.addBlueprint(
+			clauseOption = "Baseline Clause",
+			name = "Baseline clause blueprint");
+
+		VerifyElementPresent(locator1 = "Message#SUCCESS");
+	}
+
 	@priority = "4"
 	test HideWebContentViaCustomElement {
 		JSONWebcontent.addWebContent(
