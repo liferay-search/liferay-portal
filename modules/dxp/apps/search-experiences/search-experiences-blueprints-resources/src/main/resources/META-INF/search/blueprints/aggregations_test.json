@@ -539,6 +539,81 @@
       },
       "facet_configuration": {},
       "framework_configuration": {
+        "clause_contributors": {
+          "QueryPrefilterContributor": {
+            "com.liferay.portal.search.internal.spi.model.query.contributor.UserIdQueryPreFilterContributor": false,
+            "com.liferay.portal.search.internal.spi.model.query.contributor.AssetCategoryIdsQueryPreFilterContributor": false,
+            "com.liferay.asset.internal.search.spi.model.query.contributor.AssetEntryModelPreFilterContributor": false,
+            "com.liferay.portal.search.internal.spi.model.query.contributor.FolderIdQueryPreFilterContributor": false,
+            "com.liferay.portal.search.internal.spi.model.query.contributor.AssetTagNamesQueryPreFilterContributor": false,
+            "com.liferay.portal.search.internal.spi.model.query.contributor.LayoutQueryPreFilterContributor": false
+          },
+          "KeywordQueryContributor": {
+            "com.liferay.dynamic.data.mapping.internal.search.spi.model.query.contributor.DDMStructureLayoutKeywordQueryContributor": false,
+            "com.liferay.address.internal.search.spi.model.query.contributor.AddressKeywordQueryContributor": false,
+            "com.liferay.portal.search.internal.spi.model.query.contributor.AssetTagNamesKeywordQueryContributor": false,
+            "com.liferay.asset.categories.internal.search.spi.model.query.contributor.AssetVocabularyKeywordQueryContributor": false,
+            "com.liferay.calendar.internal.search.spi.model.query.contributor.CalendarBookingKeywordQueryContributor": false,
+            "com.liferay.dynamic.data.lists.internal.search.spi.model.query.contributor.DDLRecordSetKeywordQueryContributor": false,
+            "com.liferay.calendar.internal.search.spi.model.query.contributor.CalendarKeywordQueryContributor": false,
+            "com.liferay.document.library.internal.search.spi.model.query.contributor.DLFileEntryKeywordQueryContributor": false,
+            "com.liferay.dynamic.data.mapping.internal.search.spi.model.query.contributor.DDMStructureKeywordQueryContributor": false,
+            "com.liferay.asset.tags.internal.search.spi.model.query.contributor.AssetTagKeywordQueryContributor": false,
+            "com.liferay.depot.internal.search.spi.model.query.contributor.DepotEntryKeywordQueryContributor": false,
+            "com.liferay.organizations.internal.search.spi.model.query.contributor.OrganizationKeywordQueryContributor": false,
+            "com.liferay.portal.search.internal.spi.model.query.contributor.AssetCategoryTitlesKeywordQueryContributor": false,
+            "com.liferay.portal.search.internal.spi.model.query.contributor.DefaultKeywordQueryContributor": false,
+            "com.liferay.layout.internal.search.spi.model.query.contributor.LayoutKeywordQueryContributor": false,
+            "com.liferay.translation.internal.search.spi.model.query.contributor.TranslationEntryKeywordQueryContributor": false,
+            "com.liferay.portal.workflow.kaleo.internal.search.spi.model.query.contributor.KaleoInstanceTokenKeywordQueryContributor": false,
+            "com.liferay.data.engine.internal.search.spi.model.query.contributor.DEDataListViewKeywordQueryContributor": false,
+            "com.liferay.portal.search.internal.spi.model.query.contributor.AlwaysPresentFieldsKeywordQueryContributor": false,
+            "com.liferay.contacts.internal.search.spi.model.query.contributor.ContactKeywordQueryContributor": false,
+            "com.liferay.portal.search.internal.spi.model.query.contributor.AssetInternalCategoryTitlesKeywordQueryContributor": false,
+            "com.liferay.redirect.internal.search.spi.model.query.contributor.RedirectNotFoundEntryKeywordQueryContributor": false,
+            "com.liferay.exportimport.internal.search.spi.model.query.contributor.ExportImportConfigurationKeywordQueryContributor": false,
+            "com.liferay.users.admin.internal.search.spi.model.query.contributor.UserKeywordQueryContributor": false,
+            "com.liferay.account.internal.search.spi.model.query.contributor.AccountGroupKeywordQueryContributor": false,
+            "com.liferay.dynamic.data.mapping.internal.search.spi.model.query.contributor.DDMFormInstanceRecordKeywordQueryContributor": false,
+            "com.liferay.dynamic.data.mapping.internal.search.spi.model.query.contributor.DDMTemplateKeywordQueryContributor": false,
+            "com.liferay.redirect.internal.search.spi.model.query.contributor.RedirectEntryKeywordQueryContributor": false,
+            "com.liferay.blogs.internal.search.spi.model.query.contributor.BlogsEntryKeywordQueryContributor": false,
+            "com.liferay.asset.categories.internal.search.spi.model.query.contributor.AssetCategoryKeywordQueryContributor": false,
+            "com.liferay.segments.internal.search.spi.model.query.contributor.SegmentsEntryKeywordQueryContributor": false,
+            "com.liferay.account.internal.search.spi.model.query.contributor.AccountEntryKeywordQueryContributor": false
+          },
+          "ModelPrefilterContributor": {
+            "com.liferay.portal.workflow.kaleo.internal.search.spi.model.query.contributor.KaleoInstanceModelPreFilterContributor": false,
+            "com.liferay.calendar.internal.search.spi.model.query.contributor.CalendarBookingModelPreFilterContributor": false,
+            "com.liferay.dynamic.data.mapping.internal.search.spi.model.query.contributor.DDMStructureModelPreFilterContributor": false,
+            "com.liferay.message.boards.internal.search.spi.model.query.contributor.MBThreadModelPreFilterContributor": false,
+            "com.liferay.data.engine.internal.search.spi.model.query.contributor.DEDataListViewModelPreFilterContributor": false,
+            "com.liferay.organizations.internal.search.spi.model.query.contributor.OrganizationModelPreFilterContributor": false,
+            "com.liferay.document.library.internal.search.spi.model.query.contributor.DLFolderModelPreFilterContributor": false,
+            "com.liferay.asset.categories.internal.search.spi.model.query.contributor.AssetCategoryModelPreFilterContributor": false,
+            "com.liferay.portal.workflow.kaleo.internal.search.spi.model.query.contributor.KaleoInstanceTokenModelPreFilterContributor": false,
+            "com.liferay.account.internal.search.spi.model.query.contributor.OrganizationModelPreFilterContributor": false,
+            "com.liferay.exportimport.internal.search.spi.model.query.contributor.ExportImportConfigurationModelPreFilterContributor": false,
+            "com.liferay.account.internal.search.spi.model.query.contributor.UserModelPreFilterContributor": false,
+            "com.liferay.bookmarks.internal.search.spi.model.query.contributor.BookmarksEntryModelPreFilterContributor": false,
+            "com.liferay.portal.search.internal.spi.model.query.contributor.StagingModelPreFilterContributor": false,
+            "com.liferay.dynamic.data.lists.internal.search.spi.model.query.contributor.DDLRecordSetModelPreFilterContributor": false,
+            "com.liferay.users.admin.internal.search.spi.model.query.contributor.UserModelPreFilterContributor": false,
+            "com.liferay.message.boards.internal.search.spi.model.query.contributor.MBCategoryModelPreFilterContributor": false,
+            "com.liferay.account.internal.search.spi.model.query.contributor.AccountEntryModelPreFilterContributor": false,
+            "com.liferay.dynamic.data.mapping.internal.search.spi.model.query.contributor.DDMStructureLayoutModelPreFilterContributor": false,
+            "com.liferay.segments.internal.search.spi.model.query.contributor.UserModelPreFilterContributor": false,
+            "com.liferay.layout.internal.search.spi.model.query.contributor.LayoutModelPreFilterContributor": false,
+            "com.liferay.bookmarks.internal.search.spi.model.query.contributor.BookmarksFolderModelPreFilterContributor": false,
+            "com.liferay.dynamic.data.mapping.internal.search.spi.model.query.contributor.DDMTemplateModelPreFilterContributor": false,
+            "com.liferay.segments.internal.search.spi.model.query.contributor.SegmentsEntryModelPreFilterContributor": false,
+            "com.liferay.object.internal.search.spi.model.query.contributor.ObjectEntryModelPreFilterContributor": false,
+            "com.liferay.blogs.internal.search.spi.model.query.contributor.BlogsEntryModelPreFilterContributor": false,
+            "com.liferay.portal.workflow.kaleo.internal.search.spi.model.query.contributor.KaleoLogModelPreFilterContributor": false,
+            "com.liferay.portal.search.internal.spi.model.query.contributor.WorkflowStatusModelPreFilterContributor": false,
+            "com.liferay.redirect.internal.search.spi.model.query.contributor.RedirectNotFoundEntryModelPreFilterContributor": false
+          }
+        },
         "searchable_asset_types": [
           "com.liferay.blogs.model.BlogsEntry",
           "com.liferay.bookmarks.model.BookmarksEntry",
@@ -559,863 +634,14 @@
         ],
         "apply_indexer_clauses": true
       },
-      "query_configuration": [
-        {
-          "clauses": [
-            {
-              "occur": "should",
-              "query": {
-                "wrapper": {
-                  "query": {
-                    "terms": {
-                      "assetTagNames.raw": [
-                        "helsinki university"
-                      ],
-                      "boost": 50
-                    }
-                  }
-                }
-              },
-              "context": "query"
-            }
-          ],
-          "icon": "thumbs-up",
-          "description": {
-            "en_US": "Boost contents having at least one of the given tags"
-          },
-          "category": "boost",
-          "conditions": {},
-          "title": {
-            "en_US": "Boost Tagged Contents"
-          },
-          "enabled": true
-        },
-        {
-          "clauses": [
-            {
-              "occur": "must",
-              "query": {
-                "wrapper": {
-                  "query": {
-                    "multi_match": {
-                      "fuzziness": "AUTO",
-                      "query": "${keywords}",
-                      "minimum_should_match": "1",
-                      "boost": 1,
-                      "fields": [
-                        "content${context.language_id}^1"
-                      ],
-                      "type": "best_fields",
-                      "operator": "or"
-                    }
-                  }
-                }
-              },
-              "context": "query"
-            }
-          ],
-          "icon": "picture",
-          "description": {
-            "en_US": "Search for a text match over multiple text fields"
-          },
-          "category": "match",
-          "conditions": {},
-          "title": {
-            "en_US": "Text Match Over Multiple Fields"
-          },
-          "enabled": true
-        },
-        {
-          "clauses": [
-            {
-              "occur": "must",
-              "query": {
-                "wrapper": {
-                  "query": {
-                    "multi_match": {
-                      "fuzziness": "AUTO",
-                      "query": "${keywords}",
-                      "minimum_should_match": "1",
-                      "boost": 10,
-                      "fields": [
-                        "localized_title${context.language_id}^2"
-                      ],
-                      "type": "best_fields",
-                      "operator": "or"
-                    }
-                  }
-                }
-              },
-              "context": "query"
-            }
-          ],
-          "icon": "picture",
-          "description": {
-            "en_US": "Search for a text match over multiple text fields"
-          },
-          "category": "match",
-          "conditions": {},
-          "title": {
-            "en_US": "Text Match Over Multiple Fields"
-          },
-          "enabled": true
-        },
-        {
-          "clauses": [
-            {
-              "occur": "should",
-              "query": {
-                "wrapper": {
-                  "query": {
-                    "multi_match": {
-                      "query": "${keywords}",
-                      "boost": 20,
-                      "fields": [
-                        "localized_title${context.language_id}^2",
-                        "content${context.language_id}^1"
-                      ],
-                      "type": "best_fields",
-                      "operator": "and"
-                    }
-                  }
-                }
-              },
-              "context": "query"
-            }
-          ],
-          "icon": "thumbs-up",
-          "description": {
-            "en_US": "Boost contents matching all the words in the search phrase"
-          },
-          "category": "boost",
-          "conditions": {},
-          "title": {
-            "en_US": "Boost All Keywords Match"
-          },
-          "enabled": true
-        },
-        {
-          "clauses": [
-            {
-              "occur": "should",
-              "query": {
-                "wrapper": {
-                  "query": {
-                    "multi_match": {
-                      "query": "${keywords}",
-                      "boost": 20,
-                      "fields": [
-                        "localized_title${context.language_id}^2",
-                        "content${context.language_id}^1"
-                      ],
-                      "type": "bool_prefix",
-                      "operator": "and"
-                    }
-                  }
-                }
-              },
-              "context": "query"
-            }
-          ],
-          "icon": "thumbs-up",
-          "description": {
-            "en_US": "Boost contents matching all the words in the search phrase"
-          },
-          "category": "boost",
-          "conditions": {},
-          "title": {
-            "en_US": "Boost All Keywords Match"
-          },
-          "enabled": true
-        }
-      ],
+      "query_configuration": [],
       "advanced_configuration": {}
     },
     "description": {
       "en_US": "All supported aggregations test"
     },
     "selectedElements": {
-      "query_configuration": [
-        {
-          "elementTemplateJSON": {
-            "clauses": [
-              {
-                "occur": "should",
-                "query": {
-                  "wrapper": {
-                    "query": {
-                      "terms": {
-                        "assetTagNames.raw": "${configuration.asset_tags}",
-                        "boost": "${configuration.boost}"
-                      }
-                    }
-                  }
-                },
-                "context": "query"
-              }
-            ],
-            "icon": "thumbs-up",
-            "description": {
-              "en_US": "Boost contents having at least one of the given tags"
-            },
-            "category": "boost",
-            "conditions": {},
-            "title": {
-              "en_US": "Boost Tagged Contents"
-            },
-            "enabled": true
-          },
-          "uiConfigurationValues": {
-            "asset_tags": [
-              {
-                "label": "helsinki university",
-                "value": "helsinki university"
-              }
-            ],
-            "boost": 50
-          },
-          "uiConfigurationJSON": {
-            "fieldSets": [
-              {
-                "fields": [
-                  {
-                    "name": "asset_tags",
-                    "label": "Asset Tags",
-                    "type": "multiselect"
-                  },
-                  {
-                    "defaultValue": 5,
-                    "name": "boost",
-                    "typeOptions": {
-                      "min": 0
-                    },
-                    "label": "Boost",
-                    "type": "number"
-                  }
-                ]
-              }
-            ]
-          }
-        },
-        {
-          "elementTemplateJSON": {
-            "clauses": [
-              {
-                "occur": "must",
-                "query": {
-                  "wrapper": {
-                    "query": {
-                      "multi_match": {
-                        "fuzziness": "${configuration.fuzziness}",
-                        "query": "${keywords}",
-                        "minimum_should_match": "${configuration.minimum_should_match}",
-                        "boost": "${configuration.boost}",
-                        "fields": "${configuration.fields}",
-                        "type": "${configuration.type}",
-                        "operator": "${configuration.operator}",
-                        "slop": "${configuration.slop}"
-                      }
-                    }
-                  }
-                },
-                "context": "query"
-              }
-            ],
-            "icon": "picture",
-            "description": {
-              "en_US": "Search for a text match over multiple text fields"
-            },
-            "category": "match",
-            "conditions": {},
-            "title": {
-              "en_US": "Text Match Over Multiple Fields"
-            },
-            "enabled": true
-          },
-          "uiConfigurationValues": {
-            "fuzziness": "AUTO",
-            "minimum_should_match": "1",
-            "boost": 1,
-            "fields": [
-              {
-                "field": "content",
-                "boost": "1",
-                "locale": "${context.language_id}"
-              }
-            ],
-            "type": "best_fields",
-            "operator": "or",
-            "slop": null
-          },
-          "uiConfigurationJSON": {
-            "fieldSets": [
-              {
-                "fields": [
-                  {
-                    "defaultValue": [
-                      {
-                        "field": "localized_title",
-                        "boost": "2",
-                        "locale": "${context.language_id}"
-                      },
-                      {
-                        "field": "content",
-                        "boost": "1",
-                        "locale": "${context.language_id}"
-                      }
-                    ],
-                    "name": "fields",
-                    "typeOptions": {
-                      "boost": true
-                    },
-                    "label": "Fields",
-                    "type": "fieldMappingList"
-                  },
-                  {
-                    "defaultValue": "or",
-                    "name": "operator",
-                    "typeOptions": {
-                      "options": [
-                        {
-                          "label": "OR",
-                          "value": "or"
-                        },
-                        {
-                          "label": "AND",
-                          "value": "and"
-                        }
-                      ]
-                    },
-                    "label": "Operator",
-                    "type": "select"
-                  },
-                  {
-                    "defaultValue": "best_fields",
-                    "name": "type",
-                    "typeOptions": {
-                      "options": [
-                        {
-                          "label": "Best Fields",
-                          "value": "best_fields"
-                        },
-                        {
-                          "label": "Most Fields",
-                          "value": "most_fields"
-                        },
-                        {
-                          "label": "Cross Fields",
-                          "value": "cross_fields"
-                        },
-                        {
-                          "label": "Phrase",
-                          "value": "phrase"
-                        },
-                        {
-                          "label": "Phrase Prefix",
-                          "value": "phrase_prefix"
-                        },
-                        {
-                          "label": "Boolean Prefix",
-                          "value": "bool_prefix"
-                        }
-                      ]
-                    },
-                    "label": "Match Type",
-                    "type": "select"
-                  },
-                  {
-                    "helpText": "Only use fuzziness with the following match types: most fields, best fields, bool prefix.",
-                    "defaultValue": "AUTO",
-                    "name": "fuzziness",
-                    "typeOptions": {
-                      "nullable": true,
-                      "options": [
-                        {
-                          "label": "Auto",
-                          "value": "AUTO"
-                        },
-                        {
-                          "label": "0",
-                          "value": "0"
-                        },
-                        {
-                          "label": "1",
-                          "value": "1"
-                        },
-                        {
-                          "label": "2",
-                          "value": "2"
-                        }
-                      ]
-                    },
-                    "label": "Fuzziness",
-                    "type": "select"
-                  },
-                  {
-                    "defaultValue": "1",
-                    "name": "minimum_should_match",
-                    "typeOptions": {
-                      "nullable": true
-                    },
-                    "label": "Minimum Should Match",
-                    "type": "text"
-                  },
-                  {
-                    "helpText": "Only use slop with the following match types: phrase, phrase prefix.",
-                    "defaultValue": null,
-                    "name": "slop",
-                    "typeOptions": {
-                      "min": 0,
-                      "nullable": true,
-                      "step": 1
-                    },
-                    "label": "Slop",
-                    "type": "number"
-                  },
-                  {
-                    "defaultValue": 1,
-                    "name": "boost",
-                    "typeOptions": {
-                      "min": 0
-                    },
-                    "label": "Boost",
-                    "type": "number"
-                  }
-                ]
-              }
-            ]
-          }
-        },
-        {
-          "elementTemplateJSON": {
-            "clauses": [
-              {
-                "occur": "must",
-                "query": {
-                  "wrapper": {
-                    "query": {
-                      "multi_match": {
-                        "fuzziness": "${configuration.fuzziness}",
-                        "query": "${keywords}",
-                        "minimum_should_match": "${configuration.minimum_should_match}",
-                        "boost": "${configuration.boost}",
-                        "fields": "${configuration.fields}",
-                        "type": "${configuration.type}",
-                        "operator": "${configuration.operator}",
-                        "slop": "${configuration.slop}"
-                      }
-                    }
-                  }
-                },
-                "context": "query"
-              }
-            ],
-            "icon": "picture",
-            "description": {
-              "en_US": "Search for a text match over multiple text fields"
-            },
-            "category": "match",
-            "conditions": {},
-            "title": {
-              "en_US": "Text Match Over Multiple Fields"
-            },
-            "enabled": true
-          },
-          "uiConfigurationValues": {
-            "fuzziness": "AUTO",
-            "minimum_should_match": "1",
-            "boost": 10,
-            "fields": [
-              {
-                "field": "localized_title",
-                "boost": "2",
-                "locale": "${context.language_id}"
-              }
-            ],
-            "type": "best_fields",
-            "operator": "or",
-            "slop": null
-          },
-          "uiConfigurationJSON": {
-            "fieldSets": [
-              {
-                "fields": [
-                  {
-                    "defaultValue": [
-                      {
-                        "field": "localized_title",
-                        "boost": "2",
-                        "locale": "${context.language_id}"
-                      },
-                      {
-                        "field": "content",
-                        "boost": "1",
-                        "locale": "${context.language_id}"
-                      }
-                    ],
-                    "name": "fields",
-                    "typeOptions": {
-                      "boost": true
-                    },
-                    "label": "Fields",
-                    "type": "fieldMappingList"
-                  },
-                  {
-                    "defaultValue": "or",
-                    "name": "operator",
-                    "typeOptions": {
-                      "options": [
-                        {
-                          "label": "OR",
-                          "value": "or"
-                        },
-                        {
-                          "label": "AND",
-                          "value": "and"
-                        }
-                      ]
-                    },
-                    "label": "Operator",
-                    "type": "select"
-                  },
-                  {
-                    "defaultValue": "best_fields",
-                    "name": "type",
-                    "typeOptions": {
-                      "options": [
-                        {
-                          "label": "Best Fields",
-                          "value": "best_fields"
-                        },
-                        {
-                          "label": "Most Fields",
-                          "value": "most_fields"
-                        },
-                        {
-                          "label": "Cross Fields",
-                          "value": "cross_fields"
-                        },
-                        {
-                          "label": "Phrase",
-                          "value": "phrase"
-                        },
-                        {
-                          "label": "Phrase Prefix",
-                          "value": "phrase_prefix"
-                        },
-                        {
-                          "label": "Boolean Prefix",
-                          "value": "bool_prefix"
-                        }
-                      ]
-                    },
-                    "label": "Match Type",
-                    "type": "select"
-                  },
-                  {
-                    "helpText": "Only use fuzziness with the following match types: most fields, best fields, bool prefix.",
-                    "defaultValue": "AUTO",
-                    "name": "fuzziness",
-                    "typeOptions": {
-                      "nullable": true,
-                      "options": [
-                        {
-                          "label": "Auto",
-                          "value": "AUTO"
-                        },
-                        {
-                          "label": "0",
-                          "value": "0"
-                        },
-                        {
-                          "label": "1",
-                          "value": "1"
-                        },
-                        {
-                          "label": "2",
-                          "value": "2"
-                        }
-                      ]
-                    },
-                    "label": "Fuzziness",
-                    "type": "select"
-                  },
-                  {
-                    "defaultValue": "1",
-                    "name": "minimum_should_match",
-                    "typeOptions": {
-                      "nullable": true
-                    },
-                    "label": "Minimum Should Match",
-                    "type": "text"
-                  },
-                  {
-                    "helpText": "Only use slop with the following match types: phrase, phrase prefix.",
-                    "defaultValue": null,
-                    "name": "slop",
-                    "typeOptions": {
-                      "min": 0,
-                      "nullable": true,
-                      "step": 1
-                    },
-                    "label": "Slop",
-                    "type": "number"
-                  },
-                  {
-                    "defaultValue": 1,
-                    "name": "boost",
-                    "typeOptions": {
-                      "min": 0
-                    },
-                    "label": "Boost",
-                    "type": "number"
-                  }
-                ]
-              }
-            ]
-          }
-        },
-        {
-          "elementTemplateJSON": {
-            "clauses": [
-              {
-                "occur": "should",
-                "query": {
-                  "wrapper": {
-                    "query": {
-                      "multi_match": {
-                        "query": "${keywords}",
-                        "boost": "${configuration.boost}",
-                        "fields": "${configuration.fields}",
-                        "type": "${configuration.type}",
-                        "operator": "and"
-                      }
-                    }
-                  }
-                },
-                "context": "query"
-              }
-            ],
-            "icon": "thumbs-up",
-            "description": {
-              "en_US": "Boost contents matching all the words in the search phrase"
-            },
-            "category": "boost",
-            "conditions": {},
-            "title": {
-              "en_US": "Boost All Keywords Match"
-            },
-            "enabled": true
-          },
-          "uiConfigurationValues": {
-            "boost": 20,
-            "fields": [
-              {
-                "field": "localized_title",
-                "boost": 2,
-                "locale": "${context.language_id}"
-              },
-              {
-                "field": "content",
-                "boost": 1,
-                "locale": "${context.language_id}"
-              }
-            ],
-            "type": "best_fields"
-          },
-          "uiConfigurationJSON": {
-            "fieldSets": [
-              {
-                "fields": [
-                  {
-                    "defaultValue": [
-                      {
-                        "field": "localized_title",
-                        "boost": 2,
-                        "locale": "${context.language_id}"
-                      },
-                      {
-                        "field": "content",
-                        "boost": 1,
-                        "locale": "${context.language_id}"
-                      }
-                    ],
-                    "name": "fields",
-                    "typeOptions": {
-                      "boost": true
-                    },
-                    "label": "Field",
-                    "type": "fieldMappingList"
-                  },
-                  {
-                    "defaultValue": "best_fields",
-                    "name": "type",
-                    "typeOptions": {
-                      "options": [
-                        {
-                          "label": "Best Fields",
-                          "value": "best_fields"
-                        },
-                        {
-                          "label": "Most Fields",
-                          "value": "most_fields"
-                        },
-                        {
-                          "label": "Cross Fields",
-                          "value": "cross_fields"
-                        },
-                        {
-                          "label": "Phrase",
-                          "value": "phrase"
-                        },
-                        {
-                          "label": "Phrase Prefix",
-                          "value": "phrase_prefix"
-                        },
-                        {
-                          "label": "Boolean Prefix",
-                          "value": "bool_prefix"
-                        }
-                      ]
-                    },
-                    "label": "Match Type",
-                    "type": "select"
-                  },
-                  {
-                    "defaultValue": 10,
-                    "name": "boost",
-                    "typeOptions": {
-                      "min": 0
-                    },
-                    "label": "Boost",
-                    "type": "number"
-                  }
-                ]
-              }
-            ]
-          }
-        },
-        {
-          "elementTemplateJSON": {
-            "clauses": [
-              {
-                "occur": "should",
-                "query": {
-                  "wrapper": {
-                    "query": {
-                      "multi_match": {
-                        "query": "${keywords}",
-                        "boost": "${configuration.boost}",
-                        "fields": "${configuration.fields}",
-                        "type": "${configuration.type}",
-                        "operator": "and"
-                      }
-                    }
-                  }
-                },
-                "context": "query"
-              }
-            ],
-            "icon": "thumbs-up",
-            "description": {
-              "en_US": "Boost contents matching all the words in the search phrase"
-            },
-            "category": "boost",
-            "conditions": {},
-            "title": {
-              "en_US": "Boost All Keywords Match"
-            },
-            "enabled": true
-          },
-          "uiConfigurationValues": {
-            "boost": 20,
-            "fields": [
-              {
-                "field": "localized_title",
-                "boost": 2,
-                "locale": "${context.language_id}"
-              },
-              {
-                "field": "content",
-                "boost": 1,
-                "locale": "${context.language_id}"
-              }
-            ],
-            "type": "bool_prefix"
-          },
-          "uiConfigurationJSON": {
-            "fieldSets": [
-              {
-                "fields": [
-                  {
-                    "defaultValue": [
-                      {
-                        "field": "localized_title",
-                        "boost": 2,
-                        "locale": "${context.language_id}"
-                      },
-                      {
-                        "field": "content",
-                        "boost": 1,
-                        "locale": "${context.language_id}"
-                      }
-                    ],
-                    "name": "fields",
-                    "typeOptions": {
-                      "boost": true
-                    },
-                    "label": "Field",
-                    "type": "fieldMappingList"
-                  },
-                  {
-                    "defaultValue": "best_fields",
-                    "name": "type",
-                    "typeOptions": {
-                      "options": [
-                        {
-                          "label": "Best Fields",
-                          "value": "best_fields"
-                        },
-                        {
-                          "label": "Most Fields",
-                          "value": "most_fields"
-                        },
-                        {
-                          "label": "Cross Fields",
-                          "value": "cross_fields"
-                        },
-                        {
-                          "label": "Phrase",
-                          "value": "phrase"
-                        },
-                        {
-                          "label": "Phrase Prefix",
-                          "value": "phrase_prefix"
-                        },
-                        {
-                          "label": "Boolean Prefix",
-                          "value": "bool_prefix"
-                        }
-                      ]
-                    },
-                    "label": "Match Type",
-                    "type": "select"
-                  },
-                  {
-                    "defaultValue": 10,
-                    "name": "boost",
-                    "typeOptions": {
-                      "min": 0
-                    },
-                    "label": "Boost",
-                    "type": "number"
-                  }
-                ]
-              }
-            ]
-          }
-        }
-      ]
+      "query_configuration": []
     },
     "title": {
       "en_US": "Aggregations Test"
