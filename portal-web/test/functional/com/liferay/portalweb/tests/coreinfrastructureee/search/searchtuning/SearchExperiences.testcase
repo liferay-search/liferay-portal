@@ -261,14 +261,20 @@ definition {
 		SearchResultPortlet.viewSearchResultsSpecificOrder(resultsList = "Closest Location,Closer Location,Close Location");
 	}
 
-	test CreateBaselineClauseBlueprint {
+	test CreateBaselineClausesBlueprint {
 		SearchExperiences.openSearchExperiencesAdmin();
 
 		SearchExperiences.addBlueprint(
-			clauseOption = "Baseline Clause",
-			name = "Baseline clause blueprint");
+			baselineClauses = "true",
+			name = "Baseline Clauses Blueprint");
 
 		VerifyElementPresent(locator1 = "Message#SUCCESS");
+
+		AssertElementNotPresent(locator1 = "SearchExperiences#BLUEPRINTS_EMPTY_QUERY_BUILDER");
+
+		Navigator.gotoBack();
+
+		LexiconEntry.viewEntryName(rowEntry = "Baseline Clauses Blueprint");
 	}
 
 	@priority = "4"

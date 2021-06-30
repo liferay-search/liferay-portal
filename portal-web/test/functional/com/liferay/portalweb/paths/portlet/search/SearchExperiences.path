@@ -37,6 +37,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>BLUEPRINTS_EMPTY_QUERY_BUILDER</td>
+	<td>//div[contains(@class,'selected-elements-empty-text')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>BLUEPRINTS_PREVIEW_RAW_RESPONSE_EXPLANATION</td>
 	<td>xpath=(//span[contains(@class,'cm-string') and text()='"${key_searchExplanation}"'])[1]</td>
 	<td></td>
