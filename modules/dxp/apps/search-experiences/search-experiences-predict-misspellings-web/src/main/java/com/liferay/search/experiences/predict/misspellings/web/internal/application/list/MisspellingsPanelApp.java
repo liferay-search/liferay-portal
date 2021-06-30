@@ -21,8 +21,8 @@ import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.search.engine.SearchEngineInformation;
-import com.liferay.portal.search.tuning.web.application.list.constants.SearchTuningPanelCategoryKeys;
 import com.liferay.search.experiences.predict.misspellings.web.internal.constants.MisspellingsPortletKeys;
+import com.liferay.search.experiences.web.application.list.constants.SearchExperiencesPanelCategoryKeys;
 
 import java.util.Objects;
 
@@ -36,7 +36,7 @@ import org.osgi.service.component.annotations.Reference;
 	immediate = true,
 	property = {
 		"panel.app.order:Integer=400",
-		"panel.category.key=" + SearchTuningPanelCategoryKeys.CONTROL_PANEL_SEARCH_TUNING
+		"panel.category.key=" + SearchExperiencesPanelCategoryKeys.CONTROL_PANEL_SEARCH_EXPERIENCES
 	},
 	service = PanelApp.class
 )
