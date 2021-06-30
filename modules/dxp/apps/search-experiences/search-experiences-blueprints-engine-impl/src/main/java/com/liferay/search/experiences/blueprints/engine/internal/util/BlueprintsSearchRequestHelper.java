@@ -95,7 +95,7 @@ public class BlueprintsSearchRequestHelper {
 		Stream<String> stream = keySet.stream();
 
 		stream.filter(
-			name -> excludedSearchRequestBodyContributors.contains(name)
+			name -> !excludedSearchRequestBodyContributors.contains(name)
 		).forEach(
 			name -> {
 				SearchRequestBodyContributor searchRequestBodyContributor =
