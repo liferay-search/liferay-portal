@@ -264,7 +264,8 @@ public class FieldTypeaheadDataProviderSearchHelper {
 		DataProviderSettings dataProviderSettings) {
 
 		return GetterUtil.getStringValues(
-			dataProviderSettings.getAttribute(SuggestionConstants.ENTRY_CLASS_NAMES));
+			dataProviderSettings.getAttribute(
+				SuggestionConstants.ENTRY_CLASS_NAMES));
 	}
 
 	private Query _getNestedSearchQuery(
@@ -452,7 +453,7 @@ public class FieldTypeaheadDataProviderSearchHelper {
 
 	private static final String _DEFAULT_FUZZINESS = "1";
 
-	private static final Operator _DEFAULT_OPERATOR = Operator.OR;
+	private static final Operator _DEFAULT_OPERATOR = Operator.AND;
 
 	private static final int _DEFAULT_PREFIX_LENGTH = 2;
 
