@@ -24,7 +24,6 @@ dependencies {
 	compileOnly project(":core:petra:petra-lang")
 	compileOnly project(":core:petra:petra-sql-dsl-api")
 	compileOnly project(":core:petra:petra-string")
-	compileOnly project(":dxp:apps:portal-search-tuning:portal-search-tuning-web-api")
 	compileOnly project(":dxp:apps:search-experiences:search-experiences-blueprints-api")
 	compileOnly project(":dxp:apps:search-experiences:search-experiences-blueprints-engine-api")
 	compileOnly project(":dxp:apps:search-experiences:search-experiences-blueprints-engine-spi")
@@ -32,4 +31,5 @@ dependencies {
 	compileOnly project(":dxp:apps:search-experiences:search-experiences-predict-keyword-index-api")
 	compileOnly project(":dxp:apps:search-experiences:search-experiences-predict-suggestions-api")
 	compileOnly project(":dxp:apps:search-experiences:search-experiences-predict-suggestions-spi")
+	compileOnly project(":dxp:apps:search-experiences:search-experiences-web-api")
 }
