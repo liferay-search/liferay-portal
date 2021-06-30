@@ -16,8 +16,8 @@ package com.liferay.search.experiences.predict.keyword.index.web.internal.util;
 
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.language.Language;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
-import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.search.document.Document;
 import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
 import com.liferay.portal.search.engine.adapter.search.SearchSearchRequest;
@@ -71,7 +71,7 @@ public class SuggestionDataProviderHelper {
 		if (groupIds.length != 0) {
 			TermsQuery termsQuery = _queries.terms(KeywordEntryFields.GROUP_ID);
 
-			termsQuery.addValues(SetUtil.fromArray(groupIds));
+			termsQuery.addValues(ArrayUtil.toStringArray(groupIds));
 
 			booleanQuery.addFilterQueryClauses(termsQuery);
 		}

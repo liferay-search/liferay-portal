@@ -17,9 +17,9 @@ package com.liferay.search.experiences.predict.typeahead.field.internal.provider
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.search.Field;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.MapUtil;
-import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.highlight.FieldConfig;
@@ -112,7 +112,7 @@ public class FieldTypeaheadDataProviderSearchHelper {
 		if (groupIds.length != 0) {
 			TermsQuery termsQuery = _queries.terms(Field.SCOPE_GROUP_ID);
 
-			termsQuery.addValues(SetUtil.fromArray(groupIds));
+			termsQuery.addValues(ArrayUtil.toStringArray(groupIds));
 
 			booleanQuery.addFilterQueryClauses(termsQuery);
 		}
