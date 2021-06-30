@@ -414,10 +414,10 @@ public class FieldTypeaheadDataProvider implements TypeaheadDataProvider {
 		if (dataProviderSettings != null) {
 			return GetterUtil.getInteger(
 				dataProviderSettings.getAttribute(SuggestionConstants.OFFSET),
-				2);
+				_DEFAULT_OFFSET);
 		}
 
-		return 2;
+		return _DEFAULT_OFFSET;
 	}
 
 	private List<SuggestionResponse<String>> _getResults(
@@ -593,6 +593,8 @@ public class FieldTypeaheadDataProvider implements TypeaheadDataProvider {
 
 		return sb.toString();
 	}
+
+	private static final int _DEFAULT_OFFSET = 1;
 
 	private static final String _DEFAULT_PRE_SANITIZER_REGEXP =
 		"[\\?;\"\\[\\]\\{\\}\\(\\),]|(\\. )";
