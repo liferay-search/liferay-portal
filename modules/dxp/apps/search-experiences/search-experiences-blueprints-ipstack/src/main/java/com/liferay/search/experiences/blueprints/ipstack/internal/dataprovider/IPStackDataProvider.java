@@ -118,7 +118,7 @@ public class IPStackDataProvider implements GeoLocationDataProvider {
 		}
 
 		JSONObject ipStackDataJsonObject1 = _getCachedIPStackDataJSONObject(
-			ipAddress1);
+			ipAddress2);
 
 		if (ipStackDataJsonObject1 != null) {
 			return ipStackDataJsonObject1;
@@ -145,8 +145,14 @@ public class IPStackDataProvider implements GeoLocationDataProvider {
 	private String _buildURL(String ipAddress) {
 		StringBundler sb = new StringBundler(5);
 
-		sb.append(_ipStackConfiguration.apiURL());
-		sb.append("/");
+		String apiURL = _ipStackConfiguration.apiURL();
+
+		sb.append(apiURL);
+
+		if (!apiURL.endsWith("/")) {
+			sb.append("/");
+		}
+
 		sb.append(ipAddress);
 		sb.append("?access_key=");
 		sb.append(_ipStackConfiguration.apiKey());
