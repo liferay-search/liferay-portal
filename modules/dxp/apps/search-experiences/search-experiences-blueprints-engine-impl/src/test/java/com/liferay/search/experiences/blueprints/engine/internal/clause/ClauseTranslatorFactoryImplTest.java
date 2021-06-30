@@ -14,11 +14,13 @@
 
 package com.liferay.search.experiences.blueprints.engine.internal.clause;
 
-import com.liferay.portal.kernel.util.HashMapBuilder;
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
+import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
 import com.liferay.search.experiences.blueprints.engine.spi.clause.ClauseTranslator;
 
-import java.util.Map;
+import java.util.Arrays;
+import java.util.HashSet;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -44,7 +46,21 @@ public class ClauseTranslatorFactoryImplTest {
 	}
 
 	@Test
+	public void testDeactivate() {
+		_clauseTranslatorFactoryImpl.deactivate();
+
+		Assert.assertArrayEquals(
+			new String[0], _clauseTranslatorFactoryImpl.getTranslatorNames());
+	}
+
+	@Test
 	public void testGetTranslator() {
+		Mockito.when(
+			_clauseTranslatorServiceTrackerMap.getService(Mockito.anyObject())
+		).thenReturn(
+			_clauseTranslator
+		);
+
 		Assert.assertEquals(
 			_clauseTranslator,
 			_clauseTranslatorFactoryImpl.getTranslator(_NAME));
@@ -52,6 +68,12 @@ public class ClauseTranslatorFactoryImplTest {
 
 	@Test
 	public void testGetTranslatorNames() {
+		Mockito.when(
+			_clauseTranslatorServiceTrackerMap.keySet()
+		).thenReturn(
+			new HashSet<>(Arrays.asList(_NAME))
+		);
+
 		Assert.assertArrayEquals(
 			new String[] {_NAME},
 			_clauseTranslatorFactoryImpl.getTranslatorNames());
@@ -62,24 +84,16 @@ public class ClauseTranslatorFactoryImplTest {
 		_clauseTranslatorFactoryImpl.getTranslator("noExistName");
 	}
 
-	@Test
-	public void testUnregisterClauseTranslator() {
-		_clauseTranslatorFactoryImpl.unregisterClauseTranslator(
-			_clauseTranslator, _properties);
-
-		Assert.assertArrayEquals(
-			new String[0], _clauseTranslatorFactoryImpl.getTranslatorNames());
-	}
-
+	@SuppressWarnings("unchecked")
 	private void _registerClauseTranslator() {
-		_properties = HashMapBuilder.<String, Object>put(
-			"name", _NAME
-		).build();
+		_clauseTranslatorServiceTrackerMap = Mockito.mock(
+			ServiceTrackerMap.class);
 
 		_clauseTranslator = Mockito.mock(ClauseTranslator.class);
 
-		_clauseTranslatorFactoryImpl.registerClauseTranslator(
-			_clauseTranslator, _properties);
+		ReflectionTestUtil.setFieldValue(
+			_clauseTranslatorFactoryImpl, "_clauseTranslatorServiceTrackerMap",
+			_clauseTranslatorServiceTrackerMap);
 	}
 
 	private static final String _NAME = "id.name";
@@ -87,6 +101,7 @@ public class ClauseTranslatorFactoryImplTest {
 	private ClauseTranslator _clauseTranslator;
 	private final ClauseTranslatorFactoryImpl _clauseTranslatorFactoryImpl =
 		new ClauseTranslatorFactoryImpl();
-	private Map<String, Object> _properties;
+	private ServiceTrackerMap<String, ClauseTranslator>
+		_clauseTranslatorServiceTrackerMap;
 
 }
