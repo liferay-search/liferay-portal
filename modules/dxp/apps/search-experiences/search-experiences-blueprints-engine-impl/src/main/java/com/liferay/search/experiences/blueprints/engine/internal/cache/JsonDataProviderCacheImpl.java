@@ -19,7 +19,10 @@ import com.liferay.portal.kernel.cache.PortalCache;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.search.experiences.blueprints.engine.cache.JSONDataProviderCache;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 
 /**
@@ -53,12 +56,21 @@ public class JsonDataProviderCacheImpl implements JSONDataProviderCache {
 		_portalCache.remove(cacheKey);
 	}
 
-	@Reference(unbind = "-")
-	protected void setMultiVMPool(MultiVMPool multiVMPool) {
+	@Activate
+	protected void activate(BundleContext bundleContext) {
 		_portalCache =
-			(PortalCache<String, JSONObject>)multiVMPool.getPortalCache(
+			(PortalCache<String, JSONObject>)_multiVMPool.getPortalCache(
 				JsonDataProviderCacheImpl.class.getName());
 	}
+
+	@Deactivate
+	protected void deactivate() {
+		_multiVMPool.removePortalCache(
+			JsonDataProviderCacheImpl.class.getName());
+	}
+
+	@Reference
+	private MultiVMPool _multiVMPool;
 
 	private PortalCache<String, JSONObject> _portalCache;
 
