@@ -14,11 +14,13 @@
 
 package com.liferay.search.experiences.blueprints.engine.internal.condition;
 
-import com.liferay.portal.kernel.util.HashMapBuilder;
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
+import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
 import com.liferay.search.experiences.blueprints.engine.spi.clause.ConditionHandler;
 
-import java.util.Map;
+import java.util.Arrays;
+import java.util.HashSet;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -28,9 +30,12 @@ import org.junit.Test;
 
 import org.mockito.Mockito;
 
+import org.powermock.core.classloader.annotations.PrepareForTest;
+
 /**
  * @author Wade Cao
  */
+@PrepareForTest
 public class ConditionHandlerFactoryImplTest {
 
 	@ClassRule
@@ -44,13 +49,37 @@ public class ConditionHandlerFactoryImplTest {
 	}
 
 	@Test
+	public void testDeactivate() {
+		Mockito.when(
+			_conditionHandlerServiceTrackerMap.keySet()
+		).thenReturn(
+			new HashSet<>(Arrays.asList())
+		);
+
+		Assert.assertArrayEquals(
+			new String[0], _conditionHandlerFactoryImpl.getHandlerNames());
+	}
+
+	@Test
 	public void testGetHandler() {
+		Mockito.when(
+			_conditionHandlerServiceTrackerMap.getService(Mockito.anyObject())
+		).thenReturn(
+			_conditionHandler
+		);
+
 		Assert.assertEquals(
 			_conditionHandler, _conditionHandlerFactoryImpl.getHandler(_NAME));
 	}
 
 	@Test
 	public void testGetHandlerNames() {
+		Mockito.when(
+			_conditionHandlerServiceTrackerMap.keySet()
+		).thenReturn(
+			new HashSet<>(Arrays.asList(_NAME))
+		);
+
 		Assert.assertArrayEquals(
 			new String[] {_NAME},
 			_conditionHandlerFactoryImpl.getHandlerNames());
@@ -61,24 +90,16 @@ public class ConditionHandlerFactoryImplTest {
 		_conditionHandlerFactoryImpl.getHandler("noExistName");
 	}
 
-	@Test
-	public void testUnregisterConditionHandler() {
-		_conditionHandlerFactoryImpl.unregisterConditionHandler(
-			_conditionHandler, _properties);
-
-		Assert.assertArrayEquals(
-			new String[0], _conditionHandlerFactoryImpl.getHandlerNames());
-	}
-
+	@SuppressWarnings("unchecked")
 	private void _registerConditionHandler() {
-		_properties = HashMapBuilder.<String, Object>put(
-			"name", _NAME
-		).build();
+		_conditionHandlerServiceTrackerMap = Mockito.mock(
+			ServiceTrackerMap.class);
 
 		_conditionHandler = Mockito.mock(ConditionHandler.class);
 
-		_conditionHandlerFactoryImpl.registerConditionHandler(
-			_conditionHandler, _properties);
+		ReflectionTestUtil.setFieldValue(
+			_conditionHandlerFactoryImpl, "_conditionHandlerServiceTrackerMap",
+			_conditionHandlerServiceTrackerMap);
 	}
 
 	private static final String _NAME = "id.name";
@@ -86,6 +107,7 @@ public class ConditionHandlerFactoryImplTest {
 	private ConditionHandler _conditionHandler;
 	private final ConditionHandlerFactoryImpl _conditionHandlerFactoryImpl =
 		new ConditionHandlerFactoryImpl();
-	private Map<String, Object> _properties;
+	private ServiceTrackerMap<String, ConditionHandler>
+		_conditionHandlerServiceTrackerMap;
 
 }
