@@ -455,12 +455,10 @@ definition {
 		LexiconEntry.viewEntriesSpecificOrder(entryList = "Blueprint 3,Blueprint 2,Blueprint 1");
 	}
 
-	test ValidateMalformedBlueprintsJSON {
+	test ViewBlueprintsConfigJSONValidation {
 		SearchExperiences.openSearchExperiencesAdmin();
 
-		Search.searchCP(searchTerm = "Aggregations");
-
-		SearchExperiences.editBlueprint(name = "Aggregations Test");
+		SearchExperiences.addBlueprint(name = "My Blueprint");
 
 		Navigator.gotoNavTab(navTab = "Settings");
 
@@ -469,12 +467,11 @@ definition {
 	"cardinality-test": {
 		"cardinality": {
 			"precision_threshold": "3000",
-			"field": "assetTagNames.raw",
-			"description": "Number of unique asset tag names"
+			"field": "assetTagNames.raw"
 		}
 	}
 }
-			''';
+		''';
 
 		Type.typeCodeMirrorEditor(
 			key_configurationField = "Aggregation Configuration",
@@ -484,10 +481,35 @@ definition {
 		PortletEntry.save();
 
 		AssertTextEquals.assertPartialText(
-			locator1 = "Modal#BODY",
-			value1 = "The blueprint configuration has errors that may cause unexpected results. Use the preview panel to review these errors.");
+			locator1 = "Modal#HEADER",
+			value1 = "Warning");
 
-		Alert.viewErrorMessage(errorMessage = "Invalid value typeexpected type: Number, found: String (Aggregation Configuration)");
+		Alert.viewErrorMessage(errorMessage = "expected type: Number, found: String (Aggregation Configuration)");
+
+		Button.clickCancel();
+
+		Navigator.gotoBack();
+
+		SearchExperiences.editBlueprint(name = "My Blueprint");
+
+		Navigator.gotoNavTab(navTab = "Settings");
+
+		AssertTextNotPresent(value1 = "cardinality-test");
+
+		Type.typeCodeMirrorEditor(
+			key_configurationField = "Aggregation Configuration",
+			locator1 = "SearchExperiences#BLUEPRINTS_SETTINGS_CONFIGURATION_EDITOR",
+			value1 = "${aggregationConfigurationJSON}");
+
+		PortletEntry.save();
+
+		Button.click(button = "Continue To Save");
+
+		SearchExperiences.editBlueprint(name = "My Blueprint");
+
+		Navigator.gotoNavTab(navTab = "Settings");
+
+		AssertTextPresent(value1 = "cardinality-test");
 	}
 
 	test ViewAssetDetailsViaBlueprintsPreview {
