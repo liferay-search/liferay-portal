@@ -471,6 +471,57 @@ definition {
 		LexiconEntry.viewEntriesSpecificOrder(entryList = "Blueprint 3,Blueprint 2,Blueprint 1");
 	}
 
+	test ViewAssetDetailsViaBlueprintsPreview {
+		JSONBlog.addEntry(
+			entryContent = "banana, red apple, blueberry!",
+			entryTitle = "Liferay Blogs Entry Apple");
+
+		JSONWebcontent.addWebContent(
+			content = "red apple, citrus-orange",
+			groupName = "Guest",
+			title = "Web Content Article Apple");
+
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		SearchExperiences.addBlueprint(name = "My Blueprint");
+
+		Click(locator1 = "Button#PREVIEW");
+
+		SearchExperiences.searchBlueprintsPreview(searchTerm = "Apple");
+
+		Click(
+			key_searchAssetTitle = "Liferay Blogs Entry Apple",
+			locator1 = "SearchResults#ASSET_ENTRY_TABLE_TITLE");
+
+		var siteName = TestCase.getSiteName(siteName = "${siteName}");
+
+		SelectWindow(locator1 = "title=View Result - ${siteName}");
+
+		AssertTextEquals(
+			locator1 = "Portlet#H4_COMPONENT_TITLE",
+			value1 = "Liferay Blogs Entry Apple");
+
+		AssertTextEquals(
+			locator1 = "PageEditor#CONTENT_PAGE_TEXT_CONTENT",
+			value1 = "banana, red apple, blueberry!");
+
+		Close.closeAndSelectWindow(locator1 = "title=Edit Blueprint - ${siteName}");
+
+		Click(
+			key_searchAssetTitle = "Web Content Article Apple",
+			locator1 = "SearchResults#ASSET_ENTRY_TABLE_TITLE");
+
+		SelectWindow(locator1 = "title=View Result - ${siteName}");
+
+		AssertTextEquals(
+			locator1 = "Portlet#H4_COMPONENT_TITLE",
+			value1 = "Web Content Article Apple");
+
+		AssertTextEquals(
+			locator1 = "WCD#WEB_CONTENT_CONTENT",
+			value1 = "red apple, citrus-orange");
+	}
+
 	test ViewBlueprintsConfigJSONValidation {
 		SearchExperiences.openSearchExperiencesAdmin();
 
@@ -592,57 +643,6 @@ definition {
 		AssertTextPresent(value1 = "thisTypeDoesNotExist");
 	}
 
-	test ViewAssetDetailsViaBlueprintsPreview {
-		JSONBlog.addEntry(
-			entryContent = "banana, red apple, blueberry!",
-			entryTitle = "Liferay Blogs Entry Apple");
-
-		JSONWebcontent.addWebContent(
-			content = "red apple, citrus-orange",
-			groupName = "Guest",
-			title = "Web Content Article Apple");
-
-		SearchExperiences.openSearchExperiencesAdmin();
-
-		SearchExperiences.addBlueprint(name = "My Blueprint");
-
-		Click(locator1 = "Button#PREVIEW");
-
-		SearchExperiences.searchBlueprintsPreview(searchTerm = "Apple");
-
-		Click(
-			key_searchAssetTitle = "Liferay Blogs Entry Apple",
-			locator1 = "SearchResults#ASSET_ENTRY_TABLE_TITLE");
-
-		var siteName = TestCase.getSiteName(siteName = "${siteName}");
-
-		SelectWindow(locator1 = "title=View Result - ${siteName}");
-
-		AssertTextEquals(
-			locator1 = "Portlet#H4_COMPONENT_TITLE",
-			value1 = "Liferay Blogs Entry Apple");
-
-		AssertTextEquals(
-			locator1 = "PageEditor#CONTENT_PAGE_TEXT_CONTENT",
-			value1 = "banana, red apple, blueberry!");
-
-		Close.closeAndSelectWindow(locator1 = "title=Edit Blueprint - ${siteName}");
-
-		Click(
-			key_searchAssetTitle = "Web Content Article Apple",
-			locator1 = "SearchResults#ASSET_ENTRY_TABLE_TITLE");
-
-		SelectWindow(locator1 = "title=View Result - ${siteName}");
-
-		AssertTextEquals(
-			locator1 = "Portlet#H4_COMPONENT_TITLE",
-			value1 = "Web Content Article Apple");
-
-		AssertTextEquals(
-			locator1 = "WCD#WEB_CONTENT_CONTENT",
-			value1 = "red apple, citrus-orange");
-	}
-
 	test ViewExpandedAndCollapsedBlueprintsPreviewEntry {
 		JSONWebcontent.addWebContent(
 			content = "",
@@ -671,7 +671,6 @@ definition {
 			locator1 = "SearchExperiences#BLUEPRINTS_PREVIEW_ENTRY_FIELD_VALUE",
 			value1 = "Web Content Article");
 	}
-
 
 	test ViewRawResponseViaBlueprintsPreview {
 		JSONWebcontent.addWebContent(
