@@ -643,7 +643,7 @@ definition {
 			value1 = "red apple, citrus-orange");
 	}
 
-	test ViewCollapsedAndExpandedViaBlueprintsPreview {
+	test ViewExpandedAndCollapsedBlueprintsPreviewEntry {
 		JSONWebcontent.addWebContent(
 			content = "",
 			groupName = "Guest",
@@ -657,18 +657,21 @@ definition {
 
 		SearchExperiences.searchBlueprintsPreview(searchTerm = "Apple");
 
-		AssertTextEquals.assertPartialText(
-			key_fieldValue = "Web Content Article",
-			locator1 = "SearchExperiences#BLUEPRINTS_PREVIEW_ENTRY_FIELD_VALUE",
-			value1 = "Web Content Article");
-
 		Click(locator1 = "SearchExperiences#BLUEPRINTS_PREVIEW_EXPAND_ENTRY_BUTTON");
 
 		AssertTextEquals.assertPartialText(
-			key_fieldValue = "BASIC-WEB-CONTENT",
+			key_fieldName = "ddmStructureKey",
 			locator1 = "SearchExperiences#BLUEPRINTS_PREVIEW_ENTRY_FIELD_VALUE",
 			value1 = "BASIC-WEB-CONTENT");
+
+		Click(locator1 = "SearchExperiences#BLUEPRINTS_PREVIEW_COLLAPSE_ENTRY_BUTTON");
+
+		AssertTextEquals.assertPartialText(
+			key_fieldName = "type",
+			locator1 = "SearchExperiences#BLUEPRINTS_PREVIEW_ENTRY_FIELD_VALUE",
+			value1 = "Web Content Article");
 	}
+
 
 	test ViewRawResponseViaBlueprintsPreview {
 		JSONWebcontent.addWebContent(

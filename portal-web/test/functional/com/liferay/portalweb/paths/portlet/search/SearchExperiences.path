@@ -42,18 +42,23 @@
 	<td></td>
 </tr>
 <tr>
-	<td>BLUEPRINTS_PREVIEW_ENTRY_FIELD_VALUE</td>
-	<td>//div[contains(@class,'row')]/div[contains(.,'${key_fieldValue}')]</td>
+	<td>BLUEPRINTS_PREVIEW_COLLAPSE_ENTRY_BUTTON</td>
+	<td>//button[contains(@aria-label,'Collapse')]</td>
 	<td></td>
 </tr>
 <tr>
-	<td>BLUEPRINTS_PREVIEW_EXPAND_ENTRY_BUTTON</td>
-	<td>//button[contains(@aria-label,'Expand')]</td>
+	<td>BLUEPRINTS_PREVIEW_ENTRY_FIELD_VALUE</td>
+	<td>//div[contains(@class,'preview-results-list')]//*[contains(@class,'row')]//*[contains(.,'${key_fieldName}')]/following-sibling::div</td>
 	<td></td>
 </tr>
 <tr>
 	<td>BLUEPRINTS_PREVIEW_RAW_RESPONSE_EXPLANATION</td>
 	<td>xpath=(//span[contains(@class,'cm-string') and text()='"${key_searchExplanation}"'])[1]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_PREVIEW_EXPAND_ENTRY_BUTTON</td>
+	<td>//button[contains(@aria-label,'Expand')]</td>
 	<td></td>
 </tr>
 <tr>
