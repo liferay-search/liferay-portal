@@ -208,7 +208,7 @@ definition {
 			echo("File raw_response.json contains text "hits"");
 		}
 		else {
-			fail("File raw_response.json does not contains text "hits"");
+			fail("File raw_response.json does not contain text "hits"");
 		}
 	}
 
