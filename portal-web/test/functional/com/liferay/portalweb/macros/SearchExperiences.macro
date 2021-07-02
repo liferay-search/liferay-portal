@@ -9,11 +9,11 @@ definition {
 			PortletEntry.inputDescription(description = "${description}");
 		}
 
-		if (isSet(clauseOption)) {
-			LexiconCard.clickCard(card = "Custom Clauses");
+		if (isSet(baselineClauses)) {
+			LexiconCard.clickCard(card = "Baseline Clauses");
 		}
 		else {
-			LexiconCard.clickCard(card = "Liferay Default Clauses");
+			LexiconCard.clickCard(card = "All Clauses");
 		}
 
 		Button.click(button = "Create");
