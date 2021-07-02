@@ -512,14 +512,18 @@ definition {
 		AssertTextPresent(value1 = "cardinality-test");
 	}
 
-	test ValidateMalformedElementsJSON {
+	test ViewCustomElementsJSONValidation {
 		SearchExperiences.openSearchExperiencesAdmin();
 
 		Navigator.gotoNavItem(navItem = "Elements");
 
-		Search.searchCP(searchTerm = "Boost");
-
-		LexiconEntry.gotoEntry(rowEntry = "Boost Contents on My Sites");
+		var elementTemplateJSON = '''
+{
+	"title": {
+		"en_US": "My Element"
+	}
+}
+		''';
 
 		var uiConfigurationJSON = '''
 {
@@ -527,19 +531,37 @@ definition {
 		{
 			"fields": [
 				{
-					"defaultValue": 20,
-					"name": "boost",
-					"typeOptions": {
-						"min": 0
-					},
 					"label": "Boost",
-					"type": "doesntexistexample"
+					"type": "thisTypeDoesNotExist"
 				}
 			]
 		}
 	]
 }
-			''';
+		''';
+
+		SearchExperiences.createElement(
+			elementTemplateJSON = "${elementTemplateJSON}",
+			name = "My Element",
+			uiConfigurationJSON = "${uiConfigurationJSON}");
+
+		AssertTextEquals.assertPartialText(
+			locator1 = "Modal#HEADER",
+			value1 = "Warning");
+
+		Alert.viewErrorMessage(errorMessage = "thisTypeDoesNotExist is not a valid enum value");
+
+		Button.clickCancel();
+
+		Navigator.gotoBack();
+
+		SearchExperiences.editElement(name = "My Element");
+
+		AssertTextNotPresent(value1 = "thisTypeDoesNotExist");
+
+		Type.typeCodeMirrorEditor(
+			locator1 = "SearchExperiences#CUSTOM_ELEMENT_TEMPLATE_EDITOR",
+			value1 = "${elementTemplateJSON}");
 
 		Type.typeCodeMirrorEditor(
 			locator1 = "SearchExperiences#CUSTOM_ELEMENT_UI_CONFIGURATION_EDITOR",
@@ -547,11 +569,11 @@ definition {
 
 		PortletEntry.save();
 
-		AssertTextEquals.assertPartialText(
-			locator1 = "Modal#BODY",
-			value1 = "The element configuration has errors that may cause unexpected results.");
+		Button.click(button = "Continue To Save");
 
-		Alert.viewErrorMessage(errorMessage = "Invalid value");
+		SearchExperiences.editElement(name = "My Element");
+
+		AssertTextPresent(value1 = "thisTypeDoesNotExist");
 	}
 
 	test ViewAssetDetailsViaBlueprintsPreview {
