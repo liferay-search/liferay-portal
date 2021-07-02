@@ -242,7 +242,7 @@ definition {
 		"boost": 100
 	}
 }
-			''';
+		''';
 
 		SearchExperiences.addQueryElement(
 			elasticsearchQuery = "${elasticsearchQueryJSON}",
@@ -325,7 +325,7 @@ definition {
 		"en_US": "Hide Content with Multiple Tags"
 	}
 }
-			''';
+		''';
 
 		var uiConfigurationJSON = '''
 {
@@ -348,7 +348,7 @@ definition {
 		}
 	]
 }
-			''';
+		''';
 
 		SearchExperiences.createElement(
 			elementTemplateJSON = "${elementTemplateJSON}",
