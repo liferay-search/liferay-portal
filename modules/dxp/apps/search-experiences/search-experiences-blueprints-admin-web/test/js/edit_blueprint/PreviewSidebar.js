@@ -106,6 +106,6 @@ describe('PreviewSidebar', () => {
 			},
 		});
 
-		errors.map((err) => getByText(err.msg));
+		errors.map((error) => getByText(error.msg));
 	});
 });

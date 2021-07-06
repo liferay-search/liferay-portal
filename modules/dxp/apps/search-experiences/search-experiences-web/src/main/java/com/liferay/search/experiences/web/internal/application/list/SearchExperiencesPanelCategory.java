@@ -41,7 +41,8 @@ public class SearchExperiencesPanelCategory extends BasePanelCategory {
 
 	@Override
 	public String getKey() {
-		return SearchExperiencesPanelCategoryKeys.CONTROL_PANEL_SEARCH_EXPERIENCES;
+		return SearchExperiencesPanelCategoryKeys.
+			CONTROL_PANEL_SEARCH_EXPERIENCES;
 	}
 
 	@Override

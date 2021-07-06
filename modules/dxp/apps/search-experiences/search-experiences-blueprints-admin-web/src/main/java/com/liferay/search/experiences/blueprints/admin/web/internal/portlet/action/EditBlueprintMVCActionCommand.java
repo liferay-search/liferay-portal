@@ -156,7 +156,7 @@ public class EditBlueprintMVCActionCommand extends BaseMVCActionCommand {
 		).setRedirect(
 			ParamUtil.getString(actionRequest, "redirect")
 		).setParameter(
-			BlueprintsAdminWebKeys.BLUEPRINT_ID, String.valueOf(blueprintId)
+			BlueprintsAdminWebKeys.BLUEPRINT_ID, blueprintId
 		).buildString();
 	}
 

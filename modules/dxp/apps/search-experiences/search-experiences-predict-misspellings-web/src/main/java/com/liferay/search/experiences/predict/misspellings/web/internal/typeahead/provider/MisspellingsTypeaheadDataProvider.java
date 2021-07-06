@@ -145,8 +145,9 @@ public class MisspellingsTypeaheadDataProvider
 		}
 
 		return GetterUtil.getStringValues(
-			dataProviderSettings.getAttribute(SuggestionConstants.LANGUAGE_IDS));
-	} 
+			dataProviderSettings.getAttribute(
+				SuggestionConstants.LANGUAGE_IDS));
+	}
 
 	private Query _getQuery(
 		SuggestionAttributes suggestionAttributes,
@@ -173,7 +174,8 @@ public class MisspellingsTypeaheadDataProvider
 		}
 
 		return GetterUtil.getLongValues(
-			dataProviderSettings.getAttribute(SuggestionConstants.SOURCE_GROUP_IDS));
+			dataProviderSettings.getAttribute(
+				SuggestionConstants.SOURCE_GROUP_IDS));
 	}
 
 	private List<SuggestionResponse<String>> _getSuggestions(

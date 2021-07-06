@@ -494,15 +494,15 @@ export const getClauseContributorsState = (
 	defaultState = false
 ) => {
 	return initialClauseContributorsList.reduce((acc, {label, value}) => {
-		const obj = {};
+		const object = {};
 
 		value.forEach((item) => {
-			obj[item] = isDefined(clauseContributors[label]?.[item])
+			object[item] = isDefined(clauseContributors[label]?.[item])
 				? clauseContributors[label][item]
 				: defaultState;
 		});
 
-		return {...obj, ...acc};
+		return {...object, ...acc};
 	}, {});
 };
 
@@ -547,16 +547,16 @@ export const getFrameworkConfigClauseContributors = (
 	groupedByLabel = false
 ) => {
 	return initialClauseContributorsList.reduce((acc, {label, value}) => {
-		const obj = {};
+		const object = {};
 
 		value.forEach((item) => {
 			const enabled = groupedByLabel
 				? clauseContributors[label]?.[item]
 				: clauseContributors[item];
 
-			obj[item] = isDefined(enabled) ? enabled : defaultState;
+			object[item] = isDefined(enabled) ? enabled : defaultState;
 		});
 
-		return {[`${label}`]: obj, ...acc};
+		return {[`${label}`]: object, ...acc};
 	}, {});
 };
