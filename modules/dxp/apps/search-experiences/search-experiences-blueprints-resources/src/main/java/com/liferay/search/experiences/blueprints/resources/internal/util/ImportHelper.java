@@ -116,8 +116,8 @@ public class ImportHelper {
 					companyId, groupId, userId, _getJSONObject(url));
 			}
 			catch (BlueprintValidationException blueprintValidationException) {
-				_log.error(url + ": " +
-					blueprintValidationException.getMessage(),
+				_log.error(
+					url + ": " + blueprintValidationException.getMessage(),
 					blueprintValidationException);
 				_logValidationMessages(
 					blueprintValidationException.getMessages());
@@ -144,8 +144,8 @@ public class ImportHelper {
 				_importElement(companyId, groupId, userId, _getJSONObject(url));
 			}
 			catch (ElementValidationException elementValidationException) {
-				_log.error(url + ": " +
-					elementValidationException.getMessage(),
+				_log.error(
+					url + ": " + elementValidationException.getMessage(),
 					elementValidationException);
 				_logValidationMessages(
 					elementValidationException.getMessages());

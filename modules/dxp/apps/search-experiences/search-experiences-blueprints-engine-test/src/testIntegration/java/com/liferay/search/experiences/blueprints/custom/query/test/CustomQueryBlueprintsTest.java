@@ -245,10 +245,8 @@ public class CustomQueryBlueprintsTest {
 		mockActionRequest.setParameter("configuration", configurationString);
 		mockActionRequest.setParameter(Constants.CMD, "edit");
 
-		MockLiferayPortletActionResponse mockActionResponse =
-			new MockLiferayPortletActionResponse();
-
-		mvcActionCommand.processAction(mockActionRequest, mockActionResponse);
+		mvcActionCommand.processAction(
+			mockActionRequest, new MockLiferayPortletActionResponse());
 	}
 
 	@DeleteAfterTestRun

@@ -83,21 +83,21 @@ public class PreviewBlueprintMVCResourceCommand extends BaseMVCResourceCommand {
 			_blueprintValidator.validateConfiguration(
 				blueprint.getConfiguration());
 
-			BlueprintsAttributes blueprintsRequestAttributes =
-				_getBlueprintsRequestAttributes(resourceRequest, blueprint);
+			BlueprintsAttributes requestBlueprintsAttributes =
+				_getRequestBlueprintsAttributes(resourceRequest, blueprint);
 
 			Messages messages = new Messages();
 
 			SearchResponse searchResponse = _blueprintsEngineHelper.search(
-				blueprint, blueprintsRequestAttributes, messages);
+				blueprint, requestBlueprintsAttributes, messages);
 
-			BlueprintsAttributes blueprintsResponseAttributes =
-				_getBlueprintsResponseAttributes(
+			BlueprintsAttributes responseBlueprintsAttributes =
+				_getResponseBlueprintsAttributes(
 					resourceRequest, resourceResponse, blueprint,
-					blueprintsRequestAttributes);
+					requestBlueprintsAttributes);
 
 			responseJSONObject = _blueprintsJSONResponseBuilder.translate(
-				searchResponse, blueprint, blueprintsResponseAttributes,
+				searchResponse, blueprint, responseBlueprintsAttributes,
 				_getResourceBundle(resourceRequest), messages);
 		}
 		catch (BlueprintsEngineException blueprintsEngineException) {
@@ -140,7 +140,7 @@ public class PreviewBlueprintMVCResourceCommand extends BaseMVCResourceCommand {
 		return blueprint;
 	}
 
-	private BlueprintsAttributes _getBlueprintsRequestAttributes(
+	private BlueprintsAttributes _getRequestBlueprintsAttributes(
 		ResourceRequest resourceRequest, Blueprint blueprint) {
 
 		BlueprintsAttributesBuilder blueprintsAttributesBuilder =
@@ -156,14 +156,22 @@ public class PreviewBlueprintMVCResourceCommand extends BaseMVCResourceCommand {
 		return blueprintsAttributesBuilder.build();
 	}
 
-	private BlueprintsAttributes _getBlueprintsResponseAttributes(
+	private ResourceBundle _getResourceBundle(ResourceRequest resourceRequest) {
+		ThemeDisplay themeDisplay = (ThemeDisplay)resourceRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		return ResourceBundleUtil.getBundle(
+			"content.Language", themeDisplay.getLocale(), getClass());
+	}
+
+	private BlueprintsAttributes _getResponseBlueprintsAttributes(
 		ResourceRequest resourceRequest, ResourceResponse resourceResponse,
-		Blueprint blueprint, BlueprintsAttributes blueprintsRequestAttributes) {
+		Blueprint blueprint, BlueprintsAttributes requestBlueprintsAttributes) {
 
 		BlueprintsAttributesBuilder blueprintsAttributesBuilder =
 			_blueprintsAttributesHelper.getBlueprintsResponseAttributesBuilder(
 				resourceRequest, resourceResponse, blueprint,
-				blueprintsRequestAttributes);
+				requestBlueprintsAttributes);
 
 		blueprintsAttributesBuilder.addAttribute(
 			ResponseAttributeKeys.INCLUDE_DOCUMENT, true);
@@ -178,14 +186,6 @@ public class PreviewBlueprintMVCResourceCommand extends BaseMVCResourceCommand {
 			ResponseAttributeKeys.RESULT_FIELDS, _getResultFields());
 
 		return blueprintsAttributesBuilder.build();
-	}
-
-	private ResourceBundle _getResourceBundle(ResourceRequest resourceRequest) {
-		ThemeDisplay themeDisplay = (ThemeDisplay)resourceRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
-		return ResourceBundleUtil.getBundle(
-			"content.Language", themeDisplay.getLocale(), getClass());
 	}
 
 	private List<String> _getResultFields() {

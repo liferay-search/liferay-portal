@@ -190,7 +190,7 @@ public class EditElementMVCActionCommand extends BaseMVCActionCommand {
 		).setRedirect(
 			ParamUtil.getString(actionRequest, "redirect")
 		).setParameter(
-			BlueprintsAdminWebKeys.ELEMENT_ID, String.valueOf(elementId)
+			BlueprintsAdminWebKeys.ELEMENT_ID, elementId
 		).buildString();
 	}
 

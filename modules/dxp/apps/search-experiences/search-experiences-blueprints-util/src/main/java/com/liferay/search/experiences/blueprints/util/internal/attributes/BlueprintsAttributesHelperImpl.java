@@ -96,7 +96,7 @@ public class BlueprintsAttributesHelperImpl
 	@Override
 	public BlueprintsAttributesBuilder getBlueprintsResponseAttributesBuilder(
 		PortletRequest portletRequest, PortletResponse portletResponse,
-		Blueprint blueprint, BlueprintsAttributes blueprintsRequestAttributes) {
+		Blueprint blueprint, BlueprintsAttributes requestBlueprintsAttributes) {
 
 		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
@@ -107,7 +107,7 @@ public class BlueprintsAttributesHelperImpl
 		blueprintsAttributesBuilder.companyId(
 			themeDisplay.getCompanyId()
 		).keywords(
-			blueprintsRequestAttributes.getKeywords()
+			requestBlueprintsAttributes.getKeywords()
 		).locale(
 			themeDisplay.getLocale()
 		).userId(
@@ -119,7 +119,7 @@ public class BlueprintsAttributesHelperImpl
 		);
 
 		_addShowingInsteadOf(
-			blueprintsAttributesBuilder, blueprintsRequestAttributes);
+			blueprintsAttributesBuilder, requestBlueprintsAttributes);
 
 		return blueprintsAttributesBuilder;
 	}
@@ -289,10 +289,10 @@ public class BlueprintsAttributesHelperImpl
 
 	private void _addShowingInsteadOf(
 		BlueprintsAttributesBuilder blueprintsAttributesBuilder,
-		BlueprintsAttributes blueprintsRequestAttributes) {
+		BlueprintsAttributes requestBlueprintsAttributes) {
 
 		Optional<Object> showingInsteadOfOptional =
-			blueprintsRequestAttributes.getAttributeOptional(
+			requestBlueprintsAttributes.getAttributeOptional(
 				ReservedParameterNames.SHOWING_INSTEAD_OF.getKey());
 
 		if (showingInsteadOfOptional.isPresent()) {

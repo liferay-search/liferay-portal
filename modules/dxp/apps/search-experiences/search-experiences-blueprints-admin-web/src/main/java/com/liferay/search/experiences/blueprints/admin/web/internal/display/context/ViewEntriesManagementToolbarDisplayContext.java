@@ -164,7 +164,7 @@ public abstract class ViewEntriesManagementToolbarDisplayContext
 		).setActionName(
 			actionName
 		).setRedirect(
-			currentURLObj.toString()
+			currentURLObj
 		).setParameter(
 			BlueprintsAdminWebKeys.TAB, tab
 		).build();
