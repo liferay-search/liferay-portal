@@ -21,6 +21,7 @@ function MultiSelectInput({
 	nullable,
 	setFieldTouched,
 	setFieldValue,
+	validate,
 	value,
 }) {
 	const [inputValue, setInputValue] = useState('');
@@ -40,6 +41,8 @@ function MultiSelectInput({
 						]);
 
 						setInputValue('');
+
+						validate();
 					}
 
 					setFieldTouched(name);

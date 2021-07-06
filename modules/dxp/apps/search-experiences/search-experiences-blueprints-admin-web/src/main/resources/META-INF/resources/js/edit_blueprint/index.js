@@ -638,6 +638,7 @@ function EditBlueprintForm({
 								setFieldTouched={formik.setFieldTouched}
 								setFieldValue={formik.setFieldValue}
 								touched={formik.touched.selectedQueryElements}
+								validate={formik.validate}
 							/>
 						</div>
 					</>
