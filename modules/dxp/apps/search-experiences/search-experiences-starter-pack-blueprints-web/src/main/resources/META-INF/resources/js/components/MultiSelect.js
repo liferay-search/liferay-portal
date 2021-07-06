@@ -229,8 +229,8 @@ export default function MultiSelect({
 						{...otherProps}
 						className="form-control-inset"
 						disabled={disabled}
-						onBlur={(e) => {
-							onBlur(e);
+						onBlur={(event) => {
+							onBlur(event);
 							setIsFocused(false);
 						}}
 						onChange={(event) => {
@@ -238,8 +238,8 @@ export default function MultiSelect({
 
 							onChange(event.target.value.replace(',', ''));
 						}}
-						onFocus={(e) => {
-							onFocus(e);
+						onFocus={(event) => {
+							onFocus(event);
 							setIsFocused(true);
 						}}
 						onKeyDown={handleKeyDown}

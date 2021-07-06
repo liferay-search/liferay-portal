@@ -187,12 +187,12 @@ public class SuggestionAttributesBuilderImpl
 	}
 
 	private void _validateSuggestionAttributes(
-		SuggestionAttributes typeaheadAttributes) {
+		SuggestionAttributes typeaheadSuggestionAttributes) {
 
-		if ((typeaheadAttributes.getCompanyId() == null) ||
-			(typeaheadAttributes.getGroupId() == null) ||
-			(typeaheadAttributes.getKeywords() == null) ||
-			(typeaheadAttributes.getSize() == null)) {
+		if ((typeaheadSuggestionAttributes.getCompanyId() == null) ||
+			(typeaheadSuggestionAttributes.getGroupId() == null) ||
+			(typeaheadSuggestionAttributes.getKeywords() == null) ||
+			(typeaheadSuggestionAttributes.getSize() == null)) {
 
 			throw new IllegalStateException(
 				"Company id, group id, keyword and size are mandatory " +

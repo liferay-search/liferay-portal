@@ -16,14 +16,14 @@
  * renameKeys({"en-US": "Hello", "zh-CN": "Ni Hao"}, (str) => str.replace('-', '_'))
  * => {en_US: "Hello", zh_CN: "Ni Hao"}
  *
- * @param {Object} obj Original object
+ * @param {Object} object Original object
  * @return {Object}
  */
-export const renameKeys = (obj, func) => {
+export const renameKeys = (object, func) => {
 	const newObj = {};
 
-	Object.keys(obj).map((key) => {
-		newObj[`${func(key)}`] = obj[key];
+	Object.keys(object).map((key) => {
+		newObj[`${func(key)}`] = object[key];
 	});
 
 	return newObj;

@@ -31,6 +31,6 @@ public interface BlueprintsAttributesHelper {
 
 	public BlueprintsAttributesBuilder getBlueprintsResponseAttributesBuilder(
 		PortletRequest portletRequest, PortletResponse portletResponse,
-		Blueprint blueprint, BlueprintsAttributes blueprintsRequestAttributes);
+		Blueprint blueprint, BlueprintsAttributes requestBlueprintsAttributes);
 
 }

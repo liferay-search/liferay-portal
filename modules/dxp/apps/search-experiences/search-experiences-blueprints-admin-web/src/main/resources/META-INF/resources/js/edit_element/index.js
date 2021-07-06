@@ -286,7 +286,7 @@ function EditElementForm({
 			previewElementTemplateJSON = JSON.parse(elementTemplateJSON);
 			previewUIConfigurationJSON = JSON.parse(uiConfigurationJSON);
 		}
-		catch (e) {
+		catch (error) {
 			return (
 				<ClayEmptyState
 					description={Liferay.Language.get(

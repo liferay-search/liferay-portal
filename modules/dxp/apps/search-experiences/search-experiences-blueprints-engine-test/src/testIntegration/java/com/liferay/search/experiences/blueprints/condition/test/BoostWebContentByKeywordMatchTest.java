@@ -48,6 +48,7 @@ public class BoostWebContentByKeywordMatchTest extends BaseBlueprintsTestCase {
 	@Test
 	public void testContainsCondition() throws Exception {
 		addJournalArticle("Coca Cola", "cola cola");
+
 		JournalArticle journalArticle = addJournalArticle("Pepsi Cola", "");
 
 		String articleId = journalArticle.getArticleId();

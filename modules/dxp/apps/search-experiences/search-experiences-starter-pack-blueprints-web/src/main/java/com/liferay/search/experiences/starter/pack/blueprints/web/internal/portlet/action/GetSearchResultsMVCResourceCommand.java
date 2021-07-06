@@ -99,17 +99,17 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 
 			Messages messages = new Messages();
 
-			BlueprintsAttributes blueprintsRequestAttributes =
-				_getBlueprintsRequestAttributes(
+			BlueprintsAttributes requestBlueprintsAttributes =
+				_getRequestBlueprintsAttributes(
 					resourceRequest, blueprint,
 					blueprintsWebPortletPreferences);
 
 			SearchResponse searchResponse = _blueprintsEngineHelper.search(
-				blueprint, blueprintsRequestAttributes, messages);
+				blueprint, requestBlueprintsAttributes, messages);
 
 			responseJSONObject = _createResponseObject(
 				resourceRequest, resourceResponse, searchResponse, blueprint,
-				blueprintsRequestAttributes, blueprintsWebPortletPreferences,
+				requestBlueprintsAttributes, blueprintsWebPortletPreferences,
 				messages);
 
 			if (_shouldIndexKeywords(
@@ -117,7 +117,7 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 					searchResponse.getTotalHits())) {
 
 				_indexKeyword(
-					resourceRequest, blueprintsRequestAttributes.getKeywords());
+					resourceRequest, requestBlueprintsAttributes.getKeywords());
 			}
 		}
 		catch (BlueprintsEngineException blueprintsEngineException) {
@@ -174,34 +174,34 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 	private JSONObject _createResponseObject(
 			ResourceRequest resourceRequest, ResourceResponse resourceResponse,
 			SearchResponse searchResponse, Blueprint blueprint,
-			BlueprintsAttributes blueprintsRequestAttributes,
+			BlueprintsAttributes requestBlueprintsAttributes,
 			BlueprintsWebPortletPreferences blueprintsWebPortletPreferences,
 			Messages messages)
 		throws PortalException {
 
-		BlueprintsAttributes blueprintsResponseAttributes =
-			_getBlueprintsResponseAttributes(
+		BlueprintsAttributes responseBlueprintsAttributes =
+			_getResponseBlueprintsAttributes(
 				resourceRequest, resourceResponse, blueprint,
-				blueprintsRequestAttributes);
+				requestBlueprintsAttributes);
 
 		JSONObject responseJSONObject = _searchResponseJSONTranslator.translate(
-			searchResponse, blueprint, blueprintsResponseAttributes,
+			searchResponse, blueprint, responseBlueprintsAttributes,
 			_getResourceBundle(resourceRequest), messages);
 
 		if (_shouldAddSpellCheckSuggestions(
 				blueprintsWebPortletPreferences,
 				searchResponse.getTotalHits()) &&
-			!Validator.isBlank(blueprintsRequestAttributes.getKeywords())) {
+			!Validator.isBlank(requestBlueprintsAttributes.getKeywords())) {
 
 			_addSpellCheckSuggestions(
 				resourceRequest, blueprintsWebPortletPreferences,
-				blueprintsRequestAttributes.getKeywords(), responseJSONObject);
+				requestBlueprintsAttributes.getKeywords(), responseJSONObject);
 		}
 
 		return responseJSONObject;
 	}
 
-	private BlueprintsAttributes _getBlueprintsRequestAttributes(
+	private BlueprintsAttributes _getRequestBlueprintsAttributes(
 		ResourceRequest resourceRequest, Blueprint blueprint,
 		BlueprintsWebPortletPreferences blueprintsWebPortletPreferences) {
 
@@ -220,27 +220,27 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 		return blueprintsAttributesBuilder.build();
 	}
 
-	private BlueprintsAttributes _getBlueprintsResponseAttributes(
-		ResourceRequest resourceRequest, ResourceResponse resourceResponse,
-		Blueprint blueprint, BlueprintsAttributes blueprintsRequestAttributes) {
-
-		BlueprintsAttributesBuilder blueprintsAttributesBuilder =
-			_blueprintsAttributesHelper.getBlueprintsResponseAttributesBuilder(
-				resourceRequest, resourceResponse, blueprint,
-				blueprintsRequestAttributes);
-
-		blueprintsAttributesBuilder.addAttribute(
-			ResponseAttributeKeys.INCLUDE_RESULT, true);
-
-		return blueprintsAttributesBuilder.build();
-	}
-
 	private ResourceBundle _getResourceBundle(ResourceRequest resourceRequest) {
 		ThemeDisplay themeDisplay = (ThemeDisplay)resourceRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
 		return ResourceBundleUtil.getBundle(
 			"content.Language", themeDisplay.getLocale(), getClass());
+	}
+
+	private BlueprintsAttributes _getResponseBlueprintsAttributes(
+		ResourceRequest resourceRequest, ResourceResponse resourceResponse,
+		Blueprint blueprint, BlueprintsAttributes requestBlueprintsAttributes) {
+
+		BlueprintsAttributesBuilder blueprintsAttributesBuilder =
+			_blueprintsAttributesHelper.getBlueprintsResponseAttributesBuilder(
+				resourceRequest, resourceResponse, blueprint,
+				requestBlueprintsAttributes);
+
+		blueprintsAttributesBuilder.addAttribute(
+			ResponseAttributeKeys.INCLUDE_RESULT, true);
+
+		return blueprintsAttributesBuilder.build();
 	}
 
 	private SuggestionAttributes _getSpellCheckSuggestionAttributes(

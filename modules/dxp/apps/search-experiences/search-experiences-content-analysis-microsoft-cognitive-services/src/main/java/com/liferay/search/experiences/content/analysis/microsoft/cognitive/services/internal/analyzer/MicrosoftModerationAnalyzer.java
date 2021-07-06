@@ -301,14 +301,14 @@ public class MicrosoftModerationAnalyzer implements ModerationAnalyzer {
 	private static final Log _log = LogFactoryUtil.getLog(
 		MicrosoftModerationAnalyzer.class);
 
-	private CloseableHttpClient _closeableHttpClient;
+	private volatile CloseableHttpClient _closeableHttpClient;
 
 	@Reference
 	private JSONFactory _jsonFactory;
 
 	private volatile MicrosoftContentModeratorConfiguration
 		_microsoftContentModeratorConfiguration;
-	private PoolingHttpClientConnectionManager
+	private volatile PoolingHttpClientConnectionManager
 		_poolingHttpClientConnectionManager;
 
 }

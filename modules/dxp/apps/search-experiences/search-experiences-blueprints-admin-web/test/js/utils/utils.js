@@ -160,7 +160,7 @@ describe('utils', () => {
 						],
 					},
 				})
-			).toEqual('best_value'); //gets first value in options
+			).toEqual('best_value'); // gets first value in options
 		});
 
 		it('gets default value for itemSelector', () => {
@@ -227,7 +227,7 @@ describe('utils', () => {
 					type: 'multiselect',
 				})
 			).toEqual([]);
-		}); //multiselect requires label and value
+		}); // multiselect requires label and value
 
 		it('gets default value for empty multiselect', () => {
 			expect(
