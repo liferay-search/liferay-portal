@@ -402,13 +402,13 @@ function Element({
 														<ClaySticker
 															displayType="unstyled"
 															size="sm"
+															title={
+																config.helpText
+															}
 														>
 															<ClayIcon
 																data-tooltip-align="top"
 																symbol="info-circle"
-																title={
-																	config.helpText
-																}
 															/>
 														</ClaySticker>
 													</ClayTooltipProvider>

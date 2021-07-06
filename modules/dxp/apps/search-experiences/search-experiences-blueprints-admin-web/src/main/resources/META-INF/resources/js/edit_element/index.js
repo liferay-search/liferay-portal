@@ -463,13 +463,13 @@ function EditElementForm({
 													className="cursor-pointer"
 													displayType="unstyled"
 													size="sm"
+													title={Liferay.Language.get(
+														'element-template-json-helptext'
+													)}
 												>
 													<ClayIcon
 														data-tooltip-align="top"
 														symbol="info-circle"
-														title={Liferay.Language.get(
-															'element-template-json-helptext'
-														)}
 													/>
 												</ClaySticker>
 											</ClayTooltipProvider>
@@ -577,13 +577,13 @@ function EditElementForm({
 													className="cursor-pointer"
 													displayType="unstyled"
 													size="sm"
+													title={Liferay.Language.get(
+														'ui-configuration-json-helptext'
+													)}
 												>
 													<ClayIcon
 														data-tooltip-align="top"
 														symbol="info-circle"
-														title={Liferay.Language.get(
-															'ui-configuration-json-helptext'
-														)}
 													/>
 												</ClaySticker>
 											</ClayTooltipProvider>
