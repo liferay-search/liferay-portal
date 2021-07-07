@@ -33,6 +33,10 @@ public class StringQueryTranslatorImpl implements StringQueryTranslator {
 		QueryStringQueryBuilder queryStringQueryBuilder =
 			QueryBuilders.queryStringQuery(stringQuery.getQuery());
 
+		if (stringQuery.getEscape() != null) {
+			queryStringQueryBuilder.escape(stringQuery.getEscape());
+		}
+
 		if (!stringQuery.isDefaultBoost()) {
 			queryStringQueryBuilder.boost(stringQuery.getBoost());
 		}

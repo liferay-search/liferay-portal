@@ -128,6 +128,8 @@ public class AssetSearcher extends BaseSearcher {
 
 			StringQuery stringQuery = new StringQuery(keyword);
 
+			stringQuery.setEscape(true);
+
 			keywordsQuery.add(stringQuery, BooleanClauseOccur.MUST);
 		}
 
@@ -202,6 +204,8 @@ public class AssetSearcher extends BaseSearcher {
 			}
 
 			StringQuery stringQuery = new StringQuery(keyword);
+
+			stringQuery.setEscape(true);
 
 			keywordsQuery.add(stringQuery, BooleanClauseOccur.SHOULD);
 		}
@@ -332,6 +336,8 @@ public class AssetSearcher extends BaseSearcher {
 
 			StringQuery stringQuery = new StringQuery(keyword);
 
+			stringQuery.setEscape(true);
+
 			keywordsQuery.add(stringQuery, BooleanClauseOccur.MUST);
 		}
 
@@ -406,6 +412,8 @@ public class AssetSearcher extends BaseSearcher {
 			}
 
 			StringQuery stringQuery = new StringQuery(keyword);
+
+			stringQuery.setEscape(true);
 
 			keywordsQuery.add(stringQuery, BooleanClauseOccur.SHOULD);
 		}

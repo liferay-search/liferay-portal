@@ -42,8 +42,16 @@ public class StringQuery extends BaseQueryImpl implements Query {
 		return queryVisitor.visitQuery(this);
 	}
 
+	public Boolean getEscape() {
+		return _escape;
+	}
+
 	public String getQuery() {
 		return _query;
+	}
+
+	public void setEscape(boolean escape) {
+		_escape = escape;
 	}
 
 	@Override
@@ -63,6 +71,7 @@ public class StringQuery extends BaseQueryImpl implements Query {
 		return sb.toString();
 	}
 
+	private Boolean _escape;
 	private final String _query;
 
 }
