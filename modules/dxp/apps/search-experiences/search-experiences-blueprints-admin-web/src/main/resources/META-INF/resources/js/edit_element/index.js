@@ -378,10 +378,39 @@ function EditElementForm({
 					<ClayToolbar light>
 						<ClayLayout.ContainerFluid>
 							<ClayToolbar.Nav>
-								<ClayToolbar.Item
-									className="text-left"
-									expand
-								/>
+								<ClayToolbar.Item className="text-left" expand>
+									<div>
+										<div className="entry-title text-truncate">
+											{
+												initialTitle[
+													defaultLocale.replace(
+														'_',
+														'-'
+													)
+												]
+											}
+										</div>
+
+										<div className="entry-description text-truncate">
+											{initialDescription[
+												defaultLocale.replace('_', '-')
+											] ? (
+												initialDescription[
+													defaultLocale.replace(
+														'_',
+														'-'
+													)
+												]
+											) : (
+												<span className="entry-description-blank">
+													{Liferay.Language.get(
+														'no-description'
+													)}
+												</span>
+											)}
+										</div>
+									</div>
+								</ClayToolbar.Item>
 
 								<ClayToolbar.Item>
 									<PreviewModal
