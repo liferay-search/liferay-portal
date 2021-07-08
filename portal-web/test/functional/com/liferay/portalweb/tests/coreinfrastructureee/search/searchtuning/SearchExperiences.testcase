@@ -337,11 +337,11 @@ definition {
 
 		SearchExperiences.editElement(name = "TestElement");
 
-		WaitForElementPresent(
+		AssertElementPresent(
 			key_text = "'en_US': 'TestElement'",
 			locator1 = "SearchExperiences#CUSTOM_ELEMENT_TEMPLATE_EDITOR");
 
-		WaitForElementPresent(
+		AssertElementPresent(
 			key_text = "'label': 'TestElement'",
 			locator1 = "SearchExperiences#CUSTOM_ELEMENT_UI_CONFIGURATION_EDITOR");
 	}
