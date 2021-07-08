@@ -277,7 +277,7 @@ definition {
 		LexiconEntry.viewEntryName(rowEntry = "Baseline Clauses Blueprint");
 	}
 
-	test ExportAndImportElements {
+	test ExportAndImportElement {
 		SearchExperiences.openSearchExperiencesAdmin();
 
 		var elementTemplateJSON = '''
