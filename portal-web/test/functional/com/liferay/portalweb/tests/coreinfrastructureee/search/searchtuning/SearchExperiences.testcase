@@ -321,7 +321,7 @@ definition {
 			confirmationText = "Are you sure you want to delete this? It will be deleted immediately.",
 			rowEntry = "TestElement");
 
-		Click(locator1 = "Icon#HISTORY_VERTICAL_ELLIPSIS");
+		Click(locator1 = "Icon#HEADER_VERTICAL_ELLIPSIS");
 
 		MenuItem.clickNoError(menuItem = "Import");
 
