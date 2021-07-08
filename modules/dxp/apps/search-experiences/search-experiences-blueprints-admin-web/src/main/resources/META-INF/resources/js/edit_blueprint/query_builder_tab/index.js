@@ -154,7 +154,7 @@ function QueryBuilderTab({
 					justify="between"
 				>
 					<ClayLayout.Col size={12}>
-						{Liferay.Language.get('settings')}
+						{Liferay.Language.get('query-settings')}
 					</ClayLayout.Col>
 				</ClayLayout.Row>
 
