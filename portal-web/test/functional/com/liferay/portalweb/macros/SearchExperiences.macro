@@ -112,10 +112,6 @@ definition {
 		}
 	}
 
-	macro deleteBlueprint {
-		LexiconEntry.delete(rowEntry = "${name}");
-	}
-
 	macro editBlueprint {
 		LexiconEntry.gotoEntry(rowEntry = "${name}");
 	}
