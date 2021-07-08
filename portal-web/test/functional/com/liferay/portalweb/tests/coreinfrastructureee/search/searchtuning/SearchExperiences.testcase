@@ -285,7 +285,7 @@ definition {
 	"category": "hide",
 	"conditions": {},
 	"title": {
-		"en_US": "TestElement"
+		"en_US": "Test Element"
 	},
 	"enabled": true,
 	"description": {}
@@ -299,7 +299,7 @@ definition {
 			"fields": [
 				{
 					"helpText": "Help Text",
-					"label": "TestElement",
+					"label": "Test Element",
 					"type": "date"
 				}
 			]
@@ -310,16 +310,16 @@ definition {
 
 		SearchExperiences.createElement(
 			elementTemplateJSON = "${elementTemplateJSON}",
-			name = "TestElement",
+			name = "Test Element",
 			uiConfigurationJSON = "${uiConfigurationJSON}");
 
 		LexiconEntry.gotoEntryMenuItem(
 			menuItem = "Export",
-			rowEntry = "TestElement");
+			rowEntry = "Test Element");
 
 		LexiconEntry.delete(
 			confirmationText = "Are you sure you want to delete this? It will be deleted immediately.",
-			rowEntry = "TestElement");
+			rowEntry = "Test Element");
 
 		Click(locator1 = "Icon#HEADER_VERTICAL_ELLIPSIS");
 
@@ -329,20 +329,20 @@ definition {
 
 		UploadTempFile(
 			locator1 = "TextInput#FILE",
-			value1 = "TestElement.json");
+			value1 = "Test Element.json");
 
 		Button.clickImport();
 
 		VerifyElementPresent(locator1 = "Message#SUCCESS");
 
-		SearchExperiences.editElement(name = "TestElement");
+		SearchExperiences.editElement(name = "Test Element");
 
 		AssertElementPresent(
-			key_text = "'en_US': 'TestElement'",
+			key_text = "'en_US': 'Test Element'",
 			locator1 = "SearchExperiences#CUSTOM_ELEMENT_TEMPLATE_EDITOR");
 
 		AssertElementPresent(
-			key_text = "'label': 'TestElement'",
+			key_text = "'label': 'Test Element'",
 			locator1 = "SearchExperiences#CUSTOM_ELEMENT_UI_CONFIGURATION_EDITOR");
 	}
 
