@@ -191,20 +191,20 @@ definition {
 		RobotType.robotTypeShortcut(locator1 = "Ctrl + v");
 
 		WaitForElementPresent(
-			key_text = "hits",
+			key_text = "${searchExplanation}",
 			locator1 = "CKEditor#BODY_TEXT");
 	}
 
 	macro viewDownloadedRawResponse {
 		var tempDir = PropsUtil.get("output.dir.name");
 
-		var fileContent = FileUtil.read("${tempDir}/raw_response.json");
+		var fileContent = FileUtil.read("${tempDir}/${fileName}");
 
-		if (contains("${fileContent}", "hits")) {
-			echo("File raw_response.json contains text "hits"");
+		if (contains("${fileContent}", "${searchExplanation}")) {
+			echo("File ${fileName} contains text ${searchExplanation}");
 		}
 		else {
-			fail("File raw_response.json does not contain text "hits"");
+			fail("File ${fileName} does not contain text ${searchExplanation}");
 		}
 	}
 

@@ -708,6 +708,38 @@ definition {
 		AssertTextPresent(value1 = "thisTypeDoesNotExist");
 	}
 
+	test ViewElementJSONViaBlueprintsQueryBuilder {
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		SearchExperiences.addBlueprint(name = "Element JSON Blueprint");
+
+		SearchExperiences.addQueryElement(element = "Boost Asset Type");
+
+		Click(locator1 = "Icon#SVG_ELLIPSIS");
+
+		MenuItem.clickNoError(menuItem = "View Element JSON");
+
+		AssertTextEquals(
+			locator1 = "Modal#HEADER",
+			value1 = "Element JSON");
+
+		AssertVisible(
+			key_searchExplanation = "Boost the given asset type over others",
+			locator1 = "SearchExperiences#BLUEPRINTS_PREVIEW_RAW_RESPONSE_EXPLANATION");
+
+		SelectFrameTop();
+
+		Click(locator1 = "SearchExperiences#BLUEPRINTS_DOWNLOAD_RAW_RESPONSE");
+
+		SearchExperiences.viewDownloadedRawResponse(
+			fileName = "element.json",
+			searchExplanation = "Boost the given asset type over others");
+
+		Click.javaScriptClick(locator1 = "Button#COPY");
+
+		SearchExperiences.viewCopiedRawResponse(searchExplanation = "Boost the given asset type over others");
+	}
+
 	test ViewExpandedAndCollapsedBlueprintsPreviewEntry {
 		JSONWebcontent.addWebContent(
 			content = "",
@@ -767,11 +799,13 @@ definition {
 
 		Click(locator1 = "SearchExperiences#BLUEPRINTS_DOWNLOAD_RAW_RESPONSE");
 
-		SearchExperiences.viewDownloadedRawResponse();
+		SearchExperiences.viewDownloadedRawResponse(
+			fileName = "raw_response.json",
+			searchExplanation = "hits");
 
 		Click(locator1 = "Button#COPY");
 
-		SearchExperiences.viewCopiedRawResponse();
+		SearchExperiences.viewCopiedRawResponse(searchExplanation = "hits");
 	}
 
 	test ViewSearchResultsScoreViaBlueprintsPreview {
