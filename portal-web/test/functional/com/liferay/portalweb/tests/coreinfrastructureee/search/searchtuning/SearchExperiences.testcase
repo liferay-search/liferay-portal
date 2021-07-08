@@ -282,13 +282,10 @@ definition {
 
 		var elementTemplateJSON = '''
 {
-	"category": "hide",
-	"conditions": {},
+	"category": "boost",
 	"title": {
 		"en_US": "Test Element"
-	},
-	"enabled": true,
-	"description": {}
+	}
 }
 		''';
 
@@ -298,9 +295,8 @@ definition {
 		{
 			"fields": [
 				{
-					"helpText": "Help Text",
-					"label": "Test Element",
-					"type": "date"
+					"label": "Test Field",
+					"type": "number"
 				}
 			]
 		}
@@ -342,7 +338,7 @@ definition {
 			locator1 = "SearchExperiences#CUSTOM_ELEMENT_TEMPLATE_EDITOR");
 
 		AssertElementPresent(
-			key_text = "'label': 'Test Element'",
+			key_text = "'label': 'Test Field'",
 			locator1 = "SearchExperiences#CUSTOM_ELEMENT_UI_CONFIGURATION_EDITOR");
 	}
 
