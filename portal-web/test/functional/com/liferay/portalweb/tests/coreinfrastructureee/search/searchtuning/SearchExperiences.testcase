@@ -327,11 +327,9 @@ definition {
 
 		SelectFrame(locator1 = "IFrame#MODAL_BODY");
 
-		var downloadedFileName = TestCase.getDownloadedTempFileName(fileNamePattern = "TestElement.json");
-
 		UploadTempFile(
 			locator1 = "TextInput#FILE",
-			value1 = "${downloadedFileName}");
+			value1 = "TestElement.json");
 
 		Button.clickImport();
 
