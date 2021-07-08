@@ -290,7 +290,7 @@ definition {
 	"enabled": true,
 	"description": {}
 }
-			''';
+		''';
 
 		var uiConfigurationJSON = '''
 {
@@ -306,7 +306,7 @@ definition {
 		}
 	]
 }
-			''';
+		''';
 
 		SearchExperiences.createElement(
 			elementTemplateJSON = "${elementTemplateJSON}",
