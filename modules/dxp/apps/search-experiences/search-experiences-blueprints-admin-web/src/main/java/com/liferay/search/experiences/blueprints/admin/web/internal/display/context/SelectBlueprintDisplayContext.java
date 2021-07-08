@@ -61,6 +61,8 @@ public class SelectBlueprintDisplayContext
 			WorkflowConstants.STATUS_APPROVED, searchContainer, getOrderByCol(),
 			getOrderByType());
 
+		searchContainer.setRowChecker(null);
+
 		return searchContainer;
 	}
 
