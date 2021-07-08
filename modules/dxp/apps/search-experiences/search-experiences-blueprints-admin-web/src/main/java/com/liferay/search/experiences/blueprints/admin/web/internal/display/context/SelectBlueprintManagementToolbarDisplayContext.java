@@ -57,6 +57,11 @@ public class SelectBlueprintManagementToolbarDisplayContext
 	}
 
 	@Override
+	public Boolean isDisabled() {
+		return false;
+	}
+
+	@Override
 	public Boolean isSelectable() {
 		return false;
 	}
@@ -68,7 +73,7 @@ public class SelectBlueprintManagementToolbarDisplayContext
 
 	@Override
 	protected String[] getOrderByKeys() {
-		return new String[] {"name", "create-date"};
+		return new String[] {"title", "modified"};
 	}
 
 }
