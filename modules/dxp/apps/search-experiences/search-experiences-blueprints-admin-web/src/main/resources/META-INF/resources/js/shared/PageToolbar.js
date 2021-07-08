@@ -56,7 +56,7 @@ function EditTitleModal({
 
 	return (
 		<ClayModal
-			className="blueprint-edit-title-modal"
+			className="entry-edit-title-modal"
 			observer={observer}
 			size="md"
 		>
@@ -216,16 +216,16 @@ export default function PageToolbar({
 									aria-label={Liferay.Language.get(
 										'edit-name'
 									)}
-									className="blueprint-heading-edit-button"
+									className="entry-heading-edit-button"
 									displayType="unstyled"
 									monospaced={false}
 									onClick={_handleClickEdit('name')}
 								>
-									<div className="blueprint-title text-truncate">
+									<div className="entry-title text-truncate">
 										{title[DEFAULT_LOCALE]}
 
 										<ClayIcon
-											className="blueprint-heading-edit-icon"
+											className="entry-heading-edit-icon"
 											symbol="pencil"
 										/>
 									</div>
@@ -237,21 +237,21 @@ export default function PageToolbar({
 									aria-label={Liferay.Language.get(
 										'edit-description'
 									)}
-									className="blueprint-heading-edit-button"
+									className="entry-heading-edit-button"
 									displayType="unstyled"
 									monospaced={false}
 									onClick={_handleClickEdit('description')}
 								>
 									<ClayTooltipProvider>
 										<div
-											className="blueprint-description text-truncate"
+											className="entry-description text-truncate"
 											data-tooltip-align="bottom"
 											title={description[DEFAULT_LOCALE]}
 										>
 											{description[DEFAULT_LOCALE] ? (
 												description[DEFAULT_LOCALE]
 											) : (
-												<span className="blueprint-description-blank">
+												<span className="entry-description-blank">
 													{Liferay.Language.get(
 														'no-description'
 													)}
@@ -259,7 +259,7 @@ export default function PageToolbar({
 											)}
 
 											<ClayIcon
-												className="blueprint-heading-edit-icon"
+												className="entry-heading-edit-icon"
 												symbol="pencil"
 											/>
 										</div>

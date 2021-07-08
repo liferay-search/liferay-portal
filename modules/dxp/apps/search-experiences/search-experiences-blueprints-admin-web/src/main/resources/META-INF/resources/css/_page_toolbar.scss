@@ -3,20 +3,20 @@
 	width: 100%;
 	z-index: 971;
 
-	.blueprint-description {
+	.entry-description {
 		color: $secondary;
 		font-size: 14px;
 		font-weight: 400;
 
-		.blueprint-description-blank {
+		.entry-description-blank {
 			font-style: italic;
 		}
 	}
 
-	.blueprint-heading-edit-button {
+	.entry-heading-edit-button {
 		display: block;
 
-		.blueprint-heading-edit-icon {
+		.entry-heading-edit-icon {
 			color: $main;
 			font-size: 0.875rem;
 			line-height: 1.15;
@@ -26,13 +26,13 @@
 
 		&:focus,
 		&:hover {
-			.blueprint-heading-edit-icon {
+			.entry-heading-edit-icon {
 				opacity: 1;
 			}
 		}
 	}
 
-	.blueprint-title {
+	.entry-title {
 		color: $main;
 		font-size: 18px;
 		font-weight: 700;
