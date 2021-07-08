@@ -323,7 +323,7 @@ definition {
 
 		Click(locator1 = "Icon#HEADER_VERTICAL_ELLIPSIS");
 
-		MenuItem.clickNoError(menuItem = "Import");
+		MenuItem.click(menuItem = "Import");
 
 		SelectFrame(locator1 = "IFrame#MODAL_BODY");
 
