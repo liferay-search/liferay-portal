@@ -400,6 +400,10 @@ function EditBlueprintForm({
 			},
 			...formik.values.selectedQueryElements,
 		]);
+
+		openSuccessToast({
+			message: Liferay.Language.get('element-added'),
+		});
 	};
 
 	const _handleDeleteElement = (id) => {
