@@ -32,7 +32,7 @@ const ImportBlueprintModal = ({formSubmitURL}) => {
 	};
 
 	const _handleFormError = (responseContent) => {
-		setErrorMessage(responseContent.error || '');
+		setErrorMessage(responseContent.error.join(', ') || '');
 
 		setLoadingResponse(false);
 	};

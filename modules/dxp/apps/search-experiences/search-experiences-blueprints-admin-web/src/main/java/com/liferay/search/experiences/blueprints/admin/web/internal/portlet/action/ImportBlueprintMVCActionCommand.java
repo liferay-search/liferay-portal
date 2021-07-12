@@ -80,6 +80,9 @@ public class ImportBlueprintMVCActionCommand extends BaseMVCActionCommand {
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
 
+		hideDefaultErrorMessage(actionRequest);
+		hideDefaultSuccessMessage(actionRequest);
+
 		try {
 			UploadPortletRequest uploadPortletRequest =
 				_portal.getUploadPortletRequest(actionRequest);
@@ -206,12 +209,18 @@ public class ImportBlueprintMVCActionCommand extends BaseMVCActionCommand {
 				blueprintValidationException.getMessage(),
 				blueprintValidationException);
 			_logValidationMessages(blueprintValidationException.getMessages());
+
+			_blueprintExceptionRequestHandler.handlePortalException(
+				actionRequest, actionResponse, blueprintValidationException);
 		}
 		catch (ElementValidationException elementValidationException) {
 			_log.error(
 				elementValidationException.getMessage(),
 				elementValidationException);
 			_logValidationMessages(elementValidationException.getMessages());
+
+			_blueprintExceptionRequestHandler.handlePortalException(
+				actionRequest, actionResponse, elementValidationException);
 		}
 		catch (Exception exception) {
 			throw new PortalException(exception);
