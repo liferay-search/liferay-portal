@@ -277,6 +277,123 @@ definition {
 		LexiconEntry.viewEntryName(rowEntry = "Baseline Clauses Blueprint");
 	}
 
+	test DefinePermissions {
+		JSONUser.addUser(
+			userEmailAddress = "userea@liferay.com",
+			userFirstName = "userfn",
+			userLastName = "userln",
+			userScreenName = "usersn");
+
+		JSONUser.setFirstPassword(
+			agreeToTermsAndAnswerReminderQuery = "true",
+			requireReset = "false",
+			userEmailAddress = "userea@liferay.com");
+
+		JSONRole.addRegularRole(
+			roleKey = "Search Experiences",
+			roleTitle = "Search Experiences");
+
+		for (var resourceActionIndex : list "ACCESS_IN_CONTROL_PANEL,CONFIGURATION,PERMISSIONS,PREFERENCES,VIEW") {
+			Permissions.definePermissionViaJSONAPI(
+				resourceAction = "${resourceActionIndex}",
+				resourceName = "com_liferay_search_experiences_blueprints_web_internal_portlet_BlueprintsAdminPortlet",
+				roleTitle = "Search Experiences");
+		}
+
+		for (var resourceActionIndex : list "ADD_BLUEPRINT,ADD_ELEMENT,PERMISSIONS") {
+			Permissions.definePermissionViaJSONAPI(
+				resourceAction = "${resourceActionIndex}",
+				resourceName = "com.liferay.search.experiences.blueprints",
+				roleTitle = "Search Experiences");
+		}
+
+		for (var resourceActionIndex : list "APPLY,DELETE,PERMISSIONS,UPDATE,VIEW") {
+			Permissions.definePermissionViaJSONAPI(
+				resourceAction = "${resourceActionIndex}",
+				resourceName = "com.liferay.search.experiences.blueprints.model.Blueprint",
+				roleTitle = "Search Experiences");
+		}
+
+		for (var resourceActionIndex : list "DELETE,PERMISSIONS,UPDATE,VIEW") {
+			Permissions.definePermissionViaJSONAPI(
+				resourceAction = "${resourceActionIndex}",
+				resourceName = "com.liferay.search.experiences.blueprints.model.Element",
+				roleTitle = "Search Experiences");
+		}
+
+		JSONRole.assignRoleToUser(
+			roleTitle = "Search Experiences",
+			userEmailAddress = "userea@liferay.com");
+
+		User.logoutAndLoginPG(
+			userLoginEmailAddress = "userea@liferay.com",
+			userLoginFullName = "userfn userln");
+
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		AssertElementPresent(
+			key_navItem = "Blueprints",
+			locator1 = "NavBar#NAV_ITEM_LINK");
+
+		SearchExperiences.addBlueprint(name = "Blueprint 1");
+
+		PortletEntry.save();
+
+		SearchExperiences.editBlueprint(name = "Blueprint 1");
+
+		Click(locator1 = "Icon#EDIT_PENCIL");
+
+		PortletEntry.inputName(name = "Blueprint 2");
+
+		Button.clickDone();
+
+		PortletEntry.save();
+
+		SearchExperiences.deleteBlueprint(name = "Blueprint 2");
+
+		AssertClick(
+			key_navItem = "Elements",
+			locator1 = "NavBar#NAV_ITEM_LINK",
+			value1 = "Elements");
+
+		var elementTemplateJSON1 = '''
+{
+	"title": {
+		"en_US": "Element 1"
+	}
+}
+		''';
+
+		var elementTemplateJSON2 = '''
+{
+	"title": {
+		"en_US": "Element 2"
+	}
+}
+		''';
+
+		var uiConfigurationJSON = '''{}''';
+
+		SearchExperiences.createElement(
+			elementTemplateJSON = "${elementTemplateJSON1}",
+			name = "Element 1",
+			uiConfigurationJSON = "${uiConfigurationJSON}");
+
+		SearchExperiences.editElement(name = "Element 1");
+
+		Type.typeCodeMirrorEditor(
+			locator1 = "SearchExperiences#CUSTOM_ELEMENT_TEMPLATE_EDITOR",
+			value1 = "${elementTemplateJSON2}");
+
+		PortletEntry.save();
+
+		LexiconEntry.delete(rowEntry = "Element 2");
+
+		User.logoutAndLoginPG(
+			userLoginEmailAddress = "test@liferay.com",
+			userLoginFullName = "test test");
+	}
+
 	@priority = "4"
 	test HideWebContentViaCustomElement {
 		JSONWebcontent.addWebContent(
