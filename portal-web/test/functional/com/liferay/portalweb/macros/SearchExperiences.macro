@@ -102,7 +102,9 @@ definition {
 		if (IsElementNotPresent(locator1 = "Message#EMPTY_INFO")) {
 			PortletEntry.selectAll();
 
-			Click(locator1 = "ManagementBar#ELLIPSIS_ICON");
+			Click(
+				key_text = "ellipsis",
+				locator1 = "ManagementBar#ANY_ICON");
 
 			MenuItem.clickNoError(menuItem = "Delete");
 
