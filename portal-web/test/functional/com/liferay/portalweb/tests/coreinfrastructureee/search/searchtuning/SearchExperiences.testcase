@@ -737,6 +737,45 @@ definition {
 			value1 = "Web Content Article");
 	}
 
+	test ViewInvalidElementViaBlueprintsPreview {
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		Navigator.gotoNavItem(navItem = "Elements");
+
+		var elementTemplateJSON = '''
+{
+	"conditions": [],
+	"title": {
+		"en_US": "My Element"
+	},
+	"description": {}
+}
+		''';
+
+		var uiConfigurationJSON = '''
+{}
+		''';
+
+		SearchExperiences.createElement(
+			elementTemplateJSON = "${elementTemplateJSON}",
+			name = "My Element",
+			uiConfigurationJSON = "${uiConfigurationJSON}");
+
+		Button.click(button = "Continue To Save");
+
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		SearchExperiences.addBlueprint(name = "My Blueprint");
+
+		SearchExperiences.addQueryElement(element = "My Element");
+
+		Click(locator1 = "Button#PREVIEW");
+
+		SearchExperiences.searchBlueprintsPreview(searchTerm = "Test");
+
+		Alert.viewErrorMessage(errorMessage = "expected type: JSONObject, found: JSONArray (query-configuration)");
+	}
+
 	test ViewRawResponseViaBlueprintsPreview {
 		JSONWebcontent.addWebContent(
 			content = "WC Content",
