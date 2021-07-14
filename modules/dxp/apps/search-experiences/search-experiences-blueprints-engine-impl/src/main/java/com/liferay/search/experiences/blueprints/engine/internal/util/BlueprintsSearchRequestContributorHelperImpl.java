@@ -15,7 +15,12 @@
 package com.liferay.search.experiences.blueprints.engine.internal.util;
 
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
+import com.liferay.search.experiences.blueprints.definition.BlueprintDefinition;
+import com.liferay.search.experiences.blueprints.definition.BlueprintDefinitionFactory;
+import com.liferay.search.experiences.blueprints.definition.ClauseContributorsDefinition;
+import com.liferay.search.experiences.blueprints.definition.FrameworkDefinition;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.search.experiences.blueprints.engine.exception.BlueprintsEngineException;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
@@ -24,6 +29,8 @@ import com.liferay.search.experiences.blueprints.engine.util.BlueprintsSearchReq
 import com.liferay.search.experiences.blueprints.message.Messages;
 import com.liferay.search.experiences.blueprints.model.Blueprint;
 import com.liferay.search.experiences.blueprints.service.BlueprintService;
+
+import java.util.Optional;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -37,6 +44,7 @@ import org.osgi.service.component.annotations.Reference;
 public class BlueprintsSearchRequestContributorHelperImpl
 	implements BlueprintsSearchRequestContributorHelper {
 
+	@Override
 	public void combine(
 			SearchRequestBuilder searchRequestBuilder, long blueprintId,
 			BlueprintsAttributes blueprintsAttributes, Messages messages)
@@ -47,21 +55,8 @@ public class BlueprintsSearchRequestContributorHelperImpl
 		ParameterData parameterData = _parameterDataCreator.create(
 			blueprint, blueprintsAttributes, messages);
 
-		if (!_blueprintsSearchRequestHelper.shouldApplyIndexerClauses(
-				blueprint)) {
-
-			searchRequestBuilder.emptySearchEnabled(
-				true
-			).withSearchContext(
-				searchContext -> searchContext.setAttribute(
-					"search.full.query.suppress.indexer.provided.clauses",
-					Boolean.TRUE)
-			);
-		}
-
-		searchRequestBuilder.modelIndexerClassNames(
-			_blueprintsSearchRequestHelper.getModelIndexerClassNames(
-				blueprint, blueprintsAttributes.getCompanyId()));
+		applyBlueprintDefinition(
+			blueprint, parameterData, searchRequestBuilder);
 
 		_blueprintsSearchRequestHelper.setSource(
 			searchRequestBuilder, parameterData, blueprint, messages);
@@ -72,6 +67,61 @@ public class BlueprintsSearchRequestContributorHelperImpl
 		_blueprintsSearchRequestHelper.checkEngineErrors(
 			blueprint.getBlueprintId(), messages);
 	}
+
+	protected void applyBlueprintDefinition(
+		Blueprint blueprint, ParameterData parameterData,
+		SearchRequestBuilder searchRequestBuilder) {
+
+		BlueprintDefinition blueprintDefinition =
+			_blueprintDefinitionFactory.getBlueprintDefinition(blueprint);
+
+		applyFrameworkDefinition(
+			blueprintDefinition.getFrameworkDefinition(blueprintDefinition),
+			parameterData, searchRequestBuilder);
+	}
+
+	protected void applyClauseContributorsDefinition(
+		ClauseContributorsDefinition clauseContributorsDefinition,
+		SearchRequestBuilder searchRequestBuilder) {
+
+		searchRequestBuilder.withSearchContext(
+			searchContext -> searchContext.setAttribute(
+				"search.full.query.clause.contributors.excludes",
+				StringUtil.merge(clauseContributorsDefinition.getExcludes()))
+		).withSearchContext(
+			searchContext -> searchContext.setAttribute(
+				"search.full.query.clause.contributors.includes",
+				StringUtil.merge(clauseContributorsDefinition.getIncludes()))
+		);
+	}
+
+	protected void applyFrameworkDefinition(
+		FrameworkDefinition frameworkDefinition, ParameterData parameterData,
+		SearchRequestBuilder searchRequestBuilder) {
+
+		if (frameworkDefinition.isSuppressIndexerClauses()) {
+			searchRequestBuilder.emptySearchEnabled(
+				true
+			).withSearchContext(
+				searchContext -> searchContext.setAttribute(
+					"search.full.query.suppress.indexer.provided.clauses",
+					Boolean.TRUE)
+			);
+		}
+
+		Optional<ClauseContributorsDefinition> optional =
+			frameworkDefinition.getClauseContributorsDefinitionOptional();
+
+		optional.ifPresent(
+			clauseContributorsDefinition -> applyClauseContributorsDefinition(
+				clauseContributorsDefinition, searchRequestBuilder));
+
+		searchRequestBuilder.modelIndexerClassNames(
+			frameworkDefinition.getSearchableAssetTypes());
+	}
+
+	@Reference
+	private BlueprintDefinitionFactory _blueprintDefinitionFactory;
 
 	@Reference
 	private BlueprintService _blueprintService;

@@ -114,23 +114,6 @@ public class BlueprintsSearchRequestHelper {
 		);
 	}
 
-	public String[] getModelIndexerClassNames(
-		Blueprint blueprint, long companyId) {
-
-		Optional<JSONArray> optional =
-			_blueprintHelper.getSearchableAssetTypesOptional(blueprint);
-
-		if (optional.isPresent()) {
-			JSONArray jsonArray = optional.get();
-
-			if (jsonArray.length() > 0) {
-				return JSONUtil.toStringArray(optional.get());
-			}
-		}
-
-		return new String[0];
-	}
-
 	public void setSource(
 		SearchRequestBuilder searchRequestBuilder, ParameterData parameterData,
 		Blueprint blueprint, Messages messages) {
@@ -181,10 +164,6 @@ public class BlueprintsSearchRequestHelper {
 			searchRequestBuilder.fetchSourceIncludes(
 				JSONUtil.toStringArray(includesJSONArray));
 		}
-	}
-
-	public boolean shouldApplyIndexerClauses(Blueprint blueprint) {
-		return _blueprintHelper.applyIndexerClauses(blueprint);
 	}
 
 	@Activate
