@@ -181,6 +181,18 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 			searchRequestBuilder.queryString(parameterData.getKeywords());
 		}
 
+		// TODO LPS-129052 read clause contributor ids from blueprint configuration, and set these attributes
+		/*
+		searchRequestBuilder.withSearchContext(
+			searchContext -> searchContext.setAttribute(
+				"search.full.query.clause.contributors.includes",
+				StringUtil.merge(ids_of_clause_contributors_to_include));   // "a, e, i, o, u"
+		searchRequestBuilder.withSearchContext(
+			searchContext -> searchContext.setAttribute(
+				"search.full.query.clause.contributors.excludes",
+				StringUtil.merge(ids_of_clause_contributors_to_exclude));   // "k, w, y"
+		*/
+
 		_blueprintsSearchRequestHelper.executeSearchRequestBodyContributors(
 			searchRequestBuilder, parameterData, blueprint, messages);
 
