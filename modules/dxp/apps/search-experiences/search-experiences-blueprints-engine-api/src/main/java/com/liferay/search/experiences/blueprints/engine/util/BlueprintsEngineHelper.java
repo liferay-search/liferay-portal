@@ -14,11 +14,9 @@
 
 package com.liferay.search.experiences.blueprints.engine.util;
 
-import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.searcher.SearchResponse;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
-import com.liferay.search.experiences.blueprints.engine.exception.BlueprintsEngineException;
 import com.liferay.search.experiences.blueprints.message.Messages;
 import com.liferay.search.experiences.blueprints.model.Blueprint;
 
@@ -28,18 +26,15 @@ import com.liferay.search.experiences.blueprints.model.Blueprint;
 public interface BlueprintsEngineHelper {
 
 	public SearchRequestBuilder getSearchRequestBuilder(
-			long blueprintId, BlueprintsAttributes blueprintsAttributes,
-			Messages messages)
-		throws BlueprintsEngineException, PortalException;
+		long blueprintId, BlueprintsAttributes blueprintsAttributes,
+		Messages messages);
 
 	public SearchResponse search(
-			Blueprint blueprint, BlueprintsAttributes blueprintsAttributes,
-			Messages messages)
-		throws BlueprintsEngineException, PortalException;
+		Blueprint blueprint, BlueprintsAttributes blueprintsAttributes,
+		Messages messages);
 
 	public SearchResponse search(
-			long blueprintId, BlueprintsAttributes blueprintsAttributes,
-			Messages messages)
-		throws BlueprintsEngineException, PortalException;
+		long blueprintId, BlueprintsAttributes blueprintsAttributes,
+		Messages messages);
 
 }
