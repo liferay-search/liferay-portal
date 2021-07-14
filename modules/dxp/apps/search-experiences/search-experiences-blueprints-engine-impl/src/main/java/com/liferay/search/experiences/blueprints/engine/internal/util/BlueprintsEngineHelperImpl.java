@@ -46,11 +46,10 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 
 	@Override
 	public SearchRequestBuilder getSearchRequestBuilder(
-			long blueprintId, BlueprintsAttributes blueprintsAttributes,
-			Messages messages)
-		throws BlueprintsEngineException, PortalException {
+		long blueprintId, BlueprintsAttributes blueprintsAttributes,
+		Messages messages) {
 
-		Blueprint blueprint = _blueprintService.getBlueprint(blueprintId);
+		Blueprint blueprint = getBlueprint(blueprintId);
 
 		ParameterData parameterData = _parameterDataCreator.create(
 			blueprint, blueprintsAttributes, messages);
@@ -68,9 +67,8 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 
 	@Override
 	public SearchResponse search(
-			Blueprint blueprint, BlueprintsAttributes blueprintsAttributes,
-			Messages messages)
-		throws BlueprintsEngineException, PortalException {
+		Blueprint blueprint, BlueprintsAttributes blueprintsAttributes,
+		Messages messages) {
 
 		ParameterData parameterData = _parameterDataCreator.create(
 			blueprint, blueprintsAttributes, messages);
@@ -91,11 +89,10 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 
 	@Override
 	public SearchResponse search(
-			long blueprintId, BlueprintsAttributes blueprintsAttributes,
-			Messages messages)
-		throws BlueprintsEngineException, PortalException {
+		long blueprintId, BlueprintsAttributes blueprintsAttributes,
+		Messages messages) {
 
-		Blueprint blueprint = _blueprintService.getBlueprint(blueprintId);
+		Blueprint blueprint = getBlueprint(blueprintId);
 
 		ParameterData parameterData = _parameterDataCreator.create(
 			blueprint, blueprintsAttributes, messages);
@@ -110,6 +107,15 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 
 		return _searchExecutor.execute(
 			searchRequestBuilder, parameterData, blueprint, messages);
+	}
+
+	protected Blueprint getBlueprint(long blueprintId) {
+		try {
+			return _blueprintService.getBlueprint(blueprintId);
+		}
+		catch (PortalException portalException) {
+			throw new BlueprintsEngineException(portalException);
+		}
 	}
 
 	private int _getFrom(

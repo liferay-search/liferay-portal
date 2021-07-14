@@ -59,9 +59,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(immediate = true, service = BlueprintsSearchRequestHelper.class)
 public class BlueprintsSearchRequestHelper {
 
-	public void checkEngineErrors(long blueprintId, Messages messages)
-		throws BlueprintsEngineException {
-
+	public void checkEngineErrors(long blueprintId, Messages messages) {
 		if (messages.hasErrors()) {
 			List<Message> errors = messages.getMessagesBySeverity(
 				Severity.ERROR);
