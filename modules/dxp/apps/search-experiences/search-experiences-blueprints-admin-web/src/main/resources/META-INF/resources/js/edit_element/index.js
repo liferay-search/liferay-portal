@@ -9,6 +9,7 @@
  * distribution rights of the Software.
  */
 
+import ClayAlert from '@clayui/alert';
 import ClayButton from '@clayui/button';
 import ClayEmptyState from '@clayui/empty-state';
 import ClayIcon from '@clayui/icon';
@@ -47,6 +48,7 @@ function EditElementForm({
 	initialDescription,
 	initialTitle,
 	predefinedVariables,
+	readOnly,
 	redirectURL,
 	submitFormURL,
 	type,
@@ -88,8 +90,10 @@ function EditElementForm({
 		// Workaround to force a re-render so `elementTemplateJSONRef` will be
 		// defined when calling `_handleVariableClick`
 
-		setShowSidebar(true);
-	}, []);
+		if (!readOnly) {
+			setShowSidebar(true);
+		}
+	}, [readOnly]);
 
 	function _appendEntryLocale(entry, name, formData) {
 		if (typeof entry == 'object') {
@@ -412,6 +416,19 @@ function EditElementForm({
 									</div>
 								</ClayToolbar.Item>
 
+								{readOnly && (
+									<ClayToolbar.Item>
+										<ClayAlert
+											className="m-0"
+											displayType="info"
+											title={Liferay.Language.get(
+												'read-only'
+											)}
+											variant="feedback"
+										/>
+									</ClayToolbar.Item>
+								)}
+
 								<ClayToolbar.Item>
 									<PreviewModal
 										body={_renderPreviewBody()}
@@ -434,26 +451,40 @@ function EditElementForm({
 									<div className="tbar-divider" />
 								</ClayToolbar.Item>
 
-								<ClayToolbar.Item>
-									<ClayLink
-										displayType="secondary"
-										href={redirectURL}
-										outline="secondary"
-									>
-										{Liferay.Language.get('cancel')}
-									</ClayLink>
-								</ClayToolbar.Item>
+								{readOnly ? (
+									<ClayToolbar.Item>
+										<ClayLink
+											displayType="secondary"
+											href={redirectURL}
+											outline="secondary"
+										>
+											{Liferay.Language.get('close')}
+										</ClayLink>
+									</ClayToolbar.Item>
+								) : (
+									<>
+										<ClayToolbar.Item>
+											<ClayLink
+												displayType="secondary"
+												href={redirectURL}
+												outline="secondary"
+											>
+												{Liferay.Language.get('cancel')}
+											</ClayLink>
+										</ClayToolbar.Item>
 
-								<ClayToolbar.Item>
-									<ClayButton
-										disabled={isSubmitting}
-										onClick={_handleSubmit}
-										small
-										type="submit"
-									>
-										{Liferay.Language.get('save')}
-									</ClayButton>
-								</ClayToolbar.Item>
+										<ClayToolbar.Item>
+											<ClayButton
+												disabled={isSubmitting}
+												onClick={_handleSubmit}
+												small
+												type="submit"
+											>
+												{Liferay.Language.get('save')}
+											</ClayButton>
+										</ClayToolbar.Item>
+									</>
+								)}
 							</ClayToolbar.Nav>
 						</ClayLayout.ContainerFluid>
 					</ClayToolbar>
@@ -465,21 +496,25 @@ function EditElementForm({
 					<ClayLayout.Col size={8}>
 						<div className="element-section">
 							<div className="element-header">
-								<ClayButton
-									borderless
-									className={showSidebar && 'active'}
-									disabled={false}
-									displayType="secondary"
-									monospaced
-									onClick={() => setShowSidebar(!showSidebar)}
-									small
-									title={Liferay.Language.get(
-										'predefined-variables'
-									)}
-									type="submit"
-								>
-									<ClayIcon symbol="list-ul" />
-								</ClayButton>
+								{!readOnly && (
+									<ClayButton
+										borderless
+										className={showSidebar && 'active'}
+										disabled={false}
+										displayType="secondary"
+										monospaced
+										onClick={() =>
+											setShowSidebar(!showSidebar)
+										}
+										small
+										title={Liferay.Language.get(
+											'predefined-variables'
+										)}
+										type="submit"
+									>
+										<ClayIcon symbol="list-ul" />
+									</ClayButton>
+								)}
 
 								<div className="expand-header">
 									<div className="header-label">
@@ -487,6 +522,7 @@ function EditElementForm({
 											{Liferay.Language.get(
 												'element-template-json'
 											)}
+
 											<ClayTooltipProvider>
 												<ClaySticker
 													className="cursor-pointer"
@@ -584,6 +620,7 @@ function EditElementForm({
 										onChange={(value) =>
 											setElementTemplateJSON(value)
 										}
+										readOnly={readOnly}
 										ref={elementTemplateJSONRef}
 										value={elementTemplateJSON}
 									/>
@@ -626,6 +663,7 @@ function EditElementForm({
 									onChange={(value) =>
 										setUIConfigurationJSON(value)
 									}
+									readOnly={readOnly}
 									value={uiConfigurationJSON}
 								/>
 							</div>

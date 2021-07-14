@@ -149,6 +149,7 @@ public class EditElementDisplayBuilder extends EditEntryDisplayBuilder {
 				"initialTitle", getTitleJSONObject(_element.getTitleMap()));
 			props.put(
 				"predefinedVariables", _getPredefinedVariablesJSONArray());
+			props.put("readOnly", _element.getReadOnly());
 		}
 
 		return props;
