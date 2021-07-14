@@ -15,10 +15,16 @@
 package com.liferay.search.experiences.blueprints.engine.internal.util;
 
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.searcher.SearchRequestBuilderFactory;
 import com.liferay.portal.search.searcher.SearchResponse;
+import com.liferay.search.experiences.blueprints.definition.BlueprintDefinition;
+import com.liferay.search.experiences.blueprints.definition.BlueprintDefinitionFactory;
+import com.liferay.search.experiences.blueprints.definition.ClauseContributorsDefinition;
+import com.liferay.search.experiences.blueprints.definition.FrameworkDefinition;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.search.experiences.blueprints.engine.constants.ReservedParameterNames;
 import com.liferay.search.experiences.blueprints.engine.exception.BlueprintsEngineException;
@@ -109,6 +115,58 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 			searchRequestBuilder, parameterData, blueprint, messages);
 	}
 
+	protected void applyBlueprintDefinition(
+		Blueprint blueprint, ParameterData parameterData,
+		SearchRequestBuilder searchRequestBuilder) {
+
+		BlueprintDefinition blueprintDefinition =
+			_blueprintDefinitionFactory.getBlueprintDefinition(blueprint);
+
+		applyFrameworkDefinition(
+			blueprintDefinition.getFrameworkDefinition(blueprintDefinition),
+			parameterData, searchRequestBuilder);
+	}
+
+	protected void applyClauseContributorsDefinition(
+		ClauseContributorsDefinition clauseContributorsDefinition,
+		SearchRequestBuilder searchRequestBuilder) {
+
+		searchRequestBuilder.withSearchContext(
+			searchContext -> searchContext.setAttribute(
+				"search.full.query.clause.contributors.excludes",
+				StringUtil.merge(clauseContributorsDefinition.getExcludes()))
+		).withSearchContext(
+			searchContext -> searchContext.setAttribute(
+				"search.full.query.clause.contributors.includes",
+				StringUtil.merge(clauseContributorsDefinition.getIncludes()))
+		);
+	}
+
+	protected void applyFrameworkDefinition(
+		FrameworkDefinition frameworkDefinition, ParameterData parameterData,
+		SearchRequestBuilder searchRequestBuilder) {
+
+		if (frameworkDefinition.isSuppressIndexerClauses()) {
+			searchRequestBuilder.withSearchContext(
+				searchContext -> searchContext.setAttribute(
+					"search.full.query.suppress.indexer.provided.clauses",
+					Boolean.TRUE));
+		}
+		else {
+			searchRequestBuilder.queryString(parameterData.getKeywords());
+		}
+
+		Optional<ClauseContributorsDefinition> optional =
+			frameworkDefinition.getClauseContributorsDefinitionOptional();
+
+		optional.ifPresent(
+			clauseContributorsDefinition -> applyClauseContributorsDefinition(
+				clauseContributorsDefinition, searchRequestBuilder));
+
+		searchRequestBuilder.modelIndexerClassNames(
+			frameworkDefinition.getSearchableAssetTypes());
+	}
+
 	protected Blueprint getBlueprint(long blueprintId) {
 		try {
 			return _blueprintService.getBlueprint(blueprintId);
@@ -163,9 +221,6 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 				_isIncludeResponseString(parameterData)
 			).locale(
 				locale
-			).modelIndexerClassNames(
-				_blueprintsSearchRequestHelper.getModelIndexerClassNames(
-					blueprint, companyId)
 			).size(
 				size
 			).from(
@@ -175,37 +230,8 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 		_blueprintsSearchRequestHelper.setSource(
 			searchRequestBuilder, parameterData, blueprint, messages);
 
-		if (!_blueprintsSearchRequestHelper.shouldApplyIndexerClauses(
-				blueprint)) {
-
-			searchRequestBuilder.withSearchContext(
-				searchContext -> searchContext.setAttribute(
-					"search.full.query.suppress.indexer.provided.clauses",
-					Boolean.TRUE));
-		}
-		else {
-			searchRequestBuilder.queryString(parameterData.getKeywords());
-		}
-
-		// TODO LPS-129052 read clause contributor ids from blueprint
-		// configuration, and set these attributes
-
-		/*
-		searchRequestBuilder.withSearchContext(
-			searchContext -> searchContext.setAttribute(
-				"search.full.query.clause.contributors.includes",
-				StringUtil.merge(ids_of_clause_contributors_to_include));
-
-		// "a, e, i, o, u"
-
-		searchRequestBuilder.withSearchContext(
-			searchContext -> searchContext.setAttribute(
-				"search.full.query.clause.contributors.excludes",
-				StringUtil.merge(ids_of_clause_contributors_to_exclude));
-
-		// "k, w, y"
-
-		*/
+		applyBlueprintDefinition(
+			blueprint, parameterData, searchRequestBuilder);
 
 		_blueprintsSearchRequestHelper.executeSearchRequestBodyContributors(
 			searchRequestBuilder, parameterData, blueprint, messages);
@@ -255,6 +281,9 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 	}
 
 	@Reference
+	private BlueprintDefinitionFactory _blueprintDefinitionFactory;
+
+	@Reference
 	private BlueprintHelper _blueprintHelper;
 
 	@Reference
@@ -262,6 +291,9 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 
 	@Reference
 	private BlueprintsSearchRequestHelper _blueprintsSearchRequestHelper;
+
+	@Reference
+	private JSONFactory _jsonFactory;
 
 	@Reference
 	private ParameterDataCreator _parameterDataCreator;
