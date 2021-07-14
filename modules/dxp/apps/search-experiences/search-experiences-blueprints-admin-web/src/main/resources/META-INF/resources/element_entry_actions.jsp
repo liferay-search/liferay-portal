@@ -41,7 +41,7 @@ long companyGroupId = themeDisplay.getCompanyGroupId();
 		</portlet:renderURL>
 
 		<liferay-ui:icon
-			message="edit"
+			message='<%= element.getReadOnly() ? "view" : "edit" %>'
 			url="<%= editEntryURL %>"
 		/>
 	</c:if>
@@ -101,7 +101,7 @@ long companyGroupId = themeDisplay.getCompanyGroupId();
 		/>
 	</c:if>
 
-	<c:if test="<%= ElementEntryPermission.contains(permissionChecker, element, ActionKeys.DELETE) %>">
+	<c:if test="<%= ElementEntryPermission.contains(permissionChecker, element, ActionKeys.DELETE) && !element.getReadOnly() %>">
 		<portlet:actionURL name="<%= BlueprintsAdminMVCCommandNames.DELETE_ELEMENT %>" var="deleteEntryURL">
 			<portlet:param name="redirect" value="<%= currentURL %>" />
 			<portlet:param name="<%= BlueprintsAdminWebKeys.ELEMENT_ID %>" value="<%= String.valueOf(elementId) %>" />

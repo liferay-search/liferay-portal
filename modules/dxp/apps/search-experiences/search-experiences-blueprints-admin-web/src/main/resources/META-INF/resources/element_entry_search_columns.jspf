@@ -25,20 +25,27 @@
 		<liferay-ui:search-container-column-text
 			colspan="<%= 2 %>"
 		>
-			<c:choose>
-				<c:when test="<%= ElementEntryPermission.contains(permissionChecker, entry, ActionKeys.UPDATE) %>">
-					<h4>
+			<h4>
+				<c:choose>
+					<c:when test="<%= ElementEntryPermission.contains(permissionChecker, entry, ActionKeys.UPDATE) %>">
 						<aui:a href="<%= editEntryURL %>">
 							<%= HtmlUtil.escape(entry.getTitle(locale)) %>
 						</aui:a>
-					</h4>
-				</c:when>
-				<c:otherwise>
-					<h4>
+					</c:when>
+					<c:otherwise>
 						<%= HtmlUtil.escape(entry.getTitle(locale)) %>
-					</h4>
-				</c:otherwise>
-			</c:choose>
+					</c:otherwise>
+				</c:choose>
+
+				<c:if test="<%= entry.getReadOnly() %>">
+					<liferay-ui:icon
+						icon="lock"
+						iconCssClass="ml-1 text-muted"
+						markupView="lexicon"
+						message="read-only"
+					/>
+				</c:if>
+			</h4>
 
 			<h5 class="text-default text-truncate" title="<%= HtmlUtil.escape(entry.getDescription(locale)) %>">
 				<%= HtmlUtil.escape(entry.getDescription(locale)) %>
@@ -54,23 +61,31 @@
 		/>
 	</c:when>
 	<c:otherwise>
-		<c:choose>
-			<c:when test="<%= ElementEntryPermission.contains(permissionChecker, entry, ActionKeys.UPDATE) %>">
-				<liferay-ui:search-container-column-text
-					cssClass="table-cell-expand table-cell-minw-200 table-title"
-					href="<%= editEntryURL %>"
-					name="title"
-					value="<%= HtmlUtil.escape(entry.getTitle(locale)) %>"
+		<liferay-ui:search-container-column-text
+			cssClass="table-cell-expand table-cell-minw-200 table-title"
+			name="title"
+			value="<%= HtmlUtil.escape(entry.getTitle(locale)) %>"
+		>
+			<c:choose>
+				<c:when test="<%= ElementEntryPermission.contains(permissionChecker, entry, ActionKeys.UPDATE) %>">
+					<aui:a href="<%= editEntryURL %>">
+						<%= HtmlUtil.escape(entry.getTitle(locale)) %>
+					</aui:a>
+				</c:when>
+				<c:otherwise>
+					<%= HtmlUtil.escape(entry.getTitle(locale)) %>
+				</c:otherwise>
+			</c:choose>
+
+			<c:if test="<%= entry.getReadOnly() %>">
+				<liferay-ui:icon
+					icon="lock"
+					iconCssClass="ml-1 text-muted"
+					markupView="lexicon"
+					message="read-only"
 				/>
-			</c:when>
-			<c:otherwise>
-				<liferay-ui:search-container-column-text
-					cssClass="table-cell-expand table-cell-minw-200 table-title"
-					name="title"
-					value="<%= HtmlUtil.escape(entry.getTitle(locale)) %>"
-				/>
-			</c:otherwise>
-		</c:choose>
+			</c:if>
+		</liferay-ui:search-container-column-text>
 
 		<liferay-ui:search-container-column-text
 			cssClass="table-cell-expand table-cell-minw-200"
