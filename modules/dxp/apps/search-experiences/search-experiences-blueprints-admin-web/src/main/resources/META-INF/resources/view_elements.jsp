@@ -16,6 +16,8 @@
 
 <%@ include file="/init.jsp" %>
 
+<liferay-ui:error embed="<%= false %>" exception="<%= DefaultElementEntryException.class %>" message="system-read-only-elements-cannot-be-deleted" />
+
 <%
 ViewElementsDisplayContext viewElementsDisplayContext = (ViewElementsDisplayContext)request.getAttribute(BlueprintsAdminWebKeys.VIEW_ELEMENTS_DISPLAY_CONTEXT);
 %>

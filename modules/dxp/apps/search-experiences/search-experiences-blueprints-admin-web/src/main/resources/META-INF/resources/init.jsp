@@ -58,6 +58,7 @@ page import="com.liferay.search.experiences.blueprints.admin.web.internal.securi
 page import="com.liferay.search.experiences.blueprints.admin.web.internal.security.permission.resource.ElementEntryPermission" %><%@
 page import="com.liferay.search.experiences.blueprints.admin.web.internal.servlet.taglib.clay.SelectUserUserCard" %><%@
 page import="com.liferay.search.experiences.blueprints.constants.BlueprintsActionKeys" %><%@
+page import="com.liferay.search.experiences.blueprints.exception.DefaultElementEntryException" %><%@
 page import="com.liferay.search.experiences.blueprints.model.Blueprint" %><%@
 page import="com.liferay.search.experiences.blueprints.model.Element" %>
 
