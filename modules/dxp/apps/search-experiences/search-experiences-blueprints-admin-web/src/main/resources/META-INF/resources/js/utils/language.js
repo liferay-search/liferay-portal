@@ -75,7 +75,10 @@ export function sub(langKey, args, join = true) {
  * @param {string} locale
  */
 export function getLocalizedText(value, locale) {
-	if (value[locale]) {
+	if (!value) {
+		return '';
+	}
+	else if (value[locale]) {
 		return value[locale];
 	}
 	else if (typeof value === 'string' || value instanceof String) {
