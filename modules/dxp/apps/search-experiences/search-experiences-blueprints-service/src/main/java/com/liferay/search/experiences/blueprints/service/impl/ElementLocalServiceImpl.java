@@ -29,6 +29,7 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.search.experiences.blueprints.exception.BlueprintValidationException;
+import com.liferay.search.experiences.blueprints.exception.DefaultElementEntryException;
 import com.liferay.search.experiences.blueprints.exception.ElementValidationException;
 import com.liferay.search.experiences.blueprints.model.Element;
 import com.liferay.search.experiences.blueprints.service.base.ElementLocalServiceBaseImpl;
@@ -114,7 +115,8 @@ public class ElementLocalServiceImpl extends ElementLocalServiceBaseImpl {
 	@SystemEvent(type = SystemEventConstants.TYPE_DELETE)
 	public Element deleteElement(Element element) throws PortalException {
 		if (element.getReadOnly()) {
-			throw new PortalException("Cannot delete system read-only element");
+			throw new DefaultElementEntryException(
+				"Cannot delete system read-only element");
 		}
 
 		_resourceLocalService.deleteResource(
