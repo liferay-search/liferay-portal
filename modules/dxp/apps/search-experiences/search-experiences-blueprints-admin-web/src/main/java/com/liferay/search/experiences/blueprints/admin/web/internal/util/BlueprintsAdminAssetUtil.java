@@ -14,7 +14,13 @@
 
 package com.liferay.search.experiences.blueprints.admin.web.internal.util;
 
+import com.liferay.portal.json.JSONArrayImpl;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONUtil;
+import com.liferay.portal.kernel.security.permission.ResourceActionsUtil;
 import com.liferay.portal.search.asset.SearchableAssetClassNamesProvider;
+
+import java.util.Locale;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -29,11 +35,35 @@ public class BlueprintsAdminAssetUtil {
 		return _searchableAssetClassNamesProvider.getClassNames(companyId);
 	}
 
+	public static JSONArray getSearchableAssetNamesJSONArray(
+		long companyId, Locale locale) {
+
+		JSONArray jsonArray = new JSONArrayImpl();
+
+		String[] classNames = _searchableAssetClassNamesProvider.getClassNames(
+			companyId);
+
+		for (String className : classNames) {
+			jsonArray.put(
+				JSONUtil.put(
+					"className", className
+				).put(
+					"displayName", _getDisplayName(locale, className)
+				));
+		}
+
+		return jsonArray;
+	}
+
 	@Reference(unbind = "-")
 	protected void setSearchableAssetClassNamesProvider(
 		SearchableAssetClassNamesProvider searchableAssetClassNamesProvider) {
 
 		_searchableAssetClassNamesProvider = searchableAssetClassNamesProvider;
+	}
+
+	private static String _getDisplayName(Locale locale, String className) {
+		return ResourceActionsUtil.getModelResource(locale, className);
 	}
 
 	private static SearchableAssetClassNamesProvider
