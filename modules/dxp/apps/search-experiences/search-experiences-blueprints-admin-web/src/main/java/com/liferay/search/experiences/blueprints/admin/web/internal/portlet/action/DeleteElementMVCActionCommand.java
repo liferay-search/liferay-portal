@@ -25,6 +25,7 @@ import com.liferay.search.experiences.blueprints.admin.web.internal.constants.Bl
 import com.liferay.search.experiences.blueprints.admin.web.internal.constants.BlueprintsAdminWebKeys;
 import com.liferay.search.experiences.blueprints.admin.web.internal.util.BlueprintsAdminRequestUtil;
 import com.liferay.search.experiences.blueprints.constants.BlueprintsPortletKeys;
+import com.liferay.search.experiences.blueprints.exception.DefaultElementEntryException;
 import com.liferay.search.experiences.blueprints.service.ElementService;
 
 import javax.portlet.ActionRequest;
@@ -69,9 +70,17 @@ public class DeleteElementMVCActionCommand extends BaseMVCActionCommand {
 		catch (PortalException portalException) {
 			_log.error(portalException.getMessage(), portalException);
 
-			SessionErrors.add(
-				actionRequest, BlueprintsAdminWebKeys.ERROR,
-				portalException.getMessage());
+			if (portalException instanceof DefaultElementEntryException) {
+				SessionErrors.add(
+					actionRequest, DefaultElementEntryException.class);
+
+				hideDefaultErrorMessage(actionRequest);
+			}
+			else {
+				SessionErrors.add(
+					actionRequest, BlueprintsAdminWebKeys.ERROR,
+					portalException.getMessage());
+			}
 		}
 	}
 
