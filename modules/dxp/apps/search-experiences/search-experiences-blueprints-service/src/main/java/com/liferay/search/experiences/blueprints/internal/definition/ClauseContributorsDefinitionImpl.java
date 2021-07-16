@@ -24,6 +24,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * @author André de Oliveira
@@ -31,40 +33,76 @@ import java.util.Optional;
 public class ClauseContributorsDefinitionImpl
 	implements ClauseContributorsDefinition {
 
+	public static final boolean LPS_129052_NEW_PAYLOAD_READY = false;
+
 	public ClauseContributorsDefinitionImpl(JSONObject jsonObject) {
 		_jsonObject = jsonObject;
 	}
 
 	@Override
 	public Collection<String> getExcludes() {
-		return Collections.emptySet();
+		return getClauseContributorIds("excludes", Collections::emptySet);
 	}
 
 	@Override
 	public Collection<String> getIncludes() {
-		HashSet<String> includes = new HashSet<>();
+		return getClauseContributorIds(
+			"includes",
+			LPS_129052_NEW_PAYLOAD_READY ? Collections::emptySet :
+				this::_getIncludesFromSubsections);
+	}
 
+	protected Collection<String> getClauseContributorIds(
+		String key, Supplier<? extends Collection<String>> supplier) {
+
+		Optional<JSONObject> optional = getJSONObjectOptional(key);
+
+		return optional.map(
+			this::getJSONObjectKeys
+		).orElseGet(
+			supplier
+		);
+	}
+
+	protected Collection<String> getJSONObjectKeys(JSONObject jsonObject) {
+		return new HashSet<>(jsonObject.keySet());
+	}
+
+	protected Optional<JSONObject> getJSONObjectOptional(String key) {
+		return BlueprintJSONUtil.getJSONObjectOptional(
+			_jsonObject, "JSONObject/" + key);
+	}
+
+	private void _addIncludesFromSubsection(
+		Collection<String> collection, String key) {
+
+		Optional<JSONObject> optional = getJSONObjectOptional(key);
+
+		optional.ifPresent(
+			jsonObject -> _addJSONObjectKeysWithValueTrue(
+				collection, jsonObject));
+	}
+
+	private void _addJSONObjectKeysWithValueTrue(
+		Collection<String> collection, JSONObject jsonObject) {
+
+		for (String key : jsonObject.keySet()) {
+			if (jsonObject.getBoolean(key)) {
+				collection.add(key);
+			}
+		}
+	}
+
+	private Collection<String> _getIncludesFromSubsections() {
 		List<String> sections = Arrays.asList(
 			"KeywordQueryContributor", "ModelPrefilterContributor",
 			"QueryPrefilterContributor");
 
-		sections.forEach(section -> addIncludes(section, includes));
+		Set<String> set = new HashSet<>();
 
-		return includes;
-	}
+		sections.forEach(key -> _addIncludesFromSubsection(set, key));
 
-	protected void addIncludes(String section, HashSet<String> includes) {
-		Optional<JSONObject> optional = BlueprintJSONUtil.getJSONObjectOptional(
-			_jsonObject, "JSONObject/" + section);
-
-		optional.ifPresent(
-			jsonObject -> {
-				for (String key : jsonObject.keySet()) {
-					if (jsonObject.getBoolean(key)) {
-						includes.add(key);
-					}
-				}
-			});
+		return set;
 	}
 
 	private final JSONObject _jsonObject;
