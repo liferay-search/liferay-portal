@@ -22,6 +22,12 @@ const ApplyBaselineModal = ({
 		onClose,
 	});
 
+	const _handleSubmit = () => {
+		onSubmit();
+
+		handleClose();
+	};
+
 	if (!visible) {
 		return null;
 	}
@@ -47,12 +53,10 @@ const ApplyBaselineModal = ({
 						>
 							{Liferay.Language.get('cancel')}
 						</ClayButton>
+
 						<ClayButton
 							displayType="primary"
-							onClick={() => {
-								onSubmit();
-								handleClose();
-							}}
+							onClick={_handleSubmit}
 						>
 							{Liferay.Language.get('apply')}
 						</ClayButton>
