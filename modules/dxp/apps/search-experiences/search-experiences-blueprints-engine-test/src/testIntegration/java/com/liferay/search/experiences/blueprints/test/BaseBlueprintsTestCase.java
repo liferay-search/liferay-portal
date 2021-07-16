@@ -49,7 +49,6 @@ import com.liferay.portal.search.test.util.SearchTestRule;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portlet.expando.util.test.ExpandoTestUtil;
 import com.liferay.search.experiences.blueprints.constants.json.keys.BlueprintKeys;
-import com.liferay.search.experiences.blueprints.constants.json.keys.framework.FrameworkConfigurationKeys;
 import com.liferay.search.experiences.blueprints.constants.json.keys.parameter.ParameterConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributesBuilder;
@@ -288,8 +287,7 @@ public abstract class BaseBlueprintsTestCase {
 		).put(
 			FacetsBlueprintKeys.CONFIGURATION_SECTION, getConfigurationSection()
 		).put(
-			BlueprintKeys.FRAMEWORK_CONFIGURATION.getJsonKey(),
-			getFrameworkConfiguration()
+			"framework_configuration", getFrameworkConfiguration()
 		).put(
 			BlueprintKeys.HIGHLIGHT_CONFIGURATION.getJsonKey(),
 			getHightlightConfiguration()
@@ -334,9 +332,7 @@ public abstract class BaseBlueprintsTestCase {
 	}
 
 	protected JSONObject getFrameworkConfiguration() {
-		return JSONUtil.put(
-			FrameworkConfigurationKeys.APPLY_INDEXER_CLAUSES.getJsonKey(),
-			true);
+		return JSONUtil.put("apply_indexer_clauses", true);
 	}
 
 	protected String getGeolocationValue(double latitude, double longitude) {
@@ -449,13 +445,13 @@ public abstract class BaseBlueprintsTestCase {
 	private ExpandoColumnLocalService _expandoColumnLocalService;
 
 	@DeleteAfterTestRun
-	private List<ExpandoColumn> _expandoColumns = new ArrayList<>();
+	private final List<ExpandoColumn> _expandoColumns = new ArrayList<>();
 
 	@Inject
 	private ExpandoTableLocalService _expandoTableLocalService;
 
 	@DeleteAfterTestRun
-	private List<ExpandoTable> _expandoTables = new ArrayList<>();
+	private final List<ExpandoTable> _expandoTables = new ArrayList<>();
 
 	@Inject
 	private JSONDataProviderCache _jsonDataProviderCache;
