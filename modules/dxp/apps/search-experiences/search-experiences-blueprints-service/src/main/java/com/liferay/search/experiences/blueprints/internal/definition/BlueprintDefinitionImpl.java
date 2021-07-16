@@ -14,49 +14,36 @@
 
 package com.liferay.search.experiences.blueprints.internal.definition;
 
-import com.liferay.portal.kernel.json.JSONException;
-import com.liferay.portal.kernel.json.JSONFactory;
-import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.search.experiences.blueprints.definition.BlueprintDefinition;
 import com.liferay.search.experiences.blueprints.definition.FrameworkDefinition;
 import com.liferay.search.experiences.blueprints.model.Blueprint;
-import com.liferay.search.experiences.blueprints.util.util.BlueprintJSONUtil;
-
-import java.util.Optional;
 
 /**
  * @author André de Oliveira
  */
 public class BlueprintDefinitionImpl implements BlueprintDefinition {
 
-	public BlueprintDefinitionImpl(
-		Blueprint blueprint, JSONFactory jsonFactory) {
-
-		_jsonFactory = jsonFactory;
-
-		_jsonObject = _createJSONObject(blueprint.getConfiguration());
+	public BlueprintDefinitionImpl(Blueprint blueprint) {
+		_blueprintDefinitionDTO = _getBlueprintDefinitionDTO(blueprint);
 	}
 
 	@Override
 	public FrameworkDefinition getFrameworkDefinition(
 		BlueprintDefinition blueprintDefinition) {
 
-		Optional<JSONObject> optional = BlueprintJSONUtil.getJSONObjectOptional(
-			_jsonObject, "JSONObject/framework_configuration");
-
-		return new FrameworkDefinitionImpl(optional.orElse(null));
+		return new FrameworkDefinitionImpl(
+			_blueprintDefinitionDTO.frameworkDefinitionDTO);
 	}
 
-	private JSONObject _createJSONObject(String json) {
-		try {
-			return _jsonFactory.createJSONObject(json);
-		}
-		catch (JSONException jsonException) {
-			throw new RuntimeException(jsonException);
-		}
+	private BlueprintDefinitionDTO _getBlueprintDefinitionDTO(
+		Blueprint blueprint) {
+
+		BlueprintDefinitionDTOReader blueprintDefinitionDTOReader =
+			new BlueprintDefinitionDTOReader();
+
+		return blueprintDefinitionDTOReader.read(blueprint.getConfiguration());
 	}
 
-	private final JSONFactory _jsonFactory;
-	private final JSONObject _jsonObject;
+	private final BlueprintDefinitionDTO _blueprintDefinitionDTO;
 
 }

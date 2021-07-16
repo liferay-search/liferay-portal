@@ -14,12 +14,8 @@
 
 package com.liferay.search.experiences.blueprints.internal.definition;
 
-import com.liferay.portal.kernel.json.JSONArray;
-import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.search.experiences.blueprints.definition.ClauseContributorsDefinition;
 import com.liferay.search.experiences.blueprints.definition.FrameworkDefinition;
-import com.liferay.search.experiences.blueprints.util.util.BlueprintJSONUtil;
 
 import java.util.Optional;
 
@@ -28,52 +24,52 @@ import java.util.Optional;
  */
 public class FrameworkDefinitionImpl implements FrameworkDefinition {
 
-	public FrameworkDefinitionImpl(JSONObject jsonObject) {
-		_jsonObject = _getJSONObject(jsonObject);
+	public FrameworkDefinitionImpl(
+		FrameworkDefinitionDTO frameworkDefinitionDTO) {
+
+		_frameworkDefinitionDTO = _getFrameworkDefinitionBean(
+			frameworkDefinitionDTO);
 	}
 
 	@Override
 	public Optional<ClauseContributorsDefinition>
 		getClauseContributorsDefinitionOptional() {
 
-		Optional<JSONObject> optional = BlueprintJSONUtil.getJSONObjectOptional(
-			_jsonObject, "JSONObject/clause_contributors");
-
-		return optional.map(ClauseContributorsDefinitionImpl::new);
+		return Optional.ofNullable(
+			_frameworkDefinitionDTO.clauseContributorsDefinitionDTO
+		).map(
+			ClauseContributorsDefinitionImpl::new
+		);
 	}
 
 	@Override
 	public String[] getSearchableAssetTypes() {
-		Optional<JSONArray> optional = BlueprintJSONUtil.getJSONArrayOptional(
-			_jsonObject, "JSONArray/searchable_asset_types");
-
-		return optional.map(
-			JSONUtil::toStringArray
-		).orElse(
-			new String[0]
-		);
+		return _frameworkDefinitionDTO.searchableAssetTypes;
 	}
 
 	@Override
 	public boolean isSuppressIndexerClauses() {
-		return !_jsonObject.getBoolean("apply_indexer_clauses", true);
+		return _frameworkDefinitionDTO.applyIndexerClauses;
 	}
 
-	private JSONObject _getJSONObject(JSONObject jsonObject) {
-		if (jsonObject != null) {
-			return jsonObject;
+	private FrameworkDefinitionDTO _getFrameworkDefinitionBean(
+		FrameworkDefinitionDTO frameworkDefinitionDTO) {
+
+		if (frameworkDefinitionDTO != null) {
+			return frameworkDefinitionDTO;
 		}
 
-		return JSONUtil.put(
-			"apply_indexer_clauses", true
-		).put(
-			"searchable_asset_types",
-			JSONUtil.putAll(
-				"com.liferay.journal.model.JournalArticle",
-				"com.liferay.document.library.kernel.model.DLFileEntry")
-		);
+		return new FrameworkDefinitionDTO() {
+			{
+				applyIndexerClauses = true;
+				searchableAssetTypes = new String[] {
+					"com.liferay.journal.model.JournalArticle",
+					"com.liferay.document.library.kernel.model.DLFileEntry"
+				};
+			}
+		};
 	}
 
-	private final JSONObject _jsonObject;
+	private final FrameworkDefinitionDTO _frameworkDefinitionDTO;
 
 }
