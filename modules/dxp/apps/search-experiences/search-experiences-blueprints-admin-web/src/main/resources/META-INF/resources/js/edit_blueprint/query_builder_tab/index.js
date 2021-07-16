@@ -205,7 +205,7 @@ QueryBuilderTab.propTypes = {
 	onDeleteElement: PropTypes.func,
 	onFrameworkConfigChange: PropTypes.func,
 	onToggleSidebar: PropTypes.func,
-	searchableAssetTypes: PropTypes.arrayOf(PropTypes.string),
+	searchableAssetTypes: PropTypes.arrayOf(PropTypes.object),
 	selectedElements: PropTypes.arrayOf(PropTypes.object),
 	setFieldTouched: PropTypes.func,
 	setFieldValue: PropTypes.func,

@@ -31,7 +31,9 @@ function renderBuilder(props) {
 		<QueryBuilder
 			frameworkConfig={{
 				apply_indexer_clauses: false,
-				searchable_asset_types: SEARCHABLE_ASSET_TYPES,
+				searchable_asset_types: SEARCHABLE_ASSET_TYPES.map(
+					(asset) => asset.className
+				),
 			}}
 			initialSelectedElements={SELECTED_ELEMENTS}
 			onDeleteElement={jest.fn()}
