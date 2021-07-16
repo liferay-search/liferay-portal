@@ -16,8 +16,9 @@ import ClayLink from '@clayui/link';
 import ClayManagementToolbar from '@clayui/management-toolbar';
 import ClayModal, {useModal} from '@clayui/modal';
 import ClayTable from '@clayui/table';
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 
+import ThemeContext from '../../shared/ThemeContext';
 import {sub} from './../../utils/language';
 
 function SelectAssetTypes({
@@ -25,12 +26,21 @@ function SelectAssetTypes({
 	searchableAssetTypes,
 	selectedAssetTypes = [],
 }) {
+	const {locale} = useContext(ThemeContext);
+
 	const [visible, setVisible] = useState(false);
 	const {observer, onClose} = useModal({
 		onClose: () => setVisible(false),
 	});
 	const [modalSelectedAssetTypes, setModalSelectedAssetTypes] = useState(
 		selectedAssetTypes
+	);
+
+	const searchableAssetTypesClassNames = searchableAssetTypes.map(
+		(asset) => asset.className
+	);
+	const searchableAssetTypesSorted = searchableAssetTypes.sort((a, b) =>
+		a.displayName.localeCompare(b.displayName, locale.replace('_', '-'))
 	);
 
 	const _handleDelete = (asset) => () => {
@@ -76,27 +86,33 @@ function SelectAssetTypes({
 			{selectedAssetTypes.length > 0 && (
 				<ClayTable>
 					<ClayTable.Body>
-						{selectedAssetTypes.sort().map((asset) => (
-							<ClayTable.Row key={asset}>
-								<ClayTable.Cell expanded headingTitle>
-									{asset}
-								</ClayTable.Cell>
+						{searchableAssetTypesSorted
+							.filter((asset) =>
+								selectedAssetTypes.includes(asset.className)
+							)
+							.map((asset) => (
+								<ClayTable.Row key={asset.className}>
+									<ClayTable.Cell expanded headingTitle>
+										{asset.displayName}
+									</ClayTable.Cell>
 
-								<ClayTable.Cell>
-									<ClayButton
-										aria-label={Liferay.Language.get(
-											'delete'
-										)}
-										className="secondary"
-										displayType="unstyled"
-										onClick={_handleDelete(asset)}
-										small
-									>
-										<ClayIcon symbol="times" />
-									</ClayButton>
-								</ClayTable.Cell>
-							</ClayTable.Row>
-						))}
+									<ClayTable.Cell>
+										<ClayButton
+											aria-label={Liferay.Language.get(
+												'delete'
+											)}
+											className="secondary"
+											displayType="unstyled"
+											onClick={_handleDelete(
+												asset.className
+											)}
+											small
+										>
+											<ClayIcon symbol="times" />
+										</ClayButton>
+									</ClayTable.Cell>
+								</ClayTable.Row>
+							))}
 					</ClayTable.Body>
 				</ClayTable>
 			)}
@@ -134,7 +150,7 @@ function SelectAssetTypes({
 											setModalSelectedAssetTypes(
 												modalSelectedAssetTypes.length ===
 													0
-													? searchableAssetTypes
+													? searchableAssetTypesClassNames
 													: []
 											)
 										}
@@ -162,7 +178,7 @@ function SelectAssetTypes({
 												displayType="primary"
 												onClick={() => {
 													setModalSelectedAssetTypes(
-														searchableAssetTypes
+														searchableAssetTypesClassNames
 													);
 												}}
 											>
@@ -184,23 +200,25 @@ function SelectAssetTypes({
 					<ClayModal.Body scrollable>
 						<ClayTable>
 							<ClayTable.Body>
-								{searchableAssetTypes.sort().map((asset) => {
+								{searchableAssetTypesSorted.map((asset) => {
 									const isSelected = modalSelectedAssetTypes.includes(
-										asset
+										asset.className
 									);
 
 									return (
 										<ClayTable.Row
 											active={isSelected}
 											className="cursor-pointer"
-											key={asset}
-											onClick={_handleRowCheck(asset)}
+											key={asset.className}
+											onClick={_handleRowCheck(
+												asset.className
+											)}
 										>
 											<ClayTable.Cell>
 												<ClayCheckbox
 													checked={isSelected}
 													onChange={_handleRowCheck(
-														asset
+														asset.className
 													)}
 												/>
 											</ClayTable.Cell>
@@ -209,7 +227,7 @@ function SelectAssetTypes({
 												expanded
 												headingTitle
 											>
-												{asset}
+												{asset.displayName}
 											</ClayTable.Cell>
 										</ClayTable.Row>
 									);
