@@ -14,22 +14,22 @@
 
 package com.liferay.search.experiences.blueprints.internal.definition;
 
-import com.liferay.search.experiences.blueprints.definition.BlueprintDefinition;
-import com.liferay.search.experiences.blueprints.definition.BlueprintDefinitionFactory;
-import com.liferay.search.experiences.blueprints.model.Blueprint;
-
-import org.osgi.service.component.annotations.Component;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @author André de Oliveira
  */
-@Component(service = BlueprintDefinitionFactory.class)
-public class BlueprintDefinitionFactoryImpl
-	implements BlueprintDefinitionFactory {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class FrameworkDefinitionDTO {
 
-	@Override
-	public BlueprintDefinition getBlueprintDefinition(Blueprint blueprint) {
-		return new BlueprintDefinitionImpl(blueprint);
-	}
+	@JsonProperty("apply_indexer_clauses")
+	protected boolean applyIndexerClauses;
+
+	@JsonProperty("clause_contributors")
+	protected ClauseContributorsDefinitionDTO clauseContributorsDefinitionDTO;
+
+	@JsonProperty("searchable_asset_types")
+	protected String[] searchableAssetTypes;
 
 }
