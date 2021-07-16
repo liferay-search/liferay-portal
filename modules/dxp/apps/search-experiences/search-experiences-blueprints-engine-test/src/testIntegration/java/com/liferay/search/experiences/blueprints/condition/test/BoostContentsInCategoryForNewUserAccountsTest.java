@@ -23,7 +23,6 @@ import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
-import com.liferay.search.experiences.blueprints.constants.json.keys.framework.FrameworkConfigurationKeys;
 import com.liferay.search.experiences.blueprints.model.Blueprint;
 
 import java.util.Collections;
@@ -117,7 +116,7 @@ public class BoostContentsInCategoryForNewUserAccountsTest
 		JSONArray fieldsJSONArray = createJSONArray();
 
 		return JSONUtil.put(
-			FrameworkConfigurationKeys.APPLY_INDEXER_CLAUSES.getJsonKey(), true
+			"apply_indexer_clauses", true
 		).put(
 			"searchable_asset_types",
 			fieldsJSONArray.put(

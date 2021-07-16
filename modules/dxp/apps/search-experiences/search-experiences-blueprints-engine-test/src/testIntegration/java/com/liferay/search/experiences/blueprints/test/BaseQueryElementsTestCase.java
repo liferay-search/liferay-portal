@@ -17,7 +17,6 @@ package com.liferay.search.experiences.blueprints.test;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
-import com.liferay.search.experiences.blueprints.constants.json.keys.framework.FrameworkConfigurationKeys;
 
 /**
  * @author Wade Cao
@@ -29,7 +28,7 @@ public abstract class BaseQueryElementsTestCase extends BaseBlueprintsTestCase {
 		JSONArray fieldsJSONArray = createJSONArray();
 
 		return JSONUtil.put(
-			FrameworkConfigurationKeys.APPLY_INDEXER_CLAUSES.getJsonKey(), true
+			"apply_indexer_clauses", true
 		).put(
 			"searchable_asset_types",
 			fieldsJSONArray.put(
