@@ -14,22 +14,27 @@
 
 package com.liferay.search.experiences.blueprints.internal.definition;
 
-import com.liferay.search.experiences.blueprints.definition.BlueprintDefinition;
-import com.liferay.search.experiences.blueprints.definition.BlueprintDefinitionFactory;
-import com.liferay.search.experiences.blueprints.model.Blueprint;
-
-import org.osgi.service.component.annotations.Component;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author André de Oliveira
  */
-@Component(service = BlueprintDefinitionFactory.class)
-public class BlueprintDefinitionFactoryImpl
-	implements BlueprintDefinitionFactory {
+public class BlueprintDefinitionDTOReader {
 
-	@Override
-	public BlueprintDefinition getBlueprintDefinition(Blueprint blueprint) {
-		return new BlueprintDefinitionImpl(blueprint);
+	public BlueprintDefinitionDTO read(String json) {
+		ObjectMapper m = new ObjectMapper();
+
+		try {
+			return m.readValue(json, BlueprintDefinitionDTO.class);
+		}
+		catch (JsonMappingException jsonMappingException) {
+			throw new RuntimeException(jsonMappingException);
+		}
+		catch (JsonProcessingException jsonProcessingException) {
+			throw new RuntimeException(jsonProcessingException);
+		}
 	}
 
 }

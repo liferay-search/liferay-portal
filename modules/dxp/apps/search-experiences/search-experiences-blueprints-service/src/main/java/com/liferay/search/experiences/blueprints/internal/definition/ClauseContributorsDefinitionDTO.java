@@ -14,22 +14,15 @@
 
 package com.liferay.search.experiences.blueprints.internal.definition;
 
-import com.liferay.search.experiences.blueprints.definition.BlueprintDefinition;
-import com.liferay.search.experiences.blueprints.definition.BlueprintDefinitionFactory;
-import com.liferay.search.experiences.blueprints.model.Blueprint;
-
-import org.osgi.service.component.annotations.Component;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * @author André de Oliveira
  */
-@Component(service = BlueprintDefinitionFactory.class)
-public class BlueprintDefinitionFactoryImpl
-	implements BlueprintDefinitionFactory {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class ClauseContributorsDefinitionDTO {
 
-	@Override
-	public BlueprintDefinition getBlueprintDefinition(Blueprint blueprint) {
-		return new BlueprintDefinitionImpl(blueprint);
-	}
+	protected String[] excludes;
+	protected String[] includes;
 
 }
