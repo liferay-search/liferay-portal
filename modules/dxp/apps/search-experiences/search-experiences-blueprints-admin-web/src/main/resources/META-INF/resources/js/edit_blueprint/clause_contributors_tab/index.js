@@ -28,6 +28,14 @@ import {
 } from '../../utils/utils';
 import ManagementToolbar from './ManagementToolbar';
 
+const getClassDisplayName = (className) => {
+	return className
+		.split('.')
+		.slice(-1)[0]
+		.split(/([A-Z][a-z]+)/g)
+		.join(' ');
+};
+
 function ClauseContributorsTab({
 	clauseContributors,
 	initialClauseContributorsList,
@@ -106,6 +114,27 @@ function ClauseContributorsTab({
 			initialClauseContributorsList,
 			DEFAULT_BASELINE_CLAUSE_CONTRIBUTORS
 		);
+
+		updateFrameworkConfig(newEnabled);
+		setEnabled(newEnabled);
+	};
+
+	const _handleSelectChange = (className) => () => {
+		setSelected(
+			selected.includes(className)
+				? selected.filter(
+						(preselectedClassName) =>
+							preselectedClassName !== className
+				  )
+				: [...selected, className]
+		);
+	};
+
+	const _handleToggle = (className) => () => {
+		const newEnabled = {
+			...enabled,
+			[className]: !enabled[className],
+		};
 
 		updateFrameworkConfig(newEnabled);
 		setEnabled(newEnabled);
@@ -261,10 +290,12 @@ function ClauseContributorsTab({
 											</ClayTable.Cell>
 										</ClayTable.Row>
 
-										{contributor.value.map((item) => (
+										{contributor.value.map((className) => (
 											<ClayTable.Row
-												active={selected.includes(item)}
-												key={item}
+												active={selected.includes(
+													className
+												)}
+												key={className}
 											>
 												<ClayTable.Cell>
 													<ClayCheckbox
@@ -272,26 +303,11 @@ function ClauseContributorsTab({
 															'checkbox'
 														)}
 														checked={selected.includes(
-															item
+															className
 														)}
-														onChange={() =>
-															setSelected(
-																selected.includes(
-																	item
-																)
-																	? selected.filter(
-																			(
-																				name
-																			) =>
-																				name !==
-																				item
-																	  )
-																	: [
-																			...selected,
-																			item,
-																	  ]
-															)
-														}
+														onChange={_handleSelectChange(
+															className
+														)}
 													/>
 												</ClayTable.Cell>
 
@@ -299,21 +315,19 @@ function ClauseContributorsTab({
 													expanded
 													headingTitle
 												>
-													{item
-														.split('.')
-														.slice(-1)[0]
-														.split(/([A-Z][a-z]+)/g)
-														.join(' ')}
+													{getClassDisplayName(
+														className
+													)}
 												</ClayTable.Cell>
 
 												<ClayTable.Cell expanded>
-													{item}
+													{className}
 												</ClayTable.Cell>
 
 												<ClayTable.Cell className="table-cell-expand-smallest">
 													<ClayToggle
 														label={
-															enabled[item]
+															enabled[className]
 																? Liferay.Language.get(
 																		'on'
 																  )
@@ -321,22 +335,12 @@ function ClauseContributorsTab({
 																		'off'
 																  )
 														}
-														onToggle={() => {
-															const newEnabled = {
-																...enabled,
-																[item]: !enabled[
-																	item
-																],
-															};
-
-															updateFrameworkConfig(
-																newEnabled
-															);
-															setEnabled(
-																newEnabled
-															);
-														}}
-														toggled={enabled[item]}
+														onToggle={_handleToggle(
+															className
+														)}
+														toggled={
+															enabled[className]
+														}
 													/>
 												</ClayTable.Cell>
 											</ClayTable.Row>
