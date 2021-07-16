@@ -17,6 +17,7 @@ Export-Package:\
 	com.liferay.search.experiences.blueprints.constants.json.keys.sort,\
 	com.liferay.search.experiences.blueprints.constants.json.keys.suggester,\
 	com.liferay.search.experiences.blueprints.constants.json.values,\
+	com.liferay.search.experiences.blueprints.definition,\
 	com.liferay.search.experiences.blueprints.exception,\
 	com.liferay.search.experiences.blueprints.importer,\
 	com.liferay.search.experiences.blueprints.message,\
