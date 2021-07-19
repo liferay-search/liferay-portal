@@ -115,7 +115,7 @@ function ClauseContributorsTab({
 			DEFAULT_BASELINE_CLAUSE_CONTRIBUTORS
 		);
 
-		updateFrameworkConfig(newEnabled);
+		_updateEnabledContributorsConfig(newEnabled);
 		setEnabled(newEnabled);
 	};
 
@@ -136,7 +136,7 @@ function ClauseContributorsTab({
 			[className]: !enabled[className],
 		};
 
-		updateFrameworkConfig(newEnabled);
+		_updateEnabledContributorsConfig(newEnabled);
 		setEnabled(newEnabled);
 	};
 
@@ -147,7 +147,7 @@ function ClauseContributorsTab({
 			newEnabled[item] = value;
 		});
 
-		updateFrameworkConfig({...enabled, ...newEnabled});
+		_updateEnabledContributorsConfig({...enabled, ...newEnabled});
 		setEnabled({...enabled, ...newEnabled});
 		setSelected([]);
 	};
@@ -179,7 +179,7 @@ function ClauseContributorsTab({
 		}
 	};
 
-	const updateFrameworkConfig = (enabled) => {
+	const _updateEnabledContributorsConfig = (enabled) => {
 		onFrameworkConfigChange({
 			clause_contributors: getFrameworkConfigClauseContributors(
 				initialClauseContributorsList,
