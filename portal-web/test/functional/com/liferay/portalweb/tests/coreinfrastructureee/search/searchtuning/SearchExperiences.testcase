@@ -292,39 +292,39 @@ definition {
 			userEmailAddress = "userea@liferay.com");
 
 		JSONRole.addRegularRole(
-			roleKey = "Search Experiences",
-			roleTitle = "Search Experiences");
+			roleKey = "Search Blueprints Admin",
+			roleTitle = "Search Blueprints Admin");
 
 		for (var resourceActionIndex : list "ACCESS_IN_CONTROL_PANEL,CONFIGURATION,PERMISSIONS,PREFERENCES,VIEW") {
 			Permissions.definePermissionViaJSONAPI(
 				resourceAction = "${resourceActionIndex}",
 				resourceName = "com_liferay_search_experiences_blueprints_web_internal_portlet_BlueprintsAdminPortlet",
-				roleTitle = "Search Experiences");
+				roleTitle = "Search Blueprints Admin");
 		}
 
 		for (var resourceActionIndex : list "ADD_BLUEPRINT,ADD_ELEMENT,PERMISSIONS") {
 			Permissions.definePermissionViaJSONAPI(
 				resourceAction = "${resourceActionIndex}",
 				resourceName = "com.liferay.search.experiences.blueprints",
-				roleTitle = "Search Experiences");
+				roleTitle = "Search Blueprints Admin");
 		}
 
 		for (var resourceActionIndex : list "APPLY,DELETE,PERMISSIONS,UPDATE,VIEW") {
 			Permissions.definePermissionViaJSONAPI(
 				resourceAction = "${resourceActionIndex}",
 				resourceName = "com.liferay.search.experiences.blueprints.model.Blueprint",
-				roleTitle = "Search Experiences");
+				roleTitle = "Search Blueprints Admin");
 		}
 
 		for (var resourceActionIndex : list "DELETE,PERMISSIONS,UPDATE,VIEW") {
 			Permissions.definePermissionViaJSONAPI(
 				resourceAction = "${resourceActionIndex}",
 				resourceName = "com.liferay.search.experiences.blueprints.model.Element",
-				roleTitle = "Search Experiences");
+				roleTitle = "Search Blueprints Admin");
 		}
 
 		JSONRole.assignRoleToUser(
-			roleTitle = "Search Experiences",
+			roleTitle = "Search Blueprints Admin",
 			userEmailAddress = "userea@liferay.com");
 
 		User.logoutAndLoginPG(
