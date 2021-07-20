@@ -331,7 +331,10 @@ definition {
 			userLoginEmailAddress = "userea@liferay.com",
 			userLoginFullName = "userfn userln");
 
-		SearchExperiences.openSearchExperiencesAdmin();
+		ApplicationsMenu.gotoPortlet(
+			category = "Search Experiences",
+			panel = "Applications",
+			portlet = "Blueprints");
 
 		AssertElementPresent(
 			key_navItem = "Blueprints",
