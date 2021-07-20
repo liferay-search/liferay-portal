@@ -350,7 +350,7 @@ definition {
 
 		PortletEntry.save();
 
-		SearchExperiences.deleteBlueprint(name = "Blueprint 2");
+		LexiconEntry.delete(rowEntry = "Blueprint 2");
 
 		AssertClick(
 			key_navItem = "Elements",
