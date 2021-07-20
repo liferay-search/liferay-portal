@@ -280,17 +280,6 @@ definition {
 	test DefineRolePermissions {
 		property custom.properties = "jsonws.web.service.paths.excludes=";
 
-		JSONUser.addUser(
-			userEmailAddress = "userea@liferay.com",
-			userFirstName = "userfn",
-			userLastName = "userln",
-			userScreenName = "usersn");
-
-		JSONUser.setFirstPassword(
-			agreeToTermsAndAnswerReminderQuery = "true",
-			requireReset = "false",
-			userEmailAddress = "userea@liferay.com");
-
 		JSONRole.addRegularRole(
 			roleKey = "Search Blueprints Admin",
 			roleTitle = "Search Blueprints Admin");
@@ -322,6 +311,17 @@ definition {
 				resourceName = "com.liferay.search.experiences.blueprints.model.Element",
 				roleTitle = "Search Blueprints Admin");
 		}
+
+		JSONUser.addUser(
+			userEmailAddress = "userea@liferay.com",
+			userFirstName = "userfn",
+			userLastName = "userln",
+			userScreenName = "usersn");
+
+		JSONUser.setFirstPassword(
+			agreeToTermsAndAnswerReminderQuery = "true",
+			requireReset = "false",
+			userEmailAddress = "userea@liferay.com");
 
 		JSONRole.assignRoleToUser(
 			roleTitle = "Search Blueprints Admin",
