@@ -352,6 +352,8 @@ definition {
 
 		LexiconEntry.delete(rowEntry = "Blueprint 2");
 
+		LexiconEntry.viewNoEntry(rowEntry = "Blueprint 2");
+
 		AssertClick(
 			key_navItem = "Elements",
 			locator1 = "NavBar#NAV_ITEM_LINK",
