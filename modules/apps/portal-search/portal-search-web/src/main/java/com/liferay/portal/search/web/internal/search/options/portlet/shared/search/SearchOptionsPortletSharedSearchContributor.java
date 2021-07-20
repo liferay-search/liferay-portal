@@ -14,7 +14,6 @@
 
 package com.liferay.portal.search.web.internal.search.options.portlet.shared.search;
 
-import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
@@ -56,22 +55,25 @@ public class SearchOptionsPortletSharedSearchContributor
 			searchOptionsPortletPreferences.isBasicFacetSelection()
 		).emptySearchEnabled(
 			searchOptionsPortletPreferences.isAllowEmptySearches()
+		).withSearchContext(
+			searchContext -> applyAttributes(
+				searchOptionsPortletPreferences, searchContext)
 		);
+	}
 
-		SearchContext searchContext =
-			portletSharedSearchSettings.getSearchContext();
+	protected void applyAttributes(
+		SearchOptionsPortletPreferences searchOptionsPortletPreferences,
+		SearchContext searchContext) {
 
-		JSONArray attributesJSONArray =
-			searchOptionsPortletPreferences.getAttributesJSONArray();
+		for (Object object :
+				searchOptionsPortletPreferences.getAttributesJSONArray()) {
 
-		attributesJSONArray.forEach(
-			object -> {
-				JSONObject attributeJSONObject = (JSONObject)object;
+			JSONObject jsonObject = (JSONObject)object;
 
-				searchContext.setAttribute(
-					attributeJSONObject.getString("key"),
-					(Serializable)attributeJSONObject.get("value"));
-			});
+			searchContext.setAttribute(
+				jsonObject.getString("key"),
+				(Serializable)jsonObject.get("value"));
+		}
 	}
 
 }
