@@ -336,10 +336,6 @@ definition {
 			panel = "Applications",
 			portlet = "Blueprints");
 
-		AssertElementPresent(
-			key_navItem = "Blueprints",
-			locator1 = "NavBar#NAV_ITEM_LINK");
-
 		SearchExperiences.addBlueprint(name = "Blueprint 1");
 
 		PortletEntry.save();
