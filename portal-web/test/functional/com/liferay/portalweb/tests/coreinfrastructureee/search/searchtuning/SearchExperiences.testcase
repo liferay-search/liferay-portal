@@ -354,10 +354,7 @@ definition {
 
 		LexiconEntry.viewNoEntry(rowEntry = "Edited Blueprint");
 
-		AssertClick(
-			key_navItem = "Elements",
-			locator1 = "NavBar#NAV_ITEM_LINK",
-			value1 = "Elements");
+		Navigator.gotoNavItem(navItem = "Elements");
 
 		var elementTemplateJSON1 = '''
 {
