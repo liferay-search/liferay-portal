@@ -375,10 +375,6 @@ definition {
 		PortletEntry.save();
 
 		LexiconEntry.delete(rowEntry = "Edited Element");
-
-		User.logoutAndLoginPG(
-			userLoginEmailAddress = "test@liferay.com",
-			userLoginFullName = "test test");
 	}
 
 	test ExportAndImportElement {
