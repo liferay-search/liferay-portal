@@ -22,19 +22,15 @@ import {fetch, navigate} from 'frontend-js-web';
 import React, {useState} from 'react';
 
 import {
+	BASELINE_CLAUSE_CONTRIBUTORS_CONFIGURATION,
 	DEFAULT_ADVANCED_CONFIGURATION,
-	DEFAULT_BASELINE_CLAUSE_CONTRIBUTORS,
 	DEFAULT_BASELINE_ELEMENTS,
 	DEFAULT_HIGHLIGHT_CONFIGURATION,
 	DEFAULT_PARAMETER_CONFIGURATION,
 	DEFAULT_SORT_CONFIGURATION,
 } from '../utils/data';
 import {FRAMEWORK_TYPES} from '../utils/frameworkTypes';
-import {
-	getElementOutput,
-	getFrameworkConfigClauseContributors,
-	getUIConfigurationValues,
-} from '../utils/utils';
+import {getElementOutput, getUIConfigurationValues} from '../utils/utils';
 
 const DEFAULT_SELECTED_BASELINE_ELEMENTS = DEFAULT_BASELINE_ELEMENTS.map(
 	(element) => ({
@@ -122,21 +118,6 @@ const AddBlueprintModal = ({
 	const [inputValue, setInputValue] = useState('');
 	const [descriptionInputValue, setDescriptionInputValue] = useState('');
 
-	const initialClauseContributorsList = [
-		{
-			label: 'KeywordQueryContributor',
-			value: JSON.parse(keywordQueryContributorsString).sort(),
-		},
-		{
-			label: 'ModelPrefilterContributor',
-			value: JSON.parse(modelPrefilterContributorsString).sort(),
-		},
-		{
-			label: 'QueryPrefilterContributor',
-			value: JSON.parse(queryPrefilterContributorsString).sort(),
-		},
-	];
-
 	const handleFormError = (responseContent) => {
 		setErrorMessage(responseContent.error || '');
 	};
@@ -155,19 +136,23 @@ const AddBlueprintModal = ({
 				aggregation_configuration: {},
 				facet_configuration: {},
 				framework_configuration: {
+					apply_indexer_clauses: framework === FRAMEWORK_TYPES.ALL,
 					clause_contributors:
 						framework === FRAMEWORK_TYPES.ALL
-							? getFrameworkConfigClauseContributors(
-									initialClauseContributorsList,
-									{},
-									true
-							  )
-							: getFrameworkConfigClauseContributors(
-									initialClauseContributorsList,
-									DEFAULT_BASELINE_CLAUSE_CONTRIBUTORS,
-									false,
-									true
-							  ),
+							? {
+									includes: [
+										...JSON.parse(
+											keywordQueryContributorsString
+										),
+										...JSON.parse(
+											modelPrefilterContributorsString
+										),
+										...JSON.parse(
+											queryPrefilterContributorsString
+										),
+									],
+							  }
+							: BASELINE_CLAUSE_CONTRIBUTORS_CONFIGURATION,
 					searchable_asset_types: JSON.parse(
 						searchableAssetTypesString
 					),

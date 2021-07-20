@@ -51,4 +51,7 @@ export const DEFAULT_PARAMETER_CONFIGURATION = {};
 
 export const DEFAULT_SORT_CONFIGURATION = [];
 
-export const DEFAULT_BASELINE_CLAUSE_CONTRIBUTORS = {};
+export const BASELINE_CLAUSE_CONTRIBUTORS_CONFIGURATION = {
+	excludes: [],
+	includes: [],
+};

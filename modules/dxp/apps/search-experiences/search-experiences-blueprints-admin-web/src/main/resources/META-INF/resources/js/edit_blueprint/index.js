@@ -577,6 +577,11 @@ function EditBlueprintForm({
 			case 'clause-contributors':
 				return (
 					<ClauseContributorsTab
+						applyIndexerClauses={
+							formik.values.frameworkConfig[
+								'apply_indexer_clauses'
+							]
+						}
 						clauseContributors={
 							formik.values.frameworkConfig['clause_contributors']
 						}

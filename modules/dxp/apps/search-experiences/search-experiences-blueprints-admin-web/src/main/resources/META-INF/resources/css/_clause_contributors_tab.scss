@@ -35,6 +35,14 @@
 			text-transform: none;
 		}
 	}
+
+	.toggle-item {
+		justify-content: center;
+
+		.toggle-switch {
+			margin-bottom: 0;
+		}
+	}
 }
 
 .clause-content-shift {

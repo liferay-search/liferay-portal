@@ -10,7 +10,11 @@
  */
 
 import {ClayCheckbox, ClayToggle} from '@clayui/form';
+import ClayIcon from '@clayui/icon';
+import ClayList from '@clayui/list';
+import ClaySticker from '@clayui/sticker';
 import ClayTable from '@clayui/table';
+import {ClayTooltipProvider} from '@clayui/tooltip';
 import getCN from 'classnames';
 import React, {useEffect, useState} from 'react';
 
@@ -21,10 +25,11 @@ import {
 	DESCENDING,
 	INACTIVE,
 } from '../../utils/constants';
-import {DEFAULT_BASELINE_CLAUSE_CONTRIBUTORS} from '../../utils/data';
+import {BASELINE_CLAUSE_CONTRIBUTORS_CONFIGURATION} from '../../utils/data';
 import {
+	getClauseContributorsConfig,
 	getClauseContributorsState,
-	getFrameworkConfigClauseContributors,
+	isDefined,
 } from '../../utils/utils';
 import ManagementToolbar from './ManagementToolbar';
 
@@ -37,6 +42,7 @@ const getClassDisplayName = (className) => {
 };
 
 function ClauseContributorsTab({
+	applyIndexerClauses,
 	clauseContributors,
 	initialClauseContributorsList,
 	onFrameworkConfigChange,
@@ -46,10 +52,7 @@ function ClauseContributorsTab({
 		initialClauseContributorsList
 	);
 	const [enabled, setEnabled] = useState(
-		getClauseContributorsState(
-			initialClauseContributorsList,
-			clauseContributors
-		)
+		getClauseContributorsState(clauseContributors)
 	);
 	const [keyword, setKeyword] = useState('');
 	const [selected, setSelected] = useState([]);
@@ -110,13 +113,18 @@ function ClauseContributorsTab({
 	];
 
 	const _handleApplyBaseline = () => {
-		const newEnabled = getClauseContributorsState(
-			initialClauseContributorsList,
-			DEFAULT_BASELINE_CLAUSE_CONTRIBUTORS
+		const baselineEnabledState = getClauseContributorsState(
+			BASELINE_CLAUSE_CONTRIBUTORS_CONFIGURATION
 		);
 
-		_updateEnabledContributorsConfig(newEnabled);
-		setEnabled(newEnabled);
+		_updateEnabledContributorsConfig(baselineEnabledState, false);
+		setEnabled(baselineEnabledState);
+	};
+
+	const _handleApplyIndexerClausesChange = () => {
+		onFrameworkConfigChange({
+			apply_indexer_clauses: !applyIndexerClauses,
+		});
 	};
 
 	const _handleSelectChange = (className) => () => {
@@ -179,13 +187,19 @@ function ClauseContributorsTab({
 		}
 	};
 
-	const _updateEnabledContributorsConfig = (enabled) => {
-		onFrameworkConfigChange({
-			clause_contributors: getFrameworkConfigClauseContributors(
-				initialClauseContributorsList,
-				enabled
-			),
-		});
+	const _updateEnabledContributorsConfig = (
+		enabled,
+		newApplyIndexerClauses
+	) => {
+		const newConfig = {
+			clause_contributors: getClauseContributorsConfig(enabled),
+		};
+
+		if (isDefined(newApplyIndexerClauses)) {
+			newConfig.apply_indexer_clauses = newApplyIndexerClauses;
+		}
+
+		onFrameworkConfigChange(newConfig);
 	};
 
 	useEffect(() => {
@@ -255,6 +269,47 @@ function ClauseContributorsTab({
 			>
 				<div className="container-view">
 					<div className="clause-content-shift">
+						<ClayList>
+							<ClayList.Item flex>
+								<ClayList.ItemField expand>
+									<ClayList.ItemTitle>
+										{Liferay.Language.get(
+											'liferay-indexer-clauses'
+										)}
+
+										<ClayTooltipProvider>
+											<ClaySticker
+												displayType="unstyled"
+												size="sm"
+												title={Liferay.Language.get(
+													'liferay-indexer-clauses-helptext'
+												)}
+											>
+												<ClayIcon
+													data-tooltip-align="top"
+													symbol="info-circle"
+												/>
+											</ClaySticker>
+										</ClayTooltipProvider>
+									</ClayList.ItemTitle>
+								</ClayList.ItemField>
+
+								<ClayList.ItemField className="toggle-item">
+									<ClayToggle
+										label={
+											applyIndexerClauses
+												? Liferay.Language.get('on')
+												: Liferay.Language.get('off')
+										}
+										onToggle={
+											_handleApplyIndexerClausesChange
+										}
+										toggled={applyIndexerClauses || false}
+									/>
+								</ClayList.ItemField>
+							</ClayList.Item>
+						</ClayList>
+
 						<ClayTable>
 							<ClayTable.Head>
 								<ClayTable.Row>
@@ -282,7 +337,7 @@ function ClauseContributorsTab({
 								{contributors.map((contributor) => (
 									<React.Fragment key={contributor.label}>
 										<ClayTable.Row
-											divider={true}
+											divider
 											key={contributor.label}
 										>
 											<ClayTable.Cell colSpan="9">
@@ -339,7 +394,9 @@ function ClauseContributorsTab({
 															className
 														)}
 														toggled={
-															enabled[className]
+															enabled[
+																className
+															] || false
 														}
 													/>
 												</ClayTable.Cell>
