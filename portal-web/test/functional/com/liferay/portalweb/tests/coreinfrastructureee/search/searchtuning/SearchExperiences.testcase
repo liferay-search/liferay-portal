@@ -336,23 +336,23 @@ definition {
 			panel = "Applications",
 			portlet = "Blueprints");
 
-		SearchExperiences.addBlueprint(name = "Blueprint 1");
+		SearchExperiences.addBlueprint(name = "New Blueprint");
 
 		PortletEntry.save();
 
-		SearchExperiences.editBlueprint(name = "Blueprint 1");
+		SearchExperiences.editBlueprint(name = "New Blueprint");
 
 		Click(locator1 = "Icon#EDIT_PENCIL");
 
-		PortletEntry.inputName(name = "Blueprint 2");
+		PortletEntry.inputName(name = "Edited Blueprint");
 
 		Button.clickDone();
 
 		PortletEntry.save();
 
-		LexiconEntry.delete(rowEntry = "Blueprint 2");
+		LexiconEntry.delete(rowEntry = "Edited Blueprint");
 
-		LexiconEntry.viewNoEntry(rowEntry = "Blueprint 2");
+		LexiconEntry.viewNoEntry(rowEntry = "Edited Blueprint");
 
 		AssertClick(
 			key_navItem = "Elements",
