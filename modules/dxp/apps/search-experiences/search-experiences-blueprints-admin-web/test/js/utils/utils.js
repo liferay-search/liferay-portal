@@ -10,10 +10,10 @@
  */
 
 import {
+	getClauseContributorsConfig,
 	getClauseContributorsState,
 	getDefaultValue,
 	getElementOutput,
-	getFrameworkConfigClauseContributors,
 	getUIConfigurationValues,
 	isDefined,
 	isEmpty,
@@ -1006,27 +1006,17 @@ describe('utils', () => {
 	});
 
 	describe('getClauseContributorsState', () => {
-		it('collects the enabled/disabled states of all clauses', () => {
+		it('returns an object for the contributors enabled state', () => {
 			expect(
-				getClauseContributorsState(
-					[
-						{
-							label: 'KeywordQueryContributor',
-							value: [
-								'com.liferay.account.internal.search.spi.model.query.contributor.AccountEntryKeywordQueryContributor',
-								'com.liferay.account.internal.search.spi.model.query.contributor.AccountGroupKeywordQueryContributor',
-								'com.liferay.address.internal.search.spi.model.query.contributor.AddressKeywordQueryContributor',
-							],
-						},
+				getClauseContributorsState({
+					excludes: [
+						'com.liferay.account.internal.search.spi.model.query.contributor.AccountGroupKeywordQueryContributor',
 					],
-					{
-						KeywordQueryContributor: {
-							'com.liferay.account.internal.search.spi.model.query.contributor.AccountEntryKeywordQueryContributor': true,
-							'com.liferay.account.internal.search.spi.model.query.contributor.AccountGroupKeywordQueryContributor': false,
-						},
-					},
-					true
-				)
+					includes: [
+						'com.liferay.account.internal.search.spi.model.query.contributor.AccountEntryKeywordQueryContributor',
+						'com.liferay.address.internal.search.spi.model.query.contributor.AddressKeywordQueryContributor',
+					],
+				})
 			).toEqual({
 				'com.liferay.account.internal.search.spi.model.query.contributor.AccountEntryKeywordQueryContributor': true,
 				'com.liferay.account.internal.search.spi.model.query.contributor.AccountGroupKeywordQueryContributor': false,
@@ -1035,32 +1025,22 @@ describe('utils', () => {
 		});
 	});
 
-	describe('getClauseContributorsState', () => {
-		it('collects the enabled/disabled states of all clauses', () => {
+	describe('getClauseContributorsConfig', () => {
+		it('returns the clause contributors in an includes and excludes array for the framework_configuration', () => {
 			expect(
-				getFrameworkConfigClauseContributors(
-					[
-						{
-							label: 'KeywordQueryContributor',
-							value: [
-								'com.liferay.account.internal.search.spi.model.query.contributor.AccountEntryKeywordQueryContributor',
-								'com.liferay.account.internal.search.spi.model.query.contributor.AccountGroupKeywordQueryContributor',
-								'com.liferay.address.internal.search.spi.model.query.contributor.AddressKeywordQueryContributor',
-							],
-						},
-					],
-					{
-						'com.liferay.account.internal.search.spi.model.query.contributor.AccountEntryKeywordQueryContributor': true,
-						'com.liferay.account.internal.search.spi.model.query.contributor.AccountGroupKeywordQueryContributor': false,
-						'com.liferay.address.internal.search.spi.model.query.contributor.AddressKeywordQueryContributor': true,
-					}
-				)
-			).toEqual({
-				KeywordQueryContributor: {
+				getClauseContributorsConfig({
 					'com.liferay.account.internal.search.spi.model.query.contributor.AccountEntryKeywordQueryContributor': true,
 					'com.liferay.account.internal.search.spi.model.query.contributor.AccountGroupKeywordQueryContributor': false,
 					'com.liferay.address.internal.search.spi.model.query.contributor.AddressKeywordQueryContributor': true,
-				},
+				})
+			).toEqual({
+				excludes: [
+					'com.liferay.account.internal.search.spi.model.query.contributor.AccountGroupKeywordQueryContributor',
+				],
+				includes: [
+					'com.liferay.account.internal.search.spi.model.query.contributor.AccountEntryKeywordQueryContributor',
+					'com.liferay.address.internal.search.spi.model.query.contributor.AddressKeywordQueryContributor',
+				],
 			});
 		});
 	});

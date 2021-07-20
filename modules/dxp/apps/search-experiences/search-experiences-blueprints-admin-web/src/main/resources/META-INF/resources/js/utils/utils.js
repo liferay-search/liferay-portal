@@ -457,106 +457,85 @@ export const getUIConfigurationValues = (uiConfigurationJSON) => {
 };
 
 /**
- * Function for returning an object of clause contributors with enabled/
- * disabled state.
+ * Function for transforming the framework configuration's `clause_contributor`
+ * object to an object of clause contributors with `enabled` state.
  *
  * Example:
- * getClauseContributorsState([
- *			{
- *				label: 'KeywordQueryContributor',
- *				value: [
- *							'com.liferay.account.internal.search.spi.model.query.contributor.AccountEntryKeywordQueryContributor',
- *							'com.liferay.account.internal.search.spi.model.query.contributor.AccountGroupKeywordQueryContributor',
- *							'com.liferay.address.internal.search.spi.model.query.contributor.AddressKeywordQueryContributor'
- *						],
- *			}
- *		],
- *		{
- *			KeywordQueryContributor: {
- *					'com.liferay.account.internal.search.spi.model.query.contributor.AccountEntryKeywordQueryContributor': true,
- *					'com.liferay.account.internal.search.spi.model.query.contributor.AccountGroupKeywordQueryContributor': false,
- *				},
- *		},
- *		true
- *	);
+ * getClauseContributorsState({
+ * 		excludes: [
+ * 			'com.liferay.account.internal.search.spi.model.query.contributor.AccountGroupKeywordQueryContributor',
+ * 		],
+ * 		includes: [
+ * 			'com.liferay.account.internal.search.spi.model.query.contributor.AccountEntryKeywordQueryContributor',
+ * 			'com.liferay.address.internal.search.spi.model.query.contributor.AddressKeywordQueryContributor'
+ * 		]
+ * 	});
  * => {com.liferay.account.internal.search.spi.model.query.contributor.AccountEntryKeywordQueryContributor: true,
  *		com.liferay.account.internal.search.spi.model.query.contributor.AccountGroupKeywordQueryContributor: false,
  *		com.liferay.address.internal.search.spi.model.query.contributor.AddressKeywordQueryContributor: true}
  *
- * @param {Array} initialClauseContributorsList Array of clause contributors, includes label (String) and value (Array)
- * @param {object} clauseContributors Object that tracks whether clause is enabled/disabled
- * @param {boolean} defaultState When true, sets all clauses not accounted for in clauseContributors to enabled
- * @return {object}
+ * @param {object} clauseContributorsConfig The framework configuration's `clause_contributors` object
+ * @return {object} An object of enabled state for each contributor
  */
-export const getClauseContributorsState = (
-	initialClauseContributorsList,
-	clauseContributors = {},
-	defaultState = false
-) => {
-	return initialClauseContributorsList.reduce((acc, {label, value}) => {
-		const object = {};
+export const getClauseContributorsState = (clauseContributorsConfig = {}) => {
+	const clauseContributorsState = {};
 
-		value.forEach((item) => {
-			object[item] = isDefined(clauseContributors[label]?.[item])
-				? clauseContributors[label][item]
-				: defaultState;
+	if (Array.isArray(clauseContributorsConfig.excludes)) {
+		clauseContributorsConfig.excludes.forEach((exclude) => {
+			clauseContributorsState[exclude] = false;
 		});
+	}
 
-		return {...object, ...acc};
-	}, {});
+	if (Array.isArray(clauseContributorsConfig.includes)) {
+		clauseContributorsConfig.includes.forEach((include) => {
+			clauseContributorsState[include] = true;
+		});
+	}
+
+	return clauseContributorsState;
 };
 
 /**
- * Function for packaging the clause contributors for framework configuration
+ * Function for transforming the `enabled` state object to the framework
+ * configuration's `clause_contributors` object.
  *
  * Example:
- * getFrameworkConfigClauseContributors([
- *			{
- *				label: 'KeywordQueryContributor',
- *				value: [
- *							'com.liferay.account.internal.search.spi.model.query.contributor.AccountEntryKeywordQueryContributor',
- *							'com.liferay.account.internal.search.spi.model.query.contributor.AccountGroupKeywordQueryContributor',
- *							'com.liferay.address.internal.search.spi.model.query.contributor.AddressKeywordQueryContributor'
- *						],
- *			}
- *		],
+ * getClauseContributorsConfig(
  *		{
  *			'com.liferay.account.internal.search.spi.model.query.contributor.AccountEntryKeywordQueryContributor': true,
  *			'com.liferay.account.internal.search.spi.model.query.contributor.AccountGroupKeywordQueryContributor': false,
  *			'com.liferay.address.internal.search.spi.model.query.contributor.AddressKeywordQueryContributor': true
- *		},
+ *		}
  *	);
  * => {
- *		"KeywordQueryContributor": {
- *			"com.liferay.account.internal.search.spi.model.query.contributor.AccountEntryKeywordQueryContributor": true,
- *			"com.liferay.account.internal.search.spi.model.query.contributor.AccountGroupKeywordQueryContributor": false,
- *			"com.liferay.address.internal.search.spi.model.query.contributor.AddressKeywordQueryContributor": true
- *		}
- *	}
+ * 		excludes: [
+ * 			'com.liferay.account.internal.search.spi.model.query.contributor.AccountGroupKeywordQueryContributor',
+ * 		],
+ * 		includes: [
+ * 			'com.liferay.account.internal.search.spi.model.query.contributor.AccountEntryKeywordQueryContributor',
+ * 			'com.liferay.address.internal.search.spi.model.query.contributor.AddressKeywordQueryContributor'
+ * 		]
+ * 	}
  *
- * @param {Array} initialClauseContributorsList Array of clause contributors, includes label (String) and value (Array)
- * @param {object} clauseContributors Object that tracks whether clause is enabled/disabled
- * @param {boolean} defaultState When true, sets all clauses not accounted for in clauseContributors to enabled
- * @param {boolean} groupedByLabel When true, indicates that clauseContributors is grouped by labels
- * @return {object}
+ * @param {object} clauseContributorsEnabledState State object that tracks whether clause is enabled/disabled
+ * @return {object} The framework configuration's `clause_contributors` object
  */
-export const getFrameworkConfigClauseContributors = (
-	initialClauseContributorsList,
-	clauseContributors = {},
-	defaultState = false,
-	groupedByLabel = false
+export const getClauseContributorsConfig = (
+	clauseContributorsEnabledState = {}
 ) => {
-	return initialClauseContributorsList.reduce((acc, {label, value}) => {
-		const object = {};
+	const clauseContributors = {
+		excludes: [],
+		includes: [],
+	};
 
-		value.forEach((item) => {
-			const enabled = groupedByLabel
-				? clauseContributors[label]?.[item]
-				: clauseContributors[item];
+	Object.keys(clauseContributorsEnabledState).forEach((key) => {
+		if (clauseContributorsEnabledState[key]) {
+			clauseContributors.includes.push(key);
+		}
+		else {
+			clauseContributors.excludes.push(key);
+		}
+	});
 
-			object[item] = isDefined(enabled) ? enabled : defaultState;
-		});
-
-		return {[`${label}`]: object, ...acc};
-	}, {});
+	return clauseContributors;
 };
