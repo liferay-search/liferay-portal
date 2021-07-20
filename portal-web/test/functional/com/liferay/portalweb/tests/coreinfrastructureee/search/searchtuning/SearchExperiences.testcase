@@ -356,38 +356,25 @@ definition {
 
 		Navigator.gotoNavItem(navItem = "Elements");
 
-		var elementTemplateJSON1 = '''
+		SearchExperiences.createElement(name = "New Element");
+
+		SearchExperiences.editElement(name = "New Element");
+
+		var elementTemplateJSON = '''
 {
 	"title": {
-		"en_US": "Element 1"
+		"en_US": "Edited Element"
 	}
 }
 		''';
-
-		var elementTemplateJSON2 = '''
-{
-	"title": {
-		"en_US": "Element 2"
-	}
-}
-		''';
-
-		var uiConfigurationJSON = '''{}''';
-
-		SearchExperiences.createElement(
-			elementTemplateJSON = "${elementTemplateJSON1}",
-			name = "Element 1",
-			uiConfigurationJSON = "${uiConfigurationJSON}");
-
-		SearchExperiences.editElement(name = "Element 1");
 
 		Type.typeCodeMirrorEditor(
 			locator1 = "SearchExperiences#CUSTOM_ELEMENT_TEMPLATE_EDITOR",
-			value1 = "${elementTemplateJSON2}");
+			value1 = "${elementTemplateJSON}");
 
 		PortletEntry.save();
 
-		LexiconEntry.delete(rowEntry = "Element 2");
+		LexiconEntry.delete(rowEntry = "Edited Element");
 
 		User.logoutAndLoginPG(
 			userLoginEmailAddress = "test@liferay.com",

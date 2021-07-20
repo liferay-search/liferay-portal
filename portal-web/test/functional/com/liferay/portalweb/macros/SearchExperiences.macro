@@ -83,13 +83,17 @@ definition {
 
 		Button.click(button = "Create");
 
-		Type.typeCodeMirrorEditor(
-			locator1 = "SearchExperiences#CUSTOM_ELEMENT_TEMPLATE_EDITOR",
-			value1 = "${elementTemplateJSON}");
+		if (isSet(elementTemplateJSON)) {
+			Type.typeCodeMirrorEditor(
+				locator1 = "SearchExperiences#CUSTOM_ELEMENT_TEMPLATE_EDITOR",
+				value1 = "${elementTemplateJSON}");
+		}
 
-		Type.typeCodeMirrorEditor(
-			locator1 = "SearchExperiences#CUSTOM_ELEMENT_UI_CONFIGURATION_EDITOR",
-			value1 = "${uiConfigurationJSON}");
+		if (isSet(uiConfigurationJSON)) {
+			Type.typeCodeMirrorEditor(
+				locator1 = "SearchExperiences#CUSTOM_ELEMENT_UI_CONFIGURATION_EDITOR",
+				value1 = "${uiConfigurationJSON}");
+		}
 
 		PortletEntry.save();
 	}
