@@ -24,7 +24,6 @@ import com.liferay.portal.search.sort.ScoreSort;
 import com.liferay.portal.search.sort.Sort;
 import com.liferay.portal.search.sort.SortOrder;
 import com.liferay.portal.search.sort.Sorts;
-import com.liferay.search.experiences.blueprints.constants.json.keys.sort.SortConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.internal.sort.SortTranslatorFactory;
 import com.liferay.search.experiences.blueprints.engine.parameter.Parameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
@@ -143,7 +142,7 @@ public class SortSearchRequestBodyContributor
 		catch (IllegalArgumentException illegalArgumentException) {
 			MessagesUtil.invalidConfigurationValueError(
 				messages, getClass().getName(), illegalArgumentException,
-				jsonObject, SortConfigurationKeys.TYPE.getJsonKey(), key);
+				jsonObject, "type", key);
 		}
 
 		return Optional.empty();
@@ -262,10 +261,7 @@ public class SortSearchRequestBodyContributor
 
 		return _getSort(
 			(JSONObject)jsonObject, key,
-			_getSortOrder(
-				configurationJSONObject.getString(
-					SortConfigurationKeys.ORDER.getJsonKey()),
-				messages),
+			_getSortOrder(configurationJSONObject.getString("order"), messages),
 			messages);
 	}
 

@@ -16,7 +16,6 @@ package com.liferay.search.experiences.blueprints.engine.internal.condition.visi
 
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.GetterUtil;
-import com.liferay.search.experiences.blueprints.constants.json.keys.query.ConditionConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.exception.ParameterEvaluationException;
 import com.liferay.search.experiences.blueprints.engine.parameter.BooleanParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.DateParameter;
@@ -43,8 +42,7 @@ public class EqualsVisitor
 	public boolean visit(BooleanParameter parameter)
 		throws ParameterEvaluationException {
 
-		Boolean value = conditionJSONObject.getBoolean(
-			ConditionConfigurationKeys.VALUE.getJsonKey());
+		Boolean value = conditionJSONObject.getBoolean("value");
 
 		Boolean parameterValue = parameter.getValue();
 
@@ -70,8 +68,7 @@ public class EqualsVisitor
 	public boolean visit(DoubleParameter parameter)
 		throws ParameterEvaluationException {
 
-		Double value = conditionJSONObject.getDouble(
-			ConditionConfigurationKeys.VALUE.getJsonKey());
+		Double value = conditionJSONObject.getDouble("value");
 
 		return parameter.equalsTo(value);
 	}
@@ -81,27 +78,21 @@ public class EqualsVisitor
 		throws ParameterEvaluationException {
 
 		return parameter.equalsTo(
-			GetterUtil.getFloat(
-				conditionJSONObject.get(
-					ConditionConfigurationKeys.VALUE.getJsonKey())));
+			GetterUtil.getFloat(conditionJSONObject.get("value")));
 	}
 
 	@Override
 	public boolean visit(IntegerParameter parameter)
 		throws ParameterEvaluationException {
 
-		return parameter.equalsTo(
-			conditionJSONObject.getInt(
-				ConditionConfigurationKeys.VALUE.getJsonKey()));
+		return parameter.equalsTo(conditionJSONObject.getInt("value"));
 	}
 
 	@Override
 	public boolean visit(LongParameter parameter)
 		throws ParameterEvaluationException {
 
-		return parameter.equalsTo(
-			conditionJSONObject.getLong(
-				ConditionConfigurationKeys.VALUE.getJsonKey()));
+		return parameter.equalsTo(conditionJSONObject.getLong("value"));
 	}
 
 	@Override
@@ -110,9 +101,7 @@ public class EqualsVisitor
 
 		String parameterValue = parameter.getValue();
 
-		return parameterValue.equals(
-			conditionJSONObject.getString(
-				ConditionConfigurationKeys.VALUE.getJsonKey()));
+		return parameterValue.equals(conditionJSONObject.getString("value"));
 	}
 
 }

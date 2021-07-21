@@ -18,7 +18,6 @@ import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
-import com.liferay.search.experiences.blueprints.constants.json.keys.query.ConditionConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.parameter.visitor.EvaluationVisitor;
 
 import java.text.DateFormat;
@@ -140,15 +139,10 @@ public abstract class BaseVisitorTestCase {
 			invocationOnMock -> {
 				String argument = (String)invocationOnMock.getArguments()[0];
 
-				if (argument.equals(
-						ConditionConfigurationKeys.VALUE.getJsonKey())) {
-
+				if (argument.equals("value")) {
 					return value;
 				}
-				else if (argument.equals(
-							ConditionConfigurationKeys.DATE_FORMAT.
-								getJsonKey())) {
-
+				else if (argument.equals("date_format")) {
 					return dateFormat;
 				}
 				else {

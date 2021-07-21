@@ -23,7 +23,6 @@ import com.liferay.portal.search.sort.Sort;
 import com.liferay.portal.search.sort.SortMode;
 import com.liferay.portal.search.sort.SortOrder;
 import com.liferay.portal.search.sort.Sorts;
-import com.liferay.search.experiences.blueprints.constants.json.keys.sort.SortConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.internal.clause.util.ClauseHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterDataBuilder;
 import com.liferay.search.experiences.blueprints.engine.spi.sort.SortTranslator;
@@ -51,14 +50,13 @@ public class FieldSortTranslator implements SortTranslator {
 		FieldSort fieldSort = _sorts.field(field, sortOrder);
 
 		_setterHelper.setObjectValue(
-			jsonObject, SortConfigurationKeys.MISSING.getJsonKey(),
-			fieldSort::setMissing);
+			jsonObject, "missing", fieldSort::setMissing);
 
-		if (jsonObject.has(SortConfigurationKeys.MODE.getJsonKey())) {
+		if (jsonObject.has("mode")) {
 			fieldSort.setSortMode(_getSortMode(jsonObject));
 		}
 
-		if (jsonObject.has(SortConfigurationKeys.NESTED.getJsonKey())) {
+		if (jsonObject.has("nested")) {
 			fieldSort.setNestedSort(_getNestedSort(jsonObject, messages));
 		}
 
@@ -92,8 +90,7 @@ public class FieldSortTranslator implements SortTranslator {
 	}
 
 	private SortMode _getSortMode(JSONObject jsonObject) {
-		String s = jsonObject.getString(
-			SortConfigurationKeys.MODE.getJsonKey());
+		String s = jsonObject.getString("mode");
 
 		return SortMode.valueOf(StringUtil.toUpperCase(s));
 	}

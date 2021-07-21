@@ -18,7 +18,6 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.metrics.ScriptedMetricAggregation;
 import com.liferay.portal.search.script.Script;
-import com.liferay.search.experiences.blueprints.constants.json.keys.aggregation.metric.ScriptedMetricAggregationBodyConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.aggregation.AggregationWrapper;
 import com.liferay.search.experiences.blueprints.engine.internal.aggregation.util.AggregationHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
@@ -50,9 +49,7 @@ public class ScriptedMetricAggregationTranslator
 		ParameterData parameterData, Messages messages) {
 
 		Optional<Script> mapScriptOptional = _aggregationHelper.getScript(
-			jsonObject.get(
-				ScriptedMetricAggregationBodyConfigurationKeys.MAP_SCRIPT.
-					getJsonKey()));
+			jsonObject.get("map_script"));
 
 		if (!mapScriptOptional.isPresent()) {
 			return Optional.empty();
@@ -64,24 +61,17 @@ public class ScriptedMetricAggregationTranslator
 		aggregation.setMapScript(mapScriptOptional.get());
 
 		_aggregationHelper.setScript(
-			jsonObject,
-			ScriptedMetricAggregationBodyConfigurationKeys.COMBINE_SCRIPT.
-				getJsonKey(),
-			aggregation::setCombineScript, messages);
+			jsonObject, "combine_script", aggregation::setCombineScript,
+			messages);
 
 		_aggregationHelper.setScript(
-			jsonObject,
-			ScriptedMetricAggregationBodyConfigurationKeys.INIT_SCRIPT.
-				getJsonKey(),
-			aggregation::setInitScript, messages);
+			jsonObject, "init_script", aggregation::setInitScript, messages);
 
 		_setParams(aggregation, jsonObject);
 
 		_aggregationHelper.setScript(
-			jsonObject,
-			ScriptedMetricAggregationBodyConfigurationKeys.REDUCE_SCRIPT.
-				getJsonKey(),
-			aggregation::setReduceScript, messages);
+			jsonObject, "reduce_script", aggregation::setReduceScript,
+			messages);
 
 		return _aggregationHelper.wrap(aggregation);
 	}
@@ -89,8 +79,7 @@ public class ScriptedMetricAggregationTranslator
 	private void _setParams(
 		ScriptedMetricAggregation aggregation, JSONObject jsonObject) {
 
-		JSONObject paramsJSONObject = jsonObject.getJSONObject(
-			ScriptedMetricAggregationBodyConfigurationKeys.PARAMS.getJsonKey());
+		JSONObject paramsJSONObject = jsonObject.getJSONObject("params");
 
 		if (paramsJSONObject == null) {
 			return;

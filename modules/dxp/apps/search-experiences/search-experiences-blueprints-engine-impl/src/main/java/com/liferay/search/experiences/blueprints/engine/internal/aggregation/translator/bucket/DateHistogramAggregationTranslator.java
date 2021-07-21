@@ -17,7 +17,6 @@ package com.liferay.search.experiences.blueprints.engine.internal.aggregation.tr
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.bucket.DateHistogramAggregation;
-import com.liferay.search.experiences.blueprints.constants.json.keys.aggregation.bucket.DateHistogramAggregationBodyConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.aggregation.AggregationWrapper;
 import com.liferay.search.experiences.blueprints.engine.internal.aggregation.util.AggregationHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
@@ -46,39 +45,25 @@ public class DateHistogramAggregationTranslator
 		ParameterData parameterData, Messages messages) {
 
 		DateHistogramAggregation aggregation = _aggregations.dateHistogram(
-			aggregationName,
-			jsonObject.getString(
-				DateHistogramAggregationBodyConfigurationKeys.FIELD.
-					getJsonKey()));
+			aggregationName, jsonObject.getString("field"));
 
 		_aggregationHelper.setLongBounds(jsonObject, aggregation::setBounds);
 
 		_setterHelper.setStringValue(
-			jsonObject,
-			DateHistogramAggregationBodyConfigurationKeys.
-				DATE_HISTOGRAM_INTERVAL.getJsonKey(),
+			jsonObject, "date_histogram_interval",
 			aggregation::setDateHistogramInterval);
 
 		_setterHelper.setBooleanValue(
-			jsonObject,
-			DateHistogramAggregationBodyConfigurationKeys.KEYED.getJsonKey(),
-			aggregation::setKeyed);
+			jsonObject, "keyed", aggregation::setKeyed);
 
 		_setterHelper.setLongValue(
-			jsonObject,
-			DateHistogramAggregationBodyConfigurationKeys.MIN_DOC_COUNT.
-				getJsonKey(),
-			aggregation::setMinDocCount);
+			jsonObject, "min_doc_count", aggregation::setMinDocCount);
 
 		_setterHelper.setStringValue(
-			jsonObject,
-			DateHistogramAggregationBodyConfigurationKeys.MISSING.getJsonKey(),
-			aggregation::setMissing);
+			jsonObject, "missing", aggregation::setMissing);
 
 		_setterHelper.setLongValue(
-			jsonObject,
-			DateHistogramAggregationBodyConfigurationKeys.OFFSET.getJsonKey(),
-			aggregation::setOffset);
+			jsonObject, "offset", aggregation::setOffset);
 
 		_aggregationHelper.setOrders(
 			jsonObject, aggregation::addOrders, messages);

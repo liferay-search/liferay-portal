@@ -19,7 +19,6 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.bucket.DateRangeAggregation;
 import com.liferay.portal.search.aggregation.bucket.Range;
-import com.liferay.search.experiences.blueprints.constants.json.keys.aggregation.bucket.DateRangeAggregationBodyConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.aggregation.AggregationWrapper;
 import com.liferay.search.experiences.blueprints.engine.internal.aggregation.util.AggregationHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
@@ -47,24 +46,16 @@ public class DateRangeAggregationTranslator implements AggregationTranslator {
 		ParameterData parameterData, Messages messages) {
 
 		DateRangeAggregation aggregation = _aggregations.dateRange(
-			aggregationName,
-			jsonObject.getString(
-				DateRangeAggregationBodyConfigurationKeys.FIELD.getJsonKey()));
+			aggregationName, jsonObject.getString("field"));
 
 		_setterHelper.setStringValue(
-			jsonObject,
-			DateRangeAggregationBodyConfigurationKeys.FORMAT.getJsonKey(),
-			aggregation::setFormat);
+			jsonObject, "format", aggregation::setFormat);
 
 		_setterHelper.setBooleanValue(
-			jsonObject,
-			DateRangeAggregationBodyConfigurationKeys.KEYED.getJsonKey(),
-			aggregation::setKeyed);
+			jsonObject, "keyed", aggregation::setKeyed);
 
 		_setterHelper.setStringValue(
-			jsonObject,
-			DateRangeAggregationBodyConfigurationKeys.MISSING.getJsonKey(),
-			aggregation::setMissing);
+			jsonObject, "missing", aggregation::setMissing);
 
 		_setRanges(aggregation, jsonObject);
 
@@ -77,8 +68,7 @@ public class DateRangeAggregationTranslator implements AggregationTranslator {
 	private void _setRanges(
 		DateRangeAggregation aggregation, JSONObject jsonObject) {
 
-		JSONArray rangesJSONArray = jsonObject.getJSONArray(
-			DateRangeAggregationBodyConfigurationKeys.RANGES.getJsonKey());
+		JSONArray rangesJSONArray = jsonObject.getJSONArray("ranges");
 
 		if (rangesJSONArray == null) {
 			return;

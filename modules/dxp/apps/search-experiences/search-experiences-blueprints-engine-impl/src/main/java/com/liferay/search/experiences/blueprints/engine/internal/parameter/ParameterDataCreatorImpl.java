@@ -22,11 +22,7 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
-import com.liferay.search.experiences.blueprints.constants.json.keys.parameter.CustomParameterConfigurationKeys;
-import com.liferay.search.experiences.blueprints.constants.json.keys.parameter.PageConfigurationKeys;
-import com.liferay.search.experiences.blueprints.constants.json.keys.parameter.ParameterConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
-import com.liferay.search.experiences.blueprints.engine.constants.ReservedParameterNames;
 import com.liferay.search.experiences.blueprints.engine.internal.parameter.builder.ParameterBuilder;
 import com.liferay.search.experiences.blueprints.engine.parameter.BooleanParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.IntegerParameter;
@@ -86,23 +82,18 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 
 		_addPagingParameter(
 			parameterDataBuilder, blueprintsAttributes,
-			jsonObject.getJSONObject(
-				ParameterConfigurationKeys.PAGE.getJsonKey()));
+			jsonObject.getJSONObject("page"));
 
 		_addSizeParameter(
 			parameterDataBuilder, blueprintsAttributes,
-			jsonObject.getJSONObject(
-				ParameterConfigurationKeys.SIZE.getJsonKey()),
-			messages);
+			jsonObject.getJSONObject("size"), messages);
 
 		_addSortParameters(
 			parameterDataBuilder, blueprint, blueprintsAttributes, messages);
 
 		_addCustomParameters(
 			parameterDataBuilder, blueprintsAttributes,
-			jsonObject.getJSONArray(
-				ParameterConfigurationKeys.CUSTOM.getJsonKey()),
-			messages);
+			jsonObject.getJSONArray("custom"), messages);
 
 		_executeParameterContributors(
 			parameterDataBuilder, blueprint, blueprintsAttributes, messages);
@@ -159,8 +150,7 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 		BlueprintsAttributes blueprintsAttributes, JSONObject jsonObject,
 		Messages messages) {
 
-		String type = jsonObject.getString(
-			CustomParameterConfigurationKeys.TYPE.getJsonKey());
+		String type = jsonObject.getString("type");
 
 		try {
 			ParameterBuilder parameterBuilder =
@@ -176,8 +166,7 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 		catch (IllegalArgumentException illegalArgumentException) {
 			MessagesUtil.invalidConfigurationValueError(
 				messages, getClass().getName(), illegalArgumentException,
-				jsonObject, CustomParameterConfigurationKeys.TYPE.getJsonKey(),
-				type);
+				jsonObject, "type", type);
 		}
 	}
 
@@ -204,12 +193,12 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 		BlueprintsAttributes blueprintsAttributes) {
 
 		Optional<Object> optional = blueprintsAttributes.getAttributeOptional(
-			ReservedParameterNames.EXPLAIN.getKey());
+			"explain");
 
 		if (optional.isPresent()) {
 			parameterDataBuilder.addParameter(
 				new BooleanParameter(
-					ReservedParameterNames.EXPLAIN.getKey(), "${explain}",
+					"explain", "${explain}",
 					GetterUtil.getBoolean(optional.get())));
 		}
 	}
@@ -237,8 +226,7 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 		ParameterDataBuilder parameterDataBuilder,
 		BlueprintsAttributes blueprintsAttributes, JSONObject jsonObject) {
 
-		String parameterName = jsonObject.getString(
-			PageConfigurationKeys.PARAMETER_NAME.getJsonKey());
+		String parameterName = jsonObject.getString("parameter_name");
 
 		Optional<Object> optional = blueprintsAttributes.getAttributeOptional(
 			parameterName);

@@ -17,8 +17,6 @@ package com.liferay.search.experiences.blueprints.engine.internal.aggregation.tr
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.bucket.MissingAggregation;
-import com.liferay.search.experiences.blueprints.constants.json.keys.aggregation.bucket.MissingAggregationBodyConfigurationKeys;
-import com.liferay.search.experiences.blueprints.constants.json.keys.aggregation.bucket.TermsAggregationBodyConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.aggregation.AggregationWrapper;
 import com.liferay.search.experiences.blueprints.engine.internal.aggregation.util.AggregationHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
@@ -46,14 +44,10 @@ public class MissingAggregationTranslator implements AggregationTranslator {
 		ParameterData parameterData, Messages messages) {
 
 		MissingAggregation aggregation = _aggregations.missing(
-			aggregationName,
-			jsonObject.getString(
-				MissingAggregationBodyConfigurationKeys.FIELD.getJsonKey()));
+			aggregationName, jsonObject.getString("field"));
 
 		_setterHelper.setStringValue(
-			jsonObject,
-			TermsAggregationBodyConfigurationKeys.MISSING.getJsonKey(),
-			aggregation::setMissing);
+			jsonObject, "missing", aggregation::setMissing);
 
 		_aggregationHelper.setScript(
 			jsonObject, aggregation::setScript, messages);

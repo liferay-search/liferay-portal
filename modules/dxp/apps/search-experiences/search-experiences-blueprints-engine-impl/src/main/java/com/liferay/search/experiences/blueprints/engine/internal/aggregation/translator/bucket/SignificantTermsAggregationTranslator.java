@@ -17,7 +17,6 @@ package com.liferay.search.experiences.blueprints.engine.internal.aggregation.tr
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.bucket.SignificantTermsAggregation;
-import com.liferay.search.experiences.blueprints.constants.json.keys.aggregation.bucket.SignificantTermsAggregationBodyConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.aggregation.AggregationWrapper;
 import com.liferay.search.experiences.blueprints.engine.internal.aggregation.util.AggregationHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
@@ -47,58 +46,38 @@ public class SignificantTermsAggregationTranslator
 
 		SignificantTermsAggregation aggregation =
 			_aggregations.significantTerms(
-				aggregationName,
-				jsonObject.getString(
-					SignificantTermsAggregationBodyConfigurationKeys.FIELD.
-						getJsonKey()));
+				aggregationName, jsonObject.getString("field"));
 
 		_aggregationHelper.setBackgroundFilter(
 			jsonObject, aggregation::setBackgroundFilterQuery, parameterData,
 			messages);
 
 		_setterHelper.setStringValue(
-			jsonObject,
-			SignificantTermsAggregationBodyConfigurationKeys.EXECUTION_HINT.
-				getJsonKey(),
-			aggregation::setExecutionHint);
+			jsonObject, "execution_hint", aggregation::setExecutionHint);
 
 		_aggregationHelper.setIncludeExcludeClause(
 			jsonObject, aggregation::setIncludeExcludeClause);
 
 		_setterHelper.setLongValue(
-			jsonObject,
-			SignificantTermsAggregationBodyConfigurationKeys.MIN_DOC_COUNT.
-				getJsonKey(),
-			aggregation::setMinDocCount);
+			jsonObject, "min_doc_count", aggregation::setMinDocCount);
 
 		_setterHelper.setStringValue(
-			jsonObject,
-			SignificantTermsAggregationBodyConfigurationKeys.MISSING.
-				getJsonKey(),
-			aggregation::setMissing);
+			jsonObject, "missing", aggregation::setMissing);
 
 		_aggregationHelper.setScript(
 			jsonObject, aggregation::setScript, messages);
 
 		_setterHelper.setLongValue(
-			jsonObject,
-			SignificantTermsAggregationBodyConfigurationKeys.
-				SHARD_MIN_DOC_COUNT.getJsonKey(),
+			jsonObject, "shard_min_doc_count",
 			aggregation::setShardMinDocCount);
 
 		_setterHelper.setIntegerValue(
-			jsonObject,
-			SignificantTermsAggregationBodyConfigurationKeys.SHARD_SIZE.
-				getJsonKey(),
-			aggregation::setShardSize);
+			jsonObject, "shard_size", aggregation::setShardSize);
 
 		_aggregationHelper.setSignificanceHeuristics(
 			jsonObject, aggregation::setSignificanceHeuristic, messages);
 
-		_setterHelper.setIntegerValue(
-			jsonObject,
-			SignificantTermsAggregationBodyConfigurationKeys.SIZE.getJsonKey(),
-			aggregation::setSize);
+		_setterHelper.setIntegerValue(jsonObject, "size", aggregation::setSize);
 
 		return _aggregationHelper.wrap(aggregation);
 	}

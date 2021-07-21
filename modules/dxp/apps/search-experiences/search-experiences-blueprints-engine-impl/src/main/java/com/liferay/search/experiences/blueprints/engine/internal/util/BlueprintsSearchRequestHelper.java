@@ -23,9 +23,6 @@ import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
-import com.liferay.search.experiences.blueprints.constants.json.keys.advanced.AdvancedConfigurationKeys;
-import com.liferay.search.experiences.blueprints.constants.json.keys.advanced.SourceConfigurationKeys;
-import com.liferay.search.experiences.blueprints.engine.constants.ReservedParameterNames;
 import com.liferay.search.experiences.blueprints.engine.exception.BlueprintsEngineException;
 import com.liferay.search.experiences.blueprints.engine.parameter.Parameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
@@ -124,8 +121,7 @@ public class BlueprintsSearchRequestHelper {
 		JSONObject advancedConfigurationJSONObject = optional1.get();
 
 		JSONObject sourceJSONObject =
-			advancedConfigurationJSONObject.getJSONObject(
-				AdvancedConfigurationKeys.SOURCE.getJsonKey());
+			advancedConfigurationJSONObject.getJSONObject("source");
 
 		if (sourceJSONObject == null) {
 			return;
@@ -141,16 +137,13 @@ public class BlueprintsSearchRequestHelper {
 
 		JSONObject parsedSourceJSONObject = optional2.get();
 
-		if (parsedSourceJSONObject.has(
-				SourceConfigurationKeys.FETCH_SOURCE.getJsonKey())) {
-
+		if (parsedSourceJSONObject.has("fetch_source")) {
 			searchRequestBuilder.fetchSource(
-				parsedSourceJSONObject.getBoolean(
-					SourceConfigurationKeys.FETCH_SOURCE.getJsonKey()));
+				parsedSourceJSONObject.getBoolean("fetch_source"));
 		}
 
 		JSONArray excludesJSONArray = parsedSourceJSONObject.getJSONArray(
-			SourceConfigurationKeys.SOURCE_EXCLUDES.getJsonKey());
+			"source_excludes");
 
 		if ((excludesJSONArray != null) && (excludesJSONArray.length() > 0)) {
 			searchRequestBuilder.fetchSourceExcludes(
@@ -158,7 +151,7 @@ public class BlueprintsSearchRequestHelper {
 		}
 
 		JSONArray includesJSONArray = parsedSourceJSONObject.getJSONArray(
-			SourceConfigurationKeys.SOURCE_INCLUDES.getJsonKey());
+			"source_includes");
 
 		if ((includesJSONArray != null) && (includesJSONArray.length() > 0)) {
 			searchRequestBuilder.fetchSourceIncludes(
@@ -183,8 +176,7 @@ public class BlueprintsSearchRequestHelper {
 
 		Optional<Parameter> excludedSearchRequestBodyContributorsOptional =
 			parameterData.getByNameOptional(
-				ReservedParameterNames.
-					EXCLUDED_SEARCH_REQUEST_BODY_CONTRIBUTORS.getKey());
+				"excluded_search_request_body_contributors");
 
 		if (!excludedSearchRequestBodyContributorsOptional.isPresent()) {
 			return new ArrayList<>();

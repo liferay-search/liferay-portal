@@ -18,7 +18,6 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.metrics.PercentileRanksAggregation;
 import com.liferay.portal.search.aggregation.metrics.PercentilesMethod;
-import com.liferay.search.experiences.blueprints.constants.json.keys.aggregation.metric.PercentileRanksAggregationBodyConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.aggregation.AggregationWrapper;
 import com.liferay.search.experiences.blueprints.engine.internal.aggregation.util.AggregationHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
@@ -48,22 +47,14 @@ public class PercentileRanksAggregationTranslator
 		ParameterData parameterData, Messages messages) {
 
 		PercentileRanksAggregation aggregation = _aggregations.percentileRanks(
-			aggregationName,
-			jsonObject.getString(
-				PercentileRanksAggregationBodyConfigurationKeys.FIELD.
-					getJsonKey()),
+			aggregationName, jsonObject.getString("field"),
 			_getValues(jsonObject));
 
 		_setterHelper.setBooleanValue(
-			jsonObject,
-			PercentileRanksAggregationBodyConfigurationKeys.KEYED.getJsonKey(),
-			aggregation::setKeyed);
+			jsonObject, "keyed", aggregation::setKeyed);
 
 		_setterHelper.setStringValue(
-			jsonObject,
-			PercentileRanksAggregationBodyConfigurationKeys.MISSING.
-				getJsonKey(),
-			aggregation::setMissing);
+			jsonObject, "missing", aggregation::setMissing);
 
 		_aggregationHelper.setScript(
 			jsonObject, aggregation::setScript, messages);
@@ -75,9 +66,7 @@ public class PercentileRanksAggregationTranslator
 
 	private double[] _getValues(JSONObject jsonObject) {
 		return BlueprintJSONUtil.toDoubleArray(
-			jsonObject.getJSONArray(
-				PercentileRanksAggregationBodyConfigurationKeys.VALUES.
-					getJsonKey()));
+			jsonObject.getJSONArray("values"));
 	}
 
 	private void _setMethod(

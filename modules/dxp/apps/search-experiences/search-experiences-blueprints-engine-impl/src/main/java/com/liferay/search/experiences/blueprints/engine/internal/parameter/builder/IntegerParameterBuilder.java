@@ -17,7 +17,6 @@ package com.liferay.search.experiences.blueprints.engine.internal.parameter.buil
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.search.experiences.blueprints.constants.json.keys.parameter.CustomParameterConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.search.experiences.blueprints.engine.internal.attributes.util.BlueprintsAttributesHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.IntegerParameter;
@@ -44,8 +43,7 @@ public class IntegerParameterBuilder implements ParameterBuilder {
 		BlueprintsAttributes blueprintsAttributes, JSONObject jsonObject,
 		Messages messages) {
 
-		String parameterName = jsonObject.getString(
-			CustomParameterConfigurationKeys.PARAMETER_NAME.getJsonKey());
+		String parameterName = jsonObject.getString("parameter_name");
 
 		Optional<Integer> valueOptional = _getValueOptional(
 			blueprintsAttributes, jsonObject, parameterName);
@@ -62,8 +60,7 @@ public class IntegerParameterBuilder implements ParameterBuilder {
 
 	private int _getAdjustedValue(int value, JSONObject jsonObject) {
 		Optional<Integer> minValue = BlueprintValueUtil.stringToIntegerOptional(
-			jsonObject.getString(
-				CustomParameterConfigurationKeys.MIN_VALUE.getJsonKey()));
+			jsonObject.getString("min_value"));
 
 		if (minValue.isPresent() &&
 			(Integer.compare(value, minValue.get()) < 0)) {
@@ -76,8 +73,7 @@ public class IntegerParameterBuilder implements ParameterBuilder {
 		}
 
 		Optional<Integer> maxValue = BlueprintValueUtil.stringToIntegerOptional(
-			jsonObject.getString(
-				CustomParameterConfigurationKeys.MAX_VALUE.getJsonKey()));
+			jsonObject.getString("max_value"));
 
 		if (maxValue.isPresent() &&
 			(Integer.compare(value, maxValue.get()) > 0)) {
@@ -102,8 +98,7 @@ public class IntegerParameterBuilder implements ParameterBuilder {
 
 		if (!valueOptional.isPresent()) {
 			valueOptional = BlueprintValueUtil.toStringOptional(
-				jsonObject.getString(
-					CustomParameterConfigurationKeys.DEFAULT.getJsonKey()));
+				jsonObject.getString("default"));
 		}
 
 		if (!valueOptional.isPresent()) {

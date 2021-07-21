@@ -17,7 +17,6 @@ package com.liferay.search.experiences.blueprints.engine.internal.aggregation.tr
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.metrics.ValueCountAggregation;
-import com.liferay.search.experiences.blueprints.constants.json.keys.aggregation.metric.ValueCountAggregationBodyConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.aggregation.AggregationWrapper;
 import com.liferay.search.experiences.blueprints.engine.internal.aggregation.util.AggregationHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
@@ -45,9 +44,7 @@ public class ValueCountAggregationTranslator implements AggregationTranslator {
 		ParameterData parameterData, Messages messages) {
 
 		ValueCountAggregation aggregation = _aggregations.valueCount(
-			aggregationName,
-			jsonObject.getString(
-				ValueCountAggregationBodyConfigurationKeys.FIELD.getJsonKey()));
+			aggregationName, jsonObject.getString("field"));
 
 		_aggregationHelper.setScript(
 			jsonObject, aggregation::setScript, messages);

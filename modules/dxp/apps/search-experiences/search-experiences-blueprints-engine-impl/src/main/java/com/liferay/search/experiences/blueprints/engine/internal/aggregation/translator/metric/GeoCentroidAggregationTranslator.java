@@ -17,7 +17,6 @@ package com.liferay.search.experiences.blueprints.engine.internal.aggregation.tr
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.metrics.GeoCentroidAggregation;
-import com.liferay.search.experiences.blueprints.constants.json.keys.aggregation.metric.GeoCentroidAggregationBodyConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.aggregation.AggregationWrapper;
 import com.liferay.search.experiences.blueprints.engine.internal.aggregation.util.AggregationHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
@@ -45,10 +44,7 @@ public class GeoCentroidAggregationTranslator implements AggregationTranslator {
 		ParameterData parameterData, Messages messages) {
 
 		GeoCentroidAggregation aggregation = _aggregations.geoCentroid(
-			aggregationName,
-			jsonObject.getString(
-				GeoCentroidAggregationBodyConfigurationKeys.FIELD.
-					getJsonKey()));
+			aggregationName, jsonObject.getString("field"));
 
 		return _aggregationHelper.wrap(aggregation);
 	}

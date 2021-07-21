@@ -15,7 +15,6 @@
 package com.liferay.search.experiences.blueprints.engine.internal.condition.util;
 
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.search.experiences.blueprints.constants.json.values.ConditionGroup;
 import com.liferay.search.experiences.blueprints.engine.internal.condition.ConditionHandlerFactory;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
 import com.liferay.search.experiences.blueprints.engine.spi.clause.ConditionHandler;
@@ -52,11 +51,11 @@ public class ConditionsProcessor {
 			return false;
 		}
 
-		if (keySet.contains(ConditionGroup.ANY_OF.getJsonValue())) {
+		if (keySet.contains("any_of")) {
 			Stream<String> stream = keySet.stream();
 
 			boolean valid = stream.filter(
-				key -> key.equals(ConditionGroup.ANY_OF.getJsonValue())
+				key -> key.equals("any_of")
 			).anyMatch(
 				key -> processConditions(
 					jsonObject.getJSONObject(key), parameterData, messages)
@@ -67,11 +66,11 @@ public class ConditionsProcessor {
 			}
 		}
 
-		if (keySet.contains(ConditionGroup.ALL_OF.getJsonValue())) {
+		if (keySet.contains("all_of")) {
 			Stream<String> stream = keySet.stream();
 
 			boolean valid = stream.filter(
-				key -> key.equals(ConditionGroup.ALL_OF.getJsonValue())
+				key -> key.equals("all_of")
 			).allMatch(
 				key -> processConditions(
 					jsonObject.getJSONObject(key), parameterData, messages)
@@ -111,9 +110,7 @@ public class ConditionsProcessor {
 		Stream<String> stream1 = keySet.stream();
 
 		List<String> conditions = stream1.filter(
-			key ->
-				!key.equals(ConditionGroup.ALL_OF.getJsonValue()) &&
-				!key.equals(ConditionGroup.ANY_OF.getJsonValue())
+			key -> !key.equals("all_of") && !key.equals("any_of")
 		).collect(
 			Collectors.toList()
 		);

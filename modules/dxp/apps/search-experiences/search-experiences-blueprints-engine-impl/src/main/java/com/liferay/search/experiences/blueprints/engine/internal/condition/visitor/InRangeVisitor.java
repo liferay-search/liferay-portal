@@ -18,7 +18,6 @@ import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.search.experiences.blueprints.constants.json.keys.query.ConditionConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.exception.ParameterEvaluationException;
 import com.liferay.search.experiences.blueprints.engine.parameter.DateParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.DoubleParameter;
@@ -51,20 +50,16 @@ public class InRangeVisitor
 
 		_checkRangeValue(jsonArray);
 
-		String dateFormatString = conditionJSONObject.getString(
-			ConditionConfigurationKeys.DATE_FORMAT.getJsonKey());
+		String dateFormatString = conditionJSONObject.getString("date_format");
 
-		String dateString = conditionJSONObject.getString(
-			ConditionConfigurationKeys.VALUE.getJsonKey());
+		String dateString = conditionJSONObject.getString("value");
 
 		if (Validator.isNull(dateFormatString)) {
 			throw new ParameterEvaluationException(
 				MessagesUtil.toErrorMessage(
 					getClass().getName(),
 					new Throwable("Date format must be defined"),
-					conditionJSONObject,
-					ConditionConfigurationKeys.DATE_FORMAT.getJsonKey(),
-					dateFormatString,
+					conditionJSONObject, "date_format", dateFormatString,
 					"core.error.date-format-must-be-defined"));
 		}
 
@@ -93,7 +88,7 @@ public class InRangeVisitor
 			throw new ParameterEvaluationException(
 				MessagesUtil.toErrorMessage(
 					getClass().getName(), exception, conditionJSONObject,
-					ConditionConfigurationKeys.VALUE.getJsonKey(), dateString,
+					"value", dateString,
 					"core.error.clause-condition-date-parsing-error"));
 		}
 	}
@@ -198,9 +193,8 @@ public class InRangeVisitor
 			throw new ParameterEvaluationException(
 				MessagesUtil.toErrorMessage(
 					getClass().getName(), new Throwable("Invalid range value"),
-					conditionJSONObject,
-					ConditionConfigurationKeys.VALUE.getJsonKey(),
-					jsonArray.toString(), "core.error.invalid-range-value"));
+					conditionJSONObject, "value", jsonArray.toString(),
+					"core.error.invalid-range-value"));
 		}
 	}
 

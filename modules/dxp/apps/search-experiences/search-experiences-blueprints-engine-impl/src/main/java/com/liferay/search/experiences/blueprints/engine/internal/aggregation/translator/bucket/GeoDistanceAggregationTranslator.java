@@ -23,7 +23,6 @@ import com.liferay.portal.search.aggregation.bucket.GeoDistanceAggregation;
 import com.liferay.portal.search.geolocation.GeoBuilders;
 import com.liferay.portal.search.geolocation.GeoDistanceType;
 import com.liferay.portal.search.geolocation.GeoLocationPoint;
-import com.liferay.search.experiences.blueprints.constants.json.keys.aggregation.bucket.GeoDistanceAggregationBodyConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.aggregation.AggregationWrapper;
 import com.liferay.search.experiences.blueprints.engine.internal.aggregation.util.AggregationHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
@@ -58,19 +57,14 @@ public class GeoDistanceAggregationTranslator implements AggregationTranslator {
 		}
 
 		GeoDistanceAggregation aggregation = _aggregations.geoDistance(
-			aggregationName,
-			jsonObject.getString(
-				GeoDistanceAggregationBodyConfigurationKeys.FIELD.getJsonKey()),
-			geoLocationPoint);
+			aggregationName, jsonObject.getString("field"), geoLocationPoint);
 
 		_setDistanceUnit(aggregation, jsonObject);
 
 		_setDistanceType(aggregation, jsonObject);
 
 		_setterHelper.setBooleanValue(
-			jsonObject,
-			GeoDistanceAggregationBodyConfigurationKeys.KEYED.getJsonKey(),
-			aggregation::setKeyed);
+			jsonObject, "keyed", aggregation::setKeyed);
 
 		_aggregationHelper.setRanges(jsonObject, aggregation::addRange);
 
@@ -91,8 +85,7 @@ public class GeoDistanceAggregationTranslator implements AggregationTranslator {
 	}
 
 	private GeoLocationPoint _getGeoLocationPoint(JSONObject jsonObject) {
-		String origin = jsonObject.getString(
-			GeoDistanceAggregationBodyConfigurationKeys.ORIGIN.getJsonKey());
+		String origin = jsonObject.getString("origin");
 
 		List<String> coordinates = _getCoordinates(origin);
 
@@ -108,9 +101,7 @@ public class GeoDistanceAggregationTranslator implements AggregationTranslator {
 	private void _setDistanceType(
 		GeoDistanceAggregation aggregation, JSONObject jsonObject) {
 
-		String distanceType = jsonObject.getString(
-			GeoDistanceAggregationBodyConfigurationKeys.DISTANCE_TYPE.
-				getJsonKey());
+		String distanceType = jsonObject.getString("distance_type");
 
 		if (Validator.isBlank(distanceType)) {
 			return;
@@ -125,8 +116,7 @@ public class GeoDistanceAggregationTranslator implements AggregationTranslator {
 	private void _setDistanceUnit(
 		GeoDistanceAggregation aggregation, JSONObject jsonObject) {
 
-		String unit = jsonObject.getString(
-			GeoDistanceAggregationBodyConfigurationKeys.UNIT.getJsonKey());
+		String unit = jsonObject.getString("unit");
 
 		if (Validator.isBlank(unit)) {
 			return;

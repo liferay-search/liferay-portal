@@ -20,7 +20,6 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.bucket.CollectionMode;
 import com.liferay.portal.search.aggregation.bucket.TermsAggregation;
-import com.liferay.search.experiences.blueprints.constants.json.keys.aggregation.bucket.TermsAggregationBodyConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.aggregation.AggregationWrapper;
 import com.liferay.search.experiences.blueprints.engine.internal.aggregation.util.AggregationHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
@@ -48,29 +47,21 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 		ParameterData parameterData, Messages messages) {
 
 		TermsAggregation aggregation = _aggregations.terms(
-			aggregationName,
-			jsonObject.getString(
-				TermsAggregationBodyConfigurationKeys.FIELD.getJsonKey()));
+			aggregationName, jsonObject.getString("field"));
 
 		_setCollectMode(aggregation, jsonObject);
 
 		_setterHelper.setStringValue(
-			jsonObject,
-			TermsAggregationBodyConfigurationKeys.EXECUTION_HINT.getJsonKey(),
-			aggregation::setExecutionHint);
+			jsonObject, "execution_hint", aggregation::setExecutionHint);
 
 		_aggregationHelper.setIncludeExcludeClause(
 			jsonObject, aggregation::setIncludeExcludeClause);
 
 		_setterHelper.setIntegerValue(
-			jsonObject,
-			TermsAggregationBodyConfigurationKeys.MIN_DOC_COUNT.getJsonKey(),
-			aggregation::setMinDocCount);
+			jsonObject, "min_doc_count", aggregation::setMinDocCount);
 
 		_setterHelper.setStringValue(
-			jsonObject,
-			TermsAggregationBodyConfigurationKeys.MISSING.getJsonKey(),
-			aggregation::setMissing);
+			jsonObject, "missing", aggregation::setMissing);
 
 		_aggregationHelper.setOrders(
 			jsonObject, aggregation::addOrders, messages);
@@ -79,25 +70,17 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 			jsonObject, aggregation::setScript, messages);
 
 		_setterHelper.setIntegerValue(
-			jsonObject,
-			TermsAggregationBodyConfigurationKeys.SHARD_MIN_DOC_COUNT.
-				getJsonKey(),
+			jsonObject, "shard_min_doc_count",
 			aggregation::setShardMinDocCount);
 
 		_setterHelper.setIntegerValue(
-			jsonObject,
-			TermsAggregationBodyConfigurationKeys.SHARD_SIZE.getJsonKey(),
-			aggregation::setShardSize);
+			jsonObject, "shard_size", aggregation::setShardSize);
 
 		_setterHelper.setBooleanValue(
-			jsonObject,
-			TermsAggregationBodyConfigurationKeys.SHOW_TERM_DOC_COUNT_ERROR.
-				getJsonKey(),
+			jsonObject, "show_term_doc_count_error",
 			aggregation::setShowTermDocCountError);
 
-		_setterHelper.setIntegerValue(
-			jsonObject, TermsAggregationBodyConfigurationKeys.SIZE.getJsonKey(),
-			aggregation::setSize);
+		_setterHelper.setIntegerValue(jsonObject, "size", aggregation::setSize);
 
 		return _aggregationHelper.wrap(aggregation);
 	}
@@ -105,8 +88,7 @@ public class TermsAggregationTranslator implements AggregationTranslator {
 	private void _setCollectMode(
 		TermsAggregation aggregation, JSONObject jsonObject) {
 
-		String collectModeString = jsonObject.getString(
-			TermsAggregationBodyConfigurationKeys.COLLECT_MODE.getJsonKey());
+		String collectModeString = jsonObject.getString("collect_mode");
 
 		if (Validator.isBlank(collectModeString)) {
 			return;

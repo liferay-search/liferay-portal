@@ -17,7 +17,6 @@ package com.liferay.search.experiences.blueprints.engine.internal.aggregation.tr
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.metrics.GeoBoundsAggregation;
-import com.liferay.search.experiences.blueprints.constants.json.keys.aggregation.metric.GeoBoundsAggregationBodyConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.aggregation.AggregationWrapper;
 import com.liferay.search.experiences.blueprints.engine.internal.aggregation.util.AggregationHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
@@ -45,15 +44,10 @@ public class GeoBoundsAggregationTranslator implements AggregationTranslator {
 		ParameterData parameterData, Messages messages) {
 
 		GeoBoundsAggregation aggregation = _aggregations.geoBounds(
-			aggregationName,
-			jsonObject.getString(
-				GeoBoundsAggregationBodyConfigurationKeys.FIELD.getJsonKey()));
+			aggregationName, jsonObject.getString("field"));
 
 		_setterHelper.setBooleanValue(
-			jsonObject,
-			GeoBoundsAggregationBodyConfigurationKeys.WRAP_LONGITUDE.
-				getJsonKey(),
-			aggregation::setWrapLongitude);
+			jsonObject, "wrap_longitude", aggregation::setWrapLongitude);
 
 		return _aggregationHelper.wrap(aggregation);
 	}

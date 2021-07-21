@@ -17,7 +17,6 @@ package com.liferay.search.experiences.blueprints.engine.internal.condition.util
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
-import com.liferay.search.experiences.blueprints.constants.json.values.ConditionGroup;
 import com.liferay.search.experiences.blueprints.engine.internal.condition.ConditionHandlerFactory;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
 import com.liferay.search.experiences.blueprints.engine.spi.clause.ConditionHandler;
@@ -107,7 +106,7 @@ public class ConditionsProcessorTest extends PowerMockito {
 		Mockito.when(
 			_jsonObject.keySet()
 		).thenReturn(
-			new HashSet<>(Arrays.asList(ConditionGroup.ALL_OF.getJsonValue()))
+			new HashSet<>(Arrays.asList("all_of"))
 		);
 
 		Assert.assertTrue(
@@ -118,8 +117,7 @@ public class ConditionsProcessorTest extends PowerMockito {
 	@Test
 	public void testProcessConditionsWithAnyOf() {
 		setUpJsonObjectLength();
-		setUpJsonObjectKeySet(
-			new HashSet<>(Arrays.asList(ConditionGroup.ANY_OF.getJsonValue())));
+		setUpJsonObjectKeySet(new HashSet<>(Arrays.asList("any_of")));
 
 		Assert.assertTrue(
 			_conditionsProcessor.processConditions(

@@ -19,7 +19,6 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.search.experiences.blueprints.constants.json.keys.query.ConditionConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.exception.ParameterEvaluationException;
 import com.liferay.search.experiences.blueprints.engine.parameter.IntegerArrayParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.LongArrayParameter;
@@ -45,8 +44,7 @@ public class ContainsVisitor
 	public boolean visit(IntegerArrayParameter parameter)
 		throws ParameterEvaluationException {
 
-		Object object = conditionJSONObject.get(
-			ConditionConfigurationKeys.VALUE.getJsonKey());
+		Object object = conditionJSONObject.get("value");
 
 		Integer[] parameterValue = parameter.getValue();
 
@@ -85,9 +83,7 @@ public class ContainsVisitor
 			throw new ParameterEvaluationException(
 				MessagesUtil.toErrorMessage(
 					getClass().getName(), numberFormatException,
-					conditionJSONObject,
-					ConditionConfigurationKeys.VALUE.getJsonKey(),
-					object.toString(),
+					conditionJSONObject, "value", object.toString(),
 					"core.error.illegal-match-value-format"));
 		}
 	}
@@ -96,8 +92,7 @@ public class ContainsVisitor
 	public boolean visit(LongArrayParameter parameter)
 		throws ParameterEvaluationException {
 
-		Object object = conditionJSONObject.get(
-			ConditionConfigurationKeys.VALUE.getJsonKey());
+		Object object = conditionJSONObject.get("value");
 
 		Long[] parameterValue = parameter.getValue();
 
@@ -138,9 +133,7 @@ public class ContainsVisitor
 			throw new ParameterEvaluationException(
 				MessagesUtil.toErrorMessage(
 					getClass().getName(), numberFormatException,
-					conditionJSONObject,
-					ConditionConfigurationKeys.VALUE.getJsonKey(),
-					object.toString(),
+					conditionJSONObject, "value", object.toString(),
 					"core.error.illegal-match-value-format"));
 		}
 	}
@@ -149,8 +142,7 @@ public class ContainsVisitor
 	public boolean visit(StringArrayParameter parameter)
 		throws ParameterEvaluationException {
 
-		Object object = conditionJSONObject.get(
-			ConditionConfigurationKeys.VALUE.getJsonKey());
+		Object object = conditionJSONObject.get("value");
 
 		String[] parameterValue = parameter.getValue();
 
@@ -186,15 +178,13 @@ public class ContainsVisitor
 	public boolean visit(StringParameter parameter)
 		throws ParameterEvaluationException {
 
-		Object object = conditionJSONObject.get(
-			ConditionConfigurationKeys.VALUE.getJsonKey());
+		Object object = conditionJSONObject.get("value");
 
 		if (Validator.isNull(object)) {
 			throw new ParameterEvaluationException(
 				MessagesUtil.toErrorMessage(
 					getClass().getName(), new Throwable("Value cannot be null"),
-					conditionJSONObject,
-					ConditionConfigurationKeys.VALUE.getJsonKey(), null,
+					conditionJSONObject, "value", null,
 					"core.error.illegal-match-value-type"));
 		}
 

@@ -17,7 +17,6 @@ package com.liferay.search.experiences.blueprints.engine.internal.aggregation.tr
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.bucket.SignificantTextAggregation;
-import com.liferay.search.experiences.blueprints.constants.json.keys.aggregation.bucket.SignificantTextAggregationBodyConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.aggregation.AggregationWrapper;
 import com.liferay.search.experiences.blueprints.engine.internal.aggregation.util.AggregationHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
@@ -46,64 +45,42 @@ public class SignificantTextAggregationTranslator
 		ParameterData parameterData, Messages messages) {
 
 		SignificantTextAggregation aggregation = _aggregations.significantText(
-			aggregationName,
-			jsonObject.getString(
-				SignificantTextAggregationBodyConfigurationKeys.FIELD.
-					getJsonKey()));
+			aggregationName, jsonObject.getString("field"));
 
 		_aggregationHelper.setBackgroundFilter(
 			jsonObject, aggregation::setBackgroundFilterQuery, parameterData,
 			messages);
 
 		_setterHelper.setStringValue(
-			jsonObject,
-			SignificantTextAggregationBodyConfigurationKeys.EXECUTION_HINT.
-				getJsonKey(),
-			aggregation::setExecutionHint);
+			jsonObject, "execution_hint", aggregation::setExecutionHint);
 
 		_setterHelper.setBooleanValue(
-			jsonObject,
-			SignificantTextAggregationBodyConfigurationKeys.
-				FILTER_DUPLICATE_TEXT.getJsonKey(),
+			jsonObject, "filter_duplicate_text",
 			aggregation::setFilterDuplicateText);
 
 		_aggregationHelper.setIncludeExcludeClause(
 			jsonObject, aggregation::setIncludeExcludeClause);
 
 		_setterHelper.setLongValue(
-			jsonObject,
-			SignificantTextAggregationBodyConfigurationKeys.MIN_DOC_COUNT.
-				getJsonKey(),
-			aggregation::setMinDocCount);
+			jsonObject, "min_doc_count", aggregation::setMinDocCount);
 
 		_setterHelper.setStringValue(
-			jsonObject,
-			SignificantTextAggregationBodyConfigurationKeys.MISSING.
-				getJsonKey(),
-			aggregation::setMissing);
+			jsonObject, "missing", aggregation::setMissing);
 
 		_aggregationHelper.setScript(
 			jsonObject, aggregation::setScript, messages);
 
 		_setterHelper.setLongValue(
-			jsonObject,
-			SignificantTextAggregationBodyConfigurationKeys.SHARD_MIN_DOC_COUNT.
-				getJsonKey(),
+			jsonObject, "shard_min_doc_count",
 			aggregation::setShardMinDocCount);
 
 		_setterHelper.setIntegerValue(
-			jsonObject,
-			SignificantTextAggregationBodyConfigurationKeys.SHARD_SIZE.
-				getJsonKey(),
-			aggregation::setShardSize);
+			jsonObject, "shard_size", aggregation::setShardSize);
 
 		_aggregationHelper.setSignificanceHeuristics(
 			jsonObject, aggregation::setSignificanceHeuristic, messages);
 
-		_setterHelper.setIntegerValue(
-			jsonObject,
-			SignificantTextAggregationBodyConfigurationKeys.SIZE.getJsonKey(),
-			aggregation::setSize);
+		_setterHelper.setIntegerValue(jsonObject, "size", aggregation::setSize);
 
 		return _aggregationHelper.wrap(aggregation);
 	}

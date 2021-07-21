@@ -17,7 +17,6 @@ package com.liferay.search.experiences.blueprints.engine.internal.aggregation.tr
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.bucket.HistogramAggregation;
-import com.liferay.search.experiences.blueprints.constants.json.keys.aggregation.bucket.HistogramAggregationBodyConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.aggregation.AggregationWrapper;
 import com.liferay.search.experiences.blueprints.engine.internal.aggregation.util.AggregationHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
@@ -45,37 +44,24 @@ public class HistogramAggregationTranslator implements AggregationTranslator {
 		ParameterData parameterData, Messages messages) {
 
 		HistogramAggregation aggregation = _aggregations.histogram(
-			aggregationName,
-			jsonObject.getString(
-				HistogramAggregationBodyConfigurationKeys.FIELD.getJsonKey()));
+			aggregationName, jsonObject.getString("field"));
 
 		_aggregationHelper.setDoubleBounds(jsonObject, aggregation::setBounds);
 
 		_setterHelper.setDoubleValue(
-			jsonObject,
-			HistogramAggregationBodyConfigurationKeys.INTERVAL.getJsonKey(),
-			aggregation::setInterval);
+			jsonObject, "interval", aggregation::setInterval);
 
 		_setterHelper.setBooleanValue(
-			jsonObject,
-			HistogramAggregationBodyConfigurationKeys.KEYED.getJsonKey(),
-			aggregation::setKeyed);
+			jsonObject, "keyed", aggregation::setKeyed);
 
 		_setterHelper.setLongValue(
-			jsonObject,
-			HistogramAggregationBodyConfigurationKeys.MIN_DOC_COUNT.
-				getJsonKey(),
-			aggregation::setMinDocCount);
+			jsonObject, "min_doc_count", aggregation::setMinDocCount);
 
 		_setterHelper.setStringValue(
-			jsonObject,
-			HistogramAggregationBodyConfigurationKeys.MISSING.getJsonKey(),
-			aggregation::setMissing);
+			jsonObject, "missing", aggregation::setMissing);
 
 		_setterHelper.setDoubleValue(
-			jsonObject,
-			HistogramAggregationBodyConfigurationKeys.OFFSET.getJsonKey(),
-			aggregation::setOffset);
+			jsonObject, "offset", aggregation::setOffset);
 
 		_aggregationHelper.setOrders(
 			jsonObject, aggregation::addOrders, messages);

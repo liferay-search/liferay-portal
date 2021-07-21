@@ -21,7 +21,6 @@ import com.liferay.portal.search.highlight.FieldConfigBuilderFactory;
 import com.liferay.portal.search.highlight.Highlight;
 import com.liferay.portal.search.highlight.HighlightBuilder;
 import com.liferay.portal.search.highlight.HighlightBuilderFactory;
-import com.liferay.search.experiences.blueprints.constants.json.keys.highlight.HighlightConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
 import com.liferay.search.experiences.blueprints.message.Messages;
 import com.liferay.search.experiences.blueprints.util.util.SetterHelper;
@@ -45,30 +44,24 @@ public class HighlightHelper {
 		HighlightBuilder highlightBuilder = _highlightBuilderFactory.builder();
 
 		_setterHelper.setIntegerValue(
-			jsonObject, HighlightConfigurationKeys.FRAGMENT_SIZE.getJsonKey(),
-			highlightBuilder::fragmentSize);
+			jsonObject, "fragment_size", highlightBuilder::fragmentSize);
 
 		_setterHelper.setIntegerValue(
-			jsonObject,
-			HighlightConfigurationKeys.NUMBER_OF_FRAGMENTS.getJsonKey(),
+			jsonObject, "number_of_fragments",
 			highlightBuilder::numOfFragments);
 
 		_setterHelper.setStringArrayValue(
-			jsonObject, HighlightConfigurationKeys.POST_TAGS.getJsonKey(),
-			highlightBuilder::postTags);
+			jsonObject, "post_tags", highlightBuilder::postTags);
 
 		_setterHelper.setStringArrayValue(
-			jsonObject, HighlightConfigurationKeys.PRE_TAGS.getJsonKey(),
-			highlightBuilder::preTags);
+			jsonObject, "pre_tags", highlightBuilder::preTags);
 
 		_setterHelper.setBooleanValue(
-			jsonObject,
-			HighlightConfigurationKeys.REQUIRE_FIELD_MATCH.getJsonKey(),
+			jsonObject, "require_field_match",
 			highlightBuilder::requireFieldMatch);
 
 		_setterHelper.setStringValue(
-			jsonObject, HighlightConfigurationKeys.TYPE.getJsonKey(),
-			highlightBuilder::highlighterType);
+			jsonObject, "type", highlightBuilder::highlighterType);
 
 		_setFieldConfigs(highlightBuilder, jsonObject);
 
@@ -84,18 +77,14 @@ public class HighlightHelper {
 			_fieldConfigBuilderFactory.builder(key);
 
 		_setterHelper.setIntegerValue(
-			fieldJSONObject,
-			HighlightConfigurationKeys.FRAGMENT_OFFSET.getJsonKey(),
+			fieldJSONObject, "fragment_offset",
 			fieldConfigBuilder::fragmentOffset);
 
 		_setterHelper.setIntegerValue(
-			fieldJSONObject,
-			HighlightConfigurationKeys.FRAGMENT_SIZE.getJsonKey(),
-			fieldConfigBuilder::fragmentSize);
+			fieldJSONObject, "fragment_size", fieldConfigBuilder::fragmentSize);
 
 		_setterHelper.setIntegerValue(
-			fieldJSONObject,
-			HighlightConfigurationKeys.NUMBER_OF_FRAGMENTS.getJsonKey(),
+			fieldJSONObject, "number_of_fragments",
 			fieldConfigBuilder::numFragments);
 
 		return fieldConfigBuilder.build();
@@ -104,8 +93,7 @@ public class HighlightHelper {
 	private void _setFieldConfigs(
 		HighlightBuilder highlightBuilder, JSONObject jsonObject) {
 
-		JSONObject fieldsJSONObject = jsonObject.getJSONObject(
-			HighlightConfigurationKeys.FIELDS.getJsonKey());
+		JSONObject fieldsJSONObject = jsonObject.getJSONObject("fields");
 
 		if (fieldsJSONObject == null) {
 			return;

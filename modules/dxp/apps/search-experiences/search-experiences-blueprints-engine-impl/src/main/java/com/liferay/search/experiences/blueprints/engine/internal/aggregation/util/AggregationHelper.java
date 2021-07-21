@@ -32,7 +32,6 @@ import com.liferay.portal.search.query.Query;
 import com.liferay.portal.search.script.Script;
 import com.liferay.portal.search.significance.SignificanceHeuristic;
 import com.liferay.portal.search.significance.SignificanceHeuristics;
-import com.liferay.search.experiences.blueprints.constants.json.keys.aggregation.bucket.DateHistogramAggregationBodyConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.aggregation.AggregationWrapper;
 import com.liferay.search.experiences.blueprints.engine.internal.clause.util.ClauseHelper;
 import com.liferay.search.experiences.blueprints.engine.internal.util.ScriptHelper;
@@ -241,16 +240,14 @@ public class AggregationHelper {
 		JSONObject jsonObject, BiConsumer<Double, Double> setter) {
 
 		JSONObject extendedBoundsJSONObject = jsonObject.getJSONObject(
-			DateHistogramAggregationBodyConfigurationKeys.EXTENDED_BOUNDS.
-				getJsonKey());
+			"extended_bounds");
 
 		if (extendedBoundsJSONObject != null) {
 			_setDoubleBoundValues(extendedBoundsJSONObject, setter);
 		}
 		else {
 			JSONObject hardBoundsJSONObject = jsonObject.getJSONObject(
-				DateHistogramAggregationBodyConfigurationKeys.HARD_BOUNDS.
-					getJsonKey());
+				"hard_bounds");
 
 			if (hardBoundsJSONObject != null) {
 				_setDoubleBoundValues(hardBoundsJSONObject, setter);
@@ -315,16 +312,14 @@ public class AggregationHelper {
 		JSONObject jsonObject, BiConsumer<Long, Long> setter) {
 
 		JSONObject extendedBoundsJSONObject = jsonObject.getJSONObject(
-			DateHistogramAggregationBodyConfigurationKeys.EXTENDED_BOUNDS.
-				getJsonKey());
+			"extended_bounds");
 
 		if (extendedBoundsJSONObject != null) {
 			_setLongBoundValues(extendedBoundsJSONObject, setter);
 		}
 		else {
 			JSONObject hardBoundsJSONObject = jsonObject.getJSONObject(
-				DateHistogramAggregationBodyConfigurationKeys.HARD_BOUNDS.
-					getJsonKey());
+				"hard_bounds");
 
 			if (hardBoundsJSONObject != null) {
 				_setLongBoundValues(hardBoundsJSONObject, setter);
