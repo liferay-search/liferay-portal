@@ -24,7 +24,6 @@ import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
-import com.liferay.search.experiences.blueprints.engine.constants.ReservedParameterNames;
 import com.liferay.search.experiences.blueprints.engine.parameter.BooleanParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.LongParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterDataBuilder;
@@ -83,48 +82,42 @@ public class ContextParameterContributor implements ParameterContributor {
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName(
-					ReservedParameterNames.COMPANY_ID.getKey()),
+				_getTemplateVariableName("company_id"),
 				LongParameter.class.getName(),
 				"core.parameter.context.company-id"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName(
-					ReservedParameterNames.CT_COLLECTION_ID.getKey()),
+				_getTemplateVariableName("ct_collection_id"),
 				LongParameter.class.getName(),
 				"core.parameter.context.ct-collection-id"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName(
-					ReservedParameterNames.SCOPE_GROUP_ID.getKey()),
+				_getTemplateVariableName("scope_group_id"),
 				LongParameter.class.getName(),
 				"core.parameter.context.scope-group-id"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName(
-					ReservedParameterNames.LAYOUT_LOCALE_NAME.getKey()),
+				_getTemplateVariableName("layout_locale_name"),
 				StringParameter.class.getName(),
 				"core.parameter.context.layout-locale-name"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName(ReservedParameterNames.PLID.getKey()),
-				LongParameter.class.getName(), "core.parameter.context.plid"));
+				_getTemplateVariableName("plid"), LongParameter.class.getName(),
+				"core.parameter.context.plid"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName(
-					ReservedParameterNames.LANGUAGE.getKey()),
+				_getTemplateVariableName("language"),
 				StringParameter.class.getName(),
 				"core.parameter.context.language"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName(
-					ReservedParameterNames.LANGUAGE_ID.getKey()),
+				_getTemplateVariableName("language_id"),
 				StringParameter.class.getName(),
 				"core.parameter.context.language-id"));
 
@@ -137,9 +130,7 @@ public class ContextParameterContributor implements ParameterContributor {
 
 		parameterDataBuilder.addParameter(
 			new LongParameter(
-				ReservedParameterNames.COMPANY_ID.getKey(),
-				_getTemplateVariableName(
-					ReservedParameterNames.COMPANY_ID.getKey()),
+				"company_id", _getTemplateVariableName("company_id"),
 				blueprintsAttributes.getCompanyId()));
 	}
 
@@ -148,9 +139,8 @@ public class ContextParameterContributor implements ParameterContributor {
 
 		parameterDataBuilder.addParameter(
 			new LongParameter(
-				ReservedParameterNames.CT_COLLECTION_ID.getKey(),
-				_getTemplateVariableName(
-					ReservedParameterNames.CT_COLLECTION_ID.getKey()),
+				"ct_collection_id",
+				_getTemplateVariableName("ct_collection_id"),
 				CTCollectionThreadLocal.getCTCollectionId()));
 	}
 
@@ -159,7 +149,7 @@ public class ContextParameterContributor implements ParameterContributor {
 		BlueprintsAttributes blueprintsAttributes, Messages messages) {
 
 		Optional<Object> optional = blueprintsAttributes.getAttributeOptional(
-			ReservedParameterNames.SCOPE_GROUP_ID.getKey());
+			"scope_group_id");
 
 		if (!optional.isPresent()) {
 			return;
@@ -167,9 +157,7 @@ public class ContextParameterContributor implements ParameterContributor {
 
 		parameterDataBuilder.addParameter(
 			new LongParameter(
-				ReservedParameterNames.SCOPE_GROUP_ID.getKey(),
-				_getTemplateVariableName(
-					ReservedParameterNames.SCOPE_GROUP_ID.getKey()),
+				"scope_group_id", _getTemplateVariableName("scope_group_id"),
 				GetterUtil.getLong(optional.get())));
 
 		Group group = _getGroup(GetterUtil.getLong(optional.get()), messages);
@@ -180,9 +168,8 @@ public class ContextParameterContributor implements ParameterContributor {
 
 		parameterDataBuilder.addParameter(
 			new BooleanParameter(
-				ReservedParameterNames.STAGING_GROUP.getKey(),
-				_getTemplateVariableName(
-					ReservedParameterNames.STAGING_GROUP.getKey()),
+				"is_staging_group",
+				_getTemplateVariableName("is_staging_group"),
 				group.isStagingGroup()));
 	}
 
@@ -194,16 +181,12 @@ public class ContextParameterContributor implements ParameterContributor {
 
 		parameterDataBuilder.addParameter(
 			new StringParameter(
-				ReservedParameterNames.LANGUAGE_ID.getKey(),
-				_getTemplateVariableName(
-					ReservedParameterNames.LANGUAGE_ID.getKey()),
+				"language_id", _getTemplateVariableName("language_id"),
 				"_" + _language.getLanguageId(locale)));
 
 		parameterDataBuilder.addParameter(
 			new StringParameter(
-				ReservedParameterNames.LANGUAGE.getKey(),
-				_getTemplateVariableName(
-					ReservedParameterNames.LANGUAGE.getKey()),
+				"language", _getTemplateVariableName("language"),
 				locale.getLanguage()));
 	}
 
@@ -212,7 +195,7 @@ public class ContextParameterContributor implements ParameterContributor {
 		BlueprintsAttributes blueprintsAttributes, Messages messages) {
 
 		Optional<Object> optional = blueprintsAttributes.getAttributeOptional(
-			ReservedParameterNames.PLID.getKey());
+			"plid");
 
 		if (!optional.isPresent()) {
 			return;
@@ -224,9 +207,8 @@ public class ContextParameterContributor implements ParameterContributor {
 
 			parameterDataBuilder.addParameter(
 				new StringParameter(
-					ReservedParameterNames.LAYOUT_LOCALE_NAME.getKey(),
-					_getTemplateVariableName(
-						ReservedParameterNames.LAYOUT_LOCALE_NAME.getKey()),
+					"layout_locale_name",
+					_getTemplateVariableName("layout_locale_name"),
 					layout.getName(blueprintsAttributes.getLocale(), true)));
 		}
 		catch (PortalException portalException) {
@@ -241,7 +223,7 @@ public class ContextParameterContributor implements ParameterContributor {
 		BlueprintsAttributes blueprintsAttributes) {
 
 		Optional<Object> optional = blueprintsAttributes.getAttributeOptional(
-			ReservedParameterNames.PLID.getKey());
+			"plid");
 
 		if (!optional.isPresent()) {
 			return;
@@ -249,8 +231,7 @@ public class ContextParameterContributor implements ParameterContributor {
 
 		parameterDataBuilder.addParameter(
 			new LongParameter(
-				ReservedParameterNames.PLID.getKey(),
-				_getTemplateVariableName(ReservedParameterNames.PLID.getKey()),
+				"plid", _getTemplateVariableName("plid"),
 				GetterUtil.getLong(optional.get())));
 	}
 

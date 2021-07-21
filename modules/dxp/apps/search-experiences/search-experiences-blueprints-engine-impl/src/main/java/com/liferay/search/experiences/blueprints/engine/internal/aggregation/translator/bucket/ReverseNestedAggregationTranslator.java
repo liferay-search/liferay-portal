@@ -17,7 +17,6 @@ package com.liferay.search.experiences.blueprints.engine.internal.aggregation.tr
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.bucket.ReverseNestedAggregation;
-import com.liferay.search.experiences.blueprints.constants.json.keys.aggregation.bucket.ReverseNestedAggregationBodyConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.aggregation.AggregationWrapper;
 import com.liferay.search.experiences.blueprints.engine.internal.aggregation.util.AggregationHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
@@ -46,10 +45,7 @@ public class ReverseNestedAggregationTranslator
 		ParameterData parameterData, Messages messages) {
 
 		ReverseNestedAggregation aggregation = _aggregations.reverseNested(
-			aggregationName,
-			jsonObject.getString(
-				ReverseNestedAggregationBodyConfigurationKeys.PATH.
-					getJsonKey()));
+			aggregationName, jsonObject.getString("path"));
 
 		return _aggregationHelper.wrap(aggregation);
 	}

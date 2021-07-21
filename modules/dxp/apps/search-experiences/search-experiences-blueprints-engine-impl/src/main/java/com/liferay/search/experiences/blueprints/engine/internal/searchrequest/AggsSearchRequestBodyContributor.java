@@ -17,7 +17,6 @@ package com.liferay.search.experiences.blueprints.engine.internal.searchrequest;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.aggregation.Aggregation;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
-import com.liferay.search.experiences.blueprints.constants.json.keys.aggregation.AggregationConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.aggregation.AggregationWrapper;
 import com.liferay.search.experiences.blueprints.engine.internal.aggregation.AggregationTranslatorFactory;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
@@ -119,8 +118,7 @@ public class AggsSearchRequestBodyContributor
 	}
 
 	private boolean _isEnabled(JSONObject jsonObject) {
-		return jsonObject.getBoolean(
-			AggregationConfigurationKeys.ENABLED.getJsonKey(), true);
+		return jsonObject.getBoolean("enabled", true);
 	}
 
 	private void _processAggregation(

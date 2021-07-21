@@ -17,7 +17,6 @@ package com.liferay.search.experiences.blueprints.engine.internal.aggregation.tr
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.bucket.NestedAggregation;
-import com.liferay.search.experiences.blueprints.constants.json.keys.aggregation.bucket.NestedAggregationBodyConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.aggregation.AggregationWrapper;
 import com.liferay.search.experiences.blueprints.engine.internal.aggregation.util.AggregationHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
@@ -45,9 +44,7 @@ public class NestedAggregationTranslator implements AggregationTranslator {
 		ParameterData parameterData, Messages messages) {
 
 		NestedAggregation aggregation = _aggregations.nested(
-			aggregationName,
-			jsonObject.getString(
-				NestedAggregationBodyConfigurationKeys.PATH.getJsonKey()));
+			aggregationName, jsonObject.getString("path"));
 
 		return _aggregationHelper.wrap(aggregation);
 	}

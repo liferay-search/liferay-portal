@@ -17,7 +17,6 @@ package com.liferay.search.experiences.blueprints.engine.internal.aggregation.tr
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.metrics.CardinalityAggregation;
-import com.liferay.search.experiences.blueprints.constants.json.keys.aggregation.metric.CardinalityAggregationBodyConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.aggregation.AggregationWrapper;
 import com.liferay.search.experiences.blueprints.engine.internal.aggregation.util.AggregationHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
@@ -45,23 +44,16 @@ public class CardinalityAggregationTranslator implements AggregationTranslator {
 		ParameterData parameterData, Messages messages) {
 
 		CardinalityAggregation aggregation = _aggregations.cardinality(
-			aggregationName,
-			jsonObject.getString(
-				CardinalityAggregationBodyConfigurationKeys.FIELD.
-					getJsonKey()));
+			aggregationName, jsonObject.getString("field"));
 
 		_setterHelper.setStringValue(
-			jsonObject,
-			CardinalityAggregationBodyConfigurationKeys.MISSING.getJsonKey(),
-			aggregation::setMissing);
+			jsonObject, "missing", aggregation::setMissing);
 
 		_aggregationHelper.setScript(
 			jsonObject, aggregation::setScript, messages);
 
 		_setterHelper.setIntegerValue(
-			jsonObject,
-			CardinalityAggregationBodyConfigurationKeys.PRECISION_THRESHOLD.
-				getJsonKey(),
+			jsonObject, "precision_threshold",
 			aggregation::setPrecisionThreshold);
 
 		return _aggregationHelper.wrap(aggregation);

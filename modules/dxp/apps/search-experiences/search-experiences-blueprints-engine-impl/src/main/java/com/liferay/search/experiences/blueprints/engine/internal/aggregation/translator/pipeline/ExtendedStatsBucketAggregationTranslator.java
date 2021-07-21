@@ -17,7 +17,6 @@ package com.liferay.search.experiences.blueprints.engine.internal.aggregation.tr
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.pipeline.ExtendedStatsBucketPipelineAggregation;
-import com.liferay.search.experiences.blueprints.constants.json.keys.aggregation.pipeline.ExtendedStatsBucketAggregationBodyConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.aggregation.AggregationWrapper;
 import com.liferay.search.experiences.blueprints.engine.internal.aggregation.util.AggregationHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
@@ -47,25 +46,16 @@ public class ExtendedStatsBucketAggregationTranslator
 
 		ExtendedStatsBucketPipelineAggregation aggregation =
 			_aggregations.extendedStatsBucket(
-				aggregationName,
-				jsonObject.getString(
-					ExtendedStatsBucketAggregationBodyConfigurationKeys.
-						BUCKETS_PATH.getJsonKey()));
+				aggregationName, jsonObject.getString("buckets_path"));
 
 		_setterHelper.setStringValue(
-			jsonObject,
-			ExtendedStatsBucketAggregationBodyConfigurationKeys.FORMAT.
-				getJsonKey(),
-			aggregation::setFormat);
+			jsonObject, "format", aggregation::setFormat);
 
 		_aggregationHelper.setGapPolicy(
 			jsonObject, aggregation::setGapPolicy, messages);
 
 		_setterHelper.setDoubleValue(
-			jsonObject,
-			ExtendedStatsBucketAggregationBodyConfigurationKeys.SIGMA.
-				getJsonKey(),
-			aggregation::setSigma);
+			jsonObject, "sigma", aggregation::setSigma);
 
 		return _aggregationHelper.wrap(aggregation);
 	}

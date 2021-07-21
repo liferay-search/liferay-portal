@@ -17,7 +17,6 @@ package com.liferay.search.experiences.blueprints.engine.internal.aggregation.tr
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.pipeline.DerivativePipelineAggregation;
-import com.liferay.search.experiences.blueprints.constants.json.keys.aggregation.pipeline.DerivativeAggregationBodyConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.aggregation.AggregationWrapper;
 import com.liferay.search.experiences.blueprints.engine.internal.aggregation.util.AggregationHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
@@ -45,15 +44,10 @@ public class DerivativeAggregationTranslator implements AggregationTranslator {
 		ParameterData parameterData, Messages messages) {
 
 		DerivativePipelineAggregation aggregation = _aggregations.derivative(
-			aggregationName,
-			jsonObject.getString(
-				DerivativeAggregationBodyConfigurationKeys.BUCKETS_PATH.
-					getJsonKey()));
+			aggregationName, jsonObject.getString("buckets_path"));
 
 		_setterHelper.setStringValue(
-			jsonObject,
-			DerivativeAggregationBodyConfigurationKeys.FORMAT.getJsonKey(),
-			aggregation::setFormat);
+			jsonObject, "format", aggregation::setFormat);
 
 		_aggregationHelper.setGapPolicy(
 			jsonObject, aggregation::setGapPolicy, messages);

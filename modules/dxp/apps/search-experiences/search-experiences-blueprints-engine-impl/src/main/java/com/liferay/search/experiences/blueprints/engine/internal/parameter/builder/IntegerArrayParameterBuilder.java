@@ -17,7 +17,6 @@ package com.liferay.search.experiences.blueprints.engine.internal.parameter.buil
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.search.experiences.blueprints.constants.json.keys.parameter.CustomParameterConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.search.experiences.blueprints.engine.internal.attributes.util.BlueprintsAttributesHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.IntegerArrayParameter;
@@ -46,8 +45,7 @@ public class IntegerArrayParameterBuilder implements ParameterBuilder {
 		BlueprintsAttributes blueprintsAttributes, JSONObject jsonObject,
 		Messages messages) {
 
-		String parameterName = jsonObject.getString(
-			CustomParameterConfigurationKeys.PARAMETER_NAME.getJsonKey());
+		String parameterName = jsonObject.getString("parameter_name");
 
 		Optional<String[]> stringArrayOptional = _getValueArrayOptional(
 			blueprintsAttributes, jsonObject, parameterName);
@@ -69,8 +67,7 @@ public class IntegerArrayParameterBuilder implements ParameterBuilder {
 
 		if (!stringArrayOptional.isPresent()) {
 			stringArrayOptional = BlueprintJSONUtil.getStringArray(
-				jsonObject,
-				CustomParameterConfigurationKeys.DEFAULT.getJsonKey());
+				jsonObject, "default");
 		}
 
 		return stringArrayOptional;

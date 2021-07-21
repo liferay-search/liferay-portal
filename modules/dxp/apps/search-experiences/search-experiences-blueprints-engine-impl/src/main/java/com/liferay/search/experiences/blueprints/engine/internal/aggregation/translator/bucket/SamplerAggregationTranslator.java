@@ -17,7 +17,6 @@ package com.liferay.search.experiences.blueprints.engine.internal.aggregation.tr
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.bucket.SamplerAggregation;
-import com.liferay.search.experiences.blueprints.constants.json.keys.aggregation.bucket.SamplerAggregationBodyConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.aggregation.AggregationWrapper;
 import com.liferay.search.experiences.blueprints.engine.internal.aggregation.util.AggregationHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
@@ -47,9 +46,7 @@ public class SamplerAggregationTranslator implements AggregationTranslator {
 		SamplerAggregation aggregation = _aggregations.sampler(aggregationName);
 
 		_setterHelper.setIntegerValue(
-			jsonObject,
-			SamplerAggregationBodyConfigurationKeys.SHARD_SIZE.getJsonKey(),
-			aggregation::setShardSize);
+			jsonObject, "shard_size", aggregation::setShardSize);
 
 		return _aggregationHelper.wrap(aggregation);
 	}

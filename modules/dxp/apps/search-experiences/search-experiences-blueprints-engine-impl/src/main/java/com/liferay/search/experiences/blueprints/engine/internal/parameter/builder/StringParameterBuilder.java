@@ -15,7 +15,6 @@
 package com.liferay.search.experiences.blueprints.engine.internal.parameter.builder;
 
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.search.experiences.blueprints.constants.json.keys.parameter.CustomParameterConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.search.experiences.blueprints.engine.internal.attributes.util.BlueprintsAttributesHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.Parameter;
@@ -41,8 +40,7 @@ public class StringParameterBuilder implements ParameterBuilder {
 		BlueprintsAttributes blueprintsAttributes, JSONObject jsonObject,
 		Messages messages) {
 
-		String parameterName = jsonObject.getString(
-			CustomParameterConfigurationKeys.PARAMETER_NAME.getJsonKey());
+		String parameterName = jsonObject.getString("parameter_name");
 
 		Optional<String> optional = _getValueOptional(
 			blueprintsAttributes, jsonObject, parameterName);
@@ -67,8 +65,7 @@ public class StringParameterBuilder implements ParameterBuilder {
 
 		if (!optional.isPresent()) {
 			optional = BlueprintValueUtil.toStringOptional(
-				jsonObject.getString(
-					CustomParameterConfigurationKeys.DEFAULT.getJsonKey()));
+				jsonObject.getString("default"));
 		}
 
 		return optional;

@@ -26,7 +26,6 @@ import com.liferay.search.experiences.blueprints.definition.BlueprintDefinitionF
 import com.liferay.search.experiences.blueprints.definition.ClauseContributorsDefinition;
 import com.liferay.search.experiences.blueprints.definition.FrameworkDefinition;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
-import com.liferay.search.experiences.blueprints.engine.constants.ReservedParameterNames;
 import com.liferay.search.experiences.blueprints.engine.exception.BlueprintsEngineException;
 import com.liferay.search.experiences.blueprints.engine.internal.executor.SearchExecutor;
 import com.liferay.search.experiences.blueprints.engine.parameter.Parameter;
@@ -270,7 +269,7 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 
 	private boolean _isExplain(ParameterData parameterData) {
 		Optional<Parameter> parameterOptional = parameterData.getByNameOptional(
-			ReservedParameterNames.EXPLAIN.getKey());
+			"explain");
 
 		if (!parameterOptional.isPresent()) {
 			return false;
@@ -283,7 +282,7 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 
 	private boolean _isIncludeResponseString(ParameterData parameterData) {
 		Optional<Parameter> parameterOptional = parameterData.getByNameOptional(
-			ReservedParameterNames.INCLUDE_RESPONSE_STRING.getKey());
+			"include_response_string");
 
 		if (!parameterOptional.isPresent()) {
 			return false;

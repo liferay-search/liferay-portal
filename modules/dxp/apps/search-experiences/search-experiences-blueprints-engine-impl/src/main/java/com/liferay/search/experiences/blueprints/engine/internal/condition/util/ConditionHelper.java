@@ -17,7 +17,6 @@ package com.liferay.search.experiences.blueprints.engine.internal.condition.util
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.search.experiences.blueprints.constants.json.keys.query.ConditionConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.exception.ParameterEvaluationException;
 import com.liferay.search.experiences.blueprints.engine.parameter.Parameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
@@ -55,9 +54,7 @@ public class ConditionHelper {
 			return false;
 		}
 
-		jsonObject.put(
-			ConditionConfigurationKeys.VALUE.getJsonKey(),
-			parsedValueOptional.get());
+		jsonObject.put("value", parsedValueOptional.get());
 
 		boolean match = _evaluate(
 			parameterOptional.get(), function.apply(jsonObject), messages);
@@ -73,8 +70,7 @@ public class ConditionHelper {
 		ParameterData parameterData, JSONObject jsonObject) {
 
 		return parameterData.getByTemplateVariableNameOptional(
-			jsonObject.getString(
-				ConditionConfigurationKeys.PARAMETER_NAME.getJsonKey()));
+			jsonObject.getString("parameter_name"));
 	}
 
 	private boolean _evaluate(
@@ -99,8 +95,7 @@ public class ConditionHelper {
 		JSONObject jsonObject, ParameterData parameterData, Messages messages) {
 
 		return _blueprintTemplateVariableParser.parse(
-			jsonObject.get(ConditionConfigurationKeys.VALUE.getJsonKey()),
-			parameterData, messages);
+			jsonObject.get("value"), parameterData, messages);
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

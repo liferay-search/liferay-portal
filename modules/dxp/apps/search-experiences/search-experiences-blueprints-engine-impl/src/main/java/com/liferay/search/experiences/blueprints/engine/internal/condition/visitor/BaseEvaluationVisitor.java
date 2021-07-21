@@ -17,7 +17,6 @@ package com.liferay.search.experiences.blueprints.engine.internal.condition.visi
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.search.experiences.blueprints.constants.json.keys.query.ConditionConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.exception.ParameterEvaluationException;
 import com.liferay.search.experiences.blueprints.engine.parameter.BooleanParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.DateParameter;
@@ -120,17 +119,14 @@ public abstract class BaseEvaluationVisitor implements EvaluationVisitor {
 			JSONObject conditionJSONObject)
 		throws ParameterEvaluationException {
 
-		Object object = conditionJSONObject.get(
-			ConditionConfigurationKeys.VALUE.getJsonKey());
+		Object object = conditionJSONObject.get("value");
 
 		if (!(object instanceof JSONArray)) {
 			throw new ParameterEvaluationException(
 				MessagesUtil.toErrorMessage(
 					getClass().getName(),
 					new Throwable("Match value has to be an array"),
-					conditionJSONObject,
-					ConditionConfigurationKeys.VALUE.getJsonKey(),
-					object.toString(),
+					conditionJSONObject, "value", object.toString(),
 					"core.error.match-value-has-to-be-an-array"));
 		}
 
@@ -140,20 +136,16 @@ public abstract class BaseEvaluationVisitor implements EvaluationVisitor {
 	protected Date getDateValue(JSONObject conditionJSONObject)
 		throws ParameterEvaluationException {
 
-		String dateString = conditionJSONObject.getString(
-			ConditionConfigurationKeys.VALUE.getJsonKey());
+		String dateString = conditionJSONObject.getString("value");
 
-		String dateFormatString = conditionJSONObject.getString(
-			ConditionConfigurationKeys.DATE_FORMAT.getJsonKey());
+		String dateFormatString = conditionJSONObject.getString("date_format");
 
 		if (Validator.isNull(dateFormatString)) {
 			throw new ParameterEvaluationException(
 				MessagesUtil.toErrorMessage(
 					getClass().getName(),
 					new Throwable("Date format must be defined"),
-					conditionJSONObject,
-					ConditionConfigurationKeys.DATE_FORMAT.getJsonKey(),
-					dateFormatString,
+					conditionJSONObject, "date_format", dateFormatString,
 					"core.error.date-format-must-be-defined"));
 		}
 
@@ -166,8 +158,7 @@ public abstract class BaseEvaluationVisitor implements EvaluationVisitor {
 			throw new ParameterEvaluationException(
 				MessagesUtil.toErrorMessage(
 					BaseEvaluationVisitor.class.getName(), exception,
-					conditionJSONObject,
-					ConditionConfigurationKeys.VALUE.getJsonKey(), dateString,
+					conditionJSONObject, "value", dateString,
 					"core.error.clause-condition-date-parsing-error"));
 		}
 	}

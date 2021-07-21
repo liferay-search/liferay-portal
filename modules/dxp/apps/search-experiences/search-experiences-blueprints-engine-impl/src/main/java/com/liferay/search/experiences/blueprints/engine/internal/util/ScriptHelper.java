@@ -20,7 +20,6 @@ import com.liferay.portal.search.script.Script;
 import com.liferay.portal.search.script.ScriptBuilder;
 import com.liferay.portal.search.script.ScriptType;
 import com.liferay.portal.search.script.Scripts;
-import com.liferay.search.experiences.blueprints.constants.json.keys.ScriptConfigurationKeys;
 import com.liferay.search.experiences.blueprints.util.util.SetterHelper;
 
 import java.util.Objects;
@@ -60,8 +59,7 @@ public class ScriptHelper {
 		_setIdOrSource(scriptBuilder, jsonObject);
 
 		_setterHelper.setStringValue(
-			jsonObject, ScriptConfigurationKeys.LANG.getJsonKey(),
-			scriptBuilder::language);
+			jsonObject, "lang", scriptBuilder::language);
 
 		_setOptions(scriptBuilder, jsonObject);
 
@@ -91,10 +89,8 @@ public class ScriptHelper {
 	private void _setIdOrSource(
 		ScriptBuilder scriptBuilder, JSONObject jsonObject) {
 
-		String id = jsonObject.getString(
-			ScriptConfigurationKeys.ID.getJsonKey());
-		String source = jsonObject.getString(
-			ScriptConfigurationKeys.SOURCE.getJsonKey());
+		String id = jsonObject.getString("id");
+		String source = jsonObject.getString("source");
 
 		if (!Validator.isBlank(id)) {
 			scriptBuilder.idOrCode(
@@ -115,8 +111,7 @@ public class ScriptHelper {
 	private void _setOptions(
 		ScriptBuilder scriptBuilder, JSONObject jsonObject) {
 
-		JSONObject optionsJSONObject = jsonObject.getJSONObject(
-			ScriptConfigurationKeys.OPTIONS.getJsonKey());
+		JSONObject optionsJSONObject = jsonObject.getJSONObject("options");
 
 		if (optionsJSONObject == null) {
 			return;
@@ -132,8 +127,7 @@ public class ScriptHelper {
 	private void _setParams(
 		ScriptBuilder scriptBuilder, JSONObject jsonObject) {
 
-		JSONObject paramsJSONObject = jsonObject.getJSONObject(
-			ScriptConfigurationKeys.PARAMS.getJsonKey());
+		JSONObject paramsJSONObject = jsonObject.getJSONObject("params");
 
 		if (paramsJSONObject == null) {
 			return;
