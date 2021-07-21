@@ -25,7 +25,6 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
-import com.liferay.search.experiences.blueprints.engine.constants.ReservedParameterNames;
 import com.liferay.search.experiences.blueprints.engine.parameter.BooleanParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.DateParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.IntegerParameter;
@@ -94,125 +93,106 @@ public class UserParameterContributor implements ParameterContributor {
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName(
-					ReservedParameterNames.USER_ID.getKey()),
+				_getTemplateVariableName("user_id"),
 				LongParameter.class.getName(), "core.parameter.user.id"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName(
-					ReservedParameterNames.USER_IS_SIGNED_IN.getKey()),
+				_getTemplateVariableName("user_is_signed_in"),
 				BooleanParameter.class.getName(),
 				"core.parameter.user.is-signed-in"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName(
-					ReservedParameterNames.USER_FULL_NAME.getKey()),
+				_getTemplateVariableName("user_full_name"),
 				StringParameter.class.getName(),
 				"core.parameter.user.full-name"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName(
-					ReservedParameterNames.USER_FIRST_NAME.getKey()),
+				_getTemplateVariableName("user_first_name"),
 				StringParameter.class.getName(),
 				"core.parameter.user.first-name"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName(
-					ReservedParameterNames.USER_LAST_NAME.getKey()),
+				_getTemplateVariableName("user_last_name"),
 				StringParameter.class.getName(),
 				"core.parameter.user.last-name"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName(
-					ReservedParameterNames.USER_LANGUAGE_ID.getKey()),
+				_getTemplateVariableName("user_language_id"),
 				StringParameter.class.getName(),
 				"core.parameter.user.language-id"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName(
-					ReservedParameterNames.USER_JOB_TITLE.getKey()),
+				_getTemplateVariableName("user_job_title"),
 				StringParameter.class.getName(),
 				"core.parameter.user.job-title"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName(
-					ReservedParameterNames.USER_CREATE_DATE.getKey()),
+				_getTemplateVariableName("user_create_date"),
 				DateParameter.class.getName(),
 				"core.parameter.user.create-date"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName(
-					ReservedParameterNames.USER_BIRTHDAY.getKey()),
+				_getTemplateVariableName("user_birthday"),
 				DateParameter.class.getName(), "core.parameter.user.birthday"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName(
-					ReservedParameterNames.USER_AGE.getKey()),
+				_getTemplateVariableName("user_age"),
 				IntegerParameter.class.getName(), "core.parameter.user.age"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName(
-					ReservedParameterNames.USER_IS_MALE.getKey()),
+				_getTemplateVariableName("user_is_male"),
 				BooleanParameter.class.getName(),
 				"core.parameter.user.is-male"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName(
-					ReservedParameterNames.USER_IS_FEMALE.getKey()),
+				_getTemplateVariableName("user_is_female"),
 				BooleanParameter.class.getName(),
 				"core.parameter.user.is-female"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName(
-					ReservedParameterNames.USER_IS_GENDER_X.getKey()),
+				_getTemplateVariableName("user_is_gender_x"),
 				BooleanParameter.class.getName(),
 				"core.parameter.user.is-gender-x"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName(
-					ReservedParameterNames.USER_EMAIL_DOMAIN.getKey()),
+				_getTemplateVariableName("user_email_domain"),
 				StringParameter.class.getName(),
 				"core.parameter.user.email-domain"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName(
-					ReservedParameterNames.USER_GROUP_IDS.getKey()),
+				_getTemplateVariableName("user_group_ids"),
 				LongArrayParameter.class.getName(),
 				"core.parameter.user.group-ids"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName(
-					ReservedParameterNames.USER_ROLE_IDS.getKey()),
+				_getTemplateVariableName("user_role_ids"),
 				LongArrayParameter.class.getName(),
 				"core.parameter.user.role-ids"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName(
-					ReservedParameterNames.USER_SEGMENT_ENTRY_IDS.getKey()),
+				_getTemplateVariableName("user_segment_entry_ids"),
 				LongArrayParameter.class.getName(),
 				"core.parameter.user.segment-entry-ids"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName(
-					ReservedParameterNames.USER_SEGMENT_ENTRY_LOCALE_NAMES.
-						getKey()),
+				_getTemplateVariableName("user_segment_locale_names"),
 				StringArrayParameter.class.getName(),
 				"core.parameter.user.segment-entry-locale-names"));
 
@@ -224,9 +204,7 @@ public class UserParameterContributor implements ParameterContributor {
 
 		parameterDataBuilder.addParameter(
 			new LongArrayParameter(
-				ReservedParameterNames.USER_GROUP_IDS.getKey(),
-				_getTemplateVariableName(
-					ReservedParameterNames.USER_GROUP_IDS.getKey()),
+				"user_group_ids", _getTemplateVariableName("user_group_ids"),
 				LongStream.of(
 					user.getGroupIds()
 				).boxed(
@@ -241,90 +219,67 @@ public class UserParameterContributor implements ParameterContributor {
 
 		parameterDataBuilder.addParameter(
 			new LongParameter(
-				ReservedParameterNames.USER_ID.getKey(),
-				_getTemplateVariableName(
-					ReservedParameterNames.USER_ID.getKey()),
+				"user_id", _getTemplateVariableName("user_id"),
 				user.getUserId()));
 		parameterDataBuilder.addParameter(
 			new BooleanParameter(
-				ReservedParameterNames.USER_IS_SIGNED_IN.getKey(),
-				_getTemplateVariableName(
-					ReservedParameterNames.USER_IS_SIGNED_IN.getKey()),
+				"user_is_signed_in",
+				_getTemplateVariableName("user_is_signed_in"),
 				_isSignedIn(user)));
 		parameterDataBuilder.addParameter(
 			new StringParameter(
-				ReservedParameterNames.USER_FULL_NAME.getKey(),
-				_getTemplateVariableName(
-					ReservedParameterNames.USER_FULL_NAME.getKey()),
+				"user_full_name", _getTemplateVariableName("user_full_name"),
 				user.getFullName()));
 		parameterDataBuilder.addParameter(
 			new StringParameter(
-				ReservedParameterNames.USER_FIRST_NAME.getKey(),
-				_getTemplateVariableName(
-					ReservedParameterNames.USER_FIRST_NAME.getKey()),
+				"user_first_name", _getTemplateVariableName("user_first_name"),
 				user.getFirstName()));
 		parameterDataBuilder.addParameter(
 			new StringParameter(
-				ReservedParameterNames.USER_LAST_NAME.getKey(),
-				_getTemplateVariableName(
-					ReservedParameterNames.USER_LAST_NAME.getKey()),
+				"user_last_name", _getTemplateVariableName("user_last_name"),
 				user.getLastName()));
 		parameterDataBuilder.addParameter(
 			new StringParameter(
-				ReservedParameterNames.USER_LANGUAGE_ID.getKey(),
-				_getTemplateVariableName(
-					ReservedParameterNames.USER_LANGUAGE_ID.getKey()),
+				"user_language_id",
+				_getTemplateVariableName("user_language_id"),
 				user.getLanguageId()));
 		parameterDataBuilder.addParameter(
 			new StringParameter(
-				ReservedParameterNames.USER_JOB_TITLE.getKey(),
-				_getTemplateVariableName(
-					ReservedParameterNames.USER_JOB_TITLE.getKey()),
+				"user_job_title", _getTemplateVariableName("user_job_title"),
 				user.getJobTitle()));
 		parameterDataBuilder.addParameter(
 			new DateParameter(
-				ReservedParameterNames.USER_CREATE_DATE.getKey(),
-				_getTemplateVariableName(
-					ReservedParameterNames.USER_CREATE_DATE.getKey()),
+				"user_create_date",
+				_getTemplateVariableName("user_create_date"),
 				user.getCreateDate()));
 
 		parameterDataBuilder.addParameter(
 			new DateParameter(
-				ReservedParameterNames.USER_BIRTHDAY.getKey(),
-				_getTemplateVariableName(
-					ReservedParameterNames.USER_BIRTHDAY.getKey()),
+				"user_birthday", _getTemplateVariableName("user_birthday"),
 				user.getBirthday()));
 
 		parameterDataBuilder.addParameter(
 			new IntegerParameter(
-				ReservedParameterNames.USER_AGE.getKey(),
-				_getTemplateVariableName(
-					ReservedParameterNames.USER_AGE.getKey()),
+				"user_age", _getTemplateVariableName("user_age"),
 				_getUserAge(user.getBirthday())));
 		parameterDataBuilder.addParameter(
 			new BooleanParameter(
-				ReservedParameterNames.USER_IS_MALE.getKey(),
-				_getTemplateVariableName(
-					ReservedParameterNames.USER_IS_MALE.getKey()),
+				"user_is_male", _getTemplateVariableName("user_is_male"),
 				user.isMale()));
 		parameterDataBuilder.addParameter(
 			new BooleanParameter(
-				ReservedParameterNames.USER_IS_FEMALE.getKey(),
-				_getTemplateVariableName(
-					ReservedParameterNames.USER_IS_FEMALE.getKey()),
+				"user_is_female", _getTemplateVariableName("user_is_female"),
 				user.isFemale()));
 		parameterDataBuilder.addParameter(
 			new BooleanParameter(
-				ReservedParameterNames.USER_IS_GENDER_X.getKey(),
-				_getTemplateVariableName(
-					ReservedParameterNames.USER_IS_GENDER_X.getKey()),
+				"user_is_gender_x",
+				_getTemplateVariableName("user_is_gender_x"),
 				!user.isFemale() && !user.isMale()));
 
 		parameterDataBuilder.addParameter(
 			new StringParameter(
-				ReservedParameterNames.USER_EMAIL_DOMAIN.getKey(),
-				_getTemplateVariableName(
-					ReservedParameterNames.USER_EMAIL_DOMAIN.getKey()),
+				"user_email_domain",
+				_getTemplateVariableName("user_email_domain"),
 				_getUserEmailDomain(user)));
 	}
 
@@ -333,9 +288,7 @@ public class UserParameterContributor implements ParameterContributor {
 
 		parameterDataBuilder.addParameter(
 			new LongArrayParameter(
-				ReservedParameterNames.USER_ROLE_IDS.getKey(),
-				_getTemplateVariableName(
-					ReservedParameterNames.USER_ROLE_IDS.getKey()),
+				"user_role_ids", _getTemplateVariableName("user_role_ids"),
 				LongStream.of(
 					user.getRoleIds()
 				).boxed(
@@ -380,19 +333,16 @@ public class UserParameterContributor implements ParameterContributor {
 
 		parameterDataBuilder.addParameter(
 			new LongArrayParameter(
-				ReservedParameterNames.USER_SEGMENT_ENTRY_IDS.getKey(),
-				_getTemplateVariableName(
-					ReservedParameterNames.USER_SEGMENT_ENTRY_IDS.getKey()),
+				"user_segment_entry_ids",
+				_getTemplateVariableName("user_segment_entry_ids"),
 				stream1.toArray(Long[]::new)));
 
 		Stream<String> stream2 = segmentEntryNames.stream();
 
 		parameterDataBuilder.addParameter(
 			new StringArrayParameter(
-				ReservedParameterNames.USER_SEGMENT_ENTRY_LOCALE_NAMES.getKey(),
-				_getTemplateVariableName(
-					ReservedParameterNames.USER_SEGMENT_ENTRY_LOCALE_NAMES.
-						getKey()),
+				"user_segment_locale_names",
+				_getTemplateVariableName("user_segment_locale_names"),
 				stream2.toArray(String[]::new)));
 	}
 

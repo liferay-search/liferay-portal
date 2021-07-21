@@ -17,7 +17,6 @@ package com.liferay.search.experiences.blueprints.engine.internal.aggregation.tr
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.pipeline.SerialDiffPipelineAggregation;
-import com.liferay.search.experiences.blueprints.constants.json.keys.aggregation.pipeline.SerialDifferencingAggregationBodyConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.aggregation.AggregationWrapper;
 import com.liferay.search.experiences.blueprints.engine.internal.aggregation.util.AggregationHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
@@ -46,24 +45,15 @@ public class SerialDifferencingAggregationTranslator
 		ParameterData parameterData, Messages messages) {
 
 		SerialDiffPipelineAggregation aggregation = _aggregations.serialDiff(
-			aggregationName,
-			jsonObject.getString(
-				SerialDifferencingAggregationBodyConfigurationKeys.BUCKETS_PATH.
-					getJsonKey()));
+			aggregationName, jsonObject.getString("buckets_path"));
 
 		_setterHelper.setStringValue(
-			jsonObject,
-			SerialDifferencingAggregationBodyConfigurationKeys.FORMAT.
-				getJsonKey(),
-			aggregation::setFormat);
+			jsonObject, "format", aggregation::setFormat);
 
 		_aggregationHelper.setGapPolicy(
 			jsonObject, aggregation::setGapPolicy, messages);
 
-		_setterHelper.setIntegerValue(
-			jsonObject,
-			SerialDifferencingAggregationBodyConfigurationKeys.LAG.getJsonKey(),
-			aggregation::setLag);
+		_setterHelper.setIntegerValue(jsonObject, "lag", aggregation::setLag);
 
 		return _aggregationHelper.wrap(aggregation);
 	}

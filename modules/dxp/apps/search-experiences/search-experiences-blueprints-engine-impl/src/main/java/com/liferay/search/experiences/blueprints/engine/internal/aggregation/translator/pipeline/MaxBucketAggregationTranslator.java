@@ -17,7 +17,6 @@ package com.liferay.search.experiences.blueprints.engine.internal.aggregation.tr
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.pipeline.MaxBucketPipelineAggregation;
-import com.liferay.search.experiences.blueprints.constants.json.keys.aggregation.pipeline.MaxBucketAggregationBodyConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.aggregation.AggregationWrapper;
 import com.liferay.search.experiences.blueprints.engine.internal.aggregation.util.AggregationHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
@@ -45,15 +44,10 @@ public class MaxBucketAggregationTranslator implements AggregationTranslator {
 		ParameterData parameterData, Messages messages) {
 
 		MaxBucketPipelineAggregation aggregation = _aggregations.maxBucket(
-			aggregationName,
-			jsonObject.getString(
-				MaxBucketAggregationBodyConfigurationKeys.BUCKETS_PATH.
-					getJsonKey()));
+			aggregationName, jsonObject.getString("buckets_path"));
 
 		_setterHelper.setStringValue(
-			jsonObject,
-			MaxBucketAggregationBodyConfigurationKeys.FORMAT.getJsonKey(),
-			aggregation::setFormat);
+			jsonObject, "format", aggregation::setFormat);
 
 		_aggregationHelper.setGapPolicy(
 			jsonObject, aggregation::setGapPolicy, messages);

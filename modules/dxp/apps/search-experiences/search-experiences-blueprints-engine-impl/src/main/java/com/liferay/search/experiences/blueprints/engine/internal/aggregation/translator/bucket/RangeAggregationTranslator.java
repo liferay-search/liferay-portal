@@ -17,7 +17,6 @@ package com.liferay.search.experiences.blueprints.engine.internal.aggregation.tr
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.bucket.RangeAggregation;
-import com.liferay.search.experiences.blueprints.constants.json.keys.aggregation.bucket.RangeAggregationBodyConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.aggregation.AggregationWrapper;
 import com.liferay.search.experiences.blueprints.engine.internal.aggregation.util.AggregationHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
@@ -45,24 +44,16 @@ public class RangeAggregationTranslator implements AggregationTranslator {
 		ParameterData parameterData, Messages messages) {
 
 		RangeAggregation aggregation = _aggregations.range(
-			aggregationName,
-			jsonObject.getString(
-				RangeAggregationBodyConfigurationKeys.FIELD.getJsonKey()));
+			aggregationName, jsonObject.getString("field"));
 
 		_setterHelper.setStringValue(
-			jsonObject,
-			RangeAggregationBodyConfigurationKeys.FORMAT.getJsonKey(),
-			aggregation::setFormat);
+			jsonObject, "format", aggregation::setFormat);
 
 		_setterHelper.setBooleanValue(
-			jsonObject,
-			RangeAggregationBodyConfigurationKeys.KEYED.getJsonKey(),
-			aggregation::setKeyed);
+			jsonObject, "keyed", aggregation::setKeyed);
 
 		_setterHelper.setStringValue(
-			jsonObject,
-			RangeAggregationBodyConfigurationKeys.MISSING.getJsonKey(),
-			aggregation::setMissing);
+			jsonObject, "missing", aggregation::setMissing);
 
 		_aggregationHelper.setRanges(jsonObject, aggregation::addRange);
 

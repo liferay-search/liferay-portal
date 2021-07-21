@@ -17,7 +17,6 @@ package com.liferay.search.experiences.blueprints.engine.internal.aggregation.tr
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.pipeline.BucketSortPipelineAggregation;
-import com.liferay.search.experiences.blueprints.constants.json.keys.aggregation.pipeline.BucketSortAggregationBodyConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.aggregation.AggregationWrapper;
 import com.liferay.search.experiences.blueprints.engine.internal.aggregation.util.AggregationHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
@@ -47,18 +46,12 @@ public class BucketSortAggregationTranslator implements AggregationTranslator {
 		BucketSortPipelineAggregation aggregation = _aggregations.bucketSort(
 			aggregationName);
 
-		_setterHelper.setIntegerValue(
-			jsonObject,
-			BucketSortAggregationBodyConfigurationKeys.FROM.getJsonKey(),
-			aggregation::setFrom);
+		_setterHelper.setIntegerValue(jsonObject, "from", aggregation::setFrom);
 
 		_aggregationHelper.setGapPolicy(
 			jsonObject, aggregation::setGapPolicy, messages);
 
-		_setterHelper.setIntegerValue(
-			jsonObject,
-			BucketSortAggregationBodyConfigurationKeys.SIZE.getJsonKey(),
-			aggregation::setSize);
+		_setterHelper.setIntegerValue(jsonObject, "size", aggregation::setSize);
 
 		_setterHelper.setFieldSorts(
 			jsonObject, aggregation::addSortFields, messages);

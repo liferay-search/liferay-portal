@@ -18,7 +18,6 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.pipeline.MovingFunctionPipelineAggregation;
 import com.liferay.portal.search.script.Script;
-import com.liferay.search.experiences.blueprints.constants.json.keys.aggregation.pipeline.MovingFunctionAggregationBodyConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.aggregation.AggregationWrapper;
 import com.liferay.search.experiences.blueprints.engine.internal.aggregation.util.AggregationHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
@@ -47,20 +46,15 @@ public class MovingFunctionAggregationTranslator
 		ParameterData parameterData, Messages messages) {
 
 		Optional<Script> scriptOptional = _aggregationHelper.getScript(
-			jsonObject.get(
-				MovingFunctionAggregationBodyConfigurationKeys.SCRIPT.
-					getJsonKey()));
+			jsonObject.get("script"));
 
 		if (!scriptOptional.isPresent()) {
 			return Optional.empty();
 		}
 
-		String bucketsPath = jsonObject.getString(
-			MovingFunctionAggregationBodyConfigurationKeys.BUCKETS_PATH.
-				getJsonKey());
+		String bucketsPath = jsonObject.getString("buckets_path");
 
-		int window = jsonObject.getInt(
-			MovingFunctionAggregationBodyConfigurationKeys.WINDOW.getJsonKey());
+		int window = jsonObject.getInt("window");
 
 		MovingFunctionPipelineAggregation aggregation =
 			_aggregations.movingFunction(

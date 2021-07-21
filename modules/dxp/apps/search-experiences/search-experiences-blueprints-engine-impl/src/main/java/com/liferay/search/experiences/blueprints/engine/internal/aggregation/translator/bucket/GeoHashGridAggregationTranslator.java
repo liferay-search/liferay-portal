@@ -17,7 +17,6 @@ package com.liferay.search.experiences.blueprints.engine.internal.aggregation.tr
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.bucket.GeoHashGridAggregation;
-import com.liferay.search.experiences.blueprints.constants.json.keys.aggregation.bucket.GeoHashGridAggregationBodyConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.aggregation.AggregationWrapper;
 import com.liferay.search.experiences.blueprints.engine.internal.aggregation.util.AggregationHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
@@ -45,33 +44,21 @@ public class GeoHashGridAggregationTranslator implements AggregationTranslator {
 		ParameterData parameterData, Messages messages) {
 
 		GeoHashGridAggregation aggregation = _aggregations.geoHashGrid(
-			aggregationName,
-			jsonObject.getString(
-				GeoHashGridAggregationBodyConfigurationKeys.FIELD.
-					getJsonKey()));
+			aggregationName, jsonObject.getString("field"));
 
 		_setterHelper.setStringValue(
-			jsonObject,
-			GeoHashGridAggregationBodyConfigurationKeys.MISSING.getJsonKey(),
-			aggregation::setMissing);
+			jsonObject, "missing", aggregation::setMissing);
 
 		_setterHelper.setIntegerValue(
-			jsonObject,
-			GeoHashGridAggregationBodyConfigurationKeys.PRECISION.getJsonKey(),
-			aggregation::setPrecision);
+			jsonObject, "precision", aggregation::setPrecision);
 
 		_aggregationHelper.setScript(
 			jsonObject, aggregation::setScript, messages);
 
 		_setterHelper.setIntegerValue(
-			jsonObject,
-			GeoHashGridAggregationBodyConfigurationKeys.SHARD_SIZE.getJsonKey(),
-			aggregation::setShardSize);
+			jsonObject, "shard_size", aggregation::setShardSize);
 
-		_setterHelper.setIntegerValue(
-			jsonObject,
-			GeoHashGridAggregationBodyConfigurationKeys.SIZE.getJsonKey(),
-			aggregation::setSize);
+		_setterHelper.setIntegerValue(jsonObject, "size", aggregation::setSize);
 
 		return _aggregationHelper.wrap(aggregation);
 	}

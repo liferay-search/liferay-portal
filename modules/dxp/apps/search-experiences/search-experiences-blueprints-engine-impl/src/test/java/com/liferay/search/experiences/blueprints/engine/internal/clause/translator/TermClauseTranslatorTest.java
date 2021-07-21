@@ -20,7 +20,6 @@ import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.search.query.Queries;
 import com.liferay.portal.search.query.TermQuery;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
-import com.liferay.search.experiences.blueprints.constants.json.keys.query.TermQueryConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.internal.parameter.ParameterDataImpl;
 import com.liferay.search.experiences.blueprints.message.Messages;
 
@@ -70,10 +69,9 @@ public class TermClauseTranslatorTest {
 		JSONObject jsonObject = JSONUtil.put(
 			"field",
 			JSONUtil.put(
-				TermQueryConfigurationKeys.VALUE.getJsonKey(), "keyword"
+				"boost", Float.valueOf(100.0F)
 			).put(
-				TermQueryConfigurationKeys.BOOST.getJsonKey(),
-				Float.valueOf(100.0F)
+				"value", "keyword"
 			));
 
 		Assert.assertEquals(
@@ -88,10 +86,9 @@ public class TermClauseTranslatorTest {
 		JSONObject jsonObject = JSONUtil.put(
 			"jsonKey",
 			JSONUtil.put(
-				TermQueryConfigurationKeys.VALUE.getJsonKey(), ""
+				"boost", Float.valueOf(1.0F)
 			).put(
-				TermQueryConfigurationKeys.BOOST.getJsonKey(),
-				Float.valueOf(1.0F)
+				"value", ""
 			));
 
 		Assert.assertEquals(

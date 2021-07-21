@@ -20,9 +20,7 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.TimeZoneUtil;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.search.experiences.blueprints.constants.json.keys.parameter.CustomParameterConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
-import com.liferay.search.experiences.blueprints.engine.constants.ReservedParameterNames;
 import com.liferay.search.experiences.blueprints.engine.internal.attributes.util.BlueprintsAttributesHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.DateParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.Parameter;
@@ -53,7 +51,7 @@ public class DateParameterBuilder implements ParameterBuilder {
 		JSONObject configurationJSONObject, Messages messages) {
 
 		String parameterName = configurationJSONObject.getString(
-			CustomParameterConfigurationKeys.PARAMETER_NAME.getJsonKey());
+			"parameter_name");
 
 		String dateString = _getDateString(blueprintsAttributes, parameterName);
 
@@ -61,8 +59,7 @@ public class DateParameterBuilder implements ParameterBuilder {
 			return Optional.empty();
 		}
 
-		String timeZoneId = _getTimeZoneId(
-			blueprintsAttributes, ReservedParameterNames.TIMEZONE_ID.getKey());
+		String timeZoneId = _getTimeZoneId(blueprintsAttributes, "timezone_id");
 
 		if (Validator.isBlank(dateString) || Validator.isBlank(timeZoneId)) {
 			return Optional.empty();
@@ -83,8 +80,7 @@ public class DateParameterBuilder implements ParameterBuilder {
 		JSONObject configurationJSONObject, String dateString,
 		String timeZoneId) {
 
-		String dateFormat = configurationJSONObject.getString(
-			CustomParameterConfigurationKeys.DATE_FORMAT.getJsonKey());
+		String dateFormat = configurationJSONObject.getString("date_format");
 
 		try {
 			DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(

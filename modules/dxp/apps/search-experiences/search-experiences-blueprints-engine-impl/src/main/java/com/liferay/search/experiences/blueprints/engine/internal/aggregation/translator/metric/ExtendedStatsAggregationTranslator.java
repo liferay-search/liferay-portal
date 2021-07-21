@@ -17,7 +17,6 @@ package com.liferay.search.experiences.blueprints.engine.internal.aggregation.tr
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.metrics.ExtendedStatsAggregation;
-import com.liferay.search.experiences.blueprints.constants.json.keys.aggregation.metric.ExtendedStatsAggregationBodyConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.aggregation.AggregationWrapper;
 import com.liferay.search.experiences.blueprints.engine.internal.aggregation.util.AggregationHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
@@ -46,23 +45,16 @@ public class ExtendedStatsAggregationTranslator
 		ParameterData parameterData, Messages messages) {
 
 		ExtendedStatsAggregation aggregation = _aggregations.extendedStats(
-			aggregationName,
-			jsonObject.getString(
-				ExtendedStatsAggregationBodyConfigurationKeys.FIELD.
-					getJsonKey()));
+			aggregationName, jsonObject.getString("field"));
 
 		_setterHelper.setStringValue(
-			jsonObject,
-			ExtendedStatsAggregationBodyConfigurationKeys.MISSING.getJsonKey(),
-			aggregation::setMissing);
+			jsonObject, "missing", aggregation::setMissing);
 
 		_aggregationHelper.setScript(
 			jsonObject, aggregation::setScript, messages);
 
 		_setterHelper.setIntegerValue(
-			jsonObject,
-			ExtendedStatsAggregationBodyConfigurationKeys.SIGMA.getJsonKey(),
-			aggregation::setSigma);
+			jsonObject, "sigma", aggregation::setSigma);
 
 		return _aggregationHelper.wrap(aggregation);
 	}

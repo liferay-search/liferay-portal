@@ -17,7 +17,6 @@ package com.liferay.search.experiences.blueprints.engine.internal.aggregation.tr
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.metrics.WeightedAvgAggregation;
-import com.liferay.search.experiences.blueprints.constants.json.keys.aggregation.metric.WeightedAvgAggregationBodyConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.aggregation.AggregationWrapper;
 import com.liferay.search.experiences.blueprints.engine.internal.aggregation.util.AggregationHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
@@ -44,20 +43,16 @@ public class WeightedAvgAggregationTranslator implements AggregationTranslator {
 		String aggregationName, JSONObject jsonObject,
 		ParameterData parameterData, Messages messages) {
 
-		JSONObject valueJSONObject = jsonObject.getJSONObject(
-			WeightedAvgAggregationBodyConfigurationKeys.VALUE.getJsonKey());
+		JSONObject valueJSONObject = jsonObject.getJSONObject("value");
 
-		JSONObject weightJSONObject = jsonObject.getJSONObject(
-			WeightedAvgAggregationBodyConfigurationKeys.WEIGHT.getJsonKey());
+		JSONObject weightJSONObject = jsonObject.getJSONObject("weight");
 
 		WeightedAvgAggregation aggregation = _aggregations.weightedAvg(
 			aggregationName, valueJSONObject.getString("field"),
 			weightJSONObject.getString("field"));
 
 		_setterHelper.setStringValue(
-			jsonObject,
-			WeightedAvgAggregationBodyConfigurationKeys.FORMAT.getJsonKey(),
-			aggregation::setFormat);
+			jsonObject, "format", aggregation::setFormat);
 
 		_setterHelper.setObjectValue(
 			valueJSONObject, "missing", aggregation::setValueMissing);

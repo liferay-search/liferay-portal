@@ -18,7 +18,6 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.bucket.FiltersAggregation;
 import com.liferay.portal.search.query.Query;
-import com.liferay.search.experiences.blueprints.constants.json.keys.aggregation.bucket.FiltersAggregationBodyConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.aggregation.AggregationWrapper;
 import com.liferay.search.experiences.blueprints.engine.internal.aggregation.util.AggregationHelper;
 import com.liferay.search.experiences.blueprints.engine.internal.clause.util.ClauseHelper;
@@ -49,22 +48,15 @@ public class FiltersAggregationTranslator implements AggregationTranslator {
 		ParameterData parameterData, Messages messages) {
 
 		FiltersAggregation aggregation = _aggregations.filters(
-			aggregationName,
-			jsonObject.getString(
-				FiltersAggregationBodyConfigurationKeys.FIELD.getJsonKey()));
+			aggregationName, jsonObject.getString("field"));
 
 		_addQueries(aggregation, jsonObject, parameterData, messages);
 
 		_setterHelper.setBooleanValue(
-			jsonObject,
-			FiltersAggregationBodyConfigurationKeys.OTHER_BUCKET.getJsonKey(),
-			aggregation::setOtherBucket);
+			jsonObject, "other_bucket", aggregation::setOtherBucket);
 
 		_setterHelper.setStringValue(
-			jsonObject,
-			FiltersAggregationBodyConfigurationKeys.OTHER_BUCKET_KEY.
-				getJsonKey(),
-			aggregation::setOtherBucketKey);
+			jsonObject, "other_bucket_key", aggregation::setOtherBucketKey);
 
 		return _aggregationHelper.wrap(aggregation);
 	}
@@ -73,8 +65,7 @@ public class FiltersAggregationTranslator implements AggregationTranslator {
 		FiltersAggregation aggregation, JSONObject jsonObject,
 		ParameterData parameterData, Messages messages) {
 
-		JSONObject filtersJSONObject = jsonObject.getJSONObject(
-			FiltersAggregationBodyConfigurationKeys.FILTERS.getJsonKey());
+		JSONObject filtersJSONObject = jsonObject.getJSONObject("filters");
 
 		if (filtersJSONObject == null) {
 			return;

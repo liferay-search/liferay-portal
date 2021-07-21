@@ -17,7 +17,6 @@ package com.liferay.search.experiences.blueprints.engine.internal.searchrequest;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.search.suggest.Suggester;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
-import com.liferay.search.experiences.blueprints.constants.json.keys.aggregation.AggregationConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.internal.suggester.SuggesterTranslatorFactory;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
 import com.liferay.search.experiences.blueprints.engine.spi.searchrequest.SearchRequestBodyContributor;
@@ -94,8 +93,7 @@ public class SuggestSearchRequestBodyContributor
 	}
 
 	private boolean _isEnabled(JSONObject jsonObject) {
-		return jsonObject.getBoolean(
-			AggregationConfigurationKeys.ENABLED.getJsonKey(), true);
+		return jsonObject.getBoolean("enabled", true);
 	}
 
 	private void _processSuggester(

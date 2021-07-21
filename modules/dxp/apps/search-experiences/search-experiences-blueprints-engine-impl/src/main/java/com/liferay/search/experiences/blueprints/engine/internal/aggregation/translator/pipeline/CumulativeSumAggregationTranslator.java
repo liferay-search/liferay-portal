@@ -17,7 +17,6 @@ package com.liferay.search.experiences.blueprints.engine.internal.aggregation.tr
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.pipeline.CumulativeSumPipelineAggregation;
-import com.liferay.search.experiences.blueprints.constants.json.keys.aggregation.pipeline.CumulativeSumAggregationBodyConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.aggregation.AggregationWrapper;
 import com.liferay.search.experiences.blueprints.engine.internal.aggregation.util.AggregationHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
@@ -47,15 +46,10 @@ public class CumulativeSumAggregationTranslator
 
 		CumulativeSumPipelineAggregation aggregation =
 			_aggregations.cumulativeSum(
-				aggregationName,
-				jsonObject.getString(
-					CumulativeSumAggregationBodyConfigurationKeys.BUCKETS_PATH.
-						getJsonKey()));
+				aggregationName, jsonObject.getString("buckets_path"));
 
 		_setterHelper.setStringValue(
-			jsonObject,
-			CumulativeSumAggregationBodyConfigurationKeys.FORMAT.getJsonKey(),
-			aggregation::setFormat);
+			jsonObject, "format", aggregation::setFormat);
 
 		return _aggregationHelper.wrap(aggregation);
 	}

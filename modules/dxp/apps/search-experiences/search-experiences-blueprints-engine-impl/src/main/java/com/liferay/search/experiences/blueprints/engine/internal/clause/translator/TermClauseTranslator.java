@@ -20,7 +20,6 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.query.Queries;
 import com.liferay.portal.search.query.Query;
 import com.liferay.portal.search.query.TermQuery;
-import com.liferay.search.experiences.blueprints.constants.json.keys.query.TermQueryConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
 import com.liferay.search.experiences.blueprints.engine.spi.clause.ClauseTranslator;
 import com.liferay.search.experiences.blueprints.message.Messages;
@@ -64,12 +63,9 @@ public class TermClauseTranslator implements ClauseTranslator {
 		else {
 			JSONObject fieldJSONObject = (JSONObject)object;
 
-			keywords = fieldJSONObject.getString(
-				TermQueryConfigurationKeys.VALUE.getJsonKey());
+			keywords = fieldJSONObject.getString("value");
 
-			boost = GetterUtil.getFloat(
-				fieldJSONObject.get(
-					TermQueryConfigurationKeys.BOOST.getJsonKey()));
+			boost = GetterUtil.getFloat(fieldJSONObject.get("boost"));
 		}
 
 		if (Validator.isBlank(keywords)) {

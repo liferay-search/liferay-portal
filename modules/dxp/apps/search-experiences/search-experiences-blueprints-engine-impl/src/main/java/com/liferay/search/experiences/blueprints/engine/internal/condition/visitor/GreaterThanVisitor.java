@@ -16,7 +16,6 @@ package com.liferay.search.experiences.blueprints.engine.internal.condition.visi
 
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.GetterUtil;
-import com.liferay.search.experiences.blueprints.constants.json.keys.query.ConditionConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.exception.ParameterEvaluationException;
 import com.liferay.search.experiences.blueprints.engine.parameter.DateParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.DoubleParameter;
@@ -54,8 +53,7 @@ public class GreaterThanVisitor
 	public boolean visit(DoubleParameter parameter)
 		throws ParameterEvaluationException {
 
-		Double value = conditionJSONObject.getDouble(
-			ConditionConfigurationKeys.VALUE.getJsonKey());
+		Double value = conditionJSONObject.getDouble("value");
 
 		Double parameterValue = parameter.getValue();
 
@@ -77,9 +75,7 @@ public class GreaterThanVisitor
 	public boolean visit(FloatParameter parameter)
 		throws ParameterEvaluationException {
 
-		Float value = GetterUtil.getFloat(
-			conditionJSONObject.get(
-				ConditionConfigurationKeys.VALUE.getJsonKey()));
+		Float value = GetterUtil.getFloat(conditionJSONObject.get("value"));
 
 		Float parameterValue = parameter.getValue();
 
@@ -101,8 +97,7 @@ public class GreaterThanVisitor
 	public boolean visit(IntegerParameter parameter)
 		throws ParameterEvaluationException {
 
-		Integer value = conditionJSONObject.getInt(
-			ConditionConfigurationKeys.VALUE.getJsonKey());
+		Integer value = conditionJSONObject.getInt("value");
 
 		Integer parameterValue = parameter.getValue();
 
@@ -124,8 +119,7 @@ public class GreaterThanVisitor
 	public boolean visit(LongParameter parameter)
 		throws ParameterEvaluationException {
 
-		Long value = conditionJSONObject.getLong(
-			ConditionConfigurationKeys.VALUE.getJsonKey());
+		Long value = conditionJSONObject.getLong("value");
 
 		Long parameterValue = parameter.getValue();
 

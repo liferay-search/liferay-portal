@@ -19,7 +19,6 @@ import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.TimeZoneUtil;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
-import com.liferay.search.experiences.blueprints.engine.constants.ReservedParameterNames;
 import com.liferay.search.experiences.blueprints.engine.internal.attributes.util.BlueprintsAttributesHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.DateParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.IntegerParameter;
@@ -74,50 +73,42 @@ public class TimeParameterContributor implements ParameterContributor {
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName(
-					ReservedParameterNames.CURRENT_DATE.getKey()),
+				_getTemplateVariableName("current_date"),
 				DateParameter.class.getName(),
 				"core.parameter.time.current-date"));
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName(
-					ReservedParameterNames.CURRENT_DAY_OF_MONTH.getKey()),
+				_getTemplateVariableName("current_day_of_month"),
 				IntegerParameter.class.getName(),
 				"core.parameter.time.current-day-of-month"));
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName(
-					ReservedParameterNames.CURRENT_DAY_OF_WEEK.getKey()),
+				_getTemplateVariableName("current_day_of_week"),
 				IntegerParameter.class.getName(),
 				"core.parameter.time.current-day-of-week"));
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName(
-					ReservedParameterNames.CURRENT_DAY_OF_YEAR.getKey()),
+				_getTemplateVariableName("current_day_of_year"),
 				IntegerParameter.class.getName(),
 				"core.parameter.time.current-day-of-year"));
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName(
-					ReservedParameterNames.CURRENT_HOUR.getKey()),
+				_getTemplateVariableName("current_hour"),
 				IntegerParameter.class.getName(),
 				"core.parameter.time.current-hour"));
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName(
-					ReservedParameterNames.CURRENT_YEAR.getKey()),
+				_getTemplateVariableName("current_year"),
 				IntegerParameter.class.getName(),
 				"core.parameter.time.current-year"));
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName(
-					ReservedParameterNames.TIME_OF_DAY.getKey()),
+				_getTemplateVariableName("time_of_day"),
 				StringParameter.class.getName(),
 				"core.parameter.time.time-of-day"));
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName(
-					ReservedParameterNames.TIMEZONE_LOCALE_NAME.getKey()),
+				_getTemplateVariableName("timezone_locale_name"),
 				StringParameter.class.getName(),
 				"core.parameter.time.timezone-locale-name"));
 
@@ -136,60 +127,47 @@ public class TimeParameterContributor implements ParameterContributor {
 
 		parameterDataBuilder.addParameter(
 			new DateParameter(
-				ReservedParameterNames.CURRENT_DATE.getKey(),
-				_getTemplateVariableName(
-					ReservedParameterNames.CURRENT_DATE.getKey()),
-				now));
+				"current_date", _getTemplateVariableName("current_date"), now));
 
 		parameterDataBuilder.addParameter(
 			new IntegerParameter(
-				ReservedParameterNames.CURRENT_DAY_OF_MONTH.getKey(),
-				_getTemplateVariableName(
-					ReservedParameterNames.CURRENT_DAY_OF_MONTH.getKey()),
+				"current_day_of_month",
+				_getTemplateVariableName("current_day_of_month"),
 				localDateTime.getDayOfMonth()));
 
 		DayOfWeek dayOfWeek = localDateTime.getDayOfWeek();
 
 		parameterDataBuilder.addParameter(
 			new IntegerParameter(
-				ReservedParameterNames.CURRENT_DAY_OF_WEEK.getKey(),
-				_getTemplateVariableName(
-					ReservedParameterNames.CURRENT_DAY_OF_WEEK.getKey()),
+				"current_day_of_week",
+				_getTemplateVariableName("current_day_of_week"),
 				dayOfWeek.getValue()));
 
 		parameterDataBuilder.addParameter(
 			new IntegerParameter(
-				ReservedParameterNames.CURRENT_DAY_OF_YEAR.getKey(),
-				_getTemplateVariableName(
-					ReservedParameterNames.CURRENT_DAY_OF_YEAR.getKey()),
+				"current_day_of_year",
+				_getTemplateVariableName("current_day_of_year"),
 				localDateTime.getDayOfYear()));
 
 		parameterDataBuilder.addParameter(
 			new IntegerParameter(
-				ReservedParameterNames.CURRENT_HOUR.getKey(),
-				_getTemplateVariableName(
-					ReservedParameterNames.CURRENT_HOUR.getKey()),
+				"current_hour", _getTemplateVariableName("current_hour"),
 				localDateTime.getHour()));
 
 		parameterDataBuilder.addParameter(
 			new IntegerParameter(
-				ReservedParameterNames.CURRENT_YEAR.getKey(),
-				_getTemplateVariableName(
-					ReservedParameterNames.CURRENT_YEAR.getKey()),
+				"current_year", _getTemplateVariableName("current_year"),
 				localDateTime.getYear()));
 
 		parameterDataBuilder.addParameter(
 			new StringParameter(
-				ReservedParameterNames.TIME_OF_DAY.getKey(),
-				_getTemplateVariableName(
-					ReservedParameterNames.TIME_OF_DAY.getKey()),
+				"time_of_day", _getTemplateVariableName("time_of_day"),
 				_getTimeOfTheDay(localDateTime.toLocalTime())));
 
 		parameterDataBuilder.addParameter(
 			new StringParameter(
-				ReservedParameterNames.TIMEZONE_LOCALE_NAME.getKey(),
-				_getTemplateVariableName(
-					ReservedParameterNames.TIMEZONE_LOCALE_NAME.getKey()),
+				"timezone_locale_name",
+				_getTemplateVariableName("timezone_locale_name"),
 				timeZone.getDisplayName(blueprintsAttributes.getLocale())));
 	}
 
@@ -221,8 +199,7 @@ public class TimeParameterContributor implements ParameterContributor {
 	private TimeZone _getTimeZone(BlueprintsAttributes blueprintsAttributes) {
 		Optional<String> optional =
 			_blueprintsAttributesHelper.getStringOptional(
-				blueprintsAttributes,
-				ReservedParameterNames.TIMEZONE_ID.getKey());
+				blueprintsAttributes, "timezone_id");
 
 		if (optional.isPresent()) {
 			return TimeZoneUtil.getTimeZone(optional.get());

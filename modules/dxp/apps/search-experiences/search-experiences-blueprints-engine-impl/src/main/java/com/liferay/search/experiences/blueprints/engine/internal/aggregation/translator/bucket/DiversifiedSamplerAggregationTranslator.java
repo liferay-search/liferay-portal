@@ -17,7 +17,6 @@ package com.liferay.search.experiences.blueprints.engine.internal.aggregation.tr
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.aggregation.Aggregations;
 import com.liferay.portal.search.aggregation.bucket.DiversifiedSamplerAggregation;
-import com.liferay.search.experiences.blueprints.constants.json.keys.aggregation.bucket.DiversifiedSamplerAggregationBodyConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.aggregation.AggregationWrapper;
 import com.liferay.search.experiences.blueprints.engine.internal.aggregation.util.AggregationHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
@@ -47,37 +46,22 @@ public class DiversifiedSamplerAggregationTranslator
 
 		DiversifiedSamplerAggregation aggregation =
 			_aggregations.diversifiedSampler(
-				aggregationName,
-				jsonObject.getString(
-					DiversifiedSamplerAggregationBodyConfigurationKeys.FIELD.
-						getJsonKey()));
+				aggregationName, jsonObject.getString("field"));
 
 		_setterHelper.setStringValue(
-			jsonObject,
-			DiversifiedSamplerAggregationBodyConfigurationKeys.EXECUTION_HINT.
-				getJsonKey(),
-			aggregation::setExecutionHint);
+			jsonObject, "execution_hint", aggregation::setExecutionHint);
 
 		_setterHelper.setIntegerValue(
-			jsonObject,
-			DiversifiedSamplerAggregationBodyConfigurationKeys.
-				MAX_DOCS_PER_VALUE.getJsonKey(),
-			aggregation::setMaxDocsPerValue);
+			jsonObject, "max_docs_per_value", aggregation::setMaxDocsPerValue);
 
 		_setterHelper.setStringValue(
-			jsonObject,
-			DiversifiedSamplerAggregationBodyConfigurationKeys.MISSING.
-				getJsonKey(),
-			aggregation::setMissing);
+			jsonObject, "missing", aggregation::setMissing);
 
 		_aggregationHelper.setScript(
 			jsonObject, aggregation::setScript, messages);
 
 		_setterHelper.setIntegerValue(
-			jsonObject,
-			DiversifiedSamplerAggregationBodyConfigurationKeys.SHARD_SIZE.
-				getJsonKey(),
-			aggregation::setShardSize);
+			jsonObject, "shard_size", aggregation::setShardSize);
 
 		return _aggregationHelper.wrap(aggregation);
 	}
