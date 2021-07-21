@@ -829,7 +829,7 @@ definition {
 
 		SelectFrameTop();
 
-		Click(locator1 = "SearchExperiences#BLUEPRINTS_DOWNLOAD_RAW_RESPONSE");
+		Click(locator1 = "Link#DOWNLOAD");
 
 		SearchExperiences.viewDownloadedRawResponse(
 			fileName = "element.json",
@@ -897,7 +897,7 @@ definition {
 
 		SelectFrameTop();
 
-		Click(locator1 = "SearchExperiences#BLUEPRINTS_DOWNLOAD_RAW_RESPONSE");
+		Click(locator1 = "Link#DOWNLOAD");
 
 		SearchExperiences.viewDownloadedRawResponse(
 			fileName = "raw_response.json",

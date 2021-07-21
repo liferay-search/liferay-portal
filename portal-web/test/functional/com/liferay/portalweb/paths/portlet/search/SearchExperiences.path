@@ -27,11 +27,6 @@
 	<td></td>
 </tr>
 <tr>
-	<td>BLUEPRINTS_DOWNLOAD_RAW_RESPONSE</td>
-	<td>//a[contains(@class,'link-outline') and contains(.,'Download')]</td>
-	<td></td>
-</tr>
-<tr>
 	<td>BLUEPRINTS_ELASTICSEARCH_QUERY_JSON_EDITOR</td>
 	<td>//div[contains(@class,'custom-json')]//div[contains(@class,'CodeMirror cm-s-default')]</td>
 	<td></td>
