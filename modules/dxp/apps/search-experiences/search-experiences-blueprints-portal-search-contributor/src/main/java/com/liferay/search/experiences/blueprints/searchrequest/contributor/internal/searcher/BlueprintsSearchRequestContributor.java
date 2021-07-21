@@ -27,7 +27,6 @@ import com.liferay.portal.search.spi.searcher.SearchRequestContributor;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributesBuilder;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributesBuilderFactory;
-import com.liferay.search.experiences.blueprints.engine.constants.ReservedParameterNames;
 import com.liferay.search.experiences.blueprints.engine.constants.SearchContextAttributeKeys;
 import com.liferay.search.experiences.blueprints.engine.exception.BlueprintsEngineException;
 import com.liferay.search.experiences.blueprints.engine.util.BlueprintsSearchRequestContributorHelper;
@@ -101,16 +100,14 @@ public class BlueprintsSearchRequestContributor
 
 		if (channelGroupId > 0) {
 			blueprintsAttributesBuilder.addAttribute(
-				ReservedParameterNames.COMMERCE_CHANNEL_GROUP_ID.getKey(),
-				channelGroupId);
+				"commerce_channel_group_id", channelGroupId);
 		}
 
 		long[] accountGroupIds = getCommerceAccountGroupIds(searchRequest);
 
 		if (accountGroupIds.length > 0) {
 			blueprintsAttributesBuilder.addAttribute(
-				ReservedParameterNames.COMMERCE_ACCOUNT_GROUP_IDS.getKey(),
-				accountGroupIds);
+				"commerce_account_group_ids", accountGroupIds);
 		}
 	}
 
@@ -139,16 +136,13 @@ public class BlueprintsSearchRequestContributor
 		).userId(
 			getUserId(searchRequest)
 		).addAttribute(
-			ReservedParameterNames.IP_ADDRESS.getKey(),
-			getIpAddress(searchRequest)
+			"ip_address", getIpAddress(searchRequest)
 		).addAttribute(
-			ReservedParameterNames.PLID.getKey(), getPlid(searchRequest)
+			"plid", getPlid(searchRequest)
 		).addAttribute(
-			ReservedParameterNames.SCOPE_GROUP_ID.getKey(),
-			getScopeGroupId(searchRequest)
+			"scope_group_id", getScopeGroupId(searchRequest)
 		).addAttribute(
-			ReservedParameterNames.TIMEZONE_ID.getKey(),
-			getTimezoneId(searchRequest)
+			"timezone_id", getTimezoneId(searchRequest)
 		);
 
 		addCommerceAttributes(searchRequest, blueprintsAttributesBuilder);
