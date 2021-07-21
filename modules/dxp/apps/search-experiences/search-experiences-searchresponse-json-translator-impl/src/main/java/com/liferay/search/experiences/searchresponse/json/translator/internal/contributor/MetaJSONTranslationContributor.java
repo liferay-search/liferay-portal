@@ -24,7 +24,6 @@ import com.liferay.portal.search.hits.SearchHits;
 import com.liferay.portal.search.searcher.SearchResponse;
 import com.liferay.portal.search.searcher.SearchTimeValue;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
-import com.liferay.search.experiences.blueprints.engine.constants.ReservedParameterNames;
 import com.liferay.search.experiences.blueprints.message.Messages;
 import com.liferay.search.experiences.blueprints.model.Blueprint;
 import com.liferay.search.experiences.searchresponse.json.translator.constants.JSONKeys;
@@ -136,8 +135,7 @@ public class MetaJSONTranslationContributor
 		JSONObject jsonObject, BlueprintsAttributes blueprintsAttributes) {
 
 		Optional<Object> showingInsteadOfOptional =
-			blueprintsAttributes.getAttributeOptional(
-				ReservedParameterNames.SHOWING_INSTEAD_OF.getKey());
+			blueprintsAttributes.getAttributeOptional("showing_instead_of");
 
 		if (showingInsteadOfOptional.isPresent()) {
 			jsonObject.put(
