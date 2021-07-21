@@ -23,13 +23,9 @@ import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.search.experiences.blueprints.constants.json.keys.parameter.CustomParameterConfigurationKeys;
-import com.liferay.search.experiences.blueprints.constants.json.keys.parameter.ParameterConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributesBuilder;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributesBuilderFactory;
-import com.liferay.search.experiences.blueprints.engine.constants.ReservedParameterNames;
-import com.liferay.search.experiences.blueprints.facets.constants.FacetConfigurationKeys;
 import com.liferay.search.experiences.blueprints.facets.constants.FacetsBlueprintKeys;
 import com.liferay.search.experiences.blueprints.model.Blueprint;
 import com.liferay.search.experiences.blueprints.service.BlueprintService;
@@ -78,15 +74,13 @@ public class BlueprintsAttributesHelperImpl
 		).userId(
 			themeDisplay.getUserId()
 		).addAttribute(
-			ReservedParameterNames.IP_ADDRESS.getKey(),
-			httpServletRequest.getRemoteAddr()
+			"ip_address", httpServletRequest.getRemoteAddr()
 		).addAttribute(
-			ReservedParameterNames.PLID.getKey(), themeDisplay.getPlid()
+			"plid", themeDisplay.getPlid()
 		).addAttribute(
-			ReservedParameterNames.SCOPE_GROUP_ID.getKey(),
-			themeDisplay.getScopeGroupId()
+			"scope_group_id", themeDisplay.getScopeGroupId()
 		).addAttribute(
-			ReservedParameterNames.TIMEZONE_ID.getKey(), timeZone.getID()
+			"timezone_id", timeZone.getID()
 		);
 
 		return _addRequestParameters(
@@ -138,8 +132,7 @@ public class BlueprintsAttributesHelperImpl
 		JSONObject configurationJSONObject =
 			configurationJSONObjectOptional.get();
 
-		JSONArray jsonArray = configurationJSONObject.getJSONArray(
-			ParameterConfigurationKeys.CUSTOM.getJsonKey());
+		JSONArray jsonArray = configurationJSONObject.getJSONArray("custom");
 
 		if ((jsonArray == null) || (jsonArray.length() == 0)) {
 			return;
@@ -148,10 +141,8 @@ public class BlueprintsAttributesHelperImpl
 		for (int i = 0; i < jsonArray.length(); i++) {
 			JSONObject jsonObject = jsonArray.getJSONObject(i);
 
-			String key = jsonObject.getString(
-				CustomParameterConfigurationKeys.PARAMETER_NAME.getJsonKey());
-			String type = jsonObject.getString(
-				CustomParameterConfigurationKeys.TYPE.getJsonKey());
+			String key = jsonObject.getString("parameter_name");
+			String type = jsonObject.getString("type");
 
 			if (_isArrayValue(type)) {
 				_addStringValues(
@@ -179,17 +170,13 @@ public class BlueprintsAttributesHelperImpl
 
 		JSONObject typeJSONObject = jsonObject.getJSONObject(type);
 
-		if (!typeJSONObject.getBoolean(
-				FacetConfigurationKeys.ENABLED.getJsonKey(), true)) {
-
+		if (!typeJSONObject.getBoolean("enabled", true)) {
 			return;
 		}
 
-		String parameterName = typeJSONObject.getString(
-			FacetConfigurationKeys.PARAMETER_NAME.getJsonKey());
+		String parameterName = typeJSONObject.getString("parameter_name");
 
-		boolean arrayValue = typeJSONObject.getBoolean(
-			FacetConfigurationKeys.MULTI_VALUE.getJsonKey(), true);
+		boolean arrayValue = typeJSONObject.getBoolean("multi_value", true);
 
 		if (arrayValue) {
 			_addStringValues(
@@ -293,11 +280,11 @@ public class BlueprintsAttributesHelperImpl
 
 		Optional<Object> showingInsteadOfOptional =
 			requestBlueprintsAttributes.getAttributeOptional(
-				ReservedParameterNames.SHOWING_INSTEAD_OF.getKey());
+				"showing_instead_of");
 
 		if (showingInsteadOfOptional.isPresent()) {
 			blueprintsAttributesBuilder.addAttribute(
-				ReservedParameterNames.SHOWING_INSTEAD_OF.getKey(),
+				"showing_instead_of",
 				GetterUtil.getString(showingInsteadOfOptional.get()));
 		}
 	}
