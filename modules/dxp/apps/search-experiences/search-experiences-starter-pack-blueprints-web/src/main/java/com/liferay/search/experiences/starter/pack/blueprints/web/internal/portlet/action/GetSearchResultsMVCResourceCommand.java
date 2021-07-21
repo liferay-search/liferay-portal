@@ -34,7 +34,6 @@ import com.liferay.portal.search.searcher.SearchResponse;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributesBuilder;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributesBuilderFactory;
-import com.liferay.search.experiences.blueprints.engine.constants.ReservedParameterNames;
 import com.liferay.search.experiences.blueprints.engine.exception.BlueprintsEngineException;
 import com.liferay.search.experiences.blueprints.engine.util.BlueprintsEngineHelper;
 import com.liferay.search.experiences.blueprints.message.Messages;
@@ -167,8 +166,7 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 	}
 
 	private boolean _allowMisspellings(PortletRequest portletRequest) {
-		return ParamUtil.getBoolean(
-			portletRequest, ReservedParameterNames.ALLOW_MISSPELLINGS.getKey());
+		return ParamUtil.getBoolean(portletRequest, "allow_misspellings");
 	}
 
 	private JSONObject _createResponseObject(
@@ -291,7 +289,7 @@ public class GetSearchResultsMVCResourceCommand extends BaseMVCResourceCommand {
 
 		if (!keywords.equals(misspellCheckedWords)) {
 			blueprintsAttributesBuilder2.addAttribute(
-				ReservedParameterNames.SHOWING_INSTEAD_OF.getKey(), keywords);
+				"showing_instead_of", keywords);
 			blueprintsAttributesBuilder2.keywords(misspellCheckedWords);
 		}
 
