@@ -4,17 +4,6 @@ Bundle-Version: 1.0.0
 Export-Package:\
 	com.liferay.search.experiences.blueprints.comparator,\
 	com.liferay.search.experiences.blueprints.constants,\
-	com.liferay.search.experiences.blueprints.constants.json.keys,\
-	com.liferay.search.experiences.blueprints.constants.json.keys.advanced,\
-	com.liferay.search.experiences.blueprints.constants.json.keys.aggregation,\
-	com.liferay.search.experiences.blueprints.constants.json.keys.aggregation.bucket,\
-	com.liferay.search.experiences.blueprints.constants.json.keys.aggregation.metric,\
-	com.liferay.search.experiences.blueprints.constants.json.keys.aggregation.pipeline,\
-	com.liferay.search.experiences.blueprints.constants.json.keys.highlight,\
-	com.liferay.search.experiences.blueprints.constants.json.keys.parameter,\
-	com.liferay.search.experiences.blueprints.constants.json.keys.query,\
-	com.liferay.search.experiences.blueprints.constants.json.keys.sort,\
-	com.liferay.search.experiences.blueprints.constants.json.keys.suggester,\
 	com.liferay.search.experiences.blueprints.constants.json.values,\
 	com.liferay.search.experiences.blueprints.definition,\
 	com.liferay.search.experiences.blueprints.exception,\

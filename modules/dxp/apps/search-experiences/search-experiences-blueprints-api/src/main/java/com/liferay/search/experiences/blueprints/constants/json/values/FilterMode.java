@@ -14,35 +14,11 @@
 
 package com.liferay.search.experiences.blueprints.constants.json.values;
 
-import java.util.Arrays;
-import java.util.stream.Stream;
-
 /**
  * @author Petteri Karttunen
  */
 public enum FilterMode {
 
-	POST("post"), PRE("pre"), RESCORE("rescore");
-
-	public static FilterMode findByjsonValue(String jsonValue) {
-		Stream<FilterMode> stream = Arrays.stream(FilterMode.values());
-
-		return stream.filter(
-			value -> value._jsonValue.equals(jsonValue)
-		).findFirst(
-		).orElse(
-			null
-		);
-	}
-
-	public String getjsonValue() {
-		return _jsonValue;
-	}
-
-	private FilterMode(String jsonValue) {
-		_jsonValue = jsonValue;
-	}
-
-	private final String _jsonValue;
+	POST, PRE, RESCORE
 
 }

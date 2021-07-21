@@ -14,35 +14,11 @@
 
 package com.liferay.search.experiences.blueprints.constants.json.values;
 
-import java.util.Arrays;
-import java.util.stream.Stream;
-
 /**
  * @author Petteri Karttunen
  */
 public enum Operator {
 
-	AND("and"), NOT("not"), OR("or");
-
-	public static Operator findByjsonValue(String jsonValue) {
-		Stream<Operator> stream = Arrays.stream(Operator.values());
-
-		return stream.filter(
-			value -> value._jsonValue.equals(jsonValue)
-		).findFirst(
-		).orElse(
-			null
-		);
-	}
-
-	public String getjsonValue() {
-		return _jsonValue;
-	}
-
-	private Operator(String jsonValue) {
-		_jsonValue = jsonValue;
-	}
-
-	private final String _jsonValue;
+	AND, NOT, OR
 
 }
