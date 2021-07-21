@@ -17,7 +17,6 @@ package com.liferay.search.experiences.blueprints.commerce.internal.parameter;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
-import com.liferay.search.experiences.blueprints.engine.constants.ReservedParameterNames;
 import com.liferay.search.experiences.blueprints.engine.parameter.LongArrayParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.LongParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterDataBuilder;
@@ -63,15 +62,13 @@ public class CommerceParameterContributor implements ParameterContributor {
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName(
-					ReservedParameterNames.COMMERCE_ACCOUNT_GROUP_IDS.getKey()),
+				_getTemplateVariableName("commerce_account_group_ids"),
 				LongParameter.class.getName(),
 				"commerce.parameter.account-group-ids"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName(
-					ReservedParameterNames.COMMERCE_CHANNEL_GROUP_ID.getKey()),
+				_getTemplateVariableName("commerce_channel_group_id"),
 				LongParameter.class.getName(),
 				"commerce.parameter.channel-group-id"));
 
@@ -83,7 +80,7 @@ public class CommerceParameterContributor implements ParameterContributor {
 		BlueprintsAttributes blueprintsAttributes) {
 
 		Optional<Object> optional = blueprintsAttributes.getAttributeOptional(
-			ReservedParameterNames.COMMERCE_ACCOUNT_GROUP_IDS.getKey());
+			"commerce_account_group_ids");
 
 		if (!optional.isPresent()) {
 			return;
@@ -93,9 +90,8 @@ public class CommerceParameterContributor implements ParameterContributor {
 
 		parameterDataBuilder.addParameter(
 			new LongArrayParameter(
-				ReservedParameterNames.COMMERCE_ACCOUNT_GROUP_IDS.getKey(),
-				_getTemplateVariableName(
-					ReservedParameterNames.COMMERCE_ACCOUNT_GROUP_IDS.getKey()),
+				"commerce_account_group_ids",
+				_getTemplateVariableName("commerce_account_group_ids"),
 				_toBoxedArray(accountGroupIds)));
 	}
 
@@ -104,7 +100,7 @@ public class CommerceParameterContributor implements ParameterContributor {
 		BlueprintsAttributes blueprintsAttributes) {
 
 		Optional<Object> optional = blueprintsAttributes.getAttributeOptional(
-			ReservedParameterNames.COMMERCE_CHANNEL_GROUP_ID.getKey());
+			"commerce_channel_group_id");
 
 		if (!optional.isPresent()) {
 			return;
@@ -112,9 +108,8 @@ public class CommerceParameterContributor implements ParameterContributor {
 
 		parameterDataBuilder.addParameter(
 			new LongParameter(
-				ReservedParameterNames.COMMERCE_CHANNEL_GROUP_ID.getKey(),
-				_getTemplateVariableName(
-					ReservedParameterNames.COMMERCE_CHANNEL_GROUP_ID.getKey()),
+				"commerce_channel_group_id",
+				_getTemplateVariableName("commerce_channel_group_id"),
 				GetterUtil.getLong(optional.get())));
 	}
 
