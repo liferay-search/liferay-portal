@@ -903,7 +903,7 @@ definition {
 			fileName = "raw_response.json",
 			searchExplanation = "hits");
 
-		Click(locator1 = "Button#COPY");
+		Click.javaScriptClick(locator1 = "Button#COPY");
 
 		SearchExperiences.viewCopiedRawResponse(searchExplanation = "hits");
 	}
