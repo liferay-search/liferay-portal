@@ -14,35 +14,11 @@
 
 package com.liferay.search.experiences.blueprints.constants.json.values;
 
-import java.util.Arrays;
-import java.util.stream.Stream;
-
 /**
  * @author Petteri Karttunen
  */
 public enum ClauseContext {
 
-	POST_FILTER("post_filter"), QUERY("query"), RESCORE("rescore");
-
-	public static ClauseContext findBy_jsonValue(String jsonValue) {
-		Stream<ClauseContext> stream = Arrays.stream(ClauseContext.values());
-
-		return stream.filter(
-			value -> value._jsonValue.equals(jsonValue)
-		).findFirst(
-		).orElse(
-			null
-		);
-	}
-
-	public String getJsonValue() {
-		return _jsonValue;
-	}
-
-	private ClauseContext(String jsonValue) {
-		_jsonValue = jsonValue;
-	}
-
-	private final String _jsonValue;
+	POST_FILTER, QUERY, RESCORE
 
 }

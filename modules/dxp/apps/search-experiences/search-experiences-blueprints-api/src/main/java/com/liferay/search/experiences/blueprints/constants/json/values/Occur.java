@@ -14,35 +14,11 @@
 
 package com.liferay.search.experiences.blueprints.constants.json.values;
 
-import java.util.Arrays;
-import java.util.stream.Stream;
-
 /**
  * @author Petteri Karttunen
  */
 public enum Occur {
 
-	FILTER("filter"), MUST("must"), MUST_NOT("must_not"), SHOULD("should");
-
-	public static Occur findByjsonValue(String jsonValue) {
-		Stream<Occur> stream = Arrays.stream(Occur.values());
-
-		return stream.filter(
-			value -> value._jsonValue.equals(jsonValue)
-		).findFirst(
-		).orElse(
-			null
-		);
-	}
-
-	public String getjsonValue() {
-		return _jsonValue;
-	}
-
-	private Occur(String jsonValue) {
-		_jsonValue = jsonValue;
-	}
-
-	private final String _jsonValue;
+	FILTER, MUST, MUST_NOT, SHOULD
 
 }
