@@ -102,6 +102,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>BLUEPRINTS_QUERY_BUILDER_VIEW_ELEMENT_JSON_TEXT</td>
+	<td>//span[contains(@class,'cm-string') and contains(.,'${key_jsonText}')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>BLUEPRINTS_QUERY_ELEMENT_ADD_BUTTON</td>
 	<td>//div[contains(@class,'autofit-col') and contains(.,'${key_elementName}')]/following-sibling::div/button[contains(.,'Add')]</td>
 	<td></td>

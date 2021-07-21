@@ -824,8 +824,8 @@ definition {
 			value1 = "Element JSON");
 
 		AssertVisible(
-			key_searchExplanation = "clauses",
-			locator1 = "SearchExperiences#BLUEPRINTS_PREVIEW_RAW_RESPONSE_EXPLANATION");
+			key_jsonText = "clauses",
+			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_BUILDER_VIEW_ELEMENT_JSON_TEXT");
 
 		SelectFrameTop();
 
