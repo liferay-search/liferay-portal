@@ -21,7 +21,6 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.search.experiences.blueprints.constants.json.values.FilterMode;
 import com.liferay.search.experiences.blueprints.constants.json.values.Operator;
-import com.liferay.search.experiences.blueprints.facets.constants.FacetConfigurationKeys;
 import com.liferay.search.experiences.blueprints.message.Messages;
 
 import java.util.Collections;
@@ -33,8 +32,7 @@ import java.util.List;
 public class FacetConfigurationUtil {
 
 	public static String getAggregationName(JSONObject jsonObject) {
-		String name = jsonObject.getString(
-			FacetConfigurationKeys.AGGREGATION_NAME.getJsonKey());
+		String name = jsonObject.getString("aggregation_name");
 
 		if (!Validator.isBlank(name)) {
 			return name;
@@ -45,14 +43,14 @@ public class FacetConfigurationUtil {
 
 	public static List<String> getExcludeValues(JSONObject jsonObject) {
 		JSONObject parametersJSONObject = jsonObject.getJSONObject(
-			FacetConfigurationKeys.PARAMETERS.getJsonKey());
+			"parameters");
 
 		if (parametersJSONObject == null) {
 			return Collections.emptyList();
 		}
 
 		JSONArray excludeValuesJSONArray = parametersJSONObject.getJSONArray(
-			FacetConfigurationKeys.EXCLUDE_VALUES.getJsonKey());
+			"exclude_values");
 
 		if (excludeValuesJSONArray == null) {
 			Collections.emptyList();
@@ -62,29 +60,32 @@ public class FacetConfigurationUtil {
 	}
 
 	public static String getFieldName(JSONObject jsonObject) {
-		return jsonObject.getString(FacetConfigurationKeys.FIELD.getJsonKey());
+		return jsonObject.getString("field");
 	}
 
 	public static FilterMode getFilterMode(
 		JSONObject jsonObject, Messages messages) {
 
-		String s = jsonObject.getString(
-			FacetConfigurationKeys.FILTER_MODE.getJsonKey(),
-			FilterMode.PRE.getjsonValue());
+		String s = jsonObject.getString("filter_mode", "pre");
 
-		return FilterMode.valueOf(StringUtil.toUpperCase(s));
+		try {
+			return FilterMode.valueOf(StringUtil.toUpperCase(s));
+		}
+		catch (IllegalArgumentException illegalArgumentException) {
+			return null;
+		}
 	}
 
 	public static List<String> getIncludeValues(JSONObject jsonObject) {
 		JSONObject parametersJSONObject = jsonObject.getJSONObject(
-			FacetConfigurationKeys.PARAMETERS.getJsonKey());
+			"parameters");
 
 		if (parametersJSONObject == null) {
 			return Collections.emptyList();
 		}
 
 		JSONArray excludeValuesJSONArray = parametersJSONObject.getJSONArray(
-			FacetConfigurationKeys.INCLUDE_VALUES.getJsonKey());
+			"include_values");
 
 		if (excludeValuesJSONArray == null) {
 			Collections.emptyList();
@@ -94,8 +95,7 @@ public class FacetConfigurationUtil {
 	}
 
 	public static String getLabel(JSONObject jsonObject) {
-		String name = jsonObject.getString(
-			FacetConfigurationKeys.LABEL.getJsonKey());
+		String name = jsonObject.getString("label");
 
 		if (!Validator.isBlank(name)) {
 			return name;
@@ -107,16 +107,18 @@ public class FacetConfigurationUtil {
 	public static Operator getOperator(
 		JSONObject jsonObject, Messages messages) {
 
-		String s = jsonObject.getString(
-			FacetConfigurationKeys.MULTI_VALUE_OPERATOR.getJsonKey(),
-			Operator.AND.getjsonValue());
+		String s = jsonObject.getString("multi_value_operator", "and");
 
-		return Operator.valueOf(StringUtil.toUpperCase(s));
+		try {
+			return Operator.valueOf(StringUtil.toUpperCase(s));
+		}
+		catch (IllegalArgumentException illegalArgumentException) {
+			return null;
+		}
 	}
 
 	public static String getParameterName(JSONObject jsonObject) {
-		String name = jsonObject.getString(
-			FacetConfigurationKeys.PARAMETER_NAME.getJsonKey());
+		String name = jsonObject.getString("parameters");
 
 		if (!Validator.isBlank(name)) {
 			return name;
@@ -141,8 +143,7 @@ public class FacetConfigurationUtil {
 	}
 
 	public static boolean isEnabled(JSONObject jsonObject) {
-		return jsonObject.getBoolean(
-			FacetConfigurationKeys.ENABLED.getJsonKey(), true);
+		return jsonObject.getBoolean("enabled", true);
 	}
 
 }

@@ -32,7 +32,6 @@ import com.liferay.search.experiences.blueprints.engine.parameter.Parameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
 import com.liferay.search.experiences.blueprints.engine.spi.searchrequest.SearchRequestBodyContributor;
 import com.liferay.search.experiences.blueprints.engine.template.variable.BlueprintTemplateVariableParser;
-import com.liferay.search.experiences.blueprints.facets.constants.FacetConfigurationKeys;
 import com.liferay.search.experiences.blueprints.facets.constants.FacetsBlueprintKeys;
 import com.liferay.search.experiences.blueprints.facets.internal.request.handler.FacetRequestHandlerFactory;
 import com.liferay.search.experiences.blueprints.facets.internal.util.FacetConfigurationUtil;
@@ -105,7 +104,7 @@ public class FacetsSearchRequestBodyContributor
 		Messages messages) {
 
 		JSONObject parametersJSONObject = jsonObject.getJSONObject(
-			FacetConfigurationKeys.PARAMETERS.getJsonKey());
+			"parameters");
 
 		JSONArray rangesJSONArray = parametersJSONObject.getJSONArray("ranges");
 
@@ -243,23 +242,19 @@ public class FacetsSearchRequestBodyContributor
 			FacetConfigurationUtil.getAggregationName(jsonObject),
 			FacetConfigurationUtil.getFieldName(jsonObject));
 
-		int size = jsonObject.getInt(
-			FacetConfigurationKeys.SIZE.getJsonKey(), 50);
+		int size = jsonObject.getInt("size", 50);
 
 		aggregation.setSize(size);
 
-		if (jsonObject.has(FacetConfigurationKeys.SHARD_SIZE.getJsonKey())) {
+		if (jsonObject.has("shard_size")) {
 			int defaultShardSize = (int)Math.floor((size * 1.5) + 10);
 
 			aggregation.setShardSize(
-				jsonObject.getInt(
-					FacetConfigurationKeys.SHARD_SIZE.getJsonKey(),
-					defaultShardSize));
+				jsonObject.getInt("shard_size", defaultShardSize));
 		}
 
 		_setterHelper.setIntegerValue(
-			jsonObject, FacetConfigurationKeys.MIN_DOC_COUNT.getJsonKey(),
-			aggregation::setMinDocCount);
+			jsonObject, "min_doc_count", aggregation::setMinDocCount);
 
 		searchRequestBuilder.addAggregation(aggregation);
 	}
@@ -315,7 +310,7 @@ public class FacetsSearchRequestBodyContributor
 		String field = FacetConfigurationUtil.getFieldName(jsonObject);
 
 		JSONObject parametersJSONObject = jsonObject.getJSONObject(
-			FacetConfigurationKeys.PARAMETERS.getJsonKey());
+			"parameters");
 
 		JSONArray rangesJSONArray = parametersJSONObject.getJSONArray("ranges");
 

@@ -21,7 +21,6 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.search.experiences.blueprints.engine.parameter.Parameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.StringArrayParameter;
-import com.liferay.search.experiences.blueprints.facets.constants.FacetConfigurationKeys;
 import com.liferay.search.experiences.blueprints.facets.internal.util.FacetConfigurationUtil;
 import com.liferay.search.experiences.blueprints.facets.spi.request.FacetRequestHandler;
 import com.liferay.search.experiences.blueprints.message.Messages;
@@ -89,7 +88,7 @@ public class TermMapFacetRequestHandler
 		List<String> values = new ArrayList<>();
 
 		JSONObject parametersJSONObject = jsonObject.getJSONObject(
-			FacetConfigurationKeys.PARAMETERS.getJsonKey());
+			"parameters");
 
 		JSONArray mapJSONArray = parametersJSONObject.getJSONArray("map");
 
