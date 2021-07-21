@@ -831,13 +831,13 @@ definition {
 
 		Click(locator1 = "Link#DOWNLOAD");
 
-		SearchExperiences.viewDownloadedRawResponse(
+		SearchExperiences.viewDownloadedContent(
 			fileName = "element.json",
-			searchExplanation = "clauses");
+			text = "clauses");
 
 		Click.javaScriptClick(locator1 = "Button#COPY");
 
-		SearchExperiences.viewCopiedRawResponse(searchExplanation = "clauses");
+		SearchExperiences.viewCopiedContent(text = "clauses");
 	}
 
 	test ViewExpandedAndCollapsedBlueprintsPreviewEntry {
@@ -899,13 +899,13 @@ definition {
 
 		Click(locator1 = "Link#DOWNLOAD");
 
-		SearchExperiences.viewDownloadedRawResponse(
+		SearchExperiences.viewDownloadedContent(
 			fileName = "raw_response.json",
-			searchExplanation = "hits");
+			text = "hits");
 
 		Click.javaScriptClick(locator1 = "Button#COPY");
 
-		SearchExperiences.viewCopiedRawResponse(searchExplanation = "hits");
+		SearchExperiences.viewCopiedContent(text = "hits");
 	}
 
 	test ViewSearchResultsScoreViaBlueprintsPreview {

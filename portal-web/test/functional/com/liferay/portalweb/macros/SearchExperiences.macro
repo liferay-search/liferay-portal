@@ -185,7 +185,7 @@ definition {
 		IFrame.closeFrame();
 	}
 
-	macro viewCopiedRawResponse {
+	macro viewCopiedContent {
 		WebContentNavigator.openToAddBasicArticle(siteURLKey = "guest");
 
 		SelectFrame.selectFrameNoLoading(locator1 = "CKEditor#BODY_FIELD_IFRAME_2");
@@ -195,20 +195,20 @@ definition {
 		RobotType.robotTypeShortcut(locator1 = "Ctrl + v");
 
 		WaitForElementPresent(
-			key_text = "${searchExplanation}",
+			key_text = "${text}",
 			locator1 = "CKEditor#BODY_TEXT");
 	}
 
-	macro viewDownloadedRawResponse {
+	macro viewDownloadedContent {
 		var tempDir = PropsUtil.get("output.dir.name");
 
 		var fileContent = FileUtil.read("${tempDir}/${fileName}");
 
-		if (contains("${fileContent}", "${searchExplanation}")) {
-			echo("File ${fileName} contains text ${searchExplanation}");
+		if (contains("${fileContent}", "${text}")) {
+			echo("File ${fileName} contains text ${text}");
 		}
 		else {
-			fail("File ${fileName} does not contain text ${searchExplanation}");
+			fail("File ${fileName} does not contain text ${text}");
 		}
 	}
 
