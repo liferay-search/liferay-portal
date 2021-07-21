@@ -40,12 +40,10 @@ import com.liferay.portal.search.test.util.DocumentsAssert;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
-import com.liferay.search.experiences.blueprints.constants.json.keys.parameter.ParameterConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributesBuilder;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributesBuilderFactory;
 import com.liferay.search.experiences.blueprints.engine.cache.JSONDataProviderCache;
-import com.liferay.search.experiences.blueprints.engine.constants.ReservedParameterNames;
 import com.liferay.search.experiences.blueprints.engine.util.BlueprintsEngineHelper;
 import com.liferay.search.experiences.blueprints.message.Messages;
 import com.liferay.search.experiences.blueprints.model.Blueprint;
@@ -152,15 +150,15 @@ public class BlueprintsSearchRequestContributorTest {
 		).userId(
 			_user.getUserId()
 		).addAttribute(
-			ParameterConfigurationKeys.PAGE.getJsonKey(), 1
+			"page", 1
 		).addAttribute(
-			ReservedParameterNames.IP_ADDRESS.getKey(), ipAddress
+			"ip_address", ipAddress
 		).addAttribute(
-			ReservedParameterNames.PLID.getKey(), TestPropsValues.getPlid()
+			"plid", TestPropsValues.getPlid()
 		).addAttribute(
-			ReservedParameterNames.SCOPE_GROUP_ID.getKey(), _group.getGroupId()
+			"scope_group_id", _group.getGroupId()
 		).addAttribute(
-			ReservedParameterNames.TIMEZONE_ID.getKey(), timeZone.getID()
+			"timezone_id", timeZone.getID()
 		);
 
 		return blueprintsAttributesBuilder.build();
