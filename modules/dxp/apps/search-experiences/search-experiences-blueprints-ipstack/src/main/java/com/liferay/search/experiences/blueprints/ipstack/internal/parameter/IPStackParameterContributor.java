@@ -18,7 +18,6 @@ import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
-import com.liferay.search.experiences.blueprints.engine.constants.ReservedParameterNames;
 import com.liferay.search.experiences.blueprints.engine.parameter.DoubleParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterDataBuilder;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterDefinition;
@@ -189,8 +188,7 @@ public class IPStackParameterContributor implements ParameterContributor {
 
 	private String _getIpAddress(BlueprintsAttributes blueprintsAttributes) {
 		Optional<Object> valueOptional =
-			blueprintsAttributes.getAttributeOptional(
-				ReservedParameterNames.IP_ADDRESS.getKey());
+			blueprintsAttributes.getAttributeOptional("ip_address");
 
 		return GetterUtil.getString(valueOptional.orElse(null));
 	}
