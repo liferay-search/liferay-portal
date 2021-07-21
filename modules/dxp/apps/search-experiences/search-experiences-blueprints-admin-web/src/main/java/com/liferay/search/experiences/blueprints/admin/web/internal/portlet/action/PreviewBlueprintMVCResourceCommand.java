@@ -34,7 +34,6 @@ import com.liferay.search.experiences.blueprints.constants.BlueprintsPortletKeys
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributesBuilder;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributesBuilderFactory;
-import com.liferay.search.experiences.blueprints.engine.constants.ReservedParameterNames;
 import com.liferay.search.experiences.blueprints.engine.exception.BlueprintsEngineException;
 import com.liferay.search.experiences.blueprints.engine.util.BlueprintsEngineHelper;
 import com.liferay.search.experiences.blueprints.exception.BlueprintValidationException;
@@ -143,11 +142,10 @@ public class PreviewBlueprintMVCResourceCommand extends BaseMVCResourceCommand {
 			_blueprintsAttributesHelper.getBlueprintsRequestAttributesBuilder(
 				resourceRequest, blueprint);
 
-		blueprintsAttributesBuilder.addAttribute(
-			ReservedParameterNames.EXPLAIN.getKey(), true);
+		blueprintsAttributesBuilder.addAttribute("explain", true);
 
 		blueprintsAttributesBuilder.addAttribute(
-			ReservedParameterNames.INCLUDE_RESPONSE_STRING.getKey(), true);
+			"include_response_string", true);
 
 		return blueprintsAttributesBuilder.build();
 	}
