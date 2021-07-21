@@ -23,7 +23,6 @@ import com.liferay.portal.search.aggregation.AggregationResult;
 import com.liferay.portal.search.aggregation.bucket.Bucket;
 import com.liferay.portal.search.aggregation.bucket.TermsAggregationResult;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
-import com.liferay.search.experiences.blueprints.facets.constants.FacetConfigurationKeys;
 import com.liferay.search.experiences.blueprints.facets.internal.util.FacetConfigurationUtil;
 import com.liferay.search.experiences.blueprints.facets.spi.response.FacetResponseHandler;
 import com.liferay.search.experiences.blueprints.message.Messages;
@@ -66,7 +65,7 @@ public class TermMapFacetResponseHandler
 
 		try {
 			JSONObject parametersJSONObject = jsonObject.getJSONObject(
-				FacetConfigurationKeys.PARAMETERS.getJsonKey());
+				"parameters");
 
 			JSONArray aggregationsJSONArray = parametersJSONObject.getJSONArray(
 				"map");
@@ -127,8 +126,7 @@ public class TermMapFacetResponseHandler
 
 			Map<String, Integer> termMapOrdered = _sort(termsMap);
 
-			long frequencyThreshold = jsonObject.getLong(
-				FacetConfigurationKeys.MIN_DOC_COUNT.getJsonKey(), 1);
+			long frequencyThreshold = jsonObject.getLong("min_doc_count", 1);
 
 			jsonArray = _getTermsJSONArray(
 				termMapOrdered, frequencyThreshold, resourceBundle);

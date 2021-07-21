@@ -21,7 +21,6 @@ import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAtt
 import com.liferay.search.experiences.blueprints.engine.parameter.Parameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.StringArrayParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.StringParameter;
-import com.liferay.search.experiences.blueprints.facets.constants.FacetConfigurationKeys;
 import com.liferay.search.experiences.blueprints.facets.internal.util.FacetConfigurationUtil;
 import com.liferay.search.experiences.blueprints.facets.spi.request.FacetRequestHandler;
 import com.liferay.search.experiences.blueprints.message.Messages;
@@ -61,8 +60,7 @@ public abstract class BaseFacetRequestHandler implements FacetRequestHandler {
 	}
 
 	public boolean isMultiValue(JSONObject jsonObject) {
-		return jsonObject.getBoolean(
-			FacetConfigurationKeys.MULTI_VALUE.getJsonKey(), true);
+		return jsonObject.getBoolean("multi_value", true);
 	}
 
 	private Optional<Parameter> _getMultiValueParameter(
