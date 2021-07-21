@@ -824,7 +824,7 @@ definition {
 			value1 = "Element JSON");
 
 		AssertVisible(
-			key_searchExplanation = "Boost the given asset type over others",
+			key_searchExplanation = "clauses",
 			locator1 = "SearchExperiences#BLUEPRINTS_PREVIEW_RAW_RESPONSE_EXPLANATION");
 
 		SelectFrameTop();
@@ -833,11 +833,11 @@ definition {
 
 		SearchExperiences.viewDownloadedRawResponse(
 			fileName = "element.json",
-			searchExplanation = "Boost the given asset type over others");
+			searchExplanation = "clauses");
 
 		Click.javaScriptClick(locator1 = "Button#COPY");
 
-		SearchExperiences.viewCopiedRawResponse(searchExplanation = "Boost the given asset type over others");
+		SearchExperiences.viewCopiedRawResponse(searchExplanation = "clauses");
 	}
 
 	test ViewExpandedAndCollapsedBlueprintsPreviewEntry {
