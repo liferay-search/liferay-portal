@@ -48,13 +48,10 @@ import com.liferay.portal.search.test.util.DocumentsAssert;
 import com.liferay.portal.search.test.util.SearchTestRule;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portlet.expando.util.test.ExpandoTestUtil;
-import com.liferay.search.experiences.blueprints.constants.json.keys.BlueprintKeys;
-import com.liferay.search.experiences.blueprints.constants.json.keys.parameter.ParameterConfigurationKeys;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributesBuilder;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributesBuilderFactory;
 import com.liferay.search.experiences.blueprints.engine.cache.JSONDataProviderCache;
-import com.liferay.search.experiences.blueprints.engine.constants.ReservedParameterNames;
 import com.liferay.search.experiences.blueprints.engine.exception.BlueprintsEngineException;
 import com.liferay.search.experiences.blueprints.engine.util.BlueprintsEngineHelper;
 import com.liferay.search.experiences.blueprints.facets.constants.FacetsBlueprintKeys;
@@ -261,17 +258,17 @@ public abstract class BaseBlueprintsTestCase {
 		).userId(
 			user.getUserId()
 		).addAttribute(
-			ReservedParameterNames.EXPLAIN.getKey(), true
+			"explain", true
 		).addAttribute(
-			ParameterConfigurationKeys.PAGE.getJsonKey(), 1
+			"page", 1
 		).addAttribute(
-			ReservedParameterNames.IP_ADDRESS.getKey(), ipAddress
+			"ip_address", ipAddress
 		).addAttribute(
-			ReservedParameterNames.PLID.getKey(), TestPropsValues.getPlid()
+			"plid", TestPropsValues.getPlid()
 		).addAttribute(
-			ReservedParameterNames.SCOPE_GROUP_ID.getKey(), group.getGroupId()
+			"scope_group_id", group.getGroupId()
 		).addAttribute(
-			ReservedParameterNames.TIMEZONE_ID.getKey(), getTimeZoneID()
+			"timezone_id", getTimeZoneID()
 		);
 
 		return blueprintsAttributesBuilder.build();
@@ -279,26 +276,21 @@ public abstract class BaseBlueprintsTestCase {
 
 	protected JSONObject getConfigurationJSONObject(JSONArray queryJSONArray) {
 		return JSONUtil.put(
-			BlueprintKeys.ADVANCED_CONFIGURATION.getJsonKey(),
-			getAdvancedConfiguration()
-		).put(
-			BlueprintKeys.AGGREGATION_CONFIGURATION.getJsonKey(),
-			getAggregationConfiguration()
-		).put(
 			FacetsBlueprintKeys.CONFIGURATION_SECTION, getConfigurationSection()
+		).put(
+			"advanced_configuration", getAdvancedConfiguration()
+		).put(
+			"aggregation_configuration", getAggregationConfiguration()
 		).put(
 			"framework_configuration", getFrameworkConfiguration()
 		).put(
-			BlueprintKeys.HIGHLIGHT_CONFIGURATION.getJsonKey(),
-			getHightlightConfiguration()
+			"highlight_configuration", getHightlightConfiguration()
 		).put(
-			BlueprintKeys.PARAMETER_CONFIGURATION.getJsonKey(),
-			JSONUtil.put(null, null)
+			"parameter_configuration", JSONUtil.put(null, null)
 		).put(
-			BlueprintKeys.QUERY_CONFIGURATION.getJsonKey(), queryJSONArray
+			"query_configuration", queryJSONArray
 		).put(
-			BlueprintKeys.SORT_CONFIGURATION.getJsonKey(),
-			getSortConfiguration()
+			"sort_configuration", getSortConfiguration()
 		);
 	}
 
