@@ -64,27 +64,35 @@
 		<liferay-ui:search-container-column-text
 			cssClass="table-cell-expand table-cell-minw-200 table-title"
 			name="title"
-			value="<%= HtmlUtil.escape(entry.getTitle(locale)) %>"
 		>
 			<c:choose>
 				<c:when test="<%= ElementEntryPermission.contains(permissionChecker, entry, ActionKeys.UPDATE) %>">
 					<aui:a href="<%= editEntryURL %>">
 						<%= HtmlUtil.escape(entry.getTitle(locale)) %>
+
+						<c:if test="<%= entry.getReadOnly() %>">
+							<liferay-ui:icon
+								icon="lock"
+								iconCssClass="ml-1 text-muted"
+								markupView="lexicon"
+								message="read-only"
+							/>
+						</c:if>
 					</aui:a>
 				</c:when>
 				<c:otherwise>
 					<%= HtmlUtil.escape(entry.getTitle(locale)) %>
+
+					<c:if test="<%= entry.getReadOnly() %>">
+						<liferay-ui:icon
+							icon="lock"
+							iconCssClass="ml-1 text-muted"
+							markupView="lexicon"
+							message="read-only"
+						/>
+					</c:if>
 				</c:otherwise>
 			</c:choose>
-
-			<c:if test="<%= entry.getReadOnly() %>">
-				<liferay-ui:icon
-					icon="lock"
-					iconCssClass="ml-1 text-muted"
-					markupView="lexicon"
-					message="read-only"
-				/>
-			</c:if>
 		</liferay-ui:search-container-column-text>
 
 		<liferay-ui:search-container-column-text
