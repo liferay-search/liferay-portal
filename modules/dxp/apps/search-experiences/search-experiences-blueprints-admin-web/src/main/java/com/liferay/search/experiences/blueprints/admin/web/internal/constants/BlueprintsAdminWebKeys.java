@@ -41,6 +41,8 @@ public class BlueprintsAdminWebKeys {
 
 	public static final String PAGE_TITLE_KEY = "pageTitleKey";
 
+	public static final String READ_ONLY = "readOnly";
+
 	public static final String ROW_IDS = "rowIds";
 
 	public static final String SELECT_BLUEPRINT_DISPLAY_CONTEXT =
