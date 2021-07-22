@@ -150,6 +150,19 @@ public class BlueprintsAdminIndexUtil {
 		booleanQuery.addFilterQueryClauses(groupQuery);
 	}
 
+	private static void _addReadOnlyFilterClause(
+		BooleanQuery booleanQuery, PortletRequest portletRequest) {
+
+		if (!Validator.isBlank(
+				ParamUtil.getString(portletRequest, "readOnly"))) {
+
+			booleanQuery.addFilterQueryClauses(
+				_queries.term(
+					"readOnly",
+					BlueprintsAdminRequestUtil.getReadOnly(portletRequest)));
+		}
+	}
+
 	private static void _addSearchClauses(
 		BooleanQuery booleanQuery, String keywords, String languageId) {
 
@@ -263,6 +276,8 @@ public class BlueprintsAdminIndexUtil {
 		}
 
 		_addVisibilityFilterClause(booleanQuery, portletRequest);
+
+		_addReadOnlyFilterClause(booleanQuery, portletRequest);
 
 		_addSearchClauses(
 			booleanQuery,

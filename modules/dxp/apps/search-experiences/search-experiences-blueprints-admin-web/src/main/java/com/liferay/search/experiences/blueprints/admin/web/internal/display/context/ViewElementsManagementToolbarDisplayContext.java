@@ -129,6 +129,13 @@ public class ViewElementsManagementToolbarDisplayContext
 			}
 		).addGroup(
 			dropdownGroupItem -> {
+				dropdownGroupItem.setDropdownItems(
+					_getFilterReadOnlyDropdownItems());
+				dropdownGroupItem.setLabel(
+					LanguageUtil.get(httpServletRequest, "filter-by-type"));
+			}
+		).addGroup(
+			dropdownGroupItem -> {
 				dropdownGroupItem.setDropdownItems(getOrderByDropdownItems());
 				dropdownGroupItem.setLabel(
 					LanguageUtil.get(httpServletRequest, "order-by"));
@@ -141,11 +148,40 @@ public class ViewElementsManagementToolbarDisplayContext
 		return false;
 	}
 
-	private PortletURL _getFilterURL(Boolean hidden) {
+	private List<DropdownItem> _getFilterReadOnlyDropdownItems() {
+		return DropdownItemListBuilder.add(
+			dropdownItem -> {
+				dropdownItem.setActive(_getReadOnly().equals(""));
+				dropdownItem.setHref(_getFilterReadOnlyURL(""));
+				dropdownItem.setLabel(
+					LanguageUtil.get(httpServletRequest, "all"));
+			}
+		).add(
+			dropdownItem -> {
+				dropdownItem.setActive(
+					_getReadOnly().equals(Boolean.TRUE.toString()));
+				dropdownItem.setHref(
+					_getFilterReadOnlyURL(Boolean.TRUE.toString()));
+				dropdownItem.setLabel(
+					LanguageUtil.get(httpServletRequest, "default"));
+			}
+		).add(
+			dropdownItem -> {
+				dropdownItem.setActive(
+					_getReadOnly().equals(Boolean.FALSE.toString()));
+				dropdownItem.setHref(
+					_getFilterReadOnlyURL(Boolean.FALSE.toString()));
+				dropdownItem.setLabel(
+					LanguageUtil.get(httpServletRequest, "custom"));
+			}
+		).build();
+	}
+
+	private PortletURL _getFilterReadOnlyURL(String readOnly) {
 		return PortletURLBuilder.create(
 			getPortletURL()
 		).setParameter(
-			BlueprintsAdminWebKeys.HIDDEN, hidden
+			BlueprintsAdminWebKeys.READ_ONLY, readOnly
 		).build();
 	}
 
@@ -153,17 +189,25 @@ public class ViewElementsManagementToolbarDisplayContext
 		return DropdownItemListBuilder.add(
 			dropdownItem -> {
 				dropdownItem.setActive(!_getHidden());
-				dropdownItem.setHref(_getFilterURL(Boolean.FALSE));
+				dropdownItem.setHref(_getFilterVisibilityURL(Boolean.FALSE));
 				dropdownItem.setLabel(
 					LanguageUtil.get(httpServletRequest, "visible"));
 			}
 		).add(
 			dropdownItem -> {
 				dropdownItem.setActive(_getHidden());
-				dropdownItem.setHref(_getFilterURL(Boolean.TRUE));
+				dropdownItem.setHref(_getFilterVisibilityURL(Boolean.TRUE));
 				dropdownItem.setLabel(
 					LanguageUtil.get(httpServletRequest, "hidden"));
 			}
+		).build();
+	}
+
+	private PortletURL _getFilterVisibilityURL(Boolean hidden) {
+		return PortletURLBuilder.create(
+			getPortletURL()
+		).setParameter(
+			BlueprintsAdminWebKeys.HIDDEN, hidden
 		).build();
 	}
 
@@ -171,6 +215,11 @@ public class ViewElementsManagementToolbarDisplayContext
 		return ParamUtil.getBoolean(
 			liferayPortletRequest, BlueprintsAdminWebKeys.HIDDEN,
 			Boolean.FALSE);
+	}
+
+	private String _getReadOnly() {
+		return ParamUtil.getString(
+			liferayPortletRequest, BlueprintsAdminWebKeys.READ_ONLY, "");
 	}
 
 }
