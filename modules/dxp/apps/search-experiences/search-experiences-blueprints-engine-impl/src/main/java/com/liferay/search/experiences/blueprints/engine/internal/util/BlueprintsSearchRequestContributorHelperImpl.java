@@ -68,6 +68,26 @@ public class BlueprintsSearchRequestContributorHelperImpl
 			blueprint.getBlueprintId(), messages);
 	}
 
+	protected void applyApplyIndexerClauses(
+		FrameworkDefinition frameworkDefinition,
+		SearchRequestBuilder searchRequestBuilder) {
+
+		Optional<Boolean> optional =
+			frameworkDefinition.getApplyIndexerClausesOptional();
+
+		optional.ifPresent(
+			applyIndexerClauses -> {
+				searchRequestBuilder.withSearchContext(
+					searchContext -> searchContext.setAttribute(
+						"search.full.query.suppress.indexer.provided.clauses",
+						!applyIndexerClauses));
+
+				if (!applyIndexerClauses) {
+					searchRequestBuilder.emptySearchEnabled(true);
+				}
+			});
+	}
+
 	protected void applyBlueprintDefinition(
 		Blueprint blueprint, ParameterData parameterData,
 		SearchRequestBuilder searchRequestBuilder) {
@@ -99,15 +119,7 @@ public class BlueprintsSearchRequestContributorHelperImpl
 		FrameworkDefinition frameworkDefinition, ParameterData parameterData,
 		SearchRequestBuilder searchRequestBuilder) {
 
-		if (frameworkDefinition.isSuppressIndexerClauses()) {
-			searchRequestBuilder.emptySearchEnabled(
-				true
-			).withSearchContext(
-				searchContext -> searchContext.setAttribute(
-					"search.full.query.suppress.indexer.provided.clauses",
-					Boolean.TRUE)
-			);
-		}
+		applyApplyIndexerClauses(frameworkDefinition, searchRequestBuilder);
 
 		Optional<ClauseContributorsDefinition> optional =
 			frameworkDefinition.getClauseContributorsDefinitionOptional();
