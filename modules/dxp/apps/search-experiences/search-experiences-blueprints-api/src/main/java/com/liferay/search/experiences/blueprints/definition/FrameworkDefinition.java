@@ -24,11 +24,11 @@ import org.osgi.annotation.versioning.ProviderType;
 @ProviderType
 public interface FrameworkDefinition {
 
+	public Optional<Boolean> getApplyIndexerClausesOptional();
+
 	public Optional<ClauseContributorsDefinition>
 		getClauseContributorsDefinitionOptional();
 
 	public String[] getSearchableAssetTypes();
-
-	public boolean isSuppressIndexerClauses();
 
 }
