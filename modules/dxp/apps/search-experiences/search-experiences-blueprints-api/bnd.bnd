@@ -10,7 +10,6 @@ Export-Package:\
 	com.liferay.search.experiences.blueprints.constants.json.keys.aggregation.bucket,\
 	com.liferay.search.experiences.blueprints.constants.json.keys.aggregation.metric,\
 	com.liferay.search.experiences.blueprints.constants.json.keys.aggregation.pipeline,\
-	com.liferay.search.experiences.blueprints.constants.json.keys.framework,\
 	com.liferay.search.experiences.blueprints.constants.json.keys.highlight,\
 	com.liferay.search.experiences.blueprints.constants.json.keys.parameter,\
 	com.liferay.search.experiences.blueprints.constants.json.keys.query,\
