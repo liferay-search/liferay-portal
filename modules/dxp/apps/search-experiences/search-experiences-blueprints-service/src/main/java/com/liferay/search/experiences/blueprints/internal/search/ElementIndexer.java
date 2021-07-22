@@ -60,7 +60,7 @@ public class ElementIndexer extends BaseIndexer<Element> {
 		setDefaultSelectedFieldNames(
 			Field.COMPANY_ID, Field.ENTRY_CLASS_NAME, Field.ENTRY_CLASS_PK,
 			Field.GROUP_ID, Field.MODIFIED_DATE, Field.SCOPE_GROUP_ID,
-			Field.UID, "hidden");
+			Field.UID, "hidden", "readOnly");
 		setDefaultSelectedLocalizedFieldNames(Field.DESCRIPTION, Field.TITLE);
 		setFilterSearch(true);
 		setPermissionAware(true);
@@ -132,6 +132,8 @@ public class ElementIndexer extends BaseIndexer<Element> {
 		document.addNumber(Field.TYPE, element.getType());
 
 		document.addKeyword("hidden", element.getHidden());
+
+		document.addKeyword("readOnly", element.getReadOnly());
 
 		for (Locale locale :
 				LanguageUtil.getCompanyAvailableLocales(
