@@ -115,6 +115,27 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 			searchRequestBuilder, parameterData, blueprint, messages);
 	}
 
+	protected void applyApplyIndexerClauses(
+		FrameworkDefinition frameworkDefinition, ParameterData parameterData,
+		SearchRequestBuilder searchRequestBuilder) {
+
+		Optional<Boolean> optional =
+			frameworkDefinition.getApplyIndexerClausesOptional();
+
+		optional.ifPresent(
+			applyIndexerClauses -> {
+				searchRequestBuilder.withSearchContext(
+					searchContext -> searchContext.setAttribute(
+						"search.full.query.suppress.indexer.provided.clauses",
+						!applyIndexerClauses));
+
+				if (applyIndexerClauses) {
+					searchRequestBuilder.queryString(
+						parameterData.getKeywords());
+				}
+			});
+	}
+
 	protected void applyBlueprintDefinition(
 		Blueprint blueprint, ParameterData parameterData,
 		SearchRequestBuilder searchRequestBuilder) {
@@ -146,15 +167,8 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 		FrameworkDefinition frameworkDefinition, ParameterData parameterData,
 		SearchRequestBuilder searchRequestBuilder) {
 
-		if (frameworkDefinition.isSuppressIndexerClauses()) {
-			searchRequestBuilder.withSearchContext(
-				searchContext -> searchContext.setAttribute(
-					"search.full.query.suppress.indexer.provided.clauses",
-					Boolean.TRUE));
-		}
-		else {
-			searchRequestBuilder.queryString(parameterData.getKeywords());
-		}
+		applyApplyIndexerClauses(
+			frameworkDefinition, parameterData, searchRequestBuilder);
 
 		Optional<ClauseContributorsDefinition> optional =
 			frameworkDefinition.getClauseContributorsDefinitionOptional();
