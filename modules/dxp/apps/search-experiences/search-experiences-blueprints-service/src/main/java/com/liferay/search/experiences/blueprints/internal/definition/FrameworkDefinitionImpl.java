@@ -32,6 +32,11 @@ public class FrameworkDefinitionImpl implements FrameworkDefinition {
 	}
 
 	@Override
+	public Optional<Boolean> getApplyIndexerClausesOptional() {
+		return Optional.ofNullable(_frameworkDefinitionDTO.applyIndexerClauses);
+	}
+
+	@Override
 	public Optional<ClauseContributorsDefinition>
 		getClauseContributorsDefinitionOptional() {
 
@@ -44,12 +49,11 @@ public class FrameworkDefinitionImpl implements FrameworkDefinition {
 
 	@Override
 	public String[] getSearchableAssetTypes() {
-		return _frameworkDefinitionDTO.searchableAssetTypes;
-	}
+		if (_frameworkDefinitionDTO.searchableAssetTypes != null) {
+			return _frameworkDefinitionDTO.searchableAssetTypes;
+		}
 
-	@Override
-	public boolean isSuppressIndexerClauses() {
-		return _frameworkDefinitionDTO.applyIndexerClauses;
+		return new String[0];
 	}
 
 	private FrameworkDefinitionDTO _getFrameworkDefinitionBean(

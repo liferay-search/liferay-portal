@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class FrameworkDefinitionDTO {
 
 	@JsonProperty("apply_indexer_clauses")
-	protected boolean applyIndexerClauses;
+	protected Boolean applyIndexerClauses;
 
 	@JsonProperty("clause_contributors")
 	protected ClauseContributorsDefinitionDTO clauseContributorsDefinitionDTO;
