@@ -37,7 +37,6 @@
 			{
 				"fields": [
 					{
-						"helpText": "Add article IDs",
 						"label": "Article IDs",
 						"name": "article_ids",
 						"type": "multiselect"
