@@ -43,14 +43,12 @@
 					{
 						"fields": [
 							{
-								"helpText": "Add asset category ID",
-								"label": "Asset Category",
+								"label": "Asset Category ID",
 								"name": "asset_category_id",
 								"type": "number"
 							},
 							{
-								"helpText": "Add user segment ID",
-								"label": "User Segment",
+								"label": "User Segment ID",
 								"name": "user_segment_id",
 								"type": "number"
 							},

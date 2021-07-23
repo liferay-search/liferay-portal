@@ -35,8 +35,7 @@
 					{
 						"fields": [
 							{
-								"helpText": "Add asset category IDs",
-								"label": "Asset Categories",
+								"label": "Asset Category IDs",
 								"name": "asset_category_ids",
 								"type": "multiselect"
 							},
