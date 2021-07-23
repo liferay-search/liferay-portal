@@ -686,8 +686,7 @@ describe('utils', () => {
 							{
 								fields: [
 									{
-										helpText: 'Add asset category ID',
-										label: 'Asset Category',
+										label: 'Asset Category ID',
 										name: 'asset_category_id',
 										type: 'number',
 									},
