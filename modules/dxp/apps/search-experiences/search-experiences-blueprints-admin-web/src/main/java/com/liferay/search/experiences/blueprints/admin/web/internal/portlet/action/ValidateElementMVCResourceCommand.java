@@ -69,9 +69,11 @@ public class ValidateElementMVCResourceCommand extends BaseMVCResourceCommand {
 				BlueprintsAdminRequestUtil.getElementType(resourceRequest));
 		}
 		catch (ElementValidationException elementValidationException) {
-			_log.error(
-				elementValidationException.getMessage(),
-				elementValidationException);
+			if (_log.isDebugEnabled()) {
+				_log.debug(
+					elementValidationException.getMessage(),
+					elementValidationException);
+			}
 
 			responseJSONObject =
 				_blueprintsJSONResponseBuilder.translateErrorMessages(
