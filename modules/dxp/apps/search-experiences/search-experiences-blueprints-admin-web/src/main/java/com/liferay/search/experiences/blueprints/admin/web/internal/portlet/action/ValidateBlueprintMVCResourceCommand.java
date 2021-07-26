@@ -16,6 +16,8 @@ package com.liferay.search.experiences.blueprints.admin.web.internal.portlet.act
 
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.JSONPortletResponseUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCResourceCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCResourceCommand;
@@ -67,6 +69,12 @@ public class ValidateBlueprintMVCResourceCommand
 				blueprint.getConfiguration());
 		}
 		catch (BlueprintValidationException blueprintValidationException) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(
+					blueprintValidationException.getMessage(),
+					blueprintValidationException);
+			}
+
 			responseJSONObject =
 				_blueprintsJSONResponseBuilder.translateErrorMessages(
 					blueprintValidationException.getMessages(),
@@ -93,6 +101,9 @@ public class ValidateBlueprintMVCResourceCommand
 		return ResourceBundleUtil.getBundle(
 			"content.Language", themeDisplay.getLocale(), getClass());
 	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		ValidateBlueprintMVCResourceCommand.class);
 
 	@Reference
 	private BlueprintLocalService _blueprintLocalService;

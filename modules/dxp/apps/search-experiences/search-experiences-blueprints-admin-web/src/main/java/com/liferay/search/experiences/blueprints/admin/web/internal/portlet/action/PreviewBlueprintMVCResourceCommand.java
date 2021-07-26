@@ -110,6 +110,12 @@ public class PreviewBlueprintMVCResourceCommand extends BaseMVCResourceCommand {
 					_getResourceBundle(resourceRequest));
 		}
 		catch (BlueprintValidationException blueprintValidationException) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(
+					blueprintValidationException.getMessage(),
+					blueprintValidationException);
+			}
+
 			responseJSONObject =
 				_blueprintsJSONResponseBuilder.translateErrorMessages(
 					blueprintValidationException.getMessages(),
