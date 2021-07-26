@@ -40,26 +40,26 @@
 	},
 	"uiConfigurationJSON": [
 		{
-			"key": "asset_category_id",
-			"name": "Asset Category ID",
+			"label": "Asset Category ID",
+			"name": "asset_category_id",
 			"type": "number"
 		},
 		{
 			"format": "YYYYMMDD",
-			"key": "start_date",
-			"name": "Create Date: From",
+			"label": "Create Date: From",
+			"name": "start_date",
 			"type": "date"
 		},
 		{
 			"format": "YYYYMMDD",
-			"key": "end_date",
-			"name": "Create Date: To",
+			"label": "Create Date: To",
+			"name": "end_date",
 			"type": "date"
 		},
 		{
 			"defaultValue": 10,
-			"key": "boost",
-			"name": "Boost",
+			"label": "Boost",
+			"name": "boost",
 			"type": "slider"
 		}
 	]

@@ -38,19 +38,19 @@
 	},
 	"uiConfigurationJSON": [
 		{
-			"key": "asset_category_id",
-			"name": "Asset Category ID",
+			"label": "Asset Category ID",
+			"name": "asset_category_id",
 			"type": "number"
 		},
 		{
-			"key": "user_segment_id",
-			"name": "User Segment ID",
+			"label": "User Segment ID",
+			"name": "user_segment_id",
 			"type": "number"
 		},
 		{
 			"defaultValue": 20,
-			"key": "boost",
-			"name": "Boost",
+			"label": "Boost",
+			"name": "boost",
 			"type": "slider"
 		}
 	]
