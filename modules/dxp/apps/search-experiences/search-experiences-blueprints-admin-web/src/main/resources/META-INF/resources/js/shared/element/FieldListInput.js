@@ -55,7 +55,7 @@ function FieldListInput({
 						boost={item.boost}
 						disabled={disabled || value === null}
 						field={item.field}
-						id={`${id}_${index}`}
+						id={index == 0 ? id : `${id}_${index}`}
 						index={index}
 						indexFields={indexFields}
 						key={index}

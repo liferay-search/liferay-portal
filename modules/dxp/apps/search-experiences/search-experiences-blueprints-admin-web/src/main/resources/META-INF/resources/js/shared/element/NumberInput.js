@@ -18,6 +18,7 @@ import NullableCheckbox from './NullableCheckbox';
 function NumberInput({
 	configKey,
 	disabled,
+	id,
 	label,
 	max,
 	min,
@@ -43,6 +44,7 @@ function NumberInput({
 					<ClayInput
 						aria-label={label}
 						disabled={disabled || value === null}
+						id={id}
 						max={max}
 						min={min}
 						name={name}

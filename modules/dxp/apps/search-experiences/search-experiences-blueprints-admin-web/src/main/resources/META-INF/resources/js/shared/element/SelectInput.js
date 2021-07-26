@@ -14,6 +14,7 @@ import React from 'react';
 
 function SelectInput({
 	disabled,
+	id,
 	label,
 	name,
 	nullable,
@@ -28,6 +29,7 @@ function SelectInput({
 				aria-label={label}
 				className="form-control-sm"
 				disabled={disabled}
+				id={id}
 				name={name}
 				onBlur={onBlur}
 				onChange={onChange}

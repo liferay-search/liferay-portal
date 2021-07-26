@@ -16,6 +16,7 @@ import NullableCheckbox from './NullableCheckbox';
 
 function MultiSelectInput({
 	disabled,
+	id,
 	label,
 	name,
 	nullable,
@@ -31,6 +32,7 @@ function MultiSelectInput({
 			<ClayMultiSelect
 				aria-label={label}
 				disabled={disabled || value === null}
+				id={id}
 				inputValue={inputValue}
 				items={value || []}
 				onBlur={() => {
