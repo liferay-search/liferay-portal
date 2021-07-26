@@ -65,16 +65,11 @@ public class BoostContentsInCategoryTest
 			getConfigurationString((JSONObject[])null), "");
 
 		assertSearch(blueprint, null, "[coca cola, pepsi cola]", "cola", null);
-
-		String configurationString = getConfigurationString(
-			getQueryElementJSONObject(100, _assetCategory.getCategoryId()));
-
-		String selectedElementString = getSelectedElementString(
-			100, _assetCategory.getCategoryId());
-
 		assertSearch(
-			blueprint, configurationString, "[pepsi cola, coca cola]", "cola",
-			selectedElementString);
+			blueprint,
+			getConfigurationString(
+				getQueryElementJSONObject(100, _assetCategory.getCategoryId())),
+			"[pepsi cola, coca cola]", "cola", getSelectedElementString());
 	}
 
 	@Override
@@ -87,12 +82,6 @@ public class BoostContentsInCategoryTest
 		return JSONUtil.put(
 			"en_US",
 			"Boost contents in a category for the given period of time");
-	}
-
-	@Override
-	protected JSONObject getElementTemplateJSONObject() throws Exception {
-		return getElementTemplateJSONObject(
-			"/elements/boost-contents-in-a-category-test.json");
 	}
 
 	@Override

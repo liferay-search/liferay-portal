@@ -48,36 +48,23 @@ public class MatchFromScratchTest extends BaseQueryElementsTestCase {
 		addJournalArticle("Cloud Cafe", "Orange County");
 		addJournalArticle("Denny's", "Los Angeles");
 
-		String configurationString = getConfigurationString(
-			getMatchQueryElementJSONObject(200, "must", "orange county"),
-			getMultiMatchQueryElementJSONObject(1, "AUTO", "or"));
-
-		String selectedElementString = getSelectedElementString(
-			getPasteESQueryJSONObject(200, "must", "orange county"),
-			getTextMatchOverMultipleFieldJSONObject(
-				1, 2, "AUTO", 1, "or", "best_fields"));
-
 		Blueprint blueprint = addCompanyBlueprint(
 			Collections.singletonMap(
 				LocaleUtil.US, getClass().getName() + "Blueprint"),
-			Collections.singletonMap(LocaleUtil.US, ""), configurationString,
-			selectedElementString);
+			Collections.singletonMap(LocaleUtil.US, ""),
+			getConfigurationString(
+				getMatchQueryElementJSONObject(200, "must", "orange county"),
+				getMultiMatchQueryElementJSONObject(1, "AUTO", "or")),
+			getSelectedElementString());
 
 		assertSearchIgnoreRelevance(
 			blueprint, null, "[cloud cafe]", "cafe", null);
-
-		configurationString = getConfigurationString(
-			getMatchQueryElementJSONObject(200, "must", "los angeles"),
-			getMultiMatchQueryElementJSONObject(1, "AUTO", "or"));
-
-		selectedElementString = getSelectedElementString(
-			getPasteESQueryJSONObject(200, "must", "los angeles"),
-			getTextMatchOverMultipleFieldJSONObject(
-				1, 2, "AUTO", 1, "or", "best_fields"));
-
 		assertSearchIgnoreRelevance(
-			blueprint, configurationString, "[cafe rio, starbucks cafe]",
-			"cafe", selectedElementString);
+			blueprint,
+			getConfigurationString(
+				getMatchQueryElementJSONObject(200, "must", "los angeles"),
+				getMultiMatchQueryElementJSONObject(1, "AUTO", "or")),
+			"[cafe rio, starbucks cafe]", "cafe", getSelectedElementString());
 	}
 
 }

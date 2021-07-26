@@ -60,26 +60,17 @@ public class BoostWebContentByKeywordMatchTest extends BaseBlueprintsTestCase {
 			getConfigurationString((JSONObject[])null), "");
 
 		assertSearch(blueprint, null, "[coca cola, pepsi cola]", "cola", null);
-
-		String configurationString = getConfigurationString(
-			_getQueryElementJSONObject(articleId, 100, "contains", "cola"));
-
-		String selectedElementString = _getSelectedElementString(
-			articleId, 100, "cola");
-
 		assertSearch(
-			blueprint, configurationString, "[pepsi cola, coca cola]", "cola",
-			selectedElementString);
-
-		configurationString = getConfigurationString(
-			_getQueryElementJSONObject(articleId, 100, "not_contains", "cola"));
-
-		selectedElementString = _getSelectedElementString(
-			articleId, 100, "cola");
-
+			blueprint,
+			getConfigurationString(
+				_getQueryElementJSONObject(articleId, 100, "contains", "cola")),
+			"[pepsi cola, coca cola]", "cola", getSelectedElementString());
 		assertSearch(
-			blueprint, configurationString, "[coca cola, pepsi cola]", "cola",
-			selectedElementString);
+			blueprint,
+			getConfigurationString(
+				_getQueryElementJSONObject(
+					articleId, 100, "not_contains", "cola")),
+			"[coca cola, pepsi cola]", "cola", getSelectedElementString());
 	}
 
 	private JSONObject _getQueryElementJSONObject(
@@ -129,54 +120,6 @@ public class BoostWebContentByKeywordMatchTest extends BaseBlueprintsTestCase {
 		).put(
 			"title",
 			JSONUtil.put("en_US", "Boost Web Contents by Keyword Match")
-		);
-	}
-
-	private String _getSelectedElementString(
-			String articleId, int boost, String keywords)
-		throws Exception {
-
-		JSONObject elementTemplateJSONObject = getElementTemplateJSONObject(
-			"/elements/boost-web-contents-by-keyword-match-test.json");
-
-		return JSONUtil.put(
-			"query_configuration",
-			createJSONArray().put(
-				JSONUtil.put(
-					"elementTemplateJSON",
-					elementTemplateJSONObject.get("elementTemplateJSON")
-				).put(
-					"uiConfigurationJSON",
-					elementTemplateJSONObject.get("uiConfigurationJSON")
-				).put(
-					"uiConfigurationValues",
-					_getUIConfigurationValuesJSONObject(
-						articleId, boost, keywords)
-				))
-		).toString();
-	}
-
-	private JSONObject _getUIConfigurationValuesJSONObject(
-		String articleId, int boost, String keywords) {
-
-		return JSONUtil.put(
-			"article_ids",
-			createJSONArray().put(
-				JSONUtil.put(
-					"label", articleId
-				).put(
-					"value", articleId
-				))
-		).put(
-			"boost", boost
-		).put(
-			"values",
-			createJSONArray().put(
-				JSONUtil.put(
-					"label", keywords
-				).put(
-					"value", keywords
-				))
 		);
 	}
 

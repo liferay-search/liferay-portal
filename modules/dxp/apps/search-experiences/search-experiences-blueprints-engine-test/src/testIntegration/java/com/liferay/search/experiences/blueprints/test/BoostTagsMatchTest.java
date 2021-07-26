@@ -75,7 +75,7 @@ public class BoostTagsMatchTest extends BaseBlueprintsTestCase {
 				LocaleUtil.US, getClass().getName() + "Blueprint"),
 			Collections.singletonMap(LocaleUtil.US, ""),
 			getConfigurationString(_getQueryElementJSONObject(100)),
-			_getSelectedElementString(100));
+			getSelectedElementString());
 
 		assertSearch(blueprint, null, "[pepsi cola, coca cola]", "cola", null);
 	}
@@ -125,67 +125,6 @@ public class BoostTagsMatchTest extends BaseBlueprintsTestCase {
 		).put(
 			"title", JSONUtil.put("en_US", "Boost Tags Match")
 		);
-	}
-
-	private String _getSelectedElementString(int boost) throws Exception {
-		JSONObject elementTemplateJSONObject = getElementTemplateJSONObject(
-			"/elements/boost-tags-match-test.json");
-
-		return JSONUtil.put(
-			"query_configuration",
-			createJSONArray().put(
-				JSONUtil.put(
-					"elementOutput",
-					JSONUtil.put(
-						"category", "boost"
-					).put(
-						"clauses",
-						createJSONArray().put(
-							JSONUtil.put(
-								"context", "query"
-							).put(
-								"occur", "should"
-							).put(
-								"query",
-								JSONUtil.put(
-									"wrapper",
-									JSONUtil.put(
-										"query",
-										JSONUtil.put(
-											"term",
-											JSONUtil.put(
-												"assetTagNames.raw",
-												JSONUtil.put(
-													"boost", boost
-												).put(
-													"value", "${keywords}"
-												)))))
-							))
-					).put(
-						"conditions", createJSONArray()
-					).put(
-						"description",
-						JSONUtil.put(
-							"en_US",
-							"Boost contents having an exact keyword match to " +
-								"a tag")
-					).put(
-						"enabled", true
-					).put(
-						"icon", "thumbs-up"
-					).put(
-						"title", JSONUtil.put("en_US", "Boost Tags Match")
-					)
-				).put(
-					"elementTemplateJSON",
-					elementTemplateJSONObject.get("elementTemplateJSON")
-				).put(
-					"uiConfigurationJSON",
-					elementTemplateJSONObject.get("uiConfigurationJSON")
-				).put(
-					"uiConfigurationValues", JSONUtil.put("boost", boost)
-				))
-		).toString();
 	}
 
 }

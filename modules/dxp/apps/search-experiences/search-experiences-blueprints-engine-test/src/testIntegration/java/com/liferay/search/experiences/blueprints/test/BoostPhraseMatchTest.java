@@ -56,9 +56,7 @@ public class BoostPhraseMatchTest extends BaseQueryElementsTestCase {
 			getConfigurationString(
 				getMultiMatchQueryElementJSONObject(
 					10, "AUTO", "or", "most_fields")),
-			getSelectedElementString(
-				getTextMatchOverMultipleFieldUIConfigValuesJSONObject(
-					2, 1, "AUTO", 1, "or", "most_fields")));
+			getSelectedElementString());
 
 		assertSearch(
 			blueprint, null,
@@ -66,20 +64,15 @@ public class BoostPhraseMatchTest extends BaseQueryElementsTestCase {
 				"of coca drink]",
 			"coca drink", null);
 
-		String configurationString = getConfigurationString(
-			getMultiMatchQueryElementJSONObject(1, null, "or", "most_fields"),
-			getAllKeywordsMatchQueryElementJSONObject());
-
-		String selectedElementString = getSelectedElementString(
-			getTextMatchOverMultipleFieldJSONObject(
-				1, 1, null, 2, "or", "most_fields"),
-			getAllKeywordsMatchMultipleFieldJSONObject(100, 1, 2, "phrase"));
-
 		assertSearch(
-			blueprint, configurationString,
+			blueprint,
+			getConfigurationString(
+				getMultiMatchQueryElementJSONObject(
+					1, null, "or", "most_fields"),
+				getAllKeywordsMatchQueryElementJSONObject()),
 			"[this looks like a kind of coca drink, this coca looks like a " +
 				"kind of drink]",
-			"coca drink", selectedElementString);
+			"coca drink", getSelectedElementString());
 	}
 
 	protected JSONObject getAllKeywordsMatchMultipleFieldJSONObject(

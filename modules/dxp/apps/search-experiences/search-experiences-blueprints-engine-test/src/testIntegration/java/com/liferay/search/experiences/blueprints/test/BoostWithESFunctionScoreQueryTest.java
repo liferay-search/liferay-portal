@@ -72,8 +72,7 @@ public class BoostWithESFunctionScoreQueryTest
 			Collections.singletonMap(LocaleUtil.US, ""),
 			getConfigurationString(
 				getFunctionalScoreQueryElementJSONObject("64.01", "-117.42")),
-			getSelectedElementString(
-				getPasteESQueryJSONObject(100, "must", "64.01", "-117.42")));
+			getSelectedElementString());
 
 		setupJsonDataProviderCache(
 			_IP_ADDRESS[1], "Palo Alto, CA", 64.01, -117.42);
@@ -100,9 +99,7 @@ public class BoostWithESFunctionScoreQueryTest
 					getFunctionalScoreQueryElementJSONObject(
 						"24.03", "-107.44")),
 				"[branch la, branch sf]", _IP_ADDRESS[0], "branch",
-				getSelectedElementString(
-					getPasteESQueryJSONObject(
-						100, "must", "24.03", "-107.44")));
+				getSelectedElementString());
 		}
 	}
 

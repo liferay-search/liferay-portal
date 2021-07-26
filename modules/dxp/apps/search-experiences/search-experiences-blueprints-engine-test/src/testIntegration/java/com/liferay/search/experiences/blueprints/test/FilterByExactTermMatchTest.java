@@ -76,36 +76,13 @@ public class FilterByExactTermMatchTest extends BaseBlueprintsTestCase {
 		assertSearchIgnoreRelevance(
 			blueprint, null, "[cola coca, cola pepsi, cola sprite]", "cola",
 			null);
-
 		assertSearchIgnoreRelevance(
 			blueprint,
 			getConfigurationString(
 				_getQueryElementJSONObject(
 					_getGourpIdJSONArray(
 						groupA.getGroupId(), groupB.getGroupId()))),
-			"[cola coca, cola pepsi]", "cola",
-			_getSelectedElementString(
-				_getGorupIdLabelValueJSONArray(
-					groupA.getGroupId(), groupB.getGroupId())));
-	}
-
-	private JSONArray _getGorupIdLabelValueJSONArray(long... groupIds) {
-		JSONArray jsonArray = createJSONArray();
-
-		if (groupIds == null) {
-			return jsonArray;
-		}
-
-		for (long groupId : groupIds) {
-			jsonArray.put(
-				JSONUtil.put(
-					"label", groupId
-				).put(
-					"value", groupId
-				));
-		}
-
-		return jsonArray;
+			"[cola coca, cola pepsi]", "cola", getSelectedElementString());
 	}
 
 	private JSONArray _getGourpIdJSONArray(long... groupIds) {
@@ -157,38 +134,6 @@ public class FilterByExactTermMatchTest extends BaseBlueprintsTestCase {
 		).put(
 			"title", JSONUtil.put("en_US", "Filter by Exact Terms Match")
 		);
-	}
-
-	private String _getSelectedElementString(
-			JSONArray gorupIdLabelValueJSONArray)
-		throws Exception {
-
-		JSONObject elementTemplateJSONObject = getElementTemplateJSONObject(
-			"/elements/filter-by-exact-terms-match-test.json");
-
-		return JSONUtil.put(
-			"query_configuration",
-			createJSONArray().put(
-				JSONUtil.put(
-					"elementTemplateJSON",
-					elementTemplateJSONObject.get("elementTemplateJSON")
-				).put(
-					"uiConfigurationJSON",
-					elementTemplateJSONObject.get("uiConfigurationJSON")
-				).put(
-					"uiConfigurationValues",
-					JSONUtil.put(
-						"field",
-						JSONUtil.put(
-							"field", "groupId"
-						).put(
-							"languageIdPosition", -1
-						)
-					).put(
-						"values", gorupIdLabelValueJSONArray
-					)
-				))
-		).toString();
 	}
 
 	@DeleteAfterTestRun

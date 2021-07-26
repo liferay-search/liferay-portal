@@ -57,20 +57,14 @@ public class SearchWithLuceneSyntaxTest extends BaseBlueprintsTestCase {
 
 		assertSearch(
 			blueprint, null, "[coca cola, pepsi cola]", "cola +coca", null);
-
-		String configurationString = getConfigurationString(
-			_getQueryElementJSONObject(1, 2, "and", 2));
-
-		String selectedElementString = _getSelectedElementString(
-			1, 2, "and", 2);
-
 		assertSearch(
-			blueprint, configurationString, "[coca cola]", "cola +coca",
-			selectedElementString);
-
+			blueprint,
+			getConfigurationString(_getQueryElementJSONObject(1, 2, "and", 2)),
+			"[coca cola]", "cola +coca", getSelectedElementString());
 		assertSearch(
-			blueprint, configurationString, "[pepsi cola]", "cola -coca",
-			selectedElementString);
+			blueprint,
+			getConfigurationString(_getQueryElementJSONObject(1, 2, "and", 2)),
+			"[pepsi cola]", "cola -coca", getSelectedElementString());
 	}
 
 	private JSONObject _getQueryElementJSONObject(
@@ -124,54 +118,6 @@ public class SearchWithLuceneSyntaxTest extends BaseBlueprintsTestCase {
 		).put(
 			"title", JSONUtil.put("en_US", "Search with the Lucene Syntax")
 		);
-	}
-
-	private String _getSelectedElementString(
-			int boost, int contentBoost, String operator, int titleBoost)
-		throws Exception {
-
-		JSONObject elementTemplateJSONObject = getElementTemplateJSONObject(
-			"/elements/search-with-lucene-syntax-test.json");
-
-		JSONArray uiConfigurationValuesFieldsJSONArray = createJSONArray();
-
-		return JSONUtil.put(
-			"query_configuration",
-			createJSONArray().put(
-				JSONUtil.put(
-					"elementTemplateJSON",
-					elementTemplateJSONObject.get("elementTemplateJSON")
-				).put(
-					"uiConfigurationJSON",
-					elementTemplateJSONObject.get("uiConfigurationJSON")
-				).put(
-					"uiConfigurationValues",
-					JSONUtil.put(
-						"boost", boost
-					).put(
-						"fields",
-						uiConfigurationValuesFieldsJSONArray.put(
-							JSONUtil.put(
-								"boost", titleBoost
-							).put(
-								"field", "localized_title"
-							).put(
-								"locale", "${context.language_id}"
-							)
-						).put(
-							JSONUtil.put(
-								"boost", contentBoost
-							).put(
-								"field", "content"
-							).put(
-								"locale", "${context.language_id}"
-							)
-						)
-					).put(
-						"operator", operator
-					)
-				))
-		).toString();
 	}
 
 }

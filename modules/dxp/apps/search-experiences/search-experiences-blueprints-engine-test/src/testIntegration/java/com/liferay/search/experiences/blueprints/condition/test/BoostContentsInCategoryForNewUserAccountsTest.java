@@ -70,17 +70,14 @@ public class BoostContentsInCategoryForNewUserAccountsTest
 				"for new recruits]",
 			"policies", null);
 
-		String configurationString = getConfigurationString(
-			getQueryElementJSONObject(1000, _assetCategory.getCategoryId()));
-
-		String selectedElementString = getSelectedElementString(
-			1000, _assetCategory.getCategoryId());
-
 		assertSearch(
-			blueprint, configurationString,
+			blueprint,
+			getConfigurationString(
+				getQueryElementJSONObject(
+					1000, _assetCategory.getCategoryId())),
 			"[company policies for new recruits, company policies for all " +
 				"employees recruits]",
-			"policies", selectedElementString);
+			"policies", getSelectedElementString());
 	}
 
 	@Override
@@ -102,13 +99,6 @@ public class BoostContentsInCategoryForNewUserAccountsTest
 			"en_US",
 			"Boost contents in a category for user accounts created withing " +
 				"the given time");
-	}
-
-	@Override
-	protected JSONObject getElementTemplateJSONObject() throws Exception {
-		return getElementTemplateJSONObject(
-			"/elements/boost-contents-in-a-category-for-new-user-accounts-" +
-				"test.json");
 	}
 
 	@Override

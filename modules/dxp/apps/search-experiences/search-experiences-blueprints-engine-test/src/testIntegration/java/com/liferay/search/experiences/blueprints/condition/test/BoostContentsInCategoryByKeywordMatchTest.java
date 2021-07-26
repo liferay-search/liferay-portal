@@ -65,15 +65,11 @@ public class BoostContentsInCategoryByKeywordMatchTest
 
 		assertSearch(blueprint, null, "[coca cola, pepsi cola]", "cola", null);
 
-		String configurationString = getConfigurationString(
-			getQueryElementJSONObject(100, _assetCategory.getCategoryId()));
-
-		String selectedElementString = getSelectedElementString(
-			100, _assetCategory.getCategoryId());
-
 		assertSearch(
-			blueprint, configurationString, "[pepsi cola, coca cola]", "cola",
-			selectedElementString);
+			blueprint,
+			getConfigurationString(
+				getQueryElementJSONObject(100, _assetCategory.getCategoryId())),
+			"[pepsi cola, coca cola]", "cola", getSelectedElementString());
 	}
 
 	@Override
@@ -93,13 +89,6 @@ public class BoostContentsInCategoryByKeywordMatchTest
 			"en_US",
 			"Show Web Contents in a category higher in the results, if " +
 				"searchphrase contains any of the given keywords");
-	}
-
-	@Override
-	protected JSONObject getElementTemplateJSONObject() throws Exception {
-		return getElementTemplateJSONObject(
-			"/elements/boost-contents-in-a-category-by-keyword-match-" +
-				"test.json");
 	}
 
 	@Override

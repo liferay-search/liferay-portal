@@ -65,13 +65,11 @@ public class HideByExactTermMatchTest extends BaseBlueprintsTestCase {
 
 		assertSearch(
 			blueprint, null, "[hide me, do not hide me]", "hide me", null);
-
 		assertSearch(
 			blueprint,
 			getConfigurationString(
 				_getQueryElementJSONObject(journalFolder.getFolderId())),
-			"[do not hide me]", "hide me",
-			_getSelectedElementString(journalFolder.getFolderId()));
+			"[do not hide me]", "hide me", getSelectedElementString());
 	}
 
 	@Inject
@@ -123,35 +121,6 @@ public class HideByExactTermMatchTest extends BaseBlueprintsTestCase {
 		).put(
 			"title", JSONUtil.put("en_US", "Hide by an Exact Term Match")
 		);
-	}
-
-	private String _getSelectedElementString(long folderId) throws Exception {
-		JSONObject elementTemplateJSONObject = getElementTemplateJSONObject(
-			"/elements/hide-by-exact-term-match-test.json");
-
-		return JSONUtil.put(
-			"query_configuration",
-			createJSONArray().put(
-				JSONUtil.put(
-					"elementTemplateJSON",
-					elementTemplateJSONObject.get("elementTemplateJSON")
-				).put(
-					"uiConfigurationJSON",
-					elementTemplateJSONObject.get("uiConfigurationJSON")
-				).put(
-					"uiConfigurationValues",
-					JSONUtil.put(
-						"field",
-						JSONUtil.put(
-							"field", "folderId"
-						).put(
-							"languageIdPosition", -1
-						)
-					).put(
-						"value", folderId
-					)
-				))
-		).toString();
 	}
 
 }

@@ -74,7 +74,7 @@ public class LimitSearchToMySitesTest extends BaseBlueprintsTestCase {
 			Collections.singletonMap(
 				LocaleUtil.US, getClass().getName() + "Blueprint"),
 			Collections.singletonMap(LocaleUtil.US, ""), configurationString,
-			_getSelectedElementString());
+			getSelectedElementString());
 
 		assertSearchIgnoreRelevance(
 			blueprint, null, "[cola coca, cola pepsi]", "cola", null);
@@ -119,65 +119,6 @@ public class LimitSearchToMySitesTest extends BaseBlueprintsTestCase {
 		).put(
 			"title", JSONUtil.put("en_US", "Limit Search to My Sites")
 		);
-	}
-
-	private String _getSelectedElementString() throws Exception {
-		JSONObject elementTemplateJSONObject = getElementTemplateJSONObject(
-			"/elements/limit-search-to-my-sites-test.json");
-
-		return JSONUtil.put(
-			"query_configuration",
-			createJSONArray().put(
-				JSONUtil.put(
-					"elementOutput",
-					JSONUtil.put(
-						"category", "filter"
-					).put(
-						"clauses",
-						createJSONArray().put(
-							JSONUtil.put(
-								"context", "query"
-							).put(
-								"occur", "filter"
-							).put(
-								"query",
-								JSONUtil.put(
-									"wrapper",
-									JSONUtil.put(
-										"query",
-										JSONUtil.put(
-											"terms",
-											JSONUtil.put(
-												"scopeGroupId",
-												"${user.user_group_ids}"))))
-							))
-					).put(
-						"conditions",
-						createJSONArray().put(
-							JSONUtil.put("configuration", createJSONArray()))
-					).put(
-						"description",
-						JSONUtil.put(
-							"en_US",
-							"Limit search scope to the sites user is member of")
-					).put(
-						"enabled", true
-					).put(
-						"icon", "filter"
-					).put(
-						"title",
-						JSONUtil.put("en_US", "Limit Search to My Sites")
-					)
-				).put(
-					"elementTemplateJSON",
-					elementTemplateJSONObject.get("elementTemplateJSON")
-				).put(
-					"uiConfigurationJSON",
-					elementTemplateJSONObject.get("uiConfigurationJSON")
-				).put(
-					"uiConfigurationValues", JSONUtil.put(null, null)
-				))
-		).toString();
 	}
 
 	@DeleteAfterTestRun

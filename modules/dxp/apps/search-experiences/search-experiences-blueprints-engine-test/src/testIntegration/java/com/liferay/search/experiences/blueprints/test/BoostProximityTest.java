@@ -71,7 +71,7 @@ public class BoostProximityTest extends BaseBlueprintsTestCase {
 				LocaleUtil.US, getClass().getName() + "Blueprint"),
 			Collections.singletonMap(LocaleUtil.US, ""),
 			getConfigurationString(_getQueryElementJSONObject(100)),
-			_getSelectedElementString(100));
+			getSelectedElementString());
 
 		assertSearch(blueprint, null, "[branch sf, branch la]", "branch", null);
 
@@ -154,34 +154,6 @@ public class BoostProximityTest extends BaseBlueprintsTestCase {
 		).put(
 			"title", JSONUtil.put("en_US", "Boost Proximity")
 		);
-	}
-
-	private String _getSelectedElementString(int boost) throws Exception {
-		JSONObject elementTemplateJSONObject = getElementTemplateJSONObject(
-			"/elements/boost-proximity-test.json");
-
-		return JSONUtil.put(
-			"query_configuration",
-			createJSONArray().put(
-				JSONUtil.put(
-					"elementTemplateJSON",
-					elementTemplateJSONObject.get("elementTemplateJSON")
-				).put(
-					"uiConfigurationJSON",
-					elementTemplateJSONObject.get("uiConfigurationJSON")
-				).put(
-					"uiConfigurationValues",
-					JSONUtil.put(
-						"boost", boost
-					).put(
-						"decay", 0.3
-					).put(
-						"field", "expando__custom_fields__location_geolocation"
-					).put(
-						"scale", 100
-					)
-				))
-		).toString();
 	}
 
 	private static final String _EXPANDO_COLUMN_GEOLOCATION = "location";
