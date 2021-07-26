@@ -884,14 +884,9 @@ definition {
 }
 		''';
 
-		var uiConfigurationJSON = '''
-{}
-		''';
-
 		SearchExperiences.createElement(
 			elementTemplateJSON = "${elementTemplateJSON}",
-			name = "My Element",
-			uiConfigurationJSON = "${uiConfigurationJSON}");
+			name = "My Element");
 
 		Button.click(button = "Continue To Save");
 
