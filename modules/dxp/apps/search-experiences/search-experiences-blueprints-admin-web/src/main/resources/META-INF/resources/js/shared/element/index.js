@@ -154,6 +154,7 @@ function Element({
 					<ItemSelectorInput
 						disabled={disabled}
 						entityJSON={entityJSON}
+						id={inputId}
 						itemType={typeOptions.itemType}
 						label={config.label}
 						name={inputName}
@@ -179,6 +180,7 @@ function Element({
 				return (
 					<MultiSelectInput
 						disabled={disabled}
+						id={inputId}
 						label={config.label}
 						name={inputName}
 						nullable={nullable}
@@ -212,6 +214,7 @@ function Element({
 					<SelectInput
 						configKey={config.name}
 						disabled={disabled}
+						id={inputId}
 						label={config.label}
 						name={inputName}
 						nullable={nullable}
@@ -226,6 +229,7 @@ function Element({
 				return (
 					<SliderInput
 						disabled={disabled}
+						id={inputId}
 						label={config.label}
 						max={typeOptions.max}
 						min={typeOptions.min}
@@ -243,6 +247,7 @@ function Element({
 				return (
 					<TextInput
 						disabled={disabled}
+						id={inputId}
 						label={config.label}
 						name={inputName}
 						nullable={nullable}

@@ -16,6 +16,7 @@ import NullableCheckbox from './NullableCheckbox';
 
 function TextInput({
 	disabled,
+	id,
 	label,
 	name,
 	nullable,
@@ -31,6 +32,7 @@ function TextInput({
 					<ClayInput
 						aria-label={label}
 						disabled={disabled || value === null}
+						id={id}
 						name={name}
 						onBlur={onBlur}
 						onChange={onChange}

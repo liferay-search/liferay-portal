@@ -20,6 +20,7 @@ import NullableCheckbox from './NullableCheckbox';
 function ItemSelectorInput({
 	disabled,
 	entityJSON,
+	id,
 	itemType,
 	label,
 	name,
@@ -74,6 +75,7 @@ function ItemSelectorInput({
 					<ClayInput
 						aria-label={label}
 						disabled={disabled || value === null}
+						id={id}
 						name={name}
 						readOnly
 						type="text"
