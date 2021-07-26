@@ -81,7 +81,7 @@ public class BoostContentsOnMySitesTest extends BaseBlueprintsTestCase {
 
 		assertSearch(
 			blueprint, getConfigurationString(_getQueryElementJSONObject(100)),
-			"[pepsi cola, coca cola]", "cola", _getSelectedElementString(100));
+			"[pepsi cola, coca cola]", "cola", getSelectedElementString());
 	}
 
 	private JSONObject _getQueryElementJSONObject(int boost) {
@@ -120,25 +120,6 @@ public class BoostContentsOnMySitesTest extends BaseBlueprintsTestCase {
 		).put(
 			"title", JSONUtil.put("en_US", "Boost Contents on My Sites")
 		);
-	}
-
-	private String _getSelectedElementString(int boost) throws Exception {
-		JSONObject elementTemplateJSONObject = getElementTemplateJSONObject(
-			"/elements/boost-contents-on-my-sites-test.json");
-
-		return JSONUtil.put(
-			"query_configuration",
-			createJSONArray().put(
-				JSONUtil.put(
-					"elementTemplateJSON",
-					elementTemplateJSONObject.get("elementTemplateJSON")
-				).put(
-					"uiConfigurationJSON",
-					elementTemplateJSONObject.get("uiConfigurationJSON")
-				).put(
-					"uiConfigurationValues", JSONUtil.put("boost", boost)
-				))
-		).toString();
 	}
 
 	@DeleteAfterTestRun

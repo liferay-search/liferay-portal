@@ -76,17 +76,13 @@ public class LimitSearchToTheseSitesTest extends BaseBlueprintsTestCase {
 		assertSearchIgnoreRelevance(
 			blueprint, null, "[cola coca, cola pepsi, cola sprite]", "cola",
 			null);
-
 		assertSearchIgnoreRelevance(
 			blueprint,
 			getConfigurationString(
 				_getQueryElementJSONObject(
 					_getScopeGourpIdJSONArray(
 						groupA.getGroupId(), groupB.getGroupId()))),
-			"[cola coca, cola pepsi]", "cola",
-			_getSelectedElementString(
-				_getScopeGorupIdLabelValueJSONArray(
-					groupA.getGroupId(), groupB.getGroupId())));
+			"[cola coca, cola pepsi]", "cola", getSelectedElementString());
 	}
 
 	private JSONObject _getQueryElementJSONObject(
@@ -125,27 +121,6 @@ public class LimitSearchToTheseSitesTest extends BaseBlueprintsTestCase {
 		);
 	}
 
-	private JSONArray _getScopeGorupIdLabelValueJSONArray(
-		long... scopeGroupId) {
-
-		JSONArray jsonArray = createJSONArray();
-
-		if (scopeGroupId == null) {
-			return jsonArray;
-		}
-
-		for (long groupId : scopeGroupId) {
-			jsonArray.put(
-				JSONUtil.put(
-					"label", groupId
-				).put(
-					"value", groupId
-				));
-		}
-
-		return jsonArray;
-	}
-
 	private JSONArray _getScopeGourpIdJSONArray(long... scopeGroupId) {
 		JSONArray jsonArray = createJSONArray();
 
@@ -158,38 +133,6 @@ public class LimitSearchToTheseSitesTest extends BaseBlueprintsTestCase {
 		}
 
 		return jsonArray;
-	}
-
-	private String _getSelectedElementString(
-			JSONArray gorupIdLabelValueJSONArray)
-		throws Exception {
-
-		JSONObject elementTemplateJSONObject = getElementTemplateJSONObject(
-			"/elements/limit-search-to-these-sites-test.json");
-
-		return JSONUtil.put(
-			"query_configuration",
-			createJSONArray().put(
-				JSONUtil.put(
-					"elementTemplateJSON",
-					elementTemplateJSONObject.get("elementTemplateJSON")
-				).put(
-					"uiConfigurationJSON",
-					elementTemplateJSONObject.get("uiConfigurationJSON")
-				).put(
-					"uiConfigurationValues",
-					JSONUtil.put(
-						"field",
-						JSONUtil.put(
-							"field", "groupId"
-						).put(
-							"languageIdPosition", -1
-						)
-					).put(
-						"values", gorupIdLabelValueJSONArray
-					)
-				))
-		).toString();
 	}
 
 	@DeleteAfterTestRun

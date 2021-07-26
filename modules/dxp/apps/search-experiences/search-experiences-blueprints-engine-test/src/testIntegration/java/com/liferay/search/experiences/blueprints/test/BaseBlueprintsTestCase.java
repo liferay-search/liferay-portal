@@ -96,9 +96,13 @@ public abstract class BaseBlueprintsTestCase {
 			String configuration, String selectedElements)
 		throws Exception {
 
-		return blueprintService.addCompanyBlueprint(
+		Blueprint blueprint = blueprintService.addCompanyBlueprint(
 			titleMap, descriptionMap, configuration, selectedElements,
 			serviceContext);
+
+		blueprints.add(blueprint);
+
+		return blueprint;
 	}
 
 	protected void addExpandoColumn(int indexType, String... columns)
@@ -141,9 +145,13 @@ public abstract class BaseBlueprintsTestCase {
 			String configuration, String selectedElements)
 		throws Exception {
 
-		return blueprintService.addGroupBlueprint(
+		Blueprint blueprint = blueprintService.addGroupBlueprint(
 			titleMap, descriptionMap, configuration, selectedElements,
 			serviceContext);
+
+		blueprints.add(blueprint);
+
+		return blueprint;
 	}
 
 	protected JournalArticle addJournalArticle(
@@ -359,6 +367,12 @@ public abstract class BaseBlueprintsTestCase {
 		return JSONUtil.put(null, null);
 	}
 
+	protected String getSelectedElementString() throws Exception {
+		return JSONUtil.put(
+			"query_configuration", createJSONArray()
+		).toString();
+	}
+
 	protected JSONArray getSortConfiguration() {
 		return createJSONArray();
 	}
@@ -390,6 +404,9 @@ public abstract class BaseBlueprintsTestCase {
 		return JournalTestUtil.updateArticle(
 			journalArticle, title, content, false, true, serviceContext);
 	}
+
+	@DeleteAfterTestRun
+	protected List<Blueprint> blueprints = new ArrayList<>();
 
 	@Inject
 	protected BlueprintsAttributesBuilderFactory

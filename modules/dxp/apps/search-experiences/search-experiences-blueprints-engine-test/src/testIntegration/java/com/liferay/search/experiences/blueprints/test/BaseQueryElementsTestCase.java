@@ -109,8 +109,8 @@ public abstract class BaseQueryElementsTestCase extends BaseBlueprintsTestCase {
 	}
 
 	protected JSONObject getMultiMatchJSONObject(
-		int boost, String fuzziness, Integer minimumShouldMatch,
-		String operator, String type) {
+		int boost, int titleBoost, int contentBoost, String fuzziness,
+		Integer minimumShouldMatch, String operator, String type) {
 
 		JSONArray fieldsJSONArray = createJSONArray();
 
@@ -119,9 +119,9 @@ public abstract class BaseQueryElementsTestCase extends BaseBlueprintsTestCase {
 		).put(
 			"fields",
 			fieldsJSONArray.put(
-				"localized_title${context.language_id}^2"
+				"localized_title${context.language_id}^" + titleBoost
 			).put(
-				"content${context.language_id}^1"
+				"content${context.language_id}^" + contentBoost
 			)
 		).put(
 			"operator", operator
@@ -140,6 +140,92 @@ public abstract class BaseQueryElementsTestCase extends BaseBlueprintsTestCase {
 		}
 
 		return jsonObject;
+	}
+
+	protected JSONObject getMultiMatchJSONObject(
+		int boost, String fuzziness, Integer minimumShouldMatch,
+		String operator, String type) {
+
+		return getMultiMatchJSONObject(
+			boost, 2, 1, fuzziness, minimumShouldMatch, operator, type);
+
+		//		JSONArray fieldsJSONArray = createJSONArray();
+
+		//
+		//		JSONObject jsonObject = JSONUtil.put(
+		//			"boost", boost
+		//		).put(
+		//			"fields",
+		//			fieldsJSONArray.put(
+		//				"localized_title${context.language_id}^2"
+		//			).put(
+		//				"content${context.language_id}^1"
+		//			)
+		//		).put(
+		//			"operator", operator
+		//		).put(
+		//			"query", "${keywords}"
+		//		).put(
+		//			"type", type
+		//		);
+		//
+		//		if (minimumShouldMatch != null) {
+		//			jsonObject.put("minimum_should_match", minimumShouldMatch);
+		//		}
+		//
+		//		if (fuzziness != null) {
+		//			jsonObject.put("fuzziness", fuzziness);
+		//		}
+		//
+		//		return jsonObject;
+	}
+
+	protected JSONObject getMultiMatchQueryElementJSONObject(
+		int boost, int titleBoost, int contentBoost, String fuzziness,
+		Integer minimumShouldMatch, String operator, String type) {
+
+		return JSONUtil.put(
+			"category", "match"
+		).put(
+			"clauses",
+			createJSONArray().put(
+				JSONUtil.put(
+					"context", "query"
+				).put(
+					"occur", "must"
+				).put(
+					"query",
+					JSONUtil.put(
+						"wrapper",
+						JSONUtil.put(
+							"query",
+							JSONUtil.put(
+								"multi_match",
+								getMultiMatchJSONObject(
+									boost, titleBoost, contentBoost, fuzziness,
+									minimumShouldMatch, operator, type))))
+				))
+		).put(
+			"conditions", JSONUtil.put(null, null)
+		).put(
+			"description",
+			JSONUtil.put(
+				"en_US", "Search for a text match over multiple text fields")
+		).put(
+			"enabled", true
+		).put(
+			"icon", "picture"
+		).put(
+			"title", JSONUtil.put("en_US", "Text Match Over Multiple Fields")
+		);
+	}
+
+	protected JSONObject getMultiMatchQueryElementJSONObject(
+		int boost, int titleBoost, int contentBoost, String fuzziness,
+		String operator, String type) {
+
+		return getMultiMatchQueryElementJSONObject(
+			boost, titleBoost, contentBoost, fuzziness, null, operator, type);
 	}
 
 	protected JSONObject getMultiMatchQueryElementJSONObject(
@@ -232,20 +318,6 @@ public abstract class BaseQueryElementsTestCase extends BaseBlueprintsTestCase {
 						"query", queryValues[0]
 					)))
 		);
-	}
-
-	protected String getSelectedElementString(JSONObject... jsonObjects)
-		throws Exception {
-
-		JSONArray jsonArray = createJSONArray();
-
-		for (JSONObject jsonObject : jsonObjects) {
-			jsonArray.put(jsonObject);
-		}
-
-		return JSONUtil.put(
-			"query_configuration", jsonArray
-		).toString();
 	}
 
 	protected JSONObject getTextMatchOverMultipleFieldJSONObject(

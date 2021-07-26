@@ -54,9 +54,6 @@ public abstract class BaseBoostContentsInCategoryTestCase
 
 	protected abstract JSONObject getDescription();
 
-	protected abstract JSONObject getElementTemplateJSONObject()
-		throws Exception;
-
 	protected String getIcon() {
 		return "thumbs-up";
 	}
@@ -98,27 +95,6 @@ public abstract class BaseBoostContentsInCategoryTestCase
 		).put(
 			"title", getTitle()
 		);
-	}
-
-	protected String getSelectedElementString(int boost, long categoryId)
-		throws Exception {
-
-		JSONObject elementTemplateJSONObject = getElementTemplateJSONObject();
-
-		return JSONUtil.put(
-			"query_configuration",
-			createJSONArray().put(
-				JSONUtil.put(
-					"elementTemplateJSON",
-					elementTemplateJSONObject.get("elementTemplateJSON")
-				).put(
-					"uiConfigurationJSON",
-					elementTemplateJSONObject.get("uiConfigurationJSON")
-				).put(
-					"uiConfigurationValues",
-					getUIConfigurationValuesJSONObject()
-				))
-		).toString();
 	}
 
 	protected abstract JSONObject getTitle();

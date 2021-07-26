@@ -48,40 +48,26 @@ public class HideFromScratchTest extends BaseQueryElementsTestCase {
 		addJournalArticle("Cloud Cafe", "Orange County");
 		addJournalArticle("Denny's", "Los Angeles");
 
-		String configurationString = getConfigurationString(
-			getMatchQueryElementJSONObject(200, "must_not", "los angeles"),
-			getMultiMatchQueryElementJSONObject(1, "AUTO", "or"),
-			getHideHiddenContentsElementJSONObject());
-
-		String selectedElementString = getSelectedElementString(
-			getPasteESQueryJSONObject(200, "must_not", "los angeles"),
-			getTextMatchOverMultipleFieldJSONObject(
-				1, 1, "AUTO", 2, "or", "best_fields"),
-			getHideHiddenContentsJSONObject());
-
 		Blueprint blueprint = addCompanyBlueprint(
 			Collections.singletonMap(
 				LocaleUtil.US, getClass().getName() + "Blueprint"),
-			Collections.singletonMap(LocaleUtil.US, ""), configurationString,
-			selectedElementString);
+			Collections.singletonMap(LocaleUtil.US, ""),
+			getConfigurationString(
+				getMatchQueryElementJSONObject(200, "must_not", "los angeles"),
+				getMultiMatchQueryElementJSONObject(1, "AUTO", "or"),
+				getHideHiddenContentsElementJSONObject()),
+			getSelectedElementString());
 
 		assertSearchIgnoreRelevance(
 			blueprint, null, "[cloud cafe]", "cafe", null);
-
-		configurationString = getConfigurationString(
-			getMatchQueryElementJSONObject(200, "must_not", "orange county"),
-			getMultiMatchQueryElementJSONObject(1, "AUTO", "or"),
-			getHideHiddenContentsElementJSONObject());
-
-		selectedElementString = getSelectedElementString(
-			getPasteESQueryJSONObject(200, "must_not", "orange county", null),
-			getTextMatchOverMultipleFieldJSONObject(
-				1, 1, "AUTO", 2, "or", "best_fields"),
-			getHideHiddenContentsJSONObject());
-
 		assertSearchIgnoreRelevance(
-			blueprint, configurationString, "[cafe rio, starbucks cafe]",
-			"cafe", selectedElementString);
+			blueprint,
+			getConfigurationString(
+				getMatchQueryElementJSONObject(
+					200, "must_not", "orange county"),
+				getMultiMatchQueryElementJSONObject(1, "AUTO", "or"),
+				getHideHiddenContentsElementJSONObject()),
+			"[cafe rio, starbucks cafe]", "cafe", getSelectedElementString());
 	}
 
 }

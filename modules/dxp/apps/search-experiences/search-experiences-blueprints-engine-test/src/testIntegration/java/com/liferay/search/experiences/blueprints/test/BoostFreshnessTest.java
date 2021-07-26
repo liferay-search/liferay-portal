@@ -64,8 +64,7 @@ public class BoostFreshnessTest extends BaseBlueprintsTestCase {
 			blueprint,
 			getConfigurationString(
 				_getFunctionScoreElementJSONObject(1000, 0.5, "0s", "2s")),
-			"[pepsi cola, coca cola]", "cola",
-			_getSelectedElementString(0.5, 0, 2));
+			"[pepsi cola, coca cola]", "cola", getSelectedElementString());
 	}
 
 	private JSONObject _getFunctionScoreElementJSONObject(
@@ -120,35 +119,6 @@ public class BoostFreshnessTest extends BaseBlueprintsTestCase {
 		).put(
 			"title", JSONUtil.put("en_US", "Boost Freshness")
 		);
-	}
-
-	private String _getSelectedElementString(
-			double decay, int offset, int scale)
-		throws Exception {
-
-		JSONObject elementTemplateJSONObject = getElementTemplateJSONObject(
-			"/elements/boost-freshness-test.json");
-
-		return JSONUtil.put(
-			"query_configuration",
-			createJSONArray().put(
-				JSONUtil.put(
-					"elementTemplateJSON",
-					elementTemplateJSONObject.get("elementTemplateJSON")
-				).put(
-					"uiConfigurationJSON",
-					elementTemplateJSONObject.get("uiConfigurationJSON")
-				).put(
-					"uiConfigurationValues",
-					JSONUtil.put(
-						"decay", decay
-					).put(
-						"offset", offset
-					).put(
-						"scale", scale
-					)
-				))
-		).toString();
 	}
 
 }

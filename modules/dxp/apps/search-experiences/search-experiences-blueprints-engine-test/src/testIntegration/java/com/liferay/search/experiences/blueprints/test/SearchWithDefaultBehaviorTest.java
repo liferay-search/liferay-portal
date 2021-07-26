@@ -47,20 +47,14 @@ public class SearchWithDefaultBehaviorTest extends BaseQueryElementsTestCase {
 		addJournalArticle("Cloud Cafe", "Orange County");
 		addJournalArticle("Cafe Rio", "Los Angeles");
 
-		String configurationString = getConfigurationString(
-			getMatchQueryElementJSONObject(200, "should", "los angeles"),
-			getMultiMatchQueryElementJSONObject(1, "AUTO", "or"));
-
-		String selectedElementString = getSelectedElementString(
-			getPasteESQueryJSONObject(200, "should", "los angeles"),
-			getTextMatchOverMultipleFieldJSONObject(
-				1, 2, "AUTO", 1, "or", "best_fields"));
-
 		Blueprint blueprint = addCompanyBlueprint(
 			Collections.singletonMap(
 				LocaleUtil.US, getClass().getName() + "Blueprint"),
-			Collections.singletonMap(LocaleUtil.US, ""), configurationString,
-			selectedElementString);
+			Collections.singletonMap(LocaleUtil.US, ""),
+			getConfigurationString(
+				getMatchQueryElementJSONObject(200, "should", "los angeles"),
+				getMultiMatchQueryElementJSONObject(1, "AUTO", "or")),
+			getSelectedElementString());
 
 		assertSearch(blueprint, null, "[cafe rio, cloud cafe]", "cafe", null);
 

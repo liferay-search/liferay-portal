@@ -63,10 +63,9 @@ public class HideTaggedContentTest extends BaseBlueprintsTestCase {
 
 		assertSearch(
 			blueprint, null, "[hide me, do not hide me]", "hide me", null);
-
 		assertSearch(
 			blueprint, getConfigurationString(_getQueryElementJSONObject()),
-			"[do not hide me]", "hide me", _getSelectedElementString("hide"));
+			"[do not hide me]", "hide me", getSelectedElementString());
 	}
 
 	private JSONObject _getQueryElementJSONObject() {
@@ -108,25 +107,6 @@ public class HideTaggedContentTest extends BaseBlueprintsTestCase {
 		).put(
 			"title", JSONUtil.put("en_US", "Hide Tagged Contents")
 		);
-	}
-
-	private String _getSelectedElementString(String assetTag) throws Exception {
-		JSONObject elementTemplateJSONObject = getElementTemplateJSONObject(
-			"/elements/hide-tagged-contents-test.json");
-
-		return JSONUtil.put(
-			"query_configuration",
-			createJSONArray().put(
-				JSONUtil.put(
-					"elementTemplateJSON",
-					elementTemplateJSONObject.get("elementTemplateJSON")
-				).put(
-					"uiConfigurationJSON",
-					elementTemplateJSONObject.get("uiConfigurationJSON")
-				).put(
-					"uiConfigurationValues", JSONUtil.put("asset_tag", assetTag)
-				))
-		).toString();
 	}
 
 }
