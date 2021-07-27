@@ -15,7 +15,6 @@ import ClayList from '@clayui/list';
 import ClaySticker from '@clayui/sticker';
 import ClayTable from '@clayui/table';
 import {ClayTooltipProvider} from '@clayui/tooltip';
-import getCN from 'classnames';
 import React, {useEffect, useState} from 'react';
 
 import {
@@ -232,41 +231,7 @@ function ClauseContributorsTab({
 
 	return (
 		<div className="clause-contributors-tab">
-			<ManagementToolbar
-				allItems={contributors.reduce(
-					(acc, curr) => [...curr.value, ...acc],
-					[]
-				)}
-				category={category}
-				filterItems={filterItems}
-				keyword={keyword}
-				onApplyBaseline={_handleApplyBaseline}
-				onClearCategory={() => setCategory(ALL)}
-				onClearStatus={() => setStatus(ALL)}
-				onReverseSort={() =>
-					setSortDirection(
-						sortDirection === ASCENDING ? DESCENDING : ASCENDING
-					)
-				}
-				onUpdateEnabled={_handleUpdateEnabled}
-				selected={selected}
-				setKeyword={setKeyword}
-				setSelected={setSelected}
-				sortDirection={sortDirection}
-				status={status}
-			/>
-
-			<div
-				className={getCN(
-					'container-fluid',
-					'container-fluid-max-xl',
-					'clause-contributors-table',
-					{
-						'subnav-open':
-							!!keyword || status !== ALL || category !== ALL,
-					}
-				)}
-			>
+			<div className="container-fluid container-fluid-max-xl">
 				<div className="container-view">
 					<div className="clause-content-shift">
 						<ClayList>
@@ -309,6 +274,32 @@ function ClauseContributorsTab({
 								</ClayList.ItemField>
 							</ClayList.Item>
 						</ClayList>
+
+						<ManagementToolbar
+							allItems={contributors.reduce(
+								(acc, curr) => [...curr.value, ...acc],
+								[]
+							)}
+							category={category}
+							filterItems={filterItems}
+							keyword={keyword}
+							onApplyBaseline={_handleApplyBaseline}
+							onClearCategory={() => setCategory(ALL)}
+							onClearStatus={() => setStatus(ALL)}
+							onReverseSort={() =>
+								setSortDirection(
+									sortDirection === ASCENDING
+										? DESCENDING
+										: ASCENDING
+								)
+							}
+							onUpdateEnabled={_handleUpdateEnabled}
+							selected={selected}
+							setKeyword={setKeyword}
+							setSelected={setSelected}
+							sortDirection={sortDirection}
+							status={status}
+						/>
 
 						<ClayTable>
 							<ClayTable.Head>

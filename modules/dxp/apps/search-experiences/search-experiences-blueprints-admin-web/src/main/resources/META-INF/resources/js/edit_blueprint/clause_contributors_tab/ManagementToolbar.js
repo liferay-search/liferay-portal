@@ -46,7 +46,7 @@ function ManagementToolbar({
 	const [value, setValue] = useState('');
 
 	return (
-		<div className="clause-contributors-navbar">
+		<>
 			<ClayManagementToolbar
 				className={getCN('clause-contributors-management-bar', {
 					'management-bar-primary': selected.length > 0,
@@ -155,7 +155,7 @@ function ManagementToolbar({
 											className="nav-link"
 											displayType="unstyled"
 										>
-											<span className="navbar-breakpoint-down-d-none">
+											<span className="navbar-breakpoint-full">
 												<span className="navbar-text-truncate">
 													{Liferay.Language.get(
 														'filter-and-order'
@@ -167,7 +167,7 @@ function ManagementToolbar({
 													symbol="caret-bottom"
 												/>
 											</span>
-											<span className="navbar-breakpoint-d-none">
+											<span className="navbar-breakpoint-compact">
 												<ClayIcon symbol="filter" />
 											</span>
 										</ClayButton>
@@ -249,7 +249,7 @@ function ManagementToolbar({
 									onSubmit={onApplyBaseline}
 									visible={showModal}
 								/>
-								<span className="navbar-breakpoint-down-d-none">
+								<span className="navbar-breakpoint-full">
 									<ClayButton
 										displayType="secondary"
 										onClick={() => setShowModal(true)}
@@ -259,7 +259,7 @@ function ManagementToolbar({
 										)}
 									</ClayButton>
 								</span>
-								<span className="navbar-breakpoint-d-none">
+								<span className="navbar-breakpoint-compact">
 									<ClayButton
 										displayType="secondary"
 										onClick={() => setShowModal(true)}
@@ -329,7 +329,7 @@ function ManagementToolbar({
 					</ClayResultsBar.Item>
 				</ClayResultsBar>
 			)}
-		</div>
+		</>
 	);
 }
 
