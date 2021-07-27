@@ -1,34 +1,34 @@
 .clause-contributors-tab {
-	.clause-contributors-navbar {
-		margin-top: $pageToolbarHeight;
-		position: fixed;
-		width: 100%;
-		z-index: 970;
+	padding-top: $pageToolbarHeight;
 
-		.management-bar {
-			border-bottom: 1px solid $mainLighten74;
+	.management-bar {
+		border: 1px solid $mainLighten74;
+		border-bottom: 0;
 
-			.search {
-				padding-left: 12px;
-				padding-right: 16px;
-				width: 100%;
-			}
-		}
-
-		.subnav-tbar {
-			.component-label {
-				margin-right: 8px;
-			}
+		.search {
+			padding-left: 12px;
+			padding-right: 16px;
+			width: 100%;
 		}
 	}
 
-	.clause-contributors-table {
-		padding-top: calc(#{$pageToolbarHeight} + #{$managementBarHeight});
+	.subnav-tbar {
+		.component-label {
+			margin-right: 8px;
+		}
+	}
 
-		&.subnav-open {
-			padding-top: calc(
-				#{$pageToolbarHeight} + #{$managementBarHeight} + #{$subNavBarHeight}
-			);
+	.table-list {
+		border-radius: 0;
+
+		thead:first-child tr:first-child {
+			th:first-child {
+				border-top-left-radius: 0;
+			}
+
+			th:last-child {
+				border-top-right-radius: 0;
+			}
 		}
 
 		.table-divider td {
@@ -51,6 +51,10 @@
 	transition: margin-right ease 0.2s;
 }
 
+.navbar-breakpoint-compact {
+	display: none;
+}
+
 @media (min-width: calc(#{$clauseMinWidth} + #{$previewSidebarWidth})) {
 	.open-preview .clause-content-shift {
 		margin-right: calc(
@@ -59,5 +63,23 @@
 				#{$previewSidebarWidth} - (50vw - 50%) + 24px
 			)
 		);
+
+		.navbar-breakpoint-full {
+			display: none;
+		}
+
+		.navbar-breakpoint-compact {
+			display: block;
+		}
+	}
+}
+
+@media (max-width: $breakpointMaxWidth) {
+	.navbar-breakpoint-full {
+		display: none;
+	}
+
+	.navbar-breakpoint-compact {
+		display: block;
 	}
 }

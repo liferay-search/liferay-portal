@@ -61,11 +61,4 @@
 		transform: translateX(0);
 		transition: transform ease 0.2s;
 	}
-
-	&.shift-down {
-		height: calc(
-			100% - #{$controlMenuToolbarHeight} - #{$pageToolbarHeight} - #{$managementBarHeight}
-		);
-		margin-top: calc(#{$pageToolbarHeight} + #{$managementBarHeight});
-	}
 }

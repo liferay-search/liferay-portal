@@ -706,9 +706,6 @@ function EditBlueprintForm({
 			</PageToolbar>
 
 			<PreviewSidebar
-				className={getCN({
-					'shift-down': tab === 'clause-contributors',
-				})}
 				loading={previewInfo.loading}
 				onFetchResults={_handleFetchPreviewSearch}
 				onFocusElement={_handleFocusElement}
