@@ -986,7 +986,11 @@ definition {
 			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_GENERIC_FIELD",
 			value1 = "1");
 
+		AssertElementNotPresent(locator1 = "TextInput#REQUIRED_ALERT");
+
 		PortletEntry.save();
+
+		AssertElementNotPresent(locator1 = "TextInput#REQUIRED_ALERT");
 
 		SearchExperiences.editElement(name = "Test Element");
 
