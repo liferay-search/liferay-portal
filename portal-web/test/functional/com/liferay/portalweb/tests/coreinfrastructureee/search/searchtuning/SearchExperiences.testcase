@@ -958,9 +958,7 @@ definition {
 
 		Button.clickSave();
 
-		AssertTextEquals(
-			locator1 = "Message#ERROR_FORM_FIELD_REQUIRED",
-			value1 = "This field is required.");
+		Alert.viewRequiredField();
 
 		Click(locator1 = "SearchExperiences#BLUEPRINTS_QUERY_BUILDER_ADD_FIELD_MAPPING_FIELD");
 
@@ -979,9 +977,7 @@ definition {
 			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_GENERIC_FIELD",
 			value1 = "");
 
-		AssertTextEquals(
-			locator1 = "Message#ERROR_FORM_FIELD_REQUIRED",
-			value1 = "This field is required.");
+		Alert.viewRequiredField();
 
 		Type(
 			key_fieldLabel = "Boost",
