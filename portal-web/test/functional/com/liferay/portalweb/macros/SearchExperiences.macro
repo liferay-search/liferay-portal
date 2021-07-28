@@ -23,7 +23,7 @@ definition {
 		AssertElementPresent(locator1 = "SearchExperiences#BLUEPRINTS_ADD_QUERY_ELEMENTS_HEADER");
 
 		if (IsElementPresent(locator1 = "SearchExperiences#BLUEPRINTS_ADD_QUERY_ELEMENTS_SEARCH_CLEAR")) {
-			Click(locator1 = "SearchExperiences#BLUEPRINTS_ADD_QUERY_ELEMENTS_SEARCH_CLEAR");
+			Click.clickNoMouseOver(locator1 = "SearchExperiences#BLUEPRINTS_ADD_QUERY_ELEMENTS_SEARCH_CLEAR");
 		}
 
 		Type.sendKeysApplicationSearch(
@@ -41,7 +41,7 @@ definition {
 		if (isSet(assetType)) {
 			Click(locator1 = "SearchExperiences#BLUEPRINTS_QUERY_BUILDER_ASSET_TYPE_DROPDOWN");
 
-			Click(
+			Click.clickNoMouseOver(
 				locator1 = "SearchExperiences#BLUEPRINTS_QUERY_BUILDER_ASSET_TYPE_OPTION",
 				sortOption = "${assetType}");
 		}
