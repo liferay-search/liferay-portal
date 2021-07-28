@@ -906,11 +906,53 @@ definition {
 	test ViewQueryBuilderFieldValidation {
 		SearchExperiences.openSearchExperiencesAdmin();
 
-		SearchExperiences.addBlueprint(name = "Validate Field Values");
+		var elementTemplateJSON = '''
+{
+	"enabled": true,
+	"title": {
+		"en_US": "Test Element"
+	}
+}
+		''';
 
-		SearchExperiences.addQueryElement(element = "Text Match Over Multiple Fields");
+		var uiConfigurationJSON = '''
+{
+	"fieldSets": [
+		{
+			"fields": [
+				{
+					"defaultValue": [
+						{
+							"field": "localized_title",
+							"locale": "hu_HU"
+						}
+					],
+					"label": "Fields",
+					"name": "fields",
+					"type": "fieldMappingList"
+				},
+				{
+					"defaultValue": 1,
+					"label": "Boost",
+					"name": "boost",
+					"type": "number"
+				}
+			]
+		}
+	]
+}
+		''';
 
-		Click(locator1 = "Icon#DELETE");
+		SearchExperiences.createElement(
+			elementTemplateJSON = "${elementTemplateJSON}",
+			name = "Test Element",
+			uiConfigurationJSON = "${uiConfigurationJSON}");
+
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		SearchExperiences.addBlueprint(name = "Test Blueprint");
+
+		SearchExperiences.addQueryElement(element = "Test Element");
 
 		Click(locator1 = "Icon#DELETE");
 
@@ -932,22 +974,6 @@ definition {
 			value1 = "title");
 
 		Type(
-			key_fieldLabel = "Minimum Should Match",
-			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_TEXT_FIELD",
-			value1 = "");
-
-		Button.clickSave();
-
-		AssertTextEquals(
-			locator1 = "Message#ERROR_FORM_FIELD_REQUIRED",
-			value1 = "This field is required.");
-
-		Type(
-			key_fieldLabel = "Minimum Should Match",
-			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_TEXT_FIELD",
-			value1 = "1");
-
-		Type(
 			key_fieldLabel = "Boost",
 			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_GENERIC_FIELD",
 			value1 = "");
@@ -965,9 +991,7 @@ definition {
 
 		PortletEntry.save();
 
-		Navigator.gotoNavItem(navItem = "Elements");
-
-		SearchExperiences.editElement(name = "Text Match Over Multiple Fields");
+		SearchExperiences.editElement(name = "Test Element");
 
 		var uiConfigurationJSON = '''
 {
@@ -977,90 +1001,25 @@ definition {
 				{
 					"defaultValue": [
 						{
-							"field": "content",
-							"boost": "1",
-							"locale": "${context.language_id}"
+							"field": "localized_title",
+							"locale": "hu_HU"
 						}
 					],
-					"name": "fields",
-					"typeOptions": {
-						"boost": true
-					},
 					"label": "Fields",
-					"type": "fieldMappingList"
-				},
-				{
-					"defaultValue": "or",
-					"name": "operator",
+					"name": "fields",
+					"type": "fieldMappingList",
 					"typeOptions": {
-						"options": [
-							{
-								"label": "OR",
-								"value": "or"
-							}
-						]
-					},
-					"label": "Operator",
-					"type": "select"
-				},
-				{
-					"defaultValue": "best_fields",
-					"name": "type",
-					"typeOptions": {
-						"options": [
-							{
-								"label": "Best Fields",
-								"value": "best_fields"
-							}
-						]
-					},
-					"label": "Match Type",
-					"type": "select"
-				},
-				{
-					"defaultValue": "AUTO",
-					"name": "fuzziness",
-					"typeOptions": {
-						"nullable": true,
-						"options": [
-							{
-								"label": "Auto",
-								"value": "AUTO"
-							}
-						]
-					},
-					"label": "Fuzziness",
-					"type": "select"
-				},
-				{
-					"defaultValue": "",
-					"name": "minimum_should_match",
-					"typeOptions": {
-						"nullable": true,
 						"required": false
-					},
-					"label": "Minimum Should Match",
-					"type": "text"
-				},
-				{
-					"defaultValue": null,
-					"name": "slop",
-					"typeOptions": {
-						"min": 0,
-						"nullable": true,
-						"step": 1
-					},
-					"label": "Slop",
-					"type": "number"
+					}
 				},
 				{
 					"defaultValue": 1,
-					"name": "boost",
-					"typeOptions": {
-						"min": 0
-					},
 					"label": "Boost",
-					"type": "number"
+					"name": "boost",
+					"type": "number",
+					"typeOptions": {
+						"required": false
+					}
 				}
 			]
 		}
@@ -1076,9 +1035,9 @@ definition {
 
 		SearchExperiences.openSearchExperiencesAdmin();
 
-		SearchExperiences.editBlueprint(name = "Validate Field Values");
+		SearchExperiences.editBlueprint(name = "Test Blueprint");
 
-		SearchExperiences.addQueryElement(element = "Text Match Over Multiple Fields");
+		SearchExperiences.addQueryElement(element = "Test Element");
 
 		PortletEntry.save();
 	}
