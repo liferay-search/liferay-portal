@@ -218,12 +218,12 @@ definition {
 
 		Type(
 			key_fieldLabel = "Field",
-			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_TEXT_FIELD",
+			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_ELEMENT_TEXT_FIELD",
 			value1 = "ddmStructureKey");
 
 		Type(
 			key_fieldLabel = "Values",
-			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_TEXT_FIELD",
+			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_ELEMENT_TEXT_FIELD",
 			value1 = "BASIC-WEB-CONTENT");
 
 		var elasticsearchQueryJSON = '''
@@ -966,7 +966,7 @@ definition {
 
 		Type(
 			key_fieldLabel = "Field",
-			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_TEXT_FIELD",
+			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_ELEMENT_TEXT_FIELD",
 			value1 = "title");
 
 		KeyPress(
@@ -976,14 +976,14 @@ definition {
 
 		Type(
 			key_fieldLabel = "Boost",
-			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_GENERIC_FIELD",
+			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_ELEMENT_GENERIC_FIELD",
 			value1 = "");
 
 		Alert.viewRequiredField();
 
 		Type(
 			key_fieldLabel = "Boost",
-			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_GENERIC_FIELD",
+			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_ELEMENT_GENERIC_FIELD",
 			value1 = "1");
 
 		AssertElementNotPresent(locator1 = "TextInput#REQUIRED_ALERT");
@@ -1054,7 +1054,7 @@ definition {
 
 		Type(
 			key_fieldLabel = "Boost",
-			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_GENERIC_FIELD",
+			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_ELEMENT_GENERIC_FIELD",
 			value1 = "");
 
 		Click(locator1 = "SearchExperiences#BLUEPRINTS_QUERY_BUILDER_DELETE_FIELD_MAPPING_FIELD");

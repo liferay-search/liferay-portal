@@ -127,12 +127,12 @@
 	<td></td>
 </tr>
 <tr>
-	<td>BLUEPRINTS_QUERY_GENERIC_FIELD</td>
+	<td>BLUEPRINTS_QUERY_ELEMENT_GENERIC_FIELD</td>
 	<td>//input[contains(@aria-label, "${key_fieldLabel}") and contains(@name, "selectedQueryElements")]</td>
 	<td></td>
 </tr>
 <tr>
-	<td>BLUEPRINTS_QUERY_TEXT_FIELD</td>
+	<td>BLUEPRINTS_QUERY_ELEMENT_TEXT_FIELD</td>
 	<td>//input[contains(@aria-label, "${key_fieldLabel}") and @type='text']</td>
 	<td></td>
 </tr>
