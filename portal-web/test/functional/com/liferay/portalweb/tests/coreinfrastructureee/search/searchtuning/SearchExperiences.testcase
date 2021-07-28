@@ -1040,6 +1040,18 @@ definition {
 
 		SearchExperiences.addQueryElement(element = "Test Element");
 
+		AssertTextEquals.assertPartialText(
+			elementName = "Test Element",
+			fieldName = "Fields",
+			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_BUILDER_ELEMENT_FIELD_LABEL",
+			value1 = "Optional");
+
+		AssertTextEquals.assertPartialText(
+			elementName = "Test Element",
+			fieldName = "Boost",
+			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_BUILDER_ELEMENT_FIELD_LABEL",
+			value1 = "Optional");
+
 		PortletEntry.save();
 	}
 
