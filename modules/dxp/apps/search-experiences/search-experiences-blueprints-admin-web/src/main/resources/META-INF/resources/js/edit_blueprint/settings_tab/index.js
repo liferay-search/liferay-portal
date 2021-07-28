@@ -65,7 +65,7 @@ function SettingsTab({
 				</div>
 
 				<ClayForm.Group>
-					<label htmlFor="aggregation-configuration">
+					<label>
 						{Liferay.Language.get('aggregation-configuration')}
 					</label>
 
@@ -73,15 +73,13 @@ function SettingsTab({
 				</ClayForm.Group>
 
 				<ClayForm.Group>
-					<label htmlFor="facet-configuration">
-						{Liferay.Language.get('facet-configuration')}
-					</label>
+					<label>{Liferay.Language.get('facet-configuration')}</label>
 
 					{_renderEditor('facetConfig', facetConfig)}
 				</ClayForm.Group>
 
 				<ClayForm.Group>
-					<label htmlFor="highlight-configuration">
+					<label>
 						{Liferay.Language.get('highlight-configuration')}
 					</label>
 
@@ -89,15 +87,13 @@ function SettingsTab({
 				</ClayForm.Group>
 
 				<ClayForm.Group>
-					<label htmlFor="sort-configuration">
-						{Liferay.Language.get('sort-configuration')}
-					</label>
+					<label>{Liferay.Language.get('sort-configuration')}</label>
 
 					{_renderEditor('sortConfig', sortConfig)}
 				</ClayForm.Group>
 
 				<ClayForm.Group>
-					<label htmlFor="parameter-configuration">
+					<label>
 						{Liferay.Language.get('parameter-configuration')}
 					</label>
 
@@ -105,7 +101,7 @@ function SettingsTab({
 				</ClayForm.Group>
 
 				<ClayForm.Group>
-					<label htmlFor="advanced-configuration">
+					<label>
 						{Liferay.Language.get('advanced-configuration')}
 					</label>
 

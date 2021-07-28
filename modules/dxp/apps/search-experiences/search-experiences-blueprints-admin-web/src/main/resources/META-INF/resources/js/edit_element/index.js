@@ -525,7 +525,6 @@ function EditElementForm({
 
 											<ClayTooltipProvider>
 												<ClaySticker
-													className="cursor-pointer"
 													displayType="unstyled"
 													size="sm"
 													title={Liferay.Language.get(
@@ -640,7 +639,6 @@ function EditElementForm({
 											)}
 											<ClayTooltipProvider>
 												<ClaySticker
-													className="cursor-pointer"
 													displayType="unstyled"
 													size="sm"
 													title={Liferay.Language.get(
