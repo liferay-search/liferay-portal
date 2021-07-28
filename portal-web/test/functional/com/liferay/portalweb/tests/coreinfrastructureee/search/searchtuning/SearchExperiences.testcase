@@ -960,6 +960,8 @@ definition {
 
 		Alert.viewRequiredField();
 
+		Alert.viewErrorMessage(errorMessage = "Unable to save due to invalid or missing configuration values.");
+
 		Click(locator1 = "SearchExperiences#BLUEPRINTS_QUERY_BUILDER_ADD_FIELD_MAPPING_FIELD");
 
 		Type(
