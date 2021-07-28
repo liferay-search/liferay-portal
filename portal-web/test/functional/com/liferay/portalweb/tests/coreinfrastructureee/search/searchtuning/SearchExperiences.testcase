@@ -979,8 +979,6 @@ definition {
 			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_GENERIC_FIELD",
 			value1 = "");
 
-		Button.clickSave();
-
 		AssertTextEquals(
 			locator1 = "Message#ERROR_FORM_FIELD_REQUIRED",
 			value1 = "This field is required.");
