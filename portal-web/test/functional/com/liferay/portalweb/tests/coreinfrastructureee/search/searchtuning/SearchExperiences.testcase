@@ -1052,6 +1052,13 @@ definition {
 			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_BUILDER_ELEMENT_FIELD_LABEL",
 			value1 = "Optional");
 
+		Type(
+			key_fieldLabel = "Boost",
+			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_GENERIC_FIELD",
+			value1 = "");
+
+		Click(locator1 = "SearchExperiences#BLUEPRINTS_QUERY_BUILDER_DELETE_FIELD_MAPPING_FIELD");
+
 		PortletEntry.save();
 	}
 
