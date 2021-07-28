@@ -969,6 +969,11 @@ definition {
 			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_TEXT_FIELD",
 			value1 = "title");
 
+		KeyPress(
+			key_fieldLabel = "Field",
+			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_ELEMENT_TEXT_FIELD",
+			value1 = "\ESCAPE");
+
 		Type(
 			key_fieldLabel = "Boost",
 			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_GENERIC_FIELD",
