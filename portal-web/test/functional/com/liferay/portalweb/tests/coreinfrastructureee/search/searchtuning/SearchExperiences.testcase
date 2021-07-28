@@ -954,9 +954,7 @@ definition {
 
 		SearchExperiences.addQueryElement(element = "Test Element");
 
-		Click(locator1 = "Icon#DELETE");
-
-		Click(locator1 = "Icon#DELETE");
+		Click(locator1 = "SearchExperiences#BLUEPRINTS_QUERY_BUILDER_DELETE_FIELD_MAPPING_FIELD");
 
 		Button.clickSave();
 
@@ -964,9 +962,7 @@ definition {
 			locator1 = "Message#ERROR_FORM_FIELD_REQUIRED",
 			value1 = "This field is required.");
 
-		Click(
-			key_text = "Add Field",
-			locator1 = "Icon#PLUS_LAST");
+		Click(locator1 = "SearchExperiences#BLUEPRINTS_QUERY_BUILDER_ADD_FIELD_MAPPING_FIELD");
 
 		Type(
 			key_fieldLabel = "Field",

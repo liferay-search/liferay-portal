@@ -82,6 +82,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>BLUEPRINTS_QUERY_BUILDER_ADD_FIELD_MAPPING_FIELD</td>
+	<td>//li[contains(@class,'fieldMappingList')]//button[@aria-label='Add Field']</td>
+	<td></td>
+</tr>
+<tr>
 	<td>BLUEPRINTS_QUERY_BUILDER_ASSET_TYPE_DROPDOWN</td>
 	<td>//div/select[contains(@aria-label, "Asset Type")]</td>
 	<td></td>
@@ -89,6 +94,11 @@
 <tr>
 	<td>BLUEPRINTS_QUERY_BUILDER_ASSET_TYPE_OPTION</td>
 	<td>//div/select[contains(@aria-label, "Asset Type")]/option[contains(., "${sortOption}")]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_QUERY_BUILDER_DELETE_FIELD_MAPPING_FIELD</td>
+	<td>//li[contains(@class,'fieldMappingList')]//button[@aria-label='Delete']</td>
 	<td></td>
 </tr>
 <tr>
