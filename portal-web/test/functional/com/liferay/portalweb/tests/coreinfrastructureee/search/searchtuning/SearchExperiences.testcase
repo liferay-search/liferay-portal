@@ -1059,7 +1059,13 @@ definition {
 
 		Click(locator1 = "SearchExperiences#BLUEPRINTS_QUERY_BUILDER_DELETE_FIELD_MAPPING_FIELD");
 
+		AssertElementNotPresent(locator1 = "TextInput#REQUIRED_ALERT");
+
 		PortletEntry.save();
+
+		AssertElementNotPresent(locator1 = "TextInput#REQUIRED_ALERT");
+
+		AssertElementNotPresent(locator1 = "Message#ERROR_1");
 	}
 
 	test ViewRawResponseViaBlueprintsPreview {
