@@ -21,6 +21,8 @@ public class SearchContextAttributeKeys {
 
 	public static final String BLUEPRINT_ID = "blueprintId";
 
+	public static final String FEDERATED_SEARCH_KEY = "federatedSearchKey";
+
 	public static final String IP_ADDRESS = "ipAddress";
 
 }
