@@ -442,6 +442,140 @@ definition {
 			locator1 = "SearchExperiences#CUSTOM_ELEMENT_UI_CONFIGURATION_EDITOR");
 	}
 
+	test HideElements {
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		Navigator.gotoNavItem(navItem = "Elements");
+
+		Search.searchCP(searchTerm = "Hide");
+
+		LexiconEntry.openEntryMenu(rowEntry = "Hide by an Exact Term Match");
+
+		MenuItem.click(menuItem = "Hide");
+
+		AssertElementNotPresent(
+			key_rowEntry = "Hide by an Exact Term Match",
+			locator1 = "ContentRow#ENTRY_CONTENT_ENTRY_NAME");
+
+		Navigator.gotoNavItem(navItem = "Blueprints");
+
+		SearchExperiences.addBlueprint(name = "Test Blueprint");
+
+		Type.sendKeysApplicationSearch(
+			locator1 = "SearchExperiences#BLUEPRINTS_ADD_QUERY_ELEMENTS_SEARCH_BAR",
+			value1 = "Hide by an Exact Term Match");
+
+		AssertElementNotPresent(
+			key_elementName = "Hide by an Exact Term Match",
+			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_ELEMENT_ADD_NAME");
+
+		PortletEntry.save();
+
+		Navigator.gotoNavItem(navItem = "Elements");
+
+		ManagementBar.setFilterAndOrder(filterBy = "Hidden");
+
+		LexiconEntry.openEntryMenu(rowEntry = "Hide by an Exact Term Match");
+
+		MenuItem.click(menuItem = "Show");
+
+		AssertTextEquals(
+			locator1 = "Message#NO_ENTRIES",
+			value1 = "No entries were found.");
+
+		ManagementBar.setFilterAndOrder(filterBy = "Visible");
+
+		AssertElementPresent(
+			key_rowEntry = "Hide by an Exact Term Match",
+			locator1 = "ContentRow#ENTRY_CONTENT_ENTRY_NAME");
+
+		Navigator.gotoNavItem(navItem = "Blueprints");
+
+		SearchExperiences.editBlueprint(name = "Test Blueprint");
+
+		Type.sendKeysApplicationSearch(
+			locator1 = "SearchExperiences#BLUEPRINTS_ADD_QUERY_ELEMENTS_SEARCH_BAR",
+			value1 = "Hide by an Exact Term Match");
+
+		AssertElementPresent(
+			key_elementName = "Hide by an Exact Term Match",
+			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_ELEMENT_ADD_NAME");
+
+		PortletEntry.save();
+
+		Navigator.gotoNavItem(navItem = "Elements");
+
+		Search.searchCP(searchTerm = "Hide");
+
+		ManagementBar.clickSelectAllCheckbox();
+
+		Click(locator1 = "Icon#TOOLBAR_ELLIPSIS");
+
+		MenuItem.click(menuItem = "Hide");
+
+		AssertTextEquals(
+			locator1 = "Message#NO_ENTRIES",
+			value1 = "No entries were found.");
+
+		Navigator.gotoNavItem(navItem = "Blueprints");
+
+		SearchExperiences.editBlueprint(name = "Test Blueprint");
+
+		Type.sendKeysApplicationSearch(
+			locator1 = "SearchExperiences#BLUEPRINTS_ADD_QUERY_ELEMENTS_SEARCH_BAR",
+			value1 = "Hide");
+
+		AssertTextEquals(
+			locator1 = "SearchExperiences#BLUEPRINTS_EMPTY_QUERY_LIST",
+			value1 = "No query elements found.");
+
+		PortletEntry.save();
+
+		Navigator.gotoNavItem(navItem = "Elements");
+
+		ManagementBar.setFilterAndOrder(filterBy = "Hidden");
+
+		var elementsList = "Hide by an Exact Term Match,Hide Comments,Hide Contents in a Category,Hide Contents in a Category for Guest Users,Hide Default User,Hide Hidden Contents,Hide Tagged Contents";
+
+		for (var hiddenElement : list "${elementsList}") {
+			AssertElementPresent(
+				key_rowEntry = "${hiddenElement}",
+				locator1 = "ContentRow#ENTRY_CONTENT_ENTRY_NAME");
+		}
+
+		ManagementBar.clickSelectAllCheckbox();
+
+		Click(locator1 = "Icon#TOOLBAR_ELLIPSIS");
+
+		MenuItem.click(menuItem = "Show");
+
+		AssertTextEquals(
+			locator1 = "Message#NO_ENTRIES",
+			value1 = "No entries were found.");
+
+		ManagementBar.setFilterAndOrder(filterBy = "Visible");
+
+		for (var visibleElement : list "${elementsList}") {
+			AssertElementPresent(
+				key_rowEntry = "${visibleElement}",
+				locator1 = "ContentRow#ENTRY_CONTENT_ENTRY_NAME");
+		}
+
+		Navigator.gotoNavItem(navItem = "Blueprints");
+
+		SearchExperiences.editBlueprint(name = "Test Blueprint");
+
+		Type.sendKeysApplicationSearch(
+			locator1 = "SearchExperiences#BLUEPRINTS_ADD_QUERY_ELEMENTS_SEARCH_BAR",
+			value1 = "Hide");
+
+		for (var queryElement : list "${elementsList}") {
+			AssertElementPresent(
+				key_elementName = "${queryElement}",
+				locator1 = "SearchExperiences#BLUEPRINTS_QUERY_ELEMENT_ADD_NAME");
+		}
+	}
+
 	@priority = "4"
 	test HideWebContentViaCustomElement {
 		JSONWebcontent.addWebContent(
