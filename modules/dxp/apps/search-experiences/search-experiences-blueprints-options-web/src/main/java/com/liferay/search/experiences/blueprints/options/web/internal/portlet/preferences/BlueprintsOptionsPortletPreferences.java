@@ -23,8 +23,15 @@ public interface BlueprintsOptionsPortletPreferences {
 
 	public static final String PREFERENCE_KEY_BLUEPRINT_ID = "blueprintId";
 
+	public static final String PREFERENCE_KEY_FEDERATED_SEARCH_KEY =
+		"federatedSearchKey";
+
 	public Optional<String> getBlueprintIdOptional();
 
 	public String getBlueprintIdString();
+
+	public Optional<String> getFederatedSearchKeyOptional();
+
+	public String getFederatedSearchKeyString();
 
 }

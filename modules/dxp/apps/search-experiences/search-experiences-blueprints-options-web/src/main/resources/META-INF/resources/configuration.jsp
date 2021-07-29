@@ -163,6 +163,8 @@ BlueprintsOptionsPortletPreferences blueprintsOptionsPortletPreferences = new Bl
 						}
 					</aui:script>
 				</div>
+
+				<aui:input helpMessage="federated-search-key-help" label="federated-search-key" name="<%= PortletPreferencesJspUtil.getInputName(BlueprintsOptionsPortletPreferences.PREFERENCE_KEY_FEDERATED_SEARCH_KEY) %>" type="text" value="<%= blueprintsOptionsPortletPreferences.getFederatedSearchKeyString() %>" />
 			</liferay-frontend:fieldset>
 		</liferay-frontend:fieldset-group>
 	</liferay-frontend:edit-form-body>

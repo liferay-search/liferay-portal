@@ -56,6 +56,10 @@ public class BlueprintsOptionsPortletSharedSearchContributor
 			SearchContextAttributeKeys.BLUEPRINT_ID,
 			blueprintsOptionsPortletPreferences.getBlueprintIdString());
 
+		searchContext.setAttribute(
+			SearchContextAttributeKeys.FEDERATED_SEARCH_KEY,
+			blueprintsOptionsPortletPreferences.getFederatedSearchKeyString());
+
 		HttpServletRequest httpServletRequest = _portal.getHttpServletRequest(
 			portletSharedSearchSettings.getRenderRequest());
 
