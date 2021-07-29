@@ -37,6 +37,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>BLUEPRINTS_EMPTY_QUERY_LIST</td>
+	<td>//div[contains(@class,'empty-list-message')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>BLUEPRINTS_PREVIEW_COLLAPSE_ENTRY_BUTTON</td>
 	<td>//button[contains(@aria-label,'Collapse')]</td>
 	<td></td>
