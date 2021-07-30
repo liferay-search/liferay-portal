@@ -69,6 +69,18 @@
 					"if": {
 						"properties": {
 							"type": {
+								"const": "keywords"
+							}
+						}
+					},
+					"then": {
+						"$ref": "#/definitions/fieldKeywords"
+					}
+				},
+				{
+					"if": {
+						"properties": {
+							"type": {
 								"const": "multiselect"
 							}
 						}
@@ -131,6 +143,7 @@
 						"fieldMappingList",
 						"itemSelector",
 						"json",
+						"keywords",
 						"multiselect",
 						"number",
 						"select",
@@ -244,6 +257,13 @@
 			"properties": {
 				"defaultValue": {
 					"type": "object"
+				}
+			}
+		},
+		"fieldKeywords": {
+			"properties": {
+				"defaultValue": {
+					"type": "string"
 				}
 			}
 		},
