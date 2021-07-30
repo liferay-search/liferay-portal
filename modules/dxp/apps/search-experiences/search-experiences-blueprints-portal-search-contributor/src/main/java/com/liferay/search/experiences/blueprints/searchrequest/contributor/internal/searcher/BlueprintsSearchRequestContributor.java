@@ -143,6 +143,9 @@ public class BlueprintsSearchRequestContributor
 			"scope_group_id", getScopeGroupId(searchRequest)
 		).addAttribute(
 			"timezone_id", getTimezoneId(searchRequest)
+		).addAttribute(
+			SearchContextAttributeKeys.FEDERATED_SEARCH_KEY,
+			getFederatedSearchKey(searchRequest)
 		);
 
 		addCommerceAttributes(searchRequest, blueprintsAttributesBuilder);
@@ -177,6 +180,16 @@ public class BlueprintsSearchRequestContributor
 			searchRequest
 		).withSearchContextGet(
 			searchContext -> searchContext.getCompanyId()
+		);
+	}
+
+	protected String getFederatedSearchKey(SearchRequest searchRequest) {
+		return _searchRequestBuilderFactory.builder(
+			searchRequest
+		).withSearchContextGet(
+			searchContext -> GetterUtil.getString(
+				searchContext.getAttribute(
+					SearchContextAttributeKeys.FEDERATED_SEARCH_KEY))
 		);
 	}
 
