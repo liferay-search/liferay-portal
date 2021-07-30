@@ -26,7 +26,7 @@ export default {
 								minimum_should_match:
 									'${configuration.minimum_should_match}',
 								operator: '${configuration.operator}',
-								query: '${keywords}',
+								query: '${configuration.keywords}',
 								slop: '${configuration.slop}',
 								type: '${configuration.type}',
 							},
@@ -179,6 +179,16 @@ export default {
 						type: 'number',
 						typeOptions: {
 							min: 0,
+						},
+					},
+					{
+						helpText:
+							'If this is set, the search terms entered in the search bar will be replaced by this value.',
+						label: 'Text to Match',
+						name: 'keywords',
+						type: 'keywords',
+						typeOptions: {
+							required: false,
 						},
 					},
 				],

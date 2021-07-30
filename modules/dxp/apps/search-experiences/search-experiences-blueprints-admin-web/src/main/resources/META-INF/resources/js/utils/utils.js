@@ -342,6 +342,9 @@ export const getElementOutput = ({
 							configValue = '{}';
 						}
 					}
+					else if (config.type === INPUT_TYPES.KEYWORDS) {
+						configValue = initialConfigValue || '${keywords}';
+					}
 					else if (config.type === INPUT_TYPES.MULTISELECT) {
 						configValue = JSON.stringify(
 							initialConfigValue.map((item) => item.value)
