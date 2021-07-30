@@ -15,6 +15,7 @@
 package com.liferay.search.experiences.blueprints.engine.internal.util;
 
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.search.experiences.blueprints.definition.BlueprintDefinition;
@@ -22,6 +23,7 @@ import com.liferay.search.experiences.blueprints.definition.BlueprintDefinitionF
 import com.liferay.search.experiences.blueprints.definition.ClauseContributorsDefinition;
 import com.liferay.search.experiences.blueprints.definition.FrameworkDefinition;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
+import com.liferay.search.experiences.blueprints.engine.constants.SearchContextAttributeKeys;
 import com.liferay.search.experiences.blueprints.engine.exception.BlueprintsEngineException;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterDataCreator;
@@ -56,7 +58,8 @@ public class BlueprintsSearchRequestContributorHelperImpl
 			blueprint, blueprintsAttributes, messages);
 
 		applyBlueprintDefinition(
-			blueprint, parameterData, searchRequestBuilder);
+			blueprint, blueprintsAttributes, parameterData,
+			searchRequestBuilder);
 
 		_blueprintsSearchRequestHelper.setSource(
 			searchRequestBuilder, parameterData, blueprint, messages);
@@ -89,13 +92,15 @@ public class BlueprintsSearchRequestContributorHelperImpl
 	}
 
 	protected void applyBlueprintDefinition(
-		Blueprint blueprint, ParameterData parameterData,
+		Blueprint blueprint, BlueprintsAttributes blueprintsAttributes,
+		ParameterData parameterData,
 		SearchRequestBuilder searchRequestBuilder) {
 
 		BlueprintDefinition blueprintDefinition =
 			_blueprintDefinitionFactory.getBlueprintDefinition(blueprint);
 
 		applyFrameworkDefinition(
+			blueprintsAttributes,
 			blueprintDefinition.getFrameworkDefinition(blueprintDefinition),
 			parameterData, searchRequestBuilder);
 	}
@@ -115,7 +120,22 @@ public class BlueprintsSearchRequestContributorHelperImpl
 		);
 	}
 
+	protected void applyFederatedSearchKey(
+		BlueprintsAttributes blueprintsAttributes,
+		SearchRequestBuilder searchRequestBuilder) {
+
+		Optional<Object> federatedSearchKeyOptional =
+			blueprintsAttributes.getAttributeOptional(
+				SearchContextAttributeKeys.FEDERATED_SEARCH_KEY);
+
+		if (federatedSearchKeyOptional.isPresent()) {
+			searchRequestBuilder.federatedSearchKey(
+				GetterUtil.getString(federatedSearchKeyOptional.get()));
+		}
+	}
+
 	protected void applyFrameworkDefinition(
+		BlueprintsAttributes blueprintsAttributes,
 		FrameworkDefinition frameworkDefinition, ParameterData parameterData,
 		SearchRequestBuilder searchRequestBuilder) {
 
@@ -130,6 +150,8 @@ public class BlueprintsSearchRequestContributorHelperImpl
 
 		searchRequestBuilder.modelIndexerClassNames(
 			frameworkDefinition.getSearchableAssetTypes());
+
+		applyFederatedSearchKey(blueprintsAttributes, searchRequestBuilder);
 	}
 
 	@Reference
