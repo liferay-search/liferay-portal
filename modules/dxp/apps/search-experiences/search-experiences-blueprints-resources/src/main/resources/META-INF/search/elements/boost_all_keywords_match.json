@@ -14,7 +14,7 @@
 										"boost": "${configuration.boost}",
 										"fields": "${configuration.fields}",
 										"operator": "and",
-										"query": "${keywords}",
+										"query": "${configuration.keywords}",
 										"type": "${configuration.type}"
 									}
 								}
@@ -98,6 +98,15 @@
 								"type": "number",
 								"typeOptions": {
 									"min": 0
+								}
+							},
+							{
+								"helpText": "If this is set, the search terms entered in the search bar will be replaced by this value.",
+								"label": "Text to Match",
+								"name": "keywords",
+								"type": "keywords",
+								"typeOptions": {
+									"required": false
 								}
 							}
 						]
