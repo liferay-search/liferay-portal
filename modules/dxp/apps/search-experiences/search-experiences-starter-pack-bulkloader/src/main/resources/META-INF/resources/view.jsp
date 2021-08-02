@@ -32,6 +32,7 @@ String type = ParamUtil.getString(request, "type");
 				<aui:option label="restaurants" value="<%= ImportTypeKeys.RESTAURANTS %>" />
 				<aui:option label="tourist-attractions" value="<%= ImportTypeKeys.TOURIST_ATTRACTIONS %>" />
 				<aui:option label="wikipedia-articles" value="<%= ImportTypeKeys.WIKIPEDIA_ARTICLES %>" />
+				<aui:option label="federated-content" value="<%= ImportTypeKeys.FEDERATED_CONTENT %>" />
 			</aui:select>
 
 			<div class="<%= type.equals(ImportTypeKeys.WIKIPEDIA_ARTICLES) ? "" : "hide" %>" id="<portlet:namespace />wikifields">
