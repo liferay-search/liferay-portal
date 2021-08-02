@@ -12,21 +12,17 @@
  *
  */
 
-package com.liferay.search.experiences.starter.pack.bulkloader.internal.constants;
+package com.liferay.search.experiences.federation.internal.crawl;
 
 /**
- * @author Petteri Karttunen
+ * @author André de Oliveira
  */
-public class ImportTypeKeys {
+public interface CrawlerBuilder {
 
-	public static final String ALL_PLACES_DATA = "all_places_data";
+	public CrawlerBuilder addCrawlerListener(CrawlerListener crawlerListener);
 
-	public static final String FEDERATED_CONTENT = "federated_content";
+	public Crawler build();
 
-	public static final String RESTAURANTS = "restaurants";
-
-	public static final String TOURIST_ATTRACTIONS = "tourist_attractions";
-
-	public static final String WIKIPEDIA_ARTICLES = "wikipedia_articles";
+	public CrawlerBuilder indexImmediately(boolean indexImmediately);
 
 }

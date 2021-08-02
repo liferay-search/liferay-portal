@@ -23,6 +23,7 @@ import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.search.experiences.federation.ingestion.IngestorBuilderFactory;
 import com.liferay.search.experiences.starter.pack.bulkloader.internal.constants.BulkloaderPortletKeys;
 import com.liferay.search.experiences.starter.pack.bulkloader.internal.constants.ImportTypeKeys;
 import com.liferay.search.experiences.starter.pack.bulkloader.internal.constants.MVCActionCommandNames;
@@ -84,6 +85,11 @@ public class ImportMVCActionCommand extends BaseMVCActionCommand {
 			_wikipediaImporter.doImport(
 				actionRequest, actionResponse, userIds, groupIds, languageId);
 		}
+		else if (importType.equals(ImportTypeKeys.FEDERATED_CONTENT)) {
+			_ingestorBuilderFactory.builder(
+			).build(
+			).ingest();
+		}
 		else {
 			_googlePlacesImporter.doImport(
 				actionRequest, actionResponse, userIds, groupIds, languageId,
@@ -116,6 +122,9 @@ public class ImportMVCActionCommand extends BaseMVCActionCommand {
 
 	@Reference
 	private GooglePlacesImporter _googlePlacesImporter;
+
+	@Reference
+	private IngestorBuilderFactory _ingestorBuilderFactory;
 
 	@Reference
 	private WikipediaImporter _wikipediaImporter;
