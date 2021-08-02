@@ -87,6 +87,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>BLUEPRINTS_QUERY_BUILDER_ADDED_ELEMENT</td>
+	<td>//div[contains(@id,'queryElement')][./ul[contains(.,'${elementName}')]]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>BLUEPRINTS_QUERY_BUILDER_ASSET_TYPE_DROPDOWN</td>
 	<td>//div/select[contains(@aria-label, "Asset Type")]</td>
 	<td></td>

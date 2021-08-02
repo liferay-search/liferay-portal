@@ -410,7 +410,9 @@ definition {
 
 		SearchExperiences.editBlueprint(name = "Test Blueprint");
 
-		AssertElementNotPresent(locator1 = "SearchExperiences#BLUEPRINTS_EMPTY_QUERY_BUILDER");
+		AssertElementPresent(
+			elementName = "Boost Asset Type",
+			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_BUILDER_ADDED_ELEMENT");
 	}
 
 	test ExportAndImportElement {
