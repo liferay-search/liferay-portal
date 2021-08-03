@@ -89,6 +89,76 @@ export const toNumber = (str) => {
 };
 
 /**
+ * Cleans up the UIConfigurationJSON to prevent page load failures
+ * - Checks that `fieldSets` and `fields` are arrays
+ * - Removes fields without a `name` property
+ * - Removes fields with a duplicate `name` property
+ *
+ * Example:
+ *	cleanUIConfigurationJSON({
+ *		fieldSets: [
+ *			{
+ *				fields: [
+ *					{
+ *						defaultValue: 1,
+ *						label: 'Boost',
+ *						name: 'boost',
+ *						type: 'number',
+ *					},
+ *					{
+ *						label: 'Text',
+ *						type: 'text',
+ *					},
+ *				],
+ *			},
+ *		],
+ *	});
+ *	=> {
+ *		fieldSets: [
+ *			{
+ *				fields: [
+ *					{
+ *						defaultValue: 1,
+ *						label: 'Boost',
+ *						name: 'boost',
+ *						type: 'number',
+ *					},
+ *				],
+ *			},
+ *		],
+ *	}
+ *
+ * @param {object} uiConfigurationJSON Object with UI configuration
+ * @return {object}
+ */
+export const cleanUIConfigurationJSON = (uiConfigurationJSON = {}) => {
+	const fieldSets = [];
+
+	if (Array.isArray(uiConfigurationJSON.fieldSets)) {
+		const fieldNames = [];
+
+		uiConfigurationJSON.fieldSets.forEach((fieldSet) => {
+			if (Array.isArray(fieldSet.fields)) {
+				const fields = [];
+
+				fieldSet.fields.forEach((config) => {
+					if (config.name && !fieldNames.includes(config.name)) {
+						fieldNames.push(config.name);
+						fields.push(config);
+					}
+				});
+
+				if (fields.length > 0) {
+					fieldSets.push({fields});
+				}
+			}
+		});
+	}
+
+	return {fieldSets};
+};
+
+/**
  * Function for retrieving a valid default value from one element
  * configuration entry. Returns the proper empty value for invalid values.
  *
@@ -196,197 +266,183 @@ export const getElementOutput = ({
 	uiConfigurationJSON,
 	uiConfigurationValues,
 }) => {
-	if (Array.isArray(uiConfigurationJSON?.fieldSets)) {
+	const fieldSets = cleanUIConfigurationJSON(uiConfigurationJSON).fieldSets;
+
+	if (fieldSets.length > 0) {
 		let flattenJSON = JSON.stringify(elementTemplateJSON);
 
-		uiConfigurationJSON.fieldSets.map((fieldSet) => {
-			if (Array.isArray(fieldSet.fields)) {
-				fieldSet.fields.map((config) => {
-					let configValue = '';
-					const initialConfigValue =
-						uiConfigurationValues[config.name];
+		fieldSets.map(({fields}) => {
+			fields.map((config) => {
+				let configValue = '';
 
-					if (
-						initialConfigValue === null ||
-						(config.type === INPUT_TYPES.SELECT &&
-							initialConfigValue === '')
-					) {
+				const initialConfigValue = uiConfigurationValues[config.name];
 
-						// Remove property entirely if null (or blank for a select inputs).
-						// Check for regex with leading and trailing commas first.
+				if (
+					initialConfigValue === null ||
+					(config.type === INPUT_TYPES.SELECT &&
+						initialConfigValue === '')
+				) {
 
-						const nullRegex = `\\"[\\w\\._]+\\"\\:\\"\\$\\{${CONFIG_PREFIX}\\.${config.name}}\\"`;
+					// Remove property entirely if null (or blank for a select inputs).
+					// Check for regex with leading and trailing commas first.
 
-						flattenJSON = replaceStr(
-							flattenJSON,
-							new RegExp(nullRegex + `,`),
-							''
-						);
+					const nullRegex = `\\"[\\w\\._]+\\"\\:\\"\\$\\{${CONFIG_PREFIX}\\.${config.name}}\\"`;
 
-						flattenJSON = replaceStr(
-							flattenJSON,
-							new RegExp(`,` + nullRegex),
-							''
-						);
+					flattenJSON = replaceStr(
+						flattenJSON,
+						new RegExp(nullRegex + `,`),
+						''
+					);
 
-						flattenJSON = replaceStr(
-							flattenJSON,
-							new RegExp(nullRegex),
-							''
-						);
-					}
-					else if (config.type === INPUT_TYPES.DATE) {
-						configValue = initialConfigValue
-							? JSON.parse(
-									moment
-										.unix(initialConfigValue)
-										.format(
-											config.typeOptions?.format ||
-												'YYYYMMDDHHMMSS'
-										)
-							  )
-							: '';
-					}
-					else if (config.type === INPUT_TYPES.ITEM_SELECTOR) {
-						configValue = JSON.stringify(
-							initialConfigValue.map((item) => item.value)
-						);
-					}
-					else if (config.type === INPUT_TYPES.FIELD_MAPPING) {
-						const {
-							boost,
-							field,
-							languageIdPosition,
-							locale = '',
-						} = initialConfigValue;
+					flattenJSON = replaceStr(
+						flattenJSON,
+						new RegExp(`,` + nullRegex),
+						''
+					);
 
-						const transformedLocale =
-							!locale || locale.includes('$')
-								? locale
-								: `_${locale}`;
+					flattenJSON = replaceStr(
+						flattenJSON,
+						new RegExp(nullRegex),
+						''
+					);
+				}
+				else if (config.type === INPUT_TYPES.DATE) {
+					configValue = initialConfigValue
+						? JSON.parse(
+								moment
+									.unix(initialConfigValue)
+									.format(
+										config.typeOptions?.format ||
+											'YYYYMMDDHHMMSS'
+									)
+						  )
+						: '';
+				}
+				else if (config.type === INPUT_TYPES.ITEM_SELECTOR) {
+					configValue = JSON.stringify(
+						initialConfigValue.map((item) => item.value)
+					);
+				}
+				else if (config.type === INPUT_TYPES.FIELD_MAPPING) {
+					const {
+						boost,
+						field,
+						languageIdPosition,
+						locale = '',
+					} = initialConfigValue;
 
-						let localizedField;
+					const transformedLocale =
+						!locale || locale.includes('$') ? locale : `_${locale}`;
 
-						if (languageIdPosition > -1) {
-							localizedField =
-								field.substring(0, languageIdPosition) +
-								transformedLocale +
-								field.substring(languageIdPosition);
-						}
-						else {
-							localizedField = field + transformedLocale;
-						}
+					let localizedField;
 
-						localizedField = replaceStr(
-							localizedField,
-							/[\\"]+/,
-							''
-						);
-
-						configValue =
-							boost && boost > 0
-								? `${localizedField}^${boost}`
-								: localizedField;
-					}
-					else if (config.type === INPUT_TYPES.FIELD_MAPPING_LIST) {
-						const fields = initialConfigValue
-							.filter(({field}) => !!field) // Remove blank fields
-							.map(
-								({
-									boost,
-									field,
-									languageIdPosition,
-									locale = '',
-								}) => {
-									const transformedLocale =
-										!locale || locale.includes('$')
-											? locale
-											: `_${locale}`;
-
-									let localizedField;
-
-									if (languageIdPosition > -1) {
-										localizedField =
-											field.substring(
-												0,
-												languageIdPosition
-											) +
-											transformedLocale +
-											field.substring(languageIdPosition);
-									}
-									else {
-										localizedField =
-											field + transformedLocale;
-									}
-
-									localizedField = replaceStr(
-										localizedField,
-										/[\\"]+/,
-										''
-									);
-
-									return boost && boost > 0
-										? `${localizedField}^${boost}`
-										: localizedField;
-								}
-							);
-
-						configValue = JSON.stringify(fields);
-					}
-					else if (config.type === INPUT_TYPES.JSON) {
-						try {
-							JSON.parse(initialConfigValue);
-							configValue = initialConfigValue;
-						}
-						catch {
-							configValue = '{}';
-						}
-					}
-					else if (config.type === INPUT_TYPES.KEYWORDS) {
-						configValue = initialConfigValue || '${keywords}';
-					}
-					else if (config.type === INPUT_TYPES.MULTISELECT) {
-						configValue = JSON.stringify(
-							initialConfigValue.map((item) => item.value)
-						);
-					}
-					else if (config.type === INPUT_TYPES.NUMBER) {
-						configValue =
-							typeof config.typeOptions?.unitSuffix == 'string'
-								? typeof initialConfigValue == 'string'
-									? initialConfigValue.concat(
-											config.typeOptions?.unitSuffix
-									  )
-									: JSON.stringify(initialConfigValue).concat(
-											config.typeOptions?.unitSuffix
-									  )
-								: initialConfigValue;
-					}
-					else if (config.type === INPUT_TYPES.SLIDER) {
-						configValue = initialConfigValue;
+					if (languageIdPosition > -1) {
+						localizedField =
+							field.substring(0, languageIdPosition) +
+							transformedLocale +
+							field.substring(languageIdPosition);
 					}
 					else {
-						configValue = replaceStr(
-							initialConfigValue,
-							/[\\"]+/,
-							''
-						);
+						localizedField = field + transformedLocale;
 					}
 
-					// Check whether to add quotes around output
+					localizedField = replaceStr(localizedField, /[\\"]+/, '');
 
-					const key =
-						typeof configValue === 'number' ||
-						config.type === INPUT_TYPES.ITEM_SELECTOR ||
-						config.type === INPUT_TYPES.FIELD_MAPPING_LIST ||
-						config.type === INPUT_TYPES.JSON ||
-						config.type === INPUT_TYPES.MULTISELECT
-							? `"$\{${CONFIG_PREFIX}.${config.name}}"`
-							: `\${${CONFIG_PREFIX}.${config.name}}`;
+					configValue =
+						boost && boost > 0
+							? `${localizedField}^${boost}`
+							: localizedField;
+				}
+				else if (config.type === INPUT_TYPES.FIELD_MAPPING_LIST) {
+					const fields = initialConfigValue
+						.filter(({field}) => !!field) // Remove blank fields
+						.map(
+							({
+								boost,
+								field,
+								languageIdPosition,
+								locale = '',
+							}) => {
+								const transformedLocale =
+									!locale || locale.includes('$')
+										? locale
+										: `_${locale}`;
 
-					flattenJSON = replaceStr(flattenJSON, key, configValue);
-				});
-			}
+								let localizedField;
+
+								if (languageIdPosition > -1) {
+									localizedField =
+										field.substring(0, languageIdPosition) +
+										transformedLocale +
+										field.substring(languageIdPosition);
+								}
+								else {
+									localizedField = field + transformedLocale;
+								}
+
+								localizedField = replaceStr(
+									localizedField,
+									/[\\"]+/,
+									''
+								);
+
+								return boost && boost > 0
+									? `${localizedField}^${boost}`
+									: localizedField;
+							}
+						);
+
+					configValue = JSON.stringify(fields);
+				}
+				else if (config.type === INPUT_TYPES.JSON) {
+					try {
+						JSON.parse(initialConfigValue);
+						configValue = initialConfigValue;
+					}
+					catch {
+						configValue = '{}';
+					}
+				}
+				else if (config.type === INPUT_TYPES.KEYWORDS) {
+					configValue = initialConfigValue || '${keywords}';
+				}
+				else if (config.type === INPUT_TYPES.MULTISELECT) {
+					configValue = JSON.stringify(
+						initialConfigValue.map((item) => item.value)
+					);
+				}
+				else if (config.type === INPUT_TYPES.NUMBER) {
+					configValue =
+						typeof config.typeOptions?.unitSuffix == 'string'
+							? typeof initialConfigValue == 'string'
+								? initialConfigValue.concat(
+										config.typeOptions?.unitSuffix
+								  )
+								: JSON.stringify(initialConfigValue).concat(
+										config.typeOptions?.unitSuffix
+								  )
+							: initialConfigValue;
+				}
+				else if (config.type === INPUT_TYPES.SLIDER) {
+					configValue = initialConfigValue;
+				}
+				else {
+					configValue = replaceStr(initialConfigValue, /[\\"]+/, '');
+				}
+
+				// Check whether to add quotes around output
+
+				const key =
+					typeof configValue === 'number' ||
+					config.type === INPUT_TYPES.ITEM_SELECTOR ||
+					config.type === INPUT_TYPES.FIELD_MAPPING_LIST ||
+					config.type === INPUT_TYPES.JSON ||
+					config.type === INPUT_TYPES.MULTISELECT
+						? `"$\{${CONFIG_PREFIX}.${config.name}}"`
+						: `\${${CONFIG_PREFIX}.${config.name}}`;
+
+				flattenJSON = replaceStr(flattenJSON, key, configValue);
+			});
 		});
 
 		return JSON.parse(flattenJSON);
@@ -437,27 +493,23 @@ export const getElementOutput = ({
  * @param {object} uiConfigurationJSON Object with UI configuration
  * @return {object}
  */
-export const getUIConfigurationValues = (uiConfigurationJSON) => {
-	if (Array.isArray(uiConfigurationJSON?.fieldSets)) {
-		return uiConfigurationJSON.fieldSets.reduce((allValues, fieldSet) => {
-			const uiConfigurationValues = Array.isArray(fieldSet.fields)
-				? fieldSet.fields.reduce(
-						(acc, curr) => ({
-							...acc,
-							[`${curr.name}`]: getDefaultValue(curr),
-						}),
-						{}
-				  )
-				: {};
+export const getUIConfigurationValues = (uiConfigurationJSON) =>
+	cleanUIConfigurationJSON(uiConfigurationJSON).fieldSets.reduce(
+		(allValues, fieldSet) => {
+			const uiConfigurationValues = fieldSet.fields.reduce(
+				(acc, curr) => ({
+					...acc,
+					[`${curr.name}`]: getDefaultValue(curr),
+				}),
+				{}
+			);
 
 			// gets uiConfigurationValues within each fields array
 
 			return {...allValues, ...uiConfigurationValues};
-		}, {});
-	}
-
-	return {};
-};
+		},
+		{}
+	);
 
 /**
  * Function for transforming the framework configuration's `clause_contributor`

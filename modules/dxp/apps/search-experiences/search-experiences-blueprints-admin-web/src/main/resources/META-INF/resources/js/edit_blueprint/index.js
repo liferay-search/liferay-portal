@@ -25,7 +25,11 @@ import ThemeContext from '../shared/ThemeContext';
 import {CUSTOM_JSON_ELEMENT} from '../utils/data';
 import {INPUT_TYPES} from '../utils/inputTypes';
 import {openErrorToast, openSuccessToast} from '../utils/toasts';
-import {getElementOutput, getUIConfigurationValues} from '../utils/utils';
+import {
+	cleanUIConfigurationJSON,
+	getElementOutput,
+	getUIConfigurationValues,
+} from '../utils/utils';
 import {
 	validateBoost,
 	validateJSON,
@@ -261,9 +265,11 @@ function EditBlueprintForm({
 				}
 
 				const configErrors = {};
+				const fieldSets = cleanUIConfigurationJSON(uiConfigurationJSON)
+					.fieldSets;
 
-				if (Array.isArray(uiConfigurationJSON?.fieldSets)) {
-					uiConfigurationJSON.fieldSets.map(({fields = []}) => {
+				if (fieldSets.length > 0) {
+					fieldSets.map(({fields}) => {
 						fields.map(({name, type, typeOptions = {}}) => {
 							const configValue = uiConfigurationValues[name];
 

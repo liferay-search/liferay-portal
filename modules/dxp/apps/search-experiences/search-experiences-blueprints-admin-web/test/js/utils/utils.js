@@ -10,6 +10,7 @@
  */
 
 import {
+	cleanUIConfigurationJSON,
 	getClauseContributorsConfig,
 	getClauseContributorsState,
 	getDefaultValue,
@@ -82,6 +83,161 @@ describe('utils', () => {
 					'en_US'
 				)
 			).toEqual('title_en_US');
+		});
+	});
+
+	describe('cleanUIConfigurationJSON', () => {
+		it('returns a valid UIConfigurationJSON', () => {
+			expect(
+				cleanUIConfigurationJSON({
+					fieldSets: [
+						{
+							fields: [
+								{
+									defaultValue: 1,
+									label: 'Boost',
+									name: 'boost',
+									type: 'number',
+								},
+							],
+						},
+						{
+							fields: [
+								{
+									label: 'Text',
+									name: 'text',
+									type: 'text',
+								},
+							],
+						},
+					],
+				})
+			).toEqual({
+				fieldSets: [
+					{
+						fields: [
+							{
+								defaultValue: 1,
+								label: 'Boost',
+								name: 'boost',
+								type: 'number',
+							},
+						],
+					},
+					{fields: [{label: 'Text', name: 'text', type: 'text'}]},
+				],
+			});
+		});
+
+		it('cleans up UIConfigurationJSON when "fields" is an empty array', () => {
+			expect(
+				cleanUIConfigurationJSON({
+					fieldSets: [
+						{
+							fields: [],
+						},
+					],
+				})
+			).toEqual({fieldSets: []});
+		});
+
+		it('returns a valid UIConfigurationJSON when "fieldSets" is an invalid type', () => {
+			expect(
+				cleanUIConfigurationJSON({
+					fieldSets: '',
+				})
+			).toEqual({fieldSets: []});
+		});
+
+		it('returns a valid UIConfigurationJSON when "fields" is an invalid type', () => {
+			expect(
+				cleanUIConfigurationJSON({
+					fieldSets: [
+						{
+							fields: '',
+						},
+					],
+				})
+			).toEqual({fieldSets: []});
+		});
+
+		it('removes field with missing "name" property from UIConfigurationJSON', () => {
+			expect(
+				cleanUIConfigurationJSON({
+					fieldSets: [
+						{
+							fields: [
+								{
+									defaultValue: 1,
+									label: 'Boost',
+									name: 'boost',
+									type: 'number',
+								},
+								{
+									label: 'Text',
+									type: 'text',
+								},
+							],
+						},
+					],
+				})
+			).toEqual({
+				fieldSets: [
+					{
+						fields: [
+							{
+								defaultValue: 1,
+								label: 'Boost',
+								name: 'boost',
+								type: 'number',
+							},
+						],
+					},
+				],
+			});
+		});
+
+		it('removes field with non-unique "name" property from UIConfigurationJSON', () => {
+			expect(
+				cleanUIConfigurationJSON({
+					fieldSets: [
+						{
+							fields: [
+								{
+									defaultValue: 1,
+									label: 'Boost',
+									name: 'boost',
+									type: 'number',
+								},
+								{
+									label: 'Text',
+									name: 'text',
+									type: 'text',
+								},
+								{
+									label: 'Duplicate Text',
+									name: 'text',
+									type: 'text',
+								},
+							],
+						},
+					],
+				})
+			).toEqual({
+				fieldSets: [
+					{
+						fields: [
+							{
+								defaultValue: 1,
+								label: 'Boost',
+								name: 'boost',
+								type: 'number',
+							},
+							{label: 'Text', name: 'text', type: 'text'},
+						],
+					},
+				],
+			});
 		});
 	});
 

@@ -21,7 +21,11 @@ import {PropTypes} from 'prop-types';
 import React, {useContext, useEffect, useState} from 'react';
 
 import {INPUT_TYPES} from '../../utils/inputTypes';
-import {getElementOutput, isDefined} from '../../utils/utils';
+import {
+	cleanUIConfigurationJSON,
+	getElementOutput,
+	isDefined,
+} from '../../utils/utils';
 import {PreviewModalWithCopyDownload} from '../PreviewModal';
 import ThemeContext from '../ThemeContext';
 import {getLocalizedText} from './../../utils/language';
@@ -67,6 +71,8 @@ function Element({
 	);
 	const title = getLocalizedText(elementTemplateJSON.title, locale);
 
+	const fieldSets = cleanUIConfigurationJSON(uiConfigurationJSON).fieldSets;
+
 	useEffect(() => {
 		setCollapse(collapseAll);
 	}, [collapseAll]);
@@ -89,10 +95,6 @@ function Element({
 			!elementTemplateJSON.enabled
 		);
 	};
-
-	const _hasConfigurationValues =
-		Array.isArray(uiConfigurationJSON?.fieldSets) &&
-		uiConfigurationJSON.fieldSets.some((item) => item.fields?.length > 0);
 
 	const _hasError = (config) =>
 		touched.uiConfigurationValues?.[config.name] &&
@@ -345,7 +347,7 @@ function Element({
 						</ClayDropDown.ItemList>
 					</ClayDropDown>
 
-					{_hasConfigurationValues && (
+					{fieldSets.length > 0 && (
 						<ClayList.ItemField>
 							<ClayButton
 								aria-label={
@@ -372,83 +374,78 @@ function Element({
 				</ClayList.Item>
 			</ClayList>
 
-			{!collapse && _hasConfigurationValues && (
+			{!collapse && fieldSets.length > 0 && (
 				<ClayList className="configuration-form-list">
-					{uiConfigurationJSON.fieldSets.map((fieldSet) => {
-						if (Array.isArray(fieldSet.fields)) {
-							return fieldSet.fields.map((config) => (
-								<ClayList.Item
-									className={config.type}
-									flex
-									key={config.name}
-								>
-									{config.type !== INPUT_TYPES.JSON && (
-										<ClayList.ItemField className="list-item-label">
-											<label
-												htmlFor={_getInputId(
-													id,
-													config.name
+					{fieldSets.map(({fields}) => {
+						return fields.map((config) => (
+							<ClayList.Item
+								className={config.type}
+								flex
+								key={config.name}
+							>
+								{config.type !== INPUT_TYPES.JSON && (
+									<ClayList.ItemField className="list-item-label">
+										<label
+											htmlFor={_getInputId(
+												id,
+												config.name
+											)}
+										>
+											{config.label}
+
+											{isDefined(
+												config.typeOptions?.required
+											) &&
+												!config.typeOptions
+													.required && (
+													<span className="optional-text">
+														{Liferay.Language.get(
+															'optional'
+														)}
+													</span>
 												)}
-											>
-												{config.label}
 
-												{isDefined(
-													config.typeOptions?.required
-												) &&
-													!config.typeOptions
-														.required && (
-														<span className="optional-text">
-															{Liferay.Language.get(
-																'optional'
-															)}
-														</span>
-													)}
-
-												{config.helpText && (
-													<ClayTooltipProvider>
-														<ClaySticker
-															displayType="unstyled"
-															size="sm"
-															title={
-																config.helpText
-															}
-														>
-															<ClayIcon
-																data-tooltip-align="top"
-																symbol="info-circle"
-															/>
-														</ClaySticker>
-													</ClayTooltipProvider>
-												)}
-											</label>
-										</ClayList.ItemField>
-									)}
-
-									<ClayList.ItemField
-										className={getCN({
-											'has-error': _hasError(config),
-										})}
-										expand
-									>
-										{_renderInput(config)}
-
-										{_hasError(config) && (
-											<ClayForm.FeedbackGroup>
-												<ClayForm.FeedbackItem>
-													<ClayForm.FeedbackIndicator symbol="exclamation-full" />
-													{
-														error
-															.uiConfigurationValues[
-															config.name
-														]
-													}
-												</ClayForm.FeedbackItem>
-											</ClayForm.FeedbackGroup>
-										)}
+											{config.helpText && (
+												<ClayTooltipProvider>
+													<ClaySticker
+														displayType="unstyled"
+														size="sm"
+														title={config.helpText}
+													>
+														<ClayIcon
+															data-tooltip-align="top"
+															symbol="info-circle"
+														/>
+													</ClaySticker>
+												</ClayTooltipProvider>
+											)}
+										</label>
 									</ClayList.ItemField>
-								</ClayList.Item>
-							));
-						}
+								)}
+
+								<ClayList.ItemField
+									className={getCN({
+										'has-error': _hasError(config),
+									})}
+									expand
+								>
+									{_renderInput(config)}
+
+									{_hasError(config) && (
+										<ClayForm.FeedbackGroup>
+											<ClayForm.FeedbackItem>
+												<ClayForm.FeedbackIndicator symbol="exclamation-full" />
+												{
+													error.uiConfigurationValues[
+														config.name
+													]
+												}
+											</ClayForm.FeedbackItem>
+										</ClayForm.FeedbackGroup>
+									)}
+								</ClayList.ItemField>
+							</ClayList.Item>
+						));
 					})}
 				</ClayList>
 			)}
