@@ -77,6 +77,9 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 
 		_addExplainParameter(parameterDataBuilder, blueprintsAttributes);
 
+		_addIncludeResponseStringParameter(
+			parameterDataBuilder, blueprintsAttributes);
+
 		_addKeywordParameter(
 			parameterDataBuilder, blueprint, blueprintsAttributes, messages);
 
@@ -199,6 +202,21 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 			parameterDataBuilder.addParameter(
 				new BooleanParameter(
 					"explain", "${explain}",
+					GetterUtil.getBoolean(optional.get())));
+		}
+	}
+
+	private void _addIncludeResponseStringParameter(
+		ParameterDataBuilder parameterDataBuilder,
+		BlueprintsAttributes blueprintsAttributes) {
+
+		Optional<Object> optional = blueprintsAttributes.getAttributeOptional(
+			"include_response_string");
+
+		if (optional.isPresent()) {
+			parameterDataBuilder.addParameter(
+				new BooleanParameter(
+					"include_response_string", "${include_response_string}",
 					GetterUtil.getBoolean(optional.get())));
 		}
 	}
