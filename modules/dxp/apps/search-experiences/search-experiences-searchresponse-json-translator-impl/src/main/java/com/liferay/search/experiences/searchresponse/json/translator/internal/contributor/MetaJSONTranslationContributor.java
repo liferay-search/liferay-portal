@@ -127,7 +127,8 @@ public class MetaJSONTranslationContributor
 		JSONObject jsonObject, SearchResponse searchResponse) {
 
 		if (!Validator.isBlank(searchResponse.getResponseString())) {
-			jsonObject.put("requestString", searchResponse.getResponseString());
+			jsonObject.put(
+				"responseString", searchResponse.getResponseString());
 		}
 	}
 
