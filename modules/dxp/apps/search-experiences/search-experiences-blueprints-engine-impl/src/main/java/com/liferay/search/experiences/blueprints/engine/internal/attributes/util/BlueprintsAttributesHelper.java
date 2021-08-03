@@ -14,7 +14,6 @@
 
 package com.liferay.search.experiences.blueprints.engine.internal.attributes.util;
 
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.search.experiences.blueprints.util.util.BlueprintValueUtil;
 
@@ -62,7 +61,7 @@ public class BlueprintsAttributesHelper {
 		}
 
 		return BlueprintValueUtil.toStringOptional(
-			GetterUtil.getString(optional.get()));
+			String.valueOf(optional.get()));
 	}
 
 }
