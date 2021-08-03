@@ -19,6 +19,7 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.search.searcher.SearchRequest;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.sort.ScoreSort;
 import com.liferay.portal.search.sort.Sort;
@@ -60,6 +61,10 @@ public class SortSearchRequestBodyContributor
 	public void contribute(
 		SearchRequestBuilder searchRequestBuilder, Blueprint blueprint,
 		ParameterData parameterData, Messages messages) {
+
+		if (_sortsExist(searchRequestBuilder)) {
+			return;
+		}
 
 		List<Sort> sorts = _getSortsFromParameters(
 			parameterData, blueprint, messages);
@@ -283,6 +288,18 @@ public class SortSearchRequestBodyContributor
 		}
 
 		return Optional.of(sort);
+	}
+
+	private boolean _sortsExist(SearchRequestBuilder searchRequestBuilder) {
+		return searchRequestBuilder.withSearchContextGet(
+			searchContext -> {
+				SearchRequest searchRequest =
+					(SearchRequest)searchContext.getAttribute("search.request");
+
+				List<Sort> sorts = searchRequest.getSorts();
+
+				return !sorts.isEmpty();
+			});
 	}
 
 	private static final List<String> _fixedTypes = new ArrayList<>(
