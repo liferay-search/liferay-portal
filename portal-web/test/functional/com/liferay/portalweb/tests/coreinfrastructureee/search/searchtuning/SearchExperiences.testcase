@@ -485,26 +485,26 @@ definition {
 
 		SearchExperiences.addBlueprint(name = "Test Blueprint");
 
-		SearchExperiences.addQueryElement(element = "Hide by an Exact Term Match");
+		SearchExperiences.addQueryElement(element = "Boost Asset Type");
 
 		PortletEntry.save();
 
 		Navigator.gotoNavItem(navItem = "Elements");
 
-		Search.searchCP(searchTerm = "Hide");
+		Search.searchCP(searchTerm = "Boost Asset Type");
 
-		LexiconEntry.openEntryMenu(rowEntry = "Hide by an Exact Term Match");
+		LexiconEntry.openEntryMenu(rowEntry = "Boost Asset Type");
 
 		MenuItem.click(menuItem = "Hide");
 
 		AssertElementNotPresent(
-			key_rowEntry = "Hide by an Exact Term Match",
+			key_rowEntry = "Boost Asset Type",
 			locator1 = "ContentRow#ENTRY_CONTENT_ENTRY_NAME");
 
 		ManagementBar.setFilterAndOrder(filterBy = "Hidden");
 
 		AssertElementPresent(
-			key_rowEntry = "Hide by an Exact Term Match",
+			key_rowEntry = "Boost Asset Type",
 			locator1 = "ContentRow#ENTRY_CONTENT_ENTRY_NAME");
 
 		Navigator.gotoNavItem(navItem = "Blueprints");
@@ -512,15 +512,15 @@ definition {
 		SearchExperiences.editBlueprint(name = "Test Blueprint");
 
 		AssertElementPresent(
-			elementName = "Hide by an Exact Term Match",
+			elementName = "Boost Asset Type",
 			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_BUILDER_ADDED_ELEMENT");
 
 		Type.sendKeysApplicationSearch(
 			locator1 = "SearchExperiences#BLUEPRINTS_ADD_QUERY_ELEMENTS_SEARCH_BAR",
-			value1 = "Hide by an Exact Term Match");
+			value1 = "Boost Asset Type");
 
 		AssertElementNotPresent(
-			key_elementName = "Hide by an Exact Term Match",
+			key_elementName = "Boost Asset Type",
 			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_ELEMENT_ADD_NAME");
 
 		Navigator.gotoBack();
@@ -529,7 +529,7 @@ definition {
 
 		ManagementBar.setFilterAndOrder(filterBy = "Hidden");
 
-		LexiconEntry.openEntryMenu(rowEntry = "Hide by an Exact Term Match");
+		LexiconEntry.openEntryMenu(rowEntry = "Boost Asset Type");
 
 		MenuItem.click(menuItem = "Show");
 
@@ -540,7 +540,7 @@ definition {
 		ManagementBar.setFilterAndOrder(filterBy = "Visible");
 
 		AssertElementPresent(
-			key_rowEntry = "Hide by an Exact Term Match",
+			key_rowEntry = "Boost Asset Type",
 			locator1 = "ContentRow#ENTRY_CONTENT_ENTRY_NAME");
 
 		Navigator.gotoNavItem(navItem = "Blueprints");
@@ -549,10 +549,10 @@ definition {
 
 		Type.sendKeysApplicationSearch(
 			locator1 = "SearchExperiences#BLUEPRINTS_ADD_QUERY_ELEMENTS_SEARCH_BAR",
-			value1 = "Hide by an Exact Term Match");
+			value1 = "Boost Asset Type");
 
 		AssertElementPresent(
-			key_elementName = "Hide by an Exact Term Match",
+			key_elementName = "Boost Asset Type",
 			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_ELEMENT_ADD_NAME");
 
 		Navigator.gotoBack();
