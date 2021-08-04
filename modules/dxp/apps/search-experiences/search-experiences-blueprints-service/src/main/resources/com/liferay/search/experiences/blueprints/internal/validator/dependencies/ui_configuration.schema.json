@@ -163,7 +163,7 @@
 					}
 				}
 			},
-			"required": ["label", "type"]
+			"required": ["label", "name", "type"]
 		},
 		"fieldDate": {
 			"properties": {
