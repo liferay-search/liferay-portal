@@ -501,6 +501,12 @@ definition {
 			key_rowEntry = "Hide by an Exact Term Match",
 			locator1 = "ContentRow#ENTRY_CONTENT_ENTRY_NAME");
 
+		ManagementBar.setFilterAndOrder(filterBy = "Hidden");
+
+		AssertElementPresent(
+			key_rowEntry = "Hide by an Exact Term Match",
+			locator1 = "ContentRow#ENTRY_CONTENT_ENTRY_NAME");
+
 		Navigator.gotoNavItem(navItem = "Blueprints");
 
 		SearchExperiences.editBlueprint(name = "Test Blueprint");
@@ -581,6 +587,14 @@ definition {
 			locator1 = "Message#NO_ENTRIES",
 			value1 = "No entries were found.");
 
+		ManagementBar.setFilterAndOrder(filterBy = "Hidden");
+
+		for (var hiddenElement : list "${elementsList}") {
+			AssertElementPresent(
+				key_rowEntry = "${hiddenElement}",
+				locator1 = "ContentRow#ENTRY_CONTENT_ENTRY_NAME");
+		}
+
 		Navigator.gotoNavItem(navItem = "Blueprints");
 
 		SearchExperiences.editBlueprint(name = "Test Blueprint");
@@ -598,12 +612,6 @@ definition {
 		Navigator.gotoNavItem(navItem = "Elements");
 
 		ManagementBar.setFilterAndOrder(filterBy = "Hidden");
-
-		for (var hiddenElement : list "${elementsList}") {
-			AssertElementPresent(
-				key_rowEntry = "${hiddenElement}",
-				locator1 = "ContentRow#ENTRY_CONTENT_ENTRY_NAME");
-		}
 
 		ManagementBar.clickSelectAllCheckbox();
 
