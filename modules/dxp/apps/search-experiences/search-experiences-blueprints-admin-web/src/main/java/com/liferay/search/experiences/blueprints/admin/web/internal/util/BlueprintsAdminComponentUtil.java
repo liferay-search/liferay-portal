@@ -23,10 +23,11 @@ import com.liferay.portal.search.spi.model.query.contributor.QueryPreFilterContr
 import java.util.ArrayList;
 import java.util.List;
 
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -36,31 +37,26 @@ import org.osgi.service.component.annotations.Component;
 public class BlueprintsAdminComponentUtil {
 
 	public static List<String> getKeywordQueryContributors() {
-		return _keywordQueryContributors;
+		return _getComponentList(KeywordQueryContributor.class.getName());
 	}
 
 	public static List<String> getModelPrefilterContributors() {
-		return _modelPreFilterContributors;
+		return _getComponentList(ModelPreFilterContributor.class.getName());
 	}
 
 	public static List<String> getQueryPrefilterContributors() {
-		return _queryPreFilterContributors;
+		return _getComponentList(QueryPreFilterContributor.class.getName());
 	}
 
-	@Activate
-	protected void activate(BundleContext bundleContext) {
-		_keywordQueryContributors = _getComponentList(
-			bundleContext, KeywordQueryContributor.class.getName());
+	private static BundleContext _getBundleContext() {
+		Bundle bundle = FrameworkUtil.getBundle(
+			BlueprintsAdminComponentUtil.class);
 
-		_modelPreFilterContributors = _getComponentList(
-			bundleContext, ModelPreFilterContributor.class.getName());
-
-		_queryPreFilterContributors = _getComponentList(
-			bundleContext, QueryPreFilterContributor.class.getName());
+		return bundle.getBundleContext();
 	}
 
-	private List<String> _getComponentList(
-		BundleContext bundleContext, String className) {
+	private static List<String> _getComponentList(String className) {
+		BundleContext bundleContext = _getBundleContext();
 
 		List<String> list = new ArrayList<>();
 
@@ -83,9 +79,5 @@ public class BlueprintsAdminComponentUtil {
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		BlueprintsAdminComponentUtil.class);
-
-	private static List<String> _keywordQueryContributors;
-	private static List<String> _modelPreFilterContributors;
-	private static List<String> _queryPreFilterContributors;
 
 }
