@@ -483,6 +483,12 @@ definition {
 	test HideAndShowElements {
 		SearchExperiences.openSearchExperiencesAdmin();
 
+		SearchExperiences.addBlueprint(name = "Test Blueprint");
+
+		SearchExperiences.addQueryElement(element = "Hide by an Exact Term Match");
+
+		PortletEntry.save();
+
 		Navigator.gotoNavItem(navItem = "Elements");
 
 		Search.searchCP(searchTerm = "Hide");
@@ -497,7 +503,11 @@ definition {
 
 		Navigator.gotoNavItem(navItem = "Blueprints");
 
-		SearchExperiences.addBlueprint(name = "Test Blueprint");
+		SearchExperiences.editBlueprint(name = "Test Blueprint");
+
+		AssertElementPresent(
+			elementName = "Hide by an Exact Term Match",
+			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_BUILDER_ADDED_ELEMENT");
 
 		Type.sendKeysApplicationSearch(
 			locator1 = "SearchExperiences#BLUEPRINTS_ADD_QUERY_ELEMENTS_SEARCH_BAR",
