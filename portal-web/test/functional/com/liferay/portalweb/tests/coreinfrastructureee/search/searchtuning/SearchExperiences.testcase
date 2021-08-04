@@ -517,7 +517,7 @@ definition {
 			key_elementName = "Hide by an Exact Term Match",
 			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_ELEMENT_ADD_NAME");
 
-		PortletEntry.save();
+		Navigator.gotoBack();
 
 		Navigator.gotoNavItem(navItem = "Elements");
 
@@ -549,7 +549,7 @@ definition {
 			key_elementName = "Hide by an Exact Term Match",
 			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_ELEMENT_ADD_NAME");
 
-		PortletEntry.save();
+		Navigator.gotoBack();
 
 		Navigator.gotoNavItem(navItem = "Elements");
 
@@ -593,7 +593,7 @@ definition {
 			locator1 = "SearchExperiences#BLUEPRINTS_EMPTY_QUERY_LIST",
 			value1 = "No query elements found.");
 
-		PortletEntry.save();
+		Navigator.gotoBack();
 
 		Navigator.gotoNavItem(navItem = "Elements");
 
