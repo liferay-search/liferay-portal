@@ -480,7 +480,7 @@ definition {
 			locator1 = "SearchExperiences#CUSTOM_ELEMENT_UI_CONFIGURATION_EDITOR");
 	}
 
-	test HideElements {
+	test HideAndShowElements {
 		SearchExperiences.openSearchExperiencesAdmin();
 
 		Navigator.gotoNavItem(navItem = "Elements");
