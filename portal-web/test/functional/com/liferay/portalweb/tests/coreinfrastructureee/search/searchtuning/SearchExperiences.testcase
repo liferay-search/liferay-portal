@@ -534,7 +534,7 @@ definition {
 		MenuItem.click(menuItem = "Show");
 
 		AssertTextEquals(
-			locator1 = "Message#NO_ENTRIES",
+			locator1 = "Message#EMPTY_INFO",
 			value1 = "No entries were found.");
 
 		ManagementBar.setFilterAndOrder(filterBy = "Visible");
@@ -584,7 +584,7 @@ definition {
 		MenuItem.click(menuItem = "Hide");
 
 		AssertTextEquals(
-			locator1 = "Message#NO_ENTRIES",
+			locator1 = "Message#EMPTY_INFO",
 			value1 = "No entries were found.");
 
 		ManagementBar.setFilterAndOrder(filterBy = "Hidden");
@@ -620,7 +620,7 @@ definition {
 		MenuItem.click(menuItem = "Show");
 
 		AssertTextEquals(
-			locator1 = "Message#NO_ENTRIES",
+			locator1 = "Message#EMPTY_INFO",
 			value1 = "No entries were found.");
 
 		ManagementBar.setFilterAndOrder(filterBy = "Visible");
