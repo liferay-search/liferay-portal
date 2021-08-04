@@ -604,7 +604,7 @@ definition {
 			value1 = "Hide");
 
 		AssertTextEquals(
-			locator1 = "SearchExperiences#BLUEPRINTS_EMPTY_QUERY_LIST",
+			locator1 = "SearchExperiences#BLUEPRINTS_EMPTY_QUERY_ELEMENTS_LIST",
 			value1 = "No query elements found.");
 
 		Navigator.gotoBack();
