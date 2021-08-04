@@ -146,6 +146,7 @@ function PreviewSidebar({
 					<PreviewModalWithCopyDownload
 						fileName="raw_response.json"
 						folded
+						lineWrapping={false}
 						size="lg"
 						text={JSON.stringify(results, null, 2)}
 						title={Liferay.Language.get('raw-response')}

@@ -47,6 +47,7 @@ export const PreviewModalWithCopyDownload = ({
 	children,
 	fileName,
 	folded = false,
+	lineWrapping,
 	readOnly = true,
 	size,
 	text,
@@ -103,6 +104,7 @@ export const PreviewModalWithCopyDownload = ({
 
 					<CodeMirrorEditor
 						folded={folded}
+						lineWrapping={lineWrapping}
 						readOnly={readOnly}
 						value={text}
 					/>

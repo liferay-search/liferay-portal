@@ -72,6 +72,7 @@ const CodeMirrorEditor = React.forwardRef(
 	(
 		{
 			folded = false,
+			lineWrapping = true,
 			onChange = () => {},
 			mode = 'json',
 			value = '',
@@ -99,7 +100,7 @@ const CodeMirrorEditor = React.forwardRef(
 					indentWithTabs: true,
 					inputStyle: 'contenteditable',
 					lineNumbers: true,
-					lineWrapping: true,
+					lineWrapping,
 					matchBrackets: true,
 					mode: {globalVars: true, name: MODES[mode].type},
 					readOnly,
