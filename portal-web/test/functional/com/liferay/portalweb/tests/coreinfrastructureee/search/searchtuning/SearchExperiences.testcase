@@ -480,7 +480,7 @@ definition {
 			locator1 = "SearchExperiences#CUSTOM_ELEMENT_UI_CONFIGURATION_EDITOR");
 	}
 
-	test HideAndShowElements {
+	test HideAndShowElement {
 		SearchExperiences.openSearchExperiencesAdmin();
 
 		SearchExperiences.addBlueprint(name = "Test Blueprint");
@@ -554,8 +554,10 @@ definition {
 		AssertElementPresent(
 			key_elementName = "Boost Asset Type",
 			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_ELEMENT_ADD_NAME");
+	}
 
-		Navigator.gotoBack();
+	test HideAndShowMultipleElements {
+		SearchExperiences.openSearchExperiencesAdmin();
 
 		Navigator.gotoNavItem(navItem = "Elements");
 
@@ -597,7 +599,7 @@ definition {
 
 		Navigator.gotoNavItem(navItem = "Blueprints");
 
-		SearchExperiences.editBlueprint(name = "Test Blueprint");
+		SearchExperiences.addBlueprint(name = "Test Blueprint");
 
 		Type.sendKeysApplicationSearch(
 			locator1 = "SearchExperiences#BLUEPRINTS_ADD_QUERY_ELEMENTS_SEARCH_BAR",
