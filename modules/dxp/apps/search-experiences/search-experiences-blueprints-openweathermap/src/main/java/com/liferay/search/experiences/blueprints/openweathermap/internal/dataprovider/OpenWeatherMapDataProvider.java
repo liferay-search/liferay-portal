@@ -54,9 +54,7 @@ public class OpenWeatherMapDataProvider {
 	public JSONObject getWeatherDataJSONObject(
 		Messages messages, GeoLocationPoint geoLocationPoint) {
 
-		if (!_openWeatherMapConfiguration.isEnabled() ||
-			!_validateConfiguration(messages)) {
-
+		if (!_validateConfiguration(messages)) {
 			return null;
 		}
 

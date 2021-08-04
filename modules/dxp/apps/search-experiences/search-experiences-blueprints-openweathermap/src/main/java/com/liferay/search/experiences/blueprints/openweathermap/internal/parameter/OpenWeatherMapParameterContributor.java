@@ -58,6 +58,10 @@ public class OpenWeatherMapParameterContributor
 		ParameterDataBuilder parameterDataBuilder, Blueprint blueprint,
 		BlueprintsAttributes blueprintsAttributes, Messages messages) {
 
+		if (!_openWeatherMapConfiguration.isEnabled()) {
+			return;
+		}
+
 		_contribute(
 			parameterDataBuilder, _getIpAddress(blueprintsAttributes),
 			messages);
