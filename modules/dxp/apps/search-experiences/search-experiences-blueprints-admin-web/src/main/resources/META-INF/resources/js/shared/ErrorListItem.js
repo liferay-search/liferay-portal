@@ -12,6 +12,7 @@
 import ClayAlert from '@clayui/alert';
 import ClayButton, {ClayButtonWithIcon} from '@clayui/button';
 import ClayLayout from '@clayui/layout';
+import getCN from 'classnames';
 import React, {useState} from 'react';
 
 const ERROR_OMIT_KEYS = [
@@ -52,8 +53,6 @@ const prettyPrint = (value) => {
 function ErrorListItem({item, onFocusElement}) {
 	const [collapse, setCollapse] = useState(true);
 
-	const itemKeys = Object.keys(item);
-
 	const _handleCollapse = () => {
 		setCollapse(!collapse);
 	};
@@ -62,9 +61,15 @@ function ErrorListItem({item, onFocusElement}) {
 		onFocusElement(item.elementId);
 	};
 
+	const _isCollapsible = () => {
+		return Object.keys(item).includes('rootProperty');
+	};
+
 	return (
 		<ClayAlert
-			className="error-list-item"
+			className={getCN('error-list-item', {
+				collapsible: _isCollapsible(),
+			})}
 			displayType={SEVERITY_DISPLAY_TYPE[item.severity] || 'danger'}
 		>
 			<span className="message" onClick={_handleCollapse}>
@@ -89,7 +94,7 @@ function ErrorListItem({item, onFocusElement}) {
 				</div>
 			)}
 
-			{itemKeys.includes('rootProperty') && (
+			{_isCollapsible() && (
 				<ClayButtonWithIcon
 					borderless
 					className="collapse-button text-danger"
@@ -100,9 +105,9 @@ function ErrorListItem({item, onFocusElement}) {
 				/>
 			)}
 
-			{!collapse && itemKeys.includes('rootProperty') && (
+			{!collapse && _isCollapsible() && (
 				<ClayAlert.Footer>
-					{itemKeys.map(
+					{Object.keys(item).map(
 						(property) =>
 							!ERROR_OMIT_KEYS.includes(property) && (
 								<ClayLayout.Row justify="start" key={property}>

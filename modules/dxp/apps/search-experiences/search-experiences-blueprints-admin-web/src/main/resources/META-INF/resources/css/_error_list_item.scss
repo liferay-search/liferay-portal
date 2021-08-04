@@ -22,8 +22,6 @@
 	}
 
 	.message {
-		cursor: pointer;
-
 		.title {
 			font-weight: 600;
 		}
@@ -70,6 +68,12 @@
 
 		button {
 			font-size: 12px;
+		}
+	}
+
+	&.collapsible {
+		.message {
+			cursor: pointer;
 		}
 	}
 
