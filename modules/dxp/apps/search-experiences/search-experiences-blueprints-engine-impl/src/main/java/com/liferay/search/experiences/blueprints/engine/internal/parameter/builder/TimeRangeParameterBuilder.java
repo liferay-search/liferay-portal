@@ -16,7 +16,7 @@ package com.liferay.search.experiences.blueprints.engine.internal.parameter.buil
 
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
-import com.liferay.search.experiences.blueprints.engine.internal.attributes.util.BlueprintsAttributesHelper;
+import com.liferay.search.experiences.blueprints.engine.internal.attributes.util.BlueprintsAttributeValuesHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.DateParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.Parameter;
 import com.liferay.search.experiences.blueprints.message.Messages;
@@ -45,7 +45,7 @@ public class TimeRangeParameterBuilder implements ParameterBuilder {
 		String parameterName = jsonObject.getString("parameter_name");
 
 		Optional<String> optional =
-			_blueprintsAttributesHelper.getStringOptional(
+			_blueprintsAttributeValuesHelper.getStringOptional(
 				blueprintsAttributes, parameterName);
 
 		if (!optional.isPresent()) {
@@ -98,6 +98,6 @@ public class TimeRangeParameterBuilder implements ParameterBuilder {
 	}
 
 	@Reference
-	private BlueprintsAttributesHelper _blueprintsAttributesHelper;
+	private BlueprintsAttributeValuesHelper _blueprintsAttributeValuesHelper;
 
 }

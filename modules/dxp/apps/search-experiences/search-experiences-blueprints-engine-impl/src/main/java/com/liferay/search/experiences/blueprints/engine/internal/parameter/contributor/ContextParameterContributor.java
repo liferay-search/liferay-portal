@@ -24,6 +24,7 @@ import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
+import com.liferay.search.experiences.blueprints.engine.internal.attributes.util.BlueprintsAttributeValuesHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.BooleanParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.LongParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterDataBuilder;
@@ -148,19 +149,22 @@ public class ContextParameterContributor implements ParameterContributor {
 		ParameterDataBuilder parameterDataBuilder,
 		BlueprintsAttributes blueprintsAttributes, Messages messages) {
 
-		Optional<Object> optional = blueprintsAttributes.getAttributeOptional(
-			"scope_group_id");
+		Optional<Long> optional =
+			_blueprintsAttributeValuesHelper.getLongOptional(
+				blueprintsAttributes, "scope_group_id");
 
 		if (!optional.isPresent()) {
 			return;
 		}
 
+		long scopeGroupId = optional.get();
+
 		parameterDataBuilder.addParameter(
 			new LongParameter(
 				"scope_group_id", _getTemplateVariableName("scope_group_id"),
-				GetterUtil.getLong(optional.get())));
+				scopeGroupId));
 
-		Group group = _getGroup(GetterUtil.getLong(optional.get()), messages);
+		Group group = _getGroup(scopeGroupId, messages);
 
 		if (group == null) {
 			return;
@@ -194,16 +198,18 @@ public class ContextParameterContributor implements ParameterContributor {
 		ParameterDataBuilder parameterDataBuilder,
 		BlueprintsAttributes blueprintsAttributes, Messages messages) {
 
-		Optional<Object> optional = blueprintsAttributes.getAttributeOptional(
-			"plid");
+		Optional<Long> optional =
+			_blueprintsAttributeValuesHelper.getLongOptional(
+				blueprintsAttributes, "plid");
 
 		if (!optional.isPresent()) {
 			return;
 		}
 
+		long plid = optional.get();
+
 		try {
-			Layout layout = _layoutLocalService.getLayout(
-				GetterUtil.getLong(optional.get()));
+			Layout layout = _layoutLocalService.getLayout(plid);
 
 			parameterDataBuilder.addParameter(
 				new StringParameter(
@@ -214,7 +220,7 @@ public class ContextParameterContributor implements ParameterContributor {
 		catch (PortalException portalException) {
 			MessagesUtil.error(
 				messages, getClass().getName(), portalException, null, null,
-				(String)optional.get(), "core.error.layout-not-found");
+				String.valueOf(plid), "core.error.layout-not-found");
 		}
 	}
 
@@ -222,8 +228,9 @@ public class ContextParameterContributor implements ParameterContributor {
 		ParameterDataBuilder parameterDataBuilder,
 		BlueprintsAttributes blueprintsAttributes) {
 
-		Optional<Object> optional = blueprintsAttributes.getAttributeOptional(
-			"plid");
+		Optional<Long> optional =
+			_blueprintsAttributeValuesHelper.getLongOptional(
+				blueprintsAttributes, "plid");
 
 		if (!optional.isPresent()) {
 			return;
@@ -231,8 +238,7 @@ public class ContextParameterContributor implements ParameterContributor {
 
 		parameterDataBuilder.addParameter(
 			new LongParameter(
-				"plid", _getTemplateVariableName("plid"),
-				GetterUtil.getLong(optional.get())));
+				"plid", _getTemplateVariableName("plid"), optional.get()));
 	}
 
 	private Group _getGroup(long groupId, Messages messages) {
@@ -257,6 +263,9 @@ public class ContextParameterContributor implements ParameterContributor {
 
 		return sb.toString();
 	}
+
+	@Reference
+	private BlueprintsAttributeValuesHelper _blueprintsAttributeValuesHelper;
 
 	@Reference
 	private GroupLocalService _groupLocalService;

@@ -14,6 +14,7 @@
 
 package com.liferay.search.experiences.blueprints.engine.internal.attributes.util;
 
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.search.experiences.blueprints.util.util.BlueprintValueUtil;
 
@@ -24,8 +25,47 @@ import org.osgi.service.component.annotations.Component;
 /**
  * @author Petteri Karttunen
  */
-@Component(immediate = true, service = BlueprintsAttributesHelper.class)
-public class BlueprintsAttributesHelper {
+@Component(immediate = true, service = BlueprintsAttributeValuesHelper.class)
+public class BlueprintsAttributeValuesHelper {
+
+	public Optional<Boolean> getBooleanOptional(
+		BlueprintsAttributes blueprintsAttributes, String key) {
+
+		Optional<Object> valueOptional =
+			blueprintsAttributes.getAttributeOptional(key);
+
+		if (!valueOptional.isPresent()) {
+			return Optional.empty();
+		}
+
+		return valueOptional.map(GetterUtil::getBoolean);
+	}
+
+	public Optional<Integer> getIntegerOptional(
+		BlueprintsAttributes blueprintsAttributes, String key) {
+
+		Optional<Object> valueOptional =
+			blueprintsAttributes.getAttributeOptional(key);
+
+		if (!valueOptional.isPresent()) {
+			return Optional.empty();
+		}
+
+		return valueOptional.map(GetterUtil::getInteger);
+	}
+
+	public Optional<Long> getLongOptional(
+		BlueprintsAttributes blueprintsAttributes, String key) {
+
+		Optional<Object> valueOptional =
+			blueprintsAttributes.getAttributeOptional(key);
+
+		if (!valueOptional.isPresent()) {
+			return Optional.empty();
+		}
+
+		return valueOptional.map(GetterUtil::getLong);
+	}
 
 	public Optional<String[]> getStringArrayOptional(
 		BlueprintsAttributes blueprintsAttributes, String key) {

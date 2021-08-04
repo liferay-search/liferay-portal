@@ -21,7 +21,7 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.TimeZoneUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
-import com.liferay.search.experiences.blueprints.engine.internal.attributes.util.BlueprintsAttributesHelper;
+import com.liferay.search.experiences.blueprints.engine.internal.attributes.util.BlueprintsAttributeValuesHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.DateParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.Parameter;
 import com.liferay.search.experiences.blueprints.message.Messages;
@@ -110,7 +110,7 @@ public class DateParameterBuilder implements ParameterBuilder {
 		BlueprintsAttributes blueprintsAttributes, String parameterName) {
 
 		Optional<String> optional =
-			_blueprintsAttributesHelper.getStringOptional(
+			_blueprintsAttributeValuesHelper.getStringOptional(
 				blueprintsAttributes, parameterName);
 
 		return optional.orElse(StringPool.BLANK);
@@ -120,7 +120,7 @@ public class DateParameterBuilder implements ParameterBuilder {
 		BlueprintsAttributes blueprintsAttributes, String parameterName) {
 
 		Optional<String> optional =
-			_blueprintsAttributesHelper.getStringOptional(
+			_blueprintsAttributeValuesHelper.getStringOptional(
 				blueprintsAttributes, parameterName);
 
 		TimeZone defaultTimeZone = TimeZoneUtil.getDefault();
@@ -132,6 +132,6 @@ public class DateParameterBuilder implements ParameterBuilder {
 		DateParameterBuilder.class);
 
 	@Reference
-	private BlueprintsAttributesHelper _blueprintsAttributesHelper;
+	private BlueprintsAttributeValuesHelper _blueprintsAttributeValuesHelper;
 
 }

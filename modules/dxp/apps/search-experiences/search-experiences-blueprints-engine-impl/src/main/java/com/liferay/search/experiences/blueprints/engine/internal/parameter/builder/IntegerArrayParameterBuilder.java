@@ -18,7 +18,7 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
-import com.liferay.search.experiences.blueprints.engine.internal.attributes.util.BlueprintsAttributesHelper;
+import com.liferay.search.experiences.blueprints.engine.internal.attributes.util.BlueprintsAttributeValuesHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.IntegerArrayParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.Parameter;
 import com.liferay.search.experiences.blueprints.message.Messages;
@@ -62,7 +62,7 @@ public class IntegerArrayParameterBuilder implements ParameterBuilder {
 		String parameterName) {
 
 		Optional<String[]> stringArrayOptional =
-			_blueprintsAttributesHelper.getStringArrayOptional(
+			_blueprintsAttributeValuesHelper.getStringArrayOptional(
 				blueprintsAttributes, parameterName);
 
 		if (!stringArrayOptional.isPresent()) {
@@ -104,6 +104,6 @@ public class IntegerArrayParameterBuilder implements ParameterBuilder {
 		IntegerArrayParameterBuilder.class);
 
 	@Reference
-	private BlueprintsAttributesHelper _blueprintsAttributesHelper;
+	private BlueprintsAttributeValuesHelper _blueprintsAttributeValuesHelper;
 
 }

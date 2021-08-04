@@ -23,6 +23,7 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
+import com.liferay.search.experiences.blueprints.engine.internal.attributes.util.BlueprintsAttributeValuesHelper;
 import com.liferay.search.experiences.blueprints.engine.internal.parameter.builder.ParameterBuilder;
 import com.liferay.search.experiences.blueprints.engine.parameter.BooleanParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.IntegerParameter;
@@ -195,14 +196,13 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 		ParameterDataBuilder parameterDataBuilder,
 		BlueprintsAttributes blueprintsAttributes) {
 
-		Optional<Object> optional = blueprintsAttributes.getAttributeOptional(
-			"explain");
+		Optional<Boolean> optional =
+			_blueprintsAttributeValuesHelper.getBooleanOptional(
+				blueprintsAttributes, "explain");
 
 		if (optional.isPresent()) {
 			parameterDataBuilder.addParameter(
-				new BooleanParameter(
-					"explain", "${explain}",
-					GetterUtil.getBoolean(optional.get())));
+				new BooleanParameter("explain", "${explain}", optional.get()));
 		}
 	}
 
@@ -210,14 +210,15 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 		ParameterDataBuilder parameterDataBuilder,
 		BlueprintsAttributes blueprintsAttributes) {
 
-		Optional<Object> optional = blueprintsAttributes.getAttributeOptional(
-			"include_response_string");
+		Optional<Boolean> optional =
+			_blueprintsAttributeValuesHelper.getBooleanOptional(
+				blueprintsAttributes, "include_response_string");
 
 		if (optional.isPresent()) {
 			parameterDataBuilder.addParameter(
 				new BooleanParameter(
 					"include_response_string", "${include_response_string}",
-					GetterUtil.getBoolean(optional.get())));
+					optional.get()));
 		}
 	}
 
@@ -246,14 +247,13 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 
 		String parameterName = jsonObject.getString("parameter_name");
 
-		Optional<Object> optional = blueprintsAttributes.getAttributeOptional(
-			parameterName);
+		Optional<Integer> optional =
+			_blueprintsAttributeValuesHelper.getIntegerOptional(
+				blueprintsAttributes, parameterName);
 
 		if (optional.isPresent()) {
 			parameterDataBuilder.addParameter(
-				new IntegerParameter(
-					"page", "${page}",
-					GetterUtil.getInteger(optional.orElse(1))));
+				new IntegerParameter("page", "${page}", optional.get()));
 		}
 	}
 
@@ -363,6 +363,9 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 
 	@Reference
 	private BlueprintHelper _blueprintHelper;
+
+	@Reference
+	private BlueprintsAttributeValuesHelper _blueprintsAttributeValuesHelper;
 
 	private ServiceTrackerMap<String, KeywordsProcessor>
 		_keywordsProcessorServiceTrackerMap;

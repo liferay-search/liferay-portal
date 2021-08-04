@@ -16,7 +16,7 @@ package com.liferay.search.experiences.blueprints.engine.internal.parameter.cont
 
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
-import com.liferay.search.experiences.blueprints.engine.internal.attributes.util.BlueprintsAttributesHelper;
+import com.liferay.search.experiences.blueprints.engine.internal.attributes.util.BlueprintsAttributeValuesHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterDataBuilder;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterDefinition;
 import com.liferay.search.experiences.blueprints.engine.parameter.StringArrayParameter;
@@ -64,7 +64,7 @@ public class SystemParameterContributor implements ParameterContributor {
 		BlueprintsAttributes blueprintsAttributes) {
 
 		Optional<String[]> excludedSearchRequestBodyContributorsOptional =
-			_blueprintsAttributesHelper.getStringArrayOptional(
+			_blueprintsAttributeValuesHelper.getStringArrayOptional(
 				blueprintsAttributes,
 				"excluded_search_request_body_contributors");
 
@@ -80,6 +80,6 @@ public class SystemParameterContributor implements ParameterContributor {
 	}
 
 	@Reference
-	private BlueprintsAttributesHelper _blueprintsAttributesHelper;
+	private BlueprintsAttributeValuesHelper _blueprintsAttributeValuesHelper;
 
 }

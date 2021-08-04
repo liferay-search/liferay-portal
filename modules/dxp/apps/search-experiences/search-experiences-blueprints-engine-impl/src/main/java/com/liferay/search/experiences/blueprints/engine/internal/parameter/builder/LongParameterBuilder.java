@@ -18,7 +18,7 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
-import com.liferay.search.experiences.blueprints.engine.internal.attributes.util.BlueprintsAttributesHelper;
+import com.liferay.search.experiences.blueprints.engine.internal.attributes.util.BlueprintsAttributeValuesHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.LongParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.Parameter;
 import com.liferay.search.experiences.blueprints.message.Messages;
@@ -92,7 +92,7 @@ public class LongParameterBuilder implements ParameterBuilder {
 		JSONObject configurationJSONObject, String parameterName) {
 
 		Optional<String> valueStringOptional =
-			_blueprintsAttributesHelper.getStringOptional(
+			_blueprintsAttributeValuesHelper.getStringOptional(
 				blueprintsAttributes, parameterName);
 
 		if (!valueStringOptional.isPresent()) {
@@ -112,6 +112,6 @@ public class LongParameterBuilder implements ParameterBuilder {
 		LongParameterBuilder.class);
 
 	@Reference
-	private BlueprintsAttributesHelper _blueprintsAttributesHelper;
+	private BlueprintsAttributeValuesHelper _blueprintsAttributeValuesHelper;
 
 }

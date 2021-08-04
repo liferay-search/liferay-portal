@@ -15,7 +15,6 @@
 package com.liferay.search.experiences.blueprints.engine.internal.util;
 
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.search.experiences.blueprints.definition.BlueprintDefinition;
@@ -25,6 +24,7 @@ import com.liferay.search.experiences.blueprints.definition.FrameworkDefinition;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.search.experiences.blueprints.engine.constants.SearchContextAttributeKeys;
 import com.liferay.search.experiences.blueprints.engine.exception.BlueprintsEngineException;
+import com.liferay.search.experiences.blueprints.engine.internal.attributes.util.BlueprintsAttributeValuesHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterDataCreator;
 import com.liferay.search.experiences.blueprints.engine.util.BlueprintsSearchRequestContributorHelper;
@@ -124,13 +124,14 @@ public class BlueprintsSearchRequestContributorHelperImpl
 		BlueprintsAttributes blueprintsAttributes,
 		SearchRequestBuilder searchRequestBuilder) {
 
-		Optional<Object> federatedSearchKeyOptional =
-			blueprintsAttributes.getAttributeOptional(
+		Optional<String> federatedSearchKeyOptional =
+			_blueprintsAttributeValuesHelper.getStringOptional(
+				blueprintsAttributes,
 				SearchContextAttributeKeys.FEDERATED_SEARCH_KEY);
 
 		if (federatedSearchKeyOptional.isPresent()) {
 			searchRequestBuilder.federatedSearchKey(
-				GetterUtil.getString(federatedSearchKeyOptional.get()));
+				federatedSearchKeyOptional.get());
 		}
 	}
 
@@ -156,6 +157,9 @@ public class BlueprintsSearchRequestContributorHelperImpl
 
 	@Reference
 	private BlueprintDefinitionFactory _blueprintDefinitionFactory;
+
+	@Reference
+	private BlueprintsAttributeValuesHelper _blueprintsAttributeValuesHelper;
 
 	@Reference
 	private BlueprintService _blueprintService;

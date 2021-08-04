@@ -19,7 +19,7 @@ import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.TimeZoneUtil;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
-import com.liferay.search.experiences.blueprints.engine.internal.attributes.util.BlueprintsAttributesHelper;
+import com.liferay.search.experiences.blueprints.engine.internal.attributes.util.BlueprintsAttributeValuesHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.DateParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.IntegerParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterDataBuilder;
@@ -198,7 +198,7 @@ public class TimeParameterContributor implements ParameterContributor {
 
 	private TimeZone _getTimeZone(BlueprintsAttributes blueprintsAttributes) {
 		Optional<String> optional =
-			_blueprintsAttributesHelper.getStringOptional(
+			_blueprintsAttributeValuesHelper.getStringOptional(
 				blueprintsAttributes, "timezone_id");
 
 		if (optional.isPresent()) {
@@ -227,7 +227,7 @@ public class TimeParameterContributor implements ParameterContributor {
 	private static final LocalTime _NIGHT = LocalTime.of(20, 0, 0);
 
 	@Reference
-	private BlueprintsAttributesHelper _blueprintsAttributesHelper;
+	private BlueprintsAttributeValuesHelper _blueprintsAttributeValuesHelper;
 
 	@Reference
 	private Language _language;
