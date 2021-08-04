@@ -133,7 +133,7 @@
 </tr>
 <tr>
 	<td>BLUEPRINTS_QUERY_ELEMENT_ADD_NAME</td>
-	<td>//p[contains(.,'${key_elementName}') and contains(@class, 'list-group-title')]</td>
+	<td>//div[contains(@class,'element-list')]//p[contains(.,'${key_elementName}') and contains(@class, 'list-group-title')]</td>
 	<td></td>
 </tr>
 <tr>
