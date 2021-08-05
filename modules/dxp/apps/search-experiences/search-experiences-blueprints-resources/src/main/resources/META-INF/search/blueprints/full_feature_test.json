@@ -12,6 +12,7 @@
         ],
         "fields": {
           "content${context.language_id}": {},
+          "name{context.language_id}": {},
           "title${context.language_id}": {}
         },
         "require_field_match": true,
@@ -257,6 +258,35 @@
         }
       },
       "framework_configuration": {
+        "clause_contributors": {
+          "excludes": [],
+          "includes": [
+            "com.liferay.portal.search.internal.spi.model.query.contributor.UserIdQueryPreFilterContributor",
+            "com.liferay.portal.search.internal.spi.model.query.contributor.LayoutQueryPreFilterContributor",
+            "com.liferay.portal.search.internal.spi.model.query.contributor.GroupIdQueryPreFilterContributor",
+            "com.liferay.portal.search.internal.spi.model.query.contributor.FolderIdQueryPreFilterContributor",
+            "com.liferay.portal.search.internal.spi.model.query.contributor.AssetTagNamesQueryPreFilterContributor",
+            "com.liferay.portal.search.internal.spi.model.query.contributor.AssetCategoryIdsQueryPreFilterContributor",
+            "com.liferay.asset.internal.search.spi.model.query.contributor.AssetEntryModelPreFilterContributor",
+            "com.liferay.segments.internal.search.spi.model.query.contributor.UserModelPreFilterContributor",
+            "com.liferay.users.admin.internal.search.spi.model.query.contributor.UserModelPreFilterContributor",
+            "com.liferay.account.internal.search.spi.model.query.contributor.UserModelPreFilterContributor",
+            "com.liferay.analytics.settings.web.internal.search.spi.model.query.contributor.UserModelPreFilterContributor",
+            "com.liferay.blogs.internal.search.spi.model.query.contributor.BlogsEntryModelPreFilterContributor",
+            "com.liferay.bookmarks.internal.search.spi.model.query.contributor.BookmarksEntryModelPreFilterContributor",
+            "com.liferay.bookmarks.internal.search.spi.model.query.contributor.BookmarksFolderModelPreFilterContributor",
+            "com.liferay.calendar.internal.search.spi.model.query.contributor.CalendarBookingModelPreFilterContributor",
+            "com.liferay.change.tracking.internal.search.spi.model.query.contributor.CTModelPreFilterContributor",
+            "com.liferay.document.library.internal.search.spi.model.query.contributor.DLFileEntryModelPreFilterContributor",
+            "com.liferay.document.library.internal.search.spi.model.query.contributor.DLFolderModelPreFilterContributor",
+            "com.liferay.dynamic.data.lists.internal.search.spi.model.query.contributor.DDLRecordModelPreFilterContributor",
+            "com.liferay.layout.internal.search.spi.model.query.contributor.LayoutModelPreFilterContributor",
+            "com.liferay.dynamic.data.mapping.internal.search.spi.model.query.contributor.DDMFormInstanceRecordModelPreFilterContributor",
+            "com.liferay.message.boards.internal.search.spi.model.query.contributor.MBMessageModelPreFilterContributor",
+            "com.liferay.portal.search.internal.spi.model.query.contributor.StagingModelPreFilterContributor",
+            "com.liferay.portal.search.internal.spi.model.query.contributor.WorkflowStatusModelPreFilterContributor"
+          ]
+        },
         "apply_indexer_clauses": false
       },
       "query_configuration": [
@@ -267,49 +297,22 @@
               "query": {
                 "wrapper": {
                   "query": {
-                    "simple_query_string": {
-                      "default_operator": "or",
-                      "query": "${keywords}",
-                      "boost": 1,
-                      "fields": [
-                        "localized_title${context.language_id}^2",
-                        "content${context.language_id}^2"
-                      ]
-                    }
-                  }
-                }
-              },
-              "context": "query"
-            }
-          ],
-          "icon": "picture",
-          "description": {
-            "en_US": "Enable searching using the Lucene syntax"
-          },
-          "category": "match",
-          "conditions": {},
-          "title": {
-            "en_US": "Search with the Lucene Syntax"
-          },
-          "enabled": true
-        },
-        {
-          "clauses": [
-            {
-              "occur": "must",
-              "query": {
-                "wrapper": {
-                  "query": {
                     "multi_match": {
                       "fuzziness": "AUTO",
                       "query": "${keywords}",
+                      "minimum_should_match": "1",
                       "boost": 1,
                       "fields": [
                         "localized_title${context.language_id}^2",
-                        "content${context.language_id}^1",
-                        "description${context.language_id}^1",
-                        "name${context.language_id}^1",
-                        "title${context.language_id}^1"
+                        "title${context.language_id}^2",
+                        "name${context.language_id}^2",
+                        "name^2",
+                        "description^1",
+                        "description^1",
+                        "content${context.language_id}",
+                        "content",
+                        "specificationOptionsValuesNames",
+                        "externalReferenceCode"
                       ],
                       "type": "best_fields",
                       "operator": "or"
@@ -328,6 +331,48 @@
           "conditions": {},
           "title": {
             "en_US": "Text Match Over Multiple Fields"
+          },
+          "enabled": true
+        },
+        {
+          "clauses": [
+            {
+              "occur": "should",
+              "query": {
+                "wrapper": {
+                  "query": {
+                    "multi_match": {
+                      "query": "${keywords}",
+                      "boost": 10,
+                      "fields": [
+                        "localized_title${context.language_id}^2",
+                        "title${context.language_id}^2",
+                        "name${context.language_id}^2",
+                        "name^2",
+                        "description${context.language_id}",
+                        "description",
+                        "content${context.language_id}",
+                        "content",
+                        "specificationOptionsValuesNames",
+                        "externalReferenceCode"
+                      ],
+                      "type": "phrase",
+                      "operator": "and"
+                    }
+                  }
+                }
+              },
+              "context": "query"
+            }
+          ],
+          "icon": "thumbs-up",
+          "description": {
+            "en_US": "Boost contents matching all the words in the search phrase"
+          },
+          "category": "boost",
+          "conditions": {},
+          "title": {
+            "en_US": "Boost All Keywords Match"
           },
           "enabled": true
         },
@@ -495,7 +540,7 @@
                             "must_not": [
                               {
                                 "term": {
-                                  "entryClasslabel": {
+                                  "entryClassName": {
                                     "value": "com.liferay.journal.model.JournalArticle"
                                   }
                                 }
@@ -508,7 +553,7 @@
                             "must": [
                               {
                                 "term": {
-                                  "entryClasslabel": {
+                                  "entryClassName": {
                                     "value": "com.liferay.journal.model.JournalArticle"
                                   }
                                 }
@@ -656,123 +701,29 @@
             "en_US": "Scheduling Aware"
           },
           "enabled": true
-        },
-        {
-          "clauses": [
-            {
-              "occur": "filter",
-              "query": {
-                "wrapper": {
-                  "query": {
-                    "bool": {
-                      "should": [
-                        {
-                          "bool": {
-                            "must_not": [
-                              {
-                                "exists": {
-                                  "field": "stagingGroup"
-                                }
-                              }
-                            ]
-                          }
-                        },
-                        {
-                          "bool": {
-                            "must": [
-                              {
-                                "term": {
-                                  "stagingGroup": false
-                                }
-                              }
-                            ]
-                          }
-                        }
-                      ]
-                    }
-                  }
-                }
-              },
-              "context": "query"
-            }
-          ],
-          "icon": "filter",
-          "description": {
-            "en_US": "Show only published contents on live sites, published and staged contents on staging sites"
-          },
-          "category": "filter",
-          "conditions": {
-            "equals": {
-              "parameter_name": "${context.is_staging_group}",
-              "value": false
-            }
-          },
-          "title": {
-            "en_US": "Staging Aware"
-          },
-          "enabled": true
-        },
-        {
-          "clauses": [
-            {
-              "occur": "filter",
-              "query": {
-                "wrapper": {
-                  "query": {
-                    "bool": {
-                      "should": [
-                        {
-                          "bool": {
-                            "must_not": [
-                              {
-                                "exists": {
-                                  "field": "ctCollectionId"
-                                }
-                              }
-                            ]
-                          }
-                        },
-                        {
-                          "term": {
-                            "ctCollectionId": {
-                              "value": "${context.ct_collection_id}"
-                            }
-                          }
-                        }
-                      ]
-                    }
-                  }
-                }
-              },
-              "context": "query"
-            }
-          ],
-          "icon": "filter",
-          "description": {
-            "en_US": "When Publications feature is enabled, search only contents on my current timeline"
-          },
-          "category": "filter",
-          "title": {
-            "en_US": "Publications Aware"
-          },
-          "enabled": true
         }
       ],
       "advanced_configuration": {
         "query_processing": {
-          "exclude_query_post_processors": "",
-          "exclude_query_contributors": ""
+          "exclude_query_post_processors": [],
+          "exclude_query_contributors": []
         },
         "source": {
           "source_includes": [
             "articleId",
+            "content",
+            "content${context.language_id}",
+            "createDate",
+            "description",
+            "description{context.language_id}",
             "entryClassName",
             "entryClassPK",
+            "fullName",
             "localized_title${context.language_id}",
+            "name",
+            "name{context.language_id}",
             "title${context.language_id}",
-            "content${context.language_id}",
-            "modified",
-            "createDate"
+            "modified"
           ],
           "fetch_source": true,
           "source_excludes": []
@@ -780,7 +731,7 @@
       }
     },
     "description": {
-      "en_US": "A sample Blueprint for the Blueprints Blade sample widget featuring custom facets and dynamic sort configuration with geo sorting. Geolocation field has to be configured and data provider be enabled in Blueprints configuration to take advantage of location features."
+      "en_US": "A sample Blueprint featuring all the configuration options. Indexers disabled. Searches also for Commerce products."
     },
     "selectedElements": {
       "query_configuration": [
@@ -792,115 +743,15 @@
                 "query": {
                   "wrapper": {
                     "query": {
-                      "simple_query_string": {
-                        "default_operator": "${configuration.operator}",
-                        "query": "${keywords}",
-                        "boost": "${configuration.boost}",
-                        "fields": "${configuration.fields}"
-                      }
-                    }
-                  }
-                },
-                "context": "query"
-              }
-            ],
-            "icon": "picture",
-            "description": {
-              "en_US": "Enable searching using the Lucene syntax"
-            },
-            "category": "match",
-            "conditions": {},
-            "title": {
-              "en_US": "Search with the Lucene Syntax"
-            },
-            "enabled": true
-          },
-          "uiConfigurationValues": {
-            "boost": 1,
-            "fields": [
-              {
-                "field": "localized_title",
-                "boost": "2",
-                "locale": "${context.language_id}"
-              },
-              {
-                "field": "content",
-                "boost": "2",
-                "locale": "${context.language_id}"
-              }
-            ],
-            "operator": "or"
-          },
-          "uiConfigurationJSON": {
-            "fieldSets": [
-              {
-                "fields": [
-                  {
-                    "defaultValue": [
-                      {
-                        "field": "localized_title",
-                        "boost": "2",
-                        "locale": "${context.language_id}"
-                      },
-                      {
-                        "field": "content",
-                        "boost": "2",
-                        "locale": "${context.language_id}"
-                      }
-                    ],
-                    "name": "fields",
-                    "typeOptions": {
-                      "boost": true
-                    },
-                    "label": "Fields",
-                    "type": "fieldMappingList"
-                  },
-                  {
-                    "name": "operator",
-                    "typeOptions": {
-                      "options": [
-                        {
-                          "label": "OR",
-                          "value": "or"
-                        },
-                        {
-                          "label": "AND",
-                          "value": "and"
-                        }
-                      ]
-                    },
-                    "label": "Operator",
-                    "type": "select"
-                  },
-                  {
-                    "defaultValue": 1,
-                    "name": "boost",
-                    "typeOptions": {
-                      "min": 0
-                    },
-                    "label": "Boost",
-                    "type": "number"
-                  }
-                ]
-              }
-            ]
-          }
-        },
-        {
-          "elementTemplateJSON": {
-            "clauses": [
-              {
-                "occur": "must",
-                "query": {
-                  "wrapper": {
-                    "query": {
                       "multi_match": {
                         "fuzziness": "${configuration.fuzziness}",
                         "query": "${keywords}",
+                        "minimum_should_match": "${configuration.minimum_should_match}",
                         "boost": "${configuration.boost}",
                         "fields": "${configuration.fields}",
                         "type": "${configuration.type}",
-                        "operator": "${configuration.operator}"
+                        "operator": "${configuration.operator}",
+                        "slop": "${configuration.slop}"
                       }
                     }
                   }
@@ -921,6 +772,7 @@
           },
           "uiConfigurationValues": {
             "fuzziness": "AUTO",
+            "minimum_should_match": "1",
             "boost": 1,
             "fields": [
               {
@@ -929,31 +781,56 @@
                 "locale": "${context.language_id}"
               },
               {
-                "field": "content",
-                "boost": "1",
-                "locale": "${context.language_id}"
-              },
-              {
-                "languageIdPosition": 11,
-                "field": "description",
-                "boost": "1",
+                "languageIdPosition": 5,
+                "field": "title",
+                "boost": "2",
                 "locale": "${context.language_id}"
               },
               {
                 "languageIdPosition": 4,
                 "field": "name",
-                "boost": "1",
+                "boost": "2",
                 "locale": "${context.language_id}"
               },
               {
-                "languageIdPosition": 5,
-                "field": "title",
+                "languageIdPosition": 4,
+                "field": "name",
+                "boost": "2",
+                "locale": ""
+              },
+              {
+                "languageIdPosition": 11,
+                "field": "description",
+                "boost": "1"
+              },
+              {
+                "languageIdPosition": -1,
+                "field": "description",
                 "boost": "1",
+                "locale": ""
+              },
+              {
+                "languageIdPosition": 7,
+                "field": "content",
                 "locale": "${context.language_id}"
+              },
+              {
+                "languageIdPosition": -1,
+                "field": "content",
+                "locale": ""
+              },
+              {
+                "languageIdPosition": -1,
+                "field": "specificationOptionsValuesNames"
+              },
+              {
+                "languageIdPosition": -1,
+                "field": "externalReferenceCode"
               }
             ],
             "type": "best_fields",
-            "operator": "or"
+            "operator": "or",
+            "slop": null
           },
           "uiConfigurationJSON": {
             "fieldSets": [
@@ -1032,8 +909,11 @@
                     "type": "select"
                   },
                   {
+                    "helpText": "Only use fuzziness with the following match types: most fields, best fields, bool prefix.",
+                    "defaultValue": "AUTO",
                     "name": "fuzziness",
                     "typeOptions": {
+                      "nullable": true,
                       "options": [
                         {
                           "label": "Auto",
@@ -1057,7 +937,189 @@
                     "type": "select"
                   },
                   {
+                    "defaultValue": "1",
+                    "name": "minimum_should_match",
+                    "typeOptions": {
+                      "nullable": true
+                    },
+                    "label": "Minimum Should Match",
+                    "type": "text"
+                  },
+                  {
+                    "helpText": "Only use slop with the following match types: phrase, phrase prefix.",
+                    "defaultValue": null,
+                    "name": "slop",
+                    "typeOptions": {
+                      "min": 0,
+                      "nullable": true,
+                      "step": 1
+                    },
+                    "label": "Slop",
+                    "type": "number"
+                  },
+                  {
                     "defaultValue": 1,
+                    "name": "boost",
+                    "typeOptions": {
+                      "min": 0
+                    },
+                    "label": "Boost",
+                    "type": "number"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "elementTemplateJSON": {
+            "clauses": [
+              {
+                "occur": "should",
+                "query": {
+                  "wrapper": {
+                    "query": {
+                      "multi_match": {
+                        "query": "${keywords}",
+                        "boost": "${configuration.boost}",
+                        "fields": "${configuration.fields}",
+                        "type": "${configuration.type}",
+                        "operator": "and"
+                      }
+                    }
+                  }
+                },
+                "context": "query"
+              }
+            ],
+            "icon": "thumbs-up",
+            "description": {
+              "en_US": "Boost contents matching all the words in the search phrase"
+            },
+            "category": "boost",
+            "conditions": {},
+            "title": {
+              "en_US": "Boost All Keywords Match"
+            },
+            "enabled": true
+          },
+          "uiConfigurationValues": {
+            "boost": 10,
+            "fields": [
+              {
+                "field": "localized_title",
+                "boost": 2,
+                "locale": "${context.language_id}"
+              },
+              {
+                "languageIdPosition": 5,
+                "field": "title",
+                "boost": "2",
+                "locale": "${context.language_id}"
+              },
+              {
+                "languageIdPosition": 4,
+                "field": "name",
+                "boost": "2",
+                "locale": "${context.language_id}"
+              },
+              {
+                "languageIdPosition": -1,
+                "field": "name",
+                "boost": "2",
+                "locale": ""
+              },
+              {
+                "languageIdPosition": 11,
+                "field": "description",
+                "locale": "${context.language_id}"
+              },
+              {
+                "languageIdPosition": -1,
+                "field": "description",
+                "locale": ""
+              },
+              {
+                "languageIdPosition": 7,
+                "field": "content",
+                "locale": "${context.language_id}"
+              },
+              {
+                "languageIdPosition": -1,
+                "field": "content",
+                "locale": ""
+              },
+              {
+                "languageIdPosition": -1,
+                "field": "specificationOptionsValuesNames"
+              },
+              {
+                "languageIdPosition": -1,
+                "field": "externalReferenceCode"
+              }
+            ],
+            "type": "phrase"
+          },
+          "uiConfigurationJSON": {
+            "fieldSets": [
+              {
+                "fields": [
+                  {
+                    "defaultValue": [
+                      {
+                        "field": "localized_title",
+                        "boost": 2,
+                        "locale": "${context.language_id}"
+                      },
+                      {
+                        "field": "content",
+                        "boost": 1,
+                        "locale": "${context.language_id}"
+                      }
+                    ],
+                    "name": "fields",
+                    "typeOptions": {
+                      "boost": true
+                    },
+                    "label": "Field",
+                    "type": "fieldMappingList"
+                  },
+                  {
+                    "defaultValue": "best_fields",
+                    "name": "type",
+                    "typeOptions": {
+                      "options": [
+                        {
+                          "label": "Best Fields",
+                          "value": "best_fields"
+                        },
+                        {
+                          "label": "Most Fields",
+                          "value": "most_fields"
+                        },
+                        {
+                          "label": "Cross Fields",
+                          "value": "cross_fields"
+                        },
+                        {
+                          "label": "Phrase",
+                          "value": "phrase"
+                        },
+                        {
+                          "label": "Phrase Prefix",
+                          "value": "phrase_prefix"
+                        },
+                        {
+                          "label": "Boolean Prefix",
+                          "value": "bool_prefix"
+                        }
+                      ]
+                    },
+                    "label": "Match Type",
+                    "type": "select"
+                  },
+                  {
+                    "defaultValue": 10,
                     "name": "boost",
                     "typeOptions": {
                       "min": 0
@@ -1247,7 +1309,7 @@
                               "must_not": [
                                 {
                                   "term": {
-                                    "entryClasslabel": {
+                                    "entryClassName": {
                                       "value": "com.liferay.journal.model.JournalArticle"
                                     }
                                   }
@@ -1260,7 +1322,7 @@
                               "must": [
                                 {
                                   "term": {
-                                    "entryClasslabel": {
+                                    "entryClassName": {
                                       "value": "com.liferay.journal.model.JournalArticle"
                                     }
                                   }
@@ -1414,114 +1476,6 @@
             "conditions": {},
             "title": {
               "en_US": "Scheduling Aware"
-            },
-            "enabled": true
-          },
-          "uiConfigurationValues": {},
-          "uiConfigurationJSON": {}
-        },
-        {
-          "elementTemplateJSON": {
-            "clauses": [
-              {
-                "occur": "filter",
-                "query": {
-                  "wrapper": {
-                    "query": {
-                      "bool": {
-                        "should": [
-                          {
-                            "bool": {
-                              "must_not": [
-                                {
-                                  "exists": {
-                                    "field": "stagingGroup"
-                                  }
-                                }
-                              ]
-                            }
-                          },
-                          {
-                            "bool": {
-                              "must": [
-                                {
-                                  "term": {
-                                    "stagingGroup": false
-                                  }
-                                }
-                              ]
-                            }
-                          }
-                        ]
-                      }
-                    }
-                  }
-                },
-                "context": "query"
-              }
-            ],
-            "icon": "filter",
-            "description": {
-              "en_US": "Show only published contents on live sites, published and staged contents on staging sites"
-            },
-            "category": "filter",
-            "conditions": {
-              "equals": {
-                "parameter_name": "${context.is_staging_group}",
-                "value": false
-              }
-            },
-            "title": {
-              "en_US": "Staging Aware"
-            },
-            "enabled": true
-          },
-          "uiConfigurationValues": {},
-          "uiConfigurationJSON": {}
-        },
-        {
-          "elementTemplateJSON": {
-            "clauses": [
-              {
-                "occur": "filter",
-                "query": {
-                  "wrapper": {
-                    "query": {
-                      "bool": {
-                        "should": [
-                          {
-                            "bool": {
-                              "must_not": [
-                                {
-                                  "exists": {
-                                    "field": "ctCollectionId"
-                                  }
-                                }
-                              ]
-                            }
-                          },
-                          {
-                            "term": {
-                              "ctCollectionId": {
-                                "value": "${context.ct_collection_id}"
-                              }
-                            }
-                          }
-                        ]
-                      }
-                    }
-                  }
-                },
-                "context": "query"
-              }
-            ],
-            "icon": "filter",
-            "description": {
-              "en_US": "When Publications feature is enabled, search only contents on my current timeline"
-            },
-            "category": "filter",
-            "title": {
-              "en_US": "Publications Aware"
             },
             "enabled": true
           },
