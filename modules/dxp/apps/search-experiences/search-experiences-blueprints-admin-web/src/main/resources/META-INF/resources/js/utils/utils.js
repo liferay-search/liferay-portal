@@ -239,7 +239,7 @@ export const getDefaultValue = (item) => {
 		case INPUT_TYPES.SELECT:
 			return typeof itemValue === 'string'
 				? itemValue
-				: item.typeOptions?.options?.[0]?.value
+				: typeof item.typeOptions?.options?.[0]?.value === 'string'
 				? item.typeOptions.options[0].value
 				: '';
 		case INPUT_TYPES.SLIDER:
