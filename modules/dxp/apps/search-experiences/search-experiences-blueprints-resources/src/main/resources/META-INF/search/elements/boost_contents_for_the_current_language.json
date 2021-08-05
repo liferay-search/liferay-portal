@@ -14,7 +14,7 @@
 										"must": [
 											{
 												"terms": {
-													"entryClasslabel": [
+													"entryClassName": [
 														"com.liferay.portal.kernel.model.Layout",
 														"com.liferay.journal.model.JournalArticle"
 													]
