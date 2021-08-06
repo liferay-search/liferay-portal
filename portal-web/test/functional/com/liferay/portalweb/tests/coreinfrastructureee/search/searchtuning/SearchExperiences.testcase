@@ -119,6 +119,97 @@ definition {
 			searchAssetType = "Web Content Article");
 	}
 
+	test BoostCommerceItemsForMyAccountGroup {
+		CommerceAccelerators.initializeNewSiteViaAccelerator(siteName = "Minium");
+
+		ApplicationsMenu.gotoSite(site = "Minium");
+
+		JSONCommerceAccount.addCommerceAccount(commerceAccountName = "CommerceAccount");
+
+		JSONCommerceAccount.addCommerceAccountGroup(commerceAccountGroupName = "CommerceAccountGroup");
+
+		JSONCommerceAccount.addCommerceAccountGrouptoCommerceAccount(
+			commerceAccountGroupName = "CommerceAccountGroup",
+			commerceAccountName = "CommerceAccount");
+
+		CommerceNavigator.gotoPortlet(
+			category = "Product Management",
+			portlet = "Products");
+
+		CommerceProducts.searchProduct(search = "Oil Filter");
+
+		CommerceNavigator.gotoEntry(entryName = "Oil Filter");
+
+		CommerceEntry.gotoMenuTab(menuTab = "Visibility");
+
+		Click(
+			key_name = "Account Groups",
+			locator1 = "ToggleSwitch#ENABLE_SPECIFIC_TOGGLE_SWITCH");
+
+		ClickNoError.clickNoMouseOver(
+			key_title = "Add Account Group Relation to Oil Filter",
+			locator1 = "Button#BUTTON_PLUS_PRODUCT_VISIBILITY");
+
+		SelectFrame.selectFrameNoLoading(locator1 = "IFrame#MODAL_BODY");
+
+		Check(
+			key_checkboxName = "CommerceAccountGroup",
+			locator1 = "Checkbox#ENABLE_CHECKBOX");
+
+		SelectFrameTop();
+
+		Button.clickAdd();
+
+		Button.clickPublish();
+
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		SearchExperiences.addBlueprint(name = "My Blueprint");
+
+		SearchExperiences.addQueryElement(
+			element = "Boost Items for My Commerce Account Groups",
+			numberBoost = "1000");
+
+		PortletEntry.save();
+
+		var blueprintsID = SearchExperiences.findBlueprintID(name = "My Blueprint");
+
+		Navigator.openWithAppendToBaseURL(urlAppend = "web/minium");
+
+		CommerceAcceleratorsInitializer.selectAccountFromAccountSelector(accountName = "CommerceAccount");
+
+		Click(
+				key_text = "Configure additional search options in this page.",
+				locator1 = "Link#ANY");
+
+		SelectFrame(locator1 = "IFrame#CONFIGURATION");
+
+		Type(
+				key_fieldLabel = "Key",
+				locator1 = "//div[label[contains(.,'Key') and contains(@for,'key_0')]]//input[@type='text']",
+				value1 = "blueprintId");
+
+		Type(
+				key_fieldLabel = "Value",
+				locator1 = "TextInput#GENERIC_TEXT_INPUT",
+				value1 = "${blueprintsID}");
+
+		PortletEntry.save();
+
+		IFrame.closeFrame();
+
+		Type(
+			locator1 = "Search#EMBEDDED_SEARCH_BAR",
+			value1 = "pump brake pad kit oil");
+
+		Button.clickSubmitButton();
+
+		AssertTextEquals(
+			key_index = "1",
+			locator1 = "CommerceAccelerators#PRODUCT_CARD_NAME_BY_INDEX",
+			value1 = "Oil Filter");
+	}
+
 	test BoostSearchRankingForAssetType {
 		JSONWebcontent.addWebContent(
 			content = "Liferay",
