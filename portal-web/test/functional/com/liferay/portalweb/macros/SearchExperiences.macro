@@ -128,6 +128,14 @@ definition {
 		LexiconEntry.gotoEntry(rowEntry = "${name}");
 	}
 
+	macro findBlueprintID {
+		var blueprintsID = selenium.getAttribute("//h4[contains(.,'${name}')]/following-sibling::h5[2]/span[contains(@class,'id-text')]@textContent");
+
+		var blueprintsID = StringUtil.extractDigits("${blueprintsID}");
+
+		return "${blueprintsID}";
+	}
+
 	macro openSearchExperiencesAdmin {
 		if (!(isSet(siteURLKey))) {
 			var siteURLKey = "guest";
