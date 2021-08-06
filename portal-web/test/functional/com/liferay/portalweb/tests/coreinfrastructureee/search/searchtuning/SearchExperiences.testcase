@@ -172,7 +172,9 @@ definition {
 			customFieldType = "Geolocation",
 			resourceName = "Web Content Article");
 
-		WebContentNavigator.openToAddBasicArticle(siteURLKey = "guest");
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "guest");
+
+		WebContentNavigator.gotoAddCP();
 
 		Click(locator1 = "TextInput#TITLE");
 
@@ -188,7 +190,7 @@ definition {
 
 		PortletEntry.publish();
 
-		WebContentNavigator.openToAddBasicArticle(siteURLKey = "guest");
+		WebContentNavigator.gotoAddCP();
 
 		Click(locator1 = "TextInput#TITLE");
 
@@ -196,7 +198,7 @@ definition {
 
 		PortletEntry.publish();
 
-		WebContentNavigator.openToAddBasicArticle(siteURLKey = "guest");
+		WebContentNavigator.gotoAddCP();
 
 		Click(locator1 = "TextInput#TITLE");
 
