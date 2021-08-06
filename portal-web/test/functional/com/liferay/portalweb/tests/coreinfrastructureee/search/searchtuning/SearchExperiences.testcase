@@ -436,6 +436,7 @@ definition {
 			"fields": [
 				{
 					"label": "Test Field",
+					"name": "test_field",
 					"type": "number"
 				}
 			]
@@ -972,6 +973,7 @@ definition {
 			"fields": [
 				{
 					"label": "Boost",
+					"name": "boost",
 					"type": "thisTypeDoesNotExist"
 				}
 			]
