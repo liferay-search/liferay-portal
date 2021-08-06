@@ -1,0 +1,72 @@
+definition {
+
+	@summary = "Add a commerce account"
+	macro addCommerceAccount {
+		Variables.assertDefined(parameterList = "${commerceAccountName}");
+
+		var portalURL = JSONCompany.getPortalURL();
+
+		if ("${type}" == "Guest") {
+			var type = "0";
+		}
+		else if ("${type}" == "Personal") {
+			var type = "1";
+		}
+		else {
+			var type = "2";
+		}
+
+		var curl = '''
+				${portalURL}/api/jsonws/commerce.commerceaccount/add-commerce-account \
+					-u test@liferay.com:test \
+					-d name='${commerceAccountName}' \
+					-d parentCommerceAccountId=0 \
+					-d email='test@liferay.com' \
+					-d taxId= \
+					-d type='${type}' \
+					-d active=true \
+					-d externalReferenceCode=
+							''';
+
+		com.liferay.poshi.runner.util.JSONCurlUtil.post("${curl}");
+	}
+
+	@summary = "Add a commerce account group"
+	macro addCommerceAccountGroup {
+		Variables.assertDefined(parameterList = "${commerceAccountGroupName}");
+
+		var companyId = JSONCompany.getCompanyId();
+
+		var portalURL = JSONCompany.getPortalURL();
+
+		var curl = '''
+				${portalURL}/api/jsonws/commerce.commerceaccountgroup/add-commerce-account-group \
+					-u test@liferay.com:test \
+					-d companyId=${companyId} \
+					-d name='${commerceAccountGroupName}' \
+					-d type=1 \
+					-d externalReferenceCode=
+							''';
+
+		com.liferay.poshi.runner.util.JSONCurlUtil.post("${curl}");
+	}
+
+	@summary = "Add a commerce account group to a commerce account"
+	macro addCommerceAccountGrouptoCommerceAccount {
+		var commerceAccountId = CommerceEntry.getCommerceAccountID(commerceAccountName = "${commerceAccountName}");
+
+		var commerceAccountGroupId = CommerceEntry.getCommerceAccountGroupID(commerceAccountGroupName = "${commerceAccountGroupName}");
+
+		var portalURL = JSONCompany.getPortalURL();
+
+		var curl = '''
+				${portalURL}/api/jsonws/commerce.commerceaccountgroupcommerceaccountrel/add-commerce-account-group-commerce-account-rel \
+					-u test@liferay.com:test \
+					-d commerceAccountGroupId='${commerceAccountGroupId}' \
+					-d commerceAccountId='${commerceAccountId}'
+							''';
+
+		com.liferay.poshi.runner.util.JSONCurlUtil.post("${curl}");
+	}
+
+}
