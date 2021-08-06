@@ -743,6 +743,50 @@ definition {
 		Click(locator1 = "Button#BACK");
 	}
 
+	macro getCommerceAccountGroupID {
+		var portalURL = PropsUtil.get("portal.url");
+
+		Navigator.openSpecificURL(url = "${portalURL}/group/control_panel/manage?p_p_id=com_liferay_commerce_account_group_admin_web_internal_portlet_CommerceAccountGroupAdminPortlet");
+
+		var key_accountName = "${commerceAccountGroupName}";
+
+		Click(locator1 = "CommerceAccelerators#ACCOUNT_MANAGEMENT_ROLE_TABLE_NAME_SPECIFIC");
+
+		Pause(locator1 = "2000");
+
+		var currentURL = selenium.getCurrentUrl();
+
+		echo("## * Current URL: ${currentURL}");
+
+		var commerceAccountGroupId = RegexUtil.replace("${currentURL}", "commerceAccountGroupId=([\d]+)", "1");
+
+		echo("## * Commerce Account Group ID: ${commerceAccountGroupId}");
+
+		return "${commerceAccountGroupId}";
+	}
+
+	macro getCommerceAccountID {
+		var portalURL = PropsUtil.get("portal.url");
+
+		Navigator.openSpecificURL(url = "${portalURL}/group/control_panel/manage?p_p_id=com_liferay_commerce_account_admin_web_internal_portlet_CommerceAccountAdminPortlet");
+
+		var key_accountName = "${commerceAccountName}";
+
+		Click(locator1 = "CommerceAccelerators#ACCOUNT_MANAGEMENT_ROLE_TABLE_NAME_SPECIFIC");
+
+		Pause(locator1 = "2000");
+
+		var currentURL = selenium.getCurrentUrl();
+
+		echo("## * Current URL: ${currentURL}");
+
+		var commerceAccountId = RegexUtil.replace("${currentURL}", "commerceAccountId=([\d]+)", "1");
+
+		echo("## * Commerce Account ID: ${commerceAccountId}");
+
+		return "${commerceAccountId}";
+	}
+
 	macro gotoBreadcrumb {
 		Click(
 			key_breadcrumb = "${breadcrumb}",
