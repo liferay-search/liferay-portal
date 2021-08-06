@@ -528,7 +528,7 @@ function EditElementForm({
 													displayType="unstyled"
 													size="sm"
 													title={Liferay.Language.get(
-														'element-template-json-helptext'
+														'element-template-json-help'
 													)}
 												>
 													<ClayIcon
@@ -642,7 +642,7 @@ function EditElementForm({
 													displayType="unstyled"
 													size="sm"
 													title={Liferay.Language.get(
-														'ui-configuration-json-helptext'
+														'ui-configuration-json-help'
 													)}
 												>
 													<ClayIcon

@@ -347,7 +347,7 @@ const AddBlueprintModal = ({
 											framework === FRAMEWORK_TYPES.ALL
 										}
 										description={Liferay.Language.get(
-											'select-this-option-to-modify-liferays-default-search-behavior-all-search-clauses-will-be-enabled-this-can-be-changed-later'
+											'select-all-clauses-description'
 										)}
 										imagePath={`${contextPath}/images/all-clauses.svg`}
 										onChange={() =>
@@ -367,7 +367,7 @@ const AddBlueprintModal = ({
 											FRAMEWORK_TYPES.BASELINE
 										}
 										description={Liferay.Language.get(
-											'select-this-option-to-build-your-own-custom-search-behavior-a-minimal-set-of-common-search-clauses-will-be-enabled-this-canbe-changed-later'
+											'select-baseline-clauses-description'
 										)}
 										imagePath={`${contextPath}/images/baseline-clauses.svg`}
 										onChange={() =>

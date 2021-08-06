@@ -247,7 +247,7 @@ function ClauseContributorsTab({
 												displayType="unstyled"
 												size="sm"
 												title={Liferay.Language.get(
-													'liferay-indexer-clauses-helptext'
+													'liferay-indexer-clauses-help'
 												)}
 											>
 												<ClayIcon

@@ -172,7 +172,7 @@ function QueryBuilderTab({
 							<ClayPanel.Body>
 								<div className="sheet-text">
 									{Liferay.Language.get(
-										'select-the-searchable-asset-types-note-if-no-assets-are-selected-all-asset-types-will-be-searched'
+										'select-the-searchable-asset-types-description'
 									)}
 								</div>
 
