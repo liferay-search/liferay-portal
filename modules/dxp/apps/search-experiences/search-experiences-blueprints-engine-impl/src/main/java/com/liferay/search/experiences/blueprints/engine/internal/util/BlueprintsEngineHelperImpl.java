@@ -196,7 +196,7 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 			_blueprintHelper.getPageParameterName(blueprint));
 
 		if (!optional.isPresent()) {
-			return 1;
+			return 0;
 		}
 
 		Parameter parameter = optional.get();
