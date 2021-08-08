@@ -41,6 +41,18 @@ public class BlueprintJSONUtil {
 		return Optional.of(GetterUtil.getBoolean(value));
 	}
 
+	public static Optional<Double> getDoubleOptional(
+		Object object, String... paths) {
+
+		Object value = getValue(object, paths);
+
+		if (value == null) {
+			return Optional.empty();
+		}
+
+		return Optional.of(GetterUtil.getDouble(value));
+	}
+
 	public static Optional<String> getFirstKeyOptional(JSONObject jsonObject) {
 		if (jsonObject == null) {
 			return Optional.empty();
@@ -53,6 +65,18 @@ public class BlueprintJSONUtil {
 		}
 
 		return Optional.empty();
+	}
+
+	public static Optional<Float> getFloatOptional(
+		Object object, String... paths) {
+
+		Object value = getValue(object, paths);
+
+		if (value == null) {
+			return Optional.empty();
+		}
+
+		return Optional.of(GetterUtil.getFloat(value));
 	}
 
 	public static Optional<Integer[]> getIntegerArrayOptional(
@@ -127,6 +151,18 @@ public class BlueprintJSONUtil {
 		);
 
 		return Optional.of(boxedArray);
+	}
+
+	public static Optional<Long> getLongOptional(
+		Object object, String... paths) {
+
+		Object value = getValue(object, paths);
+
+		if (value == null) {
+			return Optional.empty();
+		}
+
+		return Optional.of(GetterUtil.getLong(value));
 	}
 
 	public static Optional<String[]> getStringArray(
