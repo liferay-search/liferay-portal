@@ -97,7 +97,7 @@ public class ConditionsProcessorTest extends PowerMockito {
 
 		Assert.assertFalse(
 			_conditionsProcessor.processConditions(
-				_jsonObject, _parameterData, _messages));
+				_jsonObject, _parameterData, null, _messages));
 	}
 
 	@Test
@@ -111,7 +111,7 @@ public class ConditionsProcessorTest extends PowerMockito {
 
 		Assert.assertTrue(
 			_conditionsProcessor.processConditions(
-				_jsonObject, _parameterData, _messages));
+				_jsonObject, _parameterData, null, _messages));
 	}
 
 	@Test
@@ -121,7 +121,7 @@ public class ConditionsProcessorTest extends PowerMockito {
 
 		Assert.assertTrue(
 			_conditionsProcessor.processConditions(
-				_jsonObject, _parameterData, _messages));
+				_jsonObject, _parameterData, null, _messages));
 	}
 
 	@Test
@@ -131,13 +131,13 @@ public class ConditionsProcessorTest extends PowerMockito {
 
 		Assert.assertFalse(
 			_conditionsProcessor.processConditions(
-				_jsonObject, _parameterData, _messages));
+				_jsonObject, _parameterData, null, _messages));
 	}
 
 	@Test
 	public void testProcessConditionsWithNullArguments() {
 		Assert.assertTrue(
-			_conditionsProcessor.processConditions(null, null, null));
+			_conditionsProcessor.processConditions(null, null, null, null));
 	}
 
 	protected void setUpJsonObjectKeySet(Set<String> stringSet) {

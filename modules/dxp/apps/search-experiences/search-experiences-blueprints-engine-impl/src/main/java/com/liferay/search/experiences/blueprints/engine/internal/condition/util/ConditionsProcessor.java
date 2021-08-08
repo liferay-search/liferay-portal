@@ -36,7 +36,8 @@ import org.osgi.service.component.annotations.Reference;
 public class ConditionsProcessor {
 
 	public boolean processConditions(
-		JSONObject jsonObject, ParameterData parameterData, Messages messages) {
+		JSONObject jsonObject, ParameterData parameterData,
+		String groupCondition, Messages messages) {
 
 		if ((jsonObject == null) || (jsonObject.length() == 0)) {
 			return true;
@@ -45,7 +46,7 @@ public class ConditionsProcessor {
 		Set<String> keySet = jsonObject.keySet();
 
 		boolean childrenValid = _processDirectChildren(
-			keySet, jsonObject, parameterData, messages);
+			keySet, jsonObject, parameterData, groupCondition, messages);
 
 		if (!childrenValid) {
 			return false;
@@ -58,7 +59,8 @@ public class ConditionsProcessor {
 				key -> key.equals("any_of")
 			).anyMatch(
 				key -> processConditions(
-					jsonObject.getJSONObject(key), parameterData, messages)
+					jsonObject.getJSONObject(key), parameterData, "any_of",
+					messages)
 			);
 
 			if (!valid) {
@@ -73,7 +75,8 @@ public class ConditionsProcessor {
 				key -> key.equals("all_of")
 			).allMatch(
 				key -> processConditions(
-					jsonObject.getJSONObject(key), parameterData, messages)
+					jsonObject.getJSONObject(key), parameterData, "all_of",
+					messages)
 			);
 
 			if (!valid) {
@@ -105,7 +108,7 @@ public class ConditionsProcessor {
 
 	private boolean _processDirectChildren(
 		Set<String> keySet, JSONObject jsonObject, ParameterData parameterData,
-		Messages messages) {
+		String groupCondition, Messages messages) {
 
 		Stream<String> stream1 = keySet.stream();
 
@@ -120,6 +123,13 @@ public class ConditionsProcessor {
 		}
 
 		Stream<String> stream2 = conditions.stream();
+
+		if ((groupCondition != null) && groupCondition.equals("any_of")) {
+			return stream2.anyMatch(
+				key -> _processCondition(
+					key, jsonObject.getJSONObject(key), parameterData,
+					messages));
+		}
 
 		return stream2.allMatch(
 			key -> _processCondition(

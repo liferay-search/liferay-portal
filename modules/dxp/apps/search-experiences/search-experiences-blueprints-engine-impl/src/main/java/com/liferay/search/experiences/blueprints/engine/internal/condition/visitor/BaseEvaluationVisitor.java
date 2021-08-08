@@ -133,6 +133,32 @@ public abstract class BaseEvaluationVisitor implements EvaluationVisitor {
 		return (JSONArray)object;
 	}
 
+	protected String getDateAsString(Date date, String dateFormatString)
+		throws ParameterEvaluationException {
+
+		if (Validator.isBlank(dateFormatString)) {
+			throw new ParameterEvaluationException(
+				MessagesUtil.toErrorMessage(
+					getClass().getName(),
+					new Throwable("Date format must be defined"),
+					conditionJSONObject, "date_format", dateFormatString,
+					"core.error.date-format-must-be-defined"));
+		}
+
+		try {
+			DateFormat dateFormat = new SimpleDateFormat(dateFormatString);
+
+			return dateFormat.format(date);
+		}
+		catch (Exception exception) {
+			throw new ParameterEvaluationException(
+				MessagesUtil.toErrorMessage(
+					BaseEvaluationVisitor.class.getName(), exception,
+					conditionJSONObject, "value", date.toString(),
+					"core.error.clause-condition-date-parsing-error"));
+		}
+	}
+
 	protected Date getDateValue(JSONObject conditionJSONObject)
 		throws ParameterEvaluationException {
 
@@ -140,7 +166,7 @@ public abstract class BaseEvaluationVisitor implements EvaluationVisitor {
 
 		String dateFormatString = conditionJSONObject.getString("date_format");
 
-		if (Validator.isNull(dateFormatString)) {
+		if (Validator.isBlank(dateFormatString)) {
 			throw new ParameterEvaluationException(
 				MessagesUtil.toErrorMessage(
 					getClass().getName(),

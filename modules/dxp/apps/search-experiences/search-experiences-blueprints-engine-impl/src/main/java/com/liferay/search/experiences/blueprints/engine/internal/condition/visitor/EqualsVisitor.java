@@ -26,8 +26,6 @@ import com.liferay.search.experiences.blueprints.engine.parameter.LongParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.StringParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.visitor.EvaluationVisitor;
 
-import java.util.Date;
-
 /**
  * @author Petteri Karttunen
  */
@@ -57,11 +55,12 @@ public class EqualsVisitor
 	public boolean visit(DateParameter parameter)
 		throws ParameterEvaluationException {
 
-		Date date = getDateValue(conditionJSONObject);
+		String dateString1 = conditionJSONObject.getString("value");
 
-		Date parameterValue = parameter.getValue();
+		String dateString2 = getDateAsString(
+			parameter.getValue(), conditionJSONObject.getString("date_format"));
 
-		return parameterValue.equals(date);
+		return dateString1.equals(dateString2);
 	}
 
 	@Override

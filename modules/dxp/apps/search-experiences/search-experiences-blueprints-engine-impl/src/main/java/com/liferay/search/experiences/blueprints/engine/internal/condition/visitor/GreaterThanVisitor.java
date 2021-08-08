@@ -46,7 +46,7 @@ public class GreaterThanVisitor
 
 		Date parameterValue = parameter.getValue();
 
-		return parameterValue.before(getDateValue(conditionJSONObject));
+		return parameterValue.after(getDateValue(conditionJSONObject));
 	}
 
 	@Override

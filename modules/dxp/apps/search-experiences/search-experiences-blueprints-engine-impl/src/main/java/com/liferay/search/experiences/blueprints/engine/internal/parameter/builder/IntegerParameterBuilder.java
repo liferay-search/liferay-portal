@@ -22,6 +22,7 @@ import com.liferay.search.experiences.blueprints.engine.internal.attributes.util
 import com.liferay.search.experiences.blueprints.engine.parameter.IntegerParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.Parameter;
 import com.liferay.search.experiences.blueprints.message.Messages;
+import com.liferay.search.experiences.blueprints.util.util.BlueprintJSONUtil;
 import com.liferay.search.experiences.blueprints.util.util.BlueprintValueUtil;
 
 import java.util.Optional;
@@ -89,23 +90,23 @@ public class IntegerParameterBuilder implements ParameterBuilder {
 	}
 
 	private Optional<Integer> _getValueOptional(
-		BlueprintsAttributes blueprintsAttributes, JSONObject jsonObject,
-		String parameterName) {
+		BlueprintsAttributes blueprintsAttributes,
+		JSONObject configurationJSONObject, String parameterName) {
 
-		Optional<String> valueOptional =
-			_blueprintsAttributeValuesHelper.getStringOptional(
+		Optional<Integer> optional =
+			_blueprintsAttributeValuesHelper.getIntegerOptional(
 				blueprintsAttributes, parameterName);
 
-		if (!valueOptional.isPresent()) {
-			valueOptional = BlueprintValueUtil.toStringOptional(
-				jsonObject.getString("default"));
+		if (!optional.isPresent()) {
+			optional = BlueprintJSONUtil.getIntegerOptional(
+				configurationJSONObject, "default");
 		}
 
-		if (!valueOptional.isPresent()) {
+		if (!optional.isPresent()) {
 			return Optional.empty();
 		}
 
-		return BlueprintValueUtil.stringToIntegerOptional(valueOptional.get());
+		return optional;
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

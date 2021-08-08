@@ -22,6 +22,7 @@ import com.liferay.search.experiences.blueprints.engine.internal.attributes.util
 import com.liferay.search.experiences.blueprints.engine.parameter.LongParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.Parameter;
 import com.liferay.search.experiences.blueprints.message.Messages;
+import com.liferay.search.experiences.blueprints.util.util.BlueprintJSONUtil;
 import com.liferay.search.experiences.blueprints.util.util.BlueprintValueUtil;
 
 import java.util.Optional;
@@ -91,21 +92,20 @@ public class LongParameterBuilder implements ParameterBuilder {
 		BlueprintsAttributes blueprintsAttributes,
 		JSONObject configurationJSONObject, String parameterName) {
 
-		Optional<String> valueStringOptional =
-			_blueprintsAttributeValuesHelper.getStringOptional(
+		Optional<Long> optional =
+			_blueprintsAttributeValuesHelper.getLongOptional(
 				blueprintsAttributes, parameterName);
 
-		if (!valueStringOptional.isPresent()) {
-			valueStringOptional = BlueprintValueUtil.toStringOptional(
-				configurationJSONObject.getString("default"));
+		if (!optional.isPresent()) {
+			optional = BlueprintJSONUtil.getLongOptional(
+				configurationJSONObject, "default");
 		}
 
-		if (!valueStringOptional.isPresent()) {
+		if (!optional.isPresent()) {
 			return Optional.empty();
 		}
 
-		return BlueprintValueUtil.stringToLongOptional(
-			valueStringOptional.get());
+		return optional;
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

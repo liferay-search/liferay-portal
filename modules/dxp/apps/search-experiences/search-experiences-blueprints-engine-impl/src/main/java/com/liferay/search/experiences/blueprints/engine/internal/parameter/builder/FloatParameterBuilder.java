@@ -22,6 +22,7 @@ import com.liferay.search.experiences.blueprints.engine.internal.attributes.util
 import com.liferay.search.experiences.blueprints.engine.parameter.FloatParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.Parameter;
 import com.liferay.search.experiences.blueprints.message.Messages;
+import com.liferay.search.experiences.blueprints.util.util.BlueprintJSONUtil;
 import com.liferay.search.experiences.blueprints.util.util.BlueprintValueUtil;
 
 import java.util.Optional;
@@ -88,24 +89,23 @@ public class FloatParameterBuilder implements ParameterBuilder {
 	}
 
 	private Optional<Float> _getValueOptional(
-		BlueprintsAttributes blueprintsAttributes, JSONObject jsonObject,
-		String parameterName) {
+		BlueprintsAttributes blueprintsAttributes,
+		JSONObject configurationJSONObject, String parameterName) {
 
-		Optional<String> valueStringOptional =
-			_blueprintsAttributeValuesHelper.getStringOptional(
+		Optional<Float> optional =
+			_blueprintsAttributeValuesHelper.getFloatOptional(
 				blueprintsAttributes, parameterName);
 
-		if (!valueStringOptional.isPresent()) {
-			valueStringOptional = BlueprintValueUtil.toStringOptional(
-				jsonObject.getString("default"));
+		if (!optional.isPresent()) {
+			optional = BlueprintJSONUtil.getFloatOptional(
+				configurationJSONObject, "default");
 		}
 
-		if (!valueStringOptional.isPresent()) {
+		if (!optional.isPresent()) {
 			return Optional.empty();
 		}
 
-		return BlueprintValueUtil.stringToFloatOptional(
-			valueStringOptional.get());
+		return optional;
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

@@ -44,6 +44,32 @@ public class BlueprintsAttributeValuesHelper {
 		return valueOptional.map(GetterUtil::getBoolean);
 	}
 
+	public Optional<Double> getDoubleOptional(
+		BlueprintsAttributes blueprintsAttributes, String key) {
+
+		Optional<Object> valueOptional =
+			blueprintsAttributes.getAttributeOptional(key);
+
+		if (!valueOptional.isPresent()) {
+			return Optional.empty();
+		}
+
+		return valueOptional.map(GetterUtil::getDouble);
+	}
+
+	public Optional<Float> getFloatOptional(
+		BlueprintsAttributes blueprintsAttributes, String key) {
+
+		Optional<Object> valueOptional =
+			blueprintsAttributes.getAttributeOptional(key);
+
+		if (!valueOptional.isPresent()) {
+			return Optional.empty();
+		}
+
+		return valueOptional.map(GetterUtil::getFloat);
+	}
+
 	public Optional<Integer[]> getIntegerArrayOptional(
 		BlueprintsAttributes blueprintsAttributes, String key) {
 

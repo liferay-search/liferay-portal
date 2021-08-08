@@ -290,7 +290,7 @@ public class QuerySearchRequestBodyContributor
 		}
 
 		return _conditionsProcessor.processConditions(
-			conditionsJSONObject, parameterData, messages);
+			conditionsJSONObject, parameterData, null, messages);
 	}
 
 	private void _processClauses(
