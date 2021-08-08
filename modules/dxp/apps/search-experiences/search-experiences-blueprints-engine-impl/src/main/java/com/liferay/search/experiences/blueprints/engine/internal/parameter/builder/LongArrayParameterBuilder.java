@@ -47,48 +47,45 @@ public class LongArrayParameterBuilder implements ParameterBuilder {
 
 		String parameterName = jsonObject.getString("parameter_name");
 
-		Optional<String[]> stringArrayOptional = _getValueArrayOptional(
-			blueprintsAttributes, jsonObject, parameterName);
+		Optional<Long[]> longArrayOptional =
+			_blueprintsAttributeValuesHelper.getLongArrayOptional(
+				blueprintsAttributes, parameterName);
 
-		if (!stringArrayOptional.isPresent()) {
-			return Optional.empty();
+		if (longArrayOptional.isPresent()) {
+			return _toParameter(longArrayOptional.get(), parameterName);
 		}
-
-		return _toLongArrayParameter(stringArrayOptional.get(), parameterName);
-	}
-
-	private Optional<String[]> _getValueArrayOptional(
-		BlueprintsAttributes blueprintsAttributes, JSONObject jsonObject,
-		String parameterName) {
 
 		Optional<String[]> stringArrayOptional =
 			_blueprintsAttributeValuesHelper.getStringArrayOptional(
 				blueprintsAttributes, parameterName);
 
-		if (!stringArrayOptional.isPresent()) {
-			stringArrayOptional = BlueprintJSONUtil.getStringArray(
-				jsonObject, "default");
+		if (stringArrayOptional.isPresent()) {
+			Long[] longArray = _toLongArray(stringArrayOptional.get());
+
+			if (longArray != null) {
+				return _toParameter(longArray, parameterName);
+			}
 		}
 
-		return stringArrayOptional;
+		Optional<Long[]> defaultValueOptional =
+			BlueprintJSONUtil.getLongArrayOptional(jsonObject, parameterName);
+
+		if (defaultValueOptional.isPresent()) {
+			return _toParameter(defaultValueOptional.get(), parameterName);
+		}
+
+		return Optional.empty();
 	}
 
-	private Optional<Parameter> _toLongArrayParameter(
-		String[] arr, String parameterName) {
-
+	private Long[] _toLongArray(String[] arr) {
 		try {
 			Stream<String> stream = Arrays.stream(arr);
 
-			Long[] longArray = stream.map(
+			return stream.map(
 				Long::valueOf
 			).toArray(
 				Long[]::new
 			);
-
-			return Optional.of(
-				new LongArrayParameter(
-					parameterName, "${parameter." + parameterName + "}",
-					longArray));
 		}
 		catch (NumberFormatException numberFormatException) {
 			if (_log.isWarnEnabled()) {
@@ -97,7 +94,13 @@ public class LongArrayParameterBuilder implements ParameterBuilder {
 			}
 		}
 
-		return Optional.empty();
+		return null;
+	}
+
+	private Optional<Parameter> _toParameter(Long[] arr, String parameterName) {
+		return Optional.of(
+			new LongArrayParameter(
+				parameterName, "${parameter." + parameterName + "}", arr));
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

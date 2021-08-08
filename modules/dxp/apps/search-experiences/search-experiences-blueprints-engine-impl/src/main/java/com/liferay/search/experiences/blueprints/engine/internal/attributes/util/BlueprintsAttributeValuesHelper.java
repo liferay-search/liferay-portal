@@ -18,7 +18,10 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.search.experiences.blueprints.util.util.BlueprintValueUtil;
 
+import java.util.Arrays;
 import java.util.Optional;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 
 import org.osgi.service.component.annotations.Component;
 
@@ -41,6 +44,44 @@ public class BlueprintsAttributeValuesHelper {
 		return valueOptional.map(GetterUtil::getBoolean);
 	}
 
+	public Optional<Integer[]> getIntegerArrayOptional(
+		BlueprintsAttributes blueprintsAttributes, String key) {
+
+		Optional<Object> valueOptional =
+			blueprintsAttributes.getAttributeOptional(key);
+
+		if (!valueOptional.isPresent()) {
+			return Optional.empty();
+		}
+
+		Object value = valueOptional.get();
+
+		if (value instanceof Integer[]) {
+			Integer[] arr = (Integer[])value;
+
+			if (arr.length > 0) {
+				return Optional.of(arr);
+			}
+		}
+
+		if (value instanceof int[]) {
+			int[] arr = (int[])value;
+
+			if (arr.length > 0) {
+				IntStream intStream = Arrays.stream(arr);
+
+				Integer[] boxedArray = intStream.boxed(
+				).toArray(
+					Integer[]::new
+				);
+
+				return Optional.of(boxedArray);
+			}
+		}
+
+		return Optional.empty();
+	}
+
 	public Optional<Integer> getIntegerOptional(
 		BlueprintsAttributes blueprintsAttributes, String key) {
 
@@ -52,6 +93,44 @@ public class BlueprintsAttributeValuesHelper {
 		}
 
 		return valueOptional.map(GetterUtil::getInteger);
+	}
+
+	public Optional<Long[]> getLongArrayOptional(
+		BlueprintsAttributes blueprintsAttributes, String key) {
+
+		Optional<Object> valueOptional =
+			blueprintsAttributes.getAttributeOptional(key);
+
+		if (!valueOptional.isPresent()) {
+			return Optional.empty();
+		}
+
+		Object value = valueOptional.get();
+
+		if (value instanceof Long[]) {
+			Long[] arr = (Long[])value;
+
+			if (arr.length > 0) {
+				return Optional.of(arr);
+			}
+		}
+
+		if (value instanceof long[]) {
+			long[] arr = (long[])value;
+
+			if (arr.length > 0) {
+				LongStream longStream = Arrays.stream(arr);
+
+				Long[] boxedArray = longStream.boxed(
+				).toArray(
+					Long[]::new
+				);
+
+				return Optional.of(boxedArray);
+			}
+		}
+
+		return Optional.empty();
 	}
 
 	public Optional<Long> getLongOptional(

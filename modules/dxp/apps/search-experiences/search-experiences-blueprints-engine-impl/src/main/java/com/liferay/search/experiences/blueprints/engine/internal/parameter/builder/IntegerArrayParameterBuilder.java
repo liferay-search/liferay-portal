@@ -47,48 +47,46 @@ public class IntegerArrayParameterBuilder implements ParameterBuilder {
 
 		String parameterName = jsonObject.getString("parameter_name");
 
-		Optional<String[]> stringArrayOptional = _getValueArrayOptional(
-			blueprintsAttributes, jsonObject, parameterName);
+		Optional<Integer[]> integerArrayOptional =
+			_blueprintsAttributeValuesHelper.getIntegerArrayOptional(
+				blueprintsAttributes, parameterName);
 
-		if (!stringArrayOptional.isPresent()) {
-			return Optional.empty();
+		if (integerArrayOptional.isPresent()) {
+			return _toParameter(integerArrayOptional.get(), parameterName);
 		}
-
-		return _toLongArrayParameter(stringArrayOptional.get(), parameterName);
-	}
-
-	private Optional<String[]> _getValueArrayOptional(
-		BlueprintsAttributes blueprintsAttributes, JSONObject jsonObject,
-		String parameterName) {
 
 		Optional<String[]> stringArrayOptional =
 			_blueprintsAttributeValuesHelper.getStringArrayOptional(
 				blueprintsAttributes, parameterName);
 
-		if (!stringArrayOptional.isPresent()) {
-			stringArrayOptional = BlueprintJSONUtil.getStringArray(
-				jsonObject, "default");
+		if (stringArrayOptional.isPresent()) {
+			Integer[] integerArray = _toIntegerArray(stringArrayOptional.get());
+
+			if (integerArray != null) {
+				return _toParameter(integerArray, parameterName);
+			}
 		}
 
-		return stringArrayOptional;
+		Optional<Integer[]> defaultValueOptional =
+			BlueprintJSONUtil.getIntegerArrayOptional(
+				jsonObject, parameterName);
+
+		if (defaultValueOptional.isPresent()) {
+			return _toParameter(defaultValueOptional.get(), parameterName);
+		}
+
+		return Optional.empty();
 	}
 
-	private Optional<Parameter> _toLongArrayParameter(
-		String[] arr, String parameterName) {
-
+	private Integer[] _toIntegerArray(String[] arr) {
 		try {
 			Stream<String> stream = Arrays.stream(arr);
 
-			Integer[] integerArray = stream.map(
-				Long::valueOf
+			return stream.map(
+				Integer::valueOf
 			).toArray(
 				Integer[]::new
 			);
-
-			return Optional.of(
-				new IntegerArrayParameter(
-					parameterName, "${parameter." + parameterName + "}",
-					integerArray));
 		}
 		catch (NumberFormatException numberFormatException) {
 			if (_log.isWarnEnabled()) {
@@ -97,7 +95,15 @@ public class IntegerArrayParameterBuilder implements ParameterBuilder {
 			}
 		}
 
-		return Optional.empty();
+		return null;
+	}
+
+	private Optional<Parameter> _toParameter(
+		Integer[] arr, String parameterName) {
+
+		return Optional.of(
+			new IntegerArrayParameter(
+				parameterName, "${parameter." + parameterName + "}", arr));
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
