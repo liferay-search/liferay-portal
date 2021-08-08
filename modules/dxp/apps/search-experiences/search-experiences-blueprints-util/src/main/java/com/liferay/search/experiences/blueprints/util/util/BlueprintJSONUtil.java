@@ -21,6 +21,8 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Optional;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 
 /**
  * @author Petteri Karttunen
@@ -51,6 +53,25 @@ public class BlueprintJSONUtil {
 		}
 
 		return Optional.empty();
+	}
+
+	public static Optional<Integer[]> getIntegerArrayOptional(
+		JSONObject jsonObject, String key) {
+
+		int[] arr = toIntArray(jsonObject.getJSONArray(key));
+
+		if ((arr == null) || (arr.length == 0)) {
+			return Optional.empty();
+		}
+
+		IntStream intStream = Arrays.stream(arr);
+
+		Integer[] boxedArray = intStream.boxed(
+		).toArray(
+			Integer[]::new
+		);
+
+		return Optional.of(boxedArray);
 	}
 
 	public static Optional<Integer> getIntegerOptional(
@@ -87,6 +108,25 @@ public class BlueprintJSONUtil {
 		}
 
 		return Optional.of((JSONObject)value);
+	}
+
+	public static Optional<Long[]> getLongArrayOptional(
+		JSONObject jsonObject, String key) {
+
+		long[] arr = toLongArray(jsonObject.getJSONArray(key));
+
+		if ((arr == null) || (arr.length == 0)) {
+			return Optional.empty();
+		}
+
+		LongStream longStream = Arrays.stream(arr);
+
+		Long[] boxedArray = longStream.boxed(
+		).toArray(
+			Long[]::new
+		);
+
+		return Optional.of(boxedArray);
 	}
 
 	public static Optional<String[]> getStringArray(
@@ -205,13 +245,41 @@ public class BlueprintJSONUtil {
 			return new double[0];
 		}
 
-		double[] values = new double[jsonArray.length()];
+		double[] arr = new double[jsonArray.length()];
 
 		for (int i = 0; i < jsonArray.length(); i++) {
-			values[i] = jsonArray.getDouble(i);
+			arr[i] = jsonArray.getDouble(i);
 		}
 
-		return values;
+		return arr;
+	}
+
+	public static int[] toIntArray(JSONArray jsonArray) {
+		if ((jsonArray == null) || (jsonArray.length() == 0)) {
+			return new int[0];
+		}
+
+		int[] arr = new int[jsonArray.length()];
+
+		for (int i = 0; i < jsonArray.length(); i++) {
+			arr[i] = jsonArray.getInt(i);
+		}
+
+		return arr;
+	}
+
+	public static long[] toLongArray(JSONArray jsonArray) {
+		if ((jsonArray == null) || (jsonArray.length() == 0)) {
+			return new long[0];
+		}
+
+		long[] arr = new long[jsonArray.length()];
+
+		for (int i = 0; i < jsonArray.length(); i++) {
+			arr[i] = jsonArray.getLong(i);
+		}
+
+		return arr;
 	}
 
 	public static String[] toStringArray(JSONArray jsonArray) {
@@ -219,13 +287,13 @@ public class BlueprintJSONUtil {
 			return new String[0];
 		}
 
-		String[] stringArray = new String[jsonArray.length()];
+		String[] arr = new String[jsonArray.length()];
 
 		for (int i = 0; i < jsonArray.length(); i++) {
-			stringArray[i] = jsonArray.getString(i);
+			arr[i] = jsonArray.getString(i);
 		}
 
-		return stringArray;
+		return arr;
 	}
 
 }
