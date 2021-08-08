@@ -98,7 +98,7 @@ public class LongParameterBuilder implements ParameterBuilder {
 
 		if (!optional.isPresent()) {
 			optional = BlueprintJSONUtil.getLongOptional(
-				configurationJSONObject, "default");
+				configurationJSONObject, "Object/default");
 		}
 
 		if (!optional.isPresent()) {

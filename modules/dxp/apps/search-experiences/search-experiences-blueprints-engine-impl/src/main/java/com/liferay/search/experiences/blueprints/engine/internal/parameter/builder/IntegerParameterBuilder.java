@@ -99,7 +99,7 @@ public class IntegerParameterBuilder implements ParameterBuilder {
 
 		if (!optional.isPresent()) {
 			optional = BlueprintJSONUtil.getIntegerOptional(
-				configurationJSONObject, "default");
+				configurationJSONObject, "Object/default");
 		}
 
 		if (!optional.isPresent()) {

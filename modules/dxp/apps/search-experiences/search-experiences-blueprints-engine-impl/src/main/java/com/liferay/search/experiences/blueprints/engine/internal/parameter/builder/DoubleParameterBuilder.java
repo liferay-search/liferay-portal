@@ -22,6 +22,7 @@ import com.liferay.search.experiences.blueprints.engine.internal.attributes.util
 import com.liferay.search.experiences.blueprints.engine.parameter.DoubleParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.Parameter;
 import com.liferay.search.experiences.blueprints.message.Messages;
+import com.liferay.search.experiences.blueprints.util.util.BlueprintJSONUtil;
 import com.liferay.search.experiences.blueprints.util.util.BlueprintValueUtil;
 
 import java.util.Optional;
@@ -88,24 +89,23 @@ public class DoubleParameterBuilder implements ParameterBuilder {
 	}
 
 	private Optional<Double> _getValueOptional(
-		BlueprintsAttributes blueprintsAttributes, JSONObject jsonObject,
-		String parameterName) {
+		BlueprintsAttributes blueprintsAttributes,
+		JSONObject configurationJSONObject, String parameterName) {
 
-		Optional<String> valueStringOptional =
-			_blueprintsAttributeValuesHelper.getStringOptional(
+		Optional<Double> optional =
+			_blueprintsAttributeValuesHelper.getDoubleOptional(
 				blueprintsAttributes, parameterName);
 
-		if (!valueStringOptional.isPresent()) {
-			valueStringOptional = BlueprintValueUtil.toStringOptional(
-				jsonObject.getString("default"));
+		if (!optional.isPresent()) {
+			optional = BlueprintJSONUtil.getDoubleOptional(
+				configurationJSONObject, "Object/default");
 		}
 
-		if (!valueStringOptional.isPresent()) {
+		if (!optional.isPresent()) {
 			return Optional.empty();
 		}
 
-		return BlueprintValueUtil.stringToDoubleOptional(
-			valueStringOptional.get());
+		return optional;
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

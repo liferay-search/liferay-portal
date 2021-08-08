@@ -98,7 +98,7 @@ public class FloatParameterBuilder implements ParameterBuilder {
 
 		if (!optional.isPresent()) {
 			optional = BlueprintJSONUtil.getFloatOptional(
-				configurationJSONObject, "default");
+				configurationJSONObject, "Object/default");
 		}
 
 		if (!optional.isPresent()) {
