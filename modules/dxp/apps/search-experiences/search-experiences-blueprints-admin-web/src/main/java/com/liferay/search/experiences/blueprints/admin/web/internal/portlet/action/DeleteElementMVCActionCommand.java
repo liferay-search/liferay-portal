@@ -68,15 +68,19 @@ public class DeleteElementMVCActionCommand extends BaseMVCActionCommand {
 			}
 		}
 		catch (PortalException portalException) {
-			_log.error(portalException.getMessage(), portalException);
-
 			if (portalException instanceof DefaultElementEntryException) {
+				if (_log.isDebugEnabled()) {
+					_log.debug(portalException.getMessage(), portalException);
+				}
+
 				SessionErrors.add(
 					actionRequest, DefaultElementEntryException.class);
 
 				hideDefaultErrorMessage(actionRequest);
 			}
 			else {
+				_log.error(portalException.getMessage(), portalException);
+
 				SessionErrors.add(
 					actionRequest, BlueprintsAdminWebKeys.ERROR,
 					portalException.getMessage());
