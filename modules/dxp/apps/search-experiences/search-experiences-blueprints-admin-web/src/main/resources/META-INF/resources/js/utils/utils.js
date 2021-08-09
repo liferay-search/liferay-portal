@@ -50,6 +50,28 @@ export const isEmpty = (value) => {
 };
 
 /**
+ * Used for converting a JSON string to display in a code mirror editor.
+ * @param {String} jsonString The JSON string to convert.
+ * @return {String} The converted JSON string.
+ */
+export const parseAndPrettifyJSON = (json) => {
+	if (!isDefined(json)) {
+		return '';
+	}
+
+	try {
+		return JSON.stringify(JSON.parse(json), null, 2);
+	}
+	catch (error) {
+		if (process.env.NODE_ENV === 'development') {
+			console.error(error);
+		}
+
+		return json;
+	}
+};
+
+/**
  * Function to replace all instances of a string.
  *
  * Example:

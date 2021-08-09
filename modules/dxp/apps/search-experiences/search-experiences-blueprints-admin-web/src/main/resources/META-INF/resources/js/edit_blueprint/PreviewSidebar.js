@@ -28,6 +28,7 @@ import {PreviewModalWithCopyDownload} from '../shared/PreviewModal';
 import SearchInput from '../shared/SearchInput';
 import {sub} from '../utils/language';
 import useDidUpdateEffect from '../utils/useDidUpdateEffect';
+import {parseAndPrettifyJSON} from '../utils/utils';
 import ResultListItem from './ResultListItem';
 
 const DELTAS = [10, 20, 30, 50];
@@ -148,7 +149,7 @@ function PreviewSidebar({
 						folded
 						lineWrapping={false}
 						size="lg"
-						text={JSON.stringify(results, null, 2)}
+						text={parseAndPrettifyJSON(results.meta.responseString)}
 						title={Liferay.Language.get('raw-response')}
 					>
 						<ClayButton
