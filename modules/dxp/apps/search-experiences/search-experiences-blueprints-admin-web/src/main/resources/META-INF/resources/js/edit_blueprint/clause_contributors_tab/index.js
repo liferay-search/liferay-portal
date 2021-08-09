@@ -301,7 +301,7 @@ function ClauseContributorsTab({
 							status={status}
 						/>
 
-						<ClayTable>
+						<ClayTable hover={false}>
 							<ClayTable.Head>
 								<ClayTable.Row>
 									<ClayTable.Cell headingCell />
