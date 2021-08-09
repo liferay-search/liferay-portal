@@ -15,7 +15,7 @@ import ClayLink from '@clayui/link';
 import ClayModal, {useModal} from '@clayui/modal';
 import React, {useState} from 'react';
 
-import {openSuccessToast} from '../utils/utils';
+import {openSuccessToast} from '../utils/toasts';
 import CodeMirrorEditor from './CodeMirrorEditor';
 
 const PreviewModal = ({body, children, size = 'md', title}) => {
