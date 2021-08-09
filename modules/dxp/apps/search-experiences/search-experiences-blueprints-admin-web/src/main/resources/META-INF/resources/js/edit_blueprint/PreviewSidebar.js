@@ -197,7 +197,11 @@ function PreviewSidebar({
 				className="component-tbar sidebar-search tbar"
 			>
 				<div className="container-fluid">
-					<SearchInput onChange={setValue} onEnter={_handleFetch} />
+					<SearchInput
+						disabled={loading}
+						onChange={setValue}
+						onEnter={_handleFetch}
+					/>
 				</div>
 			</nav>
 

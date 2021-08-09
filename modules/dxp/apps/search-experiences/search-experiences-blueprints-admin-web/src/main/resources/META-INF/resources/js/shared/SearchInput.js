@@ -14,7 +14,7 @@ import {ClayInput} from '@clayui/form';
 import ClayIcon from '@clayui/icon';
 import React, {useEffect, useState} from 'react';
 
-function SearchInput({onChange, onEnter}) {
+function SearchInput({disabled, onChange, onEnter}) {
 	const [value, setValue] = useState('');
 
 	useEffect(() => {
@@ -27,6 +27,7 @@ function SearchInput({onChange, onEnter}) {
 				<ClayInput
 					aria-label={Liferay.Language.get('search')}
 					className="form-control input-group-inset input-group-inset-after"
+					disabled={disabled}
 					onChange={(event) => setValue(event.target.value)}
 					onKeyDown={(event) => {
 						if (event.key === 'Enter') {
