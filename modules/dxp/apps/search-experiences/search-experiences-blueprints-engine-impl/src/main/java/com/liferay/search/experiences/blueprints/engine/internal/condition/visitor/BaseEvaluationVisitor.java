@@ -16,6 +16,7 @@ package com.liferay.search.experiences.blueprints.engine.internal.condition.visi
 
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.search.experiences.blueprints.engine.exception.ParameterEvaluationException;
 import com.liferay.search.experiences.blueprints.engine.parameter.BooleanParameter;
@@ -126,7 +127,7 @@ public abstract class BaseEvaluationVisitor implements EvaluationVisitor {
 				MessagesUtil.toErrorMessage(
 					getClass().getName(),
 					new Throwable("Match value has to be an array"),
-					conditionJSONObject, "value", object.toString(),
+					conditionJSONObject, "value", GetterUtil.getString(object),
 					"core.error.match-value-has-to-be-an-array"));
 		}
 
@@ -154,7 +155,7 @@ public abstract class BaseEvaluationVisitor implements EvaluationVisitor {
 			throw new ParameterEvaluationException(
 				MessagesUtil.toErrorMessage(
 					BaseEvaluationVisitor.class.getName(), exception,
-					conditionJSONObject, "value", date.toString(),
+					conditionJSONObject, "value", GetterUtil.getString(date),
 					"core.error.clause-condition-date-parsing-error"));
 		}
 	}
