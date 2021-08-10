@@ -58,16 +58,16 @@ public class GreaterThanVisitorTest extends BaseVisitorTestCase {
 			getDate("2021-06-08", "yyyy-MM-dd")
 		);
 
-		Assert.assertTrue(
+		Assert.assertFalse(
 			_greaterThanVisitorTrueClosedRange.visit(_dateParameter));
-		Assert.assertTrue(
+		Assert.assertFalse(
 			_greaterThanVisitorFalseClosedRange.visit(_dateParameter));
 
 		setUpConditionJsonObjectWithGetString("2021-06-07", "yyyy-MM-dd");
 
-		Assert.assertFalse(
+		Assert.assertTrue(
 			_greaterThanVisitorTrueClosedRange.visit(_dateParameter));
-		Assert.assertFalse(
+		Assert.assertTrue(
 			_greaterThanVisitorFalseClosedRange.visit(_dateParameter));
 	}
 
