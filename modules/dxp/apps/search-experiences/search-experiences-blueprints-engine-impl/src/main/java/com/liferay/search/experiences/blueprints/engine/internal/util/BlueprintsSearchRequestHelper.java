@@ -35,6 +35,7 @@ import com.liferay.search.experiences.blueprints.message.Severity;
 import com.liferay.search.experiences.blueprints.model.Blueprint;
 import com.liferay.search.experiences.blueprints.service.BlueprintService;
 import com.liferay.search.experiences.blueprints.util.BlueprintHelper;
+import com.liferay.search.experiences.blueprints.util.util.BlueprintJSONUtil;
 import com.liferay.search.experiences.blueprints.util.util.MessagesUtil;
 
 import java.util.ArrayList;
@@ -111,52 +112,24 @@ public class BlueprintsSearchRequestHelper {
 		);
 	}
 
-	public void setSource(
+	public void setFieldRetrieval(
 		SearchRequestBuilder searchRequestBuilder, ParameterData parameterData,
 		Blueprint blueprint, Messages messages) {
 
-		Optional<JSONObject> optional1 =
+		Optional<JSONObject> optional =
 			_blueprintHelper.getAdvancedConfigurationOptional(blueprint);
 
-		JSONObject advancedConfigurationJSONObject = optional1.get();
+		JSONObject advancedConfigurationJSONObject = optional.get();
 
-		JSONObject sourceJSONObject =
-			advancedConfigurationJSONObject.getJSONObject("source");
+		_setSource(
+			searchRequestBuilder,
+			advancedConfigurationJSONObject.getJSONObject("source"),
+			parameterData, messages);
 
-		if (sourceJSONObject == null) {
-			return;
-		}
-
-		Optional<JSONObject> optional2 =
-			_blueprintTemplateVariableParser.parseObject(
-				sourceJSONObject, parameterData, messages);
-
-		if (!optional2.isPresent()) {
-			return;
-		}
-
-		JSONObject parsedSourceJSONObject = optional2.get();
-
-		if (parsedSourceJSONObject.has("fetch_source")) {
-			searchRequestBuilder.fetchSource(
-				parsedSourceJSONObject.getBoolean("fetch_source"));
-		}
-
-		JSONArray excludesJSONArray = parsedSourceJSONObject.getJSONArray(
-			"source_excludes");
-
-		if ((excludesJSONArray != null) && (excludesJSONArray.length() > 0)) {
-			searchRequestBuilder.fetchSourceExcludes(
-				JSONUtil.toStringArray(excludesJSONArray));
-		}
-
-		JSONArray includesJSONArray = parsedSourceJSONObject.getJSONArray(
-			"source_includes");
-
-		if ((includesJSONArray != null) && (includesJSONArray.length() > 0)) {
-			searchRequestBuilder.fetchSourceIncludes(
-				JSONUtil.toStringArray(includesJSONArray));
-		}
+		_setStoredFields(
+			searchRequestBuilder,
+			advancedConfigurationJSONObject.getJSONArray("stored_fields"),
+			parameterData, messages);
 	}
 
 	@Activate
@@ -189,6 +162,70 @@ public class BlueprintsSearchRequestHelper {
 		}
 
 		return new ArrayList<>();
+	}
+
+	private void _setSource(
+		SearchRequestBuilder searchRequestBuilder, JSONObject jsonObject,
+		ParameterData parameterData, Messages messages) {
+
+		if (jsonObject == null) {
+			return;
+		}
+
+		Optional<JSONObject> optional =
+			_blueprintTemplateVariableParser.parseObject(
+				jsonObject, parameterData, messages);
+
+		if (!optional.isPresent()) {
+			return;
+		}
+
+		JSONObject parsedJSONObject = optional.get();
+
+		if (parsedJSONObject.has("fetch_source")) {
+			searchRequestBuilder.fetchSource(
+				parsedJSONObject.getBoolean("fetch_source"));
+		}
+
+		JSONArray excludesJSONArray = parsedJSONObject.getJSONArray(
+			"source_excludes");
+
+		if ((excludesJSONArray != null) && (excludesJSONArray.length() > 0)) {
+			searchRequestBuilder.fetchSourceExcludes(
+				JSONUtil.toStringArray(excludesJSONArray));
+		}
+
+		JSONArray includesJSONArray = parsedJSONObject.getJSONArray(
+			"source_includes");
+
+		if ((includesJSONArray != null) && (includesJSONArray.length() > 0)) {
+			searchRequestBuilder.fetchSourceIncludes(
+				JSONUtil.toStringArray(includesJSONArray));
+		}
+	}
+
+	private void _setStoredFields(
+		SearchRequestBuilder searchRequestBuilder, JSONArray jsonArray,
+		ParameterData parameterData, Messages messages) {
+
+		if (jsonArray == null) {
+			return;
+		}
+
+		Optional<JSONArray> optional =
+			_blueprintTemplateVariableParser.parseArray(
+				jsonArray, parameterData, messages);
+
+		if (!optional.isPresent()) {
+			return;
+		}
+
+		JSONArray parsedJSONArray = optional.get();
+
+		if ((parsedJSONArray != null) && (parsedJSONArray.length() > 0)) {
+			searchRequestBuilder.fields(
+				BlueprintJSONUtil.toStringArray(parsedJSONArray));
+		}
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

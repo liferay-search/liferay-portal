@@ -240,7 +240,7 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 				_getFrom(parameterData, blueprint, size)
 			);
 
-		_blueprintsSearchRequestHelper.setSource(
+		_blueprintsSearchRequestHelper.setFieldRetrieval(
 			searchRequestBuilder, parameterData, blueprint, messages);
 
 		applyBlueprintDefinition(
