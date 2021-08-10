@@ -56,6 +56,7 @@ function SearchInput({disabled, onChange, onEnter}) {
 				) : (
 					<ClayInput.GroupInsetItem after tag="span">
 						<ClayButton
+							disabled={disabled}
 							displayType="unstyled"
 							onClick={onEnter}
 							title={Liferay.Language.get('search')}
