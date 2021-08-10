@@ -108,12 +108,12 @@ SearchOptionsPortletPreferences searchOptionsPortletPreferences = new com.lifera
 
 			var fieldFormRows = Array.prototype.filter.call(
 				document.getElementsByClassName('field-form-row'),
-				function (item) {
+				(item) => {
 					return !item.getAttribute('hidden');
 				}
 			);
 
-			fieldFormRows.forEach(function (item) {
+			fieldFormRows.forEach((item) => {
 				fields.push({
 					key: item.querySelector('.key-input').value,
 					value: item.querySelector('.value-input').value,
