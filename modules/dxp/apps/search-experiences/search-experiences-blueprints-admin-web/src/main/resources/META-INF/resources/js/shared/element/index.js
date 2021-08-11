@@ -58,7 +58,6 @@ function Element({
 	touched = {},
 	uiConfigurationJSON,
 	uiConfigurationValues,
-	validate,
 }) {
 	const {locale} = useContext(ThemeContext);
 
@@ -188,7 +187,6 @@ function Element({
 						nullable={nullable}
 						setFieldTouched={setFieldTouched}
 						setFieldValue={setFieldValue}
-						validate={validate}
 						value={uiConfigurationValues[config.name]}
 					/>
 				);

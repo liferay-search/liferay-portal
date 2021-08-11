@@ -22,7 +22,6 @@ function MultiSelectInput({
 	nullable,
 	setFieldTouched,
 	setFieldValue,
-	validate,
 	value,
 }) {
 	const [inputValue, setInputValue] = useState('');
@@ -36,6 +35,8 @@ function MultiSelectInput({
 				inputValue={inputValue}
 				items={value || []}
 				onBlur={() => {
+					setFieldTouched(name);
+
 					if (inputValue) {
 						setFieldValue(name, [
 							...value,
@@ -43,11 +44,7 @@ function MultiSelectInput({
 						]);
 
 						setInputValue('');
-
-						validate();
 					}
-
-					setFieldTouched(name);
 				}}
 				onChange={setInputValue}
 				onItemsChange={(value) => setFieldValue(name, value)}

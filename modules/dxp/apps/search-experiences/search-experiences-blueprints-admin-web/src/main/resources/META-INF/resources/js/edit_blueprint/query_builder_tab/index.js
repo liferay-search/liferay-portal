@@ -38,7 +38,6 @@ function QueryBuilderTab({
 	setFieldTouched,
 	setFieldValue,
 	touched = [],
-	validate,
 }) {
 	const [collapseAll, setCollapseAll] = useState(false);
 
@@ -65,7 +64,6 @@ function QueryBuilderTab({
 						touched={touched[index]}
 						uiConfigurationJSON={element.uiConfigurationJSON}
 						uiConfigurationValues={element.uiConfigurationValues}
-						validate={validate}
 					/>
 				) : (
 					<JSONElement
