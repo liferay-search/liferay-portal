@@ -151,7 +151,7 @@ export default {
 						},
 					},
 					{
-						defaultValue: '1',
+						defaultValue: '0',
 						label: 'Minimum Should Match',
 						name: 'minimum_should_match',
 						type: 'text',
