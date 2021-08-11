@@ -28,7 +28,6 @@ import {BASELINE_CLAUSE_CONTRIBUTORS_CONFIGURATION} from '../../utils/data';
 import {
 	getClauseContributorsConfig,
 	getClauseContributorsState,
-	isDefined,
 } from '../../utils/utils';
 import ManagementToolbar from './ManagementToolbar';
 
@@ -111,12 +110,73 @@ function ClauseContributorsTab({
 		},
 	];
 
+	useEffect(() => {
+		const _isSearchVisible = (item, keyword) => {
+			if (keyword) {
+				return keyword
+					.split(' ')
+					.every((word) =>
+						item.toLowerCase().includes(word.toLowerCase())
+					);
+			}
+			else {
+				return true;
+			}
+		};
+
+		const _isStatusVisible = (item, status, enabled) => {
+			if (status === ALL) {
+				return true;
+			}
+
+			if (status === ACTIVE) {
+				return enabled[item];
+			}
+
+			if (status === INACTIVE) {
+				return !enabled[item];
+			}
+		};
+
+		setContributors(
+			initialClauseContributorsList
+				.filter(({label}) => category === ALL || category === label)
+				.map(({label, value}) => ({
+					label,
+					value: value
+						.filter(
+							(item) =>
+								_isSearchVisible(item, keyword) &&
+								_isStatusVisible(item, status, enabled)
+						)
+						.sort((a, b) =>
+							sortDirection === DESCENDING
+								? a.localeCompare(b)
+								: b.localeCompare(a)
+						),
+				}))
+		);
+	}, [
+		enabled,
+		category,
+		keyword,
+		sortDirection,
+		status,
+		initialClauseContributorsList,
+	]);
+
 	const _handleApplyBaseline = () => {
 		const baselineEnabledState = getClauseContributorsState(
 			BASELINE_CLAUSE_CONTRIBUTORS_CONFIGURATION
 		);
 
-		_updateEnabledContributorsConfig(baselineEnabledState, false);
+		onFrameworkConfigChange({
+			apply_indexer_clauses: true,
+			clause_contributors: getClauseContributorsConfig(
+				baselineEnabledState
+			),
+		});
+
 		setEnabled(baselineEnabledState);
 	};
 
@@ -143,7 +203,10 @@ function ClauseContributorsTab({
 			[className]: !enabled[className],
 		};
 
-		_updateEnabledContributorsConfig(newEnabled);
+		onFrameworkConfigChange({
+			clause_contributors: getClauseContributorsConfig(newEnabled),
+		});
+
 		setEnabled(newEnabled);
 	};
 
@@ -154,80 +217,16 @@ function ClauseContributorsTab({
 			newEnabled[item] = value;
 		});
 
-		_updateEnabledContributorsConfig({...enabled, ...newEnabled});
+		onFrameworkConfigChange({
+			clause_contributors: getClauseContributorsConfig({
+				...enabled,
+				...newEnabled,
+			}),
+		});
+
 		setEnabled({...enabled, ...newEnabled});
 		setSelected([]);
 	};
-
-	const _isSearchVisible = (item, keyword) => {
-		if (keyword) {
-			return keyword
-				.split(' ')
-				.every((word) =>
-					item.toLowerCase().includes(word.toLowerCase())
-				);
-		}
-		else {
-			return true;
-		}
-	};
-
-	const _isStatusVisible = (item, status, enabled) => {
-		if (status === ALL) {
-			return true;
-		}
-
-		if (status === ACTIVE) {
-			return enabled[item];
-		}
-
-		if (status === INACTIVE) {
-			return !enabled[item];
-		}
-	};
-
-	const _updateEnabledContributorsConfig = (
-		enabled,
-		newApplyIndexerClauses
-	) => {
-		const newConfig = {
-			clause_contributors: getClauseContributorsConfig(enabled),
-		};
-
-		if (isDefined(newApplyIndexerClauses)) {
-			newConfig.apply_indexer_clauses = newApplyIndexerClauses;
-		}
-
-		onFrameworkConfigChange(newConfig);
-	};
-
-	useEffect(() => {
-		setContributors(
-			initialClauseContributorsList
-				.filter(({label}) => category === ALL || category === label)
-				.map(({label, value}) => ({
-					label,
-					value: value
-						.filter(
-							(item) =>
-								_isStatusVisible(item, status, enabled) &&
-								_isSearchVisible(item, keyword)
-						)
-						.sort((a, b) =>
-							sortDirection === DESCENDING
-								? a.localeCompare(b)
-								: b.localeCompare(a)
-						),
-				}))
-		);
-	}, [
-		enabled,
-		category,
-		keyword,
-		sortDirection,
-		status,
-		initialClauseContributorsList,
-	]);
 
 	return (
 		<div className="clause-contributors-tab">
@@ -305,6 +304,7 @@ function ClauseContributorsTab({
 							<ClayTable.Head>
 								<ClayTable.Row>
 									<ClayTable.Cell headingCell />
+
 									<ClayTable.Cell
 										className="table-cell-expand-small"
 										expanded
@@ -312,9 +312,11 @@ function ClauseContributorsTab({
 									>
 										{Liferay.Language.get('title')}
 									</ClayTable.Cell>
+
 									<ClayTable.Cell expanded headingCell>
 										{Liferay.Language.get('class-name')}
 									</ClayTable.Cell>
+
 									<ClayTable.Cell
 										className="table-cell-expand-smallest"
 										headingCell
