@@ -65,6 +65,7 @@ export default {
 					},
 					{
 						defaultValue: {},
+						label: 'Query',
 						name: 'query',
 						type: 'json',
 					},

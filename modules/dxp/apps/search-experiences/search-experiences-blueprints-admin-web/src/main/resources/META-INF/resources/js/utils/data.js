@@ -9,8 +9,8 @@
  * distribution rights of the Software.
  */
 
+import HIDE_COMMENTS from './elements/hide-comments';
 import HIDE_DEFAULT_USER from './elements/hide-default-user';
-import HIDE_DISCUSSIONS from './elements/hide-discussions';
 import HIDE_HIDDEN_CONTENTS from './elements/hide-hidden-contents';
 import LIMIT_SEARCH_TO_HEAD_VERSION from './elements/limit-search-to-head-version';
 import LIMIT_SEARCH_TO_PUBLISHED_CONTENTS from './elements/limit-search-to-published-contents';
@@ -39,7 +39,7 @@ export const DEFAULT_BASELINE_ELEMENTS = [
 	LIMIT_SEARCH_TO_HEAD_VERSION,
 	LIMIT_SEARCH_TO_PUBLISHED_CONTENTS,
 	HIDE_HIDDEN_CONTENTS,
-	HIDE_DISCUSSIONS,
+	HIDE_COMMENTS,
 	HIDE_DEFAULT_USER,
 ];
 
