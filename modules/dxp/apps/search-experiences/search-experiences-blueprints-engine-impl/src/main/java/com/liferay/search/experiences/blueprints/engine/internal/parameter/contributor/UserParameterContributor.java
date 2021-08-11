@@ -300,11 +300,10 @@ public class UserParameterContributor implements ParameterContributor {
 
 		List<Long> segmentEntryIds = new ArrayList<>();
 
-		if ((_segmentsEntrySimulator != null) &&
-			_segmentsEntrySimulator.isSimulationActive(userId)) {
+		long[] simulatedSegmentEntryIds = _getSimulatedSegmentEntryIds(userId);
 
-			LongStream longStream = LongStream.of(
-				_segmentsEntrySimulator.getSimulatedSegmentsEntryIds(userId));
+		if (simulatedSegmentEntryIds.length > 0) {
+			LongStream longStream = LongStream.of(simulatedSegmentEntryIds);
 
 			segmentEntryIds.addAll(
 				longStream.boxed(
@@ -368,6 +367,14 @@ public class UserParameterContributor implements ParameterContributor {
 				messages, getClass().getName(), exception, null, null, null,
 				"core.error.unknown-error");
 		}
+	}
+
+	private long[] _getSimulatedSegmentEntryIds(long userId) {
+		if (_segmentsEntrySimulator != null) {
+			return _segmentsEntrySimulator.getSimulatedSegmentsEntryIds(userId);
+		}
+
+		return new long[0];
 	}
 
 	private String _getTemplateVariableName(String key) {
