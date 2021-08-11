@@ -167,6 +167,7 @@ function ManagementToolbar({
 													symbol="caret-bottom"
 												/>
 											</span>
+
 											<span className="navbar-breakpoint-compact">
 												<ClayIcon symbol="filter" />
 											</span>
@@ -249,6 +250,7 @@ function ManagementToolbar({
 									onSubmit={onApplyBaseline}
 									visible={showModal}
 								/>
+
 								<span className="navbar-breakpoint-full">
 									<ClayButton
 										displayType="secondary"
@@ -259,6 +261,7 @@ function ManagementToolbar({
 										)}
 									</ClayButton>
 								</span>
+
 								<span className="navbar-breakpoint-compact">
 									<ClayButton
 										displayType="secondary"
