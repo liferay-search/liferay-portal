@@ -32,14 +32,13 @@ import com.liferay.search.experiences.blueprints.engine.parameter.LongArrayParam
 import com.liferay.search.experiences.blueprints.engine.parameter.LongParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterDataBuilder;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterDefinition;
-import com.liferay.search.experiences.blueprints.engine.parameter.StringArrayParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.StringParameter;
 import com.liferay.search.experiences.blueprints.engine.spi.parameter.ParameterContributor;
 import com.liferay.search.experiences.blueprints.message.Messages;
 import com.liferay.search.experiences.blueprints.model.Blueprint;
 import com.liferay.search.experiences.blueprints.util.util.MessagesUtil;
-import com.liferay.segments.model.SegmentsEntry;
-import com.liferay.segments.service.SegmentsEntryLocalService;
+import com.liferay.segments.provider.SegmentsEntryProvider;
+import com.liferay.segments.simulator.SegmentsEntrySimulator;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -47,6 +46,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
@@ -190,12 +190,6 @@ public class UserParameterContributor implements ParameterContributor {
 				LongArrayParameter.class.getName(),
 				"core.parameter.user.segment-entry-ids"));
 
-		parameterDefinitions.add(
-			new ParameterDefinition(
-				_getTemplateVariableName("user_segment_locale_names"),
-				StringArrayParameter.class.getName(),
-				"core.parameter.user.segment-entry-locale-names"));
-
 		return parameterDefinitions;
 	}
 
@@ -302,48 +296,55 @@ public class UserParameterContributor implements ParameterContributor {
 			BlueprintsAttributes blueprintsAttributes, User user)
 		throws PortalException {
 
-		long[] groupIds = _getUserAccessibleSiteGroupIds(
-			blueprintsAttributes.getCompanyId(), user);
-
-		if (groupIds.length == 0) {
-			return;
-		}
+		long userId = user.getUserId();
 
 		List<Long> segmentEntryIds = new ArrayList<>();
-		List<String> segmentEntryNames = new ArrayList<>();
 
-		for (long groupId : groupIds) {
-			List<SegmentsEntry> segmentsEntries =
-				_segmentsEntryLocalService.getSegmentsEntries(
-					groupId, true, User.class.getName(), 0, 25, null);
+		if ((_segmentsEntrySimulator != null) &&
+			_segmentsEntrySimulator.isSimulationActive(userId)) {
 
-			segmentsEntries.forEach(
-				entry -> {
-					segmentEntryIds.add(entry.getSegmentsEntryId());
-					segmentEntryNames.add(
-						entry.getName(blueprintsAttributes.getLocale(), true));
-				});
+			LongStream longStream = LongStream.of(
+				_segmentsEntrySimulator.getSimulatedSegmentsEntryIds(userId));
+
+			segmentEntryIds.addAll(
+				longStream.boxed(
+				).collect(
+					Collectors.toList()
+				));
+		}
+		else {
+			long[] groupIds = _getUserAccessibleSiteGroupIds(
+				blueprintsAttributes.getCompanyId(), user);
+
+			if (groupIds.length == 0) {
+				return;
+			}
+
+			for (long groupId : groupIds) {
+				long[] ids = _segmentsEntryProvider.getSegmentsEntryIds(
+					groupId, User.class.getName(), user.getPrimaryKey());
+
+				if ((ids != null) && (ids.length > 0)) {
+					LongStream longStream = LongStream.of(ids);
+
+					segmentEntryIds.addAll(
+						longStream.boxed(
+						).collect(
+							Collectors.toList()
+						));
+				}
+			}
 		}
 
 		if (segmentEntryIds.isEmpty()) {
 			return;
 		}
 
-		Stream<Long> stream1 = segmentEntryIds.stream();
-
 		parameterDataBuilder.addParameter(
 			new LongArrayParameter(
 				"user_segment_entry_ids",
 				_getTemplateVariableName("user_segment_entry_ids"),
-				stream1.toArray(Long[]::new)));
-
-		Stream<String> stream2 = segmentEntryNames.stream();
-
-		parameterDataBuilder.addParameter(
-			new StringArrayParameter(
-				"user_segment_locale_names",
-				_getTemplateVariableName("user_segment_locale_names"),
-				stream2.toArray(String[]::new)));
+				segmentEntryIds.toArray(new Long[0])));
 	}
 
 	private void _contribute(
@@ -451,7 +452,10 @@ public class UserParameterContributor implements ParameterContributor {
 	private Portal _portal;
 
 	@Reference
-	private SegmentsEntryLocalService _segmentsEntryLocalService;
+	private SegmentsEntryProvider _segmentsEntryProvider;
+
+	@Reference
+	private SegmentsEntrySimulator _segmentsEntrySimulator;
 
 	@Reference
 	private UserLocalService _userLocalService;
