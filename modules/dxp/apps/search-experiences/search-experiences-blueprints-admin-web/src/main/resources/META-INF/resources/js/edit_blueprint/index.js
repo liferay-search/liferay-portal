@@ -9,7 +9,6 @@
  * distribution rights of the Software.
  */
 
-import ClayBadge from '@clayui/badge';
 import ClayButton from '@clayui/button';
 import ClayToolbar from '@clayui/toolbar';
 import getCN from 'classnames';
@@ -697,15 +696,6 @@ function EditBlueprintForm({
 						small
 					>
 						{Liferay.Language.get('preview')}
-
-						{!!previewInfo.results.errors?.length && (
-							<span className="inline-item inline-item-after">
-								<ClayBadge
-									displayType="danger"
-									label={previewInfo.results.errors.length}
-								/>
-							</span>
-						)}
 					</ClayButton>
 				</ClayToolbar.Item>
 			</PageToolbar>
