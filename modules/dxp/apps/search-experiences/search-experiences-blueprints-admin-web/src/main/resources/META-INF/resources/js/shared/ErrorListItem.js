@@ -62,7 +62,9 @@ function ErrorListItem({item, onFocusElement}) {
 	};
 
 	const _isCollapsible = () => {
-		return Object.keys(item).includes('rootProperty');
+		return Object.keys(item).some(
+			(property) => !ERROR_OMIT_KEYS.includes(property)
+		);
 	};
 
 	return (
@@ -77,13 +79,15 @@ function ErrorListItem({item, onFocusElement}) {
 					{item.localizedMessage || Liferay.Language.get('error')}
 				</span>
 
-				<span className="description">{`${item.msg} ${
-					CONFIGURATION_FIELD_NAME[item.rootConfiguration]
-						? '(' +
-						  CONFIGURATION_FIELD_NAME[item.rootConfiguration] +
-						  ')'
-						: ''
-				}`}</span>
+				{item.msg && (
+					<span className="description">{`${item.msg} ${
+						CONFIGURATION_FIELD_NAME[item.rootConfiguration]
+							? '(' +
+							  CONFIGURATION_FIELD_NAME[item.rootConfiguration] +
+							  ')'
+							: ''
+					}`}</span>
+				)}
 			</span>
 
 			{!!item.elementId && (
