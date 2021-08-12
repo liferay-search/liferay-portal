@@ -109,7 +109,8 @@ definition {
 			else if ("${commerceSiteType}" == "B2X") {
 				var siteType = "2";
 			}
-		} else {
+		}
+		else {
 			var siteType = "2";
 		}
 
