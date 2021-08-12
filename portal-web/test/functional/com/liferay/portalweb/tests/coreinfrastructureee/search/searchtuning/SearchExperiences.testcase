@@ -119,7 +119,7 @@ definition {
 			searchAssetType = "Web Content Article");
 	}
 
-	test BoostCommerceItemsForMyAccountGroup {
+	test BoostCommerceItemsForAccountGroup {
 		CommerceAccelerators.initializeNewSiteViaAccelerator(siteName = "Minium");
 
 		ApplicationsMenu.gotoSite(site = "Minium");
