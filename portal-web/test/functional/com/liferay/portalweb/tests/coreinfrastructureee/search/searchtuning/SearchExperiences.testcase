@@ -122,7 +122,7 @@ definition {
 	test BoostCommerceItemsForAccountGroup {
 		CommerceAccelerators.initializeNewSiteViaAccelerator(siteName = "Minium");
 
-		ApplicationsMenu.gotoSite(site = "Minium");
+		Navigator.openSiteURL(siteName = "Minium");
 
 		JSONCommerceAccount.addAccount(accountName = "TestAccount");
 
@@ -174,7 +174,7 @@ definition {
 
 		var blueprintsID = SearchExperiences.getBlueprintID(name = "My Blueprint");
 
-		Navigator.openWithAppendToBaseURL(urlAppend = "web/minium");
+		Navigator.openSiteURL(siteName = "Minium");
 
 		CommerceAcceleratorsInitializer.selectAccountFromAccountSelector(accountName = "TestAccount");
 
