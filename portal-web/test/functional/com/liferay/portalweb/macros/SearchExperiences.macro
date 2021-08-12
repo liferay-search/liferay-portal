@@ -128,7 +128,7 @@ definition {
 		LexiconEntry.gotoEntry(rowEntry = "${name}");
 	}
 
-	macro findBlueprintID {
+	macro getBlueprintID {
 		var blueprintsID = selenium.getAttribute("//h4[contains(.,'${name}')]/following-sibling::h5[2]/span[contains(@class,'id-text')]@textContent");
 
 		var blueprintsID = StringUtil.extractDigits("${blueprintsID}");

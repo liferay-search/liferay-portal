@@ -172,7 +172,7 @@ definition {
 
 		PortletEntry.save();
 
-		var blueprintsID = SearchExperiences.findBlueprintID(name = "My Blueprint");
+		var blueprintsID = SearchExperiences.getBlueprintID(name = "My Blueprint");
 
 		Navigator.openWithAppendToBaseURL(urlAppend = "web/minium");
 
