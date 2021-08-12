@@ -124,13 +124,13 @@ definition {
 
 		ApplicationsMenu.gotoSite(site = "Minium");
 
-		JSONCommerceAccount.addAccount(accountName = "CommerceAccount");
+		JSONCommerceAccount.addAccount(accountName = "TestAccount");
 
-		JSONCommerceAccount.addAccountGroup(accountGroupName = "CommerceAccountGroup");
+		JSONCommerceAccount.addAccountGroup(accountGroupName = "TestAccountGroup");
 
 		JSONCommerceAccount.addAccountToAccountGroup(
-			accountGroupName = "CommerceAccountGroup",
-			accountName = "CommerceAccount");
+			accountGroupName = "TestAccountGroup",
+			accountName = "TestAccount");
 
 		CommerceNavigator.gotoPortlet(
 			category = "Product Management",
@@ -153,7 +153,7 @@ definition {
 		SelectFrame.selectFrameNoLoading(locator1 = "IFrame#MODAL_BODY");
 
 		Check(
-			key_checkboxName = "CommerceAccountGroup",
+			key_checkboxName = "TestAccountGroup",
 			locator1 = "Checkbox#ENABLE_CHECKBOX");
 
 		SelectFrameTop();
@@ -176,7 +176,7 @@ definition {
 
 		Navigator.openWithAppendToBaseURL(urlAppend = "web/minium");
 
-		CommerceAcceleratorsInitializer.selectAccountFromAccountSelector(accountName = "CommerceAccount");
+		CommerceAcceleratorsInitializer.selectAccountFromAccountSelector(accountName = "TestAccount");
 
 		Click(
 				key_text = "Configure additional search options in this page.",
