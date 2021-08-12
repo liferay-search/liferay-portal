@@ -124,13 +124,13 @@ definition {
 
 		ApplicationsMenu.gotoSite(site = "Minium");
 
-		JSONCommerceAccount.addCommerceAccount(commerceAccountName = "CommerceAccount");
+		JSONCommerceAccount.addAccount(accountName = "CommerceAccount");
 
-		JSONCommerceAccount.addCommerceAccountGroup(commerceAccountGroupName = "CommerceAccountGroup");
+		JSONCommerceAccount.addAccountGroup(accountGroupName = "CommerceAccountGroup");
 
-		JSONCommerceAccount.addCommerceAccountGrouptoCommerceAccount(
-			commerceAccountGroupName = "CommerceAccountGroup",
-			commerceAccountName = "CommerceAccount");
+		JSONCommerceAccount.addAccountToAccountGroup(
+			accountGroupName = "CommerceAccountGroup",
+			accountName = "CommerceAccount");
 
 		CommerceNavigator.gotoPortlet(
 			category = "Product Management",

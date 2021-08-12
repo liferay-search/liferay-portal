@@ -743,12 +743,12 @@ definition {
 		Click(locator1 = "Button#BACK");
 	}
 
-	macro getCommerceAccountGroupID {
+	macro getAccountGroupID {
 		var portalURL = PropsUtil.get("portal.url");
 
 		Navigator.openSpecificURL(url = "${portalURL}/group/control_panel/manage?p_p_id=com_liferay_commerce_account_group_admin_web_internal_portlet_CommerceAccountGroupAdminPortlet");
 
-		var key_accountName = "${commerceAccountGroupName}";
+		var key_accountName = "${accountGroupName}";
 
 		Click(locator1 = "CommerceAccelerators#ACCOUNT_MANAGEMENT_ROLE_TABLE_NAME_SPECIFIC");
 
@@ -765,12 +765,12 @@ definition {
 		return "${commerceAccountGroupId}";
 	}
 
-	macro getCommerceAccountID {
+	macro getAccountID {
 		var portalURL = PropsUtil.get("portal.url");
 
 		Navigator.openSpecificURL(url = "${portalURL}/group/control_panel/manage?p_p_id=com_liferay_commerce_account_admin_web_internal_portlet_CommerceAccountAdminPortlet");
 
-		var key_accountName = "${commerceAccountName}";
+		var key_accountName = "${accountName}";
 
 		Click(locator1 = "CommerceAccelerators#ACCOUNT_MANAGEMENT_ROLE_TABLE_NAME_SPECIFIC");
 
@@ -780,11 +780,11 @@ definition {
 
 		echo("## * Current URL: ${currentURL}");
 
-		var commerceAccountId = RegexUtil.replace("${currentURL}", "commerceAccountId=([\d]+)", "1");
+		var accountID = RegexUtil.replace("${currentURL}", "commerceAccountId=([\d]+)", "1");
 
-		echo("## * Commerce Account ID: ${commerceAccountId}");
+		echo("## * Commerce Account ID: ${accountID}");
 
-		return "${commerceAccountId}";
+		return "${accountID}";
 	}
 
 	macro gotoBreadcrumb {

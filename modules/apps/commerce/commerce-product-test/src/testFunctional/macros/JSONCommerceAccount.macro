@@ -1,8 +1,8 @@
 definition {
 
-	@summary = "Add a commerce account"
-	macro addCommerceAccount {
-		Variables.assertDefined(parameterList = "${commerceAccountName}");
+	@summary = "Add a Commerce account"
+	macro addAccount {
+		Variables.assertDefined(parameterList = "${accountName}");
 
 		var portalURL = JSONCompany.getPortalURL();
 
@@ -19,7 +19,7 @@ definition {
 		var curl = '''
 				${portalURL}/api/jsonws/commerce.commerceaccount/add-commerce-account \
 					-u test@liferay.com:test \
-					-d name='${commerceAccountName}' \
+					-d name='${accountName}' \
 					-d parentCommerceAccountId=0 \
 					-d email='test@liferay.com' \
 					-d taxId= \
@@ -31,9 +31,9 @@ definition {
 		com.liferay.poshi.runner.util.JSONCurlUtil.post("${curl}");
 	}
 
-	@summary = "Add a commerce account group"
-	macro addCommerceAccountGroup {
-		Variables.assertDefined(parameterList = "${commerceAccountGroupName}");
+	@summary = "Add a Commerce account group"
+	macro addAccountGroup {
+		Variables.assertDefined(parameterList = "${accountGroupName}");
 
 		var companyId = JSONCompany.getCompanyId();
 
@@ -43,7 +43,7 @@ definition {
 				${portalURL}/api/jsonws/commerce.commerceaccountgroup/add-commerce-account-group \
 					-u test@liferay.com:test \
 					-d companyId=${companyId} \
-					-d name='${commerceAccountGroupName}' \
+					-d name='${accountGroupName}' \
 					-d type=1 \
 					-d externalReferenceCode=
 							''';
@@ -51,19 +51,19 @@ definition {
 		com.liferay.poshi.runner.util.JSONCurlUtil.post("${curl}");
 	}
 
-	@summary = "Add a commerce account group to a commerce account"
-	macro addCommerceAccountGrouptoCommerceAccount {
-		var commerceAccountId = CommerceEntry.getCommerceAccountID(commerceAccountName = "${commerceAccountName}");
+	@summary = "Add a Commerce account to a Commerce account group"
+	macro addAccountToAccountGroup {
+		var accountID = CommerceEntry.getAccountID(accountName = "${accountName}");
 
-		var commerceAccountGroupId = CommerceEntry.getCommerceAccountGroupID(commerceAccountGroupName = "${commerceAccountGroupName}");
+		var accountGroupId = CommerceEntry.getAccountGroupID(accountGroupName = "${accountGroupName}");
 
 		var portalURL = JSONCompany.getPortalURL();
 
 		var curl = '''
 				${portalURL}/api/jsonws/commerce.commerceaccountgroupcommerceaccountrel/add-commerce-account-group-commerce-account-rel \
 					-u test@liferay.com:test \
-					-d commerceAccountGroupId='${commerceAccountGroupId}' \
-					-d commerceAccountId='${commerceAccountId}'
+					-d commerceAccountGroupId='${accountGroupId}' \
+					-d commerceAccountId='${accountID}'
 							''';
 
 		com.liferay.poshi.runner.util.JSONCurlUtil.post("${curl}");
