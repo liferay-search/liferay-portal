@@ -185,8 +185,7 @@ definition {
 		SelectFrame(locator1 = "IFrame#CONFIGURATION");
 
 		Type(
-				key_fieldLabel = "Key",
-				locator1 = "//div[label[contains(.,'Key') and contains(@for,'key_0')]]//input[@type='text']",
+				locator1 = "TextInput#KEY",
 				value1 = "blueprintId");
 
 		Type(
