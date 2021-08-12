@@ -129,11 +129,24 @@ definition {
 	}
 
 	macro getBlueprintID {
-		var blueprintsID = selenium.getAttribute("//h4[contains(.,'${name}')]/following-sibling::h5[2]/span[contains(@class,'id-text')]@textContent");
+		Variables.assertDefined(parameterList = "${name}");
 
-		var blueprintsID = StringUtil.extractDigits("${blueprintsID}");
+		var groupID = JSONGroupAPI._getGroupIdByName(groupName = "Global", site = "true");
+		var portalURL = JSONCompany.getPortalURL();
 
-		return "${blueprintsID}";
+		var curl = '''
+				${portalURL}/api/jsonws/search.blueprint/get-group-blueprints \
+					-u test@liferay.com:test \
+					-d groupId=${groupID} \
+					-d "start=-1" \
+					-d "end=-1"
+						''';
+
+		var blueprintID = JSONCurlUtil.post("${curl}", "$.[?(@['titleCurrentValue'] == '${name}')]['blueprintId']");
+
+		echo("## ID for Blueprint ${name}: ${blueprintID}");
+
+		return "${blueprintID}";
 	}
 
 	macro openSearchExperiencesAdmin {
