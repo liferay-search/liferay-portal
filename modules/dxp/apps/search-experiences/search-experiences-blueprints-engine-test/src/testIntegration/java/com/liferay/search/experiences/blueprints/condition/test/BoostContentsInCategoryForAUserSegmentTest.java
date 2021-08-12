@@ -21,11 +21,8 @@ import com.liferay.asset.kernel.service.AssetCategoryLocalServiceUtil;
 import com.liferay.asset.kernel.service.AssetVocabularyLocalServiceUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
-import com.liferay.portal.kernel.model.Role;
 import com.liferay.portal.kernel.model.User;
-import com.liferay.portal.kernel.model.role.RoleConstants;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
-import com.liferay.portal.kernel.test.util.RoleTestUtil;
 import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.test.rule.Inject;
@@ -61,11 +58,9 @@ public class BoostContentsInCategoryForAUserSegmentTest
 
 	@Test
 	public void testContainsCondition() throws Exception {
-		Role role = RoleTestUtil.addRole("User A", RoleConstants.TYPE_REGULAR);
+		user = UserTestUtil.addUser(group.getGroupId());
 
-		User user = UserTestUtil.addGroupUser(group, role.getName());
-
-		_segmentsEntry = _addSegmentsEntry(role);
+		_segmentsEntry = _addSegmentsEntry();
 
 		AssetVocabulary assetVocabulary =
 			AssetVocabularyLocalServiceUtil.addDefaultVocabulary(
@@ -104,7 +99,8 @@ public class BoostContentsInCategoryForAUserSegmentTest
 			JSONUtil.put(
 				"parameter_name", "${user.user_segment_entry_ids}"
 			).put(
-				"value", _segmentsEntry.getSegmentsEntryId()
+				"value",
+				createJSONArray().put(_segmentsEntry.getSegmentsEntryId())
 			));
 	}
 
@@ -129,15 +125,16 @@ public class BoostContentsInCategoryForAUserSegmentTest
 		).put(
 			"boost", 1000
 		).put(
-			"user_segment_id", _segmentsEntry.getSegmentsEntryId()
+			"user_segment_ids",
+			createJSONArray().put(_segmentsEntry.getSegmentsEntryId())
 		);
 	}
 
-	private SegmentsEntry _addSegmentsEntry(Role role) throws Exception {
+	private SegmentsEntry _addSegmentsEntry() throws Exception {
 		Criteria criteria = new Criteria();
 
 		_userSegmentsCriteriaContributor.contribute(
-			criteria, String.format("(roleId eq '%s')", role.getRoleId()),
+			criteria, String.format("(firstName eq '%s')", user.getFirstName()),
 			Criteria.Conjunction.AND);
 
 		return SegmentsTestUtil.addSegmentsEntry(

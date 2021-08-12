@@ -22,9 +22,7 @@
 		"conditions": {
 			"contains": {
 				"parameter_name": "${user.user_segment_entry_ids}",
-				"value": [
-					"${config.user_segment_id}"
-				]
+				"value": "${config.user_segment_ids}"
 			}
 		},
 		"description": {
@@ -43,9 +41,9 @@
 			"type": "number"
 		},
 		{
-			"label": "User Segment ID",
-			"name": "user_segment_id",
-			"type": "number"
+			"label": "User Segment IDs",
+			"name": "user_segment_ids",
+			"type": "multiselect"
 		},
 		{
 			"defaultValue": 20,
