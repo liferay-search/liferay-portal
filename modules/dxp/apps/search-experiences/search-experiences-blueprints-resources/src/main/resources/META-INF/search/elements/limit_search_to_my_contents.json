@@ -11,7 +11,7 @@
 							"wrapper": {
 								"query": {
 									"term": {
-										"userId": "${user.user_id}"
+										"userId": "${user.id}"
 									}
 								}
 							}

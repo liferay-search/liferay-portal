@@ -184,7 +184,7 @@
                 "wrapper": {
                   "query": {
                     "terms": {
-                      "groupId": "${user.user_group_ids}",
+                      "groupId": "${user.group_ids}",
                       "boost": 10
                     }
                   }
@@ -379,7 +379,7 @@
                   "wrapper": {
                     "query": {
                       "terms": {
-                        "groupId": "${user.user_group_ids}",
+                        "groupId": "${user.group_ids}",
                         "boost": "${configuration.boost}"
                       }
                     }

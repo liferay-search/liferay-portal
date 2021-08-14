@@ -12,7 +12,7 @@
 								"query": {
 									"terms": {
 										"boost": "${configuration.boost}",
-										"groupId": "${user.user_group_ids}"
+										"groupId": "${user.group_ids}"
 									}
 								}
 							}
