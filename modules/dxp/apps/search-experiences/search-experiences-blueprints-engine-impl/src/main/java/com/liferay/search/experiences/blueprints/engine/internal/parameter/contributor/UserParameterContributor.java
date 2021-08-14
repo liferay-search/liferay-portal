@@ -293,7 +293,8 @@ public class UserParameterContributor implements ParameterContributor {
 
 	private void _addUserSegments(
 			ParameterDataBuilder parameterDataBuilder,
-			BlueprintsAttributes blueprintsAttributes, User user)
+			BlueprintsAttributes blueprintsAttributes, User user,
+			Messages messages)
 		throws PortalException {
 
 		long userId = user.getUserId();
@@ -320,17 +321,24 @@ public class UserParameterContributor implements ParameterContributor {
 			}
 
 			for (long groupId : groupIds) {
-				long[] ids = _segmentsEntryProvider.getSegmentsEntryIds(
-					groupId, User.class.getName(), user.getPrimaryKey());
+				try {
+					long[] ids = _segmentsEntryProvider.getSegmentsEntryIds(
+						groupId, User.class.getName(), user.getPrimaryKey());
 
-				if ((ids != null) && (ids.length > 0)) {
-					LongStream longStream = LongStream.of(ids);
+					if ((ids != null) && (ids.length > 0)) {
+						LongStream longStream = LongStream.of(ids);
 
-					segmentEntryIds.addAll(
-						longStream.boxed(
-						).collect(
-							Collectors.toList()
-						));
+						segmentEntryIds.addAll(
+							longStream.boxed(
+							).collect(
+								Collectors.toList()
+							));
+					}
+				}
+				catch (PortalException portalException) {
+					MessagesUtil.error(
+						messages, getClass().getName(), portalException, null,
+						null, null, "core.error.unknown-error");
 				}
 			}
 		}
@@ -360,7 +368,8 @@ public class UserParameterContributor implements ParameterContributor {
 
 			_addUserRoleIds(parameterDataBuilder, user);
 
-			_addUserSegments(parameterDataBuilder, blueprintsAttributes, user);
+			_addUserSegments(
+				parameterDataBuilder, blueprintsAttributes, user, messages);
 		}
 		catch (Exception exception) {
 			MessagesUtil.error(
