@@ -181,13 +181,13 @@ storiesOf('Pages|ElementForm', module).add('default', () => (
 							className:
 								'com.liferay.search.experiences.blueprints.engine.parameter.StringParameter',
 							description: "User's ID",
-							variable: '${user.user_id}',
+							variable: '${user.id}',
 						},
 						{
 							className:
 								'com.liferay.search.experiences.blueprints.engine.parameter.StringParameter',
 							description: "User's First Name",
-							variable: '${user.user_first_name}',
+							variable: '${user.first_name}',
 						},
 					],
 				},
