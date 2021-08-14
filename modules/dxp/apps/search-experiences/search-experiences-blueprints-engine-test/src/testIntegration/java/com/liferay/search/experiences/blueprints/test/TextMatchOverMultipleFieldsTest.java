@@ -67,10 +67,10 @@ public class TextMatchOverMultipleFieldsTest extends BaseQueryElementsTestCase {
 
 	@Test
 	public void testSearchMultipleFieldsTypeWithOperator() throws Exception {
-		addJournalArticle("drink carbonated pepsi", "carbonated cola cola");
-		addJournalArticle("drink carbonated coca", "carbonated cola");
-		addJournalArticle("sprite", "carbonated cola cola");
-		addJournalArticle("fruit punch", "non-carbonated cola");
+		addJournalArticle("lorem ipsum sit", "ipsum sit sit");
+		addJournalArticle("lorem ipsum dolor", "ipsum sit");
+		addJournalArticle("amet", "ipsum sit sit");
+		addJournalArticle("nunquis", "non-lorem ipsum sit");
 
 		Blueprint blueprint = addCompanyBlueprint(
 			Collections.singletonMap(
@@ -80,16 +80,15 @@ public class TextMatchOverMultipleFieldsTest extends BaseQueryElementsTestCase {
 
 		_testSearchMostFieldsWithOperator(blueprint);
 		_testSearchBestFieldsWithOperatorOr(blueprint);
-		_testSearchPhrasePrefixWithOperator(blueprint);
 		_testSearchBoolPrefixWithOperator(blueprint);
 	}
 
 	@Test
-	public void testSearchPhraseWithOperatorAnd() throws Exception {
-		addJournalArticle("drink carbonated pepsi", "carbonated cola cola");
-		addJournalArticle("drink carbonated coca", "carbonated cola");
-		addJournalArticle("sprite", "carbonated cola cola");
-		addJournalArticle("fruit punch", "non-carbonated cola");
+	public void testSearchPhrase() throws Exception {
+		addJournalArticle("listen to birds", "listen listen to birds");
+		addJournalArticle("listen to planes", "listen to birds");
+		addJournalArticle("silence", "listen listen to birds");
+		addJournalArticle("listen something", "do not listen to birds");
 
 		assertSearch(
 			addCompanyBlueprint(
@@ -98,17 +97,19 @@ public class TextMatchOverMultipleFieldsTest extends BaseQueryElementsTestCase {
 				Collections.singletonMap(LocaleUtil.US, ""),
 				getConfigurationString((JSONObject[])null), ""),
 			getConfigurationString(
-				getMultiMatchQueryElementJSONObject(1, null, "and", "phrase")),
-			"[drink carbonated pepsi, sprite]", "cola cola",
+				getMultiMatchQueryElementJSONObject(1, null, null, "phrase")),
+			"[listen to birds, silence]", "listen listen",
 			getSelectedElementString());
 	}
 
 	@Test
-	public void testSearchPhraseWithOperatorOr() throws Exception {
-		addJournalArticle("drink carbonated pepsi", "carbonated cola cola");
-		addJournalArticle("drink carbonated coca", "carbonated cola");
-		addJournalArticle("sprite", "carbonated cola cola");
-		addJournalArticle("fruit punch", "non-carbonated cola");
+	public void testSearchPhrasePrefix() throws Exception {
+		addJournalArticle(
+			"watch birds on the sky", "simple things are beautiful");
+		addJournalArticle(
+			"watch planes on the sky", "simple things are not good");
+		addJournalArticle("clouds", "simple things are beautiful sometimes");
+		addJournalArticle("watch trains", "simple things are bad");
 
 		assertSearch(
 			addCompanyBlueprint(
@@ -117,8 +118,9 @@ public class TextMatchOverMultipleFieldsTest extends BaseQueryElementsTestCase {
 				Collections.singletonMap(LocaleUtil.US, ""),
 				getConfigurationString((JSONObject[])null), ""),
 			getConfigurationString(
-				getMultiMatchQueryElementJSONObject(1, null, "or", "phrase")),
-			"[drink carbonated pepsi, sprite]", "cola cola",
+				getMultiMatchQueryElementJSONObject(
+					1, null, null, "phrase_prefix")),
+			"[watch birds on the sky, clouds]", "simple things are beau",
 			getSelectedElementString());
 	}
 
@@ -157,10 +159,9 @@ public class TextMatchOverMultipleFieldsTest extends BaseQueryElementsTestCase {
 			blueprint,
 			getConfigurationString(
 				getMultiMatchQueryElementJSONObject(
-					1, 2, 20, "AUTO", "or", "best_fields")),
-			"[drink carbonated coca, drink carbonated pepsi, sprite, fruit " +
-				"punch]",
-			"carbonated cola", getSelectedElementString());
+					1, 1, 1, "0", "or", "best_fields")),
+			"[lorem ipsum sit, amet, lorem ipsum dolor, nunquis]",
+			"ipsum sit sit", getSelectedElementString());
 	}
 
 	private void _testSearchBoolPrefixWithOperator(Blueprint blueprint)
@@ -171,15 +172,14 @@ public class TextMatchOverMultipleFieldsTest extends BaseQueryElementsTestCase {
 			getConfigurationString(
 				getMultiMatchQueryElementJSONObject(
 					1, null, "or", "bool_prefix")),
-			"[drink carbonated pepsi, drink carbonated coca]", "drink",
+			"[nunquis, lorem ipsum dolor, lorem ipsum sit]", "lorem dol",
 			getSelectedElementString());
 		assertSearch(
 			blueprint,
 			getConfigurationString(
 				getMultiMatchQueryElementJSONObject(
 					1, null, "and", "bool_prefix")),
-			"[drink carbonated coca]", "drink carbonated co",
-			getSelectedElementString());
+			"[lorem ipsum dolor]", "lorem dol", getSelectedElementString());
 	}
 
 	private void _testSearchMostFieldsWithOperator(Blueprint blueprint)
@@ -189,37 +189,15 @@ public class TextMatchOverMultipleFieldsTest extends BaseQueryElementsTestCase {
 			blueprint,
 			getConfigurationString(
 				getMultiMatchQueryElementJSONObject(
-					10, 2, 200, "AUTO", null, "or", "most_fields")),
-			"[drink carbonated pepsi, sprite, drink carbonated coca, fruit " +
-				"punch]",
-			"carbonated cola cola", getSelectedElementString());
+					1, 1, 2, "0", null, "or", "most_fields")),
+			"[lorem ipsum sit, amet, lorem ipsum dolor, nunquis]",
+			"ipsum sit sit", getSelectedElementString());
 		assertSearch(
 			blueprint,
 			getConfigurationString(
 				getMultiMatchQueryElementJSONObject(
-					10, 2, 20, "AUTO", null, "and", "most_fields")),
-			"[drink carbonated coca, drink carbonated pepsi, sprite, fruit " +
-				"punch]",
-			"coca carbonated", getSelectedElementString());
-	}
-
-	private void _testSearchPhrasePrefixWithOperator(Blueprint blueprint)
-		throws Exception {
-
-		assertSearchIgnoreRelevance(
-			blueprint,
-			getConfigurationString(
-				getMultiMatchQueryElementJSONObject(
-					1, null, "or", "phrase_prefix")),
-			"[drink carbonated coca, drink carbonated pepsi]",
-			"drink carbonated", getSelectedElementString());
-		assertSearchIgnoreRelevance(
-			blueprint,
-			getConfigurationString(
-				getMultiMatchQueryElementJSONObject(
-					1, null, "and", "phrase_prefix")),
-			"[drink carbonated coca, drink carbonated pepsi]", "drink",
+					1, 1, 2, "0", null, "and", "most_fields")),
+			"[nunquis, lorem ipsum sit]", "sit lorem",
 			getSelectedElementString());
 	}
-
 }

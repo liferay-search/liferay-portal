@@ -124,12 +124,14 @@ public abstract class BaseQueryElementsTestCase extends BaseBlueprintsTestCase {
 				"content${context.language_id}^" + contentBoost
 			)
 		).put(
-			"operator", operator
-		).put(
 			"query", "${keywords}"
 		).put(
 			"type", type
 		);
+
+		if (operator != null) {
+			jsonObject.put("operator", operator);
+		}
 
 		if (minimumShouldMatch != null) {
 			jsonObject.put("minimum_should_match", minimumShouldMatch);

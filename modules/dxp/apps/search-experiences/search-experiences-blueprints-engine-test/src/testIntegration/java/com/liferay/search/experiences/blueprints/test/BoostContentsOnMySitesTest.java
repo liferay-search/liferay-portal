@@ -105,7 +105,7 @@ public class BoostContentsOnMySitesTest extends BaseBlueprintsTestCase {
 								JSONUtil.put(
 									"boost", boost
 								).put(
-									"groupId", "${user.user_group_ids}"
+									"groupId", "${user.group_ids}"
 								))))
 				))
 		).put(

@@ -9,7 +9,7 @@
 					"wrapper": {
 						"query": {
 							"terms": {
-								"scopeGroupId": "${user.user_group_ids}"
+								"scopeGroupId": "${user.group_ids}"
 							}
 						}
 					}

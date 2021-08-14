@@ -97,7 +97,7 @@ public class BoostContentsInCategoryForAUserSegmentTest
 		return JSONUtil.put(
 			"contains",
 			JSONUtil.put(
-				"parameter_name", "${user.user_segment_entry_ids}"
+				"parameter_name", "${user.active_segment_entry_ids}"
 			).put(
 				"value",
 				createJSONArray().put(_segmentsEntry.getSegmentsEntryId())
