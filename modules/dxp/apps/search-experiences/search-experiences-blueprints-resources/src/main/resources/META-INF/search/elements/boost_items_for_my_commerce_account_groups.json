@@ -12,7 +12,7 @@
 								"query": {
 									"terms": {
 										"boost": "${configuration.boost}",
-										"commerceAccountGroupIds": "${commerce.commerce_account_group_ids}"
+										"commerceAccountGroupIds": "${commerce.account_group_ids}"
 									}
 								}
 							}

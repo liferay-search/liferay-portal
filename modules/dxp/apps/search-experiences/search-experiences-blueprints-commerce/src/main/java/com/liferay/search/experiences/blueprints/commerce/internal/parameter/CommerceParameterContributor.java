@@ -62,13 +62,13 @@ public class CommerceParameterContributor implements ParameterContributor {
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName("commerce_account_group_ids"),
+				_getTemplateVariableName("account_group_ids"),
 				LongParameter.class.getName(),
 				"commerce.parameter.account-group-ids"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName("commerce_channel_group_id"),
+				_getTemplateVariableName("channel_group_id"),
 				LongParameter.class.getName(),
 				"commerce.parameter.channel-group-id"));
 
@@ -80,7 +80,7 @@ public class CommerceParameterContributor implements ParameterContributor {
 		BlueprintsAttributes blueprintsAttributes) {
 
 		Optional<Object> optional = blueprintsAttributes.getAttributeOptional(
-			"commerce_account_group_ids");
+			"account_group_ids");
 
 		if (!optional.isPresent()) {
 			return;
@@ -90,8 +90,8 @@ public class CommerceParameterContributor implements ParameterContributor {
 
 		parameterDataBuilder.addParameter(
 			new LongArrayParameter(
-				"commerce_account_group_ids",
-				_getTemplateVariableName("commerce_account_group_ids"),
+				"account_group_ids",
+				_getTemplateVariableName("account_group_ids"),
 				_toBoxedArray(accountGroupIds)));
 	}
 
@@ -100,7 +100,7 @@ public class CommerceParameterContributor implements ParameterContributor {
 		BlueprintsAttributes blueprintsAttributes) {
 
 		Optional<Object> optional = blueprintsAttributes.getAttributeOptional(
-			"commerce_channel_group_id");
+			"channel_group_id");
 
 		if (!optional.isPresent()) {
 			return;
@@ -108,8 +108,8 @@ public class CommerceParameterContributor implements ParameterContributor {
 
 		parameterDataBuilder.addParameter(
 			new LongParameter(
-				"commerce_channel_group_id",
-				_getTemplateVariableName("commerce_channel_group_id"),
+				"channel_group_id",
+				_getTemplateVariableName("channel_group_id"),
 				GetterUtil.getLong(optional.get())));
 	}
 
