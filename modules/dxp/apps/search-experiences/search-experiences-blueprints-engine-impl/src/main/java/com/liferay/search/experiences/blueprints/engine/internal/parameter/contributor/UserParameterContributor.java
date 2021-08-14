@@ -15,16 +15,23 @@
 package com.liferay.search.experiences.blueprints.engine.internal.parameter.contributor;
 
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.model.Company;
-import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.model.Role;
 import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.model.UserGroup;
+import com.liferay.portal.kernel.model.UserGroupGroupRole;
+import com.liferay.portal.kernel.model.UserGroupRole;
 import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.service.GroupLocalService;
+import com.liferay.portal.kernel.service.RoleLocalService;
+import com.liferay.portal.kernel.service.UserGroupGroupRoleLocalService;
+import com.liferay.portal.kernel.service.UserGroupLocalService;
+import com.liferay.portal.kernel.service.UserGroupRoleLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
+import com.liferay.search.experiences.blueprints.engine.internal.attributes.util.BlueprintsAttributeValuesHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.BooleanParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.DateParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.IntegerParameter;
@@ -37,16 +44,18 @@ import com.liferay.search.experiences.blueprints.engine.spi.parameter.ParameterC
 import com.liferay.search.experiences.blueprints.message.Messages;
 import com.liferay.search.experiences.blueprints.model.Blueprint;
 import com.liferay.search.experiences.blueprints.util.util.MessagesUtil;
-import com.liferay.segments.provider.SegmentsEntryProvider;
-import com.liferay.segments.simulator.SegmentsEntrySimulator;
+import com.liferay.segments.SegmentsEntryRetriever;
+import com.liferay.segments.context.Context;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Locale;
+import java.util.Optional;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
@@ -93,118 +102,171 @@ public class UserParameterContributor implements ParameterContributor {
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName("user_id"),
-				LongParameter.class.getName(), "core.parameter.user.id"));
+				_getTemplateVariableName("id"), LongParameter.class.getName(),
+				"core.parameter.user.id"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName("user_is_signed_in"),
+				_getTemplateVariableName("is_signed_in"),
 				BooleanParameter.class.getName(),
 				"core.parameter.user.is-signed-in"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName("user_full_name"),
+				_getTemplateVariableName("full_name"),
 				StringParameter.class.getName(),
 				"core.parameter.user.full-name"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName("user_first_name"),
+				_getTemplateVariableName("first_name"),
 				StringParameter.class.getName(),
 				"core.parameter.user.first-name"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName("user_last_name"),
+				_getTemplateVariableName("last_name"),
 				StringParameter.class.getName(),
 				"core.parameter.user.last-name"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName("user_language_id"),
+				_getTemplateVariableName("language_id"),
 				StringParameter.class.getName(),
 				"core.parameter.user.language-id"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName("user_job_title"),
+				_getTemplateVariableName("job_title"),
 				StringParameter.class.getName(),
 				"core.parameter.user.job-title"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName("user_create_date"),
+				_getTemplateVariableName("create_date"),
 				DateParameter.class.getName(),
 				"core.parameter.user.create-date"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName("user_birthday"),
+				_getTemplateVariableName("birthday"),
 				DateParameter.class.getName(), "core.parameter.user.birthday"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName("user_age"),
+				_getTemplateVariableName("age"),
 				IntegerParameter.class.getName(), "core.parameter.user.age"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName("user_is_male"),
+				_getTemplateVariableName("is_male"),
 				BooleanParameter.class.getName(),
 				"core.parameter.user.is-male"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName("user_is_female"),
+				_getTemplateVariableName("is_female"),
 				BooleanParameter.class.getName(),
 				"core.parameter.user.is-female"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName("user_is_gender_x"),
+				_getTemplateVariableName("is_gender_x"),
 				BooleanParameter.class.getName(),
 				"core.parameter.user.is-gender-x"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName("user_email_domain"),
+				_getTemplateVariableName("email_domain"),
 				StringParameter.class.getName(),
 				"core.parameter.user.email-domain"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName("user_group_ids"),
+				_getTemplateVariableName("group_ids"),
 				LongArrayParameter.class.getName(),
 				"core.parameter.user.group-ids"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName("user_role_ids"),
+				_getTemplateVariableName("usergroup_ids"),
 				LongArrayParameter.class.getName(),
-				"core.parameter.user.role-ids"));
+				"core.parameter.user.usergroup-ids"));
 
 		parameterDefinitions.add(
 			new ParameterDefinition(
-				_getTemplateVariableName("user_segment_entry_ids"),
+				_getTemplateVariableName("regular_role_ids"),
 				LongArrayParameter.class.getName(),
-				"core.parameter.user.segment-entry-ids"));
+				"core.parameter.user.regular-role-ids"));
+
+		parameterDefinitions.add(
+			new ParameterDefinition(
+				_getTemplateVariableName("current_site_role_ids"),
+				LongArrayParameter.class.getName(),
+				"core.parameter.user.current-site-role-ids"));
+
+		parameterDefinitions.add(
+			new ParameterDefinition(
+				_getTemplateVariableName("active_segment_entry_ids"),
+				LongArrayParameter.class.getName(),
+				"core.parameter.user.active-segment-entry-ids"));
 
 		return parameterDefinitions;
 	}
 
-	private void _addUserGroupIds(
+	private void _addCurrentSiteRoleIds(
+		ParameterDataBuilder parameterDataBuilder,
+		BlueprintsAttributes blueprintsAttributes, User user) {
+
+		long[] roleIds = _getCurrentSiteRoleIds(
+			blueprintsAttributes, user.getUserId());
+
+		if ((roleIds == null) || (roleIds.length == 0)) {
+			return;
+		}
+
+		parameterDataBuilder.addParameter(
+			new LongArrayParameter(
+				"current_site_role_ids",
+				_getTemplateVariableName("current_site_role_ids"),
+				_toBoxedLongArray(roleIds)));
+	}
+
+	private void _addGroupIds(
 		ParameterDataBuilder parameterDataBuilder, User user) {
 
 		parameterDataBuilder.addParameter(
 			new LongArrayParameter(
-				"user_group_ids", _getTemplateVariableName("user_group_ids"),
-				LongStream.of(
-					user.getGroupIds()
-				).boxed(
-				).toArray(
-					Long[]::new
-				)));
+				"group_ids", _getTemplateVariableName("group_ids"),
+				_toBoxedLongArray(user.getGroupIds())));
+	}
+
+	private void _addRegularUserRoleIds(
+		ParameterDataBuilder parameterDataBuilder, User user,
+		Messages messages) {
+
+		long[] roleIds = _getRegularRoleIds(user, messages);
+
+		parameterDataBuilder.addParameter(
+			new LongArrayParameter(
+				"regular_role_ids",
+				_getTemplateVariableName("regular_role_ids"),
+				_toBoxedLongArray(roleIds)));
+	}
+
+	private void _addUserGroupGroupIds(
+		ParameterDataBuilder parameterDataBuilder, User user) {
+
+		long[] userGroupIds = _getUserGroupIds(user.getUserId());
+
+		if (userGroupIds.length == 0) {
+			return;
+		}
+
+		parameterDataBuilder.addParameter(
+			new LongArrayParameter(
+				"usergroup_ids", _getTemplateVariableName("usergroup_ids"),
+				_toBoxedLongArray(_getUserGroupIds(user.getUserId()))));
 	}
 
 	private void _addUserInfo(
@@ -213,145 +275,99 @@ public class UserParameterContributor implements ParameterContributor {
 
 		parameterDataBuilder.addParameter(
 			new LongParameter(
-				"user_id", _getTemplateVariableName("user_id"),
-				user.getUserId()));
+				"id", _getTemplateVariableName("id"), user.getUserId()));
 		parameterDataBuilder.addParameter(
 			new BooleanParameter(
-				"user_is_signed_in",
-				_getTemplateVariableName("user_is_signed_in"),
+				"is_signed_in", _getTemplateVariableName("is_signed_in"),
 				_isSignedIn(user)));
 		parameterDataBuilder.addParameter(
 			new StringParameter(
-				"user_full_name", _getTemplateVariableName("user_full_name"),
+				"full_name", _getTemplateVariableName("full_name"),
 				user.getFullName()));
 		parameterDataBuilder.addParameter(
 			new StringParameter(
-				"user_first_name", _getTemplateVariableName("user_first_name"),
+				"first_name", _getTemplateVariableName("first_name"),
 				user.getFirstName()));
 		parameterDataBuilder.addParameter(
 			new StringParameter(
-				"user_last_name", _getTemplateVariableName("user_last_name"),
+				"last_name", _getTemplateVariableName("last_name"),
 				user.getLastName()));
 		parameterDataBuilder.addParameter(
 			new StringParameter(
-				"user_language_id",
-				_getTemplateVariableName("user_language_id"),
+				"language_id", _getTemplateVariableName("language_id"),
 				user.getLanguageId()));
 		parameterDataBuilder.addParameter(
 			new StringParameter(
-				"user_job_title", _getTemplateVariableName("user_job_title"),
+				"job_title", _getTemplateVariableName("job_title"),
 				user.getJobTitle()));
 		parameterDataBuilder.addParameter(
 			new DateParameter(
-				"user_create_date",
-				_getTemplateVariableName("user_create_date"),
+				"create_date", _getTemplateVariableName("create_date"),
 				user.getCreateDate()));
 
 		parameterDataBuilder.addParameter(
 			new DateParameter(
-				"user_birthday", _getTemplateVariableName("user_birthday"),
+				"birthday", _getTemplateVariableName("birthday"),
 				user.getBirthday()));
 
 		parameterDataBuilder.addParameter(
 			new IntegerParameter(
-				"user_age", _getTemplateVariableName("user_age"),
+				"age", _getTemplateVariableName("age"),
 				_getUserAge(user.getBirthday())));
 		parameterDataBuilder.addParameter(
 			new BooleanParameter(
-				"user_is_male", _getTemplateVariableName("user_is_male"),
-				user.isMale()));
+				"is_male", _getTemplateVariableName("is_male"), user.isMale()));
 		parameterDataBuilder.addParameter(
 			new BooleanParameter(
-				"user_is_female", _getTemplateVariableName("user_is_female"),
+				"is_female", _getTemplateVariableName("is_female"),
 				user.isFemale()));
 		parameterDataBuilder.addParameter(
 			new BooleanParameter(
-				"user_is_gender_x",
-				_getTemplateVariableName("user_is_gender_x"),
+				"is_gender_x", _getTemplateVariableName("is_gender_x"),
 				!user.isFemale() && !user.isMale()));
 
 		parameterDataBuilder.addParameter(
 			new StringParameter(
-				"user_email_domain",
-				_getTemplateVariableName("user_email_domain"),
+				"email_domain", _getTemplateVariableName("email_domain"),
 				_getUserEmailDomain(user)));
-	}
-
-	private void _addUserRoleIds(
-		ParameterDataBuilder parameterDataBuilder, User user) {
-
-		parameterDataBuilder.addParameter(
-			new LongArrayParameter(
-				"user_role_ids", _getTemplateVariableName("user_role_ids"),
-				LongStream.of(
-					user.getRoleIds()
-				).boxed(
-				).toArray(
-					Long[]::new
-				)));
 	}
 
 	private void _addUserSegments(
 			ParameterDataBuilder parameterDataBuilder,
-			BlueprintsAttributes blueprintsAttributes, User user,
-			Messages messages)
+			BlueprintsAttributes blueprintsAttributes, User user)
 		throws PortalException {
 
-		long userId = user.getUserId();
+		Optional<Long> optional = _getScopeGroupId(blueprintsAttributes);
 
-		List<Long> segmentEntryIds = new ArrayList<>();
-
-		long[] simulatedSegmentEntryIds = _getSimulatedSegmentEntryIds(userId);
-
-		if (simulatedSegmentEntryIds.length > 0) {
-			LongStream longStream = LongStream.of(simulatedSegmentEntryIds);
-
-			segmentEntryIds.addAll(
-				longStream.boxed(
-				).collect(
-					Collectors.toList()
-				));
-		}
-		else {
-			long[] groupIds = _getUserAccessibleSiteGroupIds(
-				blueprintsAttributes.getCompanyId(), user);
-
-			if (groupIds.length == 0) {
-				return;
-			}
-
-			for (long groupId : groupIds) {
-				try {
-					long[] ids = _segmentsEntryProvider.getSegmentsEntryIds(
-						groupId, User.class.getName(), user.getPrimaryKey());
-
-					if ((ids != null) && (ids.length > 0)) {
-						LongStream longStream = LongStream.of(ids);
-
-						segmentEntryIds.addAll(
-							longStream.boxed(
-							).collect(
-								Collectors.toList()
-							));
-					}
-				}
-				catch (PortalException portalException) {
-					MessagesUtil.error(
-						messages, getClass().getName(), portalException, null,
-						null, null, "core.error.unknown-error");
-				}
-			}
+		if (!optional.isPresent()) {
+			return;
 		}
 
-		if (segmentEntryIds.isEmpty()) {
+		Locale locale = blueprintsAttributes.getLocale();
+
+		Context context = new Context();
+
+		context.put(Context.SIGNED_IN, !user.isDefaultUser());
+		context.put(Context.LANGUAGE_ID, locale.toString());
+
+		long[] segmentsEntryIds = _segmentsEntryRetriever.getSegmentsEntryIds(
+			optional.get(), user.getUserId(), context);
+
+		long[] filteredArray = LongStream.of(
+			segmentsEntryIds
+		).filter(
+			value -> value > 0
+		).toArray();
+
+		if (filteredArray.length == 0) {
 			return;
 		}
 
 		parameterDataBuilder.addParameter(
 			new LongArrayParameter(
-				"user_segment_entry_ids",
-				_getTemplateVariableName("user_segment_entry_ids"),
-				segmentEntryIds.toArray(new Long[0])));
+				"active_segment_entry_ids",
+				_getTemplateVariableName("active_segment_entry_ids"),
+				_toBoxedLongArray(segmentsEntryIds)));
 	}
 
 	private void _contribute(
@@ -364,12 +380,16 @@ public class UserParameterContributor implements ParameterContributor {
 
 			_addUserInfo(parameterDataBuilder, user);
 
-			_addUserGroupIds(parameterDataBuilder, user);
+			_addGroupIds(parameterDataBuilder, user);
 
-			_addUserRoleIds(parameterDataBuilder, user);
+			_addUserGroupGroupIds(parameterDataBuilder, user);
 
-			_addUserSegments(
-				parameterDataBuilder, blueprintsAttributes, user, messages);
+			_addCurrentSiteRoleIds(
+				parameterDataBuilder, blueprintsAttributes, user);
+
+			_addRegularUserRoleIds(parameterDataBuilder, user, messages);
+
+			_addUserSegments(parameterDataBuilder, blueprintsAttributes, user);
 		}
 		catch (Exception exception) {
 			MessagesUtil.error(
@@ -378,12 +398,45 @@ public class UserParameterContributor implements ParameterContributor {
 		}
 	}
 
-	private long[] _getSimulatedSegmentEntryIds(long userId) {
-		if (_segmentsEntrySimulator != null) {
-			return _segmentsEntrySimulator.getSimulatedSegmentsEntryIds(userId);
+	private long[] _getCurrentSiteRoleIds(
+		BlueprintsAttributes blueprintsAttributes, long userId) {
+
+		long[] userGroupRoleIds = _getUserGroupRoleIds(userId);
+
+		Optional<Long> optional = _getScopeGroupId(blueprintsAttributes);
+
+		if (!optional.isPresent()) {
+			return userGroupRoleIds;
 		}
 
-		return new long[0];
+		return LongStream.concat(
+			Arrays.stream(userGroupRoleIds),
+			Arrays.stream(_getUserGroupGroupRoleIds(userId, optional.get()))
+		).toArray();
+	}
+
+	private long[] _getRegularRoleIds(User user, Messages messages) {
+		long[] regularRoleIds = user.getRoleIds();
+
+		long[] userGroupRoleIds = _getUserGroupInheritedRoleIds(
+			user.getUserId(), messages);
+
+		if ((userGroupRoleIds == null) || (userGroupRoleIds.length == 0)) {
+			return regularRoleIds;
+		}
+
+		return LongStream.concat(
+			Arrays.stream(regularRoleIds),
+			Arrays.stream(
+				_getUserGroupInheritedRoleIds(user.getUserId(), messages))
+		).toArray();
+	}
+
+	private Optional<Long> _getScopeGroupId(
+		BlueprintsAttributes blueprintsAttributes) {
+
+		return _blueprintsAttributeValuesHelper.getLongOptional(
+			blueprintsAttributes, "scope_group_id");
 	}
 
 	private String _getTemplateVariableName(String key) {
@@ -394,42 +447,6 @@ public class UserParameterContributor implements ParameterContributor {
 		sb.append("}");
 
 		return sb.toString();
-	}
-
-	private long[] _getUserAccessibleSiteGroupIds(long companyId, User user)
-		throws PortalException {
-
-		List<Long> groupIds = new ArrayList<>();
-
-		Company company = _companyLocalService.getCompany(companyId);
-
-		long companyGroupId = company.getGroupId();
-
-		groupIds.add(companyGroupId);
-
-		for (Group group : _groupLocalService.getGroups(companyId, 0, true)) {
-			if (group.isActive() && !group.isStagingGroup() &&
-				group.hasPublicLayouts()) {
-
-				groupIds.add(group.getGroupId());
-			}
-		}
-
-		for (Group group : user.getSiteGroups()) {
-			if (!groupIds.contains(group.getGroupId()) && group.isActive() &&
-				!group.isStagingGroup()) {
-
-				groupIds.add(group.getGroupId());
-			}
-		}
-
-		groupIds.toArray(new Long[0]);
-
-		Stream<Long> stream = groupIds.stream();
-
-		return stream.mapToLong(
-			l -> l
-		).toArray();
 	}
 
 	private int _getUserAge(Date birthday) {
@@ -450,6 +467,77 @@ public class UserParameterContributor implements ParameterContributor {
 		return email.substring(email.indexOf("@") + 1);
 	}
 
+	private long[] _getUserGroupGroupRoleIds(long userId, long groupId) {
+		List<UserGroupGroupRole> userGroupGroupRoles =
+			_userGroupGroupRoleLocalService.getUserGroupGroupRolesByUser(
+				userId, groupId);
+
+		Stream<UserGroupGroupRole> stream = userGroupGroupRoles.stream();
+
+		return stream.mapToLong(
+			UserGroupGroupRole::getRoleId
+		).toArray();
+	}
+
+	private long[] _getUserGroupIds(long userId) {
+		List<UserGroup> userGroups = _userGroupLocalService.getUserUserGroups(
+			userId);
+
+		Stream<UserGroup> stream = userGroups.stream();
+
+		return stream.mapToLong(
+			UserGroup::getUserGroupId
+		).toArray();
+	}
+
+	private long[] _getUserGroupInheritedRoleIds(
+		long userId, Messages messages) {
+
+		List<UserGroup> userGroups = _userGroupLocalService.getUserUserGroups(
+			userId);
+
+		if (userGroups.isEmpty()) {
+			return null;
+		}
+
+		List<Role> roles = new ArrayList<>();
+
+		userGroups.forEach(
+			userGroup -> {
+				try {
+					roles.addAll(
+						_roleLocalService.getGroupRoles(
+							userGroup.getGroupId()));
+				}
+				catch (PortalException portalException) {
+					MessagesUtil.error(
+						messages, getClass().getName(), portalException, null,
+						null, null, "core.error.unknown-error");
+				}
+			});
+
+		if (roles.isEmpty()) {
+			return null;
+		}
+
+		Stream<Role> stream = roles.stream();
+
+		return stream.mapToLong(
+			Role::getRoleId
+		).toArray();
+	}
+
+	private long[] _getUserGroupRoleIds(long userId) {
+		List<UserGroupRole> roles =
+			_userGroupRoleLocalService.getUserGroupRoles(userId);
+
+		Stream<UserGroupRole> stream = roles.stream();
+
+		return stream.mapToLong(
+			UserGroupRole::getRoleId
+		).toArray();
+	}
+
 	private Long _getUserId(BlueprintsAttributes blueprintsAttributes) {
 		return GetterUtil.getLong(blueprintsAttributes.getUserId());
 	}
@@ -457,6 +545,18 @@ public class UserParameterContributor implements ParameterContributor {
 	private Boolean _isSignedIn(User user) {
 		return !user.isDefaultUser();
 	}
+
+	private Long[] _toBoxedLongArray(long[] arr) {
+		return LongStream.of(
+			arr
+		).boxed(
+		).toArray(
+			Long[]::new
+		);
+	}
+
+	@Reference
+	private BlueprintsAttributeValuesHelper _blueprintsAttributeValuesHelper;
 
 	@Reference
 	private CompanyLocalService _companyLocalService;
@@ -468,10 +568,19 @@ public class UserParameterContributor implements ParameterContributor {
 	private Portal _portal;
 
 	@Reference
-	private SegmentsEntryProvider _segmentsEntryProvider;
+	private RoleLocalService _roleLocalService;
 
 	@Reference
-	private SegmentsEntrySimulator _segmentsEntrySimulator;
+	private SegmentsEntryRetriever _segmentsEntryRetriever;
+
+	@Reference
+	private UserGroupGroupRoleLocalService _userGroupGroupRoleLocalService;
+
+	@Reference
+	private UserGroupLocalService _userGroupLocalService;
+
+	@Reference
+	private UserGroupRoleLocalService _userGroupRoleLocalService;
 
 	@Reference
 	private UserLocalService _userLocalService;
