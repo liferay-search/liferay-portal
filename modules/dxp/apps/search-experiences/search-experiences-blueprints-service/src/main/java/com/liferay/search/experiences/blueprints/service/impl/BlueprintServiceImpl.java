@@ -56,7 +56,9 @@ import org.osgi.service.component.annotations.ReferencePolicyOption;
 @Component(
 	property = {
 		"json.web.service.context.name=search",
-		"json.web.service.context.path=Blueprint"
+		"json.web.service.context.path=Blueprint",
+		"jsonws.web.service.parameter.type.whitelist.class.names=com.liferay.search.experiences.blueprints.comparator.BlueprintModifiedDateComparator",
+		"jsonws.web.service.parameter.type.whitelist.class.names=com.liferay.search.experiences.blueprints.comparator.BlueprintTitleComparator"
 	},
 	service = AopService.class
 )
