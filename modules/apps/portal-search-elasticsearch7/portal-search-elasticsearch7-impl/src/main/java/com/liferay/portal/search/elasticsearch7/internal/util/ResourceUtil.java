@@ -32,9 +32,9 @@ public class ResourceUtil {
 
 			return StringUtil.read(inputStream);
 		}
-		catch (IOException ioException) {
+		catch (IOException | NullPointerException exception) {
 			throw new RuntimeException(
-				"Unable to load resource: " + resourceName, ioException);
+				"Unable to load resource: " + resourceName, exception);
 		}
 	}
 
