@@ -252,86 +252,28 @@ definition {
 	}
 
 	test BoostWithCustomElasticsearchQuery {
-		ApplicationsMenu.gotoPortlet(
-			category = "Configuration",
-			panel = "Control Panel",
-			portlet = "Custom Fields");
+		JSONWebcontent.addWebContent(
+			content = "Los Angeles",
+			groupName = "Guest",
+			title = "Delicious Food");
 
-		CustomFields.addCP(
-			customFieldName = "location",
-			customFieldType = "Geolocation",
-			resourceName = "Web Content Article");
-
-		WebContentNavigator.openWebContentAdmin(siteURLKey = "guest");
-
-		WebContentNavigator.gotoAddCP();
-
-		Click(locator1 = "TextInput#TITLE");
-
-		PortletEntry.inputTitle(title = "Close Location");
-
-		Panel.expandPanel(panel = "Categorization");
-
-		Click(locator1 = "WCEditWebContent#GEOLOCATION_ZOOM_OUT");
-
-		DragAndDrop.javaScriptDragAndDropToObject(
-			locator1 = "WCEditWebContent#GEOLOCATION_LEAFLET_MARKER_DRAG_HANDLE",
-			locator2 = "WCEditWebContent#GEOLOCATION_ZOOM_OUT");
-
-		PortletEntry.publish();
-
-		WebContentNavigator.gotoAddCP();
-
-		Click(locator1 = "TextInput#TITLE");
-
-		PortletEntry.inputTitle(title = "Closest Location");
-
-		PortletEntry.publish();
-
-		WebContentNavigator.gotoAddCP();
-
-		Click(locator1 = "TextInput#TITLE");
-
-		PortletEntry.inputTitle(title = "Closer Location");
-
-		Panel.expandPanel(panel = "Categorization");
-
-		DragAndDrop.javaScriptDragAndDropToObject(
-			locator1 = "WCEditWebContent#GEOLOCATION_LEAFLET_MARKER_DRAG_HANDLE",
-			locator2 = "WCEditWebContent#GEOLOCATION_ZOOM_OUT");
-
-		PortletEntry.publish();
+		JSONWebcontent.addWebContent(
+			content = "",
+			groupName = "Guest",
+			title = "Good Food");
 
 		SearchExperiences.openSearchExperiencesAdmin();
 
-		SearchExperiences.addBlueprint(name = "The Closer to Liferay, the Better");
-
-		SearchExperiences.addQueryElement(element = "Filter by Exact Terms Match");
-
-		Type(
-			key_fieldLabel = "Field",
-			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_ELEMENT_TEXT_FIELD",
-			value1 = "ddmStructureKey");
-
-		Type(
-			key_fieldLabel = "Values",
-			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_ELEMENT_TEXT_FIELD",
-			value1 = "BASIC-WEB-CONTENT");
+		SearchExperiences.addBlueprint(name = "Test Blueprint");
 
 		var elasticsearchQueryJSON = '''
 {
-	"function_score": {
-		"gauss": {
-			"expando__keyword__custom_fields__location_geolocation": {
-				"origin": {
-					"lat": "33.99742",
-					"lon": "-117.81451"
-				},
-				"scale": "1000km",
-				"decay": 0.3
-			}
-		},
-		"boost": 100
+	"match":
+	{
+		"content_en_US":
+		{
+			"query": "los angeles"
+		}
 	}
 }
 		''';
@@ -340,17 +282,32 @@ definition {
 			elasticsearchQuery = "${elasticsearchQueryJSON}",
 			element = "Paste any Elasticsearch query");
 
+		Click(
+			dropdownName = "Occur",
+			locator1 = "SearchExperiences#BLUEPRINTS_ADDED_ELEMENT_GENERIC_DROPDOWN");
+
+		Click.clickNoMouseOver(
+			dropdownName = "Occur",
+			locator1 = "SearchExperiences#BLUEPRINTS_ADDED_ELEMENT_GENERIC_DROPDOWN_OPTION",
+			option = "must");
+
 		PortletEntry.save();
 
 		Search.openSearchPage();
 
 		SearchPortlets.addWidgets(searchPortletList = "Blueprints Options");
 
-		SearchExperiences.selectBlueprintFromOptionsWidget(name = "The Closer to Liferay, the Better");
+		SearchExperiences.selectBlueprintFromOptionsWidget(name = "Test Blueprint");
 
-		SearchPortlets.searchEmbedded(searchTerm = "location");
+		SearchPortlets.searchEmbedded(searchTerm = "food");
 
-		SearchResultPortlet.viewSearchResultsSpecificOrder(resultsList = "Closest Location,Closer Location,Close Location");
+		SearchResultPortlet.viewSearchResults(
+			searchAssetTitle = "Delicious Food",
+			searchAssetType = "Web Content Article");
+
+		SearchResultPortlet.viewSearchResultNotPresent(
+			searchAssetTitle = "Good Food",
+			searchAssetType = "Web Content Article");
 	}
 
 	test CreateBaselineClausesBlueprint {
