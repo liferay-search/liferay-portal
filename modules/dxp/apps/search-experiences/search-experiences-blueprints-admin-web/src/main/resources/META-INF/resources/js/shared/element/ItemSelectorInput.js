@@ -29,6 +29,12 @@ function ItemSelectorInput({
 	setFieldValue,
 	value,
 }) {
+	const _handleKeyDown = (event) => {
+		if (event.key === 'Enter') {
+			event.preventDefault();
+		}
+	};
+
 	const _handleMultipleEntitySelect = (itemType) => {
 		if (entityJSON[itemType].multiple) {
 			openSelectionModal({
@@ -77,6 +83,7 @@ function ItemSelectorInput({
 						disabled={disabled || value === null}
 						id={id}
 						name={name}
+						onKeyDown={_handleKeyDown}
 						readOnly
 						type="text"
 						value={

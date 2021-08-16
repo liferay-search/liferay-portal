@@ -25,6 +25,12 @@ function TextInput({
 	setFieldValue,
 	value,
 }) {
+	const _handleKeyDown = (event) => {
+		if (event.key === 'Enter') {
+			event.preventDefault();
+		}
+	};
+
 	return (
 		<>
 			<ClayInput.Group small>
@@ -36,6 +42,7 @@ function TextInput({
 						name={name}
 						onBlur={onBlur}
 						onChange={onChange}
+						onKeyDown={_handleKeyDown}
 						value={value || ''}
 					/>
 				</ClayInput.GroupItem>

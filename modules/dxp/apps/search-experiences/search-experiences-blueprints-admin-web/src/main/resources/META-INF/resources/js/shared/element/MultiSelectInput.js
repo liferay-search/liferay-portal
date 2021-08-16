@@ -26,6 +26,12 @@ function MultiSelectInput({
 }) {
 	const [inputValue, setInputValue] = useState('');
 
+	const _handleKeyDown = (event) => {
+		if (event.key === 'Enter') {
+			event.preventDefault();
+		}
+	};
+
 	return (
 		<>
 			<ClayMultiSelect
@@ -48,6 +54,7 @@ function MultiSelectInput({
 				}}
 				onChange={setInputValue}
 				onItemsChange={(value) => setFieldValue(name, value)}
+				onKeyDown={_handleKeyDown}
 			/>
 
 			{nullable && (

@@ -167,6 +167,8 @@ function FieldRow({
 	};
 
 	const _handleFieldKeyDown = (event) => {
+		_handleKeyDown(event);
+
 		if (event.key === 'Tab' || (event.shiftKey && event.key === 'Tab')) {
 			return;
 		}
@@ -178,6 +180,12 @@ function FieldRow({
 
 	const _handleLocaleChange = (event) =>
 		onChange({locale: event.target.value});
+
+	const _handleKeyDown = (event) => {
+		if (event.key === 'Enter') {
+			event.preventDefault();
+		}
+	};
 
 	const _isLocalizable = () =>
 		languageIdPosition > -1 || locale !== undefined;
@@ -236,6 +244,7 @@ function FieldRow({
 							id={`${id}_locale`}
 							onBlur={onBlur}
 							onChange={_handleLocaleChange}
+							onKeyDown={_handleKeyDown}
 							value={locale}
 						>
 							<ClaySelect.Option
@@ -273,6 +282,7 @@ function FieldRow({
 								min="0"
 								onBlur={onBlur}
 								onChange={_handleBoostChange}
+								onKeyDown={_handleKeyDown}
 								title={Liferay.Language.get('boost')}
 								type="number"
 								value={boost}

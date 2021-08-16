@@ -23,6 +23,12 @@ function SelectInput({
 	options = [],
 	value,
 }) {
+	const _handleKeyDown = (event) => {
+		if (event.key === 'Enter') {
+			event.preventDefault();
+		}
+	};
+
 	return (
 		<>
 			<ClaySelect
@@ -33,6 +39,7 @@ function SelectInput({
 				name={name}
 				onBlur={onBlur}
 				onChange={onChange}
+				onKeyDown={_handleKeyDown}
 				value={value}
 			>
 				{(nullable || value === '') && (

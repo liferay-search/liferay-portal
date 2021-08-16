@@ -26,6 +26,12 @@ function DateInput({
 	setFieldValue,
 	value,
 }) {
+	const _handleKeyDown = (event) => {
+		if (event.key === 'Enter') {
+			event.preventDefault();
+		}
+	};
+
 	return (
 		<>
 			<div
@@ -35,6 +41,7 @@ function DateInput({
 				<ClayDatePicker
 					dateFormat="MM/dd/yyyy"
 					disabled={disabled || value === null}
+					onKeyDown={_handleKeyDown}
 					onValueChange={(value) => {
 						setFieldValue(name, moment(value, 'MM/DD/YYYY').unix());
 					}}

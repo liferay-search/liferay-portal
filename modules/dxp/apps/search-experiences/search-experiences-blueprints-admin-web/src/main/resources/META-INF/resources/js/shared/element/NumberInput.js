@@ -31,6 +31,12 @@ function NumberInput({
 	unit,
 	value,
 }) {
+	const _handleKeyDown = (event) => {
+		if (event.key === 'Enter') {
+			event.preventDefault();
+		}
+	};
+
 	return (
 		<>
 			<ClayInput.Group small>
@@ -50,6 +56,7 @@ function NumberInput({
 						name={name}
 						onBlur={onBlur}
 						onChange={onChange}
+						onKeyDown={_handleKeyDown}
 						step={step}
 						type="number"
 						value={value === null ? '' : value}
