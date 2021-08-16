@@ -27,6 +27,16 @@
 	<td></td>
 </tr>
 <tr>
+	<td>BLUEPRINTS_ADDED_ELEMENT_GENERIC_DROPDOWN</td>
+	<td>//select[@aria-label="${dropdownName}"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_ADDED_ELEMENT_GENERIC_DROPDOWN_OPTION</td>
+	<td>//select[@aria-label="${dropdownName}"]/option[@value="${option}"]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>BLUEPRINTS_ELASTICSEARCH_QUERY_JSON_EDITOR</td>
 	<td>//div[contains(@class,'custom-json')]//div[contains(@class,'CodeMirror cm-s-default')]</td>
 	<td></td>
@@ -94,16 +104,6 @@
 <tr>
 	<td>BLUEPRINTS_QUERY_BUILDER_ADDED_ELEMENT</td>
 	<td>//div[contains(@id,'queryElement')][./ul[contains(.,'${elementName}')]]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>BLUEPRINTS_QUERY_BUILDER_ASSET_TYPE_DROPDOWN</td>
-	<td>//div/select[contains(@aria-label, "Asset Type")]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>BLUEPRINTS_QUERY_BUILDER_ASSET_TYPE_OPTION</td>
-	<td>//div/select[contains(@aria-label, "Asset Type")]/option[contains(., "${sortOption}")]</td>
 	<td></td>
 </tr>
 <tr>
