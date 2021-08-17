@@ -14,16 +14,12 @@
 
 package com.liferay.portal.search.web.internal.search.options.portlet.shared.search;
 
-import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.web.internal.search.options.constants.SearchOptionsPortletKeys;
 import com.liferay.portal.search.web.internal.search.options.portlet.SearchOptionsPortletPreferences;
 import com.liferay.portal.search.web.internal.search.options.portlet.SearchOptionsPortletPreferencesImpl;
 import com.liferay.portal.search.web.portlet.shared.search.PortletSharedSearchContributor;
 import com.liferay.portal.search.web.portlet.shared.search.PortletSharedSearchSettings;
-
-import java.io.Serializable;
 
 import org.osgi.service.component.annotations.Component;
 
@@ -55,25 +51,7 @@ public class SearchOptionsPortletSharedSearchContributor
 			searchOptionsPortletPreferences.isBasicFacetSelection()
 		).emptySearchEnabled(
 			searchOptionsPortletPreferences.isAllowEmptySearches()
-		).withSearchContext(
-			searchContext -> applyAttributes(
-				searchOptionsPortletPreferences, searchContext)
 		);
-	}
-
-	protected void applyAttributes(
-		SearchOptionsPortletPreferences searchOptionsPortletPreferences,
-		SearchContext searchContext) {
-
-		for (Object object :
-				searchOptionsPortletPreferences.getAttributesJSONArray()) {
-
-			JSONObject jsonObject = (JSONObject)object;
-
-			searchContext.setAttribute(
-				jsonObject.getString("key"),
-				(Serializable)jsonObject.get("value"));
-		}
 	}
 
 }

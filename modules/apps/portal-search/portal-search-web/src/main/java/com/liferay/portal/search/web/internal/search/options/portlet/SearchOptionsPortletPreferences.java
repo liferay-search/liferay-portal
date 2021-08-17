@@ -14,16 +14,12 @@
 
 package com.liferay.portal.search.web.internal.search.options.portlet;
 
-import com.liferay.portal.kernel.json.JSONArray;
-
 import java.util.Optional;
 
 /**
  * @author Wade Cao
  */
 public interface SearchOptionsPortletPreferences {
-
-	public static final String PREFERENCE_ATTRIBUTES = "attributes";
 
 	public static final String PREFERENCE_KEY_ALLOW_EMPTY_SEARCHES =
 		"allowEmptySearches";
@@ -33,10 +29,6 @@ public interface SearchOptionsPortletPreferences {
 
 	public static final String PREFERENCE_KEY_FEDERATED_SEARCH_KEY =
 		"federatedSearchKey";
-
-	public JSONArray getAttributesJSONArray();
-
-	public String getAttributesString();
 
 	public Optional<String> getFederatedSearchKeyOptional();
 
