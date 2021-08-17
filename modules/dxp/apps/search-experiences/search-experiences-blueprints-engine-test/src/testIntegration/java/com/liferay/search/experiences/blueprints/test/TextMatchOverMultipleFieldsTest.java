@@ -172,7 +172,7 @@ public class TextMatchOverMultipleFieldsTest extends BaseQueryElementsTestCase {
 			getConfigurationString(
 				getMultiMatchQueryElementJSONObject(
 					1, null, "or", "bool_prefix")),
-			"[nunquis, lorem ipsum dolor, lorem ipsum sit]", "lorem dol",
+			"[lorem ipsum dolor, lorem ipsum sit, nunquis]", "lorem dol",
 			getSelectedElementString());
 		assertSearch(
 			blueprint,
@@ -189,15 +189,15 @@ public class TextMatchOverMultipleFieldsTest extends BaseQueryElementsTestCase {
 			blueprint,
 			getConfigurationString(
 				getMultiMatchQueryElementJSONObject(
-					1, 1, 2, "0", null, "or", "most_fields")),
+					1, 1, 1, "0", null, "or", "most_fields")),
 			"[lorem ipsum sit, amet, lorem ipsum dolor, nunquis]",
 			"ipsum sit sit", getSelectedElementString());
 		assertSearch(
 			blueprint,
 			getConfigurationString(
 				getMultiMatchQueryElementJSONObject(
-					1, 1, 2, "0", null, "and", "most_fields")),
-			"[nunquis, lorem ipsum sit]", "sit lorem",
+					1, 1, 1, "0", null, "and", "most_fields")),
+			"[lorem ipsum sit, nunquis]", "sit lorem",
 			getSelectedElementString());
 	}
 }
