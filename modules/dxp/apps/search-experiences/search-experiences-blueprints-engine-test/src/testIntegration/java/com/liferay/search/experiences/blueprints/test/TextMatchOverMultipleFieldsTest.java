@@ -46,7 +46,7 @@ public class TextMatchOverMultipleFieldsTest extends BaseQueryElementsTestCase {
 
 	@Test
 	public void testSearchBestFieldsWithOperatorAnd() throws Exception {
-		addJournalArticle("drink carbonated pepsi", "carbonated cola cola");
+		addJournalArticle("drink carbonated pepsi cola", "carbonated cola cola");
 		addJournalArticle("drink carbonated coca", "carbonated cola");
 		addJournalArticle("sprite", "carbonated cola cola");
 		addJournalArticle("fruit punch", "non-carbonated cola");
@@ -60,7 +60,7 @@ public class TextMatchOverMultipleFieldsTest extends BaseQueryElementsTestCase {
 			getConfigurationString(
 				getMultiMatchQueryElementJSONObject(
 					1, 2, 1, "AUTO", "and", "best_fields")),
-			"[drink carbonated coca, drink carbonated pepsi, sprite, fruit " +
+			"[drink carbonated coca, drink carbonated pepsi cola, sprite, fruit " +
 				"punch]",
 			"coca cola", getSelectedElementString());
 	}
