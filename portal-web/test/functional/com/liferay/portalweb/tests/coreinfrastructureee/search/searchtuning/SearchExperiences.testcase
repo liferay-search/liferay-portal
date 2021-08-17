@@ -166,9 +166,12 @@ definition {
 
 		SearchExperiences.addBlueprint(name = "My Blueprint");
 
-		SearchExperiences.addQueryElement(
-			element = "Boost Items for My Commerce Account Groups",
-			numberBoost = "1000");
+		SearchExperiences.addQueryElement(element = "Boost Items for My Commerce Account Groups");
+
+		Type(
+			key_fieldLabel = "Boost",
+			locator1 = "SearchExperiences#BLUEPRINTS_ADDED_ELEMENT_NUMBER_FIELD",
+			value1 = "1000");
 
 		PortletEntry.save();
 
@@ -237,10 +240,16 @@ definition {
 
 		SearchExperiences.editBlueprint(name = "My Blueprint");
 
-		SearchExperiences.addQueryElement(
-			assetType = "Web Content Article",
-			element = "Boost Asset Type",
-			numberBoost = "1000");
+		SearchExperiences.addQueryElement(element = "Boost Asset Type");
+
+		SearchExperiences.configureElementDropdown(
+			dropdownName = "Asset Type",
+			option = "Web Content Article");
+
+		Type(
+			key_fieldLabel = "Boost",
+			locator1 = "SearchExperiences#BLUEPRINTS_ADDED_ELEMENT_NUMBER_FIELD",
+			value1 = "1000");
 
 		PortletEntry.save();
 
@@ -266,6 +275,8 @@ definition {
 
 		SearchExperiences.addBlueprint(name = "Test Blueprint");
 
+		SearchExperiences.addQueryElement(element = "Paste any Elasticsearch query");
+
 		var elasticsearchQueryJSON = '''
 {
 	"match":
@@ -278,17 +289,12 @@ definition {
 }
 		''';
 
-		SearchExperiences.addQueryElement(
-			elasticsearchQuery = "${elasticsearchQueryJSON}",
-			element = "Paste any Elasticsearch query");
+		Type.typeCodeMirrorEditor(
+			locator1 = "SearchExperiences#BLUEPRINTS_ADDED_ELEMENT_ELASTICSEARCH_QUERY_EDITOR",
+			value1 = "${elasticsearchQueryJSON}");
 
-		Click(
+		SearchExperiences.configureElementDropdown(
 			dropdownName = "Occur",
-			locator1 = "SearchExperiences#BLUEPRINTS_ADDED_ELEMENT_GENERIC_DROPDOWN");
-
-		Click.clickNoMouseOver(
-			dropdownName = "Occur",
-			locator1 = "SearchExperiences#BLUEPRINTS_ADDED_ELEMENT_GENERIC_DROPDOWN_OPTION",
 			option = "MUST");
 
 		PortletEntry.save();
@@ -796,10 +802,17 @@ definition {
 
 		SearchExperiences.addBlueprint(name = "Hide Test and Experimental Content");
 
-		SearchExperiences.addQueryElement(
-			element = "Hide Content with Multiple Tags",
-			tag1 = "test",
-			tag2 = "experimental");
+		SearchExperiences.addQueryElement(element = "Hide Content with Multiple Tags");
+
+		Type(
+			key_fieldLabel = "Tag 1",
+			locator1 = "SearchExperiences#BLUEPRINTS_ADDED_ELEMENT_TEXT_FIELD",
+			value1 = "test");
+
+		Type(
+			key_fieldLabel = "Tag 2",
+			locator1 = "SearchExperiences#BLUEPRINTS_ADDED_ELEMENT_TEXT_FIELD",
+			value1 = "experimental");
 
 		PortletEntry.save();
 

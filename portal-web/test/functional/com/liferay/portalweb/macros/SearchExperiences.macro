@@ -37,44 +37,17 @@ definition {
 		Click.clickNoMouseOverNoWaitForVisible(
 			key_elementName = "${element}",
 			locator1 = "SearchExperiences#BLUEPRINTS_ADD_ELEMENTS_SIDEBAR_ELEMENT_ADD_BUTTON");
+	}
 
-		if (isSet(assetType)) {
-			Click(
-				dropdownName = "Asset Type",
-				locator1 = "SearchExperiences#BLUEPRINTS_ADDED_ELEMENT_GENERIC_DROPDOWN");
+	macro configureElementDropdown {
+		Click(
+			dropdownName = "${dropdownName}",
+			locator1 = "SearchExperiences#BLUEPRINTS_ADDED_ELEMENT_GENERIC_DROPDOWN");
 
-			Click.clickNoMouseOver(
-				dropdownName = "Asset Type",
-				locator1 = "SearchExperiences#BLUEPRINTS_ADDED_ELEMENT_GENERIC_DROPDOWN_OPTION",
-				option = "${assetType}");
-		}
-
-		if (isSet(elasticsearchQuery)) {
-			Type.typeCodeMirrorEditor(
-				locator1 = "SearchExperiences#BLUEPRINTS_ADDED_ELEMENT_ELASTICSEARCH_QUERY_EDITOR",
-				value1 = "${elasticsearchQuery}");
-		}
-
-		if (isSet(numberBoost)) {
-			Type(
-				key_fieldLabel = "Boost",
-				locator1 = "SearchExperiences#BLUEPRINTS_ADDED_ELEMENT_NUMBER_FIELD",
-				value1 = "${numberBoost}");
-		}
-
-		if (isSet(tag1)) {
-			Type(
-				key_fieldLabel = "Tag 1",
-				locator1 = "SearchExperiences#BLUEPRINTS_ADDED_ELEMENT_TEXT_FIELD",
-				value1 = "${tag1}");
-		}
-
-		if (isSet(tag2)) {
-			Type(
-				key_fieldLabel = "Tag 2",
-				locator1 = "SearchExperiences#BLUEPRINTS_ADDED_ELEMENT_TEXT_FIELD",
-				value1 = "${tag2}");
-		}
+		Click.clickNoMouseOver(
+			dropdownName = "${dropdownName}",
+			locator1 = "SearchExperiences#BLUEPRINTS_ADDED_ELEMENT_GENERIC_DROPDOWN_OPTION",
+			option = "${option}");
 	}
 
 	macro createElement {
