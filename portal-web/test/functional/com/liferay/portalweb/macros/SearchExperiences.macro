@@ -20,23 +20,23 @@ definition {
 	}
 
 	macro addQueryElement {
-		AssertElementPresent(locator1 = "SearchExperiences#BLUEPRINTS_ADD_QUERY_ELEMENTS_HEADER");
+		AssertElementPresent(locator1 = "SearchExperiences#BLUEPRINTS_ADD_ELEMENTS_SIDEBAR_HEADER");
 
-		if (IsElementPresent(locator1 = "SearchExperiences#BLUEPRINTS_ADD_QUERY_ELEMENTS_SEARCH_CLEAR")) {
-			Click.clickNoMouseOver(locator1 = "SearchExperiences#BLUEPRINTS_ADD_QUERY_ELEMENTS_SEARCH_CLEAR");
+		if (IsElementPresent(locator1 = "SearchExperiences#BLUEPRINTS_ADD_ELEMENTS_SIDEBAR_SEARCH_CLEAR")) {
+			Click.clickNoMouseOver(locator1 = "SearchExperiences#BLUEPRINTS_ADD_ELEMENTS_SIDEBAR_SEARCH_CLEAR");
 		}
 
 		Type.sendKeysApplicationSearch(
-			locator1 = "SearchExperiences#BLUEPRINTS_ADD_QUERY_ELEMENTS_SEARCH_BAR",
+			locator1 = "SearchExperiences#BLUEPRINTS_ADD_ELEMENTS_SIDEBAR_SEARCH_BAR",
 			value1 = "${element}");
 
 		MouseOver(
 			key_elementName = "${element}",
-			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_ELEMENT_ADD_NAME");
+			locator1 = "SearchExperiences#BLUEPRINTS_ADD_ELEMENTS_SIDEBAR_ELEMENT_NAME");
 
 		Click.clickNoMouseOverNoWaitForVisible(
 			key_elementName = "${element}",
-			locator1 = "SearchExperiences#BLUEPRINTS_QUERY_ELEMENT_ADD_BUTTON");
+			locator1 = "SearchExperiences#BLUEPRINTS_ADD_ELEMENTS_SIDEBAR_ELEMENT_ADD_BUTTON");
 
 		if (isSet(assetType)) {
 			Click(
@@ -51,28 +51,28 @@ definition {
 
 		if (isSet(elasticsearchQuery)) {
 			Type.typeCodeMirrorEditor(
-				locator1 = "SearchExperiences#BLUEPRINTS_ELASTICSEARCH_QUERY_JSON_EDITOR",
+				locator1 = "SearchExperiences#BLUEPRINTS_ADDED_ELEMENT_ELASTICSEARCH_QUERY_EDITOR",
 				value1 = "${elasticsearchQuery}");
 		}
 
 		if (isSet(numberBoost)) {
 			Type(
 				key_fieldLabel = "Boost",
-				locator1 = "SearchExperiences#BLUEPRINTS_QUERY_BUILDER_NUMBER_FIELD",
+				locator1 = "SearchExperiences#BLUEPRINTS_ADDED_ELEMENT_NUMBER_FIELD",
 				value1 = "${numberBoost}");
 		}
 
 		if (isSet(tag1)) {
 			Type(
 				key_fieldLabel = "Tag 1",
-				locator1 = "SearchExperiences#BLUEPRINTS_QUERY_ELEMENT_TEXT_FIELD",
+				locator1 = "SearchExperiences#BLUEPRINTS_ADDED_ELEMENT_TEXT_FIELD",
 				value1 = "${tag1}");
 		}
 
 		if (isSet(tag2)) {
 			Type(
 				key_fieldLabel = "Tag 2",
-				locator1 = "SearchExperiences#BLUEPRINTS_QUERY_ELEMENT_TEXT_FIELD",
+				locator1 = "SearchExperiences#BLUEPRINTS_ADDED_ELEMENT_TEXT_FIELD",
 				value1 = "${tag2}");
 		}
 	}
