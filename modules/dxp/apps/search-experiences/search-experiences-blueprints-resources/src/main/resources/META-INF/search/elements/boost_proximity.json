@@ -45,11 +45,14 @@
 					{
 						"fields": [
 							{
-								"defaultValue": "expando__keyword__custom_fields__location_geolocation",
+								"defaultValue": {
+									"field": "expando__keyword__custom_fields__location_geolocation",
+									"locale": ""
+								},
 								"helpText": "A geopoint field",
 								"label": "Field",
 								"name": "field",
-								"type": "text"
+								"type": "fieldMapping"
 							},
 							{
 								"defaultValue": 0.3,
