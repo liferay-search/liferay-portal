@@ -108,7 +108,7 @@ public class SynonymTypeaheadDataProvider implements TypeaheadDataProvider {
 		String s = StringUtil.toLowerCase(keywords);
 
 		stream.filter(
-			synonym -> !synonym.startsWith(s)
+			synonym -> _shouldSuggest(synonym, s)
 		).forEach(
 			synonym -> suggestions.add(
 				new SuggestionResponse<String>(synonym, searchHit.getScore()))
@@ -217,6 +217,10 @@ public class SynonymTypeaheadDataProvider implements TypeaheadDataProvider {
 		searchSearchRequest.setStart(0);
 
 		return _searchEngineAdapter.execute(searchSearchRequest);
+	}
+
+	private boolean _shouldSuggest(String synonym, String s) {
+		return !synonym.equals(s);
 	}
 
 	private static final String _DEFAULT_FUZZINESS = "1";
