@@ -31,7 +31,7 @@ boolean spellCheckEnabled = GetterUtil.getBoolean(preferences.getValue(Blueprint
 
 int spellCheckHitsThreshold = GetterUtil.getInteger(preferences.getValue(BlueprintsWebPortletPreferenceKeys.SPELL_CHECK_HITS_THRESHOLD, "5"));
 
-String typeaheadConfiguration = preferences.getValue(BlueprintsWebPortletPreferenceKeys.TYPEAHEAD_CONFIGURATION, "{\"size\":10,\"data_provider_configuration\":{\"field\":{\"type\":\"highlighter\",\"offset\":2,\"weight\":1.0,\"field_map\":{\"title_en_US\":1.0,\"content_en_US\":1.0},\"nested_field_map\":{},\"entry_class_names\":[\"com.liferay.journal.model.JournalArticle\",\"com.liferay.document.library.kernel.model.DLFileEntry\"],\"termFilters\":{}},\"synonyms\":{\"weight\":1.0},\"misspellings\":{\"weight\":1.0}}}");
+String typeaheadConfiguration = preferences.getValue(BlueprintsWebPortletPreferenceKeys.TYPEAHEAD_CONFIGURATION, "{\"size\": 10,\"data_provider_configuration\": {\"field\": {\"entry_class_names\": [\"com.liferay.journal.model.JournalArticle\",\"com.liferay.document.library.kernel.model.DLFileEntry\"],\"fuzziness\": \"1\",\"offset\": 1,\"operator\": \"and\",\"source_definitions\": [{\"fields_boosts\": {\"title_en_US\": 1,\"content_en_US\": 1},\"term_filters\": {}},{\"nested_must_terms\": {\"ddmFieldArray.ddmFieldName\": \"ddmFieldArray.ddM_FOO_JUSTA_SAMPLE\"},\"path\": \"ddmFieldArray\",\"term_filters\": {},\"value_field\": \"ddmFieldArray.ddmFieldValueText_en_US\"}],\"type\": \"highlighter\",\"weight\": 1},\"keyword_index\": {\"weight\": 1},\"synonyms\": {\"weight\": 1},\"misspellings\": {\"weight\": 1}}}");
 
 boolean typeaheadEnabled = GetterUtil.getBoolean(preferences.getValue(BlueprintsWebPortletPreferenceKeys.TYPEAHEAD_ENABLED, "true"));
 %>

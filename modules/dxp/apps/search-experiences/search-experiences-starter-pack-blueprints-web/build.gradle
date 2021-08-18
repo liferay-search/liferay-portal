@@ -26,5 +26,6 @@ dependencies {
 	compileOnly project(":dxp:apps:search-experiences:search-experiences-predict-keyword-index-api")
 	compileOnly project(":dxp:apps:search-experiences:search-experiences-predict-misspellings-api")
 	compileOnly project(":dxp:apps:search-experiences:search-experiences-predict-suggestions-api")
+	compileOnly project(":dxp:apps:search-experiences:search-experiences-predict-typeahead-field-api")
 	compileOnly project(":dxp:apps:search-experiences:search-experiences-searchresponse-json-translator-api")
 }
