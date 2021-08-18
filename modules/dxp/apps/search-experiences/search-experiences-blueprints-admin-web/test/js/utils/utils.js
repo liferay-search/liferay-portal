@@ -9,6 +9,7 @@
  * distribution rights of the Software.
  */
 
+import {INPUT_TYPES} from '../../../src/main/resources/META-INF/resources/js/utils/inputTypes';
 import {
 	cleanUIConfigurationJSON,
 	getClauseContributorsConfig,
@@ -61,6 +62,10 @@ describe('utils', () => {
 			expect(isEmpty({})).toEqual(true);
 		});
 
+		it('returns true for an empty array', () => {
+			expect(isEmpty([])).toEqual(true);
+		});
+
 		it('returns false for an object with a property', () => {
 			expect(isEmpty({test: 'abc'})).toEqual(false);
 		});
@@ -71,6 +76,18 @@ describe('utils', () => {
 
 		it('returns false for a number', () => {
 			expect(isEmpty(0)).toEqual(false);
+		});
+
+		it('returns true for an empty fieldMapping', () => {
+			expect(isEmpty({field: ''}, INPUT_TYPES.FIELD_MAPPING)).toEqual(
+				true
+			);
+		});
+
+		it('returns true for an empty fieldMappingList', () => {
+			expect(
+				isEmpty([{field: ''}], INPUT_TYPES.FIELD_MAPPING_LIST)
+			).toEqual(true);
 		});
 	});
 

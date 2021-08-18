@@ -105,9 +105,6 @@ function Element({
 		const inputName = _getInputName(config.name);
 		const typeOptions = config.typeOptions || {};
 
-		const nullable =
-			typeOptions.nullable || uiConfigurationValues[config.name] === null;
-
 		switch (config.type) {
 			case INPUT_TYPES.DATE:
 				return (
@@ -115,7 +112,6 @@ function Element({
 						configKey={config.name}
 						disabled={disabled}
 						name={inputName}
-						nullable={nullable}
 						setFieldTouched={setFieldTouched}
 						setFieldValue={setFieldValue}
 						value={uiConfigurationValues[config.name]}
@@ -128,7 +124,6 @@ function Element({
 						id={inputId}
 						indexFields={indexFields}
 						name={inputName}
-						nullable={nullable}
 						setFieldTouched={setFieldTouched}
 						setFieldValue={setFieldValue}
 						showBoost={typeOptions.boost}
@@ -142,7 +137,6 @@ function Element({
 						id={inputId}
 						indexFields={indexFields}
 						name={inputName}
-						nullable={nullable}
 						onBlur={onBlur}
 						setFieldTouched={setFieldTouched}
 						setFieldValue={setFieldValue}
@@ -159,7 +153,6 @@ function Element({
 						itemType={typeOptions.itemType}
 						label={config.label}
 						name={inputName}
-						nullable={nullable}
 						setFieldTouched={setFieldTouched}
 						setFieldValue={setFieldValue}
 						value={uiConfigurationValues[config.name]}
@@ -171,7 +164,8 @@ function Element({
 						disabled={disabled}
 						label={config.label}
 						name={inputName}
-						nullable={nullable}
+						nullable={typeOptions.nullable}
+						required={typeOptions.required}
 						setFieldTouched={setFieldTouched}
 						setFieldValue={setFieldValue}
 						value={uiConfigurationValues[config.name]}
@@ -184,7 +178,6 @@ function Element({
 						id={inputId}
 						label={config.label}
 						name={inputName}
-						nullable={nullable}
 						setFieldTouched={setFieldTouched}
 						setFieldValue={setFieldValue}
 						value={uiConfigurationValues[config.name]}
@@ -200,7 +193,6 @@ function Element({
 						max={typeOptions.max}
 						min={typeOptions.min}
 						name={inputName}
-						nullable={nullable}
 						onBlur={onBlur}
 						onChange={onChange}
 						setFieldValue={setFieldValue}
@@ -217,7 +209,7 @@ function Element({
 						id={inputId}
 						label={config.label}
 						name={inputName}
-						nullable={nullable}
+						nullable={typeOptions.nullable}
 						onBlur={onBlur}
 						onChange={onChange}
 						options={typeOptions.options}
@@ -234,7 +226,6 @@ function Element({
 						max={typeOptions.max}
 						min={typeOptions.min}
 						name={inputName}
-						nullable={nullable}
 						onBlur={onBlur}
 						onChange={onChange}
 						setFieldTouched={setFieldTouched}
@@ -250,10 +241,8 @@ function Element({
 						id={inputId}
 						label={config.label}
 						name={inputName}
-						nullable={nullable}
 						onBlur={onBlur}
 						onChange={onChange}
-						setFieldValue={setFieldValue}
 						value={uiConfigurationValues[config.name]}
 					/>
 				);
@@ -391,17 +380,18 @@ function Element({
 										>
 											{config.label}
 
-											{isDefined(
+											{((isDefined(
 												config.typeOptions?.required
 											) &&
-												!config.typeOptions
-													.required && (
-													<span className="optional-text">
-														{Liferay.Language.get(
-															'optional'
-														)}
-													</span>
-												)}
+												!config.typeOptions.required) ||
+												config.typeOptions
+													?.nullable) && (
+												<span className="optional-text">
+													{Liferay.Language.get(
+														'optional'
+													)}
+												</span>
+											)}
 
 											{config.helpText && (
 												<ClayTooltipProvider>

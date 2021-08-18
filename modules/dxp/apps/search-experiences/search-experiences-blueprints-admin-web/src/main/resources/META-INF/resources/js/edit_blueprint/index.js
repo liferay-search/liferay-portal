@@ -276,7 +276,8 @@ function EditBlueprintForm({
 								validateRequired(
 									configValue,
 									type,
-									typeOptions.required
+									typeOptions.required,
+									typeOptions.nullable
 								) ||
 								validateBoost(configValue, type) ||
 								validateNumberRange(

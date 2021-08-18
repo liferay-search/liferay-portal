@@ -12,7 +12,7 @@
 import {ERROR_MESSAGES} from './errorMessages';
 import {INPUT_TYPES} from './inputTypes';
 import {sub} from './language';
-import {isDefined} from './utils';
+import {isDefined, isEmpty} from './utils';
 
 export const validateBoost = (configValue, type) => {
 	if (configValue === null) {
@@ -65,27 +65,17 @@ export const validateNumberRange = (configValue, type, typeOptions) => {
 	}
 };
 
-export const validateRequired = (configValue, type, required = true) => {
-	if (!required || configValue === null) {
+export const validateRequired = (
+	configValue,
+	type,
+	required = true,
+	nullable = false
+) => {
+	if (!required || nullable) {
 		return;
 	}
 
-	if (configValue === '' && type !== INPUT_TYPES.SELECT) {
-		return ERROR_MESSAGES.REQUIRED;
-	}
-
-	if (JSON.stringify(configValue) === '[]') {
-		return ERROR_MESSAGES.REQUIRED;
-	}
-
-	if (type === INPUT_TYPES.FIELD_MAPPING && !configValue.field) {
-		return ERROR_MESSAGES.REQUIRED;
-	}
-
-	if (
-		type === INPUT_TYPES.FIELD_MAPPING_LIST &&
-		configValue.every(({field}) => !field)
-	) {
+	if (isEmpty(configValue, type)) {
 		return ERROR_MESSAGES.REQUIRED;
 	}
 };

@@ -33,17 +33,27 @@ import {INPUT_TYPES} from './inputTypes';
 export const isDefined = (item) => typeof item !== 'undefined';
 
 /**
- * Checks if a value is blank. For example: `''` or `{}`.
+ * Checks if a value is blank. For example: `''` or `{}` or `[]`.
+ * For fieldMapping and fieldMappingList, checks if fields are blank.
  * @param {*} value The value to check.
+ * @param {*} type Input type (optional).
  * @return {boolean}
  */
-export const isEmpty = (value) => {
+export const isEmpty = (value, type = '') => {
 	if (typeof value === 'string' && value === '') {
 		return true;
 	}
 
 	if (typeof value === 'object' && !Object.keys(value).length) {
 		return true;
+	}
+
+	if (type === INPUT_TYPES.FIELD_MAPPING) {
+		return !value.field;
+	}
+
+	if (type === INPUT_TYPES.FIELD_MAPPING_LIST) {
+		return value.every(({field}) => !field);
 	}
 
 	return !isDefined(value);
@@ -218,10 +228,6 @@ export const cleanUIConfigurationJSON = (uiConfigurationJSON = {}) => {
 export const getDefaultValue = (item) => {
 	const itemValue = item.defaultValue;
 
-	if (itemValue === null) {
-		return itemValue;
-	}
-
 	switch (item.type) {
 		case INPUT_TYPES.DATE:
 			return typeof itemValue == 'number'
@@ -300,12 +306,11 @@ export const getElementOutput = ({
 				const initialConfigValue = uiConfigurationValues[config.name];
 
 				if (
-					initialConfigValue === null ||
-					(config.type === INPUT_TYPES.SELECT &&
-						initialConfigValue === '')
+					config.typeOptions?.nullable &&
+					isEmpty(initialConfigValue, config.type)
 				) {
 
-					// Remove property entirely if null (or blank for a select inputs).
+					// Remove property entirely if blank.
 					// Check for regex with leading and trailing commas first.
 
 					const nullRegex = `\\"[\\w\\._]+\\"\\:\\"\\$\\{${CONFIG_PREFIX}\\.${config.name}}\\"`;
@@ -426,7 +431,9 @@ export const getElementOutput = ({
 					}
 				}
 				else if (config.type === INPUT_TYPES.KEYWORDS) {
-					configValue = initialConfigValue || '${keywords}';
+					configValue =
+						replaceStr(initialConfigValue, /[\\"]+/, '') ||
+						'${keywords}';
 				}
 				else if (config.type === INPUT_TYPES.MULTISELECT) {
 					configValue = JSON.stringify(
