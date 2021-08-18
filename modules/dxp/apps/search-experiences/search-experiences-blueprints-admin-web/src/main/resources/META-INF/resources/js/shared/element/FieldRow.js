@@ -20,7 +20,7 @@ import fuzzy from 'fuzzy';
 import React, {useContext, useEffect, useRef, useState} from 'react';
 
 import {alphabeticalSort, stringLengthSort} from '../../utils/sort';
-import {isDefined} from '../../utils/utils';
+import {isDefined, isEmpty} from '../../utils/utils';
 import ThemeContext from '../ThemeContext';
 
 const USER_LANGUAGE_VARIABLE = '${context.language_id}';
@@ -187,8 +187,7 @@ function FieldRow({
 		}
 	};
 
-	const _isLocalizable = () =>
-		languageIdPosition > -1 || locale !== undefined;
+	const _isLocalizable = () => languageIdPosition > -1 || !isEmpty(locale);
 
 	return (
 		<ClayForm.Group>
