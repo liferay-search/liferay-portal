@@ -16,16 +16,7 @@ import ClayIcon from '@clayui/icon';
 import moment from 'moment';
 import React from 'react';
 
-import NullableCheckbox from './NullableCheckbox';
-
-function DateInput({
-	disabled,
-	name,
-	nullable,
-	setFieldTouched,
-	setFieldValue,
-	value,
-}) {
+function DateInput({disabled, name, setFieldTouched, setFieldValue, value}) {
 	const _handleKeyDown = (event) => {
 		if (event.key === 'Enter') {
 			event.preventDefault();
@@ -33,52 +24,39 @@ function DateInput({
 	};
 
 	return (
-		<>
-			<div
-				className="date-picker-input"
-				onBlur={() => setFieldTouched(name)}
-			>
-				<ClayDatePicker
-					dateFormat="MM/dd/yyyy"
-					disabled={disabled || value === null}
-					onKeyDown={_handleKeyDown}
-					onValueChange={(value) => {
-						setFieldValue(name, moment(value, 'MM/DD/YYYY').unix());
-					}}
-					placeholder="MM/DD/YYYY"
-					readOnly
-					sizing="sm"
-					value={value ? moment.unix(value).format('MM/DD/YYYY') : ''}
-					years={{
-						end: 2024,
-						start: 1997,
-					}}
-				/>
+		<div className="date-picker-input" onBlur={() => setFieldTouched(name)}>
+			<ClayDatePicker
+				dateFormat="MM/dd/yyyy"
+				disabled={disabled}
+				onKeyDown={_handleKeyDown}
+				onValueChange={(value) => {
+					setFieldValue(name, moment(value, 'MM/DD/YYYY').unix());
+				}}
+				placeholder="MM/DD/YYYY"
+				readOnly
+				sizing="sm"
+				value={value ? moment.unix(value).format('MM/DD/YYYY') : ''}
+				years={{
+					end: 2024,
+					start: 1997,
+				}}
+			/>
 
-				{!!value && (
-					<ClayInput.GroupItem shrink>
-						<ClayButton
-							aria-label={Liferay.Language.get('delete')}
-							disabled={disabled || value === null}
-							displayType="unstyled"
-							monospaced
-							onClick={() => setFieldValue(name, '')}
-							small
-						>
-							<ClayIcon symbol="times-circle" />
-						</ClayButton>
-					</ClayInput.GroupItem>
-				)}
-			</div>
-
-			{nullable && (
-				<NullableCheckbox
-					disabled={disabled}
-					onChange={(val) => setFieldValue(name, val)}
-					value={value}
-				/>
+			{!!value && (
+				<ClayInput.GroupItem shrink>
+					<ClayButton
+						aria-label={Liferay.Language.get('delete')}
+						disabled={disabled}
+						displayType="unstyled"
+						monospaced
+						onClick={() => setFieldValue(name, '')}
+						small
+					>
+						<ClayIcon symbol="times-circle" />
+					</ClayButton>
+				</ClayInput.GroupItem>
 			)}
-		</>
+		</div>
 	);
 }
 

@@ -30,31 +30,29 @@ function SelectInput({
 	};
 
 	return (
-		<>
-			<ClaySelect
-				aria-label={label}
-				className="form-control-sm"
-				disabled={disabled}
-				id={id}
-				name={name}
-				onBlur={onBlur}
-				onChange={onChange}
-				onKeyDown={_handleKeyDown}
-				value={value}
-			>
-				{(nullable || value === '') && (
-					<ClaySelect.Option key="nullableOption" label="" value="" />
-				)}
+		<ClaySelect
+			aria-label={label}
+			className="form-control-sm"
+			disabled={disabled}
+			id={id}
+			name={name}
+			onBlur={onBlur}
+			onChange={onChange}
+			onKeyDown={_handleKeyDown}
+			value={value}
+		>
+			{(nullable || value === '') && (
+				<ClaySelect.Option key="nullableOption" label="" value="" />
+			)}
 
-				{options.map((item) => (
-					<ClaySelect.Option
-						key={item.value}
-						label={item.label}
-						value={item.value}
-					/>
-				))}
-			</ClaySelect>
-		</>
+			{options.map((item) => (
+				<ClaySelect.Option
+					key={item.value}
+					label={item.label}
+					value={item.value}
+				/>
+			))}
+		</ClaySelect>
 	);
 }
 
