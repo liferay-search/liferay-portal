@@ -1,0 +1,6 @@
+Bundle-Name: Liferay Search Experiences Predict Typeahead Field API
+Bundle-SymbolicName: com.liferay.search.experiences.predict.typeahead.field.api
+Bundle-Version: 1.0.0
+Export-Package:\
+	com.liferay.search.experiences.predict.typeahead.field.constants,\
+	com.liferay.search.experiences.predict.typeahead.field.definition
