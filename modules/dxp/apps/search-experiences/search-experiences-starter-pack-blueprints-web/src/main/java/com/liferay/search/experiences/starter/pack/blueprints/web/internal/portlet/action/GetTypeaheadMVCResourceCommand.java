@@ -27,18 +27,24 @@ import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.search.experiences.predict.suggestions.attributes.SuggestionAttributesBuilder;
 import com.liferay.search.experiences.predict.suggestions.attributes.SuggestionAttributesBuilderFactory;
 import com.liferay.search.experiences.predict.suggestions.constants.SuggestionConstants;
 import com.liferay.search.experiences.predict.suggestions.data.provider.DataProviderSettings;
 import com.liferay.search.experiences.predict.suggestions.service.SuggestionService;
 import com.liferay.search.experiences.predict.suggestions.suggestion.Suggestion;
+import com.liferay.search.experiences.predict.typeahead.field.constants.FieldTypeaheadConstants;
+import com.liferay.search.experiences.predict.typeahead.field.definition.FieldTypeaheadSourceDefinition;
+import com.liferay.search.experiences.predict.typeahead.field.definition.FieldsSourceDefinition;
+import com.liferay.search.experiences.predict.typeahead.field.definition.NestedFieldSourceDefinition;
 import com.liferay.search.experiences.starter.pack.blueprints.web.internal.constants.BlueprintsWebPortletKeys;
 import com.liferay.search.experiences.starter.pack.blueprints.web.internal.constants.ResourceRequestKeys;
 import com.liferay.search.experiences.starter.pack.blueprints.web.internal.portlet.preferences.BlueprintsWebPortletPreferences;
 import com.liferay.search.experiences.starter.pack.blueprints.web.internal.portlet.preferences.BlueprintsWebPortletPreferencesImpl;
 import com.liferay.search.experiences.starter.pack.blueprints.web.internal.util.BlueprintsWebPortletHelper;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -100,6 +106,40 @@ public class GetTypeaheadMVCResourceCommand extends BaseMVCResourceCommand {
 					suggestionAttributesBuilder.build())));
 	}
 
+	private void _addSourceDefinitions(
+		DataProviderSettings dataProviderSettings, JSONArray jsonArray) {
+
+		if (jsonArray == null) {
+			return;
+		}
+
+		List<FieldTypeaheadSourceDefinition> fieldTypeaheadSourceDefinitions =
+			new ArrayList<>();
+
+		for (int i = 0; i < jsonArray.length(); i++) {
+			JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+			FieldTypeaheadSourceDefinition fieldTypeaheadSourceDefinition =
+				null;
+
+			String path = jsonObject.getString("path");
+
+			if (!Validator.isBlank(path)) {
+				fieldTypeaheadSourceDefinition =
+					_getNestedFieldSourceDefinition(jsonObject);
+			}
+			else {
+				fieldTypeaheadSourceDefinition = _getFieldsSourceDefinition(
+					jsonObject);
+			}
+
+			fieldTypeaheadSourceDefinitions.add(fieldTypeaheadSourceDefinition);
+		}
+
+		dataProviderSettings.addAttribute(
+			"sourceDefinitions", fieldTypeaheadSourceDefinitions);
+	}
+
 	private void _addTypeaheadDataProviderSettings(
 		SuggestionAttributesBuilder suggestionAttributesBuilder,
 		String dataProvider, JSONObject jsonObject) {
@@ -144,68 +184,65 @@ public class GetTypeaheadMVCResourceCommand extends BaseMVCResourceCommand {
 			dataProviderConfigurationJSONObject.keySet());
 	}
 
+	private FieldTypeaheadSourceDefinition _getFieldsSourceDefinition(
+		JSONObject jsonObject) {
+
+		JSONObject fieldsBoostsJSONObject = jsonObject.getJSONObject(
+			"fields_boosts");
+
+		Map<String, Float> fieldsBoosts = new HashMap<>();
+
+		if (fieldsBoostsJSONObject != null) {
+			Set<String> keySet = fieldsBoostsJSONObject.keySet();
+
+			keySet.forEach(
+				term -> fieldsBoosts.put(
+					term,
+					GetterUtil.getFloat(fieldsBoostsJSONObject.get(term))));
+		}
+
+		return new FieldsSourceDefinition.FieldsSourceDefinitionBuilder().
+			fieldsBoosts(
+				fieldsBoosts
+			).termFilterMap(
+				_getTermFilterMap(jsonObject)
+			).build();
+	}
+
 	private DataProviderSettings _getFieldTypeaheadDataProviderSettings(
 		JSONObject jsonObject) {
 
 		DataProviderSettings dataProviderSettings = new DataProviderSettings();
 
 		dataProviderSettings.addAttribute(
-			SuggestionConstants.ENTRY_CLASS_NAMES,
+			FieldTypeaheadConstants.DISPLAY_FIELD,
+			jsonObject.getString("display_field", null));
+
+		dataProviderSettings.addAttribute(
+			FieldTypeaheadConstants.ENTRY_CLASS_NAMES,
 			JSONUtil.toStringArray(
 				jsonObject.getJSONArray("entry_class_names")));
 
 		dataProviderSettings.addAttribute(
-			SuggestionConstants.DISPLAY_FIELD,
-			jsonObject.getString("display_field", null));
-
-		JSONObject fieldMapJSONObject = jsonObject.getJSONObject("field_map");
-
-		if (fieldMapJSONObject != null) {
-			Map<String, Float> fieldMap = new HashMap<>();
-
-			Set<String> keySet = fieldMapJSONObject.keySet();
-
-			keySet.forEach(
-				field -> fieldMap.put(
-					field, GetterUtil.getFloat(fieldMapJSONObject.get(field))));
-
-			dataProviderSettings.addAttribute(
-				SuggestionConstants.FIELD_MAP, fieldMap);
-		}
+			FieldTypeaheadConstants.EXCLUDE_DDM_STRUCTURE_CONTENT_FIELD,
+			GetterUtil.getBoolean(
+				jsonObject.get("exclude_ddm_structure_content_field"), true));
 
 		dataProviderSettings.addAttribute(
 			SuggestionConstants.FUZZINESS,
 			jsonObject.getString("fuzziness", null));
 		dataProviderSettings.addAttribute(
-			SuggestionConstants.INDICES,
+			FieldTypeaheadConstants.INDICES,
 			JSONUtil.toStringArray(jsonObject.getJSONArray("indices")));
-
-		JSONObject nestedFieldMapJSONObject = jsonObject.getJSONObject(
-			"nested_field_map");
-
-		if (nestedFieldMapJSONObject != null) {
-			Map<String, Float> nestedFieldMap = new HashMap<>();
-
-			Set<String> keySet = nestedFieldMapJSONObject.keySet();
-
-			keySet.forEach(
-				field -> nestedFieldMap.put(
-					field,
-					GetterUtil.getFloat(nestedFieldMapJSONObject.get(field))));
-
-			dataProviderSettings.addAttribute(
-				SuggestionConstants.NESTED_FIELD_MAP, nestedFieldMap);
-		}
-
 		dataProviderSettings.addAttribute(
-			SuggestionConstants.OFFSET, jsonObject.getInt("offset"));
+			FieldTypeaheadConstants.OFFSET, jsonObject.getInt("offset"));
 		dataProviderSettings.addAttribute(
 			SuggestionConstants.OPERATOR, jsonObject.getString("operator"));
 		dataProviderSettings.addAttribute(
 			SuggestionConstants.PREFIX_LENGTH,
 			jsonObject.getInt("prefix_length"));
 		dataProviderSettings.addAttribute(
-			SuggestionConstants.SANITIZER_REGEXP,
+			FieldTypeaheadConstants.PRE_SANITIZER_REGEXP,
 			jsonObject.getString("sanitizer_regexp", null));
 
 		JSONObject sortFieldMapJSONObject = jsonObject.getJSONObject(
@@ -221,37 +258,57 @@ public class GetTypeaheadMVCResourceCommand extends BaseMVCResourceCommand {
 					field, sortFieldMapJSONObject.getString(field)));
 
 			dataProviderSettings.addAttribute(
-				SuggestionConstants.SORT_FIELD_MAP, sortFieldMap);
+				FieldTypeaheadConstants.SORT_FIELD_MAP, sortFieldMap);
 		}
 
 		dataProviderSettings.addAttribute(
 			SuggestionConstants.SOURCE_GROUP_IDS,
 			JSONUtil.toLongArray(jsonObject.getJSONArray("source_group_ids")));
 
-		JSONObject termFiltersJSONObject = jsonObject.getJSONObject(
-			"term_filters");
-
-		if (termFiltersJSONObject != null) {
-			Map<String, String> termFilterMap = new HashMap<>();
-
-			Set<String> keySet = termFiltersJSONObject.keySet();
-
-			keySet.forEach(
-				term -> termFilterMap.put(
-					term, termFiltersJSONObject.getString(term)));
-
-			dataProviderSettings.addAttribute(
-				SuggestionConstants.TERM_FILTERS, termFilterMap);
-		}
+		dataProviderSettings.addAttribute(
+			FieldTypeaheadConstants.TRIM_STOPWORDS,
+			GetterUtil.getBoolean(jsonObject.get("trim_stop_words"), true));
 
 		dataProviderSettings.addAttribute(
-			SuggestionConstants.TYPE, jsonObject.getString("type"));
+			FieldTypeaheadConstants.TYPE, jsonObject.getString("type"));
 
 		dataProviderSettings.addAttribute(
 			SuggestionConstants.WEIGHT,
 			GetterUtil.getFloat(jsonObject.get("weight")));
 
+		_addSourceDefinitions(
+			dataProviderSettings,
+			jsonObject.getJSONArray("source_definitions"));
+
 		return dataProviderSettings;
+	}
+
+	private FieldTypeaheadSourceDefinition _getNestedFieldSourceDefinition(
+		JSONObject jsonObject) {
+
+		JSONObject nestedMustTermsJSONObject = jsonObject.getJSONObject(
+			"nested_must_terms");
+
+		Map<String, String> nestedMustTermMap = new HashMap<>();
+
+		if (nestedMustTermsJSONObject != null) {
+			Set<String> keySet = nestedMustTermsJSONObject.keySet();
+
+			keySet.forEach(
+				term -> nestedMustTermMap.put(
+					term, nestedMustTermsJSONObject.getString(term)));
+		}
+
+		return new NestedFieldSourceDefinition.
+			NestedFieldSourceDefinitionBuilder().nestedMustTermMap(
+				nestedMustTermMap
+			).path(
+				jsonObject.getString("path")
+			).termFilterMap(
+				_getTermFilterMap(jsonObject)
+			).valueFieldName(
+				jsonObject.getString("value_field")
+			).build();
 	}
 
 	private JSONObject _getResponseJSONObject(
@@ -294,6 +351,22 @@ public class GetTypeaheadMVCResourceCommand extends BaseMVCResourceCommand {
 		_setDataProviderSettings(suggestionAttributesBuilder, jsonObject);
 
 		return suggestionAttributesBuilder;
+	}
+
+	private Map<String, String> _getTermFilterMap(JSONObject jsonObject) {
+		JSONObject termFiltersJSONObject = jsonObject.getJSONObject(
+			"term_filters");
+
+		Map<String, String> map = new HashMap<>();
+
+		if (termFiltersJSONObject != null) {
+			Set<String> keySet = termFiltersJSONObject.keySet();
+
+			keySet.forEach(
+				term -> map.put(term, termFiltersJSONObject.getString(term)));
+		}
+
+		return map;
 	}
 
 	private JSONObject _getTypeaheadConfigurationJSONObject(
