@@ -26,6 +26,7 @@ import com.liferay.portal.search.query.MultiMatchQuery;
 import com.liferay.portal.search.query.Operator;
 import com.liferay.portal.search.query.Queries;
 import com.liferay.portal.search.query.Query;
+import com.liferay.search.experiences.predict.keyword.index.constants.KeywordIndexSuggestionConstants;
 import com.liferay.search.experiences.predict.keyword.index.index.name.KeywordIndexNameBuilder;
 import com.liferay.search.experiences.predict.keyword.index.web.internal.index.KeywordEntryFields;
 import com.liferay.search.experiences.predict.keyword.index.web.internal.util.SuggestionDataProviderHelper;
@@ -131,7 +132,7 @@ public class KeywordIndexTypeaheadDataProvider
 		}
 
 		return GetterUtil.getInteger(
-			SuggestionConstants.HITCOUNT_THRESHOLD,
+			KeywordIndexSuggestionConstants.HITCOUNT_THRESHOLD,
 			_DEFAULT_HITCOUNT_THRESHOLD);
 	}
 
