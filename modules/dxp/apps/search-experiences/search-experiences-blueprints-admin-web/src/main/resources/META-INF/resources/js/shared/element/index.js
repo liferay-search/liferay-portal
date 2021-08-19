@@ -20,6 +20,7 @@ import getCN from 'classnames';
 import {PropTypes} from 'prop-types';
 import React, {useContext, useEffect, useState} from 'react';
 
+import {DEFAULT_ELEMENT_ICON} from '../../utils/data';
 import {INPUT_TYPES} from '../../utils/inputTypes';
 import {
 	cleanUIConfigurationJSON,
@@ -260,7 +261,12 @@ function Element({
 				<ClayList.Item flex>
 					<ClayList.ItemField>
 						<ClaySticker size="md">
-							<ClayIcon symbol={elementTemplateJSON.icon} />
+							<ClayIcon
+								symbol={
+									elementTemplateJSON.icon ||
+									DEFAULT_ELEMENT_ICON
+								}
+							/>
 						</ClaySticker>
 					</ClayList.ItemField>
 

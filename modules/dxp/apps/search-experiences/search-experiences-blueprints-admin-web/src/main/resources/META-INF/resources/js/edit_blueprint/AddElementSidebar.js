@@ -21,6 +21,7 @@ import React, {useCallback, useContext, useEffect, useState} from 'react';
 
 import SearchInput from '../shared/SearchInput';
 import ThemeContext from '../shared/ThemeContext';
+import {DEFAULT_ELEMENT_ICON} from './../utils/data';
 import {getLocalizedText} from './../utils/language';
 
 const DEFAULT_CATEGORY = 'other';
@@ -88,7 +89,8 @@ const ElementList = ({category, elements, expand, onAddElement}) => {
 										<ClaySticker size="md">
 											<ClayIcon
 												symbol={
-													elementTemplateJSON.icon
+													elementTemplateJSON.icon ||
+													DEFAULT_ELEMENT_ICON
 												}
 											/>
 										</ClaySticker>
