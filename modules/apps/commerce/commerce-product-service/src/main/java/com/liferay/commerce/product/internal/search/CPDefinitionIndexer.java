@@ -43,6 +43,7 @@ import com.liferay.commerce.product.service.CommerceChannelRelLocalService;
 import com.liferay.commerce.util.CommerceBigDecimalUtil;
 import com.liferay.friendly.url.model.FriendlyURLEntry;
 import com.liferay.friendly.url.service.FriendlyURLEntryLocalService;
+import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
@@ -69,6 +70,7 @@ import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocalizationUtil;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
@@ -100,6 +102,18 @@ import org.osgi.service.component.annotations.Reference;
 public class CPDefinitionIndexer extends BaseIndexer<CPDefinition> {
 
 	public static final String CLASS_NAME = CPDefinition.class.getName();
+
+	public static String[] splitAndUnquote(String s) {
+		return Stream.of(
+			StringUtil.split(s.trim(), CharPool.COMMA)
+		).map(
+			String::trim
+		).map(
+			StringUtil::unquote
+		).toArray(
+			String[]::new
+		);
+	}
 
 	public CPDefinitionIndexer() {
 		setDefaultSelectedFieldNames(
@@ -236,8 +250,8 @@ public class CPDefinitionIndexer extends BaseIndexer<CPDefinition> {
 			contextBooleanFilter.add(
 				channelBooleanFilter, BooleanClauseOccur.MUST);
 
-			long[] commerceAccountGroupIds = GetterUtil.getLongValues(
-				searchContext.getAttribute("commerceAccountGroupIds"), null);
+			long[] commerceAccountGroupIds = _getLongValues(
+				searchContext.getAttribute("commerceAccountGroupIds"));
 
 			BooleanFilter accountGroupsBooleanFilter = new BooleanFilter();
 
@@ -868,6 +882,15 @@ public class CPDefinitionIndexer extends BaseIndexer<CPDefinition> {
 		indexableActionableDynamicQuery.setSearchEngineId(getSearchEngineId());
 
 		indexableActionableDynamicQuery.performActions();
+	}
+
+	private long[] _getLongValues(Serializable attribute) {
+		if (attribute instanceof String) {
+			return GetterUtil.getLongValues(
+				splitAndUnquote((String)attribute), null);
+		}
+
+		return GetterUtil.getLongValues(attribute, null);
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
