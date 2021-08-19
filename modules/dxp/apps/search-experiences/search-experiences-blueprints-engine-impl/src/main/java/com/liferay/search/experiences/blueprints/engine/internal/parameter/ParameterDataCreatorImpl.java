@@ -25,7 +25,6 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.search.experiences.blueprints.engine.internal.attributes.util.BlueprintsAttributeValuesHelper;
 import com.liferay.search.experiences.blueprints.engine.internal.parameter.builder.ParameterBuilder;
-import com.liferay.search.experiences.blueprints.engine.parameter.BooleanParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.IntegerParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.Parameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
@@ -76,11 +75,6 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 
 		JSONObject jsonObject = optional.get();
 
-		_addExplainParameter(parameterDataBuilder, blueprintsAttributes);
-
-		_addIncludeResponseStringParameter(
-			parameterDataBuilder, blueprintsAttributes);
-
 		_addKeywordParameter(
 			parameterDataBuilder, blueprint, blueprintsAttributes, messages);
 
@@ -95,12 +89,12 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 		_addSortParameters(
 			parameterDataBuilder, blueprint, blueprintsAttributes, messages);
 
+		_executeParameterContributors(
+			parameterDataBuilder, blueprint, blueprintsAttributes, messages);
+
 		_addCustomParameters(
 			parameterDataBuilder, blueprintsAttributes,
 			jsonObject.getJSONArray("custom"), messages);
-
-		_executeParameterContributors(
-			parameterDataBuilder, blueprint, blueprintsAttributes, messages);
 
 		ParameterData parameterData = parameterDataBuilder.build();
 
@@ -189,36 +183,6 @@ public class ParameterDataCreatorImpl implements ParameterDataCreator {
 			_addCustomParameter(
 				parameterDataBuilder, blueprintsAttributes,
 				configurationJSONArray.getJSONObject(i), messages);
-		}
-	}
-
-	private void _addExplainParameter(
-		ParameterDataBuilder parameterDataBuilder,
-		BlueprintsAttributes blueprintsAttributes) {
-
-		Optional<Boolean> optional =
-			_blueprintsAttributeValuesHelper.getBooleanOptional(
-				blueprintsAttributes, "explain");
-
-		if (optional.isPresent()) {
-			parameterDataBuilder.addParameter(
-				new BooleanParameter("explain", "${explain}", optional.get()));
-		}
-	}
-
-	private void _addIncludeResponseStringParameter(
-		ParameterDataBuilder parameterDataBuilder,
-		BlueprintsAttributes blueprintsAttributes) {
-
-		Optional<Boolean> optional =
-			_blueprintsAttributeValuesHelper.getBooleanOptional(
-				blueprintsAttributes, "include_response_string");
-
-		if (optional.isPresent()) {
-			parameterDataBuilder.addParameter(
-				new BooleanParameter(
-					"include_response_string", "${include_response_string}",
-					optional.get()));
 		}
 	}
 

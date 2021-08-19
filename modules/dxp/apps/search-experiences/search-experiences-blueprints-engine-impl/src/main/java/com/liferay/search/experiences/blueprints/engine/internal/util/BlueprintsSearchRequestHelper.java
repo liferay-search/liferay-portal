@@ -132,6 +132,22 @@ public class BlueprintsSearchRequestHelper {
 			parameterData, messages);
 	}
 
+	public void setPreview(
+		SearchRequestBuilder searchRequestBuilder, ParameterData parameterData,
+		Blueprint blueprint) {
+
+		Optional<Parameter> optional = parameterData.getByNameOptional(
+			"preview");
+
+		if (!optional.isPresent() || (blueprint.getBlueprintId() > 0)) {
+			return;
+		}
+
+		searchRequestBuilder.withSearchContext(
+			searchContext -> searchContext.setAttribute(
+				"search.experiences.blueprint.preview", true));
+	}
+
 	@Activate
 	protected void activate(BundleContext bundleContext) {
 		_searchRequestBodyContributorServiceTrackerMap =
