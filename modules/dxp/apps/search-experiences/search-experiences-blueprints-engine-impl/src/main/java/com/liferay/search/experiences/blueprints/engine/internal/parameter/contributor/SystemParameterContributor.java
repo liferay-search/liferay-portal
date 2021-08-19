@@ -17,6 +17,7 @@ package com.liferay.search.experiences.blueprints.engine.internal.parameter.cont
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.search.experiences.blueprints.engine.internal.attributes.util.BlueprintsAttributeValuesHelper;
+import com.liferay.search.experiences.blueprints.engine.parameter.BooleanParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterDataBuilder;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterDefinition;
 import com.liferay.search.experiences.blueprints.engine.parameter.StringArrayParameter;
@@ -45,8 +46,15 @@ public class SystemParameterContributor implements ParameterContributor {
 		ParameterDataBuilder parameterDataBuilder, Blueprint blueprint,
 		BlueprintsAttributes blueprintsAttributes, Messages messages) {
 
-		_setExcludedSearchRequestBodyContributors(
+		_addExcludedSearchRequestBodyContributors(
 			parameterDataBuilder, blueprintsAttributes);
+
+		_addExplainParameter(parameterDataBuilder, blueprintsAttributes);
+
+		_addIncludeResponseStringParameter(
+			parameterDataBuilder, blueprintsAttributes);
+
+		_addPreviewParameter(parameterDataBuilder, blueprintsAttributes);
 	}
 
 	@Override
@@ -59,7 +67,7 @@ public class SystemParameterContributor implements ParameterContributor {
 		return new ArrayList<>();
 	}
 
-	private void _setExcludedSearchRequestBodyContributors(
+	private void _addExcludedSearchRequestBodyContributors(
 		ParameterDataBuilder parameterDataBuilder,
 		BlueprintsAttributes blueprintsAttributes) {
 
@@ -77,6 +85,50 @@ public class SystemParameterContributor implements ParameterContributor {
 				"excluded_search_request_body_contributors", null,
 				GetterUtil.getStringValues(
 					excludedSearchRequestBodyContributorsOptional.get())));
+	}
+
+	private void _addExplainParameter(
+		ParameterDataBuilder parameterDataBuilder,
+		BlueprintsAttributes blueprintsAttributes) {
+
+		Optional<Boolean> optional =
+			_blueprintsAttributeValuesHelper.getBooleanOptional(
+				blueprintsAttributes, "explain");
+
+		if (optional.isPresent()) {
+			parameterDataBuilder.addParameter(
+				new BooleanParameter("explain", "${explain}", optional.get()));
+		}
+	}
+
+	private void _addIncludeResponseStringParameter(
+		ParameterDataBuilder parameterDataBuilder,
+		BlueprintsAttributes blueprintsAttributes) {
+
+		Optional<Boolean> optional =
+			_blueprintsAttributeValuesHelper.getBooleanOptional(
+				blueprintsAttributes, "include_response_string");
+
+		if (optional.isPresent()) {
+			parameterDataBuilder.addParameter(
+				new BooleanParameter(
+					"include_response_string", "${include_response_string}",
+					optional.get()));
+		}
+	}
+
+	private void _addPreviewParameter(
+		ParameterDataBuilder parameterDataBuilder,
+		BlueprintsAttributes blueprintsAttributes) {
+
+		Optional<Boolean> optional =
+			_blueprintsAttributeValuesHelper.getBooleanOptional(
+				blueprintsAttributes, "preview");
+
+		if (optional.isPresent()) {
+			parameterDataBuilder.addParameter(
+				new BooleanParameter("preview", null, optional.get()));
+		}
 	}
 
 	@Reference

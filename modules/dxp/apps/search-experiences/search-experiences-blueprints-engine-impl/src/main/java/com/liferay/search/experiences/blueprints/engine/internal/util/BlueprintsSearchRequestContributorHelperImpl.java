@@ -64,6 +64,9 @@ public class BlueprintsSearchRequestContributorHelperImpl
 		_blueprintsSearchRequestHelper.setFieldRetrieval(
 			searchRequestBuilder, parameterData, blueprint, messages);
 
+		_blueprintsSearchRequestHelper.setPreview(
+			searchRequestBuilder, parameterData, blueprint);
+
 		_blueprintsSearchRequestHelper.executeSearchRequestBodyContributors(
 			searchRequestBuilder, parameterData, blueprint, messages);
 
