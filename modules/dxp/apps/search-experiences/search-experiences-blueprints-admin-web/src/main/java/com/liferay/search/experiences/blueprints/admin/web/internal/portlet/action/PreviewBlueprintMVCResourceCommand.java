@@ -150,6 +150,8 @@ public class PreviewBlueprintMVCResourceCommand extends BaseMVCResourceCommand {
 
 		blueprintsAttributesBuilder.addAttribute("explain", true);
 
+		blueprintsAttributesBuilder.addAttribute("preview", true);
+
 		blueprintsAttributesBuilder.addAttribute(
 			"include_response_string", true);
 
