@@ -154,9 +154,9 @@ definition {
 	}
 
 	macro configureLowLevelSearchOptions {
-		Portlet.gotoPortletOptions(
-			portletName = "Low Level Search Options",
-			portletOption = "Configuration");
+		Click(
+			key_text = "Configure additional low level search options in this page.",
+			locator1 = "Link#ANY");
 
 		SelectFrame(locator1 = "IFrame#CONFIGURATION");
 
