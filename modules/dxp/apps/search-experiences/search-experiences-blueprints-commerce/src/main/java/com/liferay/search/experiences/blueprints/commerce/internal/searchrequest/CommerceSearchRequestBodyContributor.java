@@ -17,6 +17,7 @@ package com.liferay.search.experiences.blueprints.commerce.internal.searchreques
 import com.liferay.commerce.product.model.CPDefinition;
 import com.liferay.commerce.product.model.CommerceCatalog;
 import com.liferay.commerce.product.service.CommerceCatalogService;
+import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -66,7 +67,7 @@ public class CommerceSearchRequestBodyContributor
 		}
 
 		if (_isBlueprintPreview(searchRequestBuilder)) {
-			_setCommerceCatalogGroupsIds(searchRequestBuilder, parameterData);
+			_setCommerceCatalogIds(searchRequestBuilder, parameterData);
 		}
 	}
 
@@ -90,17 +91,15 @@ public class CommerceSearchRequestBodyContributor
 			_queries.term(
 				Field.ENTRY_CLASS_NAME, CPDefinition.class.getName()));
 
-		TermsQuery termsQuery = _queries.terms(Field.GROUP_ID);
+		TermsQuery termsQuery = _queries.terms("commerceCatalogId");
 
-		long[] commerceCatalogGroupIds = _getCommerceCatalogGroupIds(
-			parameterData);
+		long[] commerceCatalogsIds = _getCommerceCatalogIds(parameterData);
 
-		if (commerceCatalogGroupIds.length == 0) {
+		if (commerceCatalogsIds.length == 0) {
 			termsQuery.addValue("-1");
 		}
 		else {
-			termsQuery.addValues(
-				ArrayUtil.toStringArray(commerceCatalogGroupIds));
+			termsQuery.addValues(ArrayUtil.toStringArray(commerceCatalogsIds));
 		}
 
 		mustQuery.addMustQueryClauses(termsQuery);
@@ -116,10 +115,11 @@ public class CommerceSearchRequestBodyContributor
 			).build());
 	}
 
-	private long[] _getCommerceCatalogGroupIds(ParameterData parameterData) {
+	private long[] _getCommerceCatalogIds(ParameterData parameterData) {
 		List<CommerceCatalog> commerceCatalogs =
 			_commerceCatalogService.getCommerceCatalogs(
-				_getCompanyId(parameterData), 0, 100);
+				_getCompanyId(parameterData), QueryUtil.ALL_POS,
+				QueryUtil.ALL_POS);
 
 		if (commerceCatalogs.isEmpty()) {
 			return new long[0];
@@ -128,7 +128,7 @@ public class CommerceSearchRequestBodyContributor
 		Stream<CommerceCatalog> stream = commerceCatalogs.stream();
 
 		return stream.mapToLong(
-			commerceCatalog -> commerceCatalog.getGroupId()
+			commerceCatalog -> commerceCatalog.getCommerceCatalogId()
 		).toArray();
 	}
 
@@ -181,20 +181,19 @@ public class CommerceSearchRequestBodyContributor
 			});
 	}
 
-	private void _setCommerceCatalogGroupsIds(
+	private void _setCommerceCatalogIds(
 		SearchRequestBuilder searchRequestBuilder,
 		ParameterData parameterData) {
 
-		long[] commerceCatalogGroupIds = _getCommerceCatalogGroupIds(
-			parameterData);
+		long[] commerceCatalogsIds = _getCommerceCatalogIds(parameterData);
 
-		if (commerceCatalogGroupIds.length == 0) {
+		if (commerceCatalogsIds.length == 0) {
 			return;
 		}
 
 		searchRequestBuilder.withSearchContext(
 			searchContext -> searchContext.setAttribute(
-				"commerceCatalogGroupIds", commerceCatalogGroupIds));
+				"commerceCatalogIds", commerceCatalogsIds));
 	}
 
 	@Reference
