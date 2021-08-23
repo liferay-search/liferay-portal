@@ -19,6 +19,7 @@ import com.liferay.petra.string.StringPool;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -34,12 +35,15 @@ public class CrawlerImpl implements Crawler {
 	public void crawl() {
 		Stream<CrawlerContributor> stream = _crawlerContributorsHolder.stream();
 
-		stream.forEach(
-			seederContributor -> seederContributor.contribute(this::seed));
+		stream.forEach(this::crawl);
 
 		if (!_consumeImmediately) {
 			_frontiersMap.forEach(
 				(origin, frontier) -> consumeAll(origin, frontier));
+		}
+
+		if (!_runtimeExceptions.isEmpty()) {
+			throw new RuntimeException(_runtimeExceptions.toString());
 		}
 	}
 
@@ -94,6 +98,15 @@ public class CrawlerImpl implements Crawler {
 		}
 	}
 
+	protected void crawl(CrawlerContributor crawlerContributor) {
+		try {
+			crawlerContributor.contribute(this::seed);
+		}
+		catch (RuntimeException runtimeException) {
+			_runtimeExceptions.add(runtimeException);
+		}
+	}
+
 	protected String sanitize(String address) {
 		return StringUtils.substringBefore(address, StringPool.POUND);
 	}
@@ -119,15 +132,16 @@ public class CrawlerImpl implements Crawler {
 	}
 
 	private CrawlerImpl(CrawlerImpl crawlerImpl) {
-		_crawlerListeners = new ArrayList<>(crawlerImpl._crawlerListeners);
 		_consumeImmediately = crawlerImpl._consumeImmediately;
 		_crawlerContributorsHolder = crawlerImpl._crawlerContributorsHolder;
+		_crawlerListeners = new ArrayList<>(crawlerImpl._crawlerListeners);
 	}
 
 	private boolean _consumeImmediately;
 	private final CrawlerContributorsHolder _crawlerContributorsHolder;
-	private final ArrayList<CrawlerListener> _crawlerListeners;
+	private final List<CrawlerListener> _crawlerListeners;
 	private final Map<String, Frontier> _frontiersMap = new HashMap<>();
+	private final List<RuntimeException> _runtimeExceptions = new ArrayList<>();
 
 	private static class Frontier {
 
