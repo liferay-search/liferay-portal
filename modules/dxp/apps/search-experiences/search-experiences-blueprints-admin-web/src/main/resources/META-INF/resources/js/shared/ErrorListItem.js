@@ -46,6 +46,14 @@ const SEVERITY_DISPLAY_TYPE = {
 	WARN: 'warning',
 };
 
+const getConfigurationFieldName = (rootProperty) => {
+	const configName = Object.keys(CONFIGURATION_FIELD_NAME).find((key) =>
+		rootProperty?.includes(key)
+	);
+
+	return configName ? ` (${CONFIGURATION_FIELD_NAME[configName]})` : '';
+};
+
 const prettyPrint = (value) => {
 	return JSON.stringify(value, null, 2);
 };
@@ -80,13 +88,10 @@ function ErrorListItem({item, onFocusElement}) {
 				</span>
 
 				{item.msg && (
-					<span className="description">{`${item.msg} ${
-						CONFIGURATION_FIELD_NAME[item.rootConfiguration]
-							? '(' +
-							  CONFIGURATION_FIELD_NAME[item.rootConfiguration] +
-							  ')'
-							: ''
-					}`}</span>
+					<span className="description">
+						{item.msg}
+						{getConfigurationFieldName(item.rootProperty)}
+					</span>
 				)}
 			</span>
 
