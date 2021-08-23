@@ -107,6 +107,16 @@
 	<td></td>
 </tr>
 <tr>
+	<td>BLUEPRINTS_CLAUSE_CONTRIBUTOR_TOGGLE_DISABLED</td>
+	<td>//span[contains(@class,"toggle-switch-label") and contains(.,"Off")]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_CLAUSE_CONTRIBUTOR_TOGGLE_ENABLED</td>
+	<td>//span[contains(@class,"toggle-switch-label") and contains(.,"On")]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>BLUEPRINTS_LIFERAY_INDEXER_CLAUSES_ON_OFF_TOGGLE</td>
 	<td>//li[contains(.,"Liferay Indexer Clauses")]//input[contains(@class,"toggle-switch-check")]</td>
 	<td></td>
