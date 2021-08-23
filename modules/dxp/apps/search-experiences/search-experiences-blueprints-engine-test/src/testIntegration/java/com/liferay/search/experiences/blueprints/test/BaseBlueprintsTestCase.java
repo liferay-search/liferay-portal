@@ -14,6 +14,8 @@
 
 package com.liferay.search.experiences.blueprints.test;
 
+import com.liferay.blogs.model.BlogsEntry;
+import com.liferay.blogs.service.BlogsEntryLocalServiceUtil;
 import com.liferay.expando.kernel.model.ExpandoColumn;
 import com.liferay.expando.kernel.model.ExpandoColumnConstants;
 import com.liferay.expando.kernel.model.ExpandoTable;
@@ -58,6 +60,10 @@ import com.liferay.search.experiences.blueprints.facets.constants.FacetsBlueprin
 import com.liferay.search.experiences.blueprints.message.Messages;
 import com.liferay.search.experiences.blueprints.model.Blueprint;
 import com.liferay.search.experiences.blueprints.service.BlueprintService;
+import com.liferay.wiki.model.WikiNode;
+import com.liferay.wiki.model.WikiPage;
+import com.liferay.wiki.service.WikiNodeLocalService;
+import com.liferay.wiki.service.WikiPageLocalService;
 
 import java.util.ArrayList;
 import java.util.Dictionary;
@@ -90,6 +96,17 @@ public abstract class BaseBlueprintsTestCase {
 
 	@Rule
 	public SearchTestRule searchTestRule = new SearchTestRule();
+
+	protected BlogsEntry addBlogsEntry(String title, String content)
+		throws Exception {
+
+		BlogsEntry blogsEntry = BlogsEntryLocalServiceUtil.addEntry(
+			user.getUserId(), title, content, serviceContext);
+
+		_blogsEntries.add(blogsEntry);
+
+		return blogsEntry;
+	}
 
 	protected Blueprint addCompanyBlueprint(
 			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
@@ -196,6 +213,24 @@ public abstract class BaseBlueprintsTestCase {
 		throws Exception {
 
 		return addJournalArticle(group.getGroupId(), title, content);
+	}
+
+	protected WikiNode addWikiNode() throws Exception {
+		return _wikiNodeLocalService.addDefaultNode(
+			user.getUserId(), serviceContext);
+	}
+
+	protected WikiPage addWikiPage(
+			WikiNode wikiNode, String title, String content)
+		throws Exception {
+
+		WikiPage wikiPage = _wikiPageLocalService.addPage(
+			user.getUserId(), wikiNode.getNodeId(), title, content, "Summary",
+			false, serviceContext);
+
+		_wikiPages.add(wikiPage);
+
+		return wikiPage;
 	}
 
 	protected void assertSearch(
@@ -447,6 +482,9 @@ public abstract class BaseBlueprintsTestCase {
 		return new HashMapDictionary<>(new HashMap<String, Object>(map));
 	}
 
+	@DeleteAfterTestRun
+	private List<BlogsEntry> _blogsEntries = new ArrayList<>();
+
 	@Inject
 	private ClassNameLocalService _classNameLocalService;
 
@@ -464,5 +502,14 @@ public abstract class BaseBlueprintsTestCase {
 
 	@Inject
 	private JSONDataProviderCache _jsonDataProviderCache;
+
+	@Inject
+	private WikiNodeLocalService _wikiNodeLocalService;
+
+	@Inject
+	private WikiPageLocalService _wikiPageLocalService;
+
+	@DeleteAfterTestRun
+	private final List<WikiPage> _wikiPages = new ArrayList<>();
 
 }

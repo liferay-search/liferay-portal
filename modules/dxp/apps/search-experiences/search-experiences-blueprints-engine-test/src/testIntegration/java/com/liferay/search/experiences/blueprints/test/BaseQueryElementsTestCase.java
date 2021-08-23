@@ -150,36 +150,6 @@ public abstract class BaseQueryElementsTestCase extends BaseBlueprintsTestCase {
 
 		return getMultiMatchJSONObject(
 			boost, 2, 1, fuzziness, minimumShouldMatch, operator, type);
-
-		//		JSONArray fieldsJSONArray = createJSONArray();
-
-		//
-		//		JSONObject jsonObject = JSONUtil.put(
-		//			"boost", boost
-		//		).put(
-		//			"fields",
-		//			fieldsJSONArray.put(
-		//				"localized_title${context.language_id}^2"
-		//			).put(
-		//				"content${context.language_id}^1"
-		//			)
-		//		).put(
-		//			"operator", operator
-		//		).put(
-		//			"query", "${keywords}"
-		//		).put(
-		//			"type", type
-		//		);
-		//
-		//		if (minimumShouldMatch != null) {
-		//			jsonObject.put("minimum_should_match", minimumShouldMatch);
-		//		}
-		//
-		//		if (fuzziness != null) {
-		//			jsonObject.put("fuzziness", fuzziness);
-		//		}
-		//
-		//		return jsonObject;
 	}
 
 	protected JSONObject getMultiMatchQueryElementJSONObject(

@@ -15,6 +15,7 @@
 package com.liferay.search.experiences.blueprints.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DataGuard;
@@ -22,6 +23,7 @@ import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
 import com.liferay.search.experiences.blueprints.model.Blueprint;
+import com.liferay.wiki.model.WikiNode;
 
 import java.util.Collections;
 
@@ -46,7 +48,8 @@ public class TextMatchOverMultipleFieldsTest extends BaseQueryElementsTestCase {
 
 	@Test
 	public void testSearchBestFieldsWithOperatorAnd() throws Exception {
-		addJournalArticle("drink carbonated pepsi cola", "carbonated cola cola");
+		addJournalArticle(
+			"drink carbonated pepsi cola", "carbonated cola cola");
 		addJournalArticle("drink carbonated coca", "carbonated cola");
 		addJournalArticle("sprite", "carbonated cola cola");
 		addJournalArticle("fruit punch", "non-carbonated cola");
@@ -60,17 +63,38 @@ public class TextMatchOverMultipleFieldsTest extends BaseQueryElementsTestCase {
 			getConfigurationString(
 				getMultiMatchQueryElementJSONObject(
 					1, 2, 1, "AUTO", "and", "best_fields")),
-			"[drink carbonated coca, drink carbonated pepsi cola, sprite, fruit " +
-				"punch]",
+			"[drink carbonated coca, drink carbonated pepsi cola, sprite, " +
+				"fruit punch]",
 			"coca cola", getSelectedElementString());
 	}
 
 	@Test
-	public void testSearchMultipleFieldsTypeWithOperator() throws Exception {
-		addJournalArticle("lorem ipsum sit", "ipsum sit sit");
-		addJournalArticle("lorem ipsum dolor", "ipsum sit");
-		addJournalArticle("amet", "ipsum sit sit");
-		addJournalArticle("nunquis", "non-lorem ipsum sit");
+	public void testSearchBestFieldsWithOperatorOr() throws Exception {
+		WikiNode wikiNode = addWikiNode();
+
+		addWikiPage(wikiNode, "lorem ipsum sit", "ipsum sit sit");
+		addWikiPage(wikiNode, "lorem ipsum dolor", "ipsum sit");
+		addWikiPage(wikiNode, "nunquis", "non-lorem ipsum sit");
+
+		assertSearch(
+			addCompanyBlueprint(
+				Collections.singletonMap(
+					LocaleUtil.US, getClass().getName() + "Blueprint"),
+				Collections.singletonMap(LocaleUtil.US, ""),
+				getConfigurationString((JSONObject[])null), ""),
+			getConfigurationString(
+				getMultiMatchQueryElementJSONObject(
+					1, 1, 1, "0", "or", "best_fields")),
+			"[lorem ipsum sit, lorem ipsum dolor, nunquis]", "ipsum sit sit",
+			getSelectedElementString());
+	}
+
+	@Test
+	public void testSearchBoolPrefixWithOperator() throws Exception {
+		addBlogsEntry("lorem ipsum sit", "ipsum sit sit");
+		addBlogsEntry("lorem ipsum dolor", "ipsum sit");
+		addBlogsEntry("amet", "ipsum sit sit");
+		addBlogsEntry("nunquis", "non-lorem ipsum sit");
 
 		Blueprint blueprint = addCompanyBlueprint(
 			Collections.singletonMap(
@@ -78,9 +102,76 @@ public class TextMatchOverMultipleFieldsTest extends BaseQueryElementsTestCase {
 			Collections.singletonMap(LocaleUtil.US, ""),
 			getConfigurationString((JSONObject[])null), "");
 
-		_testSearchMostFieldsWithOperator(blueprint);
-		_testSearchBestFieldsWithOperatorOr(blueprint);
-		_testSearchBoolPrefixWithOperator(blueprint);
+		assertSearchIgnoreRelevance(
+			blueprint,
+			getConfigurationString(
+				getMultiMatchQueryElementJSONObject(
+					1, null, "or", "bool_prefix")),
+			"[lorem ipsum dolor, lorem ipsum sit, nunquis]", "lorem dol",
+			getSelectedElementString());
+		assertSearchIgnoreRelevance(
+			blueprint,
+			getConfigurationString(
+				getMultiMatchQueryElementJSONObject(
+					1, null, "and", "bool_prefix")),
+			"[lorem ipsum dolor]", "lorem dol", getSelectedElementString());
+	}
+
+	@Test
+	public void testSearchCrossFieldsWithOperator() throws Exception {
+		addJournalArticle("alpha beta", "foxtrot, golf");
+		addJournalArticle("alpha edison", "hotel golf");
+		addJournalArticle("beta charlie", "alpha");
+		addJournalArticle("edison india", "beta");
+
+		Blueprint blueprint = addCompanyBlueprint(
+			Collections.singletonMap(
+				LocaleUtil.US, getClass().getName() + "Blueprint"),
+			Collections.singletonMap(LocaleUtil.US, ""),
+			getConfigurationString(
+				getMultiMatchQueryElementJSONObject(
+					1, null, "or", "cross_fields")),
+			getSelectedElementString());
+
+		assertSearchIgnoreRelevance(
+			blueprint, null, "[alpha beta, alpha edison, beta charlie]",
+			"alpha golf", "");
+		assertSearchIgnoreRelevance(
+			blueprint,
+			getConfigurationString(
+				getMultiMatchQueryElementJSONObject(
+					1, null, "and", "cross_fields")),
+			"[alpha beta, alpha edison]", "alpha golf",
+			getSelectedElementString());
+	}
+
+	@Test
+	public void testSearchMostFieldsWithOperator() throws Exception {
+		addBlogsEntry("lorem ipsum sit", "ipsum sit sit");
+		addBlogsEntry("lorem ipsum dolor", "ipsum sit");
+		addBlogsEntry("amet", "ipsum sit sit");
+		addBlogsEntry("nunquis", "non-lorem ipsum sit");
+
+		Blueprint blueprint = addCompanyBlueprint(
+			Collections.singletonMap(
+				LocaleUtil.US, getClass().getName() + "Blueprint"),
+			Collections.singletonMap(LocaleUtil.US, ""),
+			getConfigurationString((JSONObject[])null), "");
+
+		assertSearch(
+			blueprint,
+			getConfigurationString(
+				getMultiMatchQueryElementJSONObject(
+					1, 1, 1, "0", null, "or", "most_fields")),
+			"[lorem ipsum sit, amet, lorem ipsum dolor, nunquis]",
+			"ipsum sit sit", getSelectedElementString());
+		assertSearch(
+			blueprint,
+			getConfigurationString(
+				getMultiMatchQueryElementJSONObject(
+					1, 1, 1, "0", null, "and", "most_fields")),
+			"[lorem ipsum sit, nunquis]", "sit lorem",
+			getSelectedElementString());
 	}
 
 	@Test
@@ -124,80 +215,16 @@ public class TextMatchOverMultipleFieldsTest extends BaseQueryElementsTestCase {
 			getSelectedElementString());
 	}
 
-	@Test
-	public void testSearchWithCrossFields() throws Exception {
-		addJournalArticle("alpha beta", "foxtrot, golf");
-		addJournalArticle("alpha edison", "hotel golf");
-		addJournalArticle("beta charlie", "alpha");
-		addJournalArticle("edison india", "beta");
+	@Override
+	protected JSONObject getFrameworkConfiguration() {
+		JSONObject jsonObject = super.getFrameworkConfiguration();
 
-		Blueprint blueprint = addCompanyBlueprint(
-			Collections.singletonMap(
-				LocaleUtil.US, getClass().getName() + "Blueprint"),
-			Collections.singletonMap(LocaleUtil.US, ""),
-			getConfigurationString(
-				getMultiMatchQueryElementJSONObject(
-					1, null, "or", "cross_fields")),
-			getSelectedElementString());
+		JSONArray fieldsJSONArray = (JSONArray)jsonObject.get(
+			"searchable_asset_types");
 
-		assertSearchIgnoreRelevance(
-			blueprint, null, "[alpha beta, alpha edison, beta charlie]",
-			"alpha golf", "");
-		assertSearchIgnoreRelevance(
-			blueprint,
-			getConfigurationString(
-				getMultiMatchQueryElementJSONObject(
-					1, null, "and", "cross_fields")),
-			"[alpha beta, alpha edison]", "alpha golf",
-			getSelectedElementString());
+		fieldsJSONArray.put("com.liferay.blogs.model.BlogsEntry");
+
+		return jsonObject;
 	}
 
-	private void _testSearchBestFieldsWithOperatorOr(Blueprint blueprint)
-		throws Exception {
-
-		assertSearch(
-			blueprint,
-			getConfigurationString(
-				getMultiMatchQueryElementJSONObject(
-					1, 1, 1, "0", "or", "best_fields")),
-			"[lorem ipsum sit, amet, lorem ipsum dolor, nunquis]",
-			"ipsum sit sit", getSelectedElementString());
-	}
-
-	private void _testSearchBoolPrefixWithOperator(Blueprint blueprint)
-		throws Exception {
-
-		assertSearch(
-			blueprint,
-			getConfigurationString(
-				getMultiMatchQueryElementJSONObject(
-					1, null, "or", "bool_prefix")),
-			"[lorem ipsum dolor, lorem ipsum sit, nunquis]", "lorem dol",
-			getSelectedElementString());
-		assertSearch(
-			blueprint,
-			getConfigurationString(
-				getMultiMatchQueryElementJSONObject(
-					1, null, "and", "bool_prefix")),
-			"[lorem ipsum dolor]", "lorem dol", getSelectedElementString());
-	}
-
-	private void _testSearchMostFieldsWithOperator(Blueprint blueprint)
-		throws Exception {
-
-		assertSearch(
-			blueprint,
-			getConfigurationString(
-				getMultiMatchQueryElementJSONObject(
-					1, 1, 1, "0", null, "or", "most_fields")),
-			"[lorem ipsum sit, amet, lorem ipsum dolor, nunquis]",
-			"ipsum sit sit", getSelectedElementString());
-		assertSearch(
-			blueprint,
-			getConfigurationString(
-				getMultiMatchQueryElementJSONObject(
-					1, 1, 1, "0", null, "and", "most_fields")),
-			"[lorem ipsum sit, nunquis]", "sit lorem",
-			getSelectedElementString());
-	}
 }
