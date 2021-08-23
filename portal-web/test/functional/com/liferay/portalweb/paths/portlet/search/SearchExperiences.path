@@ -102,6 +102,16 @@
 	<td></td>
 </tr>
 <tr>
+	<td>BLUEPRINTS_CLAUSE_CONTRIBUTOR_ON_OFF_TOGGLE</td>
+	<td>//tr[contains(.,"${contributorClass}")]//input[contains(@class,"toggle-switch-check")]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_LIFERAY_INDEXER_CLAUSES_ON_OFF_TOGGLE</td>
+	<td>//li[contains(.,"Liferay Indexer Clauses")]//input[contains(@class,"toggle-switch-check")]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>BLUEPRINTS_OPTIONS_WIDGET_CHOOSE</td>
 	<td>//button[@data-entityname='${key_blueprintName}']</td>
 	<td></td>
