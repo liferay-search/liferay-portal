@@ -1,0 +1,28 @@
+{
+	"mappings": {
+		"_doc": {
+			"properties": {
+				"content": {
+					"store": true,
+					"type": "text"
+				},
+				"liferay_version": {
+					"store": true,
+					"type": "keyword"
+				},
+				"link": {
+					"store": true,
+					"type": "text"
+				},
+				"origin_site": {
+					"store": true,
+					"type": "keyword"
+				},
+				"title": {
+					"store": true,
+					"type": "text"
+				}
+			}
+		}
+	}
+}
