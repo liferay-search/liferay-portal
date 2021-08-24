@@ -17,8 +17,10 @@ package com.liferay.search.experiences.federation.rest.internal.resource.v1_0;
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.search.document.Document;
+import com.liferay.portal.search.filter.ComplexQueryPart;
 import com.liferay.portal.search.hits.SearchHit;
 import com.liferay.portal.search.hits.SearchHits;
+import com.liferay.portal.search.searcher.SearchRequest;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.searcher.SearchRequestBuilderFactory;
 import com.liferay.portal.search.searcher.SearchResponse;
@@ -70,11 +72,20 @@ public class SearchResultResourceImpl extends BaseSearchResultResourceImpl {
 		SearchResponse searchResponse = searcher.search(
 			searchRequestBuilder.build());
 
+		SearchRequest searchRequest = searchResponse.getRequest();
+
+		List<ComplexQueryPart> complexQueryParts =
+			searchRequest.getComplexQueryParts();
+
+		if (complexQueryParts.isEmpty()) {
+			return new SearchResult();
+		}
+
 		SearchHits searchHits = searchResponse.getSearchHits();
 
 		List<SearchHit> searchHitList = searchHits.getSearchHits();
 
-		return _toResults(searchHitList);
+		return _toSearchResult(searchHitList);
 	}
 
 	@Activate
@@ -92,7 +103,7 @@ public class SearchResultResourceImpl extends BaseSearchResultResourceImpl {
 	@Reference
 	protected SearchRequestBuilderFactory searchRequestBuilderFactory;
 
-	private SearchResult _toResults(List<SearchHit> searchHits)
+	private SearchResult _toSearchResult(List<SearchHit> searchHits)
 		throws Exception {
 
 		Result[] restResults = new Result[searchHits.size()];
