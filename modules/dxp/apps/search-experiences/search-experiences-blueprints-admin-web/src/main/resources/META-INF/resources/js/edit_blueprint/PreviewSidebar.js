@@ -29,6 +29,7 @@ import SearchInput from '../shared/SearchInput';
 import {sub} from '../utils/language';
 import useDidUpdateEffect from '../utils/useDidUpdateEffect';
 import {parseAndPrettifyJSON} from '../utils/utils';
+import PreviewAttributesModal from './PreviewAttributesModal';
 import ResultListItem from './ResultListItem';
 
 const DELTAS = [10, 20, 30, 50];
@@ -41,12 +42,17 @@ function PreviewSidebar({
 	results,
 	visible,
 }) {
-	const [value, setValue] = useState('');
-	const [activePage, setActivePage] = useState(1);
 	const [activeDelta, setActiveDelta] = useState(10);
+	const [activePage, setActivePage] = useState(1);
+	const [attributes, setAttributes] = useState([]);
+	const [value, setValue] = useState('');
+
+	const _handleAttributesSubmit = (attributes) => {
+		setAttributes(attributes);
+	};
 
 	const _handleFetch = () => {
-		onFetchResults(value, activeDelta, activePage);
+		onFetchResults(value, activeDelta, activePage, attributes);
 	};
 
 	useDidUpdateEffect(() => {
@@ -182,14 +188,22 @@ function PreviewSidebar({
 					</span>
 				</h4>
 
-				<ClayButton
-					aria-label={Liferay.Language.get('dropdown')}
-					displayType="unstyled"
-					onClick={() => onToggle(false)}
-					small
-				>
-					<ClayIcon symbol="times" />
-				</ClayButton>
+				<span>
+					<PreviewAttributesModal
+						onSubmit={_handleAttributesSubmit}
+					/>
+
+					<ClayButton
+						aria-label={Liferay.Language.get('close')}
+						borderless
+						displayType="secondary"
+						monospaced
+						onClick={() => onToggle(false)}
+						small
+					>
+						<ClayIcon symbol="times" />
+					</ClayButton>
+				</span>
 			</div>
 
 			<nav

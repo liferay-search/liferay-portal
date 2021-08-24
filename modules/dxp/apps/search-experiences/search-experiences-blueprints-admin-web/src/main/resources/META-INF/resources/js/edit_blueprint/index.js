@@ -436,7 +436,7 @@ function EditBlueprintForm({
 		});
 	};
 
-	const _handleFetchPreviewSearch = (value, delta, page) => {
+	const _handleFetchPreviewSearch = (value, delta, page, attributes) => {
 		setPreviewInfo((previewInfo) => ({
 			...previewInfo,
 			loading: true,
@@ -476,6 +476,11 @@ function EditBlueprintForm({
 		formData.append(`${namespace}page`, page);
 		formData.append(`${namespace}q`, value);
 		formData.append(`${namespace}size`, delta);
+
+		formData.append(
+			`${namespace}previewAttributes`,
+			JSON.stringify(attributes.filter((attribute) => attribute.key))
+		);
 
 		return fetch(searchResultsURL, {
 			body: formData,

@@ -153,6 +153,11 @@ public class BlueprintsAdminRequestUtil {
 			portletRequest, BlueprintsAdminWebKeys.KEYWORDS);
 	}
 
+	public static String getPreviewAttributes(PortletRequest portletRequest) {
+		return ParamUtil.getString(
+			portletRequest, BlueprintsAdminWebKeys.PREVIEW_ATTRIBUTES);
+	}
+
 	public static boolean getReadOnly(PortletRequest portletRequest) {
 		return ParamUtil.getBoolean(
 			portletRequest, BlueprintsAdminWebKeys.READ_ONLY);

@@ -15,7 +15,10 @@
 package com.liferay.search.experiences.blueprints.admin.web.internal.portlet.action;
 
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactory;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.Log;
@@ -27,6 +30,7 @@ import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.ResourceBundleUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.search.searcher.SearchResponse;
 import com.liferay.search.experiences.blueprints.admin.web.internal.constants.BlueprintsAdminMVCCommandNames;
@@ -46,6 +50,8 @@ import com.liferay.search.experiences.blueprints.validator.BlueprintValidator;
 import com.liferay.search.experiences.searchresponse.json.translator.SearchResponseJSONTranslator;
 import com.liferay.search.experiences.searchresponse.json.translator.constants.JSONKeys;
 import com.liferay.search.experiences.searchresponse.json.translator.constants.ResponseAttributeKeys;
+
+import java.io.Serializable;
 
 import java.util.List;
 import java.util.ResourceBundle;
@@ -141,6 +147,29 @@ public class PreviewBlueprintMVCResourceCommand extends BaseMVCResourceCommand {
 		return blueprint;
 	}
 
+	private JSONArray _getPreviewAttributesJSONArray(
+		ResourceRequest resourceRequest) {
+
+		String previewAttributesString =
+			BlueprintsAdminRequestUtil.getPreviewAttributes(resourceRequest);
+
+		if (Validator.isBlank(previewAttributesString)) {
+			return JSONFactoryUtil.createJSONArray();
+		}
+
+		try {
+			return JSONFactoryUtil.createJSONArray(previewAttributesString);
+		}
+		catch (JSONException jsonException) {
+			_log.error(
+				"Unable to create a JSON array from: " +
+					previewAttributesString,
+				jsonException);
+
+			return JSONFactoryUtil.createJSONArray();
+		}
+	}
+
 	private BlueprintsAttributes _getRequestBlueprintsAttributes(
 		ResourceRequest resourceRequest, Blueprint blueprint) {
 
@@ -154,6 +183,14 @@ public class PreviewBlueprintMVCResourceCommand extends BaseMVCResourceCommand {
 
 		blueprintsAttributesBuilder.addAttribute(
 			"include_response_string", true);
+
+		for (Object object : _getPreviewAttributesJSONArray(resourceRequest)) {
+			JSONObject jsonObject = (JSONObject)object;
+
+			blueprintsAttributesBuilder.addAttribute(
+				jsonObject.getString("key"),
+				(Serializable)jsonObject.get("value"));
+		}
 
 		return blueprintsAttributesBuilder.build();
 	}
