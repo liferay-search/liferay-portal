@@ -1,0 +1,6 @@
+Bundle-Name: Liferay Search Experiences Federation REST API
+Bundle-SymbolicName: com.liferay.search.experiences.federation.rest.api
+Bundle-Version: 1.0.0
+Export-Package:\
+	com.liferay.search.experiences.federation.rest.dto.v1_0,\
+	com.liferay.search.experiences.federation.rest.resource.v1_0
