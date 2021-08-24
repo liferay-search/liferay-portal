@@ -767,7 +767,7 @@
             ],
             "type": "best_fields",
             "operator": "or",
-            "slop": null
+            "slop": ""
           },
           "uiConfigurationJSON": {
             "fieldSets": [
@@ -884,7 +884,7 @@
                   },
                   {
                     "helpText": "Only use slop with the following match types: phrase, phrase prefix.",
-                    "defaultValue": null,
+                    "defaultValue": "",
                     "name": "slop",
                     "typeOptions": {
                       "min": 0,
