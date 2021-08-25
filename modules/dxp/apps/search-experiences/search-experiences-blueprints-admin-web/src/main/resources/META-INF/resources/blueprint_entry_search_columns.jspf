@@ -20,6 +20,20 @@
 	<portlet:param name="<%= BlueprintsAdminWebKeys.BLUEPRINT_ID %>" value="<%= String.valueOf(entry.getBlueprintId()) %>" />
 </portlet:renderURL>
 
+<%
+String entryTitle = entry.getTitle(locale);
+String entryDescription = entry.getDescription(locale);
+
+String[] languageIds = entry.getAvailableLanguageIds();
+int i = 0;
+
+while (Validator.isNull(entryTitle) && (i < languageIds.length)) {
+	entryTitle = entry.getTitle(languageIds[i]);
+	entryDescription = entry.getDescription(languageIds[i]);
+	i++;
+}
+%>
+
 <c:choose>
 	<c:when test='<%= viewBlueprintsDisplayContext.getDisplayStyle().equals("descriptive") %>'>
 		<liferay-ui:search-container-column-user
@@ -34,19 +48,19 @@
 				<c:when test="<%= BlueprintEntryPermission.contains(permissionChecker, entry, ActionKeys.UPDATE) %>">
 					<h4>
 						<aui:a href="<%= editEntryURL %>">
-							<%= HtmlUtil.escape(entry.getTitle(locale)) %>
+							<%= HtmlUtil.escape(entryTitle) %>
 						</aui:a>
 					</h4>
 				</c:when>
 				<c:otherwise>
 					<h4>
-						<%= HtmlUtil.escape(entry.getTitle(locale)) %>
+						<%= HtmlUtil.escape(entryTitle) %>
 					</h4>
 				</c:otherwise>
 			</c:choose>
 
-			<h5 class="text-default text-truncate-inline" title="<%= HtmlUtil.escape(entry.getDescription(locale)) %>">
-				<%= (entry.getDescription(locale).length() > 300) ? HtmlUtil.escape(entry.getDescription(locale).substring(0, 300).concat("...")) : HtmlUtil.escape(entry.getDescription(locale)) %>
+			<h5 class="text-default text-truncate-inline" title="<%= HtmlUtil.escape(entryDescription) %>">
+				<%= (entryDescription.length() > 300) ? HtmlUtil.escape(entryDescription.substring(0, 300).concat("...")) : HtmlUtil.escape(entryDescription) %>
 			</h5>
 
 			<%
@@ -77,13 +91,13 @@
 					cssClass="table-cell-expand table-cell-minw-200 table-title"
 					href="<%= editEntryURL %>"
 					name="title"
-					value="<%= HtmlUtil.escape(entry.getTitle(locale)) %>"
+					value="<%= HtmlUtil.escape(entryTitle) %>"
 				/>
 
 				<liferay-ui:search-container-column-text
 					cssClass="table-cell-expand table-cell-minw-200"
 					name="description"
-					value="<%= HtmlUtil.escape(entry.getDescription(locale)) %>"
+					value="<%= HtmlUtil.escape(entryDescription) %>"
 				/>
 
 				<liferay-ui:search-container-column-text
@@ -96,13 +110,13 @@
 				<liferay-ui:search-container-column-text
 					cssClass="table-cell-expand table-cell-minw-200 table-title"
 					name="title"
-					value="<%= HtmlUtil.escape(entry.getTitle(locale)) %>"
+					value="<%= HtmlUtil.escape(entryTitle) %>"
 				/>
 
 				<liferay-ui:search-container-column-text
 					cssClass="table-cell-expand table-cell-minw-200"
 					name="description"
-					value="<%= HtmlUtil.escape(entry.getDescription(locale)) %>"
+					value="<%= HtmlUtil.escape(entryDescription) %>"
 				/>
 
 				<liferay-ui:search-container-column-text

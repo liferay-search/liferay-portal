@@ -398,14 +398,7 @@ function EditElementForm({
 										<div className="entry-description text-truncate">
 											{initialDescription[
 												defaultLocale.replace('_', '-')
-											] ? (
-												initialDescription[
-													defaultLocale.replace(
-														'_',
-														'-'
-													)
-												]
-											) : (
+											] || (
 												<span className="entry-description-blank">
 													{Liferay.Language.get(
 														'no-description'

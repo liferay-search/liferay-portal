@@ -202,9 +202,10 @@ function AddElementSidebar({
 		(value) => {
 			const newElements = elements.filter((element) => {
 				if (value) {
-					const elementTitle =
-						element.elementTemplateJSON.title[locale] ||
-						element.elementTemplateJSON.title;
+					const elementTitle = getLocalizedText(
+						element.elementTemplateJSON.title,
+						locale
+					);
 
 					return elementTitle
 						.toLowerCase()

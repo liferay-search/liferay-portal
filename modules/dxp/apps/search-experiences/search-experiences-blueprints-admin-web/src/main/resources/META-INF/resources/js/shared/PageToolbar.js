@@ -21,11 +21,11 @@ import {ClayTooltipProvider} from '@clayui/tooltip';
 import PropTypes from 'prop-types';
 import React, {useContext, useRef, useState} from 'react';
 
+import {getLocalizedText} from '../utils/language';
 import ThemeContext from './ThemeContext';
 
-const DEFAULT_LOCALE = 'en-US';
-
 function EditTitleModal({
+	defaultLocale,
 	initialDescription,
 	initialTitle,
 	modalFieldFocus,
@@ -42,7 +42,7 @@ function EditTitleModal({
 	const _handleSubmit = (event) => {
 		event.preventDefault();
 
-		if (!title[DEFAULT_LOCALE]) {
+		if (!title[defaultLocale]) {
 			setHasError(true);
 
 			titleInput.current.focus();
@@ -82,12 +82,12 @@ function EditTitleModal({
 							}}
 							onChange={({target: {value}}) =>
 								setTitle({
-									[DEFAULT_LOCALE]: value,
+									[defaultLocale]: value,
 								})
 							}
 							ref={titleInput}
 							type="text"
-							value={title[DEFAULT_LOCALE]}
+							value={title[defaultLocale]}
 						/>
 
 						{hasError && (
@@ -113,11 +113,11 @@ function EditTitleModal({
 							id="description"
 							onChange={({target: {value}}) =>
 								setDescription({
-									[DEFAULT_LOCALE]: value,
+									[defaultLocale]: value,
 								})
 							}
 							type="text"
-							value={description[DEFAULT_LOCALE]}
+							value={description[defaultLocale]}
 						/>
 					</ClayForm.Group>
 				</ClayModal.Body>
@@ -154,10 +154,22 @@ export default function PageToolbar({
 	tabs,
 	children,
 }) {
-	const {namespace} = useContext(ThemeContext);
+	const {defaultLocale, namespace} = useContext(ThemeContext);
 
-	const [description, setDescription] = useState(initialDescription);
-	const [title, setTitle] = useState(initialTitle);
+	const newDefaultLocale = defaultLocale.replace('_', '-');
+
+	// Update defaultLocale in case the instance defaultLocale is different
+	// from the original entry's defaultLocale.
+
+	const [description, setDescription] = useState({
+		[newDefaultLocale]: getLocalizedText(
+			initialDescription,
+			newDefaultLocale
+		),
+	});
+	const [title, setTitle] = useState({
+		[newDefaultLocale]: getLocalizedText(initialTitle, newDefaultLocale),
+	});
 
 	const [modalFieldFocus, setModalFieldFocus] = useState('name');
 	const [modalVisible, setModalVisible] = useState(false);
@@ -202,6 +214,7 @@ export default function PageToolbar({
 						<ClayToolbar.Item className="text-left" expand>
 							{modalVisible && (
 								<EditTitleModal
+									defaultLocale={newDefaultLocale}
 									initialDescription={description}
 									initialTitle={title}
 									modalFieldFocus={modalFieldFocus}
@@ -222,7 +235,7 @@ export default function PageToolbar({
 									onClick={_handleClickEdit('name')}
 								>
 									<div className="entry-title text-truncate">
-										{title[DEFAULT_LOCALE]}
+										{title[newDefaultLocale]}
 
 										<ClayIcon
 											className="entry-heading-edit-icon"
@@ -246,11 +259,11 @@ export default function PageToolbar({
 										<div
 											className="entry-description text-truncate"
 											data-tooltip-align="bottom"
-											title={description[DEFAULT_LOCALE]}
+											title={
+												description[newDefaultLocale]
+											}
 										>
-											{description[DEFAULT_LOCALE] ? (
-												description[DEFAULT_LOCALE]
-											) : (
+											{description[newDefaultLocale] || (
 												<span className="entry-description-blank">
 													{Liferay.Language.get(
 														'no-description'
