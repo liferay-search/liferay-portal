@@ -24,6 +24,8 @@ jest.mock(
 	)
 );
 
+Liferay.ThemeDisplay = {getDefaultLanguageId: () => 'en_US'};
+
 const COLLAPSED_VIEW = ['type', 'description', 'date', 'userName'];
 const SEARCH_RESULTS = mockSearchResults();
 

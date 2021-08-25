@@ -35,6 +35,7 @@ jest.mock(
 // Prevents "TypeError: Liferay.component is not a function" error on openToast
 
 Toasts.openSuccessToast = jest.fn();
+Liferay.ThemeDisplay = {getDefaultLanguageId: () => 'en_US'};
 
 function renderEditBlueprint(props) {
 	return render(
