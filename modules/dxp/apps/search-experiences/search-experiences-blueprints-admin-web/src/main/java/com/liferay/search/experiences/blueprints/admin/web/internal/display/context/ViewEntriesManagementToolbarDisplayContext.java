@@ -83,7 +83,7 @@ public abstract class ViewEntriesManagementToolbarDisplayContext
 
 	@Override
 	public String getClearResultsURL() {
-		PortletURL clearResultsURL = PortletURLBuilder.create(
+		return PortletURLBuilder.create(
 			getPortletURL()
 		).setMVCRenderCommandName(
 			getMVCRenderCommandName()
@@ -95,9 +95,7 @@ public abstract class ViewEntriesManagementToolbarDisplayContext
 			"orderByCol", getOrderByCol()
 		).setParameter(
 			"orderByType", getOrderByCol()
-		).build();
-
-		return clearResultsURL.toString();
+		).buildString();
 	}
 
 	@Override
@@ -107,7 +105,7 @@ public abstract class ViewEntriesManagementToolbarDisplayContext
 
 	@Override
 	public String getSearchActionURL() {
-		PortletURL searchActionURL = PortletURLBuilder.create(
+		return PortletURLBuilder.create(
 			getPortletURL()
 		).setMVCRenderCommandName(
 			getMVCRenderCommandName()
@@ -117,9 +115,7 @@ public abstract class ViewEntriesManagementToolbarDisplayContext
 			"orderByCol", getOrderByCol()
 		).setParameter(
 			"orderByType", getOrderByCol()
-		).build();
-
-		return searchActionURL.toString();
+		).buildString();
 	}
 
 	@Override
@@ -159,21 +155,23 @@ public abstract class ViewEntriesManagementToolbarDisplayContext
 	}
 
 	protected String createActionURL(String actionName, String cmd) {
-		PortletURL portletURL = PortletURLBuilder.createActionURL(
+		return PortletURLBuilder.createActionURL(
 			liferayPortletResponse
 		).setActionName(
 			actionName
+		).setCMD(
+			() -> {
+				if (!Validator.isBlank(cmd)) {
+					return Constants.ADD;
+				}
+
+				return null;
+			}
 		).setRedirect(
 			currentURLObj
 		).setParameter(
 			BlueprintsAdminWebKeys.TAB, tab
-		).build();
-
-		if (!Validator.isBlank(cmd)) {
-			portletURL.setParameter(Constants.CMD, Constants.ADD);
-		}
-
-		return portletURL.toString();
+		).buildString();
 	}
 
 	protected PortletURL getCurrentSortingURL() {

@@ -357,9 +357,9 @@ public class AggregationHelper {
 		keyStream.forEach(
 			key -> orders.add(_getOrder(key, orderJSONObject.getString(key))));
 
-		Stream<Order> orderStream = orders.stream();
+		Stream<Order> ordersStream = orders.stream();
 
-		setter.accept(orderStream.toArray(Order[]::new));
+		setter.accept(ordersStream.toArray(Order[]::new));
 	}
 
 	public void setRanges(JSONObject jsonObject, Consumer<Range> setter) {

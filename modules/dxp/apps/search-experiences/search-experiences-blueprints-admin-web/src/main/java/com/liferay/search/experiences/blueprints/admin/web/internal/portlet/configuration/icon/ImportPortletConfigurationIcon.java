@@ -34,7 +34,6 @@ import java.util.ResourceBundle;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
-import javax.portlet.PortletURL;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -66,7 +65,7 @@ public class ImportPortletConfigurationIcon
 	public String getOnClick(
 		PortletRequest portletRequest, PortletResponse portletResponse) {
 
-		PortletURL portletURL = PortletURLBuilder.create(
+		String portletURLString = PortletURLBuilder.create(
 			_portal.getControlPanelPortletURL(
 				portletRequest, BlueprintsPortletKeys.BLUEPRINTS_ADMIN,
 				PortletRequest.RENDER_PHASE)
@@ -82,7 +81,7 @@ public class ImportPortletConfigurationIcon
 			}
 		).setWindowState(
 			LiferayWindowState.POP_UP
-		).build();
+		).buildString();
 
 		StringBundler sb = new StringBundler(6);
 
@@ -90,7 +89,7 @@ public class ImportPortletConfigurationIcon
 		sb.append("size: 'md', title: '");
 		sb.append(getMessage(portletRequest));
 		sb.append("', url: '");
-		sb.append(portletURL.toString());
+		sb.append(portletURLString);
 		sb.append("'});");
 
 		return sb.toString();

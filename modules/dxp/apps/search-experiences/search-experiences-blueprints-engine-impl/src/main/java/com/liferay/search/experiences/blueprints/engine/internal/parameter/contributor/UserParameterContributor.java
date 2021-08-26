@@ -28,6 +28,7 @@ import com.liferay.portal.kernel.service.UserGroupLocalService;
 import com.liferay.portal.kernel.service.UserGroupRoleLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
@@ -98,120 +99,80 @@ public class UserParameterContributor implements ParameterContributor {
 
 	@Override
 	public List<ParameterDefinition> getParameterDefinitions() {
-		List<ParameterDefinition> parameterDefinitions = new ArrayList<>();
-
-		parameterDefinitions.add(
+		return ListUtil.fromArray(
 			new ParameterDefinition(
 				_getTemplateVariableName("id"), LongParameter.class.getName(),
-				"core.parameter.user.id"));
-
-		parameterDefinitions.add(
+				"core.parameter.user.id"),
 			new ParameterDefinition(
 				_getTemplateVariableName("is_signed_in"),
 				BooleanParameter.class.getName(),
-				"core.parameter.user.is-signed-in"));
-
-		parameterDefinitions.add(
+				"core.parameter.user.is-signed-in"),
 			new ParameterDefinition(
 				_getTemplateVariableName("full_name"),
 				StringParameter.class.getName(),
-				"core.parameter.user.full-name"));
-
-		parameterDefinitions.add(
+				"core.parameter.user.full-name"),
 			new ParameterDefinition(
 				_getTemplateVariableName("first_name"),
 				StringParameter.class.getName(),
-				"core.parameter.user.first-name"));
-
-		parameterDefinitions.add(
+				"core.parameter.user.first-name"),
 			new ParameterDefinition(
 				_getTemplateVariableName("last_name"),
 				StringParameter.class.getName(),
-				"core.parameter.user.last-name"));
-
-		parameterDefinitions.add(
+				"core.parameter.user.last-name"),
 			new ParameterDefinition(
 				_getTemplateVariableName("language_id"),
 				StringParameter.class.getName(),
-				"core.parameter.user.language-id"));
-
-		parameterDefinitions.add(
+				"core.parameter.user.language-id"),
 			new ParameterDefinition(
 				_getTemplateVariableName("job_title"),
 				StringParameter.class.getName(),
-				"core.parameter.user.job-title"));
-
-		parameterDefinitions.add(
+				"core.parameter.user.job-title"),
 			new ParameterDefinition(
 				_getTemplateVariableName("create_date"),
 				DateParameter.class.getName(),
-				"core.parameter.user.create-date"));
-
-		parameterDefinitions.add(
+				"core.parameter.user.create-date"),
 			new ParameterDefinition(
 				_getTemplateVariableName("birthday"),
-				DateParameter.class.getName(), "core.parameter.user.birthday"));
-
-		parameterDefinitions.add(
+				DateParameter.class.getName(), "core.parameter.user.birthday"),
 			new ParameterDefinition(
 				_getTemplateVariableName("age"),
-				IntegerParameter.class.getName(), "core.parameter.user.age"));
-
-		parameterDefinitions.add(
+				IntegerParameter.class.getName(), "core.parameter.user.age"),
 			new ParameterDefinition(
 				_getTemplateVariableName("is_male"),
 				BooleanParameter.class.getName(),
-				"core.parameter.user.is-male"));
-
-		parameterDefinitions.add(
+				"core.parameter.user.is-male"),
 			new ParameterDefinition(
 				_getTemplateVariableName("is_female"),
 				BooleanParameter.class.getName(),
-				"core.parameter.user.is-female"));
-
-		parameterDefinitions.add(
+				"core.parameter.user.is-female"),
 			new ParameterDefinition(
 				_getTemplateVariableName("is_gender_x"),
 				BooleanParameter.class.getName(),
-				"core.parameter.user.is-gender-x"));
-
-		parameterDefinitions.add(
+				"core.parameter.user.is-gender-x"),
 			new ParameterDefinition(
 				_getTemplateVariableName("email_domain"),
 				StringParameter.class.getName(),
-				"core.parameter.user.email-domain"));
-
-		parameterDefinitions.add(
+				"core.parameter.user.email-domain"),
 			new ParameterDefinition(
 				_getTemplateVariableName("group_ids"),
 				LongArrayParameter.class.getName(),
-				"core.parameter.user.group-ids"));
-
-		parameterDefinitions.add(
+				"core.parameter.user.group-ids"),
 			new ParameterDefinition(
 				_getTemplateVariableName("usergroup_ids"),
 				LongArrayParameter.class.getName(),
-				"core.parameter.user.usergroup-ids"));
-
-		parameterDefinitions.add(
+				"core.parameter.user.usergroup-ids"),
 			new ParameterDefinition(
 				_getTemplateVariableName("regular_role_ids"),
 				LongArrayParameter.class.getName(),
-				"core.parameter.user.regular-role-ids"));
-
-		parameterDefinitions.add(
+				"core.parameter.user.regular-role-ids"),
 			new ParameterDefinition(
 				_getTemplateVariableName("current_site_role_ids"),
 				LongArrayParameter.class.getName(),
-				"core.parameter.user.current-site-role-ids"));
-
-		parameterDefinitions.add(
+				"core.parameter.user.current-site-role-ids"),
 			new ParameterDefinition(
 				_getTemplateVariableName("active_segment_entry_ids"),
 				LongArrayParameter.class.getName(),
 				"core.parameter.user.active-segment-entry-ids"));
-
-		return parameterDefinitions;
 	}
 
 	private void _addCurrentSiteRoleIds(

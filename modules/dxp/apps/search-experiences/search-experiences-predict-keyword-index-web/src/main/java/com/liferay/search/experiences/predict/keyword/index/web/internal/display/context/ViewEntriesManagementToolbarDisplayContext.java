@@ -86,7 +86,7 @@ public abstract class ViewEntriesManagementToolbarDisplayContext
 
 	@Override
 	public String getSearchActionURL() {
-		PortletURL searchURL = PortletURLBuilder.createRenderURL(
+		return PortletURLBuilder.createRenderURL(
 			liferayPortletResponse
 		).setMVCRenderCommandName(
 			KeywordIndexMVCCommandNames.VIEW_KEYWORD_ENTRIES
@@ -96,9 +96,7 @@ public abstract class ViewEntriesManagementToolbarDisplayContext
 			"orderByType", getOrderByType()
 		).setParameter(
 			"tabs", getTab()
-		).build();
-
-		return searchURL.toString();
+		).buildString();
 	}
 
 	@Override

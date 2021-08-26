@@ -101,7 +101,7 @@ public class ViewMisspellingSetsManagementToolbarDisplayContext
 
 	@Override
 	public String getSearchActionURL() {
-		PortletURL searchURL = PortletURLBuilder.createRenderURL(
+		return PortletURLBuilder.createRenderURL(
 			liferayPortletResponse
 		).setMVCRenderCommandName(
 			MisspellingsMVCCommandNames.VIEW_MISSPELLING_SETS
@@ -109,9 +109,7 @@ public class ViewMisspellingSetsManagementToolbarDisplayContext
 			"orderByCol", getOrderByCol()
 		).setParameter(
 			"orderByType", getOrderByCol()
-		).build();
-
-		return searchURL.toString();
+		).buildString();
 	}
 
 	@Override

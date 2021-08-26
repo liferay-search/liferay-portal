@@ -131,11 +131,9 @@ public class ToTemplateVariableStringVisitor implements ToStringVisitor {
 	}
 
 	private Date _modifyDate(Date date, String option) {
-		if (Validator.isBlank(option)) {
-			return date;
-		}
+		if (Validator.isBlank(option) ||
+			!option.matches("^[\\+|\\-][0-9]+[h|d|w|M|y]")) {
 
-		if (!option.matches("^[\\+|\\-][0-9]+[h|d|w|M|y]")) {
 			return date;
 		}
 

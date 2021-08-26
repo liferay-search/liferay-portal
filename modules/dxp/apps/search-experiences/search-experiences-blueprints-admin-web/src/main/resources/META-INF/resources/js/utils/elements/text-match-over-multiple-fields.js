@@ -160,7 +160,7 @@ export default {
 						},
 					},
 					{
-						defaultValue: "",
+						defaultValue: '',
 						helpText:
 							'Only use slop with the following match types: phrase, phrase prefix.',
 						label: 'Slop',

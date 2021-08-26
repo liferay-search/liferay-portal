@@ -79,11 +79,8 @@ public class TermMapFacetResponseHandler
 				FacetConfigurationUtil.getIncludeValues(jsonObject);
 
 			for (Bucket bucket : termsAggregationResult.getBuckets()) {
-				if (Validator.isBlank(bucket.getKey())) {
-					continue;
-				}
-
-				if (!FacetConfigurationUtil.includeValue(
+				if (Validator.isBlank(bucket.getKey()) ||
+					!FacetConfigurationUtil.includeValue(
 						bucket.getKey(), includeValues, excludeValues)) {
 
 					continue;

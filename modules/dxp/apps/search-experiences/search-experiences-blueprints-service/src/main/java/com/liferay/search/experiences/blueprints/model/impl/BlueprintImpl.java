@@ -30,7 +30,5 @@ public class BlueprintImpl extends BlueprintBaseImpl {
 	 *
 	 * Never reference this class directly. All methods that expect a blueprint model instance should use the {@link com.liferay.search.experiences.blueprints.model.Blueprint} interface instead.
 	 */
-	public BlueprintImpl() {
-	}
 
 }

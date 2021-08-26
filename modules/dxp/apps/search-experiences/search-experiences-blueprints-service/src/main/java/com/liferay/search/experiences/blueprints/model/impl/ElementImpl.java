@@ -30,7 +30,5 @@ public class ElementImpl extends ElementBaseImpl {
 	 *
 	 * Never reference this class directly. All methods that expect a element model instance should use the {@link com.liferay.search.experiences.blueprints.model.Element} interface instead.
 	 */
-	public ElementImpl() {
-	}
 
 }

@@ -19,8 +19,6 @@ components:
                     type: array
             type: object
 info:
-    description:
-        ""
     license:
         name: "Apache 2.0"
         url: "http://www.apache.org/licenses/LICENSE-2.0.html"
@@ -66,6 +64,4 @@ paths:
                         application/xml:
                             schema:
                                 $ref: "#/components/schemas/SearchResult"
-                    description:
-                        ""
             tags: ["SearchResult"]

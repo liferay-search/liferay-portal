@@ -24,6 +24,7 @@ import com.liferay.portal.kernel.portlet.JSONPortletResponseUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCResourceCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCResourceCommand;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -46,7 +47,6 @@ import com.liferay.search.experiences.searchresponse.json.translator.SearchRespo
 import com.liferay.search.experiences.searchresponse.json.translator.constants.JSONKeys;
 import com.liferay.search.experiences.searchresponse.json.translator.constants.ResponseAttributeKeys;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -191,19 +191,9 @@ public class PreviewBlueprintMVCResourceCommand extends BaseMVCResourceCommand {
 	}
 
 	private List<String> _getResultFields() {
-		List<String> resultFields = new ArrayList<>();
-
-		resultFields.add("id");
-		resultFields.add("score");
-		resultFields.add("b_assetEntryId");
-		resultFields.add("b_author");
-		resultFields.add("b_created");
-		resultFields.add("b_modified");
-		resultFields.add("b_summary");
-		resultFields.add("b_title");
-		resultFields.add("b_type");
-
-		return resultFields;
+		return ListUtil.fromArray(
+			"id", "score", "b_assetEntryId", "b_author", "b_created",
+			"b_modified", "b_summary", "b_title", "b_type");
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

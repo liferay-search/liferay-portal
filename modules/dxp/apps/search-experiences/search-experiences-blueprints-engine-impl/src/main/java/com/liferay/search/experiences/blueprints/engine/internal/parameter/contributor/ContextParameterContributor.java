@@ -22,6 +22,7 @@ import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.search.experiences.blueprints.engine.internal.attributes.util.BlueprintsAttributeValuesHelper;
@@ -35,7 +36,6 @@ import com.liferay.search.experiences.blueprints.message.Messages;
 import com.liferay.search.experiences.blueprints.model.Blueprint;
 import com.liferay.search.experiences.blueprints.util.util.MessagesUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -79,50 +79,34 @@ public class ContextParameterContributor implements ParameterContributor {
 
 	@Override
 	public List<ParameterDefinition> getParameterDefinitions() {
-		List<ParameterDefinition> parameterDefinitions = new ArrayList<>();
-
-		parameterDefinitions.add(
+		return ListUtil.fromArray(
 			new ParameterDefinition(
 				_getTemplateVariableName("company_id"),
 				LongParameter.class.getName(),
-				"core.parameter.context.company-id"));
-
-		parameterDefinitions.add(
+				"core.parameter.context.company-id"),
 			new ParameterDefinition(
 				_getTemplateVariableName("ct_collection_id"),
 				LongParameter.class.getName(),
-				"core.parameter.context.ct-collection-id"));
-
-		parameterDefinitions.add(
+				"core.parameter.context.ct-collection-id"),
 			new ParameterDefinition(
 				_getTemplateVariableName("scope_group_id"),
 				LongParameter.class.getName(),
-				"core.parameter.context.scope-group-id"));
-
-		parameterDefinitions.add(
+				"core.parameter.context.scope-group-id"),
 			new ParameterDefinition(
 				_getTemplateVariableName("layout_locale_name"),
 				StringParameter.class.getName(),
-				"core.parameter.context.layout-locale-name"));
-
-		parameterDefinitions.add(
+				"core.parameter.context.layout-locale-name"),
 			new ParameterDefinition(
 				_getTemplateVariableName("plid"), LongParameter.class.getName(),
-				"core.parameter.context.plid"));
-
-		parameterDefinitions.add(
+				"core.parameter.context.plid"),
 			new ParameterDefinition(
 				_getTemplateVariableName("language"),
 				StringParameter.class.getName(),
-				"core.parameter.context.language"));
-
-		parameterDefinitions.add(
+				"core.parameter.context.language"),
 			new ParameterDefinition(
 				_getTemplateVariableName("language_id"),
 				StringParameter.class.getName(),
 				"core.parameter.context.language-id"));
-
-		return parameterDefinitions;
 	}
 
 	private void _addCompanyId(

@@ -316,11 +316,7 @@ public class SelectOrganizationsDisplayContext {
 	}
 
 	public boolean isShowSearch() throws PortalException {
-		if (getTotalItems() > 0) {
-			return true;
-		}
-
-		if (Validator.isNotNull(getKeywords())) {
+		if ((getTotalItems() > 0) || Validator.isNotNull(getKeywords())) {
 			return true;
 		}
 

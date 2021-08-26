@@ -16,6 +16,7 @@ package com.liferay.search.experiences.blueprints.engine.internal.parameter.cont
 
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.service.UserLocalService;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.TimeZoneUtil;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
@@ -34,7 +35,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -69,50 +69,39 @@ public class TimeParameterContributor implements ParameterContributor {
 
 	@Override
 	public List<ParameterDefinition> getParameterDefinitions() {
-		List<ParameterDefinition> parameterDefinitions = new ArrayList<>();
-
-		parameterDefinitions.add(
+		return ListUtil.fromArray(
 			new ParameterDefinition(
 				_getTemplateVariableName("current_date"),
 				DateParameter.class.getName(),
-				"core.parameter.time.current-date"));
-		parameterDefinitions.add(
+				"core.parameter.time.current-date"),
 			new ParameterDefinition(
 				_getTemplateVariableName("current_day_of_month"),
 				IntegerParameter.class.getName(),
-				"core.parameter.time.current-day-of-month"));
-		parameterDefinitions.add(
+				"core.parameter.time.current-day-of-month"),
 			new ParameterDefinition(
 				_getTemplateVariableName("current_day_of_week"),
 				IntegerParameter.class.getName(),
-				"core.parameter.time.current-day-of-week"));
-		parameterDefinitions.add(
+				"core.parameter.time.current-day-of-week"),
 			new ParameterDefinition(
 				_getTemplateVariableName("current_day_of_year"),
 				IntegerParameter.class.getName(),
-				"core.parameter.time.current-day-of-year"));
-		parameterDefinitions.add(
+				"core.parameter.time.current-day-of-year"),
 			new ParameterDefinition(
 				_getTemplateVariableName("current_hour"),
 				IntegerParameter.class.getName(),
-				"core.parameter.time.current-hour"));
-		parameterDefinitions.add(
+				"core.parameter.time.current-hour"),
 			new ParameterDefinition(
 				_getTemplateVariableName("current_year"),
 				IntegerParameter.class.getName(),
-				"core.parameter.time.current-year"));
-		parameterDefinitions.add(
+				"core.parameter.time.current-year"),
 			new ParameterDefinition(
 				_getTemplateVariableName("time_of_day"),
 				StringParameter.class.getName(),
-				"core.parameter.time.time-of-day"));
-		parameterDefinitions.add(
+				"core.parameter.time.time-of-day"),
 			new ParameterDefinition(
 				_getTemplateVariableName("timezone_locale_name"),
 				StringParameter.class.getName(),
 				"core.parameter.time.timezone-locale-name"));
-
-		return parameterDefinitions;
 	}
 
 	private void _addParameters(

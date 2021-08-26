@@ -15,6 +15,7 @@
 package com.liferay.search.experiences.blueprints.commerce.internal.parameter;
 
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.search.experiences.blueprints.engine.parameter.LongArrayParameter;
@@ -25,7 +26,6 @@ import com.liferay.search.experiences.blueprints.engine.spi.parameter.ParameterC
 import com.liferay.search.experiences.blueprints.message.Messages;
 import com.liferay.search.experiences.blueprints.model.Blueprint;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.LongStream;
@@ -58,21 +58,15 @@ public class CommerceParameterContributor implements ParameterContributor {
 
 	@Override
 	public List<ParameterDefinition> getParameterDefinitions() {
-		List<ParameterDefinition> parameterDefinitions = new ArrayList<>();
-
-		parameterDefinitions.add(
+		return ListUtil.fromArray(
 			new ParameterDefinition(
 				_getTemplateVariableName("account_group_ids"),
 				LongParameter.class.getName(),
-				"commerce.parameter.account-group-ids"));
-
-		parameterDefinitions.add(
+				"commerce.parameter.account-group-ids"),
 			new ParameterDefinition(
 				_getTemplateVariableName("channel_group_id"),
 				LongParameter.class.getName(),
 				"commerce.parameter.channel-group-id"));
-
-		return parameterDefinitions;
 	}
 
 	private void _addAccountGroupIds(
