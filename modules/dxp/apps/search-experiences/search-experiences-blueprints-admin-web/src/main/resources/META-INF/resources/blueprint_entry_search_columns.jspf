@@ -25,12 +25,10 @@ String entryTitle = entry.getTitle(locale);
 String entryDescription = entry.getDescription(locale);
 
 String[] languageIds = entry.getAvailableLanguageIds();
-int i = 0;
 
-while (Validator.isNull(entryTitle) && (i < languageIds.length)) {
+for (int i = 0; Validator.isNull(entryTitle) && (i < languageIds.length); i++) {
 	entryTitle = entry.getTitle(languageIds[i]);
 	entryDescription = entry.getDescription(languageIds[i]);
-	i++;
 }
 %>
 
