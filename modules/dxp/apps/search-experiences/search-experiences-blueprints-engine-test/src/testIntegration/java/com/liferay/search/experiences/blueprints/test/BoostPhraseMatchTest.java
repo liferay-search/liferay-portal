@@ -58,7 +58,7 @@ public class BoostPhraseMatchTest extends BaseQueryElementsTestCase {
 					10, "AUTO", "or", "most_fields")),
 			getSelectedElementString());
 
-		assertSearch(
+		assertSearchIgnoreRelevance(
 			blueprint, null,
 			"[this coca looks like a kind of drink, this looks like a kind " +
 				"of coca drink]",

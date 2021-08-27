@@ -63,7 +63,8 @@ public class BoostContentsInCategoryByKeywordMatchTest
 			Collections.singletonMap(LocaleUtil.US, ""),
 			getConfigurationString((JSONObject[])null), "");
 
-		assertSearch(blueprint, null, "[coca cola, pepsi cola]", "cola", null);
+		assertSearchIgnoreRelevance(
+			blueprint, null, "[coca cola, pepsi cola]", "cola", null);
 
 		assertSearch(
 			blueprint,
