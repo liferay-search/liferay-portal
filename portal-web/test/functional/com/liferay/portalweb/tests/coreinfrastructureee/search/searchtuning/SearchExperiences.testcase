@@ -550,4 +550,80 @@ definition {
 			locator1 = "SearchExperiences#ELEMENTS_ADMIN_UI_CONFIGURATION_EDITOR");
 	}
 
+	test HideAndShowElement {
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		SearchExperiences.addBlueprint(name = "Test Blueprint");
+
+		SearchExperiences.addQueryElement(element = "Boost Freshness");
+
+		PortletEntry.save();
+
+		Navigator.gotoNavItem(navItem = "Elements");
+
+		Search.searchCP(searchTerm = "Boost Freshness");
+
+		LexiconEntry.openEntryMenu(rowEntry = "Boost Freshness");
+
+		MenuItem.click(menuItem = "Hide");
+
+		AssertElementNotPresent(
+			key_rowEntry = "Boost Freshness",
+			locator1 = "ContentRow#ENTRY_CONTENT_ENTRY_NAME");
+
+		ManagementBar.setFilterAndOrder(filterBy = "Hidden");
+
+		AssertElementPresent(
+			key_rowEntry = "Boost Freshness",
+			locator1 = "ContentRow#ENTRY_CONTENT_ENTRY_NAME");
+
+		Navigator.gotoNavItem(navItem = "Blueprints");
+
+		SearchExperiences.editBlueprint(name = "Test Blueprint");
+
+		AssertElementPresent(
+			elementName = "Boost Freshness",
+			locator1 = "SearchExperiences#BLUEPRINTS_ADDED_ELEMENT");
+
+		Type.sendKeysApplicationSearch(
+			locator1 = "SearchExperiences#BLUEPRINTS_ADD_ELEMENTS_SIDEBAR_SEARCH_BAR",
+			value1 = "Boost Freshness");
+
+		AssertElementNotPresent(
+			key_elementName = "Boost Freshness",
+			locator1 = "SearchExperiences#BLUEPRINTS_ADD_ELEMENTS_SIDEBAR_ELEMENT_NAME");
+
+		Navigator.gotoBack();
+
+		Navigator.gotoNavItem(navItem = "Elements");
+
+		ManagementBar.setFilterAndOrder(filterBy = "Hidden");
+
+		LexiconEntry.openEntryMenu(rowEntry = "Boost Freshness");
+
+		MenuItem.click(menuItem = "Show");
+
+		AssertTextEquals(
+			locator1 = "Message#EMPTY_INFO",
+			value1 = "No entries were found.");
+
+		ManagementBar.setFilterAndOrder(filterBy = "Visible");
+
+		AssertElementPresent(
+			key_rowEntry = "Boost Freshness",
+			locator1 = "ContentRow#ENTRY_CONTENT_ENTRY_NAME");
+
+		Navigator.gotoNavItem(navItem = "Blueprints");
+
+		SearchExperiences.editBlueprint(name = "Test Blueprint");
+
+		Type.sendKeysApplicationSearch(
+			locator1 = "SearchExperiences#BLUEPRINTS_ADD_ELEMENTS_SIDEBAR_SEARCH_BAR",
+			value1 = "Boost Freshness");
+
+		AssertElementPresent(
+			key_elementName = "Boost Freshness",
+			locator1 = "SearchExperiences#BLUEPRINTS_ADD_ELEMENTS_SIDEBAR_ELEMENT_NAME");
+	}
+
 }
