@@ -341,4 +341,109 @@ definition {
 			locator1 = "SearchExperiences#BLUEPRINTS_CLAUSE_CONTRIBUTOR_ON_OFF_TOGGLE");
 	}
 
+	test DefineRolePermissions {
+		property custom.properties = "jsonws.web.service.paths.excludes=";
+
+		JSONRole.addRegularRole(
+			roleKey = "Search Blueprints Admin",
+			roleTitle = "Search Blueprints Admin");
+
+		for (var resourceActionIndex : list "ACCESS_IN_CONTROL_PANEL,CONFIGURATION,PERMISSIONS,PREFERENCES,VIEW") {
+			Permissions.definePermissionViaJSONAPI(
+				resourceAction = "${resourceActionIndex}",
+				resourceName = "com_liferay_search_experiences_blueprints_web_internal_portlet_BlueprintsAdminPortlet",
+				roleTitle = "Search Blueprints Admin");
+		}
+
+		for (var resourceActionIndex : list "ADD_BLUEPRINT,ADD_ELEMENT,PERMISSIONS") {
+			Permissions.definePermissionViaJSONAPI(
+				resourceAction = "${resourceActionIndex}",
+				resourceName = "com.liferay.search.experiences.blueprints",
+				roleTitle = "Search Blueprints Admin");
+		}
+
+		for (var resourceActionIndex : list "APPLY,DELETE,PERMISSIONS,UPDATE,VIEW") {
+			Permissions.definePermissionViaJSONAPI(
+				resourceAction = "${resourceActionIndex}",
+				resourceName = "com.liferay.search.experiences.blueprints.model.Blueprint",
+				roleTitle = "Search Blueprints Admin");
+		}
+
+		for (var resourceActionIndex : list "DELETE,PERMISSIONS,UPDATE,VIEW") {
+			Permissions.definePermissionViaJSONAPI(
+				resourceAction = "${resourceActionIndex}",
+				resourceName = "com.liferay.search.experiences.blueprints.model.Element",
+				roleTitle = "Search Blueprints Admin");
+		}
+
+		Permissions.definePermissionViaJSONAPI(
+			resourceAction = "VIEW_CONTROL_PANEL",
+			resourceName = "90",
+			roleTitle = "Search Blueprints Admin");
+
+		JSONUser.addUser(
+			userEmailAddress = "userea@liferay.com",
+			userFirstName = "userfn",
+			userLastName = "userln",
+			userScreenName = "usersn");
+
+		JSONUser.setFirstPassword(
+			agreeToTermsAndAnswerReminderQuery = "true",
+			requireReset = "false",
+			userEmailAddress = "userea@liferay.com");
+
+		JSONRole.assignRoleToUser(
+			roleTitle = "Search Blueprints Admin",
+			userEmailAddress = "userea@liferay.com");
+
+		User.logoutAndLoginPG(
+			userLoginEmailAddress = "userea@liferay.com",
+			userLoginFullName = "userfn userln");
+
+		ApplicationsMenu.gotoPortlet(
+			category = "Search Experiences",
+			panel = "Applications",
+			portlet = "Blueprints");
+
+		SearchExperiences.addBlueprint(name = "New Blueprint");
+
+		PortletEntry.save();
+
+		SearchExperiences.editBlueprint(name = "New Blueprint");
+
+		Click(locator1 = "Icon#EDIT_PENCIL");
+
+		PortletEntry.inputName(name = "Edited Blueprint");
+
+		Button.clickDone();
+
+		PortletEntry.save();
+
+		LexiconEntry.delete(rowEntry = "Edited Blueprint");
+
+		LexiconEntry.viewNoEntry(rowEntry = "Edited Blueprint");
+
+		Navigator.gotoNavItem(navItem = "Elements");
+
+		SearchExperiences.createElement(name = "New Element");
+
+		SearchExperiences.editElement(name = "New Element");
+
+		var elementTemplateJSON = '''
+{
+	"title": {
+		"en_US": "Edited Element"
+	}
+}
+		''';
+
+		Type.typeCodeMirrorEditor(
+			locator1 = "SearchExperiences#ELEMENTS_ADMIN_TEMPLATE_EDITOR",
+			value1 = "${elementTemplateJSON}");
+
+		PortletEntry.save();
+
+		LexiconEntry.delete(rowEntry = "Edited Element");
+	}
+
 }
