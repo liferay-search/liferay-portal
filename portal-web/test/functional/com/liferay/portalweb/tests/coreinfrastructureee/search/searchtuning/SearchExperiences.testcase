@@ -718,4 +718,137 @@ definition {
 		}
 	}
 
+		@priority = "4"
+		test HideWebContentViaCustomElement {
+			JSONWebcontent.addWebContent(
+				content = "",
+				groupName = "Guest",
+				title = "Content");
+
+			JSONWebcontent.addWebContent(
+				assetTagNames = "test",
+				content = "",
+				groupName = "Guest",
+				title = "Test Content");
+
+			JSONWebcontent.addWebContent(
+				assetTagNames = "experimental",
+				content = "",
+				groupName = "Guest",
+				title = "Experimental Content");
+
+			SearchExperiences.openSearchExperiencesAdmin();
+
+			var elementTemplateJSON = '''
+	{
+		"category": "hide",
+		"clauses": [
+			{
+				"context": "query",
+				"occur": "filter",
+				"query": {
+					"wrapper":{
+						"query": {
+							"bool": {
+								"must_not": [
+									{
+										"term": {
+											"assetTagNames.raw": {
+												"value": "${configuration.tag1}"
+											}
+										}
+									},
+									{
+										"term": {
+											"assetTagNames.raw": {
+												"value": "${configuration.tag2}"
+											}
+										}
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		],
+		"conditions": {},
+		"description": {
+			"en_US": "Hide content with multiple specific tags"
+		},
+		"enabled": true,
+		"icon": "hidden",
+		"title": {
+			"en_US": "Hide Content with Multiple Tags"
+		}
+	}
+			''';
+
+			var uiConfigurationJSON = '''
+	{
+		"fieldSets": [
+			{
+				"fields": [
+					{
+						"defaultValue": "",
+						"name": "tag1",
+						"label": "Tag 1",
+						"type": "text"
+					},
+					{
+						"defaultValue": "",
+						"name": "tag2",
+						"label": "Tag 2",
+						"type": "text"
+					}
+				]
+			}
+		]
+	}
+			''';
+
+			SearchExperiences.createElement(
+				elementTemplateJSON = "${elementTemplateJSON}",
+				name = "Hide Content with Multiple Tags",
+				uiConfigurationJSON = "${uiConfigurationJSON}");
+
+			Navigator.gotoNavItem(navItem = "Blueprints");
+
+			SearchExperiences.addBlueprint(name = "Hide Test and Experimental Content");
+
+			SearchExperiences.addQueryElement(element = "Hide Content with Multiple Tags");
+
+			Type(
+				key_fieldLabel = "Tag 1",
+				locator1 = "SearchExperiences#BLUEPRINTS_ADDED_ELEMENT_TEXT_FIELD",
+				value1 = "test");
+
+			Type(
+				key_fieldLabel = "Tag 2",
+				locator1 = "SearchExperiences#BLUEPRINTS_ADDED_ELEMENT_TEXT_FIELD",
+				value1 = "experimental");
+
+			PortletEntry.save();
+
+			Search.openSearchPage();
+
+			SearchPortlets.addWidgets(searchPortletList = "Blueprints Options");
+
+			SearchExperiences.selectBlueprintFromOptionsWidget(name = "Hide Test and Experimental Content");
+
+			SearchPortlets.searchEmbedded(searchTerm = "Content");
+
+			SearchResultPortlet.viewSearchResults(
+				searchAssetTitle = "Content",
+				searchAssetType = "Web Content Article");
+
+			SearchResultPortlet.viewSearchResultNotPresent(
+				searchAssetTitle = "Test Content",
+				searchAssetType = "Web Content Article");
+
+			SearchResultPortlet.viewSearchResultNotPresent(
+				searchAssetTitle = "Experimental Content",
+				searchAssetType = "Web Content Article");
+		}
+
 }
