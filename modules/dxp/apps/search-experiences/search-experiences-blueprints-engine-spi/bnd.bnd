@@ -1,0 +1,13 @@
+Bundle-Name: Liferay Search Experiences Blueprints Engine SPI
+Bundle-SymbolicName: com.liferay.search.experiences.blueprints.engine.spi
+Bundle-Version: 1.0.0
+Export-Package:\
+	com.liferay.search.experiences.blueprints.engine.spi.aggregation,\
+	com.liferay.search.experiences.blueprints.engine.spi.clause,\
+	com.liferay.search.experiences.blueprints.engine.spi.dataprovider,\
+	com.liferay.search.experiences.blueprints.engine.spi.keywords,\
+	com.liferay.search.experiences.blueprints.engine.spi.parameter,\
+	com.liferay.search.experiences.blueprints.engine.spi.query,\
+	com.liferay.search.experiences.blueprints.engine.spi.searchrequest,\
+	com.liferay.search.experiences.blueprints.engine.spi.sort,\
+	com.liferay.search.experiences.blueprints.engine.spi.suggester
