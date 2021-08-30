@@ -207,4 +207,52 @@ definition {
 			value1 = "Oil Filter");
 	}
 
+	test BoostSearchRankingForAssetType {
+		JSONWebcontent.addWebContent(
+			content = "Liferay",
+			groupName = "Guest",
+			title = "Liferay Web Content");
+
+		JSONBlog.addEntry(
+			entryContent = "Liferay Liferay",
+			entryTitle = "Liferay Blogs Entry");
+
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		SearchExperiences.addBlueprint(name = "My Blueprint");
+
+		Search.openSearchPage();
+
+		SearchPortlets.addWidgets(searchPortletList = "Blueprints Options");
+
+		SearchExperiences.selectBlueprintFromOptionsWidget(name = "My Blueprint");
+
+		SearchPortlets.searchEmbedded(searchTerm = "liferay");
+
+		SearchResultPortlet.viewSearchResultsSpecificOrder(resultsList = "Liferay Blogs Entry,Liferay Web Content");
+
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		SearchExperiences.editBlueprint(name = "My Blueprint");
+
+		SearchExperiences.addQueryElement(element = "Boost Asset Type");
+
+		SearchExperiences.configureElementDropdown(
+			dropdownName = "Asset Type",
+			option = "Web Content Article");
+
+		Type(
+			key_fieldLabel = "Boost",
+			locator1 = "SearchExperiences#BLUEPRINTS_ADDED_ELEMENT_NUMBER_FIELD",
+			value1 = "1000");
+
+		PortletEntry.save();
+
+		Search.openSearchPage();
+
+		SearchPortlets.searchEmbedded(searchTerm = "liferay");
+
+		SearchResultPortlet.viewSearchResultsSpecificOrder(resultsList = "Liferay Web Content,Liferay Blogs Entry");
+	}
+
 }
