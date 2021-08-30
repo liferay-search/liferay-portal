@@ -51,4 +51,72 @@ definition {
 		LexiconEntry.viewNoEntry(rowEntry = "Blueprint 1");
 	}
 
+	test AssertNonAdminsCannotAccessSearchExperiencePortlet {
+		property custom.properties = "jsonws.web.service.paths.excludes=";
+
+		JSONWebcontent.addWebContent(
+			content = "Los Angeles",
+			groupName = "Guest",
+			title = "Java Cafe");
+
+		for (var userNumber : list "1,2") {
+			JSONUser.addUser(
+				userEmailAddress = "userea${userNumber}@liferay.com",
+				userFirstName = "userfn${userNumber}",
+				userLastName = "userln${userNumber}",
+				userScreenName = "usersn${userNumber}");
+
+			JSONUser.setFirstPassword(
+				agreeToTermsAndAnswerReminderQuery = "true",
+				requireReset = "false",
+				userEmailAddress = "userea${userNumber}@liferay.com");
+		}
+
+		JSONRole.assignRoleToUser(
+			roleTitle = "Administrator",
+			userEmailAddress = "userea1@liferay.com");
+
+		User.logoutPG();
+
+		User.loginUserPG(
+			password = "test",
+			userEmailAddress = "userea1@liferay.com");
+
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		SearchExperiences.addBlueprint(name = "Los Angeles Boost");
+
+		Search.openSearchPage();
+
+		SearchPortlets.addWidgets(searchPortletList = "Blueprints Options");
+
+		SearchExperiences.selectBlueprintFromOptionsWidget(name = "Los Angeles Boost");
+
+		SearchPortlets.searchEmbedded(searchTerm = "cafe");
+
+		SearchResultPortlet.viewSearchResults(
+			searchAssetTitle = "Cafe",
+			searchAssetType = "Web Content Article");
+
+		User.logoutPG();
+
+		User.loginUserPG(
+			password = "test",
+			userEmailAddress = "userea2@liferay.com");
+
+		AssertElementNotPresent(locator1 = "ControlMenu#APPLICATIONS_MENU_ICON");
+
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		Portlet.viewNoPermissionPG();
+
+		Search.openSearchPage();
+
+		SearchPortlets.searchEmbedded(searchTerm = "cafe");
+
+		SearchResultPortlet.viewSearchResults(
+			searchAssetTitle = "Cafe",
+			searchAssetType = "Web Content Article");
+	}
+
 }
