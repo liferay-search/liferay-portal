@@ -446,4 +446,42 @@ definition {
 		LexiconEntry.delete(rowEntry = "Edited Element");
 	}
 
+	test ExportAndImportBlueprint {
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		SearchExperiences.addBlueprint(name = "Test Blueprint");
+
+		SearchExperiences.addQueryElement(element = "Boost Freshness");
+
+		PortletEntry.save();
+
+		LexiconEntry.gotoEntryMenuItem(
+			menuItem = "Export",
+			rowEntry = "Test Blueprint");
+
+		LexiconEntry.delete(
+			confirmationText = "Are you sure you want to delete this? It will be deleted immediately.",
+			rowEntry = "Test Blueprint");
+
+		Click(locator1 = "Icon#HEADER_VERTICAL_ELLIPSIS");
+
+		MenuItem.click(menuItem = "Import");
+
+		SelectFrame(locator1 = "IFrame#MODAL_BODY");
+
+		UploadTempFile(
+			locator1 = "TextInput#FILE",
+			value1 = "Test Blueprint.json");
+
+		Button.clickImport();
+
+		VerifyElementPresent(locator1 = "Message#SUCCESS");
+
+		SearchExperiences.editBlueprint(name = "Test Blueprint");
+
+		AssertElementPresent(
+			elementName = "Boost Freshness",
+			locator1 = "SearchExperiences#BLUEPRINTS_ADDED_ELEMENT");
+	}
+
 }
