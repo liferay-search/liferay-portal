@@ -942,7 +942,7 @@
 </tr>
 <tr>
 	<td>BUTTON_PLUS_PRODUCT_VISIBILITY</td>
-	<td>//li[contains(@class,'nav-item')]//button[contains(@title,'${key_webContentTitle}')]</td>
+	<td>//li[contains(@class,'nav-item')]//button[contains(@title,'${key_title}')]</td>
 	<td></td>
 </tr>
 </tbody>

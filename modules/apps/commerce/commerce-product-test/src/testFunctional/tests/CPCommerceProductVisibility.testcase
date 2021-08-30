@@ -122,7 +122,7 @@ definition {
 			locator1 = "ToggleSwitch#ENABLE_SPECIFIC_TOGGLE_SWITCH");
 
 		ClickNoError.clickNoMouseOver(
-			key_webContentTitle = "Add Account Group Relation to Simple T-Shirt",
+			key_title = "Add Account Group Relation to Simple T-Shirt",
 			locator1 = "Button#BUTTON_PLUS_PRODUCT_VISIBILITY");
 
 		SelectFrame.selectFrameNoLoading(locator1 = "IFrame#MODAL_BODY");
