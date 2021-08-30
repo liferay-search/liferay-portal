@@ -1180,4 +1180,33 @@ definition {
 		SearchExperiences.viewCopiedContent(text = "clauses");
 	}
 
+	test ViewExpandedAndCollapsedBlueprintsPreviewEntry {
+		JSONWebcontent.addWebContent(
+			content = "",
+			groupName = "Guest",
+			title = "Apple");
+
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		SearchExperiences.addBlueprint(name = "My Blueprint");
+
+		Click(locator1 = "Button#PREVIEW");
+
+		SearchExperiences.searchBlueprintsPreview(searchTerm = "Apple");
+
+		Click(locator1 = "SearchExperiences#BLUEPRINTS_PREVIEW_EXPAND_ENTRY_BUTTON");
+
+		AssertTextEquals.assertPartialText(
+			key_fieldName = "ddmStructureKey",
+			locator1 = "SearchExperiences#BLUEPRINTS_PREVIEW_ENTRY_FIELD_VALUE",
+			value1 = "BASIC-WEB-CONTENT");
+
+		Click(locator1 = "SearchExperiences#BLUEPRINTS_PREVIEW_COLLAPSE_ENTRY_BUTTON");
+
+		AssertTextEquals.assertPartialText(
+			key_fieldName = "type",
+			locator1 = "SearchExperiences#BLUEPRINTS_PREVIEW_ENTRY_FIELD_VALUE",
+			value1 = "com.liferay.journal.model.journalarticle");
+	}
+
 }
