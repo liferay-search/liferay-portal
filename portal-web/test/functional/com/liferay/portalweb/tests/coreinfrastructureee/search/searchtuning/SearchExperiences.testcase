@@ -1243,4 +1243,169 @@ definition {
 		Alert.viewErrorMessage(errorMessage = "expected type: JSONObject, found: JSONArray (Query Configuration)");
 	}
 
+	test ViewQueryBuilderFieldValidation {
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		var elementTemplateJSON = '''
+{
+	"enabled": true,
+	"title": {
+		"en_US": "Test Element"
+	}
+}
+		''';
+
+		var uiConfigurationJSON = '''
+{
+	"fieldSets": [
+		{
+			"fields": [
+				{
+					"defaultValue": [
+						{
+							"field": "localized_title",
+							"locale": "hu_HU"
+						}
+					],
+					"label": "Fields",
+					"name": "fields",
+					"type": "fieldMappingList"
+				},
+				{
+					"defaultValue": 1,
+					"label": "Boost",
+					"name": "boost",
+					"type": "number"
+				}
+			]
+		}
+	]
+}
+		''';
+
+		SearchExperiences.createElement(
+			elementTemplateJSON = "${elementTemplateJSON}",
+			name = "Test Element",
+			uiConfigurationJSON = "${uiConfigurationJSON}");
+
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		SearchExperiences.addBlueprint(name = "Test Blueprint");
+
+		SearchExperiences.addQueryElement(element = "Test Element");
+
+		Click(locator1 = "SearchExperiences#BLUEPRINTS_ADDED_ELEMENT_DELETE_FIELD_MAPPING_FIELD");
+
+		Button.clickSave();
+
+		Alert.viewRequiredField();
+
+		Alert.viewErrorMessage(errorMessage = "Unable to save due to invalid or missing configuration values.");
+
+		Click(locator1 = "SearchExperiences#BLUEPRINTS_ADDED_ELEMENT_FIELD_MAPPING_FIELD");
+
+		Type(
+			key_fieldLabel = "Field",
+			locator1 = "SearchExperiences#BLUEPRINTS_ADDED_ELEMENT_TEXT_FIELD",
+			value1 = "title");
+
+		KeyPress(
+			key_fieldLabel = "Field",
+			locator1 = "SearchExperiences#BLUEPRINTS_ADDED_ELEMENT_TEXT_FIELD",
+			value1 = "\ESCAPE");
+
+		Type(
+			key_fieldLabel = "Boost",
+			locator1 = "SearchExperiences#BLUEPRINTS_ADDED_ELEMENT_GENERIC_FIELD",
+			value1 = "");
+
+		Alert.viewRequiredField();
+
+		Type(
+			key_fieldLabel = "Boost",
+			locator1 = "SearchExperiences#BLUEPRINTS_ADDED_ELEMENT_GENERIC_FIELD",
+			value1 = "1");
+
+		AssertElementNotPresent(locator1 = "TextInput#REQUIRED_ALERT");
+
+		PortletEntry.save();
+
+		AssertElementNotPresent(locator1 = "TextInput#REQUIRED_ALERT");
+
+		SearchExperiences.editElement(name = "Test Element");
+
+		var uiConfigurationJSON = '''
+{
+	"fieldSets": [
+		{
+			"fields": [
+				{
+					"defaultValue": [
+						{
+							"field": "localized_title",
+							"locale": "hu_HU"
+						}
+					],
+					"label": "Fields",
+					"name": "fields",
+					"type": "fieldMappingList",
+					"typeOptions": {
+						"required": false
+					}
+				},
+				{
+					"defaultValue": 1,
+					"label": "Boost",
+					"name": "boost",
+					"type": "number",
+					"typeOptions": {
+						"required": false
+					}
+				}
+			]
+		}
+	]
+}
+		''';
+
+		Type.typeCodeMirrorEditor(
+			locator1 = "SearchExperiences#ELEMENTS_ADMIN_UI_CONFIGURATION_EDITOR",
+			value1 = "${uiConfigurationJSON}");
+
+		PortletEntry.save();
+
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		SearchExperiences.editBlueprint(name = "Test Blueprint");
+
+		SearchExperiences.addQueryElement(element = "Test Element");
+
+		AssertTextEquals.assertPartialText(
+			elementName = "Test Element",
+			fieldName = "Fields",
+			locator1 = "SearchExperiences#BLUEPRINTS_ADDED_ELEMENT_FIELD_LABEL",
+			value1 = "Optional");
+
+		AssertTextEquals.assertPartialText(
+			elementName = "Test Element",
+			fieldName = "Boost",
+			locator1 = "SearchExperiences#BLUEPRINTS_ADDED_ELEMENT_FIELD_LABEL",
+			value1 = "Optional");
+
+		Type(
+			key_fieldLabel = "Boost",
+			locator1 = "SearchExperiences#BLUEPRINTS_ADDED_ELEMENT_GENERIC_FIELD",
+			value1 = "");
+
+		Click(locator1 = "SearchExperiences#BLUEPRINTS_ADDED_ELEMENT_DELETE_FIELD_MAPPING_FIELD");
+
+		AssertElementNotPresent(locator1 = "TextInput#REQUIRED_ALERT");
+
+		PortletEntry.save();
+
+		AssertElementNotPresent(locator1 = "TextInput#REQUIRED_ALERT");
+
+		AssertElementNotPresent(locator1 = "Message#ERROR_1");
+	}
+
 }
