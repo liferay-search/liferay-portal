@@ -1209,4 +1209,38 @@ definition {
 			value1 = "com.liferay.journal.model.journalarticle");
 	}
 
+	test ViewInvalidElementViaBlueprintsPreview {
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		Navigator.gotoNavItem(navItem = "Elements");
+
+		var elementTemplateJSON = '''
+{
+	"conditions": [],
+	"title": {
+		"en_US": "My Element"
+	},
+	"description": {}
+}
+		''';
+
+		SearchExperiences.createElement(
+			elementTemplateJSON = "${elementTemplateJSON}",
+			name = "My Element");
+
+		Button.click(button = "Continue To Save");
+
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		SearchExperiences.addBlueprint(name = "My Blueprint");
+
+		SearchExperiences.addQueryElement(element = "My Element");
+
+		Click(locator1 = "Button#PREVIEW");
+
+		SearchExperiences.searchBlueprintsPreview(searchTerm = "Test");
+
+		Alert.viewErrorMessage(errorMessage = "expected type: JSONObject, found: JSONArray (Query Configuration)");
+	}
+
 }
