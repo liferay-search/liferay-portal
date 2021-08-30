@@ -1,0 +1,141 @@
+definition {
+
+	@summary = "Add a Commerce account"
+	macro addAccount {
+		Variables.assertDefined(parameterList = "${accountName}");
+
+		var portalURL = JSONCompany.getPortalURL();
+
+		if ("${type}" == "Guest") {
+			var type = "0";
+		}
+		else if ("${type}" == "Personal") {
+			var type = "1";
+		}
+		else if (("${type}" == "Business") || !(isSet(type))) {
+			var type = "2";
+		}
+
+		var curl = '''
+				${portalURL}/api/jsonws/commerce.commerceaccount/add-commerce-account \
+					-u test@liferay.com:test \
+					-d name='${accountName}' \
+					-d parentCommerceAccountId=0 \
+					-d email='test@liferay.com' \
+					-d taxId= \
+					-d type='${type}' \
+					-d active=true \
+					-d externalReferenceCode=
+							''';
+
+		com.liferay.poshi.runner.util.JSONCurlUtil.post("${curl}");
+	}
+
+	@summary = "Add a Commerce account group"
+	macro addAccountGroup {
+		Variables.assertDefined(parameterList = "${accountGroupName}");
+
+		var companyId = JSONCompany.getCompanyId();
+
+		var portalURL = JSONCompany.getPortalURL();
+
+		var curl = '''
+				${portalURL}/api/jsonws/commerce.commerceaccountgroup/add-commerce-account-group \
+					-u test@liferay.com:test \
+					-d companyId=${companyId} \
+					-d name='${accountGroupName}' \
+					-d type=1 \
+					-d externalReferenceCode=
+							''';
+
+		com.liferay.poshi.runner.util.JSONCurlUtil.post("${curl}");
+	}
+
+	@summary = "Add a Commerce account to a Commerce account group"
+	macro addAccountToAccountGroup {
+		var accountID = JSONCommerceAccount.getAccountID(accountName = "${accountName}");
+
+		var accountGroupId = JSONCommerceAccount.getAccountGroupID(accountGroupName = "${accountGroupName}");
+
+		var portalURL = JSONCompany.getPortalURL();
+
+		var curl = '''
+				${portalURL}/api/jsonws/commerce.commerceaccountgroupcommerceaccountrel/add-commerce-account-group-commerce-account-rel \
+					-u test@liferay.com:test \
+					-d commerceAccountGroupId='${accountGroupId}' \
+					-d commerceAccountId='${accountID}'
+							''';
+
+		com.liferay.poshi.runner.util.JSONCurlUtil.post("${curl}");
+	}
+
+	@summary = "Retrieve a Commerce account group ID"
+	macro getAccountGroupID {
+		Variables.assertDefined(parameterList = "${accountGroupName}");
+
+		var companyId = JSONCompany.getCompanyId();
+		var portalURL = JSONCompany.getPortalURL();
+
+		var curl = '''
+				${portalURL}/api/jsonws/commerce.commerceaccountgroup/search \
+					-u test@liferay.com:test \
+					-d companyId=${companyId} \
+					-d keywords=${accountGroupName} \
+					-d "start=-1" \
+					-d "end=-1"
+					-d -sort=
+						''';
+
+		var accountGroupID = JSONCurlUtil.post("${curl}", "$.[?(@['name'] == '${accountGroupName}')]['commerceAccountGroupId']");
+
+		echo("## ID for Commerce Account Group ${accountGroupName}: ${accountGroupID}");
+
+		return "${accountGroupID}";
+	}
+
+	@summary = "Retrieve a Commerce account ID"
+	macro getAccountID {
+		Variables.assertDefined(parameterList = "${accountName}");
+
+		var userID = JSONUserAPI._getUserIdByEmailAddress(userEmailAddress = "test@liferay.com");
+
+		if (isSet(commerceSiteType)) {
+			if ("${commerceSiteType}" == "B2C") {
+				var siteType = "0";
+			}
+			else if ("${commerceSiteType}" == "B2B") {
+				var siteType = "1";
+			}
+			else if ("${commerceSiteType}" == "B2X") {
+				var siteType = "2";
+			}
+		}
+		else {
+			var siteType = "1";
+		}
+
+		if (!(isSet(accountSearchKeywords))) {
+			var accountSearchKeywords = "";
+		}
+
+		var portalURL = JSONCompany.getPortalURL();
+
+		var curl = '''
+				${portalURL}/api/jsonws/commerce.commerceaccount/get-user-commerce-accounts \
+					-u test@liferay.com:test \
+					-d userId=${userID} \
+					-d parentCommerceAccountId=0 \
+					-d commerceSiteType=${siteType} \
+					-d keywords=${accountSearchKeywords} \
+					-d "start=-1" \
+					-d "end=-1"
+						''';
+
+		var accountID = JSONCurlUtil.post("${curl}", "$.[?(@['name'] == '${accountName}')]['commerceAccountId']");
+
+		echo("## ID for Commerce Account ${accountName}: ${accountID}");
+
+		return "${accountID}";
+	}
+
+}
