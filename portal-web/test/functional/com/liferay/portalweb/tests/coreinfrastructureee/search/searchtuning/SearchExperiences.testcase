@@ -1081,4 +1081,69 @@ definition {
 			locator1 = "SearchExperiences#BLUEPRINTS_CLAUSE_CONTRIBUTOR_ON_OFF_TOGGLE");
 	}
 
+	test ViewCustomElementsJSONValidation {
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		Navigator.gotoNavItem(navItem = "Elements");
+
+		var elementTemplateJSON = '''
+{
+	"title": {
+		"en_US": "My Element"
+	}
+}
+		''';
+
+		var uiConfigurationJSON = '''
+{
+	"fieldSets": [
+		{
+			"fields": [
+				{
+					"label": "Boost",
+					"name": "boost",
+					"type": "thisTypeDoesNotExist"
+				}
+			]
+		}
+	]
+}
+		''';
+
+		SearchExperiences.createElement(
+			elementTemplateJSON = "${elementTemplateJSON}",
+			name = "My Element",
+			uiConfigurationJSON = "${uiConfigurationJSON}");
+
+		AssertTextEquals.assertPartialText(
+			locator1 = "Modal#HEADER",
+			value1 = "Warning");
+
+		Alert.viewErrorMessage(errorMessage = "thisTypeDoesNotExist is not a valid enum value");
+
+		Button.clickCancel();
+
+		Navigator.gotoBack();
+
+		SearchExperiences.editElement(name = "My Element");
+
+		AssertTextNotPresent(value1 = "thisTypeDoesNotExist");
+
+		Type.typeCodeMirrorEditor(
+			locator1 = "SearchExperiences#ELEMENTS_ADMIN_TEMPLATE_EDITOR",
+			value1 = "${elementTemplateJSON}");
+
+		Type.typeCodeMirrorEditor(
+			locator1 = "SearchExperiences#ELEMENTS_ADMIN_UI_CONFIGURATION_EDITOR",
+			value1 = "${uiConfigurationJSON}");
+
+		PortletEntry.save();
+
+		Button.click(button = "Continue To Save");
+
+		SearchExperiences.editElement(name = "My Element");
+
+		AssertTextPresent(value1 = "thisTypeDoesNotExist");
+	}
+
 }
