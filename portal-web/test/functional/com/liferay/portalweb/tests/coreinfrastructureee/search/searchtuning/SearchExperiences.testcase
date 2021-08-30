@@ -626,4 +626,96 @@ definition {
 			locator1 = "SearchExperiences#BLUEPRINTS_ADD_ELEMENTS_SIDEBAR_ELEMENT_NAME");
 	}
 
+	test HideAndShowMultipleElements {
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		Navigator.gotoNavItem(navItem = "Elements");
+
+		Search.searchCP(searchTerm = "Hide");
+
+		task ("Create a list of all Elements present on the page") {
+			var list = ListUtil.newList();
+			var i = "1";
+
+			while (IsElementPresent(locator1 = "xpath=(//div[@data-qa-id='rowItemContent']//h4/a)[${i}]") && (maxIterations = "20")) {
+				var elementName = selenium.getText("xpath=(//div[@data-qa-id='rowItemContent']//h4/a)[${i}]");
+
+				ListUtil.add("${list}", "${elementName}");
+				var i = ${i} + 1;
+			}
+
+			var elementsList = ListUtil.toString("${list}");
+
+			echo("List of all Elements present: ${elementsList}");
+		}
+
+		ManagementBar.clickSelectAllCheckbox();
+
+		Click(locator1 = "Icon#TOOLBAR_ELLIPSIS");
+
+		MenuItem.click(menuItem = "Hide");
+
+		AssertTextEquals(
+			locator1 = "Message#EMPTY_INFO",
+			value1 = "No entries were found.");
+
+		ManagementBar.setFilterAndOrder(filterBy = "Hidden");
+
+		for (var hiddenElement : list "${elementsList}") {
+			AssertElementPresent(
+				key_rowEntry = "${hiddenElement}",
+				locator1 = "ContentRow#ENTRY_CONTENT_ENTRY_NAME");
+		}
+
+		Navigator.gotoNavItem(navItem = "Blueprints");
+
+		SearchExperiences.addBlueprint(name = "Test Blueprint");
+
+		Type.sendKeysApplicationSearch(
+			locator1 = "SearchExperiences#BLUEPRINTS_ADD_ELEMENTS_SIDEBAR_SEARCH_BAR",
+			value1 = "Hide");
+
+		AssertTextEquals(
+			locator1 = "SearchExperiences#BLUEPRINTS_ADD_ELEMENTS_SIDEBAR_EMPTY",
+			value1 = "No query elements found.");
+
+		Navigator.gotoBack();
+
+		Navigator.gotoNavItem(navItem = "Elements");
+
+		ManagementBar.setFilterAndOrder(filterBy = "Hidden");
+
+		ManagementBar.clickSelectAllCheckbox();
+
+		Click(locator1 = "Icon#TOOLBAR_ELLIPSIS");
+
+		MenuItem.click(menuItem = "Show");
+
+		AssertTextEquals(
+			locator1 = "Message#EMPTY_INFO",
+			value1 = "No entries were found.");
+
+		ManagementBar.setFilterAndOrder(filterBy = "Visible");
+
+		for (var visibleElement : list "${elementsList}") {
+			AssertElementPresent(
+				key_rowEntry = "${visibleElement}",
+				locator1 = "ContentRow#ENTRY_CONTENT_ENTRY_NAME");
+		}
+
+		Navigator.gotoNavItem(navItem = "Blueprints");
+
+		SearchExperiences.editBlueprint(name = "Test Blueprint");
+
+		Type.sendKeysApplicationSearch(
+			locator1 = "SearchExperiences#BLUEPRINTS_ADD_ELEMENTS_SIDEBAR_SEARCH_BAR",
+			value1 = "Hide");
+
+		for (var queryElement : list "${elementsList}") {
+			AssertElementPresent(
+				key_elementName = "${queryElement}",
+				locator1 = "SearchExperiences#BLUEPRINTS_ADD_ELEMENTS_SIDEBAR_ELEMENT_NAME");
+		}
+	}
+
 }
