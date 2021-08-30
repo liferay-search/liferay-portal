@@ -851,4 +851,38 @@ definition {
 				searchAssetType = "Web Content Article");
 		}
 
+	test SearchBlueprintsByTitleAndDescription {
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		SearchExperiences.addBlueprint(
+			description = "Blueprint Test Description",
+			name = "Test Blueprint - Adminicle");
+
+		Navigator.gotoBack();
+
+		SearchExperiences.addBlueprint(
+			description = "Serendipitous Blueprint Test Description",
+			name = "Test Blueprint - Aid");
+
+		Navigator.gotoBack();
+
+		Search.searchCP(searchTerm = "Adminicle");
+
+		LexiconEntry.viewEntryName(rowEntry = "Test Blueprint - Adminicle");
+
+		LexiconEntry.viewNoEntry(rowEntry = "Test Blueprint - Aid");
+
+		Search.searchCP(searchTerm = "Serendipitous");
+
+		LexiconEntry.viewEntryName(rowEntry = "Test Blueprint - Aid");
+
+		LexiconEntry.viewNoEntry(rowEntry = "Test Blueprint - Adminicle");
+
+		Search.clearSearchResult();
+
+		LexiconEntry.viewEntryName(rowEntry = "Test Blueprint - Adminicle");
+
+		LexiconEntry.viewEntryName(rowEntry = "Test Blueprint - Aid");
+	}
+
 }
