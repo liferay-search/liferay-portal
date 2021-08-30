@@ -885,4 +885,38 @@ definition {
 		LexiconEntry.viewEntryName(rowEntry = "Test Blueprint - Aid");
 	}
 
+	test SortBlueprints {
+		SearchExperiences.deleteAllBlueprints();
+
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		for (var blueprintNumber : list "1,3,2") {
+			SearchExperiences.addBlueprint(name = "Blueprint ${blueprintNumber}");
+
+			PortletEntry.save();
+		}
+
+		ManagementBar.setFilterAndOrder(orderBy = "Title");
+
+		LexiconEntry.viewEntriesSpecificOrder(entryList = "Blueprint 1,Blueprint 2,Blueprint 3");
+
+		ManagementBar.setFilterAndOrder(orderBy = "Created");
+
+		LexiconEntry.viewEntriesSpecificOrder(entryList = "Blueprint 2,Blueprint 3,Blueprint 1");
+
+		SearchExperiences.editBlueprint(name = "Blueprint 1");
+
+		SearchExperiences.addQueryElement(element = "Boost Freshness");
+
+		PortletEntry.save();
+
+		ManagementBar.setFilterAndOrder(orderBy = "Modified");
+
+		LexiconEntry.viewEntriesSpecificOrder(entryList = "Blueprint 1,Blueprint 2,Blueprint 3");
+
+		ManagementBar.toggleViewOrder();
+
+		LexiconEntry.viewEntriesSpecificOrder(entryList = "Blueprint 3,Blueprint 2,Blueprint 1");
+	}
+
 }
