@@ -1146,4 +1146,38 @@ definition {
 		AssertTextPresent(value1 = "thisTypeDoesNotExist");
 	}
 
+	test ViewElementJSONViaBlueprintsQueryBuilder {
+		property test.name.skip.portal.instance = "SearchExperiences#ViewElementJSONViaBlueprintsQueryBuilder";
+
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		SearchExperiences.addBlueprint(name = "Element JSON Blueprint");
+
+		SearchExperiences.addQueryElement(element = "Boost Asset Type");
+
+		Click(locator1 = "Icon#SVG_ELLIPSIS");
+
+		MenuItem.clickNoError(menuItem = "View Element JSON");
+
+		AssertTextEquals(
+			locator1 = "Modal#HEADER",
+			value1 = "Element JSON");
+
+		AssertVisible(
+			key_jsonText = "clauses",
+			locator1 = "SearchExperiences#BLUEPRINTS_ADDED_ELEMENT_VIEW_ELEMENT_JSON_TEXT");
+
+		SelectFrameTop();
+
+		Click(locator1 = "Link#DOWNLOAD");
+
+		SearchExperiences.viewDownloadedContent(
+			fileName = "element.json",
+			text = "clauses");
+
+		Click.javaScriptClick(locator1 = "Button#COPY");
+
+		SearchExperiences.viewCopiedContent(text = "clauses");
+	}
+
 }
