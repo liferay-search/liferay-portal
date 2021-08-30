@@ -1,0 +1,54 @@
+@component-name = "portal-search"
+definition {
+
+	property portal.release = "true";
+	property portal.suite.search.engine = "elasticsearch7";
+	property portal.upstream = "true";
+	property testray.main.component.name = "Search Experiences";
+
+	setUp {
+		TestCase.setUpPortalInstance();
+
+		User.firstLoginPG();
+	}
+
+	tearDown {
+		var testPortalInstance = PropsUtil.get("test.portal.instance");
+
+		if ("${testPortalInstance}" == "true") {
+			PortalInstances.tearDownCP();
+		}
+		else {
+			BlogsEntry.tearDownCP();
+
+			JSONUser.tearDownNonAdminUsers();
+
+			WebContent.tearDownCP();
+
+			SearchExperiences.deleteAllBlueprints();
+
+			Page.tearDownCP();
+		}
+	}
+
+	test AddCopyAndDeleteBlueprint {
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		for (var title : list "Blueprint 1,Blueprint 2") {
+			SearchExperiences.addBlueprint(name = "${title}");
+
+			PortletEntry.save();
+		}
+
+		LexiconEntry.gotoEntryMenuItem(
+			menuItem = "Copy",
+			rowEntry = "Blueprint 2");
+
+		LexiconEntry.viewEntryName(rowEntry = "Blueprint 2 (Copy)");
+
+		LexiconEntry.delete(rowEntry = "Blueprint 1");
+
+		LexiconEntry.viewNoEntry(rowEntry = "Blueprint 1");
+	}
+
+}
