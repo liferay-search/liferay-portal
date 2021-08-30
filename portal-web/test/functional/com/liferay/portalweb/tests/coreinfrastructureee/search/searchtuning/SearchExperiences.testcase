@@ -970,4 +970,61 @@ definition {
 			value1 = "red apple, citrus-orange");
 	}
 
+	test ViewBlueprintsConfigJSONValidation {
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		SearchExperiences.addBlueprint(name = "My Blueprint");
+
+		Navigator.gotoNavTab(navTab = "Settings");
+
+		var aggregationConfigurationJSON = '''
+{
+	"cardinality-test": {
+		"cardinality": {
+			"precision_threshold": "3000",
+			"field": "assetTagNames.raw"
+		}
+	}
+}
+		''';
+
+		Type.typeCodeMirrorEditor(
+			key_configurationField = "Aggregation Configuration",
+			locator1 = "SearchExperiences#BLUEPRINTS_SETTINGS_CONFIGURATION_EDITOR",
+			value1 = "${aggregationConfigurationJSON}");
+
+		PortletEntry.save();
+
+		AssertTextEquals.assertPartialText(
+			locator1 = "Modal#HEADER",
+			value1 = "Warning");
+
+		Alert.viewErrorMessage(errorMessage = "expected type: Number, found: String (Aggregation Configuration)");
+
+		Button.clickCancel();
+
+		Navigator.gotoBack();
+
+		SearchExperiences.editBlueprint(name = "My Blueprint");
+
+		Navigator.gotoNavTab(navTab = "Settings");
+
+		AssertTextNotPresent(value1 = "cardinality-test");
+
+		Type.typeCodeMirrorEditor(
+			key_configurationField = "Aggregation Configuration",
+			locator1 = "SearchExperiences#BLUEPRINTS_SETTINGS_CONFIGURATION_EDITOR",
+			value1 = "${aggregationConfigurationJSON}");
+
+		PortletEntry.save();
+
+		Button.click(button = "Continue To Save");
+
+		SearchExperiences.editBlueprint(name = "My Blueprint");
+
+		Navigator.gotoNavTab(navTab = "Settings");
+
+		AssertTextPresent(value1 = "cardinality-test");
+	}
+
 }
