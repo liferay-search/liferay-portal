@@ -154,9 +154,9 @@ definition {
 	}
 
 	macro configureLowLevelSearchOptions {
-		Portlet.gotoPortletOptions(
-			portletName = "Low Level Search Options",
-			portletOption = "Configuration");
+		Click(
+			key_text = "Configure additional low level search options in this page.",
+			locator1 = "Link#ANY");
 
 		SelectFrame(locator1 = "IFrame#CONFIGURATION");
 
@@ -179,6 +179,17 @@ definition {
 				key_fieldLabel = "Indexes",
 				locator1 = "TextInput#GENERIC_TEXT_INPUT",
 				value1 = "${indexes}");
+		}
+
+		if (isSet(attributesKey)) {
+			Type(
+				locator1 = "TextInput#KEY",
+				value1 = "${attributesKey}");
+
+			Type(
+				key_fieldLabel = "Value",
+				locator1 = "TextInput#GENERIC_TEXT_INPUT",
+				value1 = "${attributesValue}");
 		}
 
 		PortletEntry.save();

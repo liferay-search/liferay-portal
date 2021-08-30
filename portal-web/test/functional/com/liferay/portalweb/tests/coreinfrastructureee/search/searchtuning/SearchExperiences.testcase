@@ -119,4 +119,92 @@ definition {
 			searchAssetType = "Web Content Article");
 	}
 
+	test BoostCommerceItemsForAccountGroup {
+		property test.name.skip.portal.instance = "SearchExperiences#BoostCommerceItemsForAccountGroup";
+
+		CommerceAccelerators.initializeNewSiteViaAccelerator(siteName = "Minium");
+
+		Navigator.openSiteURL(siteName = "Minium");
+
+		JSONCommerceAccount.addAccount(accountName = "TestAccount");
+
+		JSONCommerceAccount.addAccountGroup(accountGroupName = "TestAccountGroup");
+
+		JSONCommerceAccount.addAccountToAccountGroup(
+			accountGroupName = "TestAccountGroup",
+			accountName = "TestAccount");
+
+		CommerceNavigator.gotoPortlet(
+			category = "Product Management",
+			portlet = "Products");
+
+		CommerceProducts.searchProduct(search = "Oil Filter");
+
+		CommerceNavigator.gotoEntry(entryName = "Oil Filter");
+
+		CommerceEntry.gotoMenuTab(menuTab = "Visibility");
+
+		Click(
+			key_name = "Account Groups",
+			locator1 = "ToggleSwitch#ENABLE_SPECIFIC_TOGGLE_SWITCH");
+
+		ClickNoError.clickNoMouseOver(
+			key_title = "Add Account Group Relation to Oil Filter",
+			locator1 = "Button#BUTTON_PLUS_PRODUCT_VISIBILITY");
+
+		SelectFrame.selectFrameNoLoading(locator1 = "IFrame#MODAL_BODY");
+
+		Check(
+			key_checkboxName = "TestAccountGroup",
+			locator1 = "Checkbox#ENABLE_CHECKBOX");
+
+		SelectFrameTop();
+
+		Button.clickAdd();
+
+		Button.clickPublish();
+
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		SearchExperiences.addBlueprint(name = "My Blueprint");
+
+		SearchExperiences.addQueryElement(element = "Boost Items for My Commerce Account Groups");
+
+		Type(
+			key_fieldLabel = "Boost",
+			locator1 = "SearchExperiences#BLUEPRINTS_ADDED_ELEMENT_NUMBER_FIELD",
+			value1 = "1000");
+
+		PortletEntry.save();
+
+		var blueprintID = SearchExperiences.getBlueprintID(name = "My Blueprint");
+
+		Navigator.openSiteURL(siteName = "Minium");
+
+		CommerceAcceleratorsInitializer.selectAccountFromAccountSelector(accountName = "TestAccount");
+
+		JSONLayout.addWidgetToPrivateLayout(
+			column = "1",
+			groupName = "Minium",
+			layoutName = "Catalog",
+			widgetName = "Low Level Search Options");
+
+		Refresh();
+
+		SearchPortlets.configureLowLevelSearchOptions(
+			attributesKey = "search.experiences.blueprint.id",
+			attributesValue = "${blueprintID}");
+
+		Type(
+			locator1 = "Search#EMBEDDED_SEARCH_BAR",
+			value1 = "pump brake pad kit oil");
+
+		Button.clickSubmitButton();
+
+		AssertTextEquals(
+			key_index = "1",
+			locator1 = "CommerceAccelerators#PRODUCT_CARD_NAME_BY_INDEX",
+			value1 = "Oil Filter");
+	}
+
 }
