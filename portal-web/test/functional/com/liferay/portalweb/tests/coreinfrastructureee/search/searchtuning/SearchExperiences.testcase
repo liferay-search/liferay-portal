@@ -1027,4 +1027,58 @@ definition {
 		AssertTextPresent(value1 = "cardinality-test");
 	}
 
+	test ViewClauseContributorsUI {
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		SearchExperiences.addBlueprint(name = "All Clauses Blueprint");
+
+		Navigator.gotoNavTab(navTab = "Clause Contributors");
+
+		AssertElementNotPresent(locator1 = "SearchExperiences#BLUEPRINTS_CLAUSE_CONTRIBUTOR_TOGGLE_DISABLED");
+
+		Uncheck.uncheckToggleSwitch(locator1 = "SearchExperiences#BLUEPRINTS_LIFERAY_INDEXER_CLAUSES_ON_OFF_TOGGLE");
+
+		ManagementBar.clickSelectAllCheckbox();
+
+		Button.click(button = "Turn Off");
+
+		AssertElementNotPresent(locator1 = "SearchExperiences#BLUEPRINTS_CLAUSE_CONTRIBUTOR_TOGGLE_ENABLED");
+
+		PortletEntry.save();
+
+		SearchExperiences.editBlueprint(name = "All Clauses Blueprint");
+
+		Navigator.gotoNavTab(navTab = "Clause Contributors");
+
+		AssertElementNotPresent(locator1 = "SearchExperiences#BLUEPRINTS_CLAUSE_CONTRIBUTOR_TOGGLE_ENABLED");
+
+		Check.checkToggleSwitch(locator1 = "SearchExperiences#BLUEPRINTS_LIFERAY_INDEXER_CLAUSES_ON_OFF_TOGGLE");
+
+		ManagementBar.clickSelectAllCheckbox();
+
+		Button.click(button = "Turn On");
+
+		PortletEntry.save();
+
+		SearchExperiences.editBlueprint(name = "All Clauses Blueprint");
+
+		Navigator.gotoNavTab(navTab = "Clause Contributors");
+
+		AssertElementNotPresent(locator1 = "SearchExperiences#BLUEPRINTS_CLAUSE_CONTRIBUTOR_TOGGLE_DISABLED");
+
+		Button.click(button = "Reset to Baseline");
+
+		Button.click(button = "Apply");
+
+		AssertChecked.assertCheckedNotVisible(locator1 = "SearchExperiences#BLUEPRINTS_LIFERAY_INDEXER_CLAUSES_ON_OFF_TOGGLE");
+
+		AssertNotChecked.assertNotCheckedNotVisible(
+			contributorClass = "AccountEntryKeywordQueryContributor",
+			locator1 = "SearchExperiences#BLUEPRINTS_CLAUSE_CONTRIBUTOR_ON_OFF_TOGGLE");
+
+		AssertChecked.assertCheckedNotVisible(
+			contributorClass = "CTModelPreFilterContributor",
+			locator1 = "SearchExperiences#BLUEPRINTS_CLAUSE_CONTRIBUTOR_ON_OFF_TOGGLE");
+	}
+
 }
