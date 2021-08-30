@@ -1408,4 +1408,45 @@ definition {
 		AssertElementNotPresent(locator1 = "Message#ERROR_1");
 	}
 
+	test ViewRawResponseViaBlueprintsPreview {
+		property test.name.skip.portal.instance = "SearchExperiences#ViewRawResponseViaBlueprintsPreview";
+
+		JSONWebcontent.addWebContent(
+			content = "WC Content",
+			groupName = "Guest",
+			title = "Apple");
+
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		SearchExperiences.addBlueprint(name = "Score Explanation Blueprint");
+
+		Click(locator1 = "Button#PREVIEW");
+
+		SearchExperiences.searchBlueprintsPreview(searchTerm = "Apple");
+
+		Click(
+			key_text = "View Raw Response",
+			locator1 = "Button#ANY");
+
+		AssertTextEquals(
+			locator1 = "Modal#HEADER",
+			value1 = "Raw Response");
+
+		AssertVisible(
+			key_searchExplanation = "hits",
+			locator1 = "SearchExperiences#BLUEPRINTS_PREVIEW_RAW_RESPONSE_EXPLANATION");
+
+		SelectFrameTop();
+
+		Click(locator1 = "Link#DOWNLOAD");
+
+		SearchExperiences.viewDownloadedContent(
+			fileName = "raw_response.json",
+			text = "hits");
+
+		Click.javaScriptClick(locator1 = "Button#COPY");
+
+		SearchExperiences.viewCopiedContent(text = "hits");
+	}
+
 }
