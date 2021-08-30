@@ -311,4 +311,34 @@ definition {
 			searchAssetType = "Web Content Article");
 	}
 
+	test CreateBaselineClausesBlueprint {
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		SearchExperiences.addBlueprint(
+			baselineClauses = "true",
+			name = "Baseline Clauses Blueprint");
+
+		VerifyElementPresent(locator1 = "Message#SUCCESS");
+
+		AssertElementNotPresent(locator1 = "SearchExperiences#BLUEPRINTS_ADDED_ELEMENTS_EMPTY");
+
+		Navigator.gotoBack();
+
+		LexiconEntry.viewEntryName(rowEntry = "Baseline Clauses Blueprint");
+
+		SearchExperiences.editBlueprint(name = "Baseline Clauses Blueprint");
+
+		Navigator.gotoNavTab(navTab = "Clause Contributors");
+
+		AssertNotChecked.assertNotCheckedNotVisible(locator1 = "SearchExperiences#BLUEPRINTS_LIFERAY_INDEXER_CLAUSES_ON_OFF_TOGGLE");
+
+		AssertNotChecked.assertNotCheckedNotVisible(
+			contributorClass = "AccountEntryKeywordQueryContributor",
+			locator1 = "SearchExperiences#BLUEPRINTS_CLAUSE_CONTRIBUTOR_ON_OFF_TOGGLE");
+
+		AssertChecked.assertCheckedNotVisible(
+			contributorClass = "CTModelPreFilterContributor",
+			locator1 = "SearchExperiences#BLUEPRINTS_CLAUSE_CONTRIBUTOR_ON_OFF_TOGGLE");
+	}
+
 }
