@@ -1,0 +1,193 @@
+<html>
+<head>
+<title>SearchExperiences</title>
+</head>
+
+<body>
+<table border="1" cellpadding="1" cellspacing="1">
+<thead>
+<tr><td rowspan="1" colspan="3">SearchExperiences</td></tr>
+</thead>
+
+<tbody>
+<!--BLUEPRINTS-->
+<tr>
+	<td>BLUEPRINTS_ADD_ELEMENTS_SIDEBAR_EMPTY</td>
+	<td>//div[contains(@class,'empty-list-message')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_ADD_ELEMENTS_SIDEBAR_HEADER</td>
+	<td>//div[contains(@class,'sidebar-header')]//span[contains(.,'Add Query Elements')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_ADD_ELEMENTS_SIDEBAR_SEARCH_BAR</td>
+	<td>//div[contains(@class,'open')]//input[contains(@placeholder,'Search')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_ADD_ELEMENTS_SIDEBAR_SEARCH_CLEAR</td>
+	<td>//div[contains(@class,'add-element-sidebar')]//button[contains(@title,'Clear')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_ADD_ELEMENTS_SIDEBAR_ELEMENT_ADD_BUTTON</td>
+	<td>//div[contains(@class,'autofit-col') and contains(.,'${key_elementName}')]/following-sibling::div/button[contains(.,'Add')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_ADD_ELEMENTS_SIDEBAR_ELEMENT_NAME</td>
+	<td>//div[contains(@class,'element-list')]//p[contains(.,'${key_elementName}') and contains(@class, 'list-group-title')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_ADDED_ELEMENT</td>
+	<td>//div[contains(@id,'queryElement')][./ul[contains(.,'${elementName}')]]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_ADDED_ELEMENT_DELETE_FIELD_MAPPING_FIELD</td>
+	<td>//li[contains(@class,'fieldMappingList')]//button[@aria-label='Delete']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_ADDED_ELEMENT_ELASTICSEARCH_QUERY_EDITOR</td>
+	<td>//div[contains(@class,'custom-json')]//div[contains(@class,'CodeMirror cm-s-default')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_ADDED_ELEMENT_FIELD_LABEL</td>
+	<td>//div[contains(@id,'queryElement')][./ul[contains(.,'${elementName}')]]//label[contains(.,'${fieldName}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_ADDED_ELEMENT_FIELD_MAPPING_FIELD</td>
+	<td>//li[contains(@class,'fieldMappingList')]//button[@aria-label='Add Field']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_ADDED_ELEMENT_GENERIC_DROPDOWN</td>
+	<td>//select[@aria-label="${dropdownName}"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_ADDED_ELEMENT_GENERIC_DROPDOWN_OPTION</td>
+	<td>//select[@aria-label="${dropdownName}"]/option[contains(.,"${option}")]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_ADDED_ELEMENT_GENERIC_FIELD</td>
+	<td>//input[contains(@aria-label, "${key_fieldLabel}") and contains(@name, "selectedQueryElements")]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_ADDED_ELEMENT_NUMBER_FIELD</td>
+	<td>//div[contains(.,'${key_fieldLabel}')]//input[@type='number']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_ADDED_ELEMENT_TEXT_FIELD</td>
+	<td>//input[contains(@aria-label, "${key_fieldLabel}") and @type='text']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_ADDED_ELEMENT_VIEW_ELEMENT_JSON_TEXT</td>
+	<td>//span[contains(@class,'cm-string') and contains(.,'${key_jsonText}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_ADDED_ELEMENTS_EMPTY</td>
+	<td>//div[contains(@class,'selected-elements-empty-text')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_CLAUSE_CONTRIBUTOR_ON_OFF_TOGGLE</td>
+	<td>//tr[contains(.,"${contributorClass}")]//input[contains(@class,"toggle-switch-check")]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_CLAUSE_CONTRIBUTOR_TOGGLE_DISABLED</td>
+	<td>//span[contains(@class,"toggle-switch-label") and contains(.,"Off")]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_CLAUSE_CONTRIBUTOR_TOGGLE_ENABLED</td>
+	<td>//span[contains(@class,"toggle-switch-label") and contains(.,"On")]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_LIFERAY_INDEXER_CLAUSES_ON_OFF_TOGGLE</td>
+	<td>//li[contains(.,"Liferay Indexer Clauses")]//input[contains(@class,"toggle-switch-check")]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_OPTIONS_WIDGET_CHOOSE</td>
+	<td>//button[@data-entityname='${key_blueprintName}']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_PREVIEW_COLLAPSE_ENTRY_BUTTON</td>
+	<td>//button[contains(@aria-label,'Collapse')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_PREVIEW_ENTRY_FIELD_VALUE</td>
+	<td>//div[contains(@class,'preview-results-list')]//*[contains(@class,'row')]//*[contains(.,'${key_fieldName}')]/following-sibling::div</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_PREVIEW_EXPAND_ENTRY_BUTTON</td>
+	<td>//button[contains(@aria-label,'Expand')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_PREVIEW_RAW_RESPONSE_EXPLANATION</td>
+	<td>xpath=(//span[contains(@class,'cm-string') and text()='"${key_searchExplanation}"'])[1]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_PREVIEW_SCORE</td>
+	<td>//div[contains(.,'${key_searchAssetTitle}')]/preceding-sibling::div//button[contains(@class,'score')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_PREVIEW_SCORE_EXPLANATION</td>
+	<td>xpath=(//span[contains(@class,'cm-variable') and text()='${key_searchExplanation}'])[1]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_PREVIEW_SEARCH_BAR</td>
+	<td>//div[contains(@class,'preview')]//input[contains(@placeholder,'Search')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BLUEPRINTS_SETTINGS_CONFIGURATION_EDITOR</td>
+	<td>//label[text()='${key_configurationField}']/following-sibling::div//div[contains(@class,'CodeMirror cm-s-default')]</td>
+	<td></td>
+</tr>
+<!--ELEMENTS_ADMIN-->
+<tr>
+	<td>ELEMENTS_ADMIN_DEFAULT_ELEMENT_ENTRY</td>
+	<td>//*[@data-qa-id='row'][.//*[contains(@class,'lexicon-icon-lock')]]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>ELEMENTS_ADMIN_DEFAULT_ELEMENT_VERTICAL_ELLIPSIS</td>
+	<td>//*[@data-qa-id='row'][.//*[contains(@class,'lexicon-icon-lock')]]//*[*[name()='svg'][contains(@class,'icon-ellipsis')]]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>ELEMENTS_ADMIN_TEMPLATE_EDITOR</td>
+	<td>//div[contains(@class,'element-header') and contains(.,'Element Template (JSON')]/following-sibling::div//div[contains(@class,'CodeMirror cm-s-default')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>ELEMENTS_ADMIN_UI_CONFIGURATION_EDITOR</td>
+	<td>//div[contains(@class,'element-header') and contains(.,'UI Configuration (JSON')]/following-sibling::div//div[contains(@class,'CodeMirror cm-s-default')]</td>
+	<td></td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>
