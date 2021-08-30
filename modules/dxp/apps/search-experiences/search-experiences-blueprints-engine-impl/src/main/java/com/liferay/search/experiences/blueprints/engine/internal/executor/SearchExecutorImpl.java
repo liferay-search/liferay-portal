@@ -1,0 +1,188 @@
+/**
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of the Liferay Enterprise
+ * Subscription License ("License"). You may not use this file except in
+ * compliance with the License. You can obtain a copy of the License by
+ * contacting Liferay, Inc. See the License for the specific language governing
+ * permissions and limitations under the License, including but not limited to
+ * distribution rights of the Software.
+ *
+ *
+ *
+ */
+
+package com.liferay.search.experiences.blueprints.engine.internal.executor;
+
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.search.rescore.Rescore;
+import com.liferay.portal.search.searcher.SearchRequest;
+import com.liferay.portal.search.searcher.SearchRequestBuilder;
+import com.liferay.portal.search.searcher.SearchRequestBuilderFactory;
+import com.liferay.portal.search.searcher.SearchResponse;
+import com.liferay.portal.search.searcher.Searcher;
+import com.liferay.portal.search.sort.Sort;
+import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
+import com.liferay.search.experiences.blueprints.engine.spi.query.QueryPostProcessor;
+import com.liferay.search.experiences.blueprints.model.Blueprint;
+import com.liferay.search.experiences.blueprints.util.BlueprintHelper;
+import com.liferay.search.experiences.problems.ProblemBuilder;
+import com.liferay.search.experiences.problems.ProblemBuilders;
+import com.liferay.search.experiences.problems.ProblemsHolderBuilder;
+
+import java.util.List;
+import java.util.Set;
+
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+
+/**
+ * @author Petteri Karttunen
+ */
+@Component(immediate = true, service = SearchExecutor.class)
+public class SearchExecutorImpl implements SearchExecutor {
+
+	@Override
+	public SearchResponse execute(
+		SearchRequestBuilder searchRequestBuilder, ParameterData parameterData,
+		Blueprint blueprint, ProblemsHolderBuilder problemsHolderBuilder) {
+
+		SearchRequestBuilder searchRequestBuilder2 = _rescoreOrSort(
+			searchRequestBuilder);
+
+		return _execute(
+			searchRequestBuilder2, parameterData, blueprint,
+			problemsHolderBuilder);
+	}
+
+	@Activate
+	protected void activate(BundleContext bundleContext) {
+		_queryPostProcessorServiceTrackerMap =
+			ServiceTrackerMapFactory.openSingleValueMap(
+				bundleContext, QueryPostProcessor.class, "name");
+	}
+
+	@Deactivate
+	protected void deactivate() {
+		_queryPostProcessorServiceTrackerMap.close();
+	}
+
+	private void _checkErrors(
+		SearchResponse searchResponse,
+		ProblemsHolderBuilder problemsHolderBuilder) {
+
+		String errorMessage = searchResponse.withSearchContextGet(
+			searchContext -> GetterUtil.getString(
+				searchContext.getAttribute("search.exception.message")));
+
+		if (!Validator.isBlank(errorMessage)) {
+			ProblemBuilder problemBuilder = _problemBuilders.error(
+				getClass().getName(), "core.error.unknown-error", null, null,
+				null, new Throwable(errorMessage));
+
+			problemsHolderBuilder.addProblem(problemBuilder.build());
+		}
+	}
+
+	private SearchResponse _execute(
+		SearchRequestBuilder searchRequestBuilder, ParameterData parameterData,
+		Blueprint blueprint, ProblemsHolderBuilder problemsHolderBuilder) {
+
+		try {
+			SearchResponse searchResponse = _searcher.search(
+				searchRequestBuilder.build());
+
+			if (_log.isDebugEnabled() && (searchResponse != null)) {
+				_log.debug(
+					"Request string: " + searchResponse.getRequestString());
+				_log.debug("Hits: " + searchResponse.getCount());
+			}
+
+			_checkErrors(searchResponse, problemsHolderBuilder);
+
+			_executeQueryPostProcessors(
+				searchResponse, parameterData, blueprint,
+				problemsHolderBuilder);
+
+			return searchResponse;
+		}
+		catch (RuntimeException runtimeException) {
+			ProblemBuilder problemBuilder = _problemBuilders.error(
+				getClass().getName(), "core.error.unknown-error", null, null,
+				null, runtimeException);
+
+			problemsHolderBuilder.addProblem(problemBuilder.build());
+		}
+
+		return null;
+	}
+
+	private void _executeQueryPostProcessors(
+		SearchResponse searchResponse, ParameterData parameterData,
+		Blueprint blueprint, ProblemsHolderBuilder problemsHolderBuilder) {
+
+		if (_log.isDebugEnabled()) {
+			_log.debug("Executing query post processors");
+		}
+
+		Set<String> keySet = _queryPostProcessorServiceTrackerMap.keySet();
+
+		if (keySet.isEmpty()) {
+			return;
+		}
+
+		keySet.forEach(
+			name -> {
+				QueryPostProcessor queryPostProcessor =
+					_queryPostProcessorServiceTrackerMap.getService(name);
+
+				queryPostProcessor.process(
+					searchResponse, blueprint, parameterData,
+					problemsHolderBuilder);
+			});
+	}
+
+	private SearchRequestBuilder _rescoreOrSort(
+		SearchRequestBuilder searchRequestBuilder) {
+
+		SearchRequest searchRequest = searchRequestBuilder.build();
+
+		SearchRequestBuilder searchRequestBuilder2 =
+			_searchRequestBuilderFactory.builder(searchRequest);
+
+		List<Rescore> rescores = searchRequest.getRescores();
+
+		if ((rescores != null) && !rescores.isEmpty()) {
+			searchRequestBuilder2.sorts(new Sort[0]);
+		}
+
+		return searchRequestBuilder;
+	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		SearchExecutorImpl.class);
+
+	@Reference
+	private BlueprintHelper _blueprintHelper;
+
+	@Reference
+	private ProblemBuilders _problemBuilders;
+
+	private ServiceTrackerMap<String, QueryPostProcessor>
+		_queryPostProcessorServiceTrackerMap;
+
+	@Reference
+	private Searcher _searcher;
+
+	@Reference
+	private SearchRequestBuilderFactory _searchRequestBuilderFactory;
+
+}
