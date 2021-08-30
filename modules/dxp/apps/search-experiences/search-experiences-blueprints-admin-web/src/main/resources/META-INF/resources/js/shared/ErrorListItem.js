@@ -51,7 +51,7 @@ const getConfigurationFieldName = (rootProperty) => {
 		rootProperty?.includes(key)
 	);
 
-	return configName ? ` (${CONFIGURATION_FIELD_NAME[configName]})` : '';
+	return configName ? CONFIGURATION_FIELD_NAME[configName] : '';
 };
 
 const prettyPrint = (value) => {
@@ -89,8 +89,9 @@ function ErrorListItem({item, onFocusElement}) {
 
 				{item.msg && (
 					<span className="description">
-						{item.msg}
-						{getConfigurationFieldName(item.rootProperty)}
+						{`${item.msg} ${getConfigurationFieldName(
+							item.rootProperty
+						)}`}
 					</span>
 				)}
 			</span>
