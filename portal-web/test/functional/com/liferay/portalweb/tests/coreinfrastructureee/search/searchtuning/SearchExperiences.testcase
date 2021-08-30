@@ -255,4 +255,60 @@ definition {
 		SearchResultPortlet.viewSearchResultsSpecificOrder(resultsList = "Liferay Web Content,Liferay Blogs Entry");
 	}
 
+	test BoostWithCustomElasticsearchQuery {
+		JSONWebcontent.addWebContent(
+			content = "Los Angeles",
+			groupName = "Guest",
+			title = "Delicious Food");
+
+		JSONWebcontent.addWebContent(
+			content = "",
+			groupName = "Guest",
+			title = "Good Food");
+
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		SearchExperiences.addBlueprint(name = "Test Blueprint");
+
+		SearchExperiences.addQueryElement(element = "Paste any Elasticsearch query");
+
+		var elasticsearchQueryJSON = '''
+{
+	"match":
+	{
+		"content_en_US":
+		{
+			"query": "los angeles"
+		}
+	}
+}
+		''';
+
+		Type.typeCodeMirrorEditor(
+			locator1 = "SearchExperiences#BLUEPRINTS_ADDED_ELEMENT_ELASTICSEARCH_QUERY_EDITOR",
+			value1 = "${elasticsearchQueryJSON}");
+
+		SearchExperiences.configureElementDropdown(
+			dropdownName = "Occur",
+			option = "MUST");
+
+		PortletEntry.save();
+
+		Search.openSearchPage();
+
+		SearchPortlets.addWidgets(searchPortletList = "Blueprints Options");
+
+		SearchExperiences.selectBlueprintFromOptionsWidget(name = "Test Blueprint");
+
+		SearchPortlets.searchEmbedded(searchTerm = "food");
+
+		SearchResultPortlet.viewSearchResults(
+			searchAssetTitle = "Delicious Food",
+			searchAssetType = "Web Content Article");
+
+		SearchResultPortlet.viewSearchResultNotPresent(
+			searchAssetTitle = "Good Food",
+			searchAssetType = "Web Content Article");
+	}
+
 }
