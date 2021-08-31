@@ -14,16 +14,19 @@
 
 package com.liferay.search.experiences.blueprints.admin.web.internal.display.context;
 
+import com.liferay.petra.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.search.experiences.blueprints.admin.web.internal.constants.BlueprintsAdminMVCCommandNames;
 import com.liferay.search.experiences.blueprints.admin.web.internal.util.BlueprintsAdminIndexUtil;
 import com.liferay.search.experiences.blueprints.model.Blueprint;
 
 import javax.portlet.PortletException;
+import javax.portlet.PortletURL;
 
 /**
  * @author Kevin Tan
@@ -64,6 +67,14 @@ public class SelectBlueprintDisplayContext
 		searchContainer.setRowChecker(null);
 
 		return searchContainer;
+	}
+
+	protected PortletURL getIteratorURL() {
+		return PortletURLBuilder.createRenderURL(
+			liferayPortletResponse
+		).setMVCRenderCommandName(
+			BlueprintsAdminMVCCommandNames.SELECT_BLUEPRINT
+		).buildPortletURL();
 	}
 
 	private String _eventName;
