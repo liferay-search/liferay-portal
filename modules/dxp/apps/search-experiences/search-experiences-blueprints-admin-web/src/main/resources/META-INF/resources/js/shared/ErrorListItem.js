@@ -61,6 +61,16 @@ const prettyPrint = (value) => {
 function ErrorListItem({item, onFocusElement}) {
 	const [collapse, setCollapse] = useState(true);
 
+	const _getDescription = () => {
+		const configurationFieldName = getConfigurationFieldName(
+			item.rootProperty
+		);
+
+		return configurationFieldName
+			? `${item.msg} (${getConfigurationFieldName(item.rootProperty)})`
+			: item.msg;
+	};
+
 	const _handleCollapse = () => {
 		setCollapse(!collapse);
 	};
@@ -88,11 +98,7 @@ function ErrorListItem({item, onFocusElement}) {
 				</span>
 
 				{item.msg && (
-					<span className="description">
-						{`${item.msg} ${getConfigurationFieldName(
-							item.rootProperty
-						)}`}
-					</span>
+					<span className="description">{_getDescription()}</span>
 				)}
 			</span>
 
