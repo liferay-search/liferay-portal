@@ -67,7 +67,7 @@ function ErrorListItem({item, onFocusElement}) {
 		);
 
 		return configurationFieldName
-			? `${item.msg} (${getConfigurationFieldName(item.rootProperty)})`
+			? `${item.msg} (${configurationFieldName})`
 			: item.msg;
 	};
 
