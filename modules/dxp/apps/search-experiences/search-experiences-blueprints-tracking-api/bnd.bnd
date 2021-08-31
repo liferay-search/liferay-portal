@@ -1,0 +1,4 @@
+Bundle-Name: Liferay Search Experiences Blueprints Tracking API
+Bundle-SymbolicName: com.liferay.search.experiences.blueprints.tracking.api
+Bundle-Version: 1.0.0
+Export-Package: com.liferay.search.experiences.blueprints.tracking.util
