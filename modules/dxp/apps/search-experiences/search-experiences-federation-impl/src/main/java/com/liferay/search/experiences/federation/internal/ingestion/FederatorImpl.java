@@ -79,6 +79,12 @@ public class FederatorImpl implements Federator {
 	private String _getLiferayVersion(String content) {
 		String aux = StringUtils.substringAfter(content, "Liferay DXP 7.");
 
+		if (aux.equals("")) {
+			aux = StringUtils.substringAfter(content, "Liferay Portal 6.");
+
+			return "Liferay DXP 6." + aux.charAt(0);
+		}
+
 		return "Liferay DXP 7." + aux.charAt(0);
 	}
 

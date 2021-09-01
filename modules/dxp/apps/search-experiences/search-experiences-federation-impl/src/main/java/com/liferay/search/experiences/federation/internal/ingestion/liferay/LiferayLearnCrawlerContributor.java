@@ -18,8 +18,11 @@ import com.liferay.search.experiences.federation.internal.crawl.CrawlerContribut
 import com.liferay.search.experiences.federation.internal.crawl.CrawlerContributorHelper;
 import com.liferay.search.experiences.federation.internal.download.Downloader;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -34,26 +37,64 @@ public class LiferayLearnCrawlerContributor implements CrawlerContributor {
 	@Override
 	public void contribute(CrawlerContributorHelper crawlerContributorHelper) {
 		List<String> seeds = Arrays.asList(
-			"https://learn.liferay.com/dxp/latest/en/using_search.html");
+			"https://learn.liferay.com/index.html");
+		ArrayList<String> ignore = new ArrayList<>(
+			Arrays.asList("reference/latest/en/index.html"));
 
 		for (String seed : seeds) {
 			Seeder.builder(
 			).base(
-				"https://learn.liferay.com/dxp/latest/en/"
-			).begin(
-				"<h1>Using Search<a"
+				"https://learn.liferay.com"
+			).listLinksDelimiter(
+				"<section class=\"col-md-12 justify-content-center products\">",
+				"</section>"
 			).delimiter(
 				"</a>"
-			).end(
-				"</div>"
+			).ignoreList(
+				ignore
 			).html(
 				downloader.download(seed)
 			).onAddress(
-				address -> crawlerContributorHelper.seed(
-					address, "Liferay Learn")
+				address -> crawl1(address, crawlerContributorHelper)
 			).build(
 			).seed();
 		}
+	}
+
+	public void crawl1(
+		String seed, CrawlerContributorHelper crawlerContributorHelper) {
+
+		String baseSeed = StringUtils.substringBefore(seed, "index.html");
+
+		Seeder.builder(
+		).base(
+			baseSeed
+		).listLinksDelimiter(
+			"<ul>", "</ul>"
+		).html(
+			downloader.download(seed)
+		).onAddress(
+			address -> crawl2(address, crawlerContributorHelper)
+		).build(
+		).seed();
+	}
+
+	public void crawl2(
+		String seed, CrawlerContributorHelper crawlerContributorHelper) {
+
+		String baseSeed = StringUtils.substringBeforeLast(seed, "/") + "/";
+
+		Seeder.builder(
+		).base(
+			baseSeed
+		).listLinksDelimiter(
+			"<ul>", "</ul>"
+		).html(
+			downloader.download(seed)
+		).onAddress(
+			address -> crawlerContributorHelper.seed(address, "Liferay Learn")
+		).build(
+		).seed();
 	}
 
 	@Reference

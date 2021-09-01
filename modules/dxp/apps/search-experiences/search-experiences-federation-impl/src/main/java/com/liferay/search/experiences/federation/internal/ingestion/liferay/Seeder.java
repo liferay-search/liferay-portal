@@ -14,7 +14,11 @@
 
 package com.liferay.search.experiences.federation.internal.ingestion.liferay;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -22,6 +26,9 @@ import org.apache.commons.lang.StringUtils;
  * @author André de Oliveira
  */
 public class Seeder {
+
+	public static Matcher matcher;
+	public static Pattern pattern;
 
 	public static SeederBuilder builder() {
 		return new SeederBuilder();
@@ -32,24 +39,75 @@ public class Seeder {
 
 	public Seeder(Seeder seeder) {
 		_base = seeder._base;
-		_begin = seeder._begin;
+		_beginListLinks = seeder._beginListLinks;
 		_consumer = seeder._consumer;
 		_delimiter = seeder._delimiter;
-		_end = seeder._end;
+		_endListLinks = seeder._endListLinks;
 		_html = seeder._html;
+		_beginLink = seeder._beginLink;
+		_endLink = seeder._endLink;
+		_ignore = seeder._ignore;
+	}
+
+	public String get_beginLink() {
+		if (_beginLink == null) {
+			_beginLink = "href=\"";
+		}
+
+		return _beginLink;
+	}
+
+	public String get_delimiter() {
+		if (_delimiter == null) {
+			_delimiter = "</li>";
+		}
+
+		return _delimiter;
+	}
+
+	public String get_endLink() {
+		if (_endLink == null) {
+			_endLink = "\"";
+		}
+
+		return _endLink;
+	}
+
+	public boolean ignore(String link) {
+		Iterator<String> ignoreListIterator = _ignore.iterator();
+
+		while (ignoreListIterator.hasNext()) {
+			pattern = Pattern.compile(
+				ignoreListIterator.next(), Pattern.CASE_INSENSITIVE);
+
+			matcher = pattern.matcher(link);
+
+			if (matcher.find()) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	public void seed() {
-		String list = StringUtils.substringBetween(_html, _begin, _end);
+		String list = StringUtils.substringBetween(
+			_html, _beginListLinks, _endListLinks);
 
 		while (!list.equals("")) {
-			String link = StringUtils.substringBetween(list, "href=\"", "\"");
+			String link = StringUtils.substringBetween(
+				list, get_beginLink(), get_endLink());
+			boolean hasIgnore = false;
 
-			if (link != null) {
+			if (_ignore != null) {
+				hasIgnore = ignore(link);
+			}
+
+			if ((link != null) && !hasIgnore) {
 				_consumer.accept(_base + link);
 			}
 
-			list = StringUtils.substringAfter(list, _delimiter);
+			list = StringUtils.substringAfter(list, get_delimiter());
 		}
 	}
 
@@ -57,12 +115,6 @@ public class Seeder {
 
 		public SeederBuilder base(String base) {
 			_seeder._base = base;
-
-			return this;
-		}
-
-		public SeederBuilder begin(String begin) {
-			_seeder._begin = begin;
 
 			return this;
 		}
@@ -77,14 +129,28 @@ public class Seeder {
 			return this;
 		}
 
-		public SeederBuilder end(String end) {
-			_seeder._end = end;
+		public SeederBuilder html(String html) {
+			_seeder._html = html;
 
 			return this;
 		}
 
-		public SeederBuilder html(String html) {
-			_seeder._html = html;
+		public SeederBuilder ignoreList(ArrayList<String> ignore) {
+			_seeder._ignore = ignore;
+
+			return this;
+		}
+
+		public SeederBuilder linkReference(String begin, String end) {
+			_seeder._beginLink = begin;
+			_seeder._endLink = end;
+
+			return this;
+		}
+
+		public SeederBuilder listLinksDelimiter(String begin, String end) {
+			_seeder._beginListLinks = begin;
+			_seeder._endListLinks = end;
 
 			return this;
 		}
@@ -100,10 +166,13 @@ public class Seeder {
 	}
 
 	private String _base;
-	private String _begin;
+	private String _beginLink;
+	private String _beginListLinks;
 	private Consumer<String> _consumer;
 	private String _delimiter;
-	private String _end;
+	private String _endLink;
+	private String _endListLinks;
 	private String _html;
+	private ArrayList<String> _ignore;
 
 }
