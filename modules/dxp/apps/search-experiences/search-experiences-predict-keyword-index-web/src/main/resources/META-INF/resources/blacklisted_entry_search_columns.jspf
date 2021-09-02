@@ -38,7 +38,7 @@ String lastReporter = KeywordIndexUtil.getLastReporter(entry);
 			<c:if test='<%= !lastReporter.equals("") %>'>
 				<h5 class="text-default text-truncate">
 					<span class="id-text">
-						<liferay-ui:message key="reporter" /> <%= lastReporter %>
+						<liferay-ui:message arguments="<%= lastReporter %>" key="reported-by-x" />
 						<liferay-ui:message arguments="<%= LanguageUtil.getTimeDescription(request, System.currentTimeMillis() - entry.getCreated().getTime(), true) %>" key="x-ago" />
 					</span>
 				</h5>
@@ -70,7 +70,7 @@ String lastReporter = KeywordIndexUtil.getLastReporter(entry);
 			<%= entry.getContent() %>
 			<c:if test='<%= !lastReporter.equals("") %>'>
 				<span class="reporter">
-					<liferay-ui:message key="reporter" /> <%= lastReporter %>
+					<liferay-ui:message arguments="<%= lastReporter %>" key="reported-by-x" />
 					<liferay-ui:message arguments="<%= LanguageUtil.getTimeDescription(request, System.currentTimeMillis() - entry.getCreated().getTime(), true) %>" key="x-ago" />
 				</span>
 			</c:if>

@@ -77,7 +77,7 @@ boolean typeaheadEnabled = GetterUtil.getBoolean(preferences.getValue(Blueprints
 
 				<hr />
 
-				<aui:input helpMessage="keywordindexing-enabled-help" id="keywordIndexingEnabled" label="enable-keyword-indexing" name="preferences--keywordIndexingEnabled--" type="checkbox" value="<%= keywordIndexingEnabled %>" />
+				<aui:input helpMessage="keyword-indexing-enabled-help" id="keywordIndexingEnabled" label="enable-keyword-indexing" name="preferences--keywordIndexingEnabled--" type="checkbox" value="<%= keywordIndexingEnabled %>" />
 
 				<div class="options-container <%= !keywordIndexingEnabled ? "hide" : StringPool.BLANK %>" id="<portlet:namespace />keywordIndexingOptionsContainer">
 					<aui:input label="hits-threshold-for-indexing-keywords" name="preferences--keywordIndexingHitsThreshold--" size="3" type="text" value="<%= keywordIndexingHitsThreshold %>" />
