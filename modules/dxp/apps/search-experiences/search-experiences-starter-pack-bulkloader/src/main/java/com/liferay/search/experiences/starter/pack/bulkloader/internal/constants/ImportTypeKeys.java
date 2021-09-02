@@ -21,8 +21,6 @@ public class ImportTypeKeys {
 
 	public static final String ALL_PLACES_DATA = "all_places_data";
 
-	public static final String FEDERATED_CONTENT = "federated_content";
-
 	public static final String RESTAURANTS = "restaurants";
 
 	public static final String TOURIST_ATTRACTIONS = "tourist_attractions";
