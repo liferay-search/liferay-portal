@@ -31,21 +31,15 @@ import com.liferay.portal.configuration.metatype.annotations.ExtendedObjectClass
 )
 public interface IPStackConfiguration {
 
-	@Meta.AD(
-		deflt = "false", description = "is-enabled-desc",
-		name = "is-enabled-name", required = false
-	)
+	@Meta.AD(deflt = "false", name = "is-enabled-name", required = false)
 	public boolean isEnabled();
 
-	@Meta.AD(
-		deflt = "", description = "api-key-desc", name = "api-key-name",
-		required = false
-	)
+	@Meta.AD(deflt = "", name = "api-key-name", required = false)
 	public String apiKey();
 
 	@Meta.AD(
-		deflt = "http://api.ipstack.com/", description = "api-url-desc",
-		name = "api-url-name", required = false
+		deflt = "http://api.ipstack.com/", name = "api-url-name",
+		required = false
 	)
 	public String apiURL();
 

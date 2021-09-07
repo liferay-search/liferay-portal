@@ -32,34 +32,24 @@ import com.liferay.portal.configuration.metatype.annotations.ExtendedObjectClass
 )
 public interface MicrosoftContentModeratorConfiguration {
 
-	@Meta.AD(
-		deflt = "false", description = "is-enabled-desc",
-		name = "is-enabled-name", required = false
-	)
+	@Meta.AD(deflt = "false", name = "is-enabled-name", required = false)
 	public boolean isEnabled();
 
-	@Meta.AD(
-		deflt = "", description = "subscription-key-desc",
-		name = "subscription-key-name", required = false
-	)
+	@Meta.AD(deflt = "", name = "subscription-key-name", required = false)
 	public String subscriptionKey();
 
 	@Meta.AD(
 		deflt = "https://westus.api.cognitive.microsoft.com/contentmoderator/moderate/v1.0/ProcessText/Screen",
-		description = "endpoint-desc", name = "endpoint-name", required = false
+		name = "endpoint-name", required = false
 	)
 	public String apiEndpoint();
 
 	@Meta.AD(
-		deflt = "true", description = "classify-by-default-desc",
-		name = "classify-by-default-name", required = false
+		deflt = "true", name = "classify-by-default-name", required = false
 	)
 	public boolean classifyByDefault();
 
-	@Meta.AD(
-		deflt = "true", description = "pii-by-default-desc",
-		name = "pii-by-default-name", required = false
-	)
+	@Meta.AD(deflt = "true", name = "pii-by-default-name", required = false)
 	public boolean pIIByDefault();
 
 }

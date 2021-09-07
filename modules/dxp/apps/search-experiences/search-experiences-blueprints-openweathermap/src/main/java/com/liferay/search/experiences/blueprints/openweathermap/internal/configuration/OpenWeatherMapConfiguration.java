@@ -32,21 +32,15 @@ import com.liferay.portal.configuration.metatype.annotations.ExtendedObjectClass
 )
 public interface OpenWeatherMapConfiguration {
 
-	@Meta.AD(
-		deflt = "false", description = "is-enabled-desc",
-		name = "is-enabled-name", required = false
-	)
+	@Meta.AD(deflt = "false", name = "is-enabled-name", required = false)
 	public boolean isEnabled();
 
-	@Meta.AD(
-		deflt = "", description = "api-key-desc", name = "api-key-name",
-		required = false
-	)
+	@Meta.AD(deflt = "", name = "api-key-name", required = false)
 	public String apiKey();
 
 	@Meta.AD(
 		deflt = "http://api.openweathermap.org/data/2.5/weather",
-		description = "api-url-desc", name = "api-url-name", required = false
+		name = "api-url-name", required = false
 	)
 	public String apiURL();
 
