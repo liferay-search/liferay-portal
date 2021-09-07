@@ -59,7 +59,7 @@
 	z-index: 972;
 
 	&.open {
-		transform: translateX(0);
+		transform: translateX(0%);
 		transition: transform ease 0.2s;
 	}
 }
