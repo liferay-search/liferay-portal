@@ -17,13 +17,13 @@ import ClayIcon from '@clayui/icon';
 import ClayList from '@clayui/list';
 import ClayLoadingIndicator from '@clayui/loading-indicator';
 import ClayManagementToolbar from '@clayui/management-toolbar';
+import {ClayPaginationWithBasicItems} from '@clayui/pagination';
 import ClayPaginationBar from '@clayui/pagination-bar';
 import getCN from 'classnames';
 import PropTypes from 'prop-types';
 import React, {useState} from 'react';
 
 import ErrorListItem from '../shared/ErrorListItem';
-import PaginationWithBasicItems from '../shared/PaginationWithBasicItems';
 import {PreviewModalWithCopyDownload} from '../shared/PreviewModal';
 import SearchInput from '../shared/SearchInput';
 import {sub} from '../utils/language';
@@ -112,8 +112,9 @@ function PreviewSidebar({
 					])}
 				</ClayPaginationBar.Results>
 
-				<PaginationWithBasicItems
+				<ClayPaginationWithBasicItems
 					activePage={activePage}
+					alignmentPosition={Align.TopCenter}
 					ellipsisBuffer={1}
 					onPageChange={setActivePage}
 					totalPages={Math.ceil(results.meta.totalHits / activeDelta)}
