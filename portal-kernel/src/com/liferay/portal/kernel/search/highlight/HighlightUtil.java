@@ -71,7 +71,7 @@ public class HighlightUtil {
 			return s;
 		}
 
-		StringBundler sb = new StringBundler((3 * queryTerms.length) - 1);
+		StringBundler sb = new StringBundler((2 * queryTerms.length) - 1);
 
 		for (int i = 0; i < queryTerms.length; i++) {
 			if (i != 0) {
@@ -79,8 +79,6 @@ public class HighlightUtil {
 			}
 
 			sb.append(Pattern.quote(queryTerms[i].trim()));
-
-			sb.append(_REGEXP_WORD_BOUNDARY);
 		}
 
 		Pattern pattern = Pattern.compile(
