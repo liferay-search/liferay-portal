@@ -26,7 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import java.util.stream.Stream;
+import java.util.List;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
@@ -159,22 +159,12 @@ public class ElasticsearchInstaller {
 		Path filePath = _getFilePath(
 			_distribution.getElasticsearchDistributable());
 
-		UncompressUtil.unarchive(filePath, _temporaryDirectoryPath);
-
-		Path extractedElasticsearchDirectoryPath =
-			_getExtractedElasticsearchDirectoryPath(_temporaryDirectoryPath);
+		List<String> archiveNames = UncompressUtil.unarchive(
+			filePath, _temporaryDirectoryPath);
 
 		PathUtil.copyDirectory(
-			extractedElasticsearchDirectoryPath.resolve("lib"),
-			_installationDirectoryPath.resolve("lib"));
-
-		Path extractedModulesDirectoryPath =
-			extractedElasticsearchDirectoryPath.resolve("modules");
-
-		PathUtil.copyDirectory(
-			extractedModulesDirectoryPath,
-			_installationDirectoryPath.resolve("modules"),
-			extractedModulesDirectoryPath.resolve("ingest-geoip"));
+			_temporaryDirectoryPath.resolve(archiveNames.get(0)),
+			_installationDirectoryPath);
 	}
 
 	private void _downloadAndInstallPlugin(Distributable distributable)
@@ -207,18 +197,6 @@ public class ElasticsearchInstaller {
 				_distribution.getPluginDistributables()) {
 
 			_downloadAndInstallPlugin(distributable);
-		}
-	}
-
-	private Path _getExtractedElasticsearchDirectoryPath(
-			Path extractedRootDirectoryPath)
-		throws IOException {
-
-		try (Stream<Path> stream = Files.list(extractedRootDirectoryPath)) {
-			return stream.filter(
-				Files::isDirectory
-			).findAny(
-			).get();
 		}
 	}
 

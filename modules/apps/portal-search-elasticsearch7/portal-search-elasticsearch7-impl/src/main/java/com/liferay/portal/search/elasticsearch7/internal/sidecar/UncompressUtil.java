@@ -27,6 +27,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermissions;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -39,7 +41,7 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
  */
 public class UncompressUtil {
 
-	public static void unarchive(
+	public static List<String> unarchive(
 			Path tarGzFilePath, Path destinationDirectoryPath)
 		throws IOException {
 
@@ -55,10 +57,14 @@ public class UncompressUtil {
 
 			TarArchiveEntry tarArchiveEntry = null;
 
+			List<String> archiveNames = new ArrayList<>();
+
 			while ((tarArchiveEntry =
 						tarArchiveInputStream.getNextTarEntry()) != null) {
 
 				if (tarArchiveInputStream.canReadEntryData(tarArchiveEntry)) {
+					archiveNames.add(tarArchiveEntry.getName());
+
 					Path path = destinationDirectoryPath.resolve(
 						tarArchiveEntry.getName());
 
@@ -79,6 +85,8 @@ public class UncompressUtil {
 					}
 				}
 			}
+
+			return archiveNames;
 		}
 	}
 
