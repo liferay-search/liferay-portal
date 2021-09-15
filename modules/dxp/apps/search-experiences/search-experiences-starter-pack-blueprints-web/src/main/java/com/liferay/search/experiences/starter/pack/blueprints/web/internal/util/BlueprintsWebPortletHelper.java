@@ -14,14 +14,11 @@
 
 package com.liferay.search.experiences.starter.pack.blueprints.web.internal.util;
 
-import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.search.experiences.blueprints.model.Blueprint;
-import com.liferay.search.experiences.blueprints.service.BlueprintService;
+import com.liferay.search.experiences.blueprints.Blueprint;
+import com.liferay.search.experiences.blueprints.BlueprintLookup;
 import com.liferay.search.experiences.predict.suggestions.attributes.SuggestionAttributesBuilder;
 import com.liferay.search.experiences.predict.suggestions.attributes.SuggestionAttributesBuilderFactory;
 import com.liferay.search.experiences.starter.pack.blueprints.web.internal.portlet.preferences.BlueprintsWebPortletPreferences;
@@ -43,17 +40,6 @@ import org.osgi.service.component.annotations.Reference;
 @Component(immediate = true, service = BlueprintsWebPortletHelper.class)
 public class BlueprintsWebPortletHelper {
 
-	public Optional<Blueprint> getBlueprint(long blueprintId) {
-		try {
-			return Optional.of(_blueprintService.getBlueprint(blueprintId));
-		}
-		catch (PortalException portalException) {
-			_log.error(portalException.getMessage(), portalException);
-		}
-
-		return Optional.empty();
-	}
-
 	public Optional<Blueprint> getBlueprint(PortletRequest portletRequest) {
 		long blueprintId = getBlueprintId(portletRequest);
 
@@ -61,7 +47,7 @@ public class BlueprintsWebPortletHelper {
 			return Optional.empty();
 		}
 
-		return getBlueprint(blueprintId);
+		return _blueprintLookup.getBlueprintOptional(blueprintId);
 	}
 
 	public long getBlueprintId(PortletRequest portletRequest) {
@@ -116,11 +102,8 @@ public class BlueprintsWebPortletHelper {
 		return timeZone.getID();
 	}
 
-	private static final Log _log = LogFactoryUtil.getLog(
-		BlueprintsWebPortletHelper.class);
-
 	@Reference
-	private BlueprintService _blueprintService;
+	private BlueprintLookup _blueprintLookup;
 
 	@Reference
 	private Portal _portal;
