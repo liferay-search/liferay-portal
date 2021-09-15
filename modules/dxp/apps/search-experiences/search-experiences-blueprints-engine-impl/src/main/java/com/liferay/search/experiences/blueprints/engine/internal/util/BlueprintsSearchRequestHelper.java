@@ -23,14 +23,13 @@ import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
+import com.liferay.search.experiences.blueprints.Blueprint;
 import com.liferay.search.experiences.blueprints.engine.exception.BlueprintsEngineException;
 import com.liferay.search.experiences.blueprints.engine.parameter.Parameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterDataCreator;
 import com.liferay.search.experiences.blueprints.engine.spi.searchrequest.SearchRequestBodyContributor;
 import com.liferay.search.experiences.blueprints.engine.template.variable.BlueprintTemplateVariableParser;
-import com.liferay.search.experiences.blueprints.model.Blueprint;
-import com.liferay.search.experiences.blueprints.service.BlueprintService;
 import com.liferay.search.experiences.blueprints.util.BlueprintHelper;
 import com.liferay.search.experiences.problems.Problem;
 import com.liferay.search.experiences.problems.ProblemBuilder;
@@ -254,9 +253,6 @@ public class BlueprintsSearchRequestHelper {
 
 	@Reference
 	private BlueprintHelper _blueprintHelper;
-
-	@Reference
-	private BlueprintService _blueprintService;
 
 	@Reference
 	private BlueprintTemplateVariableParser _blueprintTemplateVariableParser;

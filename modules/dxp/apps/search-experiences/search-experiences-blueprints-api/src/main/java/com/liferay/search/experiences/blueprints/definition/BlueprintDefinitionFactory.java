@@ -14,7 +14,7 @@
 
 package com.liferay.search.experiences.blueprints.definition;
 
-import com.liferay.search.experiences.blueprints.model.Blueprint;
+import com.liferay.search.experiences.blueprints.Blueprint;
 
 import org.osgi.annotation.versioning.ProviderType;
 

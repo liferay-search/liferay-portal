@@ -14,9 +14,9 @@
 
 package com.liferay.search.experiences.blueprints.internal.definition;
 
+import com.liferay.search.experiences.blueprints.Blueprint;
 import com.liferay.search.experiences.blueprints.definition.BlueprintDefinition;
 import com.liferay.search.experiences.blueprints.definition.BlueprintDefinitionFactory;
-import com.liferay.search.experiences.blueprints.model.Blueprint;
 
 import org.osgi.service.component.annotations.Component;
 

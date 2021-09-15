@@ -15,10 +15,10 @@
 package com.liferay.search.experiences.blueprints.engine.spi.query;
 
 import com.liferay.portal.search.query.Query;
+import com.liferay.search.experiences.blueprints.Blueprint;
 import com.liferay.search.experiences.blueprints.constants.json.values.ClauseContext;
 import com.liferay.search.experiences.blueprints.constants.json.values.Occur;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
-import com.liferay.search.experiences.blueprints.model.Blueprint;
 import com.liferay.search.experiences.problems.ProblemsHolderBuilder;
 
 import java.util.Map;

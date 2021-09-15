@@ -22,6 +22,7 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.search.experiences.blueprints.Blueprint;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.search.experiences.blueprints.engine.internal.attributes.util.BlueprintsAttributeValuesHelper;
 import com.liferay.search.experiences.blueprints.engine.internal.parameter.builder.ParameterBuilder;
@@ -35,7 +36,6 @@ import com.liferay.search.experiences.blueprints.engine.parameter.ParameterDefin
 import com.liferay.search.experiences.blueprints.engine.parameter.StringParameter;
 import com.liferay.search.experiences.blueprints.engine.spi.keywords.KeywordsProcessor;
 import com.liferay.search.experiences.blueprints.engine.spi.parameter.ParameterContributor;
-import com.liferay.search.experiences.blueprints.model.Blueprint;
 import com.liferay.search.experiences.blueprints.util.BlueprintHelper;
 import com.liferay.search.experiences.problems.ProblemBuilder;
 import com.liferay.search.experiences.problems.ProblemsHolderBuilder;

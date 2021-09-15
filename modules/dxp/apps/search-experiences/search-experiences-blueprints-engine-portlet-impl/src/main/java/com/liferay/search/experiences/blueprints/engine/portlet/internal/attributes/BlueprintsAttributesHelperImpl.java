@@ -23,13 +23,12 @@ import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.search.experiences.blueprints.Blueprint;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributesBuilder;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributesBuilderFactory;
 import com.liferay.search.experiences.blueprints.engine.portlet.attributes.BlueprintsAttributesHelper;
 import com.liferay.search.experiences.blueprints.facets.constants.FacetsBlueprintKeys;
-import com.liferay.search.experiences.blueprints.model.Blueprint;
-import com.liferay.search.experiences.blueprints.service.BlueprintService;
 import com.liferay.search.experiences.blueprints.util.BlueprintHelper;
 
 import java.util.Iterator;
@@ -378,9 +377,6 @@ public class BlueprintsAttributesHelperImpl
 	@Reference
 	private BlueprintsAttributesBuilderFactory
 		_blueprintsAttributesBuilderFactory;
-
-	@Reference
-	private BlueprintService _blueprintService;
 
 	@Reference
 	private Portal _portal;

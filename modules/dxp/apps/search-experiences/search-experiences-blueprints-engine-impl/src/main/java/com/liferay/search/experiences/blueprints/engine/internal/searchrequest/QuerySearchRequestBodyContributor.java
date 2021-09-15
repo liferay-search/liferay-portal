@@ -28,6 +28,7 @@ import com.liferay.portal.search.query.Query;
 import com.liferay.portal.search.rescore.RescoreBuilder;
 import com.liferay.portal.search.rescore.RescoreBuilderFactory;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
+import com.liferay.search.experiences.blueprints.Blueprint;
 import com.liferay.search.experiences.blueprints.constants.json.values.ClauseContext;
 import com.liferay.search.experiences.blueprints.constants.json.values.Occur;
 import com.liferay.search.experiences.blueprints.engine.internal.clause.util.ClauseHelper;
@@ -36,7 +37,6 @@ import com.liferay.search.experiences.blueprints.engine.internal.util.ProblemBui
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
 import com.liferay.search.experiences.blueprints.engine.spi.query.QueryContributor;
 import com.liferay.search.experiences.blueprints.engine.spi.searchrequest.SearchRequestBodyContributor;
-import com.liferay.search.experiences.blueprints.model.Blueprint;
 import com.liferay.search.experiences.blueprints.util.BlueprintHelper;
 import com.liferay.search.experiences.problems.ProblemBuilder;
 import com.liferay.search.experiences.problems.ProblemsHolderBuilder;

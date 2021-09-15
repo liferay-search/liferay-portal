@@ -14,9 +14,9 @@
 
 package com.liferay.search.experiences.blueprints.engine.portlet.attributes;
 
+import com.liferay.search.experiences.blueprints.Blueprint;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributesBuilder;
-import com.liferay.search.experiences.blueprints.model.Blueprint;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;

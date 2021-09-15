@@ -14,20 +14,18 @@
 
 package com.liferay.search.experiences.blueprints.engine.internal.util;
 
-import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
+import com.liferay.search.experiences.blueprints.Blueprint;
+import com.liferay.search.experiences.blueprints.BlueprintLookup;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.search.experiences.blueprints.engine.internal.searchrequest.BlueprintToSearchRequestTranslator;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterDataCreator;
 import com.liferay.search.experiences.blueprints.engine.util.BlueprintsSearchRequestContributorHelper;
-import com.liferay.search.experiences.blueprints.exception.NoSuchBlueprintException;
-import com.liferay.search.experiences.blueprints.model.Blueprint;
-import com.liferay.search.experiences.blueprints.service.BlueprintService;
 import com.liferay.search.experiences.problems.ProblemsHolderBuilder;
 import com.liferay.search.experiences.problems.ProblemsHolderBuilderFactory;
+
+import java.util.Optional;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -46,11 +44,17 @@ public class BlueprintsSearchRequestContributorHelperImpl
 		SearchRequestBuilder searchRequestBuilder, long blueprintId,
 		BlueprintsAttributes blueprintsAttributes) {
 
-		Blueprint blueprint = _getBlueprint(blueprintId);
+		Optional<Blueprint> optional = _blueprintLookup.getBlueprintOptional(
+			blueprintId);
 
-		if (blueprint == null) {
-			return;
-		}
+		optional.ifPresent(
+			blueprint -> _combine(
+				searchRequestBuilder, blueprint, blueprintsAttributes));
+	}
+
+	private void _combine(
+		SearchRequestBuilder searchRequestBuilder, Blueprint blueprint,
+		BlueprintsAttributes blueprintsAttributes) {
 
 		ProblemsHolderBuilder problemsHolderBuilder =
 			_problemsHolderBuilderFactory.builder();
@@ -77,25 +81,8 @@ public class BlueprintsSearchRequestContributorHelperImpl
 			blueprint.getBlueprintId(), problemsHolderBuilder.build());
 	}
 
-	private Blueprint _getBlueprint(long blueprintId) {
-		try {
-			return _blueprintService.getBlueprint(blueprintId);
-		}
-		catch (NoSuchBlueprintException noSuchBlueprintException) {
-			_log.error(noSuchBlueprintException);
-
-			return null;
-		}
-		catch (PortalException portalException) {
-			throw new RuntimeException(portalException);
-		}
-	}
-
-	private static final Log _log = LogFactoryUtil.getLog(
-		BlueprintsSearchRequestContributorHelperImpl.class);
-
 	@Reference
-	private BlueprintService _blueprintService;
+	private BlueprintLookup _blueprintLookup;
 
 	@Reference
 	private BlueprintsSearchRequestHelper _blueprintsSearchRequestHelper;

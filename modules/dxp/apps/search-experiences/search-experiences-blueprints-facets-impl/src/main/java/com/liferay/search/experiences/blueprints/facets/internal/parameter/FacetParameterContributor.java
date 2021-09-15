@@ -17,6 +17,7 @@ package com.liferay.search.experiences.blueprints.facets.internal.parameter;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.search.experiences.blueprints.Blueprint;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.search.experiences.blueprints.engine.parameter.Parameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterDataBuilder;
@@ -27,7 +28,6 @@ import com.liferay.search.experiences.blueprints.facets.internal.request.handler
 import com.liferay.search.experiences.blueprints.facets.internal.util.BlueprintJSONUtil;
 import com.liferay.search.experiences.blueprints.facets.internal.util.FacetConfigurationUtil;
 import com.liferay.search.experiences.blueprints.facets.spi.request.FacetRequestHandler;
-import com.liferay.search.experiences.blueprints.model.Blueprint;
 import com.liferay.search.experiences.blueprints.util.BlueprintHelper;
 import com.liferay.search.experiences.problems.ProblemBuilder;
 import com.liferay.search.experiences.problems.ProblemBuilders;
