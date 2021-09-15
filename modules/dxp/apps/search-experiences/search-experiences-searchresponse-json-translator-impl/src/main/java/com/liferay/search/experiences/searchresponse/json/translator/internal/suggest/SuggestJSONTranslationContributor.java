@@ -17,8 +17,8 @@ package com.liferay.search.experiences.searchresponse.json.translator.internal.s
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.searcher.SearchResponse;
+import com.liferay.search.experiences.blueprints.Blueprint;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
-import com.liferay.search.experiences.blueprints.model.Blueprint;
 import com.liferay.search.experiences.problems.ProblemsHolderBuilder;
 import com.liferay.search.experiences.searchresponse.json.translator.spi.contributor.JSONTranslationContributor;
 
