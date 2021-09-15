@@ -17,6 +17,7 @@ dependencies {
 	compileOnly project(":apps:static:portal-configuration:portal-configuration-metatype-api")
 	compileOnly project(":core:osgi-service-tracker-collections")
 	compileOnly project(":core:petra:petra-string")
+	compileOnly project(":dxp:apps:search-experiences:search-experiences-api")
 	compileOnly project(":dxp:apps:search-experiences:search-experiences-blueprints-api")
 	compileOnly project(":dxp:apps:search-experiences:search-experiences-blueprints-engine-api")
 	compileOnly project(":dxp:apps:search-experiences:search-experiences-blueprints-engine-spi")

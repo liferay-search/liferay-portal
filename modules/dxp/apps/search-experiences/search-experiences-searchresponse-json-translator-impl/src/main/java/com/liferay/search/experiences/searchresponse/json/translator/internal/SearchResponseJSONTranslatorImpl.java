@@ -19,17 +19,16 @@ import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.searcher.SearchResponse;
+import com.liferay.search.experiences.blueprints.Blueprint;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
-import com.liferay.search.experiences.blueprints.model.Blueprint;
-import com.liferay.search.experiences.blueprints.service.BlueprintService;
 import com.liferay.search.experiences.problems.ProblemsHolderBuilder;
 import com.liferay.search.experiences.searchresponse.json.translator.SearchResponseJSONTranslator;
 import com.liferay.search.experiences.searchresponse.json.translator.spi.contributor.JSONTranslationContributor;
 
-import java.beans.ExceptionListener;
-
 import java.util.Collection;
 import java.util.ResourceBundle;
+
+import java.beans.ExceptionListener;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
@@ -103,9 +102,6 @@ public class SearchResponseJSONTranslatorImpl
 
 		_jsonTranslationContributors = jsonTranslationContributors;
 	}
-
-	@Reference
-	private BlueprintService _blueprintService;
 
 	private JSONFactory _jsonFactory;
 	private Collection<JSONTranslationContributor> _jsonTranslationContributors;
