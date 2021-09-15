@@ -14,10 +14,10 @@
 
 package com.liferay.search.experiences.blueprints.engine.spi.parameter;
 
+import com.liferay.search.experiences.blueprints.Blueprint;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterDataBuilder;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterDefinition;
-import com.liferay.search.experiences.blueprints.model.Blueprint;
 import com.liferay.search.experiences.problems.ProblemsHolderBuilder;
 
 import java.util.List;

@@ -14,10 +14,10 @@
 
 package com.liferay.search.experiences.blueprints.internal.definition;
 
+import com.liferay.search.experiences.blueprints.Blueprint;
 import com.liferay.search.experiences.blueprints.definition.AdvancedDefinition;
 import com.liferay.search.experiences.blueprints.definition.BlueprintDefinition;
 import com.liferay.search.experiences.blueprints.definition.FrameworkDefinition;
-import com.liferay.search.experiences.blueprints.model.Blueprint;
 
 /**
  * @author André de Oliveira

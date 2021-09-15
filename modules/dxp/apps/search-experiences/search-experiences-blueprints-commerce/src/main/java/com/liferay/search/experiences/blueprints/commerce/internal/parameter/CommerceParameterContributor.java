@@ -17,13 +17,13 @@ package com.liferay.search.experiences.blueprints.commerce.internal.parameter;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.search.experiences.blueprints.Blueprint;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.search.experiences.blueprints.engine.parameter.LongArrayParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.LongParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterDataBuilder;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterDefinition;
 import com.liferay.search.experiences.blueprints.engine.spi.parameter.ParameterContributor;
-import com.liferay.search.experiences.blueprints.model.Blueprint;
 import com.liferay.search.experiences.problems.ProblemsHolderBuilder;
 
 import java.util.List;

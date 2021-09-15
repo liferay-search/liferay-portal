@@ -19,6 +19,7 @@ import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.search.geolocation.GeoLocationPoint;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.search.experiences.blueprints.Blueprint;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.search.experiences.blueprints.engine.parameter.DoubleParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.IntegerParameter;
@@ -27,7 +28,6 @@ import com.liferay.search.experiences.blueprints.engine.parameter.ParameterDefin
 import com.liferay.search.experiences.blueprints.engine.parameter.StringParameter;
 import com.liferay.search.experiences.blueprints.engine.spi.dataprovider.GeoLocationDataProvider;
 import com.liferay.search.experiences.blueprints.engine.spi.parameter.ParameterContributor;
-import com.liferay.search.experiences.blueprints.model.Blueprint;
 import com.liferay.search.experiences.blueprints.openweathermap.internal.configuration.OpenWeatherMapConfiguration;
 import com.liferay.search.experiences.blueprints.openweathermap.internal.dataprovider.OpenWeatherMapDataProvider;
 import com.liferay.search.experiences.problems.ProblemsHolderBuilder;

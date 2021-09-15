@@ -16,9 +16,9 @@ package com.liferay.search.experiences.blueprints.engine.internal.keywords;
 
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.search.experiences.blueprints.Blueprint;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.search.experiences.blueprints.engine.spi.keywords.KeywordsProcessor;
-import com.liferay.search.experiences.blueprints.model.Blueprint;
 import com.liferay.search.experiences.problems.ProblemsHolderBuilder;
 
 import java.util.stream.IntStream;

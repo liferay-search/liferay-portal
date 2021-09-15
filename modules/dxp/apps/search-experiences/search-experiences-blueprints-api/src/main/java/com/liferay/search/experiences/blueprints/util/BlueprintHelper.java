@@ -16,7 +16,7 @@ package com.liferay.search.experiences.blueprints.util;
 
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.search.experiences.blueprints.model.Blueprint;
+import com.liferay.search.experiences.blueprints.Blueprint;
 
 import java.util.Optional;
 

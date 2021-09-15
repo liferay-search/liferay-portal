@@ -15,6 +15,7 @@
 package com.liferay.search.experiences.blueprints.engine.internal.parameter.contributor;
 
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.search.experiences.blueprints.Blueprint;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.search.experiences.blueprints.engine.internal.attributes.util.BlueprintsAttributeValuesHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.BooleanParameter;
@@ -22,7 +23,6 @@ import com.liferay.search.experiences.blueprints.engine.parameter.ParameterDataB
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterDefinition;
 import com.liferay.search.experiences.blueprints.engine.parameter.StringArrayParameter;
 import com.liferay.search.experiences.blueprints.engine.spi.parameter.ParameterContributor;
-import com.liferay.search.experiences.blueprints.model.Blueprint;
 import com.liferay.search.experiences.problems.ProblemsHolderBuilder;
 
 import java.util.ArrayList;

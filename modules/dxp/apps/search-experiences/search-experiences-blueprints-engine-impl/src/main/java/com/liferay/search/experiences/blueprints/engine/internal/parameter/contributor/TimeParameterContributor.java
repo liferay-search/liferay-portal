@@ -19,6 +19,7 @@ import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.TimeZoneUtil;
+import com.liferay.search.experiences.blueprints.Blueprint;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.search.experiences.blueprints.engine.internal.attributes.util.BlueprintsAttributeValuesHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.DateParameter;
@@ -27,7 +28,6 @@ import com.liferay.search.experiences.blueprints.engine.parameter.ParameterDataB
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterDefinition;
 import com.liferay.search.experiences.blueprints.engine.parameter.StringParameter;
 import com.liferay.search.experiences.blueprints.engine.spi.parameter.ParameterContributor;
-import com.liferay.search.experiences.blueprints.model.Blueprint;
 import com.liferay.search.experiences.problems.ProblemsHolderBuilder;
 
 import java.time.DayOfWeek;

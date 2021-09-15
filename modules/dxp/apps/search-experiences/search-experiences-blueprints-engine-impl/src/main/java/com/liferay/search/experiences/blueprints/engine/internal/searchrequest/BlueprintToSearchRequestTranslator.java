@@ -16,6 +16,7 @@ package com.liferay.search.experiences.blueprints.engine.internal.searchrequest;
 
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
+import com.liferay.search.experiences.blueprints.Blueprint;
 import com.liferay.search.experiences.blueprints.definition.BlueprintDefinition;
 import com.liferay.search.experiences.blueprints.definition.BlueprintDefinitionFactory;
 import com.liferay.search.experiences.blueprints.definition.ClauseContributorsDefinition;
@@ -24,7 +25,6 @@ import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAtt
 import com.liferay.search.experiences.blueprints.engine.constants.SearchContextAttributeKeys;
 import com.liferay.search.experiences.blueprints.engine.internal.attributes.util.BlueprintsAttributeValuesHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
-import com.liferay.search.experiences.blueprints.model.Blueprint;
 
 import java.util.Optional;
 

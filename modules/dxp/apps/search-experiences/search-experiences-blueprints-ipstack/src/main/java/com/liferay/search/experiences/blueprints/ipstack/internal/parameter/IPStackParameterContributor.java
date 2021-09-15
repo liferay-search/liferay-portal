@@ -17,6 +17,7 @@ package com.liferay.search.experiences.blueprints.ipstack.internal.parameter;
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.search.experiences.blueprints.Blueprint;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.search.experiences.blueprints.engine.parameter.DoubleParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterDataBuilder;
@@ -25,7 +26,6 @@ import com.liferay.search.experiences.blueprints.engine.parameter.StringParamete
 import com.liferay.search.experiences.blueprints.engine.spi.dataprovider.GeoLocationDataProvider;
 import com.liferay.search.experiences.blueprints.engine.spi.parameter.ParameterContributor;
 import com.liferay.search.experiences.blueprints.ipstack.internal.configuration.IPStackConfiguration;
-import com.liferay.search.experiences.blueprints.model.Blueprint;
 import com.liferay.search.experiences.problems.ProblemsHolderBuilder;
 
 import java.util.ArrayList;

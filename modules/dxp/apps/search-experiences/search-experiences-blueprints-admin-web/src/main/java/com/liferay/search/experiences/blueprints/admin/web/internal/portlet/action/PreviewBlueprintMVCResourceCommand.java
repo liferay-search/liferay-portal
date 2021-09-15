@@ -31,6 +31,7 @@ import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.search.searcher.SearchResponse;
+import com.liferay.search.experiences.blueprints.Blueprint;
 import com.liferay.search.experiences.blueprints.admin.web.internal.constants.BlueprintsAdminMVCCommandNames;
 import com.liferay.search.experiences.blueprints.admin.web.internal.util.BlueprintsAdminRequestUtil;
 import com.liferay.search.experiences.blueprints.constants.BlueprintsPortletKeys;
@@ -41,7 +42,6 @@ import com.liferay.search.experiences.blueprints.engine.exception.BlueprintsEngi
 import com.liferay.search.experiences.blueprints.engine.portlet.attributes.BlueprintsAttributesHelper;
 import com.liferay.search.experiences.blueprints.engine.util.BlueprintsEngineHelper;
 import com.liferay.search.experiences.blueprints.exception.BlueprintValidationException;
-import com.liferay.search.experiences.blueprints.model.Blueprint;
 import com.liferay.search.experiences.blueprints.service.BlueprintLocalService;
 import com.liferay.search.experiences.blueprints.validator.BlueprintValidator;
 import com.liferay.search.experiences.problems.Problem;
@@ -73,6 +73,26 @@ import org.osgi.service.component.annotations.Reference;
 )
 public class PreviewBlueprintMVCResourceCommand extends BaseMVCResourceCommand {
 
+	public static class PreviewBlueprint implements Blueprint {
+
+		public PreviewBlueprint(String configuration) {
+			_configuration = configuration;
+		}
+
+		@Override
+		public long getBlueprintId() {
+			return 0;
+		}
+
+		@Override
+		public String getConfiguration() {
+			return _configuration;
+		}
+
+		private final String _configuration;
+
+	}
+
 	@Override
 	protected void doServeResource(
 			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
@@ -87,7 +107,8 @@ public class PreviewBlueprintMVCResourceCommand extends BaseMVCResourceCommand {
 		ResourceRequest resourceRequest, ResourceResponse resourceResponse) {
 
 		try {
-			Blueprint blueprint = _getBlueprint(resourceRequest);
+			Blueprint blueprint = new PreviewBlueprint(
+				BlueprintsAdminRequestUtil.getConfiguration(resourceRequest));
 
 			_blueprintValidator.validateConfiguration(
 				blueprint.getConfiguration());
@@ -158,15 +179,6 @@ public class PreviewBlueprintMVCResourceCommand extends BaseMVCResourceCommand {
 		catch (JSONException jsonException) {
 			throw new RuntimeException(jsonException);
 		}
-	}
-
-	private Blueprint _getBlueprint(ResourceRequest resourceRequest) {
-		Blueprint blueprint = _blueprintLocalService.createBlueprint(0L);
-
-		blueprint.setConfiguration(
-			BlueprintsAdminRequestUtil.getConfiguration(resourceRequest));
-
-		return blueprint;
 	}
 
 	private JSONArray _getPreviewAttributesJSONArray(

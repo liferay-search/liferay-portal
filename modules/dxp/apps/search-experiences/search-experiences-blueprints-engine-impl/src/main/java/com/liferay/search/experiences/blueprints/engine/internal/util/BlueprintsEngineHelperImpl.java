@@ -14,12 +14,13 @@
 
 package com.liferay.search.experiences.blueprints.engine.internal.util;
 
-import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.searcher.SearchRequestBuilderFactory;
 import com.liferay.portal.search.searcher.SearchResponse;
+import com.liferay.search.experiences.blueprints.Blueprint;
+import com.liferay.search.experiences.blueprints.BlueprintLookup;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.search.experiences.blueprints.engine.exception.BlueprintsEngineException;
 import com.liferay.search.experiences.blueprints.engine.internal.executor.SearchExecutor;
@@ -28,8 +29,6 @@ import com.liferay.search.experiences.blueprints.engine.parameter.Parameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterDataCreator;
 import com.liferay.search.experiences.blueprints.engine.util.BlueprintsEngineHelper;
-import com.liferay.search.experiences.blueprints.model.Blueprint;
-import com.liferay.search.experiences.blueprints.service.BlueprintService;
 import com.liferay.search.experiences.blueprints.util.BlueprintHelper;
 import com.liferay.search.experiences.problems.ProblemsHolderBuilder;
 
@@ -50,20 +49,15 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 		long blueprintId, BlueprintsAttributes blueprintsAttributes,
 		ProblemsHolderBuilder problemsHolderBuilder) {
 
-		Blueprint blueprint = getBlueprint(blueprintId);
+		Optional<Blueprint> optional = _blueprintLookup.getBlueprintOptional(
+			blueprintId);
 
-		ParameterData parameterData = _parameterDataCreator.create(
-			blueprint, blueprintsAttributes, problemsHolderBuilder);
-
-		SearchRequestBuilder searchRequestBuilder = _getSearchRequestBuilder(
-			parameterData, blueprint, problemsHolderBuilder,
-			blueprintsAttributes.getCompanyId(),
-			blueprintsAttributes.getLocale());
-
-		_blueprintsSearchRequestHelper.checkEngineErrors(
-			blueprint.getBlueprintId(), problemsHolderBuilder.build());
-
-		return searchRequestBuilder;
+		return optional.map(
+			blueprint -> _getSearchRequestBuilder(
+				blueprint, blueprintsAttributes, problemsHolderBuilder)
+		).orElseThrow(
+			BlueprintsEngineException::new
+		);
 	}
 
 	@Override
@@ -71,22 +65,7 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 		Blueprint blueprint, BlueprintsAttributes blueprintsAttributes,
 		ProblemsHolderBuilder problemsHolderBuilder) {
 
-		ParameterData parameterData = _parameterDataCreator.create(
-			blueprint, blueprintsAttributes, problemsHolderBuilder);
-
-		SearchRequestBuilder searchRequestBuilder = _getSearchRequestBuilder(
-			parameterData, blueprint, problemsHolderBuilder,
-			blueprintsAttributes.getCompanyId(),
-			blueprintsAttributes.getLocale());
-
-		SearchResponse searchResponse = _searchExecutor.execute(
-			searchRequestBuilder, parameterData, blueprint,
-			problemsHolderBuilder);
-
-		_blueprintsSearchRequestHelper.checkEngineErrors(
-			blueprint.getBlueprintId(), problemsHolderBuilder.build());
-
-		return searchResponse;
+		return _search(blueprint, blueprintsAttributes, problemsHolderBuilder);
 	}
 
 	@Override
@@ -94,31 +73,15 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 		long blueprintId, BlueprintsAttributes blueprintsAttributes,
 		ProblemsHolderBuilder problemsHolderBuilder) {
 
-		Blueprint blueprint = getBlueprint(blueprintId);
+		Optional<Blueprint> optional = _blueprintLookup.getBlueprintOptional(
+			blueprintId);
 
-		ParameterData parameterData = _parameterDataCreator.create(
-			blueprint, blueprintsAttributes, problemsHolderBuilder);
-
-		SearchRequestBuilder searchRequestBuilder = _getSearchRequestBuilder(
-			parameterData, blueprint, problemsHolderBuilder,
-			blueprintsAttributes.getCompanyId(),
-			blueprintsAttributes.getLocale());
-
-		_blueprintsSearchRequestHelper.checkEngineErrors(
-			blueprint.getBlueprintId(), problemsHolderBuilder.build());
-
-		return _searchExecutor.execute(
-			searchRequestBuilder, parameterData, blueprint,
-			problemsHolderBuilder);
-	}
-
-	protected Blueprint getBlueprint(long blueprintId) {
-		try {
-			return _blueprintService.getBlueprint(blueprintId);
-		}
-		catch (PortalException portalException) {
-			throw new BlueprintsEngineException(portalException);
-		}
+		return optional.map(
+			blueprint -> _search(
+				blueprint, blueprintsAttributes, problemsHolderBuilder)
+		).orElseThrow(
+			BlueprintsEngineException::new
+		);
 	}
 
 	private int _getFrom(
@@ -144,6 +107,24 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 		}
 
 		return (page - 1) * size;
+	}
+
+	private SearchRequestBuilder _getSearchRequestBuilder(
+		Blueprint blueprint, BlueprintsAttributes blueprintsAttributes,
+		ProblemsHolderBuilder problemsHolderBuilder) {
+
+		ParameterData parameterData = _parameterDataCreator.create(
+			blueprint, blueprintsAttributes, problemsHolderBuilder);
+
+		SearchRequestBuilder searchRequestBuilder = _getSearchRequestBuilder(
+			parameterData, blueprint, problemsHolderBuilder,
+			blueprintsAttributes.getCompanyId(),
+			blueprintsAttributes.getLocale());
+
+		_blueprintsSearchRequestHelper.checkEngineErrors(
+			blueprint.getBlueprintId(), problemsHolderBuilder.build());
+
+		return searchRequestBuilder;
 	}
 
 	private SearchRequestBuilder _getSearchRequestBuilder(
@@ -231,11 +212,33 @@ public class BlueprintsEngineHelperImpl implements BlueprintsEngineHelper {
 		return GetterUtil.getBoolean(parameter.getValue());
 	}
 
+	private SearchResponse _search(
+		Blueprint blueprint, BlueprintsAttributes blueprintsAttributes,
+		ProblemsHolderBuilder problemsHolderBuilder) {
+
+		ParameterData parameterData = _parameterDataCreator.create(
+			blueprint, blueprintsAttributes, problemsHolderBuilder);
+
+		SearchRequestBuilder searchRequestBuilder = _getSearchRequestBuilder(
+			parameterData, blueprint, problemsHolderBuilder,
+			blueprintsAttributes.getCompanyId(),
+			blueprintsAttributes.getLocale());
+
+		SearchResponse searchResponse = _searchExecutor.execute(
+			searchRequestBuilder, parameterData, blueprint,
+			problemsHolderBuilder);
+
+		_blueprintsSearchRequestHelper.checkEngineErrors(
+			blueprint.getBlueprintId(), problemsHolderBuilder.build());
+
+		return searchResponse;
+	}
+
 	@Reference
 	private BlueprintHelper _blueprintHelper;
 
 	@Reference
-	private BlueprintService _blueprintService;
+	private BlueprintLookup _blueprintLookup;
 
 	@Reference
 	private BlueprintsSearchRequestHelper _blueprintsSearchRequestHelper;

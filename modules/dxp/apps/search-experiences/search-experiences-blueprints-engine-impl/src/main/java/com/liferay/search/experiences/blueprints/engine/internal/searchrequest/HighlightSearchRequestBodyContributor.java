@@ -17,11 +17,11 @@ package com.liferay.search.experiences.blueprints.engine.internal.searchrequest;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.search.highlight.Highlight;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
+import com.liferay.search.experiences.blueprints.Blueprint;
 import com.liferay.search.experiences.blueprints.engine.internal.util.HighlightHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
 import com.liferay.search.experiences.blueprints.engine.spi.searchrequest.SearchRequestBodyContributor;
 import com.liferay.search.experiences.blueprints.engine.template.variable.BlueprintTemplateVariableParser;
-import com.liferay.search.experiences.blueprints.model.Blueprint;
 import com.liferay.search.experiences.blueprints.util.BlueprintHelper;
 import com.liferay.search.experiences.problems.ProblemsHolderBuilder;
 
