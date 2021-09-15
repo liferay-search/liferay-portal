@@ -75,12 +75,12 @@ function SelectAssetTypes({
 	return (
 		<>
 			<ClayButton
-				className="select-asset-types"
+				className="select-types"
 				displayType="secondary"
 				onClick={() => setVisible(true)}
 				small
 			>
-				{Liferay.Language.get('select-asset-types')}
+				{Liferay.Language.get('select-types')}
 			</ClayButton>
 
 			{selectedAssetTypes.length > 0 && (
@@ -119,12 +119,12 @@ function SelectAssetTypes({
 
 			{visible && (
 				<ClayModal
-					className="blueprint-searchable-assets-modal modal-height-xl"
+					className="blueprint-searchable-types-modal modal-height-xl"
 					observer={observer}
 					size="lg"
 				>
 					<ClayModal.Header>
-						{Liferay.Language.get('select-asset-types')}
+						{Liferay.Language.get('select-types')}
 					</ClayModal.Header>
 
 					<ClayManagementToolbar

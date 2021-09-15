@@ -159,10 +159,10 @@ function QueryBuilderTab({
 				<div className="settings-content-container sheet">
 					<ClayPanel.Group flush>
 						<ClayPanel
-							className="searchable-asset-types"
+							className="searchable-types"
 							collapsable
 							displayTitle={Liferay.Language.get(
-								'searchable-asset-types'
+								'searchable-types'
 							)}
 							displayType="unstyled"
 							showCollapseIcon
@@ -170,7 +170,7 @@ function QueryBuilderTab({
 							<ClayPanel.Body>
 								<div className="sheet-text">
 									{Liferay.Language.get(
-										'select-the-searchable-asset-types-description'
+										'select-the-searchable-types-description'
 									)}
 								</div>
 
