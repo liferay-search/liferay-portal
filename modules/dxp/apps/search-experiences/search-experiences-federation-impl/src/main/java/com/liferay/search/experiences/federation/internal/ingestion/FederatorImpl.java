@@ -25,6 +25,10 @@ import com.liferay.search.experiences.federation.internal.index.FederatedContent
 
 import org.apache.commons.lang.StringUtils;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -46,7 +50,7 @@ public class FederatorImpl implements Federator {
 		index(
 			documentBuilderFactory.builder(
 			).setString(
-				"content", content
+				"content", _getContentText(content)
 			).setString(
 				"liferay_version", _getLiferayVersion(content)
 			).setString(
@@ -75,6 +79,33 @@ public class FederatorImpl implements Federator {
 
 	@Reference
 	protected SearchEngineAdapter searchEngineAdapter;
+
+	private String _getContentText(String content) {
+		org.jsoup.nodes.Document document = _getDocument(content);
+
+		Element bodyElement = document.body();
+
+		Elements paragraphElements = bodyElement.select("#docContent p");
+
+		if (paragraphElements.isEmpty()) {
+			paragraphElements = bodyElement.select(".article-content p");
+		}
+
+		return paragraphElements.text();
+	}
+
+	private org.jsoup.nodes.Document _getDocument(String html) {
+		org.jsoup.nodes.Document document = Jsoup.parseBodyFragment(html);
+
+		org.jsoup.nodes.Document.OutputSettings outputSettings =
+			new org.jsoup.nodes.Document.OutputSettings();
+
+		outputSettings.prettyPrint(false);
+
+		document.outputSettings(outputSettings);
+
+		return document;
+	}
 
 	private String _getLiferayVersion(String content) {
 		String aux = StringUtils.substringAfter(content, "Liferay DXP 7.");
