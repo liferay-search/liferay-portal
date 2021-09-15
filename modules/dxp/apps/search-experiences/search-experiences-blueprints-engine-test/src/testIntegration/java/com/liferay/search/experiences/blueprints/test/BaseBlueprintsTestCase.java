@@ -50,6 +50,8 @@ import com.liferay.portal.search.test.util.DocumentsAssert;
 import com.liferay.portal.search.test.util.SearchTestRule;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portlet.expando.util.test.ExpandoTestUtil;
+import com.liferay.search.experiences.blueprints.Blueprint;
+import com.liferay.search.experiences.blueprints.BlueprintLookup;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributesBuilder;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributesBuilderFactory;
@@ -57,9 +59,9 @@ import com.liferay.search.experiences.blueprints.engine.cache.JSONDataProviderCa
 import com.liferay.search.experiences.blueprints.engine.exception.BlueprintsEngineException;
 import com.liferay.search.experiences.blueprints.engine.util.BlueprintsEngineHelper;
 import com.liferay.search.experiences.blueprints.facets.constants.FacetsBlueprintKeys;
-import com.liferay.search.experiences.blueprints.model.Blueprint;
 import com.liferay.search.experiences.blueprints.service.BlueprintService;
 import com.liferay.search.experiences.problems.ProblemsHolderBuilderFactory;
+import com.liferay.search.experiences.service.SXPBlueprintLocalService;
 import com.liferay.wiki.model.WikiNode;
 import com.liferay.wiki.model.WikiPage;
 import com.liferay.wiki.service.WikiNodeLocalService;
@@ -71,6 +73,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TimeZone;
 
 import org.junit.Before;
@@ -113,13 +116,17 @@ public abstract class BaseBlueprintsTestCase {
 			String configuration, String selectedElements)
 		throws Exception {
 
-		Blueprint blueprint = blueprintService.addCompanyBlueprint(
-			titleMap, descriptionMap, configuration, selectedElements,
-			serviceContext);
+		com.liferay.search.experiences.blueprints.model.Blueprint blueprint =
+			blueprintService.addCompanyBlueprint(
+				titleMap, descriptionMap, configuration, selectedElements,
+				serviceContext);
 
-		blueprints.add(blueprint);
+		_blueprints.add(blueprint);
 
-		return blueprint;
+		Optional<Blueprint> optional = _blueprintLookup.getBlueprintOptional(
+			blueprint.getBlueprintId());
+
+		return optional.get();
 	}
 
 	protected void addExpandoColumn(int indexType, String... columns)
@@ -162,13 +169,17 @@ public abstract class BaseBlueprintsTestCase {
 			String configuration, String selectedElements)
 		throws Exception {
 
-		Blueprint blueprint = blueprintService.addGroupBlueprint(
-			titleMap, descriptionMap, configuration, selectedElements,
-			serviceContext);
+		com.liferay.search.experiences.blueprints.model.Blueprint blueprint =
+			blueprintService.addGroupBlueprint(
+				titleMap, descriptionMap, configuration, selectedElements,
+				serviceContext);
 
-		blueprints.add(blueprint);
+		_blueprints.add(blueprint);
 
-		return blueprint;
+		Optional<Blueprint> optional = _blueprintLookup.getBlueprintOptional(
+			blueprint.getBlueprintId());
+
+		return optional.get();
 	}
 
 	protected JournalArticle addJournalArticle(
@@ -440,9 +451,6 @@ public abstract class BaseBlueprintsTestCase {
 			journalArticle, title, content, false, true, serviceContext);
 	}
 
-	@DeleteAfterTestRun
-	protected List<Blueprint> blueprints = new ArrayList<>();
-
 	@Inject
 	protected BlueprintsAttributesBuilderFactory
 		blueprintsAttributesBuilderFactory;
@@ -460,21 +468,32 @@ public abstract class BaseBlueprintsTestCase {
 	protected User user;
 
 	private SearchResponse _getSearchResponse(
-			Blueprint blueprint, String configurationString, String ipAddress,
+			Blueprint blueprint1, String configurationString, String ipAddress,
 			String keywords, String selectedElementString)
 		throws BlueprintsEngineException, Exception, PortalException {
 
 		if (!Validator.isBlank(configurationString) &&
 			!Validator.isBlank(selectedElementString)) {
 
-			blueprint = blueprintService.updateBlueprint(
-				blueprint.getBlueprintId(), blueprint.getTitleMap(),
-				blueprint.getDescriptionMap(), configurationString,
-				selectedElementString, serviceContext);
+			com.liferay.search.experiences.blueprints.model.Blueprint
+				blueprint2 = blueprintService.getBlueprint(
+					blueprint1.getBlueprintId());
+
+			com.liferay.search.experiences.blueprints.model.Blueprint
+				blueprint3 = blueprintService.updateBlueprint(
+					blueprint2.getBlueprintId(), blueprint2.getTitleMap(),
+					blueprint2.getDescriptionMap(), configurationString,
+					selectedElementString, serviceContext);
+
+			Optional<Blueprint> optional =
+				_blueprintLookup.getBlueprintOptional(
+					blueprint3.getBlueprintId());
+
+			blueprint1 = optional.get();
 		}
 
 		return blueprintsEngineHelper.search(
-			blueprint, getBlueprintsAttributes(ipAddress, keywords),
+			blueprint1, getBlueprintsAttributes(ipAddress, keywords),
 			_problemsHolderBuilderFactory.builder());
 	}
 
@@ -484,6 +503,13 @@ public abstract class BaseBlueprintsTestCase {
 
 	@DeleteAfterTestRun
 	private final List<BlogsEntry> _blogsEntries = new ArrayList<>();
+
+	@Inject
+	private BlueprintLookup _blueprintLookup;
+
+	@DeleteAfterTestRun
+	private List<com.liferay.search.experiences.blueprints.model.Blueprint>
+		_blueprints = new ArrayList<>();
 
 	@Inject
 	private ClassNameLocalService _classNameLocalService;
@@ -505,6 +531,9 @@ public abstract class BaseBlueprintsTestCase {
 
 	@Inject
 	private ProblemsHolderBuilderFactory _problemsHolderBuilderFactory;
+
+	@Inject
+	private SXPBlueprintLocalService _sxpBlueprintLocalService;
 
 	@Inject
 	private WikiNodeLocalService _wikiNodeLocalService;

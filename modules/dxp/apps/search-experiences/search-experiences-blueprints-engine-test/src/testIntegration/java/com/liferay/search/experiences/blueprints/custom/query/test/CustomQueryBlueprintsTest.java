@@ -46,16 +46,19 @@ import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
 import com.liferay.portletmvc4spring.test.mock.web.portlet.MockActionRequest;
+import com.liferay.search.experiences.blueprints.Blueprint;
+import com.liferay.search.experiences.blueprints.BlueprintLookup;
 import com.liferay.search.experiences.blueprints.admin.web.internal.constants.BlueprintsAdminMVCCommandNames;
 import com.liferay.search.experiences.blueprints.admin.web.internal.constants.BlueprintsAdminWebKeys;
 import com.liferay.search.experiences.blueprints.engine.constants.SearchContextAttributeKeys;
-import com.liferay.search.experiences.blueprints.model.Blueprint;
 import com.liferay.search.experiences.blueprints.service.BlueprintService;
+import com.liferay.search.experiences.service.SXPBlueprintLocalService;
 import com.liferay.users.admin.test.util.search.GroupBlueprint;
 import com.liferay.users.admin.test.util.search.GroupSearchFixture;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -145,14 +148,19 @@ public class CustomQueryBlueprintsTest {
 	protected void addBlueprint() throws Exception {
 		String configurationString = readConfiguration();
 
-		Blueprint blueprint = blueprintService.addCompanyBlueprint(
-			Collections.singletonMap(LocaleUtil.US, "Los Angeles Boost"),
-			Collections.singletonMap(LocaleUtil.US, "test Description"),
-			configurationString, "", _getServiceContext());
+		com.liferay.search.experiences.blueprints.model.Blueprint blueprint =
+			blueprintService.addCompanyBlueprint(
+				Collections.singletonMap(LocaleUtil.US, "Los Angeles Boost"),
+				Collections.singletonMap(LocaleUtil.US, "test Description"),
+				configurationString, "", _getServiceContext());
 
 		_blueprint = blueprint;
 
-		_updateBlueprintWithMVCActionCommand(blueprint, configurationString);
+		Optional<Blueprint> optional = _blueprintLookup.getBlueprintOptional(
+			blueprint.getBlueprintId());
+
+		_updateBlueprintWithMVCActionCommand(
+			optional.get(), configurationString);
 	}
 
 	protected String readConfiguration() {
@@ -250,12 +258,19 @@ public class CustomQueryBlueprintsTest {
 	}
 
 	@DeleteAfterTestRun
-	private Blueprint _blueprint;
+	private com.liferay.search.experiences.blueprints.model.Blueprint
+		_blueprint;
+
+	@Inject
+	private BlueprintLookup _blueprintLookup;
 
 	private Group _group;
 
 	@DeleteAfterTestRun
 	private List<Group> _groups;
+
+	@Inject
+	private SXPBlueprintLocalService _sxpBlueprintLocalService;
 
 	private User _user;
 

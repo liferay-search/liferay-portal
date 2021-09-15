@@ -20,6 +20,7 @@ dependencies {
 	testIntegrationCompile project(":core:petra:petra-lang")
 	testIntegrationCompile project(":core:petra:petra-reflect")
 	testIntegrationCompile project(":core:petra:petra-string")
+	testIntegrationCompile project(":dxp:apps:search-experiences:search-experiences-api")
 	testIntegrationCompile project(":dxp:apps:search-experiences:search-experiences-blueprints-admin-web")
 	testIntegrationCompile project(":dxp:apps:search-experiences:search-experiences-blueprints-api")
 	testIntegrationCompile project(":dxp:apps:search-experiences:search-experiences-blueprints-engine-api")

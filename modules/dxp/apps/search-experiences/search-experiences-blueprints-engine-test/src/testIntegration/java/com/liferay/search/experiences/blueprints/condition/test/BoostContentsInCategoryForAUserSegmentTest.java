@@ -28,7 +28,7 @@ import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
-import com.liferay.search.experiences.blueprints.model.Blueprint;
+import com.liferay.search.experiences.blueprints.Blueprint;
 import com.liferay.segments.criteria.Criteria;
 import com.liferay.segments.criteria.CriteriaSerializer;
 import com.liferay.segments.criteria.contributor.SegmentsCriteriaContributor;
