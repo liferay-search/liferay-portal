@@ -40,19 +40,22 @@ import com.liferay.portal.search.test.util.DocumentsAssert;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
+import com.liferay.search.experiences.blueprints.Blueprint;
+import com.liferay.search.experiences.blueprints.BlueprintLookup;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributesBuilder;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributesBuilderFactory;
 import com.liferay.search.experiences.blueprints.engine.cache.JSONDataProviderCache;
 import com.liferay.search.experiences.blueprints.engine.util.BlueprintsEngineHelper;
-import com.liferay.search.experiences.blueprints.model.Blueprint;
 import com.liferay.search.experiences.blueprints.service.BlueprintService;
 import com.liferay.search.experiences.problems.ProblemsHolderBuilderFactory;
+import com.liferay.search.experiences.service.SXPBlueprintLocalService;
 
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TimeZone;
 
 import org.junit.Before;
@@ -202,14 +205,20 @@ public class BlueprintsSearchRequestContributorTest {
 	private Blueprint _addCompanyBlueprint(String configurationString)
 		throws Exception {
 
-		Blueprint blueprint = _blueprintService.addCompanyBlueprint(
-			Collections.singletonMap(LocaleUtil.US, "testTitle"),
-			Collections.singletonMap(LocaleUtil.US, "testDescription"),
-			configurationString, "", _getServiceContext());
+		com.liferay.search.experiences.blueprints.model.Blueprint blueprint1 =
+			_blueprintService.addCompanyBlueprint(
+				Collections.singletonMap(LocaleUtil.US, "testTitle"),
+				Collections.singletonMap(LocaleUtil.US, "testDescription"),
+				configurationString, "", _getServiceContext());
 
-		_blueprint = blueprint;
+		Optional<Blueprint> optional = _blueprintLookup.getBlueprintOptional(
+			blueprint1.getBlueprintId());
 
-		return blueprint;
+		Blueprint blueprint2 = optional.get();
+
+		_blueprint = blueprint2;
+
+		return blueprint2;
 	}
 
 	private void _addJournalArticles(String... titles) throws Exception {
@@ -276,6 +285,9 @@ public class BlueprintsSearchRequestContributorTest {
 	private Blueprint _blueprint;
 
 	@Inject
+	private BlueprintLookup _blueprintLookup;
+
+	@Inject
 	private BlueprintsEngineHelper _blueprintsEngineHelper;
 
 	@Inject
@@ -291,6 +303,10 @@ public class BlueprintsSearchRequestContributorTest {
 	private ProblemsHolderBuilderFactory _problemsHolderBuilderFactory;
 
 	private ServiceContext _serviceContext;
+
+	@Inject
+	private SXPBlueprintLocalService _sxpBlueprintLocalService;
+
 	private User _user;
 
 }
