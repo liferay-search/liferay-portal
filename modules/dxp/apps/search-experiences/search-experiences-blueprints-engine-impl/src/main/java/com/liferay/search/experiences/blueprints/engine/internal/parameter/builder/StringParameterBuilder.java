@@ -15,8 +15,8 @@
 package com.liferay.search.experiences.blueprints.engine.internal.parameter.builder;
 
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributeValuesHelper;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
-import com.liferay.search.experiences.blueprints.engine.internal.attributes.util.BlueprintsAttributeValuesHelper;
 import com.liferay.search.experiences.blueprints.engine.internal.util.BlueprintValueUtil;
 import com.liferay.search.experiences.blueprints.engine.parameter.Parameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.StringParameter;
