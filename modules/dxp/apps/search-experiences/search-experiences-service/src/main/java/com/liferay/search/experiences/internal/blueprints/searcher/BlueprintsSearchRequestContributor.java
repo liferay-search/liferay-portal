@@ -14,7 +14,6 @@
 
 package com.liferay.search.experiences.internal.blueprints.searcher;
 
-import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -69,13 +68,6 @@ public class BlueprintsSearchRequestContributor
 
 		_blueprintsSearchRequestContributorHelper.combine(
 			searchRequestBuilder, blueprintId, blueprintsAttributes);
-
-		// TODO IN THE NEXT PULL REQUEST....
-
-		_log.error(
-			StringBundler.concat(
-				"TODO! apply blueprint to search request", searchRequestBuilder,
-				blueprintId, blueprintsAttributes));
 
 		return searchRequestBuilder.build();
 	}
