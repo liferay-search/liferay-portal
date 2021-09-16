@@ -14,6 +14,8 @@
 
 package com.liferay.search.experiences.internal.blueprints.attributes;
 
+import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
+
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -21,9 +23,9 @@ import java.util.Optional;
 /**
  * @author Petteri Karttunen
  */
-public class BlueprintAttributesImpl implements BlueprintAttributes {
+public class BlueprintsAttributesImpl implements BlueprintsAttributes {
 
-	public BlueprintAttributesImpl(
+	public BlueprintsAttributesImpl(
 		Map<String, Object> attributes, Long companyId, String keywords,
 		Locale locale, Long userId) {
 

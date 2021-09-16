@@ -15,6 +15,7 @@
 package com.liferay.search.experiences.blueprints.engine.internal.attributes.util;
 
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributeValuesHelper;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.search.experiences.blueprints.engine.internal.util.BlueprintValueUtil;
 
@@ -29,8 +30,10 @@ import org.osgi.service.component.annotations.Component;
  * @author Petteri Karttunen
  */
 @Component(immediate = true, service = BlueprintsAttributeValuesHelper.class)
-public class BlueprintsAttributeValuesHelper {
+public class BlueprintsAttributeValuesHelperImpl
+	implements BlueprintsAttributeValuesHelper {
 
+	@Override
 	public Optional<Boolean> getBooleanOptional(
 		BlueprintsAttributes blueprintsAttributes, String key) {
 
@@ -44,6 +47,7 @@ public class BlueprintsAttributeValuesHelper {
 		return valueOptional.map(GetterUtil::getBoolean);
 	}
 
+	@Override
 	public Optional<Double> getDoubleOptional(
 		BlueprintsAttributes blueprintsAttributes, String key) {
 
@@ -57,6 +61,7 @@ public class BlueprintsAttributeValuesHelper {
 		return valueOptional.map(GetterUtil::getDouble);
 	}
 
+	@Override
 	public Optional<Float> getFloatOptional(
 		BlueprintsAttributes blueprintsAttributes, String key) {
 
@@ -70,6 +75,7 @@ public class BlueprintsAttributeValuesHelper {
 		return valueOptional.map(GetterUtil::getFloat);
 	}
 
+	@Override
 	public Optional<Integer[]> getIntegerArrayOptional(
 		BlueprintsAttributes blueprintsAttributes, String key) {
 
@@ -108,6 +114,7 @@ public class BlueprintsAttributeValuesHelper {
 		return Optional.empty();
 	}
 
+	@Override
 	public Optional<Integer> getIntegerOptional(
 		BlueprintsAttributes blueprintsAttributes, String key) {
 
@@ -121,6 +128,7 @@ public class BlueprintsAttributeValuesHelper {
 		return valueOptional.map(GetterUtil::getInteger);
 	}
 
+	@Override
 	public Optional<Long[]> getLongArrayOptional(
 		BlueprintsAttributes blueprintsAttributes, String key) {
 
@@ -159,6 +167,7 @@ public class BlueprintsAttributeValuesHelper {
 		return Optional.empty();
 	}
 
+	@Override
 	public Optional<Long> getLongOptional(
 		BlueprintsAttributes blueprintsAttributes, String key) {
 
@@ -172,6 +181,7 @@ public class BlueprintsAttributeValuesHelper {
 		return valueOptional.map(GetterUtil::getLong);
 	}
 
+	@Override
 	public Optional<String[]> getStringArrayOptional(
 		BlueprintsAttributes blueprintsAttributes, String key) {
 
@@ -195,6 +205,7 @@ public class BlueprintsAttributeValuesHelper {
 		return Optional.empty();
 	}
 
+	@Override
 	public Optional<String> getStringOptional(
 		BlueprintsAttributes blueprintsAttributes, String key) {
 

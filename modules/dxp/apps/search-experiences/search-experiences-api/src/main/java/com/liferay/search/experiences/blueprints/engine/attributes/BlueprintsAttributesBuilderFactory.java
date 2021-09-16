@@ -12,16 +12,16 @@
  *
  */
 
-package com.liferay.search.experiences.internal.blueprints.attributes;
+package com.liferay.search.experiences.blueprints.engine.attributes;
 
 /**
  * @author Petteri Karttunen
  */
-public interface BlueprintAttributesBuilderFactory {
+public interface BlueprintsAttributesBuilderFactory {
 
-	public BlueprintAttributesBuilder builder();
+	public BlueprintsAttributesBuilder builder();
 
-	public BlueprintAttributesBuilder builder(
-		BlueprintAttributes blueprintAttributes);
+	public BlueprintsAttributesBuilder builder(
+		BlueprintsAttributes blueprintsAttributes);
 
 }
