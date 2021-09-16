@@ -12,17 +12,10 @@
  *
  */
 
-package com.liferay.search.experiences.blueprints.internal.definition;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+package com.liferay.search.experiences.internal.blueprints.definition;
 
 /**
  * @author André de Oliveira
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class AdvancedDefinitionDTO {
-
-	protected String[] excludes;
-	protected String[] includes;
-
+public interface AdvancedDefinition {
 }

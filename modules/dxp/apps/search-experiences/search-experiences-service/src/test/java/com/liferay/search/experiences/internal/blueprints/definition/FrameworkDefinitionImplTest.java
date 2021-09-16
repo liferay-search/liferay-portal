@@ -12,10 +12,9 @@
  *
  */
 
-package com.liferay.search.experiences.blueprints.internal.definition;
+package com.liferay.search.experiences.internal.blueprints.definition;
 
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
-import com.liferay.search.experiences.blueprints.definition.FrameworkDefinition;
 
 import java.util.Arrays;
 import java.util.Optional;

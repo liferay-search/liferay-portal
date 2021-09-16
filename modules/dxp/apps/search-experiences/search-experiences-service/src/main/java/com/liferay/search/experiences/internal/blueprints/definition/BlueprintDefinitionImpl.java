@@ -12,12 +12,9 @@
  *
  */
 
-package com.liferay.search.experiences.blueprints.internal.definition;
+package com.liferay.search.experiences.internal.blueprints.definition;
 
 import com.liferay.search.experiences.blueprints.Blueprint;
-import com.liferay.search.experiences.blueprints.definition.AdvancedDefinition;
-import com.liferay.search.experiences.blueprints.definition.BlueprintDefinition;
-import com.liferay.search.experiences.blueprints.definition.FrameworkDefinition;
 
 /**
  * @author André de Oliveira

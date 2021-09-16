@@ -12,20 +12,17 @@
  *
  */
 
-package com.liferay.search.experiences.blueprints.definition;
-
-import java.util.Collection;
-
-import org.osgi.annotation.versioning.ProviderType;
+package com.liferay.search.experiences.internal.blueprints.definition;
 
 /**
  * @author André de Oliveira
  */
-@ProviderType
-public interface ClauseContributorsDefinition {
+public class AdvancedDefinitionImpl implements AdvancedDefinition {
 
-	public Collection<String> getExcludes();
+	public AdvancedDefinitionImpl(AdvancedDefinitionDTO advancedDefinitionDTO) {
+		_advancedDefinitionDTO = advancedDefinitionDTO;
+	}
 
-	public Collection<String> getIncludes();
+	private final AdvancedDefinitionDTO _advancedDefinitionDTO;
 
 }

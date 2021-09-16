@@ -12,10 +12,17 @@
  *
  */
 
-package com.liferay.search.experiences.blueprints.definition;
+package com.liferay.search.experiences.internal.blueprints.definition;
+
+import java.util.Collection;
 
 /**
  * @author André de Oliveira
  */
-public interface AdvancedDefinition {
+public interface ClauseContributorsDefinition {
+
+	public Collection<String> getExcludes();
+
+	public Collection<String> getIncludes();
+
 }

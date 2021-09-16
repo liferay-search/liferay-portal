@@ -12,7 +12,7 @@
  *
  */
 
-package com.liferay.search.experiences.blueprints.internal.definition;
+package com.liferay.search.experiences.internal.blueprints.definition;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -21,12 +21,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author André de Oliveira
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class BlueprintDefinitionDTO {
+public class FrameworkDefinitionDTO {
 
-	@JsonProperty("advanced_configuration")
-	protected AdvancedDefinitionDTO advancedDefinitionDTO;
+	@JsonProperty("apply_indexer_clauses")
+	protected Boolean applyIndexerClauses;
 
-	@JsonProperty("framework_configuration")
-	protected FrameworkDefinitionDTO frameworkDefinitionDTO;
+	@JsonProperty("clause_contributors")
+	protected ClauseContributorsDefinitionDTO clauseContributorsDefinitionDTO;
+
+	@JsonProperty("searchable_asset_types")
+	protected String[] searchableAssetTypes;
 
 }

@@ -12,24 +12,15 @@
  *
  */
 
-package com.liferay.search.experiences.blueprints.internal.definition;
+package com.liferay.search.experiences.internal.blueprints.definition;
 
 import com.liferay.search.experiences.blueprints.Blueprint;
-import com.liferay.search.experiences.blueprints.definition.BlueprintDefinition;
-import com.liferay.search.experiences.blueprints.definition.BlueprintDefinitionFactory;
-
-import org.osgi.service.component.annotations.Component;
 
 /**
  * @author André de Oliveira
  */
-@Component(service = BlueprintDefinitionFactory.class)
-public class BlueprintDefinitionFactoryImpl
-	implements BlueprintDefinitionFactory {
+public interface BlueprintDefinitionFactory {
 
-	@Override
-	public BlueprintDefinition getBlueprintDefinition(Blueprint blueprint) {
-		return new BlueprintDefinitionImpl(blueprint);
-	}
+	public BlueprintDefinition getBlueprintDefinition(Blueprint blueprint);
 
 }

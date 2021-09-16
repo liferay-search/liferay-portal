@@ -5,7 +5,6 @@ Export-Package:\
 	com.liferay.search.experiences.blueprints.comparator,\
 	com.liferay.search.experiences.blueprints.constants,\
 	com.liferay.search.experiences.blueprints.constants.json.values,\
-	com.liferay.search.experiences.blueprints.definition,\
 	com.liferay.search.experiences.blueprints.exception,\
 	com.liferay.search.experiences.blueprints.importer,\
 	com.liferay.search.experiences.blueprints.model,\

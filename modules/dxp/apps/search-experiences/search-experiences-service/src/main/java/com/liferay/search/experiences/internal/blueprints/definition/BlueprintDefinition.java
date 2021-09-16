@@ -12,14 +12,11 @@
  *
  */
 
-package com.liferay.search.experiences.blueprints.definition;
-
-import org.osgi.annotation.versioning.ProviderType;
+package com.liferay.search.experiences.internal.blueprints.definition;
 
 /**
  * @author André de Oliveira
  */
-@ProviderType
 public interface BlueprintDefinition {
 
 	public AdvancedDefinition getAdvancedDefinition();
