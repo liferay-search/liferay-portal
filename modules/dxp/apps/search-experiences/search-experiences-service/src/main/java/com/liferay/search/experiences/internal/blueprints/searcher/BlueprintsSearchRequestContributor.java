@@ -23,6 +23,7 @@ import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.searcher.SearchRequestBuilderFactory;
 import com.liferay.portal.search.spi.searcher.SearchRequestContributor;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
+import com.liferay.search.experiences.blueprints.engine.constants.SearchContextAttributeKeys;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -45,7 +46,8 @@ public class BlueprintsSearchRequestContributor
 
 		long blueprintId = searchRequestBuilder.withSearchContextGet(
 			searchContext -> GetterUtil.getLong(
-				searchContext.getAttribute("search.experiences.blueprint.id")));
+				searchContext.getAttribute(
+					SearchContextAttributeKeys.BLUEPRINT_ID)));
 
 		if (_log.isDebugEnabled()) {
 			_log.debug(
