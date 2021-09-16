@@ -16,8 +16,8 @@ package com.liferay.search.experiences.blueprints.engine.internal.parameter.cont
 
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.search.experiences.blueprints.Blueprint;
+import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributeValuesHelper;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
-import com.liferay.search.experiences.blueprints.engine.internal.attributes.util.BlueprintsAttributeValuesHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.BooleanParameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterDataBuilder;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterDefinition;
