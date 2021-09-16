@@ -12,10 +12,10 @@
  *
  */
 
-package com.liferay.search.experiences.blueprints.engine.util;
+package com.liferay.search.experiences.internal.blueprints.searcher;
 
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
-import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
+import com.liferay.search.experiences.internal.blueprints.attributes.BlueprintAttributes;
 
 /**
  * @author Petteri Karttunen
@@ -24,6 +24,6 @@ public interface BlueprintsSearchRequestContributorHelper {
 
 	public void combine(
 		SearchRequestBuilder searchRequestBuilder, long blueprintId,
-		BlueprintsAttributes blueprintsAttributes);
+		BlueprintAttributes blueprintsAttributes);
 
 }

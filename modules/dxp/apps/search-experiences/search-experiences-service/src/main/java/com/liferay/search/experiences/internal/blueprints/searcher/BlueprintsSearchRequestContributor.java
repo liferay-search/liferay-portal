@@ -65,6 +65,10 @@ public class BlueprintsSearchRequestContributor
 			_searchRequestToBlueprintAttributesTranslator.translate(
 				searchRequest);
 
+		_blueprintsSearchRequestContributorHelper.combine(
+			searchRequestBuilder, blueprintId,
+			blueprintAttributes);
+
 		// TODO IN THE NEXT PULL REQUEST....
 
 		_log.error(
@@ -77,6 +81,10 @@ public class BlueprintsSearchRequestContributor
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		BlueprintsSearchRequestContributor.class);
+
+	@Reference
+	private BlueprintsSearchRequestContributorHelper
+		_blueprintsSearchRequestContributorHelper;
 
 	@Reference
 	private SearchRequestBuilderFactory _searchRequestBuilderFactory;
