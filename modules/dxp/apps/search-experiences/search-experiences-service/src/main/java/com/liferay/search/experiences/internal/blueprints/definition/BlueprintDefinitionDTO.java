@@ -12,19 +12,21 @@
  *
  */
 
-package com.liferay.search.experiences.blueprints.internal.definition;
+package com.liferay.search.experiences.internal.blueprints.definition;
 
-import com.liferay.search.experiences.blueprints.definition.AdvancedDefinition;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @author André de Oliveira
  */
-public class AdvancedDefinitionImpl implements AdvancedDefinition {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class BlueprintDefinitionDTO {
 
-	public AdvancedDefinitionImpl(AdvancedDefinitionDTO advancedDefinitionDTO) {
-		_advancedDefinitionDTO = advancedDefinitionDTO;
-	}
+	@JsonProperty("advanced_configuration")
+	protected AdvancedDefinitionDTO advancedDefinitionDTO;
 
-	private final AdvancedDefinitionDTO _advancedDefinitionDTO;
+	@JsonProperty("framework_configuration")
+	protected FrameworkDefinitionDTO frameworkDefinitionDTO;
 
 }

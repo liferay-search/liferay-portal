@@ -12,7 +12,7 @@
  *
  */
 
-package com.liferay.search.experiences.blueprints.internal.definition;
+package com.liferay.search.experiences.internal.blueprints.definition;
 
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.util.StringBundler;

@@ -12,23 +12,17 @@
  *
  */
 
-package com.liferay.search.experiences.blueprints.definition;
+package com.liferay.search.experiences.internal.blueprints.definition;
 
-import java.util.Optional;
-
-import org.osgi.annotation.versioning.ProviderType;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * @author André de Oliveira
  */
-@ProviderType
-public interface FrameworkDefinition {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class AdvancedDefinitionDTO {
 
-	public Optional<Boolean> getApplyIndexerClausesOptional();
-
-	public Optional<ClauseContributorsDefinition>
-		getClauseContributorsDefinitionOptional();
-
-	public String[] getSearchableAssetTypes();
+	protected String[] excludes;
+	protected String[] includes;
 
 }

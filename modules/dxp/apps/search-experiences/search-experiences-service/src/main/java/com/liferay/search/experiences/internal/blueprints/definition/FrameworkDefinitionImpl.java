@@ -12,10 +12,7 @@
  *
  */
 
-package com.liferay.search.experiences.blueprints.internal.definition;
-
-import com.liferay.search.experiences.blueprints.definition.ClauseContributorsDefinition;
-import com.liferay.search.experiences.blueprints.definition.FrameworkDefinition;
+package com.liferay.search.experiences.internal.blueprints.definition;
 
 import java.util.Optional;
 
