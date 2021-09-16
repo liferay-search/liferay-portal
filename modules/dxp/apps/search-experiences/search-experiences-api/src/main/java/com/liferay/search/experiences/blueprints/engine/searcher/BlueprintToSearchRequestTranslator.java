@@ -12,18 +12,20 @@
  *
  */
 
-package com.liferay.search.experiences.internal.blueprints.searcher;
+package com.liferay.search.experiences.blueprints.engine.searcher;
 
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
+import com.liferay.search.experiences.blueprints.Blueprint;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
+import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
 
 /**
- * @author Petteri Karttunen
+ * @author André de Oliveira
  */
-public interface BlueprintsSearchRequestContributorHelper {
+public interface BlueprintToSearchRequestTranslator {
 
-	public void combine(
-		SearchRequestBuilder searchRequestBuilder, long blueprintId,
-		BlueprintsAttributes blueprintsAttributes);
+	public void translate(
+		Blueprint blueprint, SearchRequestBuilder searchRequestBuilder,
+		ParameterData parameterData, BlueprintsAttributes blueprintsAttributes);
 
 }

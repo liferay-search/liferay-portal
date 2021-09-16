@@ -25,10 +25,10 @@ import com.liferay.search.experiences.problems.ProblemsHolderBuilder;
 import com.liferay.search.experiences.searchresponse.json.translator.SearchResponseJSONTranslator;
 import com.liferay.search.experiences.searchresponse.json.translator.spi.contributor.JSONTranslationContributor;
 
+import java.beans.ExceptionListener;
+
 import java.util.Collection;
 import java.util.ResourceBundle;
-
-import java.beans.ExceptionListener;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;

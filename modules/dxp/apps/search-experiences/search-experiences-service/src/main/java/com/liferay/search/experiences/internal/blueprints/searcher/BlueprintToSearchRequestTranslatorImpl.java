@@ -12,19 +12,19 @@
  *
  */
 
-package com.liferay.search.experiences.blueprints.engine.internal.searchrequest;
+package com.liferay.search.experiences.internal.blueprints.searcher;
 
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.search.experiences.blueprints.Blueprint;
-import com.liferay.search.experiences.blueprints.definition.BlueprintDefinition;
-import com.liferay.search.experiences.blueprints.definition.BlueprintDefinitionFactory;
-import com.liferay.search.experiences.blueprints.definition.ClauseContributorsDefinition;
-import com.liferay.search.experiences.blueprints.definition.FrameworkDefinition;
+import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributeValuesHelper;
 import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
-import com.liferay.search.experiences.blueprints.engine.constants.SearchContextAttributeKeys;
-import com.liferay.search.experiences.blueprints.engine.internal.attributes.util.BlueprintsAttributeValuesHelper;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
+import com.liferay.search.experiences.blueprints.engine.searcher.BlueprintToSearchRequestTranslator;
+import com.liferay.search.experiences.internal.blueprints.definition.BlueprintDefinition;
+import com.liferay.search.experiences.internal.blueprints.definition.BlueprintDefinitionFactory;
+import com.liferay.search.experiences.internal.blueprints.definition.ClauseContributorsDefinition;
+import com.liferay.search.experiences.internal.blueprints.definition.FrameworkDefinition;
 
 import java.util.Optional;
 
@@ -35,8 +35,10 @@ import org.osgi.service.component.annotations.Reference;
  * @author André de Oliveira
  */
 @Component(service = BlueprintToSearchRequestTranslator.class)
-public class BlueprintToSearchRequestTranslator {
+public class BlueprintToSearchRequestTranslatorImpl
+	implements BlueprintToSearchRequestTranslator {
 
+	@Override
 	public void translate(
 		Blueprint blueprint, SearchRequestBuilder searchRequestBuilder,
 		ParameterData parameterData,
@@ -99,21 +101,6 @@ public class BlueprintToSearchRequestTranslator {
 		);
 	}
 
-	protected void applyFederatedSearchKey(
-		BlueprintsAttributes blueprintsAttributes,
-		SearchRequestBuilder searchRequestBuilder) {
-
-		Optional<String> federatedSearchKeyOptional =
-			_blueprintsAttributeValuesHelper.getStringOptional(
-				blueprintsAttributes,
-				SearchContextAttributeKeys.FEDERATED_SEARCH_KEY);
-
-		if (federatedSearchKeyOptional.isPresent()) {
-			searchRequestBuilder.federatedSearchKey(
-				federatedSearchKeyOptional.get());
-		}
-	}
-
 	protected void applyFrameworkDefinition(
 		BlueprintsAttributes blueprintsAttributes,
 		FrameworkDefinition frameworkDefinition, ParameterData parameterData,
@@ -131,8 +118,6 @@ public class BlueprintToSearchRequestTranslator {
 
 		searchRequestBuilder.modelIndexerClassNames(
 			frameworkDefinition.getSearchableAssetTypes());
-
-		applyFederatedSearchKey(blueprintsAttributes, searchRequestBuilder);
 	}
 
 	@Reference

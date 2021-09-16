@@ -22,7 +22,7 @@ import com.liferay.portal.search.searcher.SearchRequest;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.searcher.SearchRequestBuilderFactory;
 import com.liferay.portal.search.spi.searcher.SearchRequestContributor;
-import com.liferay.search.experiences.internal.blueprints.attributes.BlueprintAttributes;
+import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -61,20 +61,19 @@ public class BlueprintsSearchRequestContributor
 			return searchRequest;
 		}
 
-		BlueprintAttributes blueprintAttributes =
-			_searchRequestToBlueprintAttributesTranslator.translate(
+		BlueprintsAttributes blueprintsAttributes =
+			_searchRequestToBlueprintsAttributesTranslator.translate(
 				searchRequest);
 
 		_blueprintsSearchRequestContributorHelper.combine(
-			searchRequestBuilder, blueprintId,
-			blueprintAttributes);
+			searchRequestBuilder, blueprintId, blueprintsAttributes);
 
 		// TODO IN THE NEXT PULL REQUEST....
 
 		_log.error(
 			StringBundler.concat(
 				"TODO! apply blueprint to search request", searchRequestBuilder,
-				blueprintId, blueprintAttributes));
+				blueprintId, blueprintsAttributes));
 
 		return searchRequestBuilder.build();
 	}
@@ -90,7 +89,7 @@ public class BlueprintsSearchRequestContributor
 	private SearchRequestBuilderFactory _searchRequestBuilderFactory;
 
 	@Reference
-	private SearchRequestToBlueprintAttributesTranslator
-		_searchRequestToBlueprintAttributesTranslator;
+	private SearchRequestToBlueprintsAttributesTranslator
+		_searchRequestToBlueprintsAttributesTranslator;
 
 }
