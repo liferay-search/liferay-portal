@@ -31,7 +31,7 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author André de Oliveira
  */
-@Component(service = BlueprintLookup.class)
+@Component(enabled = false, service = BlueprintLookup.class)
 public class BlueprintLookupImpl implements BlueprintLookup {
 
 	@Override
