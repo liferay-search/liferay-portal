@@ -28,6 +28,7 @@ import com.liferay.search.experiences.blueprints.engine.exception.BlueprintsEngi
 import com.liferay.search.experiences.blueprints.engine.parameter.Parameter;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterDataCreator;
+import com.liferay.search.experiences.blueprints.engine.searcher.BlueprintsSearchRequestHelper;
 import com.liferay.search.experiences.blueprints.engine.spi.searchrequest.SearchRequestBodyContributor;
 import com.liferay.search.experiences.blueprints.engine.template.variable.BlueprintTemplateVariableParser;
 import com.liferay.search.experiences.blueprints.util.BlueprintHelper;
@@ -54,8 +55,10 @@ import org.osgi.service.component.annotations.Reference;
  * @author Petteri Karttunen
  */
 @Component(immediate = true, service = BlueprintsSearchRequestHelper.class)
-public class BlueprintsSearchRequestHelper {
+public class BlueprintsSearchRequestHelperImpl
+	implements BlueprintsSearchRequestHelper {
 
+	@Override
 	public void checkEngineErrors(
 		long blueprintId, ProblemsHolder problemsHolder) {
 
@@ -72,6 +75,7 @@ public class BlueprintsSearchRequestHelper {
 		}
 	}
 
+	@Override
 	public void executeSearchRequestBodyContributors(
 		SearchRequestBuilder searchRequestBuilder, ParameterData parameterData,
 		Blueprint blueprint, ProblemsHolderBuilder problemsHolderBuilder) {
@@ -114,6 +118,7 @@ public class BlueprintsSearchRequestHelper {
 		);
 	}
 
+	@Override
 	public void setFieldRetrieval(
 		SearchRequestBuilder searchRequestBuilder, ParameterData parameterData,
 		Blueprint blueprint, ProblemsHolderBuilder problemsHolderBuilder) {
@@ -134,6 +139,7 @@ public class BlueprintsSearchRequestHelper {
 			parameterData, problemsHolderBuilder);
 	}
 
+	@Override
 	public void setPreview(
 		SearchRequestBuilder searchRequestBuilder, ParameterData parameterData,
 		Blueprint blueprint) {
@@ -249,7 +255,7 @@ public class BlueprintsSearchRequestHelper {
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
-		BlueprintsSearchRequestHelper.class);
+		BlueprintsSearchRequestHelperImpl.class);
 
 	@Reference
 	private BlueprintHelper _blueprintHelper;

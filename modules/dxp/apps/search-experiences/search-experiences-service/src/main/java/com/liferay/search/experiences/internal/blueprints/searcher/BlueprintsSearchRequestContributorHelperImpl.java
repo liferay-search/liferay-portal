@@ -17,10 +17,11 @@ package com.liferay.search.experiences.internal.blueprints.searcher;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.search.experiences.blueprints.Blueprint;
 import com.liferay.search.experiences.blueprints.BlueprintLookup;
-import com.liferay.search.experiences.blueprints.engine.internal.searchrequest.BlueprintToSearchRequestTranslator;
+import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterData;
 import com.liferay.search.experiences.blueprints.engine.parameter.ParameterDataCreator;
-import com.liferay.search.experiences.internal.blueprints.attributes.BlueprintAttributes;
+import com.liferay.search.experiences.blueprints.engine.searcher.BlueprintToSearchRequestTranslator;
+import com.liferay.search.experiences.blueprints.engine.searcher.BlueprintsSearchRequestHelper;
 import com.liferay.search.experiences.problems.ProblemsHolderBuilder;
 import com.liferay.search.experiences.problems.ProblemsHolderBuilderFactory;
 
@@ -41,29 +42,29 @@ public class BlueprintsSearchRequestContributorHelperImpl
 	@Override
 	public void combine(
 		SearchRequestBuilder searchRequestBuilder, long blueprintId,
-		BlueprintAttributes blueprintAttributes) {
+		BlueprintsAttributes blueprintsAttributes) {
 
 		Optional<Blueprint> optional = _blueprintLookup.getBlueprintOptional(
 			blueprintId);
 
 		optional.ifPresent(
 			blueprint -> _combine(
-				searchRequestBuilder, blueprint, blueprintAttributes));
+				searchRequestBuilder, blueprint, blueprintsAttributes));
 	}
 
 	private void _combine(
 		SearchRequestBuilder searchRequestBuilder, Blueprint blueprint,
-		BlueprintAttributes blueprintAttributes) {
+		BlueprintsAttributes blueprintsAttributes) {
 
 		ProblemsHolderBuilder problemsHolderBuilder =
 			_problemsHolderBuilderFactory.builder();
 
 		ParameterData parameterData = _parameterDataCreator.create(
-			blueprint, blueprintAttributes, problemsHolderBuilder);
+			blueprint, blueprintsAttributes, problemsHolderBuilder);
 
 		_blueprintToSearchRequestTranslator.translate(
 			blueprint, searchRequestBuilder, parameterData,
-			blueprintAttributes);
+			blueprintsAttributes);
 
 		_blueprintsSearchRequestHelper.setFieldRetrieval(
 			searchRequestBuilder, parameterData, blueprint,

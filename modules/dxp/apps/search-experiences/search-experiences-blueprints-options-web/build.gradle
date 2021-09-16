@@ -16,6 +16,7 @@ dependencies {
 	compileOnly project(":core:petra:petra-function")
 	compileOnly project(":core:petra:petra-lang")
 	compileOnly project(":core:petra:petra-string")
+	compileOnly project(":dxp:apps:search-experiences:search-experiences-api")
 	compileOnly project(":dxp:apps:search-experiences:search-experiences-blueprints-api")
 	compileOnly project(":dxp:apps:search-experiences:search-experiences-blueprints-engine-api")
 }

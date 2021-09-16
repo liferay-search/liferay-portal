@@ -19,9 +19,9 @@ import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.search.searcher.SearchRequest;
 import com.liferay.portal.search.searcher.SearchRequestBuilderFactory;
-import com.liferay.search.experiences.internal.blueprints.attributes.BlueprintAttributes;
-import com.liferay.search.experiences.internal.blueprints.attributes.BlueprintAttributesBuilder;
-import com.liferay.search.experiences.internal.blueprints.attributes.BlueprintAttributesBuilderFactory;
+import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributes;
+import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributesBuilder;
+import com.liferay.search.experiences.blueprints.engine.attributes.BlueprintsAttributesBuilderFactory;
 
 import java.util.Locale;
 import java.util.TimeZone;
@@ -33,14 +33,14 @@ import org.osgi.service.component.annotations.Reference;
  * @author Petteri Karttunen
  * @author André de Oliveira
  */
-@Component(service = SearchRequestToBlueprintAttributesTranslator.class)
-public class SearchRequestToBlueprintAttributesTranslator {
+@Component(service = SearchRequestToBlueprintsAttributesTranslator.class)
+public class SearchRequestToBlueprintsAttributesTranslator {
 
-	public BlueprintAttributes translate(SearchRequest searchRequest) {
-		BlueprintAttributesBuilder blueprintAttributesBuilder =
-			_blueprintAttributesBuilderFactory.builder();
+	public BlueprintsAttributes translate(SearchRequest searchRequest) {
+		BlueprintsAttributesBuilder blueprintsAttributesBuilder =
+			_blueprintsAttributesBuilderFactory.builder();
 
-		blueprintAttributesBuilder.companyId(
+		blueprintsAttributesBuilder.companyId(
 			getCompanyId(searchRequest)
 		).keywords(
 			searchRequest.getQueryString()
@@ -60,26 +60,26 @@ public class SearchRequestToBlueprintAttributesTranslator {
 			"federatedSearchKey", searchRequest.getFederatedSearchKey()
 		);
 
-		addCommerceAttributes(searchRequest, blueprintAttributesBuilder);
+		addCommerceAttributes(searchRequest, blueprintsAttributesBuilder);
 
-		return blueprintAttributesBuilder.build();
+		return blueprintsAttributesBuilder.build();
 	}
 
 	protected void addCommerceAttributes(
 		SearchRequest searchRequest,
-		BlueprintAttributesBuilder blueprintAttributesBuilder) {
+		BlueprintsAttributesBuilder blueprintsAttributesBuilder) {
 
 		long channelGroupId = getCommerceChannelGroupId(searchRequest);
 
 		if (channelGroupId > 0) {
-			blueprintAttributesBuilder.addAttribute(
+			blueprintsAttributesBuilder.addAttribute(
 				"channel_group_id", channelGroupId);
 		}
 
 		long[] accountGroupIds = getCommerceAccountGroupIds(searchRequest);
 
 		if (accountGroupIds.length > 0) {
-			blueprintAttributesBuilder.addAttribute(
+			blueprintsAttributesBuilder.addAttribute(
 				"account_group_ids", accountGroupIds);
 		}
 	}
@@ -190,8 +190,8 @@ public class SearchRequestToBlueprintAttributesTranslator {
 	}
 
 	@Reference
-	private BlueprintAttributesBuilderFactory
-		_blueprintAttributesBuilderFactory;
+	private BlueprintsAttributesBuilderFactory
+		_blueprintsAttributesBuilderFactory;
 
 	@Reference
 	private SearchRequestBuilderFactory _searchRequestBuilderFactory;
