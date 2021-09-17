@@ -140,7 +140,7 @@ public class EditBlueprintDisplayBuilder extends EditEntryDisplayBuilder {
 		).put(
 			"redirectURL", getRedirect()
 		).put(
-			"searchableAssetTypes",
+			"searchableTypes",
 			BlueprintsAdminAssetUtil.getSearchableAssetNamesJSONArray(
 				themeDisplay.getCompanyId(), themeDisplay.getLocale())
 		).put(
