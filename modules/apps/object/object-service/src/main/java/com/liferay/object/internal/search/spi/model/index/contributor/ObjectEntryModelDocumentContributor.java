@@ -117,16 +117,20 @@ public class ObjectEntryModelDocumentContributor
 		document.addKeyword(
 			"objectDefinitionName", objectDefinition.getShortName());
 
-		//TODO
+		String titleFieldPrefix = "title";
+
+		// TODO
+
 		//String titleFieldPrefix = objectDefinition.getTitleFieldPrefix();
 
-		String titleFieldPrefix = "title"; //default to "title" for now as PoC
-
 		if (titleFieldPrefix == null) {
-			//if no title field prefix is defined by the user, we can try to
-			//build a title from rules etc
+
+			// TODO If no title field prefix is defined by the user, build a
+			// title from a set of rules
 
 			String title = "This is a title";
+
+			// TODO Can we camel case this?
 
 			document.add(new Field("object_entry_title", title));
 		}
@@ -158,6 +162,8 @@ public class ObjectEntryModelDocumentContributor
 		if (sb.index() > 0) {
 			sb.setIndex(sb.index() - 1);
 		}
+
+		// TODO Can we camel case this?
 
 		document.add(new Field("object_entry_content", sb.toString()));
 	}
