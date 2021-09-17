@@ -106,7 +106,7 @@ const AddBlueprintModal = ({
 	namespace,
 	onFormSuccess,
 	queryPrefilterContributorsString,
-	searchableAssetTypesString,
+	searchableTypesString,
 	submitButtonLabel = Liferay.Language.get('create'),
 	type,
 }) => {
@@ -153,9 +153,7 @@ const AddBlueprintModal = ({
 									],
 							  }
 							: BASELINE_CLAUSE_CONTRIBUTORS_CONFIGURATION,
-					searchable_asset_types: JSON.parse(
-						searchableAssetTypesString
-					),
+					searchable_asset_types: JSON.parse(searchableTypesString),
 				},
 				highlight_configuration: DEFAULT_HIGHLIGHT_CONFIGURATION,
 				parameter_configuration: DEFAULT_PARAMETER_CONFIGURATION,

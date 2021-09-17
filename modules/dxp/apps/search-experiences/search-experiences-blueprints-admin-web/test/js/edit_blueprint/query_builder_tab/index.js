@@ -13,7 +13,7 @@ import {fireEvent, render} from '@testing-library/react';
 import React from 'react';
 
 import QueryBuilder from '../../../../src/main/resources/META-INF/resources/js/edit_blueprint/query_builder_tab';
-import {SEARCHABLE_ASSET_TYPES, SELECTED_ELEMENTS} from '../../mocks/data';
+import {SEARCHABLE_TYPES, SELECTED_ELEMENTS} from '../../mocks/data';
 
 import '@testing-library/jest-dom/extend-expect';
 
@@ -31,15 +31,15 @@ function renderBuilder(props) {
 		<QueryBuilder
 			frameworkConfig={{
 				apply_indexer_clauses: false,
-				searchable_asset_types: SEARCHABLE_ASSET_TYPES.map(
-					(asset) => asset.className
+				searchable_asset_types: SEARCHABLE_TYPES.map(
+					({className}) => className
 				),
 			}}
 			initialSelectedElements={SELECTED_ELEMENTS}
 			onDeleteElement={jest.fn()}
 			onFrameworkConfigChange={jest.fn()}
 			onUpdateElement={onUpdateElement}
-			searchableAssetTypes={SEARCHABLE_ASSET_TYPES}
+			searchableTypes={SEARCHABLE_TYPES}
 			selectedElements={SELECTED_ELEMENTS}
 			{...props}
 		/>

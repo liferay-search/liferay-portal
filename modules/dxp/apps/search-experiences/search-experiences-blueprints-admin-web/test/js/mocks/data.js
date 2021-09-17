@@ -112,7 +112,7 @@ export const QUERY_ELEMENTS = [
 	PASTE_AN_ELASTICSEARCH_QUERY,
 ];
 
-export const SEARCHABLE_ASSET_TYPES = [
+export const SEARCHABLE_TYPES = [
 	{
 		className: 'com.liferay.blogs.model.BlogsEntry',
 		displayName: 'Blogs Entry',
@@ -206,8 +206,8 @@ export const INITIAL_CONFIGURATION = {
 	facet_configuration: {},
 	framework_configuration: {
 		apply_indexer_clauses: false,
-		searchable_asset_types: SEARCHABLE_ASSET_TYPES.map(
-			(asset) => asset.className
+		searchable_asset_types: SEARCHABLE_TYPES.map(
+			({className}) => className
 		),
 	},
 	highlight_configuration: {},

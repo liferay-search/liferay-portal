@@ -26,7 +26,7 @@ import BlueprintForm from '../../src/main/resources/META-INF/resources/js/edit_b
 import AddElementSidebar from '../../src/main/resources/META-INF/resources/js/edit_blueprint/AddElementSidebar';
 import PreviewSidebar from '../../src/main/resources/META-INF/resources/js/edit_blueprint/PreviewSidebar';
 import QueryBuilder from '../../src/main/resources/META-INF/resources/js/edit_blueprint/tabs/QueryBuilder';
-import SelectAssetTypes from '../../src/main/resources/META-INF/resources/js/edit_blueprint/tabs/SelectAssetTypes';
+import SelectTypes from '../../src/main/resources/META-INF/resources/js/edit_blueprint/tabs/SelectTypes';
 import ElementForm from '../../src/main/resources/META-INF/resources/js/edit_element';
 import ErrorBoundary from '../../src/main/resources/META-INF/resources/js/shared/ErrorBoundary';
 import JSONElement from '../../src/main/resources/META-INF/resources/js/shared/JSONElement';
@@ -40,7 +40,7 @@ import {
 	ENTITY_JSON,
 	INDEX_FIELDS,
 	INITIAL_CONFIGURATION,
-	SEARCHABLE_ASSET_TYPES,
+	SEARCHABLE_TYPES,
 	SELECTED_ELEMENTS,
 	mockSearchResults,
 } from '../js/mocks/data';
@@ -105,7 +105,7 @@ const BLUEPRINT_FORM_PROPS = {
 	},
 	queryElements: SELECTED_ELEMENTS,
 	redirectURL: '',
-	searchableAssetTypes: SEARCHABLE_ASSET_TYPES,
+	searchableTypes: SEARCHABLE_TYPES,
 	submitFormURL: '',
 };
 
@@ -223,7 +223,7 @@ storiesOf('Components|AddBlueprintModal', module)
 			contextPath="/o/search-experiences-blueprints-admin-web/"
 			dialogTitle="New Search Blueprint"
 			initialVisible
-			searchableAssetTypesString={JSON.stringify(SEARCHABLE_ASSET_TYPES)}
+			searchableTypesString={JSON.stringify(SEARCHABLE_TYPES)}
 		/>
 	));
 
@@ -280,11 +280,11 @@ storiesOf('Components|QueryBuilder', module)
 		<QueryBuilder
 			frameworkConfig={{
 				apply_indexer_clauses: true,
-				searchable_asset_types: SEARCHABLE_ASSET_TYPES,
+				searchable_types: SEARCHABLE_TYPES,
 			}}
 			onDeleteElement={action('buildElement')}
 			onUpdateElement={action('onUpdateElement')}
-			searchableAssetTypes={SEARCHABLE_ASSET_TYPES}
+			searchableTypes={SEARCHABLE_TYPES}
 			selectedElements={SELECTED_ELEMENTS}
 		/>
 	));
@@ -298,14 +298,14 @@ storiesOf('Components|SearchInput', module)
 		/>
 	));
 
-storiesOf('Components|SelectAssetTypes', module)
+storiesOf('Components|SelectTypes', module)
 	.addDecorator(withBlueprintsClass)
 	.addDecorator(withContainer)
-	.add('SelectAssetTypes', () => (
-		<SelectAssetTypes
-			searchableAssetTypes={SEARCHABLE_ASSET_TYPES}
-			selectedAssetTypes={[]}
-			updateSelectedAssetTypes={action('updateSelectedAssetTypes')}
+	.add('SelectTypes', () => (
+		<SelectTypes
+			searchableTypes={SEARCHABLE_TYPES}
+			selectedTypes={[]}
+			updateSelectedTypes={action('updateSelectedTypes')}
 		/>
 	));
 

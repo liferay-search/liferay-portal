@@ -77,7 +77,7 @@ public class ViewBlueprintsManagementToolbarDisplayContext
 						Constants.ADD));
 
 				dropdownItem.putData(
-					"searchableAssetTypesString",
+					"searchableTypesString",
 					_convertListToString(
 						Arrays.asList(
 							BlueprintsAdminAssetUtil.getSearchableAssetNames(

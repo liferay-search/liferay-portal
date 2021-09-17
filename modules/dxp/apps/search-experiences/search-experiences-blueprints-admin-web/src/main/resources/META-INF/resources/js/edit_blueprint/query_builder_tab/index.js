@@ -20,7 +20,7 @@ import React, {useState} from 'react';
 import JSONElement from '../../shared/JSONElement';
 import Element from '../../shared/element/index';
 import {ELEMENT_PREFIX} from '../../utils/constants';
-import SelectAssetTypes from './SelectAssetTypes';
+import SelectTypes from './SelectTypes';
 
 function QueryBuilderTab({
 	entityJSON,
@@ -33,7 +33,7 @@ function QueryBuilderTab({
 	onDeleteElement,
 	onFrameworkConfigChange,
 	onToggleSidebar,
-	searchableAssetTypes,
+	searchableTypes,
 	selectedElements,
 	setFieldTouched,
 	setFieldValue,
@@ -174,12 +174,12 @@ function QueryBuilderTab({
 									)}
 								</div>
 
-								<SelectAssetTypes
+								<SelectTypes
 									onFrameworkConfigChange={
 										onFrameworkConfigChange
 									}
-									searchableAssetTypes={searchableAssetTypes}
-									selectedAssetTypes={
+									searchableTypes={searchableTypes}
+									selectedTypes={
 										frameworkConfig.searchable_asset_types
 									}
 								/>
@@ -203,7 +203,7 @@ QueryBuilderTab.propTypes = {
 	onDeleteElement: PropTypes.func,
 	onFrameworkConfigChange: PropTypes.func,
 	onToggleSidebar: PropTypes.func,
-	searchableAssetTypes: PropTypes.arrayOf(PropTypes.object),
+	searchableTypes: PropTypes.arrayOf(PropTypes.object),
 	selectedElements: PropTypes.arrayOf(PropTypes.object),
 	setFieldTouched: PropTypes.func,
 	setFieldValue: PropTypes.func,

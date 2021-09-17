@@ -19,12 +19,12 @@ import ClayTable from '@clayui/table';
 import React, {useContext, useState} from 'react';
 
 import ThemeContext from '../../shared/ThemeContext';
-import {sub} from './../../utils/language';
+import {sub} from '../../utils/language';
 
-function SelectAssetTypes({
+function SelectTypes({
 	onFrameworkConfigChange,
-	searchableAssetTypes,
-	selectedAssetTypes = [],
+	searchableTypes,
+	selectedTypes = [],
 }) {
 	const {locale} = useContext(ThemeContext);
 
@@ -32,43 +32,39 @@ function SelectAssetTypes({
 	const {observer, onClose} = useModal({
 		onClose: () => setVisible(false),
 	});
-	const [modalSelectedAssetTypes, setModalSelectedAssetTypes] = useState(
-		selectedAssetTypes
-	);
+	const [modalSelectedTypes, setModalSelectedTypes] = useState(selectedTypes);
 
-	const searchableAssetTypesClassNames = searchableAssetTypes.map(
-		(asset) => asset.className
+	const searchableTypesClassNames = searchableTypes.map(
+		({className}) => className
 	);
-	const searchableAssetTypesSorted = searchableAssetTypes.sort((a, b) =>
+	const searchableTypesSorted = searchableTypes.sort((a, b) =>
 		a.displayName.localeCompare(b.displayName, locale.replace('_', '-'))
 	);
 
-	const _handleDelete = (asset) => () => {
-		const newSelected = modalSelectedAssetTypes.filter(
-			(item) => item !== asset
-		);
+	const _handleDelete = (type) => () => {
+		const newSelected = modalSelectedTypes.filter((item) => item !== type);
 
 		onFrameworkConfigChange({
 			searchable_asset_types: newSelected,
 		});
-		setModalSelectedAssetTypes(newSelected);
+		setModalSelectedTypes(newSelected);
 	};
 
 	const _handleModalDone = () => {
 		onClose();
 
 		onFrameworkConfigChange({
-			searchable_asset_types: modalSelectedAssetTypes,
+			searchable_asset_types: modalSelectedTypes,
 		});
 	};
 
-	const _handleRowCheck = (asset) => () => {
-		const isSelected = modalSelectedAssetTypes.includes(asset);
+	const _handleRowCheck = (type) => () => {
+		const isSelected = modalSelectedTypes.includes(type);
 
-		setModalSelectedAssetTypes(
+		setModalSelectedTypes(
 			isSelected
-				? modalSelectedAssetTypes.filter((item) => item !== asset)
-				: [...modalSelectedAssetTypes, asset]
+				? modalSelectedTypes.filter((item) => item !== type)
+				: [...modalSelectedTypes, type]
 		);
 	};
 
@@ -83,17 +79,17 @@ function SelectAssetTypes({
 				{Liferay.Language.get('select-types')}
 			</ClayButton>
 
-			{selectedAssetTypes.length > 0 && (
+			{selectedTypes.length > 0 && (
 				<ClayTable>
 					<ClayTable.Body>
-						{searchableAssetTypesSorted
-							.filter((asset) =>
-								selectedAssetTypes.includes(asset.className)
+						{searchableTypesSorted
+							.filter(({className}) =>
+								selectedTypes.includes(className)
 							)
-							.map((asset) => (
-								<ClayTable.Row key={asset.className}>
+							.map(({className, displayName}) => (
+								<ClayTable.Row key={className}>
 									<ClayTable.Cell expanded headingTitle>
-										{asset.displayName}
+										{displayName}
 									</ClayTable.Cell>
 
 									<ClayTable.Cell>
@@ -103,9 +99,7 @@ function SelectAssetTypes({
 											)}
 											className="secondary"
 											displayType="unstyled"
-											onClick={_handleDelete(
-												asset.className
-											)}
+											onClick={_handleDelete(className)}
 											small
 										>
 											<ClayIcon symbol="times" />
@@ -129,7 +123,7 @@ function SelectAssetTypes({
 
 					<ClayManagementToolbar
 						className={
-							modalSelectedAssetTypes.length > 0 &&
+							modalSelectedTypes.length > 0 &&
 							'management-bar-primary'
 						}
 					>
@@ -137,20 +131,16 @@ function SelectAssetTypes({
 							<ClayManagementToolbar.ItemList>
 								<ClayManagementToolbar.Item>
 									<ClayCheckbox
-										checked={
-											modalSelectedAssetTypes.length > 0
-										}
+										checked={modalSelectedTypes.length > 0}
 										indeterminate={
-											modalSelectedAssetTypes.length >
-												0 &&
-											modalSelectedAssetTypes.length !==
-												searchableAssetTypes.length
+											modalSelectedTypes.length > 0 &&
+											modalSelectedTypes.length !==
+												searchableTypes.length
 										}
 										onChange={() =>
-											setModalSelectedAssetTypes(
-												modalSelectedAssetTypes.length ===
-													0
-													? searchableAssetTypesClassNames
+											setModalSelectedTypes(
+												modalSelectedTypes.length === 0
+													? searchableTypesClassNames
 													: []
 											)
 										}
@@ -158,7 +148,7 @@ function SelectAssetTypes({
 								</ClayManagementToolbar.Item>
 
 								<ClayManagementToolbar.Item>
-									{modalSelectedAssetTypes.length > 0 ? (
+									{modalSelectedTypes.length > 0 ? (
 										<>
 											<span className="component-text">
 												{sub(
@@ -166,8 +156,8 @@ function SelectAssetTypes({
 														'x-of-x-selected'
 													),
 													[
-														modalSelectedAssetTypes.length,
-														searchableAssetTypes.length,
+														modalSelectedTypes.length,
+														searchableTypes.length,
 													],
 													false
 												)}
@@ -177,8 +167,8 @@ function SelectAssetTypes({
 												className="component-text"
 												displayType="primary"
 												onClick={() => {
-													setModalSelectedAssetTypes(
-														searchableAssetTypesClassNames
+													setModalSelectedTypes(
+														searchableTypesClassNames
 													);
 												}}
 											>
@@ -200,38 +190,40 @@ function SelectAssetTypes({
 					<ClayModal.Body scrollable>
 						<ClayTable>
 							<ClayTable.Body>
-								{searchableAssetTypesSorted.map((asset) => {
-									const isSelected = modalSelectedAssetTypes.includes(
-										asset.className
-									);
+								{searchableTypesSorted.map(
+									({className, displayName}) => {
+										const isSelected = modalSelectedTypes.includes(
+											className
+										);
 
-									return (
-										<ClayTable.Row
-											active={isSelected}
-											className="cursor-pointer"
-											key={asset.className}
-											onClick={_handleRowCheck(
-												asset.className
-											)}
-										>
-											<ClayTable.Cell>
-												<ClayCheckbox
-													checked={isSelected}
-													onChange={_handleRowCheck(
-														asset.className
-													)}
-												/>
-											</ClayTable.Cell>
-
-											<ClayTable.Cell
-												expanded
-												headingTitle
+										return (
+											<ClayTable.Row
+												active={isSelected}
+												className="cursor-pointer"
+												key={className}
+												onClick={_handleRowCheck(
+													className
+												)}
 											>
-												{asset.displayName}
-											</ClayTable.Cell>
-										</ClayTable.Row>
-									);
-								})}
+												<ClayTable.Cell>
+													<ClayCheckbox
+														checked={isSelected}
+														onChange={_handleRowCheck(
+															className
+														)}
+													/>
+												</ClayTable.Cell>
+
+												<ClayTable.Cell
+													expanded
+													headingTitle
+												>
+													{displayName}
+												</ClayTable.Cell>
+											</ClayTable.Row>
+										);
+									}
+								)}
 							</ClayTable.Body>
 						</ClayTable>
 					</ClayModal.Body>
@@ -258,4 +250,4 @@ function SelectAssetTypes({
 	);
 }
 
-export default React.memo(SelectAssetTypes);
+export default React.memo(SelectTypes);

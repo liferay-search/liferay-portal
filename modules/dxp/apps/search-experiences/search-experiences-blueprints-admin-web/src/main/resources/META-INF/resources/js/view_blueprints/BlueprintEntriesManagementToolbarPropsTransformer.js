@@ -31,7 +31,7 @@ export default function propsTransformer({
 			namespace: portletNamespace,
 			queryPrefilterContributorsString:
 				itemData.queryPrefilterContributorsString,
-			searchableAssetTypesString: itemData.searchableAssetTypesString,
+			searchableTypesString: itemData.searchableTypesString,
 			type: itemData.type,
 		});
 	};
