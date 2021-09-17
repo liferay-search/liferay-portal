@@ -64,7 +64,7 @@ function EditBlueprintForm({
 	queryElements = [],
 	queryPrefilterContributors,
 	redirectURL = '',
-	searchableAssetTypes,
+	searchableTypes,
 	searchResultsURL,
 	submitFormURL = '',
 	validateBlueprintURL,
@@ -651,7 +651,7 @@ function EditBlueprintForm({
 									setShowPreview(false);
 									setShowSidebar(!showSidebar);
 								}}
-								searchableAssetTypes={searchableAssetTypes}
+								searchableTypes={searchableTypes}
 								selectedElements={
 									formik.values.selectedQueryElements
 								}
@@ -736,7 +736,7 @@ EditBlueprintForm.propTypes = {
 	queryElements: PropTypes.arrayOf(PropTypes.object),
 	redirectURL: PropTypes.string,
 	searchResultsURL: PropTypes.string,
-	searchableAssetTypes: PropTypes.arrayOf(PropTypes.object),
+	searchableTypes: PropTypes.arrayOf(PropTypes.object),
 	submitFormURL: PropTypes.string,
 };
 

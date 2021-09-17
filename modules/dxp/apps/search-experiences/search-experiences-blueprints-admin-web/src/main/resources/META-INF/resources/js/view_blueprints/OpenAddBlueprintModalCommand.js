@@ -55,7 +55,7 @@ function openAddBlueprintModal({
 	namespace,
 	onFormSuccess,
 	queryPrefilterContributorsString,
-	searchableAssetTypesString,
+	searchableTypesString,
 	type,
 }) {
 	dispose();
@@ -76,7 +76,7 @@ function openAddBlueprintModal({
 			namespace={namespace}
 			onFormSuccess={onFormSuccess}
 			queryPrefilterContributorsString={queryPrefilterContributorsString}
-			searchableAssetTypesString={searchableAssetTypesString}
+			searchableTypesString={searchableTypesString}
 			type={type}
 		/>,
 		DEFAULT_RENDER_DATA,

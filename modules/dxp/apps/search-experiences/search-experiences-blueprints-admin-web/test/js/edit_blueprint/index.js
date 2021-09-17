@@ -19,7 +19,7 @@ import {
 	ENTITY_JSON,
 	INDEX_FIELDS,
 	INITIAL_CONFIGURATION,
-	SEARCHABLE_ASSET_TYPES,
+	SEARCHABLE_TYPES,
 	SELECTED_ELEMENTS,
 } from '../mocks/data';
 
@@ -65,7 +65,7 @@ function renderEditBlueprint(props) {
 				},
 				queryElements: SELECTED_ELEMENTS,
 				redirectURL: '',
-				searchableAssetTypes: SEARCHABLE_ASSET_TYPES,
+				searchableTypes: SEARCHABLE_TYPES,
 				submitFormURL: '',
 				...props,
 			}}
