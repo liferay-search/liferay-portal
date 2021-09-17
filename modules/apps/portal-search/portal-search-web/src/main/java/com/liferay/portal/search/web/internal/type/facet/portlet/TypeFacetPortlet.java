@@ -132,9 +132,6 @@ public class TypeFacetPortlet extends MVCPortlet {
 		assetEntriesSearchFacetDisplayBuilder.setClassNames(
 			getAssetTypesClassNames(typeFacetPortletPreferences, themeDisplay));
 
-		assetEntriesSearchFacetDisplayBuilder.setTypeNames(
-			getAssetTypesTypeNames(typeFacetPortletPreferences, themeDisplay));
-
 		assetEntriesSearchFacetDisplayBuilder.setFacet(facet);
 		assetEntriesSearchFacetDisplayBuilder.setFrequencyThreshold(
 			assetEntriesFacetConfiguration.getFrequencyThreshold());
@@ -148,6 +145,9 @@ public class TypeFacetPortlet extends MVCPortlet {
 		String parameterName = typeFacetPortletPreferences.getParameterName();
 
 		assetEntriesSearchFacetDisplayBuilder.setParameterName(parameterName);
+
+		assetEntriesSearchFacetDisplayBuilder.setTypeNames(
+			getAssetTypesTypeNames(typeFacetPortletPreferences, themeDisplay));
 
 		SearchOptionalUtil.copy(
 			() -> getParameterValuesOptional(
