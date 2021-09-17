@@ -57,7 +57,6 @@ public class TypeFacetConfigurationAction extends DefaultConfigurationAction {
 		httpServletRequest.setAttribute(
 			ObjectDefinitionLocalService.class.getName(),
 			objectDefinitionLocalService);
-
 		httpServletRequest.setAttribute(
 			SearchableAssetClassNamesProvider.class.getName(),
 			searchableAssetClassNamesProvider);
