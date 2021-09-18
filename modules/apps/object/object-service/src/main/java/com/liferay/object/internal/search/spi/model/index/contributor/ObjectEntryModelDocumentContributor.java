@@ -91,11 +91,11 @@ public class ObjectEntryModelDocumentContributor
 	}
 
 	private void _appendToContent(
-		StringBundler sb, String objectFieldName, String stringValue) {
+		StringBundler sb, String objectFieldName, String valueString) {
 
 		sb.append(objectFieldName);
 		sb.append(": ");
-		sb.append(stringValue);
+		sb.append(valueString);
 		sb.append(StringPool.COMMA_AND_SPACE);
 	}
 
@@ -192,7 +192,7 @@ public class ObjectEntryModelDocumentContributor
 		}
 
 		String objectFieldName = objectField.getName();
-		String stringValue = String.valueOf(value);
+		String valueString = String.valueOf(value);
 
 		if ((titleFieldPrefix != null) &&
 			objectFieldName.startsWith(titleFieldPrefix)) {
@@ -202,10 +202,10 @@ public class ObjectEntryModelDocumentContributor
 					new Field(
 						"object_entry_title_" +
 							objectField.getIndexedLanguageId(),
-						stringValue));
+						valueString));
 			}
 			else {
-				document.add(new Field("object_entry_title", stringValue));
+				document.add(new Field("object_entry_title", valueString));
 			}
 
 			document.add(new Field("title_field_prefix", titleFieldPrefix));
@@ -214,23 +214,23 @@ public class ObjectEntryModelDocumentContributor
 		if (objectField.isIndexedAsKeyword()) {
 			_addField(
 				fieldArray, objectFieldName, "value_keyword",
-				StringUtil.lowerCase(stringValue));
+				StringUtil.lowerCase(valueString));
 
-			_appendToContent(sb, objectFieldName, stringValue);
+			_appendToContent(sb, objectFieldName, valueString);
 		}
 		else if (value instanceof BigDecimal) {
-			_addField(fieldArray, objectFieldName, "value_double", stringValue);
+			_addField(fieldArray, objectFieldName, "value_double", valueString);
 
-			_appendToContent(sb, objectFieldName, stringValue);
+			_appendToContent(sb, objectFieldName, valueString);
 		}
 		else if (value instanceof Boolean) {
 			_addField(
-				fieldArray, objectFieldName, "value_boolean", stringValue);
+				fieldArray, objectFieldName, "value_boolean", valueString);
 			_addField(
 				fieldArray, objectFieldName, "value_keyword",
 				_translate((Boolean)value));
 
-			_appendToContent(sb, objectFieldName, stringValue);
+			_appendToContent(sb, objectFieldName, valueString);
 		}
 		else if (value instanceof Date) {
 			_addField(
@@ -240,37 +240,37 @@ public class ObjectEntryModelDocumentContributor
 			_appendToContent(sb, objectFieldName, _getDateString(value));
 		}
 		else if (value instanceof Double) {
-			_addField(fieldArray, objectFieldName, "value_double", stringValue);
+			_addField(fieldArray, objectFieldName, "value_double", valueString);
 
-			_appendToContent(sb, objectFieldName, stringValue);
+			_appendToContent(sb, objectFieldName, valueString);
 		}
 		else if (value instanceof Integer) {
 			_addField(
-				fieldArray, objectFieldName, "value_integer", stringValue);
+				fieldArray, objectFieldName, "value_integer", valueString);
 
-			_appendToContent(sb, objectFieldName, stringValue);
+			_appendToContent(sb, objectFieldName, valueString);
 		}
 		else if (value instanceof Long) {
-			_addField(fieldArray, objectFieldName, "value_long", stringValue);
+			_addField(fieldArray, objectFieldName, "value_long", valueString);
 
-			_appendToContent(sb, objectFieldName, stringValue);
+			_appendToContent(sb, objectFieldName, valueString);
 		}
 		else if (value instanceof String) {
 			if (Validator.isBlank(objectField.getIndexedLanguageId())) {
 				_addField(
-					fieldArray, objectFieldName, "value_text", stringValue);
+					fieldArray, objectFieldName, "value_text", valueString);
 			}
 			else {
 				_addField(
 					fieldArray, objectFieldName,
-					"value_" + objectField.getIndexedLanguageId(), stringValue);
+					"value_" + objectField.getIndexedLanguageId(), valueString);
 			}
 
 			_addField(
 				fieldArray, objectFieldName, "value_keyword_lowercase",
-				_getSortableValue(stringValue));
+				_getSortableValue(valueString));
 
-			_appendToContent(sb, objectFieldName, stringValue);
+			_appendToContent(sb, objectFieldName, valueString);
 		}
 		else if (value instanceof byte[]) {
 			_addField(
