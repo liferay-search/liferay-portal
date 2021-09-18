@@ -218,7 +218,8 @@ public class ObjectEntryKeywordQueryContributor
 		}
 		else if (Objects.equals(objectField.getType(), "BigDecimal")) {
 			_addNumericClause(
-				"nestedFieldArray.value_double", nestedBooleanQuery, objectField, token);
+				"nestedFieldArray.value_double", nestedBooleanQuery,
+				objectField, token);
 		}
 		else if (Objects.equals(objectField.getType(), "Blob")) {
 			_log.error("Blob type is not indexable");
@@ -264,7 +265,8 @@ public class ObjectEntryKeywordQueryContributor
 		}
 		else if (Objects.equals(objectField.getType(), "Long")) {
 			_addNumericClause(
-				"nestedFieldArray.value_long", nestedBooleanQuery, objectField, token);
+				"nestedFieldArray.value_long", nestedBooleanQuery, objectField,
+				token);
 		}
 		else if (Objects.equals(objectField.getType(), "String")) {
 			if (Validator.isBlank(objectField.getIndexedLanguageId())) {
