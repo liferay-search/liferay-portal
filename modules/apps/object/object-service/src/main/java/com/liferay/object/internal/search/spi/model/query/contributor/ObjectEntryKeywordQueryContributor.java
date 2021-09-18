@@ -186,7 +186,7 @@ public class ObjectEntryKeywordQueryContributor
 			return;
 		}
 
-		token = _getToken(objectField.getName(), token, searchContext);
+		token = _getToken(objectField.getName(), searchContext, token);
 
 		if (Validator.isNull(token)) {
 			return;
@@ -309,7 +309,7 @@ public class ObjectEntryKeywordQueryContributor
 	}
 
 	private String _getToken(
-		String fieldName, String token, SearchContext searchContext) {
+		String fieldName, SearchContext searchContext, String token) {
 
 		if (Validator.isNotNull(token)) {
 			return token;
