@@ -197,8 +197,6 @@ public class ObjectEntryModelDocumentContributor
 		if ((titleFieldPrefix != null) &&
 			objectFieldName.startsWith(titleFieldPrefix)) {
 
-			document.add(new Field("title_field_prefix", titleFieldPrefix));
-
 			if (!Validator.isBlank(objectField.getIndexedLanguageId())) {
 				document.add(
 					new Field(
@@ -209,6 +207,8 @@ public class ObjectEntryModelDocumentContributor
 			else {
 				document.add(new Field("object_entry_title", stringValue));
 			}
+
+			document.add(new Field("title_field_prefix", titleFieldPrefix));
 		}
 
 		if (objectField.isIndexedAsKeyword()) {
