@@ -144,7 +144,7 @@ public class ObjectEntryKeywordQueryContributor
 		throws ParseException {
 
 		boolean addedRangeQuery = _addRangeQuery(
-			token, nestedBooleanQuery, fieldName, objectField.getType());
+			nestedBooleanQuery, fieldName, token, objectField.getType());
 
 		if (!addedRangeQuery && _isValidInput(token, objectField.getType())) {
 			nestedBooleanQuery.add(
@@ -153,7 +153,7 @@ public class ObjectEntryKeywordQueryContributor
 	}
 
 	private boolean _addRangeQuery(
-			String token, BooleanQuery booleanQuery, String fieldName,
+			BooleanQuery booleanQuery, String fieldName, String token,
 			String type)
 		throws ParseException {
 
