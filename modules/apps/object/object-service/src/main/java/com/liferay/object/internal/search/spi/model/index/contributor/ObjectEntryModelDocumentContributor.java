@@ -155,8 +155,8 @@ public class ObjectEntryModelDocumentContributor
 
 		for (ObjectField objectField : objectFields) {
 			_contribute(
-				fieldArray, objectEntry, objectField, values, titleFieldPrefix,
-				document, sb);
+				document, fieldArray, objectEntry, objectField, sb,
+				titleFieldPrefix, values);
 		}
 
 		if (sb.index() > 0) {
@@ -169,9 +169,9 @@ public class ObjectEntryModelDocumentContributor
 	}
 
 	private void _contribute(
-		FieldArray fieldArray, ObjectEntry objectEntry, ObjectField objectField,
-		Map<String, Serializable> values, String titleFieldPrefix,
-		Document document, StringBundler sb) {
+		Document document, FieldArray fieldArray, ObjectEntry objectEntry,
+		ObjectField objectField, StringBundler sb, String titleFieldPrefix,
+		Map<String, Serializable> values) {
 
 		if (!objectField.isIndexed()) {
 			return;
