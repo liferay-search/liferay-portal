@@ -139,8 +139,8 @@ public class ObjectEntryKeywordQueryContributor
 	}
 
 	private void _addNumericClause(
-			ObjectField objectField, String token,
-			BooleanQuery nestedBooleanQuery, String fieldName)
+			String fieldName, BooleanQuery nestedBooleanQuery,
+			ObjectField objectField, String token)
 		throws ParseException {
 
 		boolean addedRangeQuery = _addRangeQuery(
@@ -218,8 +218,7 @@ public class ObjectEntryKeywordQueryContributor
 		}
 		else if (Objects.equals(objectField.getType(), "BigDecimal")) {
 			_addNumericClause(
-				objectField, token, nestedBooleanQuery,
-				"nestedFieldArray.value_double");
+				"nestedFieldArray.value_double", nestedBooleanQuery, objectField, token);
 		}
 		else if (Objects.equals(objectField.getType(), "Blob")) {
 			_log.error("Blob type is not indexable");
@@ -250,23 +249,22 @@ public class ObjectEntryKeywordQueryContributor
 		}
 		else if (Objects.equals(objectField.getType(), "Date")) {
 			_addNumericClause(
-				objectField, token, nestedBooleanQuery,
-				"nestedFieldArray.value_date");
+				"nestedFieldArray.value_date", nestedBooleanQuery, objectField,
+				token);
 		}
 		else if (Objects.equals(objectField.getType(), "Double")) {
 			_addNumericClause(
-				objectField, token, nestedBooleanQuery,
-				"nestedFieldArray.value_double");
+				"nestedFieldArray.value_double", nestedBooleanQuery,
+				objectField, token);
 		}
 		else if (Objects.equals(objectField.getType(), "Integer")) {
 			_addNumericClause(
-				objectField, token, nestedBooleanQuery,
-				"nestedFieldArray.value_integer");
+				"nestedFieldArray.value_integer", nestedBooleanQuery,
+				objectField, token);
 		}
 		else if (Objects.equals(objectField.getType(), "Long")) {
 			_addNumericClause(
-				objectField, token, nestedBooleanQuery,
-				"nestedFieldArray.value_long");
+				"nestedFieldArray.value_long", nestedBooleanQuery, objectField, token);
 		}
 		else if (Objects.equals(objectField.getType(), "String")) {
 			if (Validator.isBlank(objectField.getIndexedLanguageId())) {
