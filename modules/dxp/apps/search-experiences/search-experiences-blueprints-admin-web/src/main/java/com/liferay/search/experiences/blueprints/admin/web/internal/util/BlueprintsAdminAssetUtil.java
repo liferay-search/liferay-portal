@@ -14,10 +14,13 @@
 
 package com.liferay.search.experiences.blueprints.admin.web.internal.util;
 
+import com.liferay.object.model.ObjectDefinition;
+import com.liferay.object.service.ObjectDefinitionLocalService;
 import com.liferay.portal.json.JSONArrayImpl;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.security.permission.ResourceActionsUtil;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.asset.SearchableAssetClassNamesProvider;
 
 import java.util.Locale;
@@ -56,6 +59,13 @@ public class BlueprintsAdminAssetUtil {
 	}
 
 	@Reference(unbind = "-")
+	protected void setObjectDefinitionLocalService(
+		ObjectDefinitionLocalService objectDefinitionLocalService) {
+
+		_objectDefinitionLocalService = objectDefinitionLocalService;
+	}
+
+	@Reference(unbind = "-")
 	protected void setSearchableAssetClassNamesProvider(
 		SearchableAssetClassNamesProvider searchableAssetClassNamesProvider) {
 
@@ -63,9 +73,23 @@ public class BlueprintsAdminAssetUtil {
 	}
 
 	private static String _getDisplayName(Locale locale, String className) {
-		return ResourceActionsUtil.getModelResource(locale, className);
+		String modelResource = ResourceActionsUtil.getModelResource(
+			locale, className);
+
+		if (className.startsWith(ObjectDefinition.class.getName() + "#")) {
+			String[] parts = StringUtil.split(className, "#");
+
+			ObjectDefinition objectDefinition =
+				_objectDefinitionLocalService.fetchObjectDefinition(
+					Long.valueOf(parts[1]));
+
+			modelResource = objectDefinition.getLabel(locale);
+		}
+
+		return modelResource;
 	}
 
+	private static ObjectDefinitionLocalService _objectDefinitionLocalService;
 	private static SearchableAssetClassNamesProvider
 		_searchableAssetClassNamesProvider;
 
