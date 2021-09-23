@@ -41,6 +41,18 @@ import SelectInput from './SelectInput';
 import SliderInput from './SliderInput';
 import TextInput from './TextInput';
 
+/**
+ * Converts the searchable types to be compatible with ClaySelect options prop.
+ * @param {Array} searchableTypes Searchable types array from the EditBlueprintDisplayBuilder
+ * @returns {Array}
+ */
+const convertSearchableTypesToSelectOptions = (searchableTypes) => {
+	return searchableTypes.map(({className, displayName}) => ({
+		label: displayName,
+		value: className,
+	}));
+};
+
 function Element({
 	collapseAll,
 	elementTemplateJSON,
@@ -54,6 +66,7 @@ function Element({
 	onChange = () => {},
 	onDeleteElement,
 	prefixedId,
+	searchableTypes = [],
 	setFieldTouched = () => {},
 	setFieldValue = () => {},
 	touched = {},
@@ -199,6 +212,24 @@ function Element({
 						setFieldValue={setFieldValue}
 						step={typeOptions.step}
 						unit={typeOptions.unit}
+						value={uiConfigurationValues[config.name]}
+					/>
+				);
+			case INPUT_TYPES.SEARCHABLE_TYPE:
+				return (
+					<SelectInput
+						configKey={config.name}
+						disabled={disabled}
+						id={inputId}
+						label={config.label}
+						name={inputName}
+						nullable={typeOptions.nullable}
+						onBlur={onBlur}
+						onChange={onChange}
+						options={convertSearchableTypesToSelectOptions(
+							searchableTypes
+						)}
+						setFieldValue={setFieldValue}
 						value={uiConfigurationValues[config.name]}
 					/>
 				);
