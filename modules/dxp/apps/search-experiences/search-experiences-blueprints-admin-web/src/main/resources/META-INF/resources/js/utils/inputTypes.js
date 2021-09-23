@@ -18,6 +18,7 @@ export const INPUT_TYPES = {
 	KEYWORDS: 'keywords',
 	MULTISELECT: 'multiselect',
 	NUMBER: 'number',
+	SEARCHABLE_TYPE: 'searchableType',
 	SELECT: 'select',
 	SLIDER: 'slider',
 	TEXT: 'text',

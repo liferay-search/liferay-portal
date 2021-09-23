@@ -59,6 +59,7 @@ function QueryBuilderTab({
 						onChange={onChange}
 						onDeleteElement={onDeleteElement}
 						prefixedId={`${ELEMENT_PREFIX.QUERY}-${index}`}
+						searchableTypes={searchableTypes}
 						setFieldTouched={setFieldTouched}
 						setFieldValue={setFieldValue}
 						touched={touched[index]}
