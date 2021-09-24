@@ -6,6 +6,10 @@
 					"store": true,
 					"type": "text"
 				},
+				"label_names": {
+					"store": true,
+					"type": "keyword"
+				},
 				"liferay_version": {
 					"store": true,
 					"type": "keyword"

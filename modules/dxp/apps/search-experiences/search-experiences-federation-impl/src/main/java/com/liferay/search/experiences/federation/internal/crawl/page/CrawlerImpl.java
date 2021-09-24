@@ -12,7 +12,7 @@
  *
  */
 
-package com.liferay.search.experiences.federation.internal.crawl;
+package com.liferay.search.experiences.federation.internal.crawl.page;
 
 import com.liferay.petra.string.StringPool;
 

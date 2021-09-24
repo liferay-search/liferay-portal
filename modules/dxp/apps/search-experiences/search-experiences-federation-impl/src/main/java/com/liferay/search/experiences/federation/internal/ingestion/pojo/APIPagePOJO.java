@@ -12,13 +12,18 @@
  *
  */
 
-package com.liferay.search.experiences.federation.internal.crawl;
+package com.liferay.search.experiences.federation.internal.ingestion.pojo;
+
+import java.util.List;
 
 /**
- * @author André de Oliveira
+ * @author Gustavo Lima
  */
-public interface CrawlerContributorHelper {
+public class APIPagePOJO {
 
-	public void seed(String address, String origin);
+	public List<ArticlesPOJO> articles;
+	public String next_page;
+	public int page;
+	public int page_count;
 
 }

@@ -12,13 +12,13 @@
  *
  */
 
-package com.liferay.search.experiences.federation.internal.crawl;
+package com.liferay.search.experiences.federation.internal.crawl.page;
 
 /**
  * @author André de Oliveira
  */
-public interface CrawlerContributor {
+public interface CrawlerContributorHelper {
 
-	public void contribute(CrawlerContributorHelper crawlerContributorHelper);
+	public void seed(String address, String origin);
 
 }

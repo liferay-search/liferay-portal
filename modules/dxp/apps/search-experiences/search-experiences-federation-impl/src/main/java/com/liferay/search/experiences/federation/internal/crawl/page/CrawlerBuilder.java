@@ -12,15 +12,17 @@
  *
  */
 
-package com.liferay.search.experiences.federation.internal.crawl;
-
-import java.util.stream.Stream;
+package com.liferay.search.experiences.federation.internal.crawl.page;
 
 /**
  * @author André de Oliveira
  */
-public interface CrawlerContributorsHolder {
+public interface CrawlerBuilder {
 
-	public Stream<CrawlerContributor> stream();
+	public CrawlerBuilder addCrawlerListener(CrawlerListener crawlerListener);
+
+	public Crawler build();
+
+	public CrawlerBuilder indexImmediately(boolean indexImmediately);
 
 }

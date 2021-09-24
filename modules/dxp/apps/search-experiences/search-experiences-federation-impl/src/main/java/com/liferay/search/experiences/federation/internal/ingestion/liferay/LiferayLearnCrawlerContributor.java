@@ -14,8 +14,8 @@
 
 package com.liferay.search.experiences.federation.internal.ingestion.liferay;
 
-import com.liferay.search.experiences.federation.internal.crawl.CrawlerContributor;
-import com.liferay.search.experiences.federation.internal.crawl.CrawlerContributorHelper;
+import com.liferay.search.experiences.federation.internal.crawl.page.CrawlerContributor;
+import com.liferay.search.experiences.federation.internal.crawl.page.CrawlerContributorHelper;
 import com.liferay.search.experiences.federation.internal.download.Downloader;
 
 import java.util.Arrays;

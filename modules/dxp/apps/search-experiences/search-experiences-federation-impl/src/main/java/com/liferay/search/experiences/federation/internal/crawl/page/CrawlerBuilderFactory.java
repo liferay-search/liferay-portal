@@ -12,7 +12,7 @@
  *
  */
 
-package com.liferay.search.experiences.federation.internal.crawl;
+package com.liferay.search.experiences.federation.internal.crawl.page;
 
 /**
  * @author André de Oliveira

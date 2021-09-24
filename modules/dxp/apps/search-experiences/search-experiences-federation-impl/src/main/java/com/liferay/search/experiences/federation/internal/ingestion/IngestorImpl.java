@@ -15,7 +15,10 @@
 package com.liferay.search.experiences.federation.internal.ingestion;
 
 import com.liferay.search.experiences.federation.ingestion.Ingestor;
-import com.liferay.search.experiences.federation.internal.crawl.CrawlerBuilderFactory;
+import com.liferay.search.experiences.federation.internal.crawl.endpoint.LiferayHelpCenterAPIRequester;
+import com.liferay.search.experiences.federation.internal.crawl.page.CrawlerBuilderFactory;
+
+import java.io.IOException;
 
 /**
  * @author André de Oliveira
@@ -23,14 +26,23 @@ import com.liferay.search.experiences.federation.internal.crawl.CrawlerBuilderFa
 public class IngestorImpl implements Ingestor {
 
 	public IngestorImpl(
-		CrawlerBuilderFactory crawlerBuilderFactory, Federator federator) {
+		CrawlerBuilderFactory crawlerBuilderFactory, Federator federator,
+		LiferayHelpCenterAPIRequester liferayHelpCenterAPIRequester) {
 
 		_crawlerBuilderFactory = crawlerBuilderFactory;
 		_federator = federator;
+		_liferayHelpCenterAPIRequester = liferayHelpCenterAPIRequester;
 	}
 
 	@Override
 	public void ingest() {
+		try {
+			_liferayHelpCenterAPIRequester.contributor();
+		}
+		catch (IOException ioException) {
+			ioException.printStackTrace();
+		}
+
 		_crawlerBuilderFactory.builder(
 		).addCrawlerListener(
 			this::federate
@@ -46,5 +58,6 @@ public class IngestorImpl implements Ingestor {
 
 	private final CrawlerBuilderFactory _crawlerBuilderFactory;
 	private final Federator _federator;
+	private final LiferayHelpCenterAPIRequester _liferayHelpCenterAPIRequester;
 
 }

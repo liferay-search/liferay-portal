@@ -12,23 +12,15 @@
  *
  */
 
-package com.liferay.search.experiences.federation.internal.crawl;
+package com.liferay.search.experiences.federation.internal.crawl.page;
 
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
+import java.util.stream.Stream;
 
 /**
  * @author André de Oliveira
  */
-@Component(immediate = true, service = CrawlerBuilderFactory.class)
-public class CrawlerBuilderFactoryImpl implements CrawlerBuilderFactory {
+public interface CrawlerContributorsHolder {
 
-	@Override
-	public CrawlerBuilder builder() {
-		return new CrawlerImpl.CrawlerBuilderImpl(crawlerContributorsHolder);
-	}
-
-	@Reference
-	protected CrawlerContributorsHolder crawlerContributorsHolder;
+	public Stream<CrawlerContributor> stream();
 
 }

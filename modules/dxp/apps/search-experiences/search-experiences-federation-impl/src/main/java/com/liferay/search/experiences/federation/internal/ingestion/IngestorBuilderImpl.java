@@ -16,7 +16,8 @@ package com.liferay.search.experiences.federation.internal.ingestion;
 
 import com.liferay.search.experiences.federation.ingestion.Ingestor;
 import com.liferay.search.experiences.federation.ingestion.IngestorBuilder;
-import com.liferay.search.experiences.federation.internal.crawl.CrawlerBuilderFactory;
+import com.liferay.search.experiences.federation.internal.crawl.endpoint.LiferayHelpCenterAPIRequester;
+import com.liferay.search.experiences.federation.internal.crawl.page.CrawlerBuilderFactory;
 
 /**
  * @author André de Oliveira
@@ -24,18 +25,22 @@ import com.liferay.search.experiences.federation.internal.crawl.CrawlerBuilderFa
 public class IngestorBuilderImpl implements IngestorBuilder {
 
 	public IngestorBuilderImpl(
-		CrawlerBuilderFactory crawlerBuilderFactory, Federator federator) {
+		CrawlerBuilderFactory crawlerBuilderFactory, Federator federator,
+		LiferayHelpCenterAPIRequester liferayHelpCenterAPIRequester) {
 
 		_crawlerBuilderFactory = crawlerBuilderFactory;
 		_federator = federator;
+		_liferayHelpCenterAPIRequester = liferayHelpCenterAPIRequester;
 	}
 
 	@Override
 	public Ingestor build() {
-		return new IngestorImpl(_crawlerBuilderFactory, _federator);
+		return new IngestorImpl(
+			_crawlerBuilderFactory, _federator, _liferayHelpCenterAPIRequester);
 	}
 
 	private final CrawlerBuilderFactory _crawlerBuilderFactory;
 	private final Federator _federator;
+	private final LiferayHelpCenterAPIRequester _liferayHelpCenterAPIRequester;
 
 }

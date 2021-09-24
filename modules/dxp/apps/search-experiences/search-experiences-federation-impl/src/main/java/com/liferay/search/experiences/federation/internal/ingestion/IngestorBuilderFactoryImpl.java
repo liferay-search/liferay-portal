@@ -16,7 +16,8 @@ package com.liferay.search.experiences.federation.internal.ingestion;
 
 import com.liferay.search.experiences.federation.ingestion.IngestorBuilder;
 import com.liferay.search.experiences.federation.ingestion.IngestorBuilderFactory;
-import com.liferay.search.experiences.federation.internal.crawl.CrawlerBuilderFactory;
+import com.liferay.search.experiences.federation.internal.crawl.endpoint.LiferayHelpCenterAPIRequester;
+import com.liferay.search.experiences.federation.internal.crawl.page.CrawlerBuilderFactory;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -29,7 +30,8 @@ public class IngestorBuilderFactoryImpl implements IngestorBuilderFactory {
 
 	@Override
 	public IngestorBuilder builder() {
-		return new IngestorBuilderImpl(crawlerBuilderFactory, federator);
+		return new IngestorBuilderImpl(
+			crawlerBuilderFactory, federator, liferayHelpCenterAPIRequester);
 	}
 
 	@Reference
@@ -37,5 +39,8 @@ public class IngestorBuilderFactoryImpl implements IngestorBuilderFactory {
 
 	@Reference
 	protected Federator federator;
+
+	@Reference
+	protected LiferayHelpCenterAPIRequester liferayHelpCenterAPIRequester;
 
 }

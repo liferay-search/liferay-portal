@@ -12,7 +12,7 @@
  *
  */
 
-package com.liferay.search.experiences.federation.internal.crawl;
+package com.liferay.search.experiences.federation.internal.crawl.page;
 
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArrayList;

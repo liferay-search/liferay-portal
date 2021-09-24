@@ -12,17 +12,13 @@
  *
  */
 
-package com.liferay.search.experiences.federation.internal.crawl;
+package com.liferay.search.experiences.federation.internal.crawl.page;
 
 /**
  * @author André de Oliveira
  */
-public interface CrawlerBuilder {
+public interface CrawlerListener {
 
-	public CrawlerBuilder addCrawlerListener(CrawlerListener crawlerListener);
-
-	public Crawler build();
-
-	public CrawlerBuilder indexImmediately(boolean indexImmediately);
+	public void consume(String address, String origin);
 
 }
