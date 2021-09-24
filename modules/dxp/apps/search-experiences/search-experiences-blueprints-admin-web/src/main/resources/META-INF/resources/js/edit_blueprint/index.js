@@ -599,15 +599,21 @@ function EditBlueprintForm({
 						initialClauseContributorsList={[
 							{
 								label: 'KeywordQueryContributor',
-								value: keywordQueryContributors.sort(),
+								value: keywordQueryContributors
+									.filter((contributor) => contributor)
+									.sort(),
 							},
 							{
 								label: 'ModelPrefilterContributor',
-								value: modelPrefilterContributors.sort(),
+								value: modelPrefilterContributors
+									.filter((contributor) => contributor)
+									.sort(),
 							},
 							{
 								label: 'QueryPrefilterContributor',
-								value: queryPrefilterContributors.sort(),
+								value: queryPrefilterContributors
+									.filter((contributor) => contributor)
+									.sort(),
 							},
 						]}
 						onFrameworkConfigChange={_handleFrameworkConfigChange}
