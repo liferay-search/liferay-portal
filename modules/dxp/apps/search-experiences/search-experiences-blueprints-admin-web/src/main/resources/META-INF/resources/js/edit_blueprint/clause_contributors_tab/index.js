@@ -31,7 +31,17 @@ import {
 } from '../../utils/utils';
 import ManagementToolbar from './ManagementToolbar';
 
+/**
+ * Converts a class name "com.liferay.account.internal.search.spi.model.query.contributor.AccountEntryKeywordQueryContributor"
+ * to "Account Entry Keyword Query Contributor".
+ * @param {String} className
+ * @returns
+ */
 const getClassDisplayName = (className) => {
+	if (!className) {
+		return '';
+	}
+
 	return className
 		.split('.')
 		.slice(-1)[0]
