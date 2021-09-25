@@ -93,6 +93,18 @@
 					"if": {
 						"properties": {
 							"type": {
+								"const": "searchableType"
+							}
+						}
+					},
+					"then": {
+						"$ref": "#/definitions/fieldSearchableType"
+					}
+				},
+				{
+					"if": {
+						"properties": {
+							"type": {
 								"const": "select"
 							}
 						}
@@ -282,6 +294,13 @@
 						"type": "object"
 					},
 					"type": "array"
+				}
+			}
+		},
+		"fieldSearchableType": {
+			"properties": {
+				"defaultValue": {
+					"type": "string"
 				}
 			}
 		},
