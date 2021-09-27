@@ -157,6 +157,7 @@
 						"keywords",
 						"multiselect",
 						"number",
+						"searchableType",
 						"select",
 						"slider",
 						"text"
