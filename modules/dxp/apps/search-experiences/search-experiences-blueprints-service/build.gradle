@@ -36,6 +36,4 @@ dependencies {
 	compileOnly project(":dxp:apps:search-experiences:search-experiences-problems-api")
 
 	testCompile project(":dxp:apps:search-experiences:search-experiences-problems-impl")
-
-	testCompileOnly project(":core:registry-api")
 }
