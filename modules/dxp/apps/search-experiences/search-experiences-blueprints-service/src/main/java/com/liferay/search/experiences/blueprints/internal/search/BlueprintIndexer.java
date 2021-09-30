@@ -176,7 +176,7 @@ public class BlueprintIndexer extends BaseIndexer<Blueprint> {
 	}
 
 	protected void reindexBlueprints(long companyId) throws PortalException {
-		final IndexableActionableDynamicQuery indexableActionableDynamicQuery =
+		IndexableActionableDynamicQuery indexableActionableDynamicQuery =
 			_blueprintLocalService.getIndexableActionableDynamicQuery();
 
 		indexableActionableDynamicQuery.setCompanyId(companyId);

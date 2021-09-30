@@ -115,12 +115,12 @@ public class FacetParameterContributor implements ParameterContributor {
 			FacetRequestHandler facetRequestHandler =
 				_facetRequestHandlerFactory.getHandler(type);
 
-			Optional<Parameter> parameter =
+			Optional<Parameter> optional =
 				facetRequestHandler.getParameterOptional(
 					blueprintsAttributes, problemsHolderBuilder, jsonObject);
 
-			if (parameter.isPresent()) {
-				parameterDataBuilder.addParameter(parameter.get());
+			if (optional.isPresent()) {
+				parameterDataBuilder.addParameter(optional.get());
 			}
 		}
 		catch (IllegalArgumentException illegalArgumentException) {

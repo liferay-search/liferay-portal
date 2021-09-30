@@ -114,7 +114,7 @@ public abstract class BaseValidator {
 	}
 
 	protected void validateTitle(
-		final Map<Locale, String> titleMap, List<Problem> problems) {
+		Map<Locale, String> titleMap, List<Problem> problems) {
 
 		if (MapUtil.isEmpty(titleMap)) {
 			ProblemBuilderFactory problemBuilderFactory =
