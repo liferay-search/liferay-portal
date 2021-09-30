@@ -59,30 +59,32 @@ public class DoubleParameterBuilder implements ParameterBuilder {
 	}
 
 	private double _getAdjustedValue(double value, JSONObject jsonObject) {
-		Optional<Double> minValue = BlueprintValueUtil.stringToDoubleOptional(
-			jsonObject.getString("min_value"));
+		Optional<Double> minValueOptional =
+			BlueprintValueUtil.stringToDoubleOptional(
+				jsonObject.getString("min_value"));
 
-		if (minValue.isPresent() &&
-			(Double.compare(value, minValue.get()) < 0)) {
+		if (minValueOptional.isPresent() &&
+			(Double.compare(value, minValueOptional.get()) < 0)) {
 
 			if (_log.isWarnEnabled()) {
-				_log.warn(minValue.get() + " is below the minimum.");
+				_log.warn(minValueOptional.get() + " is below the minimum.");
 			}
 
-			value = minValue.get();
+			value = minValueOptional.get();
 		}
 
-		Optional<Double> maxValue = BlueprintValueUtil.stringToDoubleOptional(
-			jsonObject.getString("max_value"));
+		Optional<Double> maxValueOptional =
+			BlueprintValueUtil.stringToDoubleOptional(
+				jsonObject.getString("max_value"));
 
-		if (maxValue.isPresent() &&
-			(Double.compare(value, maxValue.get()) > 0)) {
+		if (maxValueOptional.isPresent() &&
+			(Double.compare(value, maxValueOptional.get()) > 0)) {
 
 			if (_log.isWarnEnabled()) {
-				_log.warn(maxValue.get() + " is above the maximum.");
+				_log.warn(maxValueOptional.get() + " is above the maximum.");
 			}
 
-			value = maxValue.get();
+			value = maxValueOptional.get();
 		}
 
 		return value;

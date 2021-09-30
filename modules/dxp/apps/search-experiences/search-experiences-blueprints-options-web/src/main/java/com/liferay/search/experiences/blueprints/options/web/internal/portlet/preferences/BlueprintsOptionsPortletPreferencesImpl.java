@@ -28,10 +28,9 @@ public class BlueprintsOptionsPortletPreferencesImpl
 	implements BlueprintsOptionsPortletPreferences {
 
 	public BlueprintsOptionsPortletPreferencesImpl(
-		Optional<PortletPreferences> portletPreferences) {
+		Optional<PortletPreferences> optional) {
 
-		_portletPreferencesHelper = new PortletPreferencesHelper(
-			portletPreferences);
+		_portletPreferencesHelper = new PortletPreferencesHelper(optional);
 	}
 
 	@Override

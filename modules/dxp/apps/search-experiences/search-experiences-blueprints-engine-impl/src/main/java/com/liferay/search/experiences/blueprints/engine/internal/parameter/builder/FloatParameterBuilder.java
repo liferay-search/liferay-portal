@@ -59,30 +59,32 @@ public class FloatParameterBuilder implements ParameterBuilder {
 	}
 
 	private float _getAdjustedValue(float value, JSONObject jsonObject) {
-		Optional<Float> minValue = BlueprintValueUtil.stringToFloatOptional(
-			jsonObject.getString("min_value"));
+		Optional<Float> minValueOptional =
+			BlueprintValueUtil.stringToFloatOptional(
+				jsonObject.getString("min_value"));
 
-		if (minValue.isPresent() &&
-			(Float.compare(value, minValue.get()) < 0)) {
+		if (minValueOptional.isPresent() &&
+			(Float.compare(value, minValueOptional.get()) < 0)) {
 
 			if (_log.isWarnEnabled()) {
-				_log.warn(minValue.get() + " is below the minimum.");
+				_log.warn(minValueOptional.get() + " is below the minimum.");
 			}
 
-			value = minValue.get();
+			value = minValueOptional.get();
 		}
 
-		Optional<Float> maxValue = BlueprintValueUtil.stringToFloatOptional(
-			jsonObject.getString("max_value"));
+		Optional<Float> maxValueOptional =
+			BlueprintValueUtil.stringToFloatOptional(
+				jsonObject.getString("max_value"));
 
-		if (maxValue.isPresent() &&
-			(Float.compare(value, maxValue.get()) > 0)) {
+		if (maxValueOptional.isPresent() &&
+			(Float.compare(value, maxValueOptional.get()) > 0)) {
 
 			if (_log.isWarnEnabled()) {
-				_log.warn(maxValue.get() + " is above the maximum.");
+				_log.warn(maxValueOptional.get() + " is above the maximum.");
 			}
 
-			value = maxValue.get();
+			value = maxValueOptional.get();
 		}
 
 		return value;

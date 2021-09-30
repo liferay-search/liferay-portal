@@ -64,26 +64,32 @@ public class LongParameterBuilder implements ParameterBuilder {
 	private long _getAdjustedValue(
 		long value, JSONObject configurationJSONObject) {
 
-		Optional<Long> minValue = BlueprintValueUtil.stringToLongOptional(
-			configurationJSONObject.getString("min_value"));
+		Optional<Long> minValueOptional =
+			BlueprintValueUtil.stringToLongOptional(
+				configurationJSONObject.getString("min_value"));
 
-		if (minValue.isPresent() && (Long.compare(value, minValue.get()) < 0)) {
+		if (minValueOptional.isPresent() &&
+			(Long.compare(value, minValueOptional.get()) < 0)) {
+
 			if (_log.isWarnEnabled()) {
-				_log.warn(minValue.get() + " is below the minimum.");
+				_log.warn(minValueOptional.get() + " is below the minimum.");
 			}
 
-			value = minValue.get();
+			value = minValueOptional.get();
 		}
 
-		Optional<Long> maxValue = BlueprintValueUtil.stringToLongOptional(
-			configurationJSONObject.getString("max_value"));
+		Optional<Long> maxValueOptional =
+			BlueprintValueUtil.stringToLongOptional(
+				configurationJSONObject.getString("max_value"));
 
-		if (maxValue.isPresent() && (Long.compare(value, maxValue.get()) > 0)) {
+		if (maxValueOptional.isPresent() &&
+			(Long.compare(value, maxValueOptional.get()) > 0)) {
+
 			if (_log.isWarnEnabled()) {
-				_log.warn(maxValue.get() + " is above the maximum.");
+				_log.warn(maxValueOptional.get() + " is above the maximum.");
 			}
 
-			value = maxValue.get();
+			value = maxValueOptional.get();
 		}
 
 		return value;

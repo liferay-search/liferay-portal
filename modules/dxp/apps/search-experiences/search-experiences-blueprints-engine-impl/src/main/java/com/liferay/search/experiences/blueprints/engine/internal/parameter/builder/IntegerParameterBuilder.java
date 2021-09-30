@@ -60,30 +60,32 @@ public class IntegerParameterBuilder implements ParameterBuilder {
 	}
 
 	private int _getAdjustedValue(int value, JSONObject jsonObject) {
-		Optional<Integer> minValue = BlueprintValueUtil.stringToIntegerOptional(
-			jsonObject.getString("min_value"));
+		Optional<Integer> minValueOptional =
+			BlueprintValueUtil.stringToIntegerOptional(
+				jsonObject.getString("min_value"));
 
-		if (minValue.isPresent() &&
-			(Integer.compare(value, minValue.get()) < 0)) {
+		if (minValueOptional.isPresent() &&
+			(Integer.compare(value, minValueOptional.get()) < 0)) {
 
 			if (_log.isWarnEnabled()) {
-				_log.warn(minValue.get() + " is below the minimum.");
+				_log.warn(minValueOptional.get() + " is below the minimum.");
 			}
 
-			value = minValue.get();
+			value = minValueOptional.get();
 		}
 
-		Optional<Integer> maxValue = BlueprintValueUtil.stringToIntegerOptional(
-			jsonObject.getString("max_value"));
+		Optional<Integer> maxValueOptional =
+			BlueprintValueUtil.stringToIntegerOptional(
+				jsonObject.getString("max_value"));
 
-		if (maxValue.isPresent() &&
-			(Integer.compare(value, maxValue.get()) > 0)) {
+		if (maxValueOptional.isPresent() &&
+			(Integer.compare(value, maxValueOptional.get()) > 0)) {
 
 			if (_log.isWarnEnabled()) {
-				_log.warn(maxValue.get() + " is above the maximum.");
+				_log.warn(maxValueOptional.get() + " is above the maximum.");
 			}
 
-			value = maxValue.get();
+			value = maxValueOptional.get();
 		}
 
 		return value;

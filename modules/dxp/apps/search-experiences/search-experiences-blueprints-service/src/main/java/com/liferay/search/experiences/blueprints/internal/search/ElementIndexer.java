@@ -182,7 +182,7 @@ public class ElementIndexer extends BaseIndexer<Element> {
 	}
 
 	protected void reindexElements(long companyId) throws PortalException {
-		final IndexableActionableDynamicQuery indexableActionableDynamicQuery =
+		IndexableActionableDynamicQuery indexableActionableDynamicQuery =
 			_elementLocalService.getIndexableActionableDynamicQuery();
 
 		indexableActionableDynamicQuery.setCompanyId(companyId);

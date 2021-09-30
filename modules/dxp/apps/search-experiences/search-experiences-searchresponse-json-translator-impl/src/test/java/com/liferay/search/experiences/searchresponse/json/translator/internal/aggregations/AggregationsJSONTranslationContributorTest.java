@@ -44,12 +44,12 @@ public class AggregationsJSONTranslationContributorTest {
 			aggregationsJSONTranslationContributor =
 				createAggregationsJSONTranslationContributor();
 
-		Optional<JSONObject> translate =
+		Optional<JSONObject> optional =
 			aggregationsJSONTranslationContributor.translate(
 				new AvgAggregationResultImpl("foo", 42), null);
 
 		Assert.assertEquals(
-			"{\"name\":\"foo\",\"value\":42}", String.valueOf(translate.get()));
+			"{\"name\":\"foo\",\"value\":42}", String.valueOf(optional.get()));
 	}
 
 	protected AggregationsJSONTranslationContributor

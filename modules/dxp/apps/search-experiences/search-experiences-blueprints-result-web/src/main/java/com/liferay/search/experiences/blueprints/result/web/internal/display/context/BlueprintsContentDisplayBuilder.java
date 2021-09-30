@@ -59,7 +59,7 @@ public class BlueprintsContentDisplayBuilder {
 
 		blueprintsContentDisplayContext.setAssetRenderer(assetRenderer);
 
-		final boolean visible;
+		boolean visible;
 
 		if ((assetEntry != null) && (assetRenderer != null) &&
 			assetEntry.isVisible() &&

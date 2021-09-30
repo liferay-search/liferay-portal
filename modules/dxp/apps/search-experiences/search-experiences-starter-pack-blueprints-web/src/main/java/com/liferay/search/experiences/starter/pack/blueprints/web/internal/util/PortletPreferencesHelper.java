@@ -34,39 +34,39 @@ public class PortletPreferencesHelper {
 	}
 
 	public Optional<Boolean> getBoolean(String key) {
-		Optional<String> value = getValue(key);
+		Optional<String> optional = getValue(key);
 
-		return value.map(GetterUtil::getBoolean);
+		return optional.map(GetterUtil::getBoolean);
 	}
 
 	public boolean getBoolean(String key, boolean defaultValue) {
-		Optional<Boolean> value = getBoolean(key);
+		Optional<Boolean> optional = getBoolean(key);
 
-		return value.orElse(defaultValue);
+		return optional.orElse(defaultValue);
 	}
 
 	public Optional<Integer> getInteger(String key) {
-		Optional<String> value = getValue(key);
+		Optional<String> optional = getValue(key);
 
-		return value.map(GetterUtil::getInteger);
+		return optional.map(GetterUtil::getInteger);
 	}
 
 	public int getInteger(String key, int defaultValue) {
-		Optional<Integer> value = getInteger(key);
+		Optional<Integer> optional = getInteger(key);
 
-		return value.orElse(defaultValue);
+		return optional.orElse(defaultValue);
 	}
 
 	public long getLong(String key, long defaultValue) {
-		Optional<Long> value = getLongOptional(key);
+		Optional<Long> optional = getLongOptional(key);
 
-		return value.orElse(defaultValue);
+		return optional.orElse(defaultValue);
 	}
 
 	public Optional<Long> getLongOptional(String key) {
-		Optional<String> value = getValue(key);
+		Optional<String> optional = getValue(key);
 
-		return value.map(GetterUtil::getLong);
+		return optional.map(GetterUtil::getLong);
 	}
 
 	public Optional<String> getString(String key) {
@@ -74,9 +74,9 @@ public class PortletPreferencesHelper {
 	}
 
 	public String getString(String key, String defaultValue) {
-		Optional<String> value = getString(key);
+		Optional<String> optional = getString(key);
 
-		return value.orElse(defaultValue);
+		return optional.orElse(defaultValue);
 	}
 
 	protected Optional<String> getValue(String key) {
