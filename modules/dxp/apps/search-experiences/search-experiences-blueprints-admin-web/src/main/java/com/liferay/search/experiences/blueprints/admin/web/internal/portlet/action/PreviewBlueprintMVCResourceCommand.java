@@ -106,9 +106,10 @@ public class PreviewBlueprintMVCResourceCommand extends BaseMVCResourceCommand {
 	protected String getResponseJSONString(
 		ResourceRequest resourceRequest, ResourceResponse resourceResponse) {
 
+		String configuration = _request_getConfiguration(resourceRequest);
+
 		try {
-			Blueprint blueprint = new PreviewBlueprint(
-				BlueprintsAdminRequestUtil.getConfiguration(resourceRequest));
+			Blueprint blueprint = new PreviewBlueprint(configuration);
 
 			_blueprintValidator.validateConfiguration(
 				blueprint.getConfiguration());
@@ -131,6 +132,12 @@ public class PreviewBlueprintMVCResourceCommand extends BaseMVCResourceCommand {
 				searchResponse, blueprint, responseBlueprintsAttributes,
 				_getResourceBundle(resourceRequest),
 				problemsHolderBuilder::addExceptions, problemsHolderBuilder);
+
+			System.out.println(jsonString);
+
+			if (false) {
+				jsonString = _toDTOAndBackToJSONString(jsonString);
+			}
 
 			ProblemsHolder problemsHolder = problemsHolderBuilder.build();
 
@@ -172,9 +179,9 @@ public class PreviewBlueprintMVCResourceCommand extends BaseMVCResourceCommand {
 		}
 	}
 
-	private JSONObject _createJSONObject(String translate) {
+	private JSONObject _createJSONObject(String jsonString) {
 		try {
-			return _jsonFactory.createJSONObject(translate);
+			return _jsonFactory.createJSONObject(jsonString);
 		}
 		catch (JSONException jsonException) {
 			throw new RuntimeException(jsonException);
@@ -264,6 +271,16 @@ public class PreviewBlueprintMVCResourceCommand extends BaseMVCResourceCommand {
 		return ListUtil.fromArray(
 			"id", "score", "b_assetEntryId", "b_author", "b_created",
 			"b_modified", "b_summary", "b_title", "b_type");
+	}
+
+	private String _request_getConfiguration(ResourceRequest resourceRequest) {
+		return BlueprintsAdminRequestUtil.getConfiguration(resourceRequest);
+	}
+
+	private String _toDTOAndBackToJSONString(String jsonString) {
+		return String.valueOf(
+			com.liferay.search.experiences.rest.dto.v1_0.SearchResponse.toDTO(
+				jsonString));
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
