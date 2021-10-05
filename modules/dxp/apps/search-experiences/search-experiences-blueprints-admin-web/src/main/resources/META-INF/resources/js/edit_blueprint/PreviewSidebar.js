@@ -240,9 +240,9 @@ function PreviewSidebar({
 				_renderResultsManagementBar()}
 
 			{!loading ? (
-				results.errors && results.errors.length ? (
+				results.errors && !!results.errors.length ? (
 					_renderErrors()
-				) : results.hits && results.hits.length ? (
+				) : results.hits && !!results.hits.length ? (
 					_renderHits()
 				) : results.meta ? (
 					<div className="empty-list-message">

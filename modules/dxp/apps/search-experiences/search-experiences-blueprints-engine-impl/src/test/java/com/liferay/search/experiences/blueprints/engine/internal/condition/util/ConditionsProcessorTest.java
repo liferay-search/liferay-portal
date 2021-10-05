@@ -97,6 +97,7 @@ public class ConditionsProcessorTest {
 	@Test
 	public void testProcessConditionsWithAllOf() {
 		setUpJsonObjectLength();
+
 		Mockito.when(
 			_jsonObject.keySet()
 		).thenReturn(

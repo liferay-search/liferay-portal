@@ -208,6 +208,7 @@ public class ImportBlueprintMVCActionCommand extends BaseMVCActionCommand {
 			_log.error(
 				blueprintValidationException.getMessage(),
 				blueprintValidationException);
+
 			_logValidationMessages(blueprintValidationException.getProblems());
 
 			_blueprintExceptionRequestHandler.handlePortalException(
@@ -217,6 +218,7 @@ public class ImportBlueprintMVCActionCommand extends BaseMVCActionCommand {
 			_log.error(
 				elementValidationException.getMessage(),
 				elementValidationException);
+
 			_logValidationMessages(elementValidationException.getProblems());
 
 			_blueprintExceptionRequestHandler.handlePortalException(

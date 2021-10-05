@@ -119,6 +119,7 @@ public class ImportHelper {
 				_log.error(
 					url + ": " + blueprintValidationException.getMessage(),
 					blueprintValidationException);
+
 				_logValidationMessages(
 					blueprintValidationException.getProblems());
 			}
@@ -147,6 +148,7 @@ public class ImportHelper {
 				_log.error(
 					url + ": " + elementValidationException.getMessage(),
 					elementValidationException);
+
 				_logValidationMessages(
 					elementValidationException.getProblems());
 			}
