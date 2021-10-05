@@ -20,7 +20,10 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.upload.UploadPortletRequest;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.search.experiences.federation.ingestion.IngestorBuilderFactory;
@@ -30,6 +33,8 @@ import com.liferay.search.experiences.starter.pack.bulkloader.internal.constants
 import com.liferay.search.experiences.starter.pack.bulkloader.internal.util.GooglePlacesImporter;
 import com.liferay.search.experiences.starter.pack.bulkloader.internal.util.WikipediaImporter;
 
+import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -91,9 +96,17 @@ public class ImportMVCActionCommand extends BaseMVCActionCommand {
 			).ingest();
 		}
 		else {
+			UploadPortletRequest uploadPortletRequest =
+				_portal.getUploadPortletRequest(actionRequest);
+
+			String fileName = GetterUtil.getString(
+				uploadPortletRequest.getFileName("file"));
+
+			InputStream file = uploadPortletRequest.getFileAsStream("file");
+
 			_googlePlacesImporter.doImport(
 				actionRequest, actionResponse, userIds, groupIds, languageId,
-				importType);
+				fileName, file, importType);
 		}
 
 		ExportImportThreadLocal.setPortletImportInProcess(false);
@@ -125,6 +138,9 @@ public class ImportMVCActionCommand extends BaseMVCActionCommand {
 
 	@Reference
 	private IngestorBuilderFactory _ingestorBuilderFactory;
+
+	@Reference
+	private Portal _portal;
 
 	@Reference
 	private WikipediaImporter _wikipediaImporter;
