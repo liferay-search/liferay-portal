@@ -25,9 +25,21 @@ public class PlacesConstants {
 
 	public static final Map<String, String> fileNameToCityMap =
 		HashMapBuilder.put(
+			"budapest-ikea-stores.json", "IKEA Budapest"
+		).put(
+			"charlotte-ikea-stores.json", "IKEA Charlotte"
+		).put(
+			"chicago-ikea-stores.json", "IKEA Chicago"
+		).put(
+			"helsinki-ikea-stores.json", "IKEA Helsinki"
+		).put(
+			"la-ikea-stores.json", "IKEA Los Angeles"
+		).put(
 			"la-restaurant.json", "Los Angeles"
 		).put(
 			"la-tourist.json", "Los Angeles"
+		).put(
+			"mn-ikea-stores.json", "IKEA Minneapolis"
 		).put(
 			"nashville-restaurant.json", "Nashville"
 		).put(
