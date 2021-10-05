@@ -173,9 +173,17 @@ public class GooglePlacesImporter {
 	}
 
 	private String _getTitle(JsonObject jsonObject) {
-		JsonElement jsonElement = jsonObject.get("name");
+		StringBundler sb = new StringBundler(4);
 
-		return jsonElement.getAsString();
+		JsonElement nameJsonElement = jsonObject.get("name");
+		JsonElement vicinityJsonElement = jsonObject.get("vicinity");
+
+		sb.append(nameJsonElement.getAsString());
+		sb.append(" (");
+		sb.append(vicinityJsonElement.getAsString());
+		sb.append(")");
+
+		return sb.toString();	
 	}
 
 	private UnicodeProperties _getUnicodeProperties(
@@ -208,6 +216,12 @@ public class GooglePlacesImporter {
 		Set<String> fileNames = PlacesConstants.fileNameToCityMap.keySet();
 
 		for (String fileName : fileNames) {
+			if (importType.equals(ImportTypeKeys.IKEA_STORES) &&
+				!fileName.endsWith("-ikea-stores.json")) {
+
+				continue;
+			}
+
 			if (importType.equals(ImportTypeKeys.RESTAURANTS) &&
 				!fileName.endsWith("-restaurant.json")) {
 
@@ -262,7 +276,7 @@ public class GooglePlacesImporter {
 						_journalArticleHelper.addJournalArticle(
 							portletRequest, userId, groupId, languageId,
 							_getTitle(resultJsonObject),
-							_getContent(fileName, lat, lng),
+							_getContent(fileName,lat, lng),
 							_getAssetTagNames(resultJsonObject));
 
 					_addLocationAttribute(journalArticle, lat, lng);

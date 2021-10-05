@@ -1,0 +1,36 @@
+{
+	"html_attributions": [
+	],
+	"results": [
+		{
+			"geometry": {
+				"location": {
+					"lat": 44.858112,
+					"lng": -93.24344119999999
+				},
+				"viewport": {
+					"northeast": {
+						"lat": 44.85946182989272,
+						"lng": -93.24209137010727
+					},
+					"southwest": {
+						"lat": 44.85676217010727,
+						"lng": -93.24479102989271
+					}
+				}
+			},
+			"icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/geocode-71.png",
+			"icon_background_color": "#7B9EB0",
+			"icon_mask_base_uri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/generic_pinlet",
+			"name": "Ikea Way",
+			"place_id": "ChIJibV1dmkv9ocR3Lto2yMkis4",
+			"reference": "ChIJibV1dmkv9ocR3Lto2yMkis4",
+			"scope": "GOOGLE",
+			"types": [
+				"route"
+			],
+			"vicinity": "Bloomington"
+		}
+	],
+	"status": "OK"
+}

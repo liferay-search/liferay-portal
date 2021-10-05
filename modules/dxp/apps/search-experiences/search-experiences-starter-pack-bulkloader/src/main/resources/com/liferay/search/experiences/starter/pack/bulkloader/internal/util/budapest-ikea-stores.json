@@ -1,0 +1,327 @@
+{
+	"html_attributions": [
+	],
+	"results": [
+		{
+			"business_status": "OPERATIONAL",
+			"geometry": {
+				"location": {
+					"lat": 47.5055604,
+					"lng": 19.1382303
+				},
+				"viewport": {
+					"northeast": {
+						"lat": 47.50683992989273,
+						"lng": 19.14112105
+					},
+					"southwest": {
+						"lat": 47.50414027010729,
+						"lng": 19.13578525
+					}
+				}
+			},
+			"icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/shopping-71.png",
+			"icon_background_color": "#4B96F3",
+			"icon_mask_base_uri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/shopping_pinlet",
+			"name": "IKEA",
+			"opening_hours": {
+				"open_now": true
+			},
+			"photos": [
+				{
+					"height": 2976,
+					"html_attributions": [
+						"<a href=\"https://maps.google.com/maps/contrib/109651540117217668575\">Balázs Németh</a>"
+					],
+					"photo_reference": "Aap_uEACycY0vxkQPmpQlSMUuvbSK2YVc30KfxTYVeXexpH5KPy7YQJtj6AglGDGbY9EPHhcsbXKgnGLt3PZLZi4NlVZHiO5IXwhGysO2kdKfrfRcFOFIFCvLtCo0VMR-LjN6B88PTYwIspMo_0tWMHHfju4_FwqADwzFOCMqhXa-jgCJtdY",
+					"width": 3968
+				}
+			],
+			"place_id": "ChIJq2Kmsj3cQUcR7U00BehgF5A",
+			"plus_code": {
+				"compound_code": "G44Q+67 Budapest",
+				"global_code": "8FVXG44Q+67"
+			},
+			"rating": 4.5,
+			"reference": "ChIJq2Kmsj3cQUcR7U00BehgF5A",
+			"scope": "GOOGLE",
+			"types": [
+				"home_goods_store",
+				"cafe",
+				"furniture_store",
+				"restaurant",
+				"food",
+				"point_of_interest",
+				"store",
+				"establishment"
+			],
+			"user_ratings_total": 39865,
+			"vicinity": "Budapest, Örs vezér tere 22"
+		},
+		{
+			"business_status": "OPERATIONAL",
+			"geometry": {
+				"location": {
+					"lat": 47.4539871,
+					"lng": 18.940153
+				},
+				"viewport": {
+					"northeast": {
+						"lat": 47.45508642989272,
+						"lng": 18.94115722989272
+					},
+					"southwest": {
+						"lat": 47.45238677010727,
+						"lng": 18.93845757010727
+					}
+				}
+			},
+			"icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/shopping-71.png",
+			"icon_background_color": "#4B96F3",
+			"icon_mask_base_uri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/shopping_pinlet",
+			"name": "IKEA",
+			"opening_hours": {
+				"open_now": true
+			},
+			"photos": [
+				{
+					"height": 2336,
+					"html_attributions": [
+						"<a href=\"https://maps.google.com/maps/contrib/105134481326021526991\">Tamás Merő</a>"
+					],
+					"photo_reference": "Aap_uEAIZexbUUS7YsSCnY7SbXtEClJ7xQkMspcCZvcEdqgf-ttmyhg9Mtl_pjCnRXIAZSASHoEmIa5CWNwZIQv04MFIIhuG-bUsKoi7Khiqjk58BcQ2AAM8RjXFWepZ9sarxQes1QIomcl-RfVFhGepD3rR-Go7Q9K_gbMUW3bJOHbMIEW9",
+					"width": 4160
+				}
+			],
+			"place_id": "ChIJb8rIuYPgQUcRWbp6CGuXirE",
+			"plus_code": {
+				"compound_code": "FW3R+H3 Budaörs",
+				"global_code": "8FVWFW3R+H3"
+			},
+			"rating": 4.5,
+			"reference": "ChIJb8rIuYPgQUcRWbp6CGuXirE",
+			"scope": "GOOGLE",
+			"types": [
+				"furniture_store",
+				"cafe",
+				"home_goods_store",
+				"restaurant",
+				"food",
+				"point_of_interest",
+				"store",
+				"establishment"
+			],
+			"user_ratings_total": 26822,
+			"vicinity": "Budaörs, Sport u. 2-4"
+		},
+		{
+			"business_status": "OPERATIONAL",
+			"geometry": {
+				"location": {
+					"lat": 47.4118256,
+					"lng": 19.1611694
+				},
+				"viewport": {
+					"northeast": {
+						"lat": 47.41326107989273,
+						"lng": 19.16273737989272
+					},
+					"southwest": {
+						"lat": 47.41056142010728,
+						"lng": 19.16003772010728
+					}
+				}
+			},
+			"icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/shopping-71.png",
+			"icon_background_color": "#4B96F3",
+			"icon_mask_base_uri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/shopping_pinlet",
+			"name": "IKEA",
+			"opening_hours": {
+				"open_now": true
+			},
+			"photos": [
+				{
+					"height": 3648,
+					"html_attributions": [
+						"<a href=\"https://maps.google.com/maps/contrib/106981104369344664409\">Fenes Tamas</a>"
+					],
+					"photo_reference": "Aap_uEAkOerI9__stM33kbDfu4oq4T0PfPkvN3vCpWt6EoCjo4kudJyX1eLwjC-9ItKqlEzz3l05l2L14MITxw75pXia5AdyTNWelUHcfqTAqSzyozCJGIbmwVLDP7FK6oE1vnhxF7WL5SKYWoc0swXSqfrJxag5DInHqRSm2aAFgRi3z1A0",
+					"width": 5472
+				}
+			],
+			"place_id": "ChIJ26D9vdvpQUcRTCaqf0gmepA",
+			"plus_code": {
+				"compound_code": "C566+PF Budapest",
+				"global_code": "8FVXC566+PF"
+			},
+			"rating": 4.6,
+			"reference": "ChIJ26D9vdvpQUcRTCaqf0gmepA",
+			"scope": "GOOGLE",
+			"types": [
+				"furniture_store",
+				"department_store",
+				"home_goods_store",
+				"restaurant",
+				"food",
+				"point_of_interest",
+				"store",
+				"establishment"
+			],
+			"user_ratings_total": 21692,
+			"vicinity": "Budapest, Bevásárló u. 4"
+		},
+		{
+			"business_status": "OPERATIONAL",
+			"geometry": {
+				"location": {
+					"lat": 47.5036315,
+					"lng": 19.1503772
+				},
+				"viewport": {
+					"northeast": {
+						"lat": 47.50521797989273,
+						"lng": 19.15178912989272
+					},
+					"southwest": {
+						"lat": 47.50251832010728,
+						"lng": 19.14908947010728
+					}
+				}
+			},
+			"icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/shopping-71.png",
+			"icon_background_color": "#4B96F3",
+			"icon_mask_base_uri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/shopping_pinlet",
+			"name": "Ikea Árukiadó",
+			"opening_hours": {
+				"open_now": true
+			},
+			"photos": [
+				{
+					"height": 2988,
+					"html_attributions": [
+						"<a href=\"https://maps.google.com/maps/contrib/109055692486344287851\">Csaba Láng</a>"
+					],
+					"photo_reference": "Aap_uEBrujzvKV_2of9ezjSixcWWGHq-cD20g9OCYp6BTOi1E5mjsP25Q_3KJrkhMHTPQ47pxhe-rF9wBawRWuBCykFXh-MR9xSni6sBhdOjcybHirPfxDz_SDJe8WIR9FBu_VktTNKJFINyGMSeyTcOf6tr7HWoVQVlkWcY9r__shh57XNf",
+					"width": 3984
+				}
+			],
+			"place_id": "ChIJOahrJarEQUcRD7otIqlD_2k",
+			"plus_code": {
+				"compound_code": "G532+F5 Budapest",
+				"global_code": "8FVXG532+F5"
+			},
+			"rating": 4.3,
+			"reference": "ChIJOahrJarEQUcRD7otIqlD_2k",
+			"scope": "GOOGLE",
+			"types": [
+				"store",
+				"point_of_interest",
+				"establishment"
+			],
+			"user_ratings_total": 1170,
+			"vicinity": "Budapest, Kerepesi út 73"
+		},
+		{
+			"business_status": "OPERATIONAL",
+			"geometry": {
+				"location": {
+					"lat": 47.4116842,
+					"lng": 19.1589419
+				},
+				"viewport": {
+					"northeast": {
+						"lat": 47.41327247989272,
+						"lng": 19.16092987989272
+					},
+					"southwest": {
+						"lat": 47.41057282010728,
+						"lng": 19.15823022010728
+					}
+				}
+			},
+			"icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/generic_business-71.png",
+			"icon_background_color": "#7B9EB0",
+			"icon_mask_base_uri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/generic_pinlet",
+			"name": "IKEA Csomagpontok",
+			"opening_hours": {
+				"open_now": true
+			},
+			"photos": [
+				{
+					"height": 3000,
+					"html_attributions": [
+						"<a href=\"https://maps.google.com/maps/contrib/115427969702494693282\">Ádám Budai</a>"
+					],
+					"photo_reference": "Aap_uEAztrVqjY2GGWfk8TZFIkwqkMJ-LeJiiS4BenE386ThsnBB6kaTHSIoZFjSbFdY7fF2EMGjJ2q9EiPmmFkvQZzYAYHrcoq8mWdU_4iWEvWvLBsLAnd3Ye-2l3X4DSlS5H1p4MIX9XQvvULBJInexSo8KePQRUtMN6SxnQj4N689U0ey",
+					"width": 4000
+				}
+			],
+			"place_id": "ChIJy3qGiKHpQUcRAMzDc7AnOJ0",
+			"plus_code": {
+				"compound_code": "C565+MH Budapest",
+				"global_code": "8FVXC565+MH"
+			},
+			"rating": 2,
+			"reference": "ChIJy3qGiKHpQUcRAMzDc7AnOJ0",
+			"scope": "GOOGLE",
+			"types": [
+				"point_of_interest",
+				"establishment"
+			],
+			"user_ratings_total": 8,
+			"vicinity": "Budapest, Vecsés út 195836/32"
+		},
+		{
+			"business_status": "OPERATIONAL",
+			"geometry": {
+				"location": {
+					"lat": 47.4749981,
+					"lng": 18.8607647
+				},
+				"viewport": {
+					"northeast": {
+						"lat": 47.47624007989271,
+						"lng": 18.86228117989272
+					},
+					"southwest": {
+						"lat": 47.47354042010727,
+						"lng": 18.85958152010728
+					}
+				}
+			},
+			"icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/generic_business-71.png",
+			"icon_background_color": "#7B9EB0",
+			"icon_mask_base_uri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/generic_pinlet",
+			"name": "IKEA Budaörs Külső árukiadó",
+			"opening_hours": {
+				"open_now": true
+			},
+			"photos": [
+				{
+					"height": 3024,
+					"html_attributions": [
+						"<a href=\"https://maps.google.com/maps/contrib/117393787268957984597\">Kata Nagy</a>"
+					],
+					"photo_reference": "Aap_uEA2zkLw4Kh6ITao1kNCjKHt-yrmG9coYbWGQV4RVpMNgw48gMQ4oa4OJlW9vSB7xgc-vgMNr--bLK7wTR_MfAYVH4t6LXiDfJNKJcE_UA8H8EpqkQzJtbsCl_0vrIAzgTMZgi2cw__EnK_Rs5RbLac_YmEhwK9xkKEFcytL1fFUMiLc",
+					"width": 4032
+				}
+			],
+			"place_id": "ChIJ67UyM0p1akcR7cudjcGCDmA",
+			"plus_code": {
+				"compound_code": "FVF6+X8 Biatorbágy",
+				"global_code": "8FVWFVF6+X8"
+			},
+			"rating": 4.5,
+			"reference": "ChIJ67UyM0p1akcR7cudjcGCDmA",
+			"scope": "GOOGLE",
+			"types": [
+				"storage",
+				"point_of_interest",
+				"establishment"
+			],
+			"user_ratings_total": 1183,
+			"vicinity": "Biatorbágy, Huber u. 5"
+		}
+	],
+	"status": "OK"
+}

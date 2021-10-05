@@ -1,0 +1,219 @@
+{
+	"html_attributions": [
+	],
+	"results": [
+		{
+			"business_status": "OPERATIONAL",
+			"geometry": {
+				"location": {
+					"lat": 34.1748067,
+					"lng": -118.3035453
+				},
+				"viewport": {
+					"northeast": {
+						"lat": 34.17640754999999,
+						"lng": -118.30263165
+					},
+					"southwest": {
+						"lat": 34.17271735,
+						"lng": -118.30563145
+					}
+				}
+			},
+			"icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/shopping-71.png",
+			"icon_background_color": "#4B96F3",
+			"icon_mask_base_uri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/shopping_pinlet",
+			"name": "IKEA",
+			"opening_hours": {
+				"open_now": false
+			},
+			"photos": [
+				{
+					"height": 3024,
+					"html_attributions": [
+						"<a href=\"https://maps.google.com/maps/contrib/111015072589499873919\">Bolin Huang</a>"
+					],
+					"photo_reference": "Aap_uECCBQ903koUaAaCIWTeAfx_vawE9BfldMWHssFOyk4XuLOtx5IAPUGcJXn9fBJX7Oae21rJIDjmjfX06Qdvc9R53TE-gazK__VgHrnj6hKmAZAtT914SqXlaXbGkcm8gD272FPWW_4-eGi4pvmGcPRqoIrwgklkgwO1HPeroamn8lv0",
+					"width": 4032
+				}
+			],
+			"place_id": "ChIJ_wNxA0WVwoARapEc4xm_e9s",
+			"plus_code": {
+				"compound_code": "5MFW+WH Burbank, Kalifornia, Egyesült Államok",
+				"global_code": "85635MFW+WH"
+			},
+			"rating": 4.4,
+			"reference": "ChIJ_wNxA0WVwoARapEc4xm_e9s",
+			"scope": "GOOGLE",
+			"types": [
+				"furniture_store",
+				"home_goods_store",
+				"point_of_interest",
+				"store",
+				"establishment"
+			],
+			"user_ratings_total": 11806,
+			"vicinity": "600 S Ikea Way, Burbank"
+		},
+		{
+			"business_status": "OPERATIONAL",
+			"geometry": {
+				"location": {
+					"lat": 33.6910441,
+					"lng": -117.9162956
+				},
+				"viewport": {
+					"northeast": {
+						"lat": 33.69204212989273,
+						"lng": -117.9149635201073
+					},
+					"southwest": {
+						"lat": 33.68934247010728,
+						"lng": -117.9176631798927
+					}
+				}
+			},
+			"icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/shopping-71.png",
+			"icon_background_color": "#4B96F3",
+			"icon_mask_base_uri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/shopping_pinlet",
+			"name": "IKEA",
+			"opening_hours": {
+				"open_now": false
+			},
+			"photos": [
+				{
+					"height": 3024,
+					"html_attributions": [
+						"<a href=\"https://maps.google.com/maps/contrib/103696270664168358908\">Andrew S</a>"
+					],
+					"photo_reference": "Aap_uEA6sbgDTrGot8v_pjDGSvIDhFRCXE1wz0F7JfRunAp6WskVz9wjZxKo6SWcNA1elK9IV3cGLFncVyRTeEPxchzqFwjQ3Rn5yjhLYACl0U0xixyhEDCLY0iqP3yIlSDByjMQ9kdpgFuEJB_ACD3U1wGw53-scDALfFlaWjS3y4VRnrXa",
+					"width": 4032
+				}
+			],
+			"place_id": "ChIJfwsvdFHf3IARjIMt_lC40wA",
+			"plus_code": {
+				"compound_code": "M3RM+CF Costa Mesa, Kalifornia, Egyesült Államok",
+				"global_code": "8554M3RM+CF"
+			},
+			"rating": 4.4,
+			"reference": "ChIJfwsvdFHf3IARjIMt_lC40wA",
+			"scope": "GOOGLE",
+			"types": [
+				"furniture_store",
+				"home_goods_store",
+				"point_of_interest",
+				"store",
+				"establishment"
+			],
+			"user_ratings_total": 8057,
+			"vicinity": "1475 S Coast Dr, Costa Mesa"
+		},
+		{
+			"business_status": "OPERATIONAL",
+			"geometry": {
+				"location": {
+					"lat": 33.8419766,
+					"lng": -118.2597887
+				},
+				"viewport": {
+					"northeast": {
+						"lat": 33.84315227989272,
+						"lng": -118.2586247201072
+					},
+					"southwest": {
+						"lat": 33.84045262010728,
+						"lng": -118.2613243798927
+					}
+				}
+			},
+			"icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/shopping-71.png",
+			"icon_background_color": "#4B96F3",
+			"icon_mask_base_uri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/shopping_pinlet",
+			"name": "IKEA",
+			"opening_hours": {
+				"open_now": false
+			},
+			"photos": [
+				{
+					"height": 3024,
+					"html_attributions": [
+						"<a href=\"https://maps.google.com/maps/contrib/110807580678235973145\">Daniel kim</a>"
+					],
+					"photo_reference": "Aap_uEDU07kyD0AFxIM-LJArIUk_HloAT_3TRkllyImhQA6d4L-JgKc4nFCI6x_vrXsL7EsMcEornc_M4BhDNPe_9uJb3rJrVp2mt4yI-59TATDLbV5HnYVwKPrPEiRQyRuNN_1YI2hzrqLBPpvNh8SCrKIztcGt_-aci6p4mAhcF48ai6S0",
+					"width": 4032
+				}
+			],
+			"place_id": "ChIJB1MrviM13YARBN4V9jdKFI0",
+			"plus_code": {
+				"compound_code": "RPRR+Q3 Carson, Kalifornia, Egyesült Államok",
+				"global_code": "8553RPRR+Q3"
+			},
+			"rating": 4.3,
+			"reference": "ChIJB1MrviM13YARBN4V9jdKFI0",
+			"scope": "GOOGLE",
+			"types": [
+				"furniture_store",
+				"home_goods_store",
+				"point_of_interest",
+				"store",
+				"establishment"
+			],
+			"user_ratings_total": 5473,
+			"vicinity": "20700 S Avalon Blvd, Carson"
+		},
+		{
+			"business_status": "OPERATIONAL",
+			"geometry": {
+				"location": {
+					"lat": 34.0741958,
+					"lng": -117.8786773
+				},
+				"viewport": {
+					"northeast": {
+						"lat": 34.0757249,
+						"lng": -117.8774717
+					},
+					"southwest": {
+						"lat": 34.07286449999999,
+						"lng": -117.8822941
+					}
+				}
+			},
+			"icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/shopping-71.png",
+			"icon_background_color": "#4B96F3",
+			"icon_mask_base_uri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/shopping_pinlet",
+			"name": "IKEA",
+			"opening_hours": {
+				"open_now": false
+			},
+			"photos": [
+				{
+					"height": 3036,
+					"html_attributions": [
+						"<a href=\"https://maps.google.com/maps/contrib/117152606010353254311\">Bun Ben Ko</a>"
+					],
+					"photo_reference": "Aap_uEAGsrBjczWfcWpBCh0vsAI68miz8g3tKYPeENP1s8VfjmjTUXHcwQCs6DxoVWOenRCroA-SAp7fnz866s7kFEqyl34KyPXi1zMUXkbo-cX7mN506pd6nYQJ7sq-CxM7EzILkDA0vzc5k-B9ku2ZSlGySZ0oM9Ga-37c0Gv06PAQY7dI",
+					"width": 4048
+				}
+			],
+			"place_id": "ChIJlVXX7Kopw4ARlYoBCd8UmzA",
+			"plus_code": {
+				"compound_code": "34FC+MG Covina, Kalifornia, Egyesült Államok",
+				"global_code": "856434FC+MG"
+			},
+			"rating": 4.4,
+			"reference": "ChIJlVXX7Kopw4ARlYoBCd8UmzA",
+			"scope": "GOOGLE",
+			"types": [
+				"furniture_store",
+				"home_goods_store",
+				"point_of_interest",
+				"store",
+				"establishment"
+			],
+			"user_ratings_total": 8170,
+			"vicinity": "848 S Barranca Ave, Covina"
+		}
+	],
+	"status": "OK"
+}

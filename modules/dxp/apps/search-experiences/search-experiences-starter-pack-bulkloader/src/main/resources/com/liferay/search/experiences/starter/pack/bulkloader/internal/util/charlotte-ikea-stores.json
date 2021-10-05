@@ -1,0 +1,33 @@
+{
+   "html_attributions" : [],
+   "results" : [
+      {
+         "geometry" : {
+            "location" : {
+               "lat" : 35.2957577,
+               "lng" : -80.7618995
+            },
+            "viewport" : {
+               "northeast" : {
+                  "lat" : 35.29710752989271,
+                  "lng" : -80.76054967010727
+               },
+               "southwest" : {
+                  "lat" : 35.29440787010727,
+                  "lng" : -80.76324932989272
+               }
+            }
+         },
+         "icon" : "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/geocode-71.png",
+         "icon_background_color" : "#7B9EB0",
+         "icon_mask_base_uri" : "https://maps.gstatic.com/mapfiles/place_api/icons/v2/generic_pinlet",
+         "name" : "Ikea Blvd",
+         "place_id" : "ChIJP9xPEIceVIgRQSOq67FGiLE",
+         "reference" : "ChIJP9xPEIceVIgRQSOq67FGiLE",
+         "scope" : "GOOGLE",
+         "types" : [ "route" ],
+         "vicinity" : "Charlotte"
+      }
+   ],
+   "status" : "OK"
+}
