@@ -23,6 +23,8 @@ public class ImportTypeKeys {
 
 	public static final String FEDERATED_CONTENT = "federated_content";
 
+	public static final String FILE = "file";
+
 	public static final String IKEA_STORES = "ikea_stores";
 
 	public static final String RESTAURANTS = "restaurants";

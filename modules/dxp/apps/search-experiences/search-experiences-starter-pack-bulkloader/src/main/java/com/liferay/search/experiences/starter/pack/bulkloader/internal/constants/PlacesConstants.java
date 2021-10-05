@@ -48,6 +48,8 @@ public class PlacesConstants {
 			"ny-restaurant.json", "New York"
 		).put(
 			"ny-tourist.json", "New York"
+		).put(
+			"upload-file.json", "Upload File"
 		).build();
 
 }

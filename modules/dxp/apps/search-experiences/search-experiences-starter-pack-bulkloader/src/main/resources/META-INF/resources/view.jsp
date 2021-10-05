@@ -25,16 +25,19 @@ String type = ParamUtil.getString(request, "type");
 <div class="container-md">
 	<h1><liferay-ui:message key="bulk-loader-title" /></h1>
 
-	<aui:form action="<%= importActionURL %>" name="importform">
+	<aui:form action="<%= importActionURL %>" enctype="multipart/form-data" method="post" name="importform">
 		<aui:fieldset>
 			<aui:select label="select-data-type" name="type">
 				<aui:option label="all-places-data" value="<%= ImportTypeKeys.ALL_PLACES_DATA %>" />
 				<aui:option label="federated-content" value="<%= ImportTypeKeys.FEDERATED_CONTENT %>" />
+				<aui:option label="file-upload" value="<%= ImportTypeKeys.FILE %>" />
 				<aui:option label="ikea-stores" value="<%= ImportTypeKeys.IKEA_STORES %>" />
 				<aui:option label="restaurants" value="<%= ImportTypeKeys.RESTAURANTS %>" />
 				<aui:option label="tourist-attractions" value="<%= ImportTypeKeys.TOURIST_ATTRACTIONS %>" />
 				<aui:option label="wikipedia-articles" value="<%= ImportTypeKeys.WIKIPEDIA_ARTICLES %>" />
 			</aui:select>
+
+			<aui:input cssClass="file-input" label="file-upload" name="file" type="file" />
 
 			<div class="<%= type.equals(ImportTypeKeys.WIKIPEDIA_ARTICLES) ? "" : "hide" %>" id="<portlet:namespace />wikifields">
 				<aui:input label="wiki-language" name="wikiLanguage" value="en" />

@@ -32,6 +32,7 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.search.experiences.starter.pack.bulkloader.internal.constants.ImportTypeKeys;
 import com.liferay.search.experiences.starter.pack.bulkloader.internal.constants.PlacesConstants;
@@ -58,7 +59,7 @@ public class GooglePlacesImporter {
 	public void doImport(
 			PortletRequest portletRequest, PortletResponse portletResponse,
 			List<Long> userIds, List<Long> groupIds, String languageId,
-			String importType)
+			String fileName, InputStream file, String importType)
 		throws Exception {
 
 		try {
@@ -71,7 +72,8 @@ public class GooglePlacesImporter {
 		}
 
 		_importArticles(
-			portletRequest, userIds, groupIds, languageId, importType);
+			portletRequest, userIds, groupIds, languageId, fileName, file,
+			importType);
 	}
 
 	private void _addLocationAttribute(
@@ -204,7 +206,8 @@ public class GooglePlacesImporter {
 
 	private void _importArticles(
 			PortletRequest portletRequest, List<Long> userIds,
-			List<Long> groupIds, String languageId, String importType)
+			List<Long> groupIds, String languageId, String uploadFileName,
+			InputStream uploadInputStream, String importType)
 		throws Exception {
 
 		JsonParser parser = new JsonParser();
@@ -234,12 +237,27 @@ public class GooglePlacesImporter {
 				continue;
 			}
 
-			if (_log.isInfoEnabled()) {
-				_log.info("Importing " + fileName);
+			if (importType.equals(ImportTypeKeys.FILE) &&
+				 Validator.isNull(uploadInputStream)) {
+
+				continue;
 			}
 
-			try (InputStream inputStream = getClass().getResourceAsStream(
-					fileName)) {
+			InputStream inputStream = null;
+
+			try {
+				if (importType.equals(ImportTypeKeys.FILE)) {
+					inputStream = uploadInputStream;
+					fileName = uploadFileName;
+				}
+				else {
+					inputStream = getClass().getResourceAsStream(
+					fileName);
+				}
+
+				if (_log.isInfoEnabled()) {
+					_log.info("Importing " + fileName);
+				}
 
 				JsonElement rootJsonElement = parser.parse(
 					new InputStreamReader(inputStream));
@@ -276,7 +294,7 @@ public class GooglePlacesImporter {
 						_journalArticleHelper.addJournalArticle(
 							portletRequest, userId, groupId, languageId,
 							_getTitle(resultJsonObject),
-							_getContent(fileName,lat, lng),
+							_getContent(fileName, lat, lng),
 							_getAssetTagNames(resultJsonObject));
 
 					_addLocationAttribute(journalArticle, lat, lng);
@@ -284,6 +302,17 @@ public class GooglePlacesImporter {
 			}
 			catch (Exception exception) {
 				_log.error(exception.getMessage(), exception);
+			}
+			finally {
+				if (Validator.isNotNull(inputStream)) {
+					inputStream.close();
+				}
+
+				if (Validator.isNotNull(uploadInputStream)) {
+					uploadInputStream.close();
+
+					break;
+				}
 			}
 		}
 	}
