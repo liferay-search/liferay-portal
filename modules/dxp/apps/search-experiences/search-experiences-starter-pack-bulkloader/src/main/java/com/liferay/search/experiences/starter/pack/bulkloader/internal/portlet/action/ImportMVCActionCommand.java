@@ -31,6 +31,7 @@ import com.liferay.search.experiences.starter.pack.bulkloader.internal.constants
 import com.liferay.search.experiences.starter.pack.bulkloader.internal.constants.ImportTypeKeys;
 import com.liferay.search.experiences.starter.pack.bulkloader.internal.constants.MVCActionCommandNames;
 import com.liferay.search.experiences.starter.pack.bulkloader.internal.util.GooglePlacesImporter;
+import com.liferay.search.experiences.starter.pack.bulkloader.internal.util.NPSNationalParksImporter;
 import com.liferay.search.experiences.starter.pack.bulkloader.internal.util.WikipediaImporter;
 
 import java.io.File;
@@ -95,6 +96,11 @@ public class ImportMVCActionCommand extends BaseMVCActionCommand {
 			).build(
 			).ingest();
 		}
+		else if (importType.equals(ImportTypeKeys.NPS_NATIONAL_PARKS)) {
+			_npsNationalParksImporter.doImport(
+				actionRequest, actionResponse, userIds, groupIds, languageId,
+				languageId, null, importType);
+		}
 		else {
 			UploadPortletRequest uploadPortletRequest =
 				_portal.getUploadPortletRequest(actionRequest);
@@ -138,6 +144,9 @@ public class ImportMVCActionCommand extends BaseMVCActionCommand {
 
 	@Reference
 	private IngestorBuilderFactory _ingestorBuilderFactory;
+
+	@Reference
+	private NPSNationalParksImporter _npsNationalParksImporter;
 
 	@Reference
 	private Portal _portal;

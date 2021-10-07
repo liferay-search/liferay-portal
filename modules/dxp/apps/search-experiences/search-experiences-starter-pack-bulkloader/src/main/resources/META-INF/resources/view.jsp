@@ -32,6 +32,7 @@ String type = ParamUtil.getString(request, "type");
 				<aui:option label="federated-content" value="<%= ImportTypeKeys.FEDERATED_CONTENT %>" />
 				<aui:option label="file-upload" value="<%= ImportTypeKeys.FILE %>" />
 				<aui:option label="ikea-stores" value="<%= ImportTypeKeys.IKEA_STORES %>" />
+				<aui:option label="nps-national-parks" value="<%= ImportTypeKeys.NPS_NATIONAL_PARKS %>" />
 				<aui:option label="restaurants" value="<%= ImportTypeKeys.RESTAURANTS %>" />
 				<aui:option label="tourist-attractions" value="<%= ImportTypeKeys.TOURIST_ATTRACTIONS %>" />
 				<aui:option label="wikipedia-articles" value="<%= ImportTypeKeys.WIKIPEDIA_ARTICLES %>" />

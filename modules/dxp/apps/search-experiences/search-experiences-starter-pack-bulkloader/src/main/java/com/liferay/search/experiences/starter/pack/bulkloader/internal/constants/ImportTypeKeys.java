@@ -27,6 +27,8 @@ public class ImportTypeKeys {
 
 	public static final String IKEA_STORES = "ikea_stores";
 
+	public static final String NPS_NATIONAL_PARKS = "nps_national_parks";
+
 	public static final String RESTAURANTS = "restaurants";
 
 	public static final String TOURIST_ATTRACTIONS = "tourist_attractions";
