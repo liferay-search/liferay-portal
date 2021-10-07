@@ -1,6 +1,6 @@
 buildService {
 	apiDir = "../search-experiences-blueprints-api/src/main/java"
-	testDir = "../search-experiences-blueprints-test/src/testIntegration/java"
+//	testDir = "../search-experiences-blueprints-test/src/testIntegration/java"
 }
 
 dependencies {
@@ -35,7 +35,7 @@ dependencies {
 	compileOnly project(":dxp:apps:search-experiences:search-experiences-blueprints-api")
 	compileOnly project(":dxp:apps:search-experiences:search-experiences-problems-api")
 
-	testCompile project(":dxp:apps:search-experiences:search-experiences-problems-impl")
-
-	testCompileOnly project(":core:registry-api")
+//	testCompile project(":dxp:apps:search-experiences:search-experiences-problems-impl")
+//
+//	testCompileOnly project(":core:registry-api")
 }
