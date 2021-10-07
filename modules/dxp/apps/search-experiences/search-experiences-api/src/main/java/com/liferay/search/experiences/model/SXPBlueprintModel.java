@@ -17,6 +17,7 @@ package com.liferay.search.experiences.model;
 import com.liferay.portal.kernel.bean.AutoEscape;
 import com.liferay.portal.kernel.exception.LocaleException;
 import com.liferay.portal.kernel.model.BaseModel;
+import com.liferay.portal.kernel.model.GroupedModel;
 import com.liferay.portal.kernel.model.LocalizedModel;
 import com.liferay.portal.kernel.model.MVCCModel;
 import com.liferay.portal.kernel.model.ShardedModel;
@@ -42,8 +43,8 @@ import org.osgi.annotation.versioning.ProviderType;
  */
 @ProviderType
 public interface SXPBlueprintModel
-	extends BaseModel<SXPBlueprint>, LocalizedModel, MVCCModel, ShardedModel,
-			StagedAuditedModel, WorkflowedModel {
+	extends BaseModel<SXPBlueprint>, GroupedModel, LocalizedModel, MVCCModel,
+			ShardedModel, StagedAuditedModel, WorkflowedModel {
 
 	/*
 	 * NOTE FOR DEVELOPERS:
@@ -111,6 +112,22 @@ public interface SXPBlueprintModel
 	 * @param sxpBlueprintId the sxp blueprint ID of this sxp blueprint
 	 */
 	public void setSXPBlueprintId(long sxpBlueprintId);
+
+	/**
+	 * Returns the group ID of this sxp blueprint.
+	 *
+	 * @return the group ID of this sxp blueprint
+	 */
+	@Override
+	public long getGroupId();
+
+	/**
+	 * Sets the group ID of this sxp blueprint.
+	 *
+	 * @param groupId the group ID of this sxp blueprint
+	 */
+	@Override
+	public void setGroupId(long groupId);
 
 	/**
 	 * Returns the company ID of this sxp blueprint.
@@ -210,19 +227,19 @@ public interface SXPBlueprintModel
 	public void setModifiedDate(Date modifiedDate);
 
 	/**
-	 * Returns the configuration json of this sxp blueprint.
+	 * Returns the configurations json of this sxp blueprint.
 	 *
-	 * @return the configuration json of this sxp blueprint
+	 * @return the configurations json of this sxp blueprint
 	 */
 	@AutoEscape
-	public String getConfigurationJSON();
+	public String getConfigurationsJSON();
 
 	/**
-	 * Sets the configuration json of this sxp blueprint.
+	 * Sets the configurations json of this sxp blueprint.
 	 *
-	 * @param configurationJSON the configuration json of this sxp blueprint
+	 * @param configurationsJSON the configurations json of this sxp blueprint
 	 */
-	public void setConfigurationJSON(String configurationJSON);
+	public void setConfigurationsJSON(String configurationsJSON);
 
 	/**
 	 * Returns the description of this sxp blueprint.

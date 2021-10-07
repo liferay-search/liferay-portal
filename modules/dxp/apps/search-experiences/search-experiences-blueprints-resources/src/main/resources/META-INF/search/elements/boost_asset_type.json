@@ -1,0 +1,66 @@
+{
+	"element-payload": {
+		"configuration": {
+			"elementTemplateJSON": {
+				"category": "boost",
+				"clauses": [
+					{
+						"context": "query",
+						"occur": "should",
+						"query": {
+							"wrapper": {
+								"query": {
+									"term": {
+										"entryClassName": {
+											"boost": "${configuration.boost}",
+											"value": "${configuration.entry_class_name}"
+										}
+									}
+								}
+							}
+						}
+					}
+				],
+				"conditions": {
+				},
+				"description": {
+					"en_US": "Boost the given asset type over others"
+				},
+				"enabled": true,
+				"icon": "thumbs-up",
+				"title": {
+					"en_US": "Boost Asset Type"
+				}
+			},
+			"uiConfigurationJSON": {
+				"fieldSets": [
+					{
+						"fields": [
+							{
+								"label": "Asset Type",
+								"name": "entry_class_name",
+								"type": "searchableType"
+							},
+							{
+								"defaultValue": 10,
+								"label": "Boost",
+								"name": "boost",
+								"type": "number",
+								"typeOptions": {
+									"min": 0
+								}
+							}
+						]
+					}
+				]
+			}
+		},
+		"description": {
+			"en_US": "Boost the given asset type over others"
+		},
+		"title": {
+			"en_US": "Boost Asset Type"
+		}
+	},
+	"type": 10
+}

@@ -1,0 +1,4 @@
+Bundle-Name: Liferay Search Experiences Predict Misspellings Web
+Bundle-SymbolicName: com.liferay.search.experiences.predict.misspellings.web
+Bundle-Version: 1.0.0
+Web-ContextPath: /search-experiences-predict-misspellings-web

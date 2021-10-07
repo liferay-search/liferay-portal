@@ -77,7 +77,7 @@ public class SXPBlueprintCacheModel
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(33);
+		StringBundler sb = new StringBundler(35);
 
 		sb.append("{mvccVersion=");
 		sb.append(mvccVersion);
@@ -85,6 +85,8 @@ public class SXPBlueprintCacheModel
 		sb.append(uuid);
 		sb.append(", sxpBlueprintId=");
 		sb.append(sxpBlueprintId);
+		sb.append(", groupId=");
+		sb.append(groupId);
 		sb.append(", companyId=");
 		sb.append(companyId);
 		sb.append(", userId=");
@@ -95,8 +97,8 @@ public class SXPBlueprintCacheModel
 		sb.append(createDate);
 		sb.append(", modifiedDate=");
 		sb.append(modifiedDate);
-		sb.append(", configurationJSON=");
-		sb.append(configurationJSON);
+		sb.append(", configurationsJSON=");
+		sb.append(configurationsJSON);
 		sb.append(", description=");
 		sb.append(description);
 		sb.append(", elementInstancesJSON=");
@@ -130,6 +132,7 @@ public class SXPBlueprintCacheModel
 		}
 
 		sxpBlueprintImpl.setSXPBlueprintId(sxpBlueprintId);
+		sxpBlueprintImpl.setGroupId(groupId);
 		sxpBlueprintImpl.setCompanyId(companyId);
 		sxpBlueprintImpl.setUserId(userId);
 
@@ -154,11 +157,11 @@ public class SXPBlueprintCacheModel
 			sxpBlueprintImpl.setModifiedDate(new Date(modifiedDate));
 		}
 
-		if (configurationJSON == null) {
-			sxpBlueprintImpl.setConfigurationJSON("");
+		if (configurationsJSON == null) {
+			sxpBlueprintImpl.setConfigurationsJSON("");
 		}
 		else {
-			sxpBlueprintImpl.setConfigurationJSON(configurationJSON);
+			sxpBlueprintImpl.setConfigurationsJSON(configurationsJSON);
 		}
 
 		if (description == null) {
@@ -213,13 +216,15 @@ public class SXPBlueprintCacheModel
 
 		sxpBlueprintId = objectInput.readLong();
 
+		groupId = objectInput.readLong();
+
 		companyId = objectInput.readLong();
 
 		userId = objectInput.readLong();
 		userName = objectInput.readUTF();
 		createDate = objectInput.readLong();
 		modifiedDate = objectInput.readLong();
-		configurationJSON = (String)objectInput.readObject();
+		configurationsJSON = (String)objectInput.readObject();
 		description = objectInput.readUTF();
 		elementInstancesJSON = (String)objectInput.readObject();
 		title = objectInput.readUTF();
@@ -244,6 +249,8 @@ public class SXPBlueprintCacheModel
 
 		objectOutput.writeLong(sxpBlueprintId);
 
+		objectOutput.writeLong(groupId);
+
 		objectOutput.writeLong(companyId);
 
 		objectOutput.writeLong(userId);
@@ -258,11 +265,11 @@ public class SXPBlueprintCacheModel
 		objectOutput.writeLong(createDate);
 		objectOutput.writeLong(modifiedDate);
 
-		if (configurationJSON == null) {
+		if (configurationsJSON == null) {
 			objectOutput.writeObject("");
 		}
 		else {
-			objectOutput.writeObject(configurationJSON);
+			objectOutput.writeObject(configurationsJSON);
 		}
 
 		if (description == null) {
@@ -303,12 +310,13 @@ public class SXPBlueprintCacheModel
 	public long mvccVersion;
 	public String uuid;
 	public long sxpBlueprintId;
+	public long groupId;
 	public long companyId;
 	public long userId;
 	public String userName;
 	public long createDate;
 	public long modifiedDate;
-	public String configurationJSON;
+	public String configurationsJSON;
 	public String description;
 	public String elementInstancesJSON;
 	public String title;

@@ -46,15 +46,16 @@ public class SXPElementLocalServiceUtil {
 	 * Never modify this class directly. Add custom service methods to <code>com.liferay.search.experiences.service.impl.SXPElementLocalServiceImpl</code> and rerun ServiceBuilder to regenerate this class.
 	 */
 	public static SXPElement addSXPElement(
-			long userId, Map<java.util.Locale, String> descriptionMap,
+			long userId, long groupId,
+			Map<java.util.Locale, String> descriptionMap,
 			String elementDefinitionJSON, boolean readOnly,
 			Map<java.util.Locale, String> titleMap, int type,
 			com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws PortalException {
 
 		return getService().addSXPElement(
-			userId, descriptionMap, elementDefinitionJSON, readOnly, titleMap,
-			type, serviceContext);
+			userId, groupId, descriptionMap, elementDefinitionJSON, readOnly,
+			titleMap, type, serviceContext);
 	}
 
 	/**
@@ -225,16 +226,16 @@ public class SXPElementLocalServiceUtil {
 	}
 
 	/**
-	 * Returns the sxp element with the matching UUID and company.
+	 * Returns the sxp element matching the UUID and group.
 	 *
 	 * @param uuid the sxp element's UUID
-	 * @param companyId the primary key of the company
+	 * @param groupId the primary key of the group
 	 * @return the matching sxp element, or <code>null</code> if a matching sxp element could not be found
 	 */
-	public static SXPElement fetchSXPElementByUuidAndCompanyId(
-		String uuid, long companyId) {
+	public static SXPElement fetchSXPElementByUuidAndGroupId(
+		String uuid, long groupId) {
 
-		return getService().fetchSXPElementByUuidAndCompanyId(uuid, companyId);
+		return getService().fetchSXPElementByUuidAndGroupId(uuid, groupId);
 	}
 
 	public static com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery
@@ -290,18 +291,18 @@ public class SXPElementLocalServiceUtil {
 	}
 
 	/**
-	 * Returns the sxp element with the matching UUID and company.
+	 * Returns the sxp element matching the UUID and group.
 	 *
 	 * @param uuid the sxp element's UUID
-	 * @param companyId the primary key of the company
+	 * @param groupId the primary key of the group
 	 * @return the matching sxp element
 	 * @throws PortalException if a matching sxp element could not be found
 	 */
-	public static SXPElement getSXPElementByUuidAndCompanyId(
-			String uuid, long companyId)
+	public static SXPElement getSXPElementByUuidAndGroupId(
+			String uuid, long groupId)
 		throws PortalException {
 
-		return getService().getSXPElementByUuidAndCompanyId(uuid, companyId);
+		return getService().getSXPElementByUuidAndGroupId(uuid, groupId);
 	}
 
 	/**
@@ -317,6 +318,37 @@ public class SXPElementLocalServiceUtil {
 	 */
 	public static List<SXPElement> getSXPElements(int start, int end) {
 		return getService().getSXPElements(start, end);
+	}
+
+	/**
+	 * Returns all the sxp elements matching the UUID and company.
+	 *
+	 * @param uuid the UUID of the sxp elements
+	 * @param companyId the primary key of the company
+	 * @return the matching sxp elements, or an empty list if no matches were found
+	 */
+	public static List<SXPElement> getSXPElementsByUuidAndCompanyId(
+		String uuid, long companyId) {
+
+		return getService().getSXPElementsByUuidAndCompanyId(uuid, companyId);
+	}
+
+	/**
+	 * Returns a range of sxp elements matching the UUID and company.
+	 *
+	 * @param uuid the UUID of the sxp elements
+	 * @param companyId the primary key of the company
+	 * @param start the lower bound of the range of sxp elements
+	 * @param end the upper bound of the range of sxp elements (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the range of matching sxp elements, or an empty list if no matches were found
+	 */
+	public static List<SXPElement> getSXPElementsByUuidAndCompanyId(
+		String uuid, long companyId, int start, int end,
+		OrderByComparator<SXPElement> orderByComparator) {
+
+		return getService().getSXPElementsByUuidAndCompanyId(
+			uuid, companyId, start, end, orderByComparator);
 	}
 
 	/**

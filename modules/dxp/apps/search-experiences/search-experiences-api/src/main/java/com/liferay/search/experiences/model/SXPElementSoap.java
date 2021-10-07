@@ -36,6 +36,7 @@ public class SXPElementSoap implements Serializable {
 		soapModel.setMvccVersion(model.getMvccVersion());
 		soapModel.setUuid(model.getUuid());
 		soapModel.setSXPElementId(model.getSXPElementId());
+		soapModel.setGroupId(model.getGroupId());
 		soapModel.setCompanyId(model.getCompanyId());
 		soapModel.setUserId(model.getUserId());
 		soapModel.setUserName(model.getUserName());
@@ -123,6 +124,14 @@ public class SXPElementSoap implements Serializable {
 
 	public void setSXPElementId(long sxpElementId) {
 		_sxpElementId = sxpElementId;
+	}
+
+	public long getGroupId() {
+		return _groupId;
+	}
+
+	public void setGroupId(long groupId) {
+		_groupId = groupId;
 	}
 
 	public long getCompanyId() {
@@ -232,6 +241,7 @@ public class SXPElementSoap implements Serializable {
 	private long _mvccVersion;
 	private String _uuid;
 	private long _sxpElementId;
+	private long _groupId;
 	private long _companyId;
 	private long _userId;
 	private String _userName;

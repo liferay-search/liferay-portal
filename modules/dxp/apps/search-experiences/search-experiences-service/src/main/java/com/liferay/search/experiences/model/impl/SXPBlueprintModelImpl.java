@@ -86,13 +86,14 @@ public class SXPBlueprintModelImpl
 
 	public static final Object[][] TABLE_COLUMNS = {
 		{"mvccVersion", Types.BIGINT}, {"uuid_", Types.VARCHAR},
-		{"sxpBlueprintId", Types.BIGINT}, {"companyId", Types.BIGINT},
-		{"userId", Types.BIGINT}, {"userName", Types.VARCHAR},
-		{"createDate", Types.TIMESTAMP}, {"modifiedDate", Types.TIMESTAMP},
-		{"configurationJSON", Types.CLOB}, {"description", Types.VARCHAR},
-		{"elementInstancesJSON", Types.CLOB}, {"title", Types.VARCHAR},
-		{"status", Types.INTEGER}, {"statusByUserId", Types.BIGINT},
-		{"statusByUserName", Types.VARCHAR}, {"statusDate", Types.TIMESTAMP}
+		{"sxpBlueprintId", Types.BIGINT}, {"groupId", Types.BIGINT},
+		{"companyId", Types.BIGINT}, {"userId", Types.BIGINT},
+		{"userName", Types.VARCHAR}, {"createDate", Types.TIMESTAMP},
+		{"modifiedDate", Types.TIMESTAMP}, {"configurationsJSON", Types.CLOB},
+		{"description", Types.VARCHAR}, {"elementInstancesJSON", Types.CLOB},
+		{"title", Types.VARCHAR}, {"status", Types.INTEGER},
+		{"statusByUserId", Types.BIGINT}, {"statusByUserName", Types.VARCHAR},
+		{"statusDate", Types.TIMESTAMP}
 	};
 
 	public static final Map<String, Integer> TABLE_COLUMNS_MAP =
@@ -102,12 +103,13 @@ public class SXPBlueprintModelImpl
 		TABLE_COLUMNS_MAP.put("mvccVersion", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("uuid_", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("sxpBlueprintId", Types.BIGINT);
+		TABLE_COLUMNS_MAP.put("groupId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("companyId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("userId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("userName", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("createDate", Types.TIMESTAMP);
 		TABLE_COLUMNS_MAP.put("modifiedDate", Types.TIMESTAMP);
-		TABLE_COLUMNS_MAP.put("configurationJSON", Types.CLOB);
+		TABLE_COLUMNS_MAP.put("configurationsJSON", Types.CLOB);
 		TABLE_COLUMNS_MAP.put("description", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("elementInstancesJSON", Types.CLOB);
 		TABLE_COLUMNS_MAP.put("title", Types.VARCHAR);
@@ -118,7 +120,7 @@ public class SXPBlueprintModelImpl
 	}
 
 	public static final String TABLE_SQL_CREATE =
-		"create table SXPBlueprint (mvccVersion LONG default 0 not null,uuid_ VARCHAR(75) null,sxpBlueprintId LONG not null primary key,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,configurationJSON TEXT null,description STRING null,elementInstancesJSON TEXT null,title STRING null,status INTEGER,statusByUserId LONG,statusByUserName VARCHAR(75) null,statusDate DATE null)";
+		"create table SXPBlueprint (mvccVersion LONG default 0 not null,uuid_ VARCHAR(75) null,sxpBlueprintId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,configurationsJSON TEXT null,description STRING null,elementInstancesJSON TEXT null,title STRING null,status INTEGER,statusByUserId LONG,statusByUserName VARCHAR(75) null,statusDate DATE null)";
 
 	public static final String TABLE_SQL_DROP = "drop table SXPBlueprint";
 
@@ -144,14 +146,20 @@ public class SXPBlueprintModelImpl
 	 * @deprecated As of Athanasius (7.3.x), replaced by {@link #getColumnBitmask(String)}
 	 */
 	@Deprecated
-	public static final long UUID_COLUMN_BITMASK = 2L;
+	public static final long GROUPID_COLUMN_BITMASK = 2L;
+
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link #getColumnBitmask(String)}
+	 */
+	@Deprecated
+	public static final long UUID_COLUMN_BITMASK = 4L;
 
 	/**
 	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
 	 *		#getColumnBitmask(String)}
 	 */
 	@Deprecated
-	public static final long SXPBLUEPRINTID_COLUMN_BITMASK = 4L;
+	public static final long SXPBLUEPRINTID_COLUMN_BITMASK = 8L;
 
 	/**
 	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
@@ -185,12 +193,13 @@ public class SXPBlueprintModelImpl
 		model.setMvccVersion(soapModel.getMvccVersion());
 		model.setUuid(soapModel.getUuid());
 		model.setSXPBlueprintId(soapModel.getSXPBlueprintId());
+		model.setGroupId(soapModel.getGroupId());
 		model.setCompanyId(soapModel.getCompanyId());
 		model.setUserId(soapModel.getUserId());
 		model.setUserName(soapModel.getUserName());
 		model.setCreateDate(soapModel.getCreateDate());
 		model.setModifiedDate(soapModel.getModifiedDate());
-		model.setConfigurationJSON(soapModel.getConfigurationJSON());
+		model.setConfigurationsJSON(soapModel.getConfigurationsJSON());
 		model.setDescription(soapModel.getDescription());
 		model.setElementInstancesJSON(soapModel.getElementInstancesJSON());
 		model.setTitle(soapModel.getTitle());
@@ -362,6 +371,10 @@ public class SXPBlueprintModelImpl
 		attributeSetterBiConsumers.put(
 			"sxpBlueprintId",
 			(BiConsumer<SXPBlueprint, Long>)SXPBlueprint::setSXPBlueprintId);
+		attributeGetterFunctions.put("groupId", SXPBlueprint::getGroupId);
+		attributeSetterBiConsumers.put(
+			"groupId",
+			(BiConsumer<SXPBlueprint, Long>)SXPBlueprint::setGroupId);
 		attributeGetterFunctions.put("companyId", SXPBlueprint::getCompanyId);
 		attributeSetterBiConsumers.put(
 			"companyId",
@@ -383,11 +396,11 @@ public class SXPBlueprintModelImpl
 			"modifiedDate",
 			(BiConsumer<SXPBlueprint, Date>)SXPBlueprint::setModifiedDate);
 		attributeGetterFunctions.put(
-			"configurationJSON", SXPBlueprint::getConfigurationJSON);
+			"configurationsJSON", SXPBlueprint::getConfigurationsJSON);
 		attributeSetterBiConsumers.put(
-			"configurationJSON",
+			"configurationsJSON",
 			(BiConsumer<SXPBlueprint, String>)
-				SXPBlueprint::setConfigurationJSON);
+				SXPBlueprint::setConfigurationsJSON);
 		attributeGetterFunctions.put(
 			"description", SXPBlueprint::getDescription);
 		attributeSetterBiConsumers.put(
@@ -485,6 +498,30 @@ public class SXPBlueprintModelImpl
 		}
 
 		_sxpBlueprintId = sxpBlueprintId;
+	}
+
+	@JSON
+	@Override
+	public long getGroupId() {
+		return _groupId;
+	}
+
+	@Override
+	public void setGroupId(long groupId) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
+		_groupId = groupId;
+	}
+
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *             #getColumnOriginalValue(String)}
+	 */
+	@Deprecated
+	public long getOriginalGroupId() {
+		return GetterUtil.getLong(this.<Long>getColumnOriginalValue("groupId"));
 	}
 
 	@JSON
@@ -601,22 +638,22 @@ public class SXPBlueprintModelImpl
 
 	@JSON
 	@Override
-	public String getConfigurationJSON() {
-		if (_configurationJSON == null) {
+	public String getConfigurationsJSON() {
+		if (_configurationsJSON == null) {
 			return "";
 		}
 		else {
-			return _configurationJSON;
+			return _configurationsJSON;
 		}
 	}
 
 	@Override
-	public void setConfigurationJSON(String configurationJSON) {
+	public void setConfigurationsJSON(String configurationsJSON) {
 		if (_columnOriginalValues == Collections.EMPTY_MAP) {
 			_setColumnOriginalValues();
 		}
 
-		_configurationJSON = configurationJSON;
+		_configurationsJSON = configurationsJSON;
 	}
 
 	@JSON
@@ -684,7 +721,7 @@ public class SXPBlueprintModelImpl
 
 	@Override
 	public void setDescription(String description, Locale locale) {
-		setDescription(description, locale, LocaleUtil.getDefault());
+		setDescription(description, locale, LocaleUtil.getSiteDefault());
 	}
 
 	@Override
@@ -714,7 +751,7 @@ public class SXPBlueprintModelImpl
 
 	@Override
 	public void setDescriptionMap(Map<Locale, String> descriptionMap) {
-		setDescriptionMap(descriptionMap, LocaleUtil.getDefault());
+		setDescriptionMap(descriptionMap, LocaleUtil.getSiteDefault());
 	}
 
 	@Override
@@ -816,7 +853,7 @@ public class SXPBlueprintModelImpl
 
 	@Override
 	public void setTitle(String title, Locale locale) {
-		setTitle(title, locale, LocaleUtil.getDefault());
+		setTitle(title, locale, LocaleUtil.getSiteDefault());
 	}
 
 	@Override
@@ -843,7 +880,7 @@ public class SXPBlueprintModelImpl
 
 	@Override
 	public void setTitleMap(Map<Locale, String> titleMap) {
-		setTitleMap(titleMap, LocaleUtil.getDefault());
+		setTitleMap(titleMap, LocaleUtil.getSiteDefault());
 	}
 
 	@Override
@@ -1102,7 +1139,7 @@ public class SXPBlueprintModelImpl
 			return "";
 		}
 
-		Locale defaultLocale = LocaleUtil.getDefault();
+		Locale defaultLocale = LocaleUtil.getSiteDefault();
 
 		return LocalizationUtil.getDefaultLanguageId(xml, defaultLocale);
 	}
@@ -1127,7 +1164,7 @@ public class SXPBlueprintModelImpl
 	public void prepareLocalizedFieldsForImport(Locale defaultImportLocale)
 		throws LocaleException {
 
-		Locale defaultLocale = LocaleUtil.getDefault();
+		Locale defaultLocale = LocaleUtil.getSiteDefault();
 
 		String modelDefaultLanguageId = getDefaultLanguageId();
 
@@ -1174,12 +1211,13 @@ public class SXPBlueprintModelImpl
 		sxpBlueprintImpl.setMvccVersion(getMvccVersion());
 		sxpBlueprintImpl.setUuid(getUuid());
 		sxpBlueprintImpl.setSXPBlueprintId(getSXPBlueprintId());
+		sxpBlueprintImpl.setGroupId(getGroupId());
 		sxpBlueprintImpl.setCompanyId(getCompanyId());
 		sxpBlueprintImpl.setUserId(getUserId());
 		sxpBlueprintImpl.setUserName(getUserName());
 		sxpBlueprintImpl.setCreateDate(getCreateDate());
 		sxpBlueprintImpl.setModifiedDate(getModifiedDate());
-		sxpBlueprintImpl.setConfigurationJSON(getConfigurationJSON());
+		sxpBlueprintImpl.setConfigurationsJSON(getConfigurationsJSON());
 		sxpBlueprintImpl.setDescription(getDescription());
 		sxpBlueprintImpl.setElementInstancesJSON(getElementInstancesJSON());
 		sxpBlueprintImpl.setTitle(getTitle());
@@ -1202,6 +1240,8 @@ public class SXPBlueprintModelImpl
 		sxpBlueprintImpl.setUuid(this.<String>getColumnOriginalValue("uuid_"));
 		sxpBlueprintImpl.setSXPBlueprintId(
 			this.<Long>getColumnOriginalValue("sxpBlueprintId"));
+		sxpBlueprintImpl.setGroupId(
+			this.<Long>getColumnOriginalValue("groupId"));
 		sxpBlueprintImpl.setCompanyId(
 			this.<Long>getColumnOriginalValue("companyId"));
 		sxpBlueprintImpl.setUserId(this.<Long>getColumnOriginalValue("userId"));
@@ -1211,8 +1251,8 @@ public class SXPBlueprintModelImpl
 			this.<Date>getColumnOriginalValue("createDate"));
 		sxpBlueprintImpl.setModifiedDate(
 			this.<Date>getColumnOriginalValue("modifiedDate"));
-		sxpBlueprintImpl.setConfigurationJSON(
-			this.<String>getColumnOriginalValue("configurationJSON"));
+		sxpBlueprintImpl.setConfigurationsJSON(
+			this.<String>getColumnOriginalValue("configurationsJSON"));
 		sxpBlueprintImpl.setDescription(
 			this.<String>getColumnOriginalValue("description"));
 		sxpBlueprintImpl.setElementInstancesJSON(
@@ -1316,6 +1356,8 @@ public class SXPBlueprintModelImpl
 
 		sxpBlueprintCacheModel.sxpBlueprintId = getSXPBlueprintId();
 
+		sxpBlueprintCacheModel.groupId = getGroupId();
+
 		sxpBlueprintCacheModel.companyId = getCompanyId();
 
 		sxpBlueprintCacheModel.userId = getUserId();
@@ -1346,12 +1388,14 @@ public class SXPBlueprintModelImpl
 			sxpBlueprintCacheModel.modifiedDate = Long.MIN_VALUE;
 		}
 
-		sxpBlueprintCacheModel.configurationJSON = getConfigurationJSON();
+		sxpBlueprintCacheModel.configurationsJSON = getConfigurationsJSON();
 
-		String configurationJSON = sxpBlueprintCacheModel.configurationJSON;
+		String configurationsJSON = sxpBlueprintCacheModel.configurationsJSON;
 
-		if ((configurationJSON != null) && (configurationJSON.length() == 0)) {
-			sxpBlueprintCacheModel.configurationJSON = null;
+		if ((configurationsJSON != null) &&
+			(configurationsJSON.length() == 0)) {
+
+			sxpBlueprintCacheModel.configurationsJSON = null;
 		}
 
 		sxpBlueprintCacheModel.description = getDescription();
@@ -1495,13 +1539,14 @@ public class SXPBlueprintModelImpl
 	private long _mvccVersion;
 	private String _uuid;
 	private long _sxpBlueprintId;
+	private long _groupId;
 	private long _companyId;
 	private long _userId;
 	private String _userName;
 	private Date _createDate;
 	private Date _modifiedDate;
 	private boolean _setModifiedDate;
-	private String _configurationJSON;
+	private String _configurationsJSON;
 	private String _description;
 	private String _descriptionCurrentLanguageId;
 	private String _elementInstancesJSON;
@@ -1544,12 +1589,13 @@ public class SXPBlueprintModelImpl
 		_columnOriginalValues.put("mvccVersion", _mvccVersion);
 		_columnOriginalValues.put("uuid_", _uuid);
 		_columnOriginalValues.put("sxpBlueprintId", _sxpBlueprintId);
+		_columnOriginalValues.put("groupId", _groupId);
 		_columnOriginalValues.put("companyId", _companyId);
 		_columnOriginalValues.put("userId", _userId);
 		_columnOriginalValues.put("userName", _userName);
 		_columnOriginalValues.put("createDate", _createDate);
 		_columnOriginalValues.put("modifiedDate", _modifiedDate);
-		_columnOriginalValues.put("configurationJSON", _configurationJSON);
+		_columnOriginalValues.put("configurationsJSON", _configurationsJSON);
 		_columnOriginalValues.put("description", _description);
 		_columnOriginalValues.put(
 			"elementInstancesJSON", _elementInstancesJSON);
@@ -1587,31 +1633,33 @@ public class SXPBlueprintModelImpl
 
 		columnBitmasks.put("sxpBlueprintId", 4L);
 
-		columnBitmasks.put("companyId", 8L);
+		columnBitmasks.put("groupId", 8L);
 
-		columnBitmasks.put("userId", 16L);
+		columnBitmasks.put("companyId", 16L);
 
-		columnBitmasks.put("userName", 32L);
+		columnBitmasks.put("userId", 32L);
 
-		columnBitmasks.put("createDate", 64L);
+		columnBitmasks.put("userName", 64L);
 
-		columnBitmasks.put("modifiedDate", 128L);
+		columnBitmasks.put("createDate", 128L);
 
-		columnBitmasks.put("configurationJSON", 256L);
+		columnBitmasks.put("modifiedDate", 256L);
 
-		columnBitmasks.put("description", 512L);
+		columnBitmasks.put("configurationsJSON", 512L);
 
-		columnBitmasks.put("elementInstancesJSON", 1024L);
+		columnBitmasks.put("description", 1024L);
 
-		columnBitmasks.put("title", 2048L);
+		columnBitmasks.put("elementInstancesJSON", 2048L);
 
-		columnBitmasks.put("status", 4096L);
+		columnBitmasks.put("title", 4096L);
 
-		columnBitmasks.put("statusByUserId", 8192L);
+		columnBitmasks.put("status", 8192L);
 
-		columnBitmasks.put("statusByUserName", 16384L);
+		columnBitmasks.put("statusByUserId", 16384L);
 
-		columnBitmasks.put("statusDate", 32768L);
+		columnBitmasks.put("statusByUserName", 32768L);
+
+		columnBitmasks.put("statusDate", 65536L);
 
 		_columnBitmasks = Collections.unmodifiableMap(columnBitmasks);
 	}

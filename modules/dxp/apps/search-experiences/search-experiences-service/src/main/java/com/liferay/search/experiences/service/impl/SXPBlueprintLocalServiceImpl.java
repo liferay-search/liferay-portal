@@ -29,7 +29,7 @@ import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.kernel.workflow.WorkflowHandlerRegistryUtil;
-import com.liferay.search.experiences.exception.SXPBlueprintConfigurationJSONException;
+import com.liferay.search.experiences.exception.SXPBlueprintConfigurationsJSONException;
 import com.liferay.search.experiences.exception.SXPBlueprintTitleException;
 import com.liferay.search.experiences.model.SXPBlueprint;
 import com.liferay.search.experiences.service.base.SXPBlueprintLocalServiceBaseImpl;
@@ -55,15 +55,17 @@ public class SXPBlueprintLocalServiceImpl
 	@Indexable(type = IndexableType.REINDEX)
 	@Override
 	public SXPBlueprint addSXPBlueprint(
-			long userId, String configurationJSON,
+			long userId, long groupId, String configurationsJSON,
 			Map<Locale, String> descriptionMap, String elementInstancesJSON,
 			Map<Locale, String> titleMap, ServiceContext serviceContext)
 		throws PortalException {
 
-		_validate(configurationJSON, titleMap, serviceContext);
+		_validate(configurationsJSON, titleMap, serviceContext);
 
 		SXPBlueprint sxpBlueprint = sxpBlueprintPersistence.create(
 			counterLocalService.increment());
+
+		sxpBlueprint.setGroupId(groupId);
 
 		User user = _userLocalService.getUser(userId);
 
@@ -71,7 +73,7 @@ public class SXPBlueprintLocalServiceImpl
 		sxpBlueprint.setUserId(user.getUserId());
 		sxpBlueprint.setUserName(user.getFullName());
 
-		sxpBlueprint.setConfigurationJSON(configurationJSON);
+		sxpBlueprint.setConfigurationsJSON(configurationsJSON);
 		sxpBlueprint.setDescriptionMap(descriptionMap);
 		sxpBlueprint.setElementInstancesJSON(elementInstancesJSON);
 		sxpBlueprint.setTitleMap(titleMap);
@@ -112,13 +114,13 @@ public class SXPBlueprintLocalServiceImpl
 			sxpBlueprint, ResourceConstants.SCOPE_INDIVIDUAL);
 
 		_workflowInstanceLinkLocalService.deleteWorkflowInstanceLinks(
-			sxpBlueprint.getCompanyId(), 0, SXPBlueprint.class.getName(),
-			sxpBlueprint.getSXPBlueprintId());
+			sxpBlueprint.getCompanyId(), sxpBlueprint.getGroupId(),
+			SXPBlueprint.class.getName(), sxpBlueprint.getSXPBlueprintId());
 
 		return sxpBlueprint;
 	}
 
-	public int getSXPBlueprintsCount(long companyId) {
+	public int getCompanySXPBlueprintsCount(long companyId) {
 		return sxpBlueprintPersistence.countByCompanyId(companyId);
 	}
 
@@ -150,17 +152,17 @@ public class SXPBlueprintLocalServiceImpl
 
 	@Indexable(type = IndexableType.REINDEX)
 	public SXPBlueprint updateSXPBlueprint(
-			long userId, long sxpBlueprintId, String configurationJSON,
+			long userId, long sxpBlueprintId, String configurationsJSON,
 			Map<Locale, String> descriptionMap, String elementInstancesJSON,
 			Map<Locale, String> titleMap, ServiceContext serviceContext)
 		throws PortalException {
 
-		_validate(configurationJSON, titleMap, serviceContext);
+		_validate(configurationsJSON, titleMap, serviceContext);
 
 		SXPBlueprint sxpBlueprint = sxpBlueprintPersistence.findByPrimaryKey(
 			sxpBlueprintId);
 
-		sxpBlueprint.setConfigurationJSON(configurationJSON);
+		sxpBlueprint.setConfigurationsJSON(configurationsJSON);
 		sxpBlueprint.setDescriptionMap(descriptionMap);
 		sxpBlueprint.setElementInstancesJSON(elementInstancesJSON);
 		sxpBlueprint.setTitleMap(titleMap);
@@ -174,15 +176,15 @@ public class SXPBlueprintLocalServiceImpl
 		throws PortalException {
 
 		WorkflowHandlerRegistryUtil.startWorkflowInstance(
-			sxpBlueprint.getCompanyId(), 0, userId,
+			sxpBlueprint.getCompanyId(), sxpBlueprint.getGroupId(), userId,
 			SXPBlueprint.class.getName(), sxpBlueprint.getSXPBlueprintId(),
 			sxpBlueprint, serviceContext);
 	}
 
 	private void _validate(
-			String configurationJSON, Map<Locale, String> titleMap,
+			String configurationsJSON, Map<Locale, String> titleMap,
 			ServiceContext serviceContext)
-		throws SXPBlueprintConfigurationJSONException,
+		throws SXPBlueprintConfigurationsJSONException,
 			   SXPBlueprintTitleException {
 
 		if (!GetterUtil.getBoolean(
@@ -194,7 +196,7 @@ public class SXPBlueprintLocalServiceImpl
 			return;
 		}
 
-		_sxpBlueprintValidator.validate(configurationJSON, titleMap);
+		_sxpBlueprintValidator.validate(configurationsJSON, titleMap);
 	}
 
 	@Reference

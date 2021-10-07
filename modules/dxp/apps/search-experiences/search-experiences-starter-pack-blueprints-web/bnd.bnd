@@ -1,0 +1,5 @@
+Bundle-Name: Liferay Search Experiences Starter Pack Blueprints Web
+Bundle-SymbolicName: com.liferay.search.experiences.starter.pack.blueprints.web
+Bundle-Version: 1.0.0
+Web-ContextPath: /search-experiences-starter-pack-blueprints-web
+-liferay-aggregate-resource-bundles: com.liferay.search.experiences.lang

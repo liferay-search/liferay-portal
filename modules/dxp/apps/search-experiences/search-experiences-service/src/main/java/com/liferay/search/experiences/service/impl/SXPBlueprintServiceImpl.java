@@ -50,16 +50,16 @@ public class SXPBlueprintServiceImpl extends SXPBlueprintServiceBaseImpl {
 
 	@Override
 	public SXPBlueprint addSXPBlueprint(
-			String configurationJSON, Map<Locale, String> descriptionMap,
-			String elementInstancesJSON, Map<Locale, String> titleMap,
-			ServiceContext serviceContext)
+			long groupId, String configurationsJSON,
+			Map<Locale, String> descriptionMap, String elementInstancesJSON,
+			Map<Locale, String> titleMap, ServiceContext serviceContext)
 		throws PortalException {
 
 		_portletResourcePermission.check(
-			getPermissionChecker(), null, SXPActionKeys.ADD_SXP_BLUEPRINT);
+			getPermissionChecker(), groupId, SXPActionKeys.ADD_SXP_BLUEPRINT);
 
 		return sxpBlueprintLocalService.addSXPBlueprint(
-			getUserId(), configurationJSON, descriptionMap,
+			getUserId(), groupId, configurationsJSON, descriptionMap,
 			elementInstancesJSON, titleMap, serviceContext);
 	}
 
@@ -89,7 +89,7 @@ public class SXPBlueprintServiceImpl extends SXPBlueprintServiceBaseImpl {
 
 	@Override
 	public SXPBlueprint updateSXPBlueprint(
-			long sxpBlueprintId, String configurationJSON,
+			long sxpBlueprintId, String configurationsJSON,
 			Map<Locale, String> descriptionMap, String elementInstancesJSON,
 			Map<Locale, String> titleMap, ServiceContext serviceContext)
 		throws PortalException {
@@ -98,7 +98,7 @@ public class SXPBlueprintServiceImpl extends SXPBlueprintServiceBaseImpl {
 			getPermissionChecker(), sxpBlueprintId, ActionKeys.UPDATE);
 
 		return _sxpBlueprintLocalService.updateSXPBlueprint(
-			getUserId(), sxpBlueprintId, configurationJSON, descriptionMap,
+			getUserId(), sxpBlueprintId, configurationsJSON, descriptionMap,
 			elementInstancesJSON, titleMap, serviceContext);
 	}
 

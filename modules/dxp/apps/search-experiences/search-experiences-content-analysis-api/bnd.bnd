@@ -1,0 +1,8 @@
+Bundle-Name: Liferay Search Experiences Content Analysis API
+Bundle-SymbolicName: com.liferay.search.experiences.content.analysis.api
+Bundle-Version: 1.0.0
+Export-Package:\
+	com.liferay.search.experiences.content.analysis.constants,\
+	com.liferay.search.experiences.content.analysis.request,\
+	com.liferay.search.experiences.content.analysis.response,\
+	com.liferay.search.experiences.content.analysis.service

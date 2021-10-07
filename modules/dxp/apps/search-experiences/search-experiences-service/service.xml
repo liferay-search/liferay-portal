@@ -9,6 +9,10 @@
 
 		<column method-name="SXPBlueprintId" name="sxpBlueprintId" primary="true" type="long" />
 
+		<!-- Group instance -->
+
+		<column name="groupId" type="long" />
+
 		<!-- Audit fields -->
 
 		<column name="companyId" type="long" />
@@ -19,7 +23,7 @@
 
 		<!-- Other fields -->
 
-		<column name="configurationJSON" type="String" />
+		<column name="configurationsJSON" type="String" />
 		<column localized="true" name="description" type="String" />
 		<column name="elementInstancesJSON" type="String" />
 		<column localized="true" name="title" type="String" />
@@ -39,6 +43,10 @@
 		<!-- PK fields -->
 
 		<column method-name="SXPElementId" name="sxpElementId" primary="true" type="long" />
+
+		<!-- Group instance -->
+
+		<column name="groupId" type="long" />
 
 		<!-- Audit fields -->
 
@@ -60,18 +68,18 @@
 
 		<!-- Finder methods -->
 
-		<finder name="C_T" return-type="Collection">
-			<finder-column name="companyId" />
+		<finder name="G_T" return-type="Collection">
+			<finder-column name="groupId" />
 			<finder-column name="type" />
 		</finder>
-		<finder name="C_T_S" return-type="Collection">
-			<finder-column name="companyId" />
+		<finder name="G_T_S" return-type="Collection">
+			<finder-column name="groupId" />
 			<finder-column name="type" />
 			<finder-column name="status" />
 		</finder>
 	</entity>
 	<exceptions>
-		<exception>SXPBlueprintConfigurationJSON</exception>
+		<exception>SXPBlueprintConfigurationsJSON</exception>
 		<exception>SXPBlueprintTitle</exception>
 		<exception>SXPElementElementDefinitionJSON</exception>
 		<exception>SXPElementReadOnly</exception>

@@ -35,7 +35,7 @@ public class SXPBlueprintLocalServiceWrapper
 
 	@Override
 	public com.liferay.search.experiences.model.SXPBlueprint addSXPBlueprint(
-			long userId, String configurationJSON,
+			long userId, long groupId, String configurationsJSON,
 			java.util.Map<java.util.Locale, String> descriptionMap,
 			String elementInstancesJSON,
 			java.util.Map<java.util.Locale, String> titleMap,
@@ -43,8 +43,8 @@ public class SXPBlueprintLocalServiceWrapper
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return _sxpBlueprintLocalService.addSXPBlueprint(
-			userId, configurationJSON, descriptionMap, elementInstancesJSON,
-			titleMap, serviceContext);
+			userId, groupId, configurationsJSON, descriptionMap,
+			elementInstancesJSON, titleMap, serviceContext);
 	}
 
 	/**
@@ -247,18 +247,18 @@ public class SXPBlueprintLocalServiceWrapper
 	}
 
 	/**
-	 * Returns the sxp blueprint with the matching UUID and company.
+	 * Returns the sxp blueprint matching the UUID and group.
 	 *
 	 * @param uuid the sxp blueprint's UUID
-	 * @param companyId the primary key of the company
+	 * @param groupId the primary key of the group
 	 * @return the matching sxp blueprint, or <code>null</code> if a matching sxp blueprint could not be found
 	 */
 	@Override
 	public com.liferay.search.experiences.model.SXPBlueprint
-		fetchSXPBlueprintByUuidAndCompanyId(String uuid, long companyId) {
+		fetchSXPBlueprintByUuidAndGroupId(String uuid, long groupId) {
 
-		return _sxpBlueprintLocalService.fetchSXPBlueprintByUuidAndCompanyId(
-			uuid, companyId);
+		return _sxpBlueprintLocalService.fetchSXPBlueprintByUuidAndGroupId(
+			uuid, groupId);
 	}
 
 	@Override
@@ -266,6 +266,12 @@ public class SXPBlueprintLocalServiceWrapper
 		getActionableDynamicQuery() {
 
 		return _sxpBlueprintLocalService.getActionableDynamicQuery();
+	}
+
+	@Override
+	public int getCompanySXPBlueprintsCount(long companyId) {
+		return _sxpBlueprintLocalService.getCompanySXPBlueprintsCount(
+			companyId);
 	}
 
 	@Override
@@ -322,20 +328,20 @@ public class SXPBlueprintLocalServiceWrapper
 	}
 
 	/**
-	 * Returns the sxp blueprint with the matching UUID and company.
+	 * Returns the sxp blueprint matching the UUID and group.
 	 *
 	 * @param uuid the sxp blueprint's UUID
-	 * @param companyId the primary key of the company
+	 * @param groupId the primary key of the group
 	 * @return the matching sxp blueprint
 	 * @throws PortalException if a matching sxp blueprint could not be found
 	 */
 	@Override
 	public com.liferay.search.experiences.model.SXPBlueprint
-			getSXPBlueprintByUuidAndCompanyId(String uuid, long companyId)
+			getSXPBlueprintByUuidAndGroupId(String uuid, long groupId)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
-		return _sxpBlueprintLocalService.getSXPBlueprintByUuidAndCompanyId(
-			uuid, companyId);
+		return _sxpBlueprintLocalService.getSXPBlueprintByUuidAndGroupId(
+			uuid, groupId);
 	}
 
 	/**
@@ -357,6 +363,43 @@ public class SXPBlueprintLocalServiceWrapper
 	}
 
 	/**
+	 * Returns all the sxp blueprints matching the UUID and company.
+	 *
+	 * @param uuid the UUID of the sxp blueprints
+	 * @param companyId the primary key of the company
+	 * @return the matching sxp blueprints, or an empty list if no matches were found
+	 */
+	@Override
+	public java.util.List<com.liferay.search.experiences.model.SXPBlueprint>
+		getSXPBlueprintsByUuidAndCompanyId(String uuid, long companyId) {
+
+		return _sxpBlueprintLocalService.getSXPBlueprintsByUuidAndCompanyId(
+			uuid, companyId);
+	}
+
+	/**
+	 * Returns a range of sxp blueprints matching the UUID and company.
+	 *
+	 * @param uuid the UUID of the sxp blueprints
+	 * @param companyId the primary key of the company
+	 * @param start the lower bound of the range of sxp blueprints
+	 * @param end the upper bound of the range of sxp blueprints (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the range of matching sxp blueprints, or an empty list if no matches were found
+	 */
+	@Override
+	public java.util.List<com.liferay.search.experiences.model.SXPBlueprint>
+		getSXPBlueprintsByUuidAndCompanyId(
+			String uuid, long companyId, int start, int end,
+			com.liferay.portal.kernel.util.OrderByComparator
+				<com.liferay.search.experiences.model.SXPBlueprint>
+					orderByComparator) {
+
+		return _sxpBlueprintLocalService.getSXPBlueprintsByUuidAndCompanyId(
+			uuid, companyId, start, end, orderByComparator);
+	}
+
+	/**
 	 * Returns the number of sxp blueprints.
 	 *
 	 * @return the number of sxp blueprints
@@ -364,11 +407,6 @@ public class SXPBlueprintLocalServiceWrapper
 	@Override
 	public int getSXPBlueprintsCount() {
 		return _sxpBlueprintLocalService.getSXPBlueprintsCount();
-	}
-
-	@Override
-	public int getSXPBlueprintsCount(long companyId) {
-		return _sxpBlueprintLocalService.getSXPBlueprintsCount(companyId);
 	}
 
 	@Override
@@ -383,7 +421,7 @@ public class SXPBlueprintLocalServiceWrapper
 
 	@Override
 	public com.liferay.search.experiences.model.SXPBlueprint updateSXPBlueprint(
-			long userId, long sxpBlueprintId, String configurationJSON,
+			long userId, long sxpBlueprintId, String configurationsJSON,
 			java.util.Map<java.util.Locale, String> descriptionMap,
 			String elementInstancesJSON,
 			java.util.Map<java.util.Locale, String> titleMap,
@@ -391,7 +429,7 @@ public class SXPBlueprintLocalServiceWrapper
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return _sxpBlueprintLocalService.updateSXPBlueprint(
-			userId, sxpBlueprintId, configurationJSON, descriptionMap,
+			userId, sxpBlueprintId, configurationsJSON, descriptionMap,
 			elementInstancesJSON, titleMap, serviceContext);
 	}
 

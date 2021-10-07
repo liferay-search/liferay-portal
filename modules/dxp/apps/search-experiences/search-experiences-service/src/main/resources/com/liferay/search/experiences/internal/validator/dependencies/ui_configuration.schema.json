@@ -92,6 +92,18 @@
 					"if": {
 						"properties": {
 							"type": {
+								"const": "searchableType"
+							}
+						}
+					},
+					"then": {
+						"$ref": "#/definitions/fieldSearchableType"
+					}
+				},
+				{
+					"if": {
+						"properties": {
+							"type": {
 								"const": "select"
 							}
 						}
@@ -145,6 +157,7 @@
 						"keywords",
 						"multiselect",
 						"number",
+						"searchableType",
 						"select",
 						"slider",
 						"text"
@@ -313,6 +326,13 @@
 						"type": "object"
 					},
 					"type": "array"
+				}
+			}
+		},
+		"fieldSearchableType": {
+			"properties": {
+				"defaultValue": {
+					"type": "string"
 				}
 			}
 		},

@@ -69,7 +69,8 @@ public class SXPBlueprintServiceSoap {
 
 	public static com.liferay.search.experiences.model.SXPBlueprintSoap
 			addSXPBlueprint(
-				String configurationJSON, String[] descriptionMapLanguageIds,
+				long groupId, String configurationsJSON,
+				String[] descriptionMapLanguageIds,
 				String[] descriptionMapValues, String elementInstancesJSON,
 				String[] titleMapLanguageIds, String[] titleMapValues,
 				com.liferay.portal.kernel.service.ServiceContext serviceContext)
@@ -84,8 +85,8 @@ public class SXPBlueprintServiceSoap {
 
 			com.liferay.search.experiences.model.SXPBlueprint returnValue =
 				SXPBlueprintServiceUtil.addSXPBlueprint(
-					configurationJSON, descriptionMap, elementInstancesJSON,
-					titleMap, serviceContext);
+					groupId, configurationsJSON, descriptionMap,
+					elementInstancesJSON, titleMap, serviceContext);
 
 			return com.liferay.search.experiences.model.SXPBlueprintSoap.
 				toSoapModel(returnValue);
@@ -135,7 +136,7 @@ public class SXPBlueprintServiceSoap {
 
 	public static com.liferay.search.experiences.model.SXPBlueprintSoap
 			updateSXPBlueprint(
-				long sxpBlueprintId, String configurationJSON,
+				long sxpBlueprintId, String configurationsJSON,
 				String[] descriptionMapLanguageIds,
 				String[] descriptionMapValues, String elementInstancesJSON,
 				String[] titleMapLanguageIds, String[] titleMapValues,
@@ -151,7 +152,7 @@ public class SXPBlueprintServiceSoap {
 
 			com.liferay.search.experiences.model.SXPBlueprint returnValue =
 				SXPBlueprintServiceUtil.updateSXPBlueprint(
-					sxpBlueprintId, configurationJSON, descriptionMap,
+					sxpBlueprintId, configurationsJSON, descriptionMap,
 					elementInstancesJSON, titleMap, serviceContext);
 
 			return com.liferay.search.experiences.model.SXPBlueprintSoap.

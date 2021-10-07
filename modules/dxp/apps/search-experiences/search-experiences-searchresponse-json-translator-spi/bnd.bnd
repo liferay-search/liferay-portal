@@ -1,0 +1,8 @@
+Bundle-Name: Liferay Search Experiences Search Response JSON Translator SPI
+Bundle-SymbolicName: com.liferay.search.experiences.searchresponse.json.translator.spi
+Bundle-Version: 1.0.0
+Export-Package:\
+	com.liferay.search.experiences.searchresponse.json.translator.spi.aggregation,\
+	com.liferay.search.experiences.searchresponse.json.translator.spi.contributor,\
+	com.liferay.search.experiences.searchresponse.json.translator.spi.hit,\
+	com.liferay.search.experiences.searchresponse.json.translator.spi.result

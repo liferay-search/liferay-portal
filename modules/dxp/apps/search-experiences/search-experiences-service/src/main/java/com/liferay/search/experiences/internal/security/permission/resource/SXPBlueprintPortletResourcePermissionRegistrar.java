@@ -14,19 +14,20 @@
 
 package com.liferay.search.experiences.internal.security.permission.resource;
 
-import com.liferay.portal.kernel.model.Group;
-import com.liferay.portal.kernel.security.permission.PermissionChecker;
+import com.liferay.exportimport.kernel.staging.permission.StagingPermission;
 import com.liferay.portal.kernel.security.permission.resource.PortletResourcePermission;
 import com.liferay.portal.kernel.security.permission.resource.PortletResourcePermissionFactory;
-import com.liferay.portal.kernel.security.permission.resource.PortletResourcePermissionLogic;
+import com.liferay.portal.kernel.security.permission.resource.StagedPortletPermissionLogic;
 import com.liferay.portal.kernel.util.HashMapDictionaryBuilder;
 import com.liferay.search.experiences.constants.SXPConstants;
+import com.liferay.search.experiences.constants.SXPPortletKeys;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Petteri Karttunen
@@ -40,7 +41,8 @@ public class SXPBlueprintPortletResourcePermissionRegistrar {
 			PortletResourcePermission.class,
 			PortletResourcePermissionFactory.create(
 				SXPConstants.RESOURCE_NAME,
-				new ListTypePortletResourcePermissionLogic()),
+				new StagedPortletPermissionLogic(
+					_stagingPermission, SXPPortletKeys.SXP_BLUEPRINT)),
 			HashMapDictionaryBuilder.<String, Object>put(
 				"resource.name", SXPConstants.RESOURCE_NAME
 			).build());
@@ -53,21 +55,7 @@ public class SXPBlueprintPortletResourcePermissionRegistrar {
 
 	private ServiceRegistration<PortletResourcePermission> _serviceRegistration;
 
-	private static class ListTypePortletResourcePermissionLogic
-		implements PortletResourcePermissionLogic {
-
-		@Override
-		public Boolean contains(
-			PermissionChecker permissionChecker, String name, Group group,
-			String actionId) {
-
-			if (permissionChecker.hasPermission(group, name, 0, actionId)) {
-				return true;
-			}
-
-			return false;
-		}
-
-	}
+	@Reference
+	private StagingPermission _stagingPermission;
 
 }
