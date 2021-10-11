@@ -592,6 +592,26 @@ definition {
 			locator1 = "SearchExperiences#ELEMENTS_ADMIN_UI_CONFIGURATION_EDITOR");
 	}
 
+	test FilterDefaultElements {
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		Navigator.gotoNavItem(navItem = "Elements");
+
+		SearchExperiences.createElement(name = "New Element");
+
+		ManagementBar.setFilterAndOrder(filterBy = "Default");
+
+		AssertElementPresent(locator1 = "SearchExperiences#ELEMENTS_ADMIN_DEFAULT_ELEMENT_ENTRY");
+
+		LexiconEntry.viewNoEntry(rowEntry = "New Element");
+
+		ManagementBar.setFilterAndOrder(filterBy = "Custom");
+
+		LexiconEntry.viewEntryName(rowEntry = "New Element");
+
+		AssertElementNotPresent(locator1 = "SearchExperiences#ELEMENTS_ADMIN_DEFAULT_ELEMENT_ENTRY");
+	}
+
 	test HideAndShowElement {
 		SearchExperiences.openSearchExperiencesAdmin();
 
