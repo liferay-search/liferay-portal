@@ -64,6 +64,7 @@ import org.osgi.service.component.annotations.ReferencePolicyOption;
 )
 public class BlueprintServiceImpl extends BlueprintServiceBaseImpl {
 
+	@Override
 	public Blueprint addCompanyBlueprint(
 			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
 			String configuration, String selectedElements,
@@ -81,6 +82,7 @@ public class BlueprintServiceImpl extends BlueprintServiceBaseImpl {
 			selectedElements, serviceContext);
 	}
 
+	@Override
 	public Blueprint addGroupBlueprint(
 			Map<Locale, String> titleMap, Map<Locale, String> descriptionMap,
 			String configuration, String selectedElements,
@@ -98,6 +100,7 @@ public class BlueprintServiceImpl extends BlueprintServiceBaseImpl {
 			selectedElements, serviceContext);
 	}
 
+	@Override
 	public Blueprint deleteBlueprint(long blueprintId) throws PortalException {
 		_blueprintModelResourcePermission.check(
 			getPermissionChecker(), blueprintId, ActionKeys.DELETE);
@@ -105,6 +108,7 @@ public class BlueprintServiceImpl extends BlueprintServiceBaseImpl {
 		return blueprintLocalService.deleteBlueprint(blueprintId);
 	}
 
+	@Override
 	public Blueprint getBlueprint(long blueprintId) throws PortalException {
 		Blueprint blueprint = _blueprintLocalService.getBlueprint(blueprintId);
 
@@ -115,6 +119,7 @@ public class BlueprintServiceImpl extends BlueprintServiceBaseImpl {
 		return blueprint;
 	}
 
+	@Override
 	public List<Blueprint> getGroupBlueprints(
 		long groupId, int start, int end) {
 
@@ -122,6 +127,7 @@ public class BlueprintServiceImpl extends BlueprintServiceBaseImpl {
 			groupId, WorkflowConstants.STATUS_APPROVED, start, end);
 	}
 
+	@Override
 	public List<Blueprint> getGroupBlueprints(
 		long groupId, int status, int start, int end) {
 
@@ -134,6 +140,7 @@ public class BlueprintServiceImpl extends BlueprintServiceBaseImpl {
 			groupId, status, start, end);
 	}
 
+	@Override
 	public List<Blueprint> getGroupBlueprints(
 		long groupId, int status, int start, int end,
 		OrderByComparator<Blueprint> orderByComparator) {
@@ -147,6 +154,7 @@ public class BlueprintServiceImpl extends BlueprintServiceBaseImpl {
 			groupId, status, start, end, orderByComparator);
 	}
 
+	@Override
 	public List<Blueprint> getGroupBlueprints(
 		long groupId, int start, int end,
 		OrderByComparator<Blueprint> orderByComparator) {
@@ -156,11 +164,13 @@ public class BlueprintServiceImpl extends BlueprintServiceBaseImpl {
 			orderByComparator);
 	}
 
+	@Override
 	public int getGroupBlueprintsCount(long groupId) {
 		return getGroupBlueprintsCount(
 			groupId, WorkflowConstants.STATUS_APPROVED);
 	}
 
+	@Override
 	public int getGroupBlueprintsCount(long groupId, int status) {
 		if (status == WorkflowConstants.STATUS_ANY) {
 			return blueprintPersistence.countByGroupId(groupId);
@@ -169,6 +179,7 @@ public class BlueprintServiceImpl extends BlueprintServiceBaseImpl {
 		return blueprintPersistence.countByG_S(groupId, status);
 	}
 
+	@Override
 	public Blueprint updateBlueprint(
 			long blueprintId, Map<Locale, String> titleMap,
 			Map<Locale, String> descriptionMap, String configuration,

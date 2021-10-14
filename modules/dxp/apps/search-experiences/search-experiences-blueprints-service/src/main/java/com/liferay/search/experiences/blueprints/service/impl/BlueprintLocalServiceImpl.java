@@ -25,6 +25,7 @@ import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.service.ResourceLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserLocalService;
+import com.liferay.portal.kernel.service.WorkflowInstanceLinkLocalService;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
@@ -119,7 +120,7 @@ public class BlueprintLocalServiceImpl extends BlueprintLocalServiceBaseImpl {
 		_resourceLocalService.deleteResource(
 			blueprint, ResourceConstants.SCOPE_INDIVIDUAL);
 
-		workflowInstanceLinkLocalService.deleteWorkflowInstanceLinks(
+		_workflowInstanceLinkLocalService.deleteWorkflowInstanceLinks(
 			blueprint.getCompanyId(), blueprint.getGroupId(),
 			Blueprint.class.getName(), blueprint.getBlueprintId());
 
@@ -134,10 +135,12 @@ public class BlueprintLocalServiceImpl extends BlueprintLocalServiceBaseImpl {
 		return deleteBlueprint(blueprint);
 	}
 
+	@Override
 	public int getCompanyBlueprintsCount(long companyId) {
 		return blueprintPersistence.countByCompanyId(companyId);
 	}
 
+	@Override
 	public List<Blueprint> getGroupBlueprints(
 		long groupId, int start, int end) {
 
@@ -145,6 +148,7 @@ public class BlueprintLocalServiceImpl extends BlueprintLocalServiceBaseImpl {
 			groupId, WorkflowConstants.STATUS_APPROVED, start, end);
 	}
 
+	@Override
 	public List<Blueprint> getGroupBlueprints(
 		long groupId, int status, int start, int end) {
 
@@ -155,6 +159,7 @@ public class BlueprintLocalServiceImpl extends BlueprintLocalServiceBaseImpl {
 		return blueprintPersistence.findByG_S(groupId, status, start, end);
 	}
 
+	@Override
 	public List<Blueprint> getGroupBlueprints(
 		long groupId, int status, int start, int end,
 		OrderByComparator<Blueprint> orderByComparator) {
@@ -168,6 +173,7 @@ public class BlueprintLocalServiceImpl extends BlueprintLocalServiceBaseImpl {
 			groupId, status, start, end, orderByComparator);
 	}
 
+	@Override
 	public List<Blueprint> getGroupBlueprints(
 		long groupId, int start, int end,
 		OrderByComparator<Blueprint> orderByComparator) {
@@ -177,16 +183,19 @@ public class BlueprintLocalServiceImpl extends BlueprintLocalServiceBaseImpl {
 			orderByComparator);
 	}
 
+	@Override
 	public int getGroupBlueprintsCount(long groupId) {
 		return getGroupBlueprintsCount(
 			groupId, WorkflowConstants.STATUS_APPROVED);
 	}
 
+	@Override
 	public int getGroupBlueprintsCount(long groupId, int status) {
 		return blueprintPersistence.countByG_S(groupId, status);
 	}
 
 	@Indexable(type = IndexableType.REINDEX)
+	@Override
 	public Blueprint updateBlueprint(
 			long userId, long blueprintId, Map<Locale, String> titleMap,
 			Map<Locale, String> descriptionMap, String configuration,
@@ -269,5 +278,8 @@ public class BlueprintLocalServiceImpl extends BlueprintLocalServiceBaseImpl {
 
 	@Reference
 	private UserLocalService _userLocalService;
+
+	@Reference
+	private WorkflowInstanceLinkLocalService _workflowInstanceLinkLocalService;
 
 }
