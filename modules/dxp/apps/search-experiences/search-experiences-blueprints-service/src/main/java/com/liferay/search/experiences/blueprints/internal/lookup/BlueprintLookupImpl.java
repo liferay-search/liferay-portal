@@ -19,8 +19,8 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.search.experiences.blueprints.Blueprint;
 import com.liferay.search.experiences.blueprints.BlueprintLookup;
+import com.liferay.search.experiences.blueprints.exception.NoSuchBlueprintException;
 import com.liferay.search.experiences.blueprints.service.BlueprintLocalService;
-import com.liferay.search.experiences.exception.NoSuchSXPBlueprintException;
 
 import java.util.Optional;
 
@@ -48,8 +48,10 @@ public class BlueprintLookupImpl implements BlueprintLookup {
 		try {
 			return _blueprintLocalService.getBlueprint(blueprintId);
 		}
-		catch (NoSuchSXPBlueprintException noSuchSXPBlueprintException) {
-			_log.error(noSuchSXPBlueprintException);
+		catch (NoSuchBlueprintException noSuchBlueprintException) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(noSuchBlueprintException);
+			}
 
 			return null;
 		}
