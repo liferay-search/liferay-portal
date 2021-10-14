@@ -17,6 +17,7 @@ package com.liferay.search.experiences.blueprints.test;
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.asset.kernel.model.AssetTag;
 import com.liferay.asset.test.util.AssetTestUtil;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
@@ -97,7 +98,7 @@ public class HideTaggedContentTest extends BaseBlueprintsTestCase {
 													"value", "hide"))))))))
 				))
 		).put(
-			"conditions", JSONUtil.put(null, null)
+			"conditions", JSONFactoryUtil.createJSONObject()
 		).put(
 			"description", JSONUtil.put("en_US", "Hide contents tagged with")
 		).put(

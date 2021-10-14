@@ -18,6 +18,7 @@ import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.journal.model.JournalFolder;
 import com.liferay.journal.service.JournalFolderLocalService;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
@@ -110,7 +111,7 @@ public class HideByExactTermMatchTest extends BaseBlueprintsTestCase {
 													"value", folderId))))))))
 				))
 		).put(
-			"conditions", JSONUtil.put(null, null)
+			"conditions", JSONFactoryUtil.createJSONObject()
 		).put(
 			"description",
 			JSONUtil.put("en_US", "Hide results by an exact term match")

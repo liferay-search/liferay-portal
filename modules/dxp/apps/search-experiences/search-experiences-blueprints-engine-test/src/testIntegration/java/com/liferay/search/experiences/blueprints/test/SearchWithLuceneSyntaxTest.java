@@ -16,6 +16,7 @@ package com.liferay.search.experiences.blueprints.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
@@ -107,7 +108,7 @@ public class SearchWithLuceneSyntaxTest extends BaseBlueprintsTestCase {
 								))))
 				))
 		).put(
-			"conditions", JSONUtil.put(null, null)
+			"conditions", JSONFactoryUtil.createJSONObject()
 		).put(
 			"description",
 			JSONUtil.put("en_US", "Enable searching using the Lucene syntax")

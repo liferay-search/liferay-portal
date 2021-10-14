@@ -15,6 +15,7 @@
 package com.liferay.search.experiences.blueprints.test;
 
 import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 
@@ -60,7 +61,7 @@ public abstract class BaseQueryElementsTestCase extends BaseBlueprintsTestCase {
 			"uiConfigurationJSON",
 			elementTemplateJSONObject.get("uiConfigurationJSON")
 		).put(
-			"uiConfigurationValues", JSONUtil.put(null, null)
+			"uiConfigurationValues", JSONFactoryUtil.createJSONObject()
 		);
 	}
 
@@ -93,7 +94,7 @@ public abstract class BaseQueryElementsTestCase extends BaseBlueprintsTestCase {
 									)))))
 				))
 		).put(
-			"conditions", JSONUtil.put(null, null)
+			"conditions", JSONFactoryUtil.createJSONObject()
 		).put(
 			"description",
 			JSONUtil.put(
@@ -178,7 +179,7 @@ public abstract class BaseQueryElementsTestCase extends BaseBlueprintsTestCase {
 									minimumShouldMatch, operator, type))))
 				))
 		).put(
-			"conditions", JSONUtil.put(null, null)
+			"conditions", JSONFactoryUtil.createJSONObject()
 		).put(
 			"description",
 			JSONUtil.put(
@@ -226,7 +227,7 @@ public abstract class BaseQueryElementsTestCase extends BaseBlueprintsTestCase {
 									operator, type))))
 				))
 		).put(
-			"conditions", JSONUtil.put(null, null)
+			"conditions", JSONFactoryUtil.createJSONObject()
 		).put(
 			"description",
 			JSONUtil.put(

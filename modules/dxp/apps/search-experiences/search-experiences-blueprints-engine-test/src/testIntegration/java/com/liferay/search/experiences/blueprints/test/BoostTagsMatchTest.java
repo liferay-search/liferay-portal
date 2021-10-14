@@ -18,6 +18,7 @@ import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.asset.kernel.model.AssetTag;
 import com.liferay.asset.kernel.service.AssetTagLocalServiceUtil;
 import com.liferay.journal.model.JournalArticle;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
@@ -112,7 +113,7 @@ public class BoostTagsMatchTest extends BaseBlueprintsTestCase {
 									)))))
 				))
 		).put(
-			"conditions", JSONUtil.put(null, null)
+			"conditions", JSONFactoryUtil.createJSONObject()
 		).put(
 			"description",
 			JSONUtil.put(

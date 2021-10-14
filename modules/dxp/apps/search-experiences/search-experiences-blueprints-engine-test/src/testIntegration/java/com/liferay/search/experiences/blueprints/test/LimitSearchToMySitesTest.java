@@ -15,6 +15,7 @@
 package com.liferay.search.experiences.blueprints.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.model.Group;
@@ -107,7 +108,7 @@ public class LimitSearchToMySitesTest extends BaseBlueprintsTestCase {
 									"scopeGroupId", "${user.group_ids}"))))
 				))
 		).put(
-			"conditions", JSONUtil.put(null, null)
+			"conditions", JSONFactoryUtil.createJSONObject()
 		).put(
 			"description",
 			JSONUtil.put(

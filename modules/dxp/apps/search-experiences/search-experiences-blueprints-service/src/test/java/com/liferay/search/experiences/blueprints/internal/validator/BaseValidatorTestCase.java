@@ -36,19 +36,19 @@ public abstract class BaseValidatorTestCase {
 		).put(
 			"properties",
 			JSONUtil.put(
-				"advanced_configuration", JSONUtil.put(null, null)
+				"advanced_configuration", JSONFactoryUtil.createJSONObject()
 			).put(
-				"aggregation_configuration", JSONUtil.put(null, null)
+				"aggregation_configuration", JSONFactoryUtil.createJSONObject()
 			).put(
-				"facet_configuration", JSONUtil.put(null, null)
+				"facet_configuration", JSONFactoryUtil.createJSONObject()
 			).put(
-				"highlight_configuration", JSONUtil.put(null, null)
+				"highlight_configuration", JSONFactoryUtil.createJSONObject()
 			).put(
-				"parameter_configuration", JSONUtil.put(null, null)
+				"parameter_configuration", JSONFactoryUtil.createJSONObject()
 			).put(
-				"query_configuration", JSONUtil.put(null, null)
+				"query_configuration", JSONFactoryUtil.createJSONObject()
 			).put(
-				"sort_configuration", JSONUtil.put(null, null)
+				"sort_configuration", JSONFactoryUtil.createJSONObject()
 			)
 		).put(
 			"title", "test Blueprint"

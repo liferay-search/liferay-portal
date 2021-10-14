@@ -289,11 +289,11 @@ public abstract class BaseBlueprintsTestCase {
 	}
 
 	protected JSONObject getAdvancedConfiguration() {
-		return JSONUtil.put(null, null);
+		return JSONFactoryUtil.createJSONObject();
 	}
 
 	protected JSONObject getAggregationConfiguration() {
-		return JSONUtil.put(null, null);
+		return JSONFactoryUtil.createJSONObject();
 	}
 
 	protected BlueprintsAttributes getBlueprintsAttributes(
@@ -340,7 +340,7 @@ public abstract class BaseBlueprintsTestCase {
 		).put(
 			"highlight_configuration", getHightlightConfiguration()
 		).put(
-			"parameter_configuration", JSONUtil.put(null, null)
+			"parameter_configuration", JSONFactoryUtil.createJSONObject()
 		).put(
 			"query_configuration", queryJSONArray
 		).put(
@@ -349,7 +349,7 @@ public abstract class BaseBlueprintsTestCase {
 	}
 
 	protected JSONObject getConfigurationSection() {
-		return JSONUtil.put(null, null);
+		return JSONFactoryUtil.createJSONObject();
 	}
 
 	protected String getConfigurationString(JSONObject... jsonObjects) {
@@ -388,7 +388,7 @@ public abstract class BaseBlueprintsTestCase {
 	}
 
 	protected JSONObject getHightlightConfiguration() {
-		return JSONUtil.put(null, null);
+		return JSONFactoryUtil.createJSONObject();
 	}
 
 	protected ConfigurationTemporarySwapper
@@ -410,7 +410,7 @@ public abstract class BaseBlueprintsTestCase {
 	}
 
 	protected JSONObject getParameterConfiguration() {
-		return JSONUtil.put(null, null);
+		return JSONFactoryUtil.createJSONObject();
 	}
 
 	protected String getSelectedElementString() throws Exception {
