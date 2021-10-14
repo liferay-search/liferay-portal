@@ -17,7 +17,7 @@ package com.liferay.search.experiences.blueprints.searchrequest.contributor.sear
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.test.util.JournalTestUtil;
-import com.liferay.petra.string.CharPool;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.configuration.test.util.ConfigurationTemporarySwapper;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.model.Group;
@@ -187,15 +187,11 @@ public class BlueprintsSearchRequestContributorTest {
 	protected String readConfiguration() {
 		Class<?> clazz = getClass();
 
-		StringBundler sb = new StringBundler(5);
-
-		sb.append(clazz.getSimpleName());
-		sb.append(CharPool.PERIOD);
-		sb.append(testName.getMethodName());
-		sb.append(CharPool.PERIOD);
-		sb.append("json");
-
-		return StringUtil.read(clazz, sb.toString());
+		return StringUtil.read(
+			clazz,
+			StringBundler.concat(
+				clazz.getSimpleName(), StringPool.PERIOD,
+				testName.getMethodName(), ".json"));
 	}
 
 	@Inject
