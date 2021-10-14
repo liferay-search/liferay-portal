@@ -249,6 +249,80 @@ definition {
 			value1 = "Oil Filter");
 	}
 
+	test BoostCustomLiferayObjectType {
+		ObjectAdmin.addObjectViaAPI(
+			labelName = "Custom Object",
+			objectName = "CustomObject",
+			panelCategoryKey = "site_administration.content",
+			pluralLabelName = "Custom Objects",
+			scope = "site");
+
+		ObjectAdmin.addObjectFieldViaAPI(
+			fieldLabelName = "title",
+			fieldName = "title",
+			fieldType = "String",
+			isRequired = "false",
+			objectName = "CustomObject");
+
+		ObjectAdmin.publishObjectViaAPI(objectName = "CustomObject");
+
+		Refresh();
+
+		ProductMenu.gotoPortlet(
+			category = "Content &amp; Data",
+			portlet = "Custom Objects");
+
+		LexiconEntry.gotoAdd();
+
+		PortletEntry.inputTitle(title = "reddish apple");
+
+		PortletEntry.save();
+
+		JSONWebcontent.addWebContent(
+			content = "",
+			groupName = "Guest",
+			title = "red apple");
+
+		Search.openSearchPage();
+
+		SearchPortlets.searchEmbedded(searchTerm = "red apple");
+
+		SearchResultPortlet.viewSearchResultsSpecificOrder(resultsList = "red apple,reddish apple");
+
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		SearchExperiences.addBlueprint(name = "Boost Custom Object Blueprint");
+
+		Panel.expandPanel(panel = "Searchable Types");
+
+		AssertElementPresent(
+			typeName = "Custom Object",
+			locator1 = "SearchExperiences#BLUEPRINTS_SELECTED_SEARCHABLE_TYPE");
+
+		SearchExperiences.addQueryElement(element = "Boost Asset Type");
+
+		SearchExperiences.configureElementDropdown(
+			dropdownName = "Asset Type",
+			option = "Custom Object");
+
+		Type(
+			key_fieldLabel = "Boost",
+			locator1 = "SearchExperiences#BLUEPRINTS_ADDED_ELEMENT_NUMBER_FIELD",
+			value1 = "1000");
+
+		PortletEntry.save();
+
+		Search.openSearchPage();
+
+		SearchPortlets.addWidgets(searchPortletList = "Blueprints Options");
+
+		SearchExperiences.selectBlueprintFromOptionsWidget(name = "Boost Custom Object Blueprint");
+
+		SearchPortlets.searchEmbedded(searchTerm = "red apple");
+
+		SearchResultPortlet.viewSearchResultsSpecificOrder(resultsList = "reddish apple,red apple");
+	}
+
 	test BoostSearchRankingForAssetType {
 		JSONWebcontent.addWebContent(
 			content = "Liferay",
