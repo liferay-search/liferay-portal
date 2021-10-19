@@ -102,6 +102,12 @@ definition {
 		Click(locator1 = "CreateObject#SAVE_BUTTON");
 	}
 
+	macro selectEntryDisplayTitleField {
+		Select(
+			locator1 = "CreateObject#ENTRY_DISPLAY_TITLE_FIELD",
+			value1 = "${fieldName}");
+	}
+
 	macro selectPanelCategoryKey {
 		Select(
 			locator1 = "CreateObject#PANEL_CATEGORY_KEY",
