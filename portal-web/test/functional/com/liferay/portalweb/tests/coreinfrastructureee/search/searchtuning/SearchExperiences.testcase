@@ -51,6 +51,22 @@ definition {
 		LexiconEntry.viewNoEntry(rowEntry = "Blueprint 1");
 	}
 
+	test AddCopyAndDeleteCustomElement {
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		SearchExperiences.createElement(name = "New Element");
+
+		LexiconEntry.gotoEntryMenuItem(
+			menuItem = "Copy",
+			rowEntry = "New Element");
+
+		LexiconEntry.viewEntryName(rowEntry = "New Element (Copy)");
+
+		LexiconEntry.delete(rowEntry = "New Element");
+
+		LexiconEntry.viewNoEntry(rowEntry = "Blueprint 1");
+	}
+
 	test AssertCannotModifyDefaultElements {
 		SearchExperiences.openSearchExperiencesAdmin();
 
