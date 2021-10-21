@@ -451,6 +451,24 @@ definition {
 			searchAssetType = "Web Content Article");
 	}
 
+	test CopyAndDeleteDefaultElement {
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		Navigator.gotoNavItem(navItem = "Elements");
+
+		var defaultElement = selenium.getText("SearchExperiences#ELEMENTS_ADMIN_DEFAULT_ELEMENT_ENTRY_NAME");
+
+		LexiconEntry.gotoEntryMenuItem(
+			menuItem = "Copy",
+			rowEntry = "${defaultElement}");
+
+		LexiconEntry.viewEntryName(rowEntry = "${defaultElement} (Copy)");
+
+		LexiconEntry.delete(rowEntry = "${defaultElement} (Copy)");
+
+		LexiconEntry.viewNoEntry(rowEntry = "${defaultElement} (Copy)");
+	}
+
 	test CreateBaselineClausesBlueprint {
 		SearchExperiences.openSearchExperiencesAdmin();
 
