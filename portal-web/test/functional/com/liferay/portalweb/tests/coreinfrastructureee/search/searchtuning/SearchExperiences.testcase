@@ -1356,6 +1356,22 @@ definition {
 		SearchExperiences.viewCopiedContent(text = "clauses");
 	}
 
+	test ViewElementsAdminPreview {
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		Navigator.gotoNavItem(navItem = "Elements");
+
+		var defaultElementName = selenium.getText("SearchExperiences#ELEMENTS_ADMIN_DEFAULT_ELEMENT_ENTRY_NAME");
+
+		LexiconEntry.gotoEntry(rowEntry = "${defaultElementName}");
+
+		Click(locator1 = "Button#PREVIEW");
+
+		AssertTextEquals.assertPartialText(
+			locator1 = "Modal#BODY",
+			value1 = "${defaultElementName}");
+	}
+
 	test ViewExpandedAndCollapsedBlueprintsPreviewEntry {
 		JSONWebcontent.addWebContent(
 			content = "",
