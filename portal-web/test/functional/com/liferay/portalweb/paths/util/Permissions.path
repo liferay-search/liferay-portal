@@ -144,6 +144,16 @@
 	<td></td>
 </tr>
 <tr>
+	<td>INLINE_PERMISSIONS_ANY_CHECKBOX</td>
+	<td>//input[@id='${key_roleTitle}_ACTION_${key_permission}']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>INLINE_PERMISSIONS_APPLY_BLUEPRINT_CHECKBOX</td>
+	<td>//input[@id='${key_roleTitle}_ACTION_APPLY_BLUEPRINT']</td>
+	<td></td>
+</tr>
+<tr>
 	<td>INLINE_PERMISSIONS_PERMISSIONS_CHECKBOX</td>
 	<td>//input[@id='${key_roleTitle}_ACTION_PERMISSIONS']</td>
 	<td></td>

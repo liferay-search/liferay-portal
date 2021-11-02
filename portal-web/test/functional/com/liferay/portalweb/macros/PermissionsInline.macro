@@ -111,6 +111,31 @@ definition {
 			value1 = "Your request completed successfully.");
 	}
 
+	macro addPermissions {
+		var roleTitle = StringUtil.replace("${roleTitle}", " ", "-");
+		var roleTitle = StringUtil.lowerCase("${roleTitle}");
+		var permissions = StringUtil.replace("${permissions}", " ", "_");
+		var permissions = StringUtil.upperCase("${permissions}");
+
+		for (var permission : list "${permissions}") {
+			Check(
+				key_permission = "${permission}",
+				key_roleTitle = "${roleTitle}",
+				locator1 = "Permissions#INLINE_PERMISSIONS_ANY_CHECKBOX");
+		}
+
+		Button.clickSave();
+
+		VerifyElementPresent(locator1 = "Message#SUCCESS");
+
+		for (var permission : list "${permissions}") {
+			AssertChecked(
+				key_permission = "${permission}",
+				key_roleTitle = "${roleTitle}",
+				locator1 = "Permissions#INLINE_PERMISSIONS_ANY_CHECKBOX");
+		}
+	}
+
 	macro assertDefaultPG {
 		for (var roleTitle : list "${roleList}") {
 			var roleTitle = "${roleTitle}";
@@ -188,6 +213,14 @@ definition {
 		LexiconEntry.gotoEllipsisMenuItem(menuItem = "Permissions");
 
 		SelectFrame(locator1 = "IFrame#MODAL_BODY");
+	}
+
+	macro gotoEntryPermissions {
+		LexiconEntry.gotoEntryMenuItem(
+			menuItem = "Permissions",
+			rowEntry = "${rowEntry}");
+
+		IFrame.selectPermissionsFrame();
 	}
 
 	macro gotoMessageBoardsCategoryPG {
@@ -326,6 +359,31 @@ definition {
 			listEntry = "${webContentTitle}");
 
 		IFrame.selectPermissionsFrame();
+	}
+
+	macro removePermissions {
+		var roleTitle = StringUtil.replace("${roleTitle}", " ", "-");
+		var roleTitle = StringUtil.lowerCase("${roleTitle}");
+		var permissions = StringUtil.replace("${permissions}", " ", "_");
+		var permissions = StringUtil.upperCase("${permissions}");
+
+		for (var permission : list "${permissions}") {
+			Uncheck(
+				key_permission = "${permission}",
+				key_roleTitle = "${roleTitle}",
+				locator1 = "Permissions#INLINE_PERMISSIONS_ANY_CHECKBOX");
+		}
+
+		Button.clickSave();
+
+		VerifyElementPresent(locator1 = "Message#SUCCESS");
+
+		for (var permission : list "${permissions}") {
+			AssertNotChecked(
+				key_permission = "${permission}",
+				key_roleTitle = "${roleTitle}",
+				locator1 = "Permissions#INLINE_PERMISSIONS_ANY_CHECKBOX");
+		}
 	}
 
 	macro viewPermissionsChecked {
