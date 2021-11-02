@@ -167,9 +167,8 @@ definition {
 			key_title = "Select Blueprint",
 			locator1 = "IFrame#MODAL_ANY");
 
-		var key_blueprintName = "${name}";
-
 		AssertClick(
+			key_blueprintName = "${name}",
 			locator1 = "SearchExperiences#BLUEPRINTS_OPTIONS_WIDGET_CHOOSE",
 			value1 = "Choose");
 
@@ -182,6 +181,10 @@ definition {
 		Alert.viewSuccessMessage();
 
 		IFrame.closeFrame();
+
+		Portlet.viewBody(
+			portletBody = "Blueprint: ${name}",
+			portletName = "Blueprints Options");
 	}
 
 	macro viewCopiedContent {

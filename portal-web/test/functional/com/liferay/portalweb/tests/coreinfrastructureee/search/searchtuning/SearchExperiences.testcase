@@ -1146,6 +1146,92 @@ definition {
 			value1 = "red apple, citrus-orange");
 	}
 
+	test ViewBlueprintsApplyPermission {
+		property custom.properties = "jsonws.web.service.paths.excludes=";
+
+		JSONRole.addRegularRole(
+			roleKey = "Search Blueprints User",
+			roleTitle = "Search Blueprints User");
+
+		for (var resourceActionIndex : list "ACCESS_IN_CONTROL_PANEL,CONFIGURATION,PERMISSIONS,PREFERENCES,VIEW") {
+			Permissions.definePermissionViaJSONAPI(
+				resourceAction = "${resourceActionIndex}",
+				resourceName = "com_liferay_search_experiences_blueprints_web_internal_portlet_BlueprintsAdminPortlet",
+				roleTitle = "Search Blueprints User");
+		}
+
+		for (var resourceActionIndex : list "ADD_BLUEPRINT,ADD_ELEMENT,PERMISSIONS") {
+			Permissions.definePermissionViaJSONAPI(
+				resourceAction = "${resourceActionIndex}",
+				resourceName = "com.liferay.search.experiences.blueprints",
+				roleTitle = "Search Blueprints User");
+		}
+
+		Permissions.definePermissionViaJSONAPI(
+			resourceAction = "VIEW_CONTROL_PANEL",
+			resourceName = "90",
+			roleTitle = "Search Blueprints User");
+
+		JSONUser.addUser(
+			userEmailAddress = "userea@liferay.com",
+			userFirstName = "userfn",
+			userLastName = "userln",
+			userScreenName = "usersn");
+
+		JSONUser.setFirstPassword(
+			agreeToTermsAndAnswerReminderQuery = "true",
+			requireReset = "false",
+			userEmailAddress = "userea@liferay.com");
+
+		JSONRole.assignRoleToUser(
+			roleTitle = "Search Blueprints User",
+			userEmailAddress = "userea@liferay.com");
+
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		SearchExperiences.addBlueprint(name = "Admin Blueprint");
+
+		PortletEntry.save();
+
+		PermissionsInline.gotoEntryPermissions(rowEntry = "Admin Blueprint");
+
+		PermissionsInline.addPermissions(
+			permissions = "Apply Blueprint,View",
+			roleTitle = "Search Blueprints User");
+
+		Search.openSearchPage();
+
+		SearchPortlets.addWidgets(searchPortletList = "Blueprints Options");
+
+		PermissionsInline.gotoConfigurationPG(portletName = "Blueprints Options");
+
+		PermissionsInline.addPermissions(
+			permissions = "Configuration,View",
+			roleTitle = "Search Blueprints User");
+
+		User.logoutAndLoginPG(
+			userLoginEmailAddress = "userea@liferay.com",
+			userLoginFullName = "userfn userln");
+
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		SearchExperiences.addBlueprint(name = "My Blueprint");
+
+		PortletEntry.save();
+
+		PermissionsInline.gotoEntryPermissions(rowEntry = "My Blueprint");
+
+		PermissionsInline.removePermissions(
+			permissions = "Delete,Update,View",
+			roleTitle = "Owner");
+
+		Search.openSearchPage();
+
+		SearchExperiences.selectBlueprintFromOptionsWidget(name = "Admin Blueprint");
+
+		SearchExperiences.selectBlueprintFromOptionsWidget(name = "My Blueprint");
+	}
+
 	test ViewBlueprintsConfigJSONValidation {
 		SearchExperiences.openSearchExperiencesAdmin();
 
