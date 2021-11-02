@@ -1203,6 +1203,161 @@ definition {
 		AssertTextPresent(value1 = "cardinality-test");
 	}
 
+	test ViewBlueprintsEntryPermissions {
+		property custom.properties = "jsonws.web.service.paths.excludes=";
+
+		JSONRole.addRegularRole(
+			roleKey = "Search Blueprints User",
+			roleTitle = "Search Blueprints User");
+
+		for (var resourceActionIndex : list "ACCESS_IN_CONTROL_PANEL,CONFIGURATION,PERMISSIONS,PREFERENCES,VIEW") {
+			Permissions.definePermissionViaJSONAPI(
+				resourceAction = "${resourceActionIndex}",
+				resourceName = "com_liferay_search_experiences_blueprints_web_internal_portlet_BlueprintsAdminPortlet",
+				roleTitle = "Search Blueprints User");
+		}
+
+		for (var resourceActionIndex : list "ADD_BLUEPRINT,ADD_ELEMENT,PERMISSIONS") {
+			Permissions.definePermissionViaJSONAPI(
+				resourceAction = "${resourceActionIndex}",
+				resourceName = "com.liferay.search.experiences.blueprints",
+				roleTitle = "Search Blueprints User");
+		}
+
+		Permissions.definePermissionViaJSONAPI(
+			resourceAction = "VIEW_CONTROL_PANEL",
+			resourceName = "90",
+			roleTitle = "Search Blueprints User");
+
+		JSONUser.addUser(
+			userEmailAddress = "userea@liferay.com",
+			userFirstName = "userfn",
+			userLastName = "userln",
+			userScreenName = "usersn");
+
+		JSONUser.setFirstPassword(
+			agreeToTermsAndAnswerReminderQuery = "true",
+			requireReset = "false",
+			userEmailAddress = "userea@liferay.com");
+
+		JSONRole.assignRoleToUser(
+			roleTitle = "Search Blueprints User",
+			userEmailAddress = "userea@liferay.com");
+
+		SearchExperiences.openSearchExperiencesAdmin();
+
+		SearchExperiences.addBlueprint(name = "Admin Blueprint");
+
+		PortletEntry.save();
+
+		PermissionsInline.gotoEntryPermissions(rowEntry = "Admin Blueprint");
+
+		PermissionsInline.addPermissions(
+			permissions = "View",
+			roleTitle = "Search Blueprints User");
+
+		IFrame.closeFrame();
+
+		User.logoutAndLoginPG(
+			userLoginEmailAddress = "userea@liferay.com",
+			userLoginFullName = "userfn userln");
+
+		ApplicationsMenu.gotoPortlet(
+			category = "Search Experiences",
+			panel = "Applications",
+			portlet = "Blueprints");
+
+		LexiconEntry.viewEntryName(rowEntry = "Admin Blueprint");
+
+		AssertElementNotPresent(
+			key_rowNumber = "2",
+			locator1 = "ContentRow#ENTRY_CONTENT_ROW_NUMBER");
+
+		LexiconEntry.openEntryMenu(rowEntry = "Admin Blueprint");
+
+		for (var menuItem : list "Copy,Export,Permissions") {
+			AssertElementPresent(
+				key_menuItem = "${menuItem}",
+				locator1 = "MenuItem#ANY_MENU_ITEM");
+		}
+
+		for (var menuItem : list "Edit,Delete") {
+			AssertElementNotPresent(
+				key_menuItem = "${menuItem}",
+				locator1 = "MenuItem#ANY_MENU_ITEM");
+		}
+
+		SearchExperiences.addBlueprint(name = "My Blueprint");
+
+		PortletEntry.save();
+
+		LexiconEntry.openEntryMenu(rowEntry = "My Blueprint");
+
+		for (var menuItem : list "Edit,Copy,Export,Permissions,Delete") {
+			AssertElementPresent(
+				key_menuItem = "${menuItem}",
+				locator1 = "MenuItem#ANY_MENU_ITEM");
+		}
+
+		MenuItem.click(menuItem = "Edit");
+
+		ControlMenu.viewHeaderTitle(headerTitle = "Edit Blueprint");
+
+		Navigator.gotoBack();
+
+		PermissionsInline.gotoEntryPermissions(rowEntry = "My Blueprint");
+
+		for (var permission : list "APPLY_BLUEPRINT,DELETE,PERMISSIONS,UPDATE,VIEW") {
+			var permissionLocator = "INLINE_PERMISSIONS_${permission}_CHECKBOX";
+
+			PermissionsInline.viewPermissionsChecked(
+				permissionDefinitionKey = "${permissionLocator}",
+				roleTitle = "Owner");
+		}
+
+		PermissionsInline.removePermissions(
+			permissions = "Delete,Update",
+			roleTitle = "Owner");
+
+		Refresh();
+
+		LexiconEntry.openEntryMenu(rowEntry = "My Blueprint");
+
+		AssertElementNotPresent(
+			key_menuItem = "Edit",
+			locator1 = "MenuItem#ANY_MENU_ITEM");
+
+		AssertElementNotPresent(
+			key_menuItem = "Delete",
+			locator1 = "MenuItem#ANY_MENU_ITEM");
+
+		MenuItem.click(menuItem = "Copy");
+
+		LexiconEntry.viewEntryName(rowEntry = "My Blueprint (Copy)");
+
+		PermissionsInline.gotoEntryPermissions(rowEntry = "My Blueprint (Copy)");
+
+		for (var permission : list "APPLY_BLUEPRINT,DELETE,PERMISSIONS,UPDATE,VIEW") {
+			var permissionLocator = "INLINE_PERMISSIONS_${permission}_CHECKBOX";
+
+			PermissionsInline.viewPermissionsChecked(
+				permissionDefinitionKey = "${permissionLocator}",
+				roleTitle = "Owner");
+		}
+
+		PermissionsInline.removePermissions(
+			permissions = "Apply Blueprint",
+			roleTitle = "Owner");
+
+		PermissionsInline.removePermissions(
+			permissions = "Apply Blueprint",
+			roleTitle = "Guest");
+
+		Refresh();
+
+		LexiconEntry.viewNoEntry(rowEntry = "My Blueprint (Copy)");
+	}
+
 	test ViewClauseContributorsUI {
 		SearchExperiences.openSearchExperiencesAdmin();
 
