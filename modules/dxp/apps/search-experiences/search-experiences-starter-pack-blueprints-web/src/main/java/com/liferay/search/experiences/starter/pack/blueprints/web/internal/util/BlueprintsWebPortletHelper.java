@@ -58,58 +58,10 @@ public class BlueprintsWebPortletHelper {
 		return blueprintsWebPortletPreferences.getBlueprintId();
 	}
 
-	public SuggestionAttributesBuilder getSuggestionAttributesBuilder(
-		PortletRequest portletRequest, String[] dataProviders, String keywords,
-		int size) {
-
-		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
-		return _suggestionAttributesBuilderFactory.builder(
-		).companyId(
-			themeDisplay.getCompanyId()
-		).groupId(
-			themeDisplay.getScopeGroupId()
-		).ipAddress(
-			_getIPAddress(portletRequest)
-		).includedDataProviders(
-			dataProviders
-		).keywords(
-			keywords
-		).locale(
-			themeDisplay.getLocale()
-		).plid(
-			themeDisplay.getPlid()
-		).size(
-			size
-		).timezoneId(
-			_getTimezoneId(themeDisplay)
-		).userId(
-			themeDisplay.getUserId()
-		);
-	}
-
-	private String _getIPAddress(PortletRequest portletRequest) {
-		HttpServletRequest httpServletRequest = _portal.getHttpServletRequest(
-			portletRequest);
-
-		return httpServletRequest.getRemoteAddr();
-	}
-
-	private String _getTimezoneId(ThemeDisplay themeDisplay) {
-		TimeZone timeZone = themeDisplay.getTimeZone();
-
-		return timeZone.getID();
-	}
-
 	@Reference
 	private BlueprintLookup _blueprintLookup;
 
 	@Reference
 	private Portal _portal;
-
-	@Reference
-	private SuggestionAttributesBuilderFactory
-		_suggestionAttributesBuilderFactory;
 
 }
