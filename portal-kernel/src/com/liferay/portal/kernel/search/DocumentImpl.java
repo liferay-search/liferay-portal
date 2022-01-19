@@ -400,9 +400,21 @@ public class DocumentImpl implements Document {
 			return;
 		}
 
-		createField(name, values);
+		String[] filteredValues = Arrays.stream(
+			values
+		).filter(
+			value -> Validator.isNotNull(value)
+		).toArray(
+			String[]::new
+		);
 
-		_createSortableTextField(name, true, values);
+		if (ArrayUtil.isEmpty(filteredValues)) {
+			return;
+		}
+
+		createField(name, filteredValues);
+
+		_createSortableTextField(name, true, filteredValues);
 	}
 
 	@Override
