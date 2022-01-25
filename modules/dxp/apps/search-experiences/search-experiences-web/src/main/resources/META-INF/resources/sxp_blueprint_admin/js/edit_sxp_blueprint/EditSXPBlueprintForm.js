@@ -674,20 +674,21 @@ function EditSXPBlueprintForm({
 			}
 		)
 			.then((response) => {
-				if (!response.ok) {
-					if (response.status === 400) {
-						return response.json().then((json) => {
-							return getResultsError({msg: json.title});
-						});
-					}
-				}
-
-				return response.json();
+				return response.json().then((data) => ({
+					ok: response.ok,
+					responseContent: data,
+				}));
 			})
-			.then((responseContent) => {
+			.then(({ok, responseContent}) => {
 				setPreviewInfo({
 					loading: false,
-					results: parseResponseContent(responseContent),
+					results: parseResponseContent(
+						ok
+							? responseContent
+							: getResultsError({
+									msg: responseContent?.title,
+							  })
+					),
 				});
 			})
 			.catch(() => {
