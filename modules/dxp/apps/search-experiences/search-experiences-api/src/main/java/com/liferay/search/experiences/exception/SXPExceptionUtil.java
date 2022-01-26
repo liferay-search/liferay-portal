@@ -16,6 +16,7 @@ package com.liferay.search.experiences.exception;
 
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.search.experiences.blueprint.exception.InvalidElementInstanceException;
+import com.liferay.search.experiences.blueprint.exception.SXPParameterContributorException;
 
 /**
  * @author André de Oliveira
@@ -24,7 +25,9 @@ import com.liferay.search.experiences.blueprint.exception.InvalidElementInstance
 public class SXPExceptionUtil {
 
 	public static boolean hasErrors(Throwable throwable) {
-		if (throwable instanceof InvalidElementInstanceException) {
+		if (throwable instanceof InvalidElementInstanceException ||
+			throwable instanceof SXPParameterContributorException) {
+
 			return false;
 		}
 
