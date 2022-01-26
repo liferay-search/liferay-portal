@@ -26,6 +26,7 @@ import com.liferay.portal.kernel.util.HttpUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.webcache.WebCacheItem;
 import com.liferay.portal.kernel.webcache.WebCachePoolUtil;
+import com.liferay.search.experiences.blueprint.exception.InvalidWebCacheItemException;
 import com.liferay.search.experiences.internal.configuration.OpenWeatherMapConfiguration;
 
 import java.beans.ExceptionListener;
@@ -34,6 +35,7 @@ import java.io.IOException;
 
 /**
  * @author Brian Wing Shun Chan
+ * @author Petteri Karttunen
  */
 public class OpenWeatherMapWebCacheItem implements WebCacheItem {
 
@@ -96,7 +98,7 @@ public class OpenWeatherMapWebCacheItem implements WebCacheItem {
 			return jsonObject;
 		}
 		catch (IOException | JSONException exception) {
-			throw new RuntimeException(exception);
+			throw new InvalidWebCacheItemException(exception);
 		}
 	}
 
@@ -116,7 +118,7 @@ public class OpenWeatherMapWebCacheItem implements WebCacheItem {
 			return;
 		}
 
-		throw new RuntimeException(
+		throw new InvalidWebCacheItemException(
 			StringBundler.concat(
 				"OpenWeatherMap: ",
 				JSONUtil.getValueAsString(jsonObject, "Object/message"), " (",
