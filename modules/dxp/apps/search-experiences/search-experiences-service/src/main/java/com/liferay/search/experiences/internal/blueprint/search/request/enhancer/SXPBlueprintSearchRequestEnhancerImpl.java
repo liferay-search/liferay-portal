@@ -40,6 +40,7 @@ import com.liferay.portal.search.sort.Sorts;
 import com.liferay.portal.vulcan.dto.converter.DTOConverter;
 import com.liferay.portal.vulcan.dto.converter.DTOConverterRegistry;
 import com.liferay.search.experiences.blueprint.exception.InvalidElementInstanceException;
+import com.liferay.search.experiences.blueprint.exception.SXPParameterContributorException;
 import com.liferay.search.experiences.blueprint.parameter.SXPParameter;
 import com.liferay.search.experiences.blueprint.search.request.enhancer.SXPBlueprintSearchRequestEnhancer;
 import com.liferay.search.experiences.internal.blueprint.highlight.HighlightConverter;
@@ -204,11 +205,20 @@ public class SXPBlueprintSearchRequestEnhancerImpl
 
 		RuntimeException runtimeException = new RuntimeException();
 
+		SXPParameterContributorException sxpParameterContributorException =
+			new SXPParameterContributorException();
+
 		SXPParameterData sxpParameterData = _sxpParameterDataCreator.create(
-			runtimeException::addSuppressed,
+			sxpParameterContributorException::addSuppressed,
 			searchRequestBuilder.withSearchContextGet(
 				searchContext -> searchContext),
 			sxpBlueprint);
+
+		if (ArrayUtil.isNotEmpty(
+				sxpParameterContributorException.getSuppressed())) {
+
+			runtimeException.addSuppressed(sxpParameterContributorException);
+		}
 
 		if (configuration != null) {
 			_contributeSXPSearchRequestBodyContributors(
