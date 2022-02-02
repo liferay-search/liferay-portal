@@ -131,6 +131,11 @@ function ErrorListItem({error, onFocusSXPElement}) {
 
 			{_isCollapsible() && (
 				<ClayButtonWithIcon
+					aria-label={
+						collapse
+							? Liferay.Language.get('expand')
+							: Liferay.Language.get('collapse')
+					}
 					borderless
 					className={getCN(
 						'collapse-button',
