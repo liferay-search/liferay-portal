@@ -53,10 +53,18 @@ const getConfigurationFieldName = (rootProperty) => {
 	return configName ? CONFIGURATION_FIELD_NAME[configName] : '';
 };
 
-const prettyPrint = (value) => {
-	return JSON.stringify(value, null, 2);
-};
+function getTextCSSClass(severity) {
+	return 'text-' + (SEVERITY_DISPLAY_TYPE[severity] || 'danger');
+}
 
+function prettyPrint(value) {
+	return JSON.stringify(value, null, 2);
+}
+
+/**
+ * Displays an alert depending on the `item` object properties.
+ * Used in the preview sidebar.
+ */
 function ErrorListItem({item, onFocusSXPElement}) {
 	const [collapse, setCollapse] = useState(true);
 
@@ -112,7 +120,10 @@ function ErrorListItem({item, onFocusSXPElement}) {
 			{_isCollapsible() && (
 				<ClayButtonWithIcon
 					borderless
-					className="collapse-button text-danger"
+					className={getCN(
+						'collapse-button',
+						getTextCSSClass(item.severity)
+					)}
 					displayType="unstyled"
 					onClick={_handleCollapse}
 					small
@@ -134,7 +145,11 @@ function ErrorListItem({item, onFocusSXPElement}) {
 									</ClayLayout.Col>
 
 									<ClayLayout.Col size={9}>
-										<code>
+										<code
+											className={getTextCSSClass(
+												item.severity
+											)}
+										>
 											{typeof item[property] === 'object'
 												? prettyPrint(item[property])
 												: item[property]}
