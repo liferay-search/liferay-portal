@@ -305,7 +305,11 @@ public class ElasticsearchInstanceSettingsBuilder {
 
 		_configureTestMode();
 
-		put("transport.type", "netty4");
+		put("xpack.ml.enabled", false);
+		put("xpack.monitoring.enabled", false);
+		put("xpack.security.enabled", false);
+		put("xpack.sql.enabled", false);
+		put("xpack.watcher.enabled", false);
 	}
 
 	private void _loadSettingsContributors() {
