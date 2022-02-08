@@ -48,9 +48,8 @@ public class SXPElementEntityModel implements EntityModel {
 					Field.DESCRIPTION, LocaleUtil.toLanguageId(locale))),
 			new StringEntityField(
 				"title",
-				locale -> Field.getSortableFieldName(
-					LocalizationUtil.getLocalizedName(
-						Field.TITLE, LocaleUtil.toLanguageId(locale)))));
+				locale -> LocalizationUtil.getLocalizedName(
+					Field.TITLE, LocaleUtil.toLanguageId(locale))));
 	}
 
 	@Override
