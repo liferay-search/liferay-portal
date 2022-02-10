@@ -155,40 +155,16 @@ public class SXPElementResourceImpl
 				long sxpElementId = GetterUtil.getLong(
 					document.get(Field.ENTRY_CLASS_PK));
 
-				SXPElement sxpElement = _sxpElementDTOConverter.toDTO(
-					new DefaultDTOConverterContext(
-						contextAcceptLanguage.isAcceptAllLanguages(),
-						new HashMap<>(), _dtoConverterRegistry,
-						contextHttpServletRequest,
-						document.get(Field.ENTRY_CLASS_PK),
-						contextAcceptLanguage.getPreferredLocale(),
-						contextUriInfo, contextUser),
-					_sxpElementService.getSXPElement(sxpElementId));
-
-				String permissionName =
-					com.liferay.search.experiences.model.SXPElement.class.
-						getName();
-
-				sxpElement.setActions(
-					HashMapBuilder.put(
-						"delete",
-						() -> {
-							if (sxpElement.getReadOnly()) {
-								return null;
-							}
-
-							return addAction(
-								ActionKeys.DELETE, "deleteSXPElement",
-								permissionName, sxpElementId);
-						}
-					).put(
-						"view",
-						() -> addAction(
-							ActionKeys.VIEW, "getSXPElement", permissionName,
-							sxpElementId)
-					).build());
-
-				return sxpElement;
+				return _setActions(
+					_sxpElementDTOConverter.toDTO(
+						new DefaultDTOConverterContext(
+							contextAcceptLanguage.isAcceptAllLanguages(),
+							new HashMap<>(), _dtoConverterRegistry,
+							contextHttpServletRequest,
+							document.get(Field.ENTRY_CLASS_PK),
+							contextAcceptLanguage.getPreferredLocale(),
+							contextUriInfo, contextUser),
+						_sxpElementService.getSXPElement(sxpElementId)));
 			});
 	}
 
@@ -218,24 +194,27 @@ public class SXPElementResourceImpl
 
 	@Override
 	public SXPElement postSXPElement(SXPElement sxpElement) throws Exception {
-		return _sxpElementDTOConverter.toDTO(
-			new DefaultDTOConverterContext(
-				contextAcceptLanguage.isAcceptAllLanguages(), new HashMap<>(),
-				_dtoConverterRegistry, contextHttpServletRequest,
-				sxpElement.getId(), contextAcceptLanguage.getPreferredLocale(),
-				contextUriInfo, contextUser),
-			_sxpElementService.addSXPElement(
-				LocalizedMapUtil.getLocalizedMap(
-					contextAcceptLanguage.getPreferredLocale(),
-					sxpElement.getDescription(),
-					sxpElement.getDescription_i18n()),
-				_getElementDefinitionJSON(sxpElement), false,
-				_getSchemaVersion(),
-				LocalizedMapUtil.getLocalizedMap(
-					contextAcceptLanguage.getPreferredLocale(),
-					sxpElement.getTitle(), sxpElement.getTitle_i18n()),
-				GetterUtil.getInteger(sxpElement.getType()),
-				ServiceContextFactory.getInstance(contextHttpServletRequest)));
+		return _setActions(
+			_sxpElementDTOConverter.toDTO(
+				new DefaultDTOConverterContext(
+					contextAcceptLanguage.isAcceptAllLanguages(),
+					new HashMap<>(), _dtoConverterRegistry,
+					contextHttpServletRequest, sxpElement.getId(),
+					contextAcceptLanguage.getPreferredLocale(), contextUriInfo,
+					contextUser),
+				_sxpElementService.addSXPElement(
+					LocalizedMapUtil.getLocalizedMap(
+						contextAcceptLanguage.getPreferredLocale(),
+						sxpElement.getDescription(),
+						sxpElement.getDescription_i18n()),
+					_getElementDefinitionJSON(sxpElement), false,
+					_getSchemaVersion(),
+					LocalizedMapUtil.getLocalizedMap(
+						contextAcceptLanguage.getPreferredLocale(),
+						sxpElement.getTitle(), sxpElement.getTitle_i18n()),
+					GetterUtil.getInteger(sxpElement.getType()),
+					ServiceContextFactory.getInstance(
+						contextHttpServletRequest))));
 	}
 
 	@Override
@@ -276,6 +255,32 @@ public class SXPElementResourceImpl
 	private String _getSchemaVersion() {
 		return StringUtils.substringBetween(
 			contextUriInfo.getPath(), "v", StringPool.SLASH);
+	}
+
+	private SXPElement _setActions(SXPElement sxpElement) {
+		String permissionName =
+			com.liferay.search.experiences.model.SXPElement.class.getName();
+
+		sxpElement.setActions(
+			HashMapBuilder.put(
+				"delete",
+				() -> {
+					if (sxpElement.getReadOnly()) {
+						return null;
+					}
+
+					return addAction(
+						ActionKeys.DELETE, "deleteSXPElement", permissionName,
+						sxpElement.getId());
+				}
+			).put(
+				"view",
+				() -> addAction(
+					ActionKeys.VIEW, "getSXPElement", permissionName,
+					sxpElement.getId())
+			).build());
+
+		return sxpElement;
 	}
 
 	@Reference

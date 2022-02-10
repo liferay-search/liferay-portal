@@ -162,34 +162,16 @@ public class SXPBlueprintResourceImpl
 				long sxpBlueprintId = GetterUtil.getLong(
 					document.get(Field.ENTRY_CLASS_PK));
 
-				SXPBlueprint sxpBlueprint = _sxpBlueprintDTOConverter.toDTO(
-					new DefaultDTOConverterContext(
-						contextAcceptLanguage.isAcceptAllLanguages(),
-						new HashMap<>(), _dtoConverterRegistry,
-						contextHttpServletRequest,
-						document.get(Field.ENTRY_CLASS_PK),
-						contextAcceptLanguage.getPreferredLocale(),
-						contextUriInfo, contextUser),
-					_sxpBlueprintService.getSXPBlueprint(sxpBlueprintId));
-
-				String permissionName =
-					com.liferay.search.experiences.model.SXPBlueprint.class.
-						getName();
-
-				sxpBlueprint.setActions(
-					HashMapBuilder.put(
-						"delete",
-						() -> addAction(
-							ActionKeys.DELETE, "deleteSXPBlueprint",
-							permissionName, sxpBlueprintId)
-					).put(
-						"view",
-						() -> addAction(
-							ActionKeys.VIEW, "getSXPBlueprint", permissionName,
-							sxpBlueprintId)
-					).build());
-
-				return sxpBlueprint;
+				return _setActions(
+					_sxpBlueprintDTOConverter.toDTO(
+						new DefaultDTOConverterContext(
+							contextAcceptLanguage.isAcceptAllLanguages(),
+							new HashMap<>(), _dtoConverterRegistry,
+							contextHttpServletRequest,
+							document.get(Field.ENTRY_CLASS_PK),
+							contextAcceptLanguage.getPreferredLocale(),
+							contextUriInfo, contextUser),
+						_sxpBlueprintService.getSXPBlueprint(sxpBlueprintId)));
 			});
 	}
 
@@ -226,24 +208,26 @@ public class SXPBlueprintResourceImpl
 
 		SXPBlueprintUtil.unpack(sxpBlueprint);
 
-		return _sxpBlueprintDTOConverter.toDTO(
-			new DefaultDTOConverterContext(
-				contextAcceptLanguage.isAcceptAllLanguages(), new HashMap<>(),
-				_dtoConverterRegistry, contextHttpServletRequest,
-				sxpBlueprint.getId(),
-				contextAcceptLanguage.getPreferredLocale(), contextUriInfo,
-				contextUser),
-			_sxpBlueprintService.addSXPBlueprint(
-				_getConfigurationJSON(sxpBlueprint),
-				LocalizedMapUtil.getLocalizedMap(
-					contextAcceptLanguage.getPreferredLocale(),
-					sxpBlueprint.getDescription(),
-					sxpBlueprint.getDescription_i18n()),
-				_getElementInstancesJSON(sxpBlueprint), _getSchemaVersion(),
-				LocalizedMapUtil.getLocalizedMap(
-					contextAcceptLanguage.getPreferredLocale(),
-					sxpBlueprint.getTitle(), sxpBlueprint.getTitle_i18n()),
-				ServiceContextFactory.getInstance(contextHttpServletRequest)));
+		return _setActions(
+			_sxpBlueprintDTOConverter.toDTO(
+				new DefaultDTOConverterContext(
+					contextAcceptLanguage.isAcceptAllLanguages(),
+					new HashMap<>(), _dtoConverterRegistry,
+					contextHttpServletRequest, sxpBlueprint.getId(),
+					contextAcceptLanguage.getPreferredLocale(), contextUriInfo,
+					contextUser),
+				_sxpBlueprintService.addSXPBlueprint(
+					_getConfigurationJSON(sxpBlueprint),
+					LocalizedMapUtil.getLocalizedMap(
+						contextAcceptLanguage.getPreferredLocale(),
+						sxpBlueprint.getDescription(),
+						sxpBlueprint.getDescription_i18n()),
+					_getElementInstancesJSON(sxpBlueprint), _getSchemaVersion(),
+					LocalizedMapUtil.getLocalizedMap(
+						contextAcceptLanguage.getPreferredLocale(),
+						sxpBlueprint.getTitle(), sxpBlueprint.getTitle_i18n()),
+					ServiceContextFactory.getInstance(
+						contextHttpServletRequest))));
 	}
 
 	@Override
@@ -294,6 +278,26 @@ public class SXPBlueprintResourceImpl
 	private String _getSchemaVersion() {
 		return StringUtils.substringBetween(
 			contextUriInfo.getPath(), "v", StringPool.SLASH);
+	}
+
+	private SXPBlueprint _setActions(SXPBlueprint sxpBlueprint) {
+		String permissionName =
+			com.liferay.search.experiences.model.SXPBlueprint.class.getName();
+
+		sxpBlueprint.setActions(
+			HashMapBuilder.put(
+				"delete",
+				() -> addAction(
+					ActionKeys.DELETE, "deleteSXPBlueprint", permissionName,
+					sxpBlueprint.getId())
+			).put(
+				"view",
+				() -> addAction(
+					ActionKeys.VIEW, "getSXPBlueprint", permissionName,
+					sxpBlueprint.getId())
+			).build());
+
+		return sxpBlueprint;
 	}
 
 	@Reference
