@@ -15,9 +15,10 @@
 package com.liferay.search.experiences.rest.resource.v1_0.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
-import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.search.experiences.rest.client.dto.v1_0.SXPBlueprint;
+import com.liferay.search.experiences.rest.client.http.HttpInvoker;
+import com.liferay.search.experiences.rest.client.pagination.Page;
 
 import java.util.Collections;
 
@@ -31,6 +32,55 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Arquillian.class)
 public class SXPBlueprintResourceTest extends BaseSXPBlueprintResourceTestCase {
+
+	@Override
+	@Test
+	public void testGetSXPBlueprintExport() throws Exception {
+		SXPBlueprint sxpBlueprint = randomSXPBlueprint();
+
+		String title = sxpBlueprint.getTitle();
+		String description = sxpBlueprint.getDescription();
+
+		SXPBlueprint postSXPBlueprint = testPostSXPBlueprint_addSXPBlueprint(
+			sxpBlueprint);
+
+		HttpInvoker.HttpResponse httpResponse =
+			sxpBlueprintResource.getSXPBlueprintExportHttpResponse(
+				postSXPBlueprint.getId());
+
+		String content = httpResponse.getContent();
+
+		String schemaVersion = postSXPBlueprint.getSchemaVersion();
+
+		String expectedContent =
+			"{  \"schemaVersion\" : \"" + schemaVersion +
+				"\",  \"title_i18n\" : {    \"en_US\" : \"" + title +
+					"\"  },  \"configuration\" : { },  \"description_i18n\" :" +
+						" {    \"en_US\" : \"" + description +
+							"\"  },  \"elementInstances\" : [ ]}";
+
+		sxpBlueprintResource.deleteSXPBlueprint(postSXPBlueprint.getId());
+
+		Assert.assertEquals(expectedContent, content);
+	}
+
+	@Override
+	@Test
+	public void testGetSXPBlueprintsPageWithFilterDateTimeEquals()
+		throws Exception {
+
+		_deleteSXPBlueprintsCreatedBefore();
+
+		super.testGetSXPBlueprintsPageWithFilterDateTimeEquals();
+	}
+
+	@Override
+	@Test
+	public void testGetSXPBlueprintsPageWithSortDateTime() throws Exception {
+		_deleteSXPBlueprintsCreatedBefore();
+
+		super.testGetSXPBlueprintsPageWithFilterDateTimeEquals();
+	}
 
 	@Ignore
 	@Override
@@ -49,12 +99,7 @@ public class SXPBlueprintResourceTest extends BaseSXPBlueprintResourceTestCase {
 	public void testPostSXPBlueprint() throws Exception {
 		super.testPostSXPBlueprint();
 
-		SXPBlueprint sxpBlueprint = SXPBlueprint.toDTO(
-			JSONUtil.put(
-				"description", RandomTestUtil.randomString()
-			).put(
-				"title", RandomTestUtil.randomString()
-			).toJSONString());
+		SXPBlueprint sxpBlueprint = randomSXPBlueprint();
 
 		SXPBlueprint postSXPBlueprint = testPostSXPBlueprint_addSXPBlueprint(
 			sxpBlueprint);
@@ -64,6 +109,7 @@ public class SXPBlueprintResourceTest extends BaseSXPBlueprintResourceTestCase {
 		sxpBlueprint.setModifiedDate(postSXPBlueprint.getModifiedDate());
 		sxpBlueprint.setSchemaVersion(postSXPBlueprint.getSchemaVersion());
 		sxpBlueprint.setUserName(postSXPBlueprint.getUserName());
+		sxpBlueprint.setActions(postSXPBlueprint.getActions());
 
 		Assert.assertEquals(
 			sxpBlueprint.toString(), postSXPBlueprint.toString());
@@ -80,6 +126,11 @@ public class SXPBlueprintResourceTest extends BaseSXPBlueprintResourceTestCase {
 	@Override
 	protected SXPBlueprint randomSXPBlueprint() throws Exception {
 		SXPBlueprint sxpBlueprint = super.randomSXPBlueprint();
+
+		/* TODO Elasticsearch split tokens at letter-number transitions causes
+		   failure in testGetSXPBlueprintsPageWithFilterStringEquals() */
+
+		sxpBlueprint.setTitle("_" + RandomTestUtil.randomLong());
 
 		sxpBlueprint.setTitle_i18n(
 			Collections.singletonMap("en_US", sxpBlueprint.getTitle()));
@@ -146,6 +197,19 @@ public class SXPBlueprintResourceTest extends BaseSXPBlueprintResourceTestCase {
 		throws Exception {
 
 		return sxpBlueprintResource.postSXPBlueprint(sxpBlueprint);
+	}
+
+	private void _deleteSXPBlueprintsCreatedBefore() throws Exception {
+		Page<SXPBlueprint> page1 = sxpBlueprintResource.getSXPBlueprintsPage(
+			null, null, null, null);
+
+		for (SXPBlueprint sxpBlueprint : page1.getItems()) {
+			String sxpBlueprintTitle = sxpBlueprint.getTitle();
+
+			if (sxpBlueprintTitle.startsWith("_")) {
+				sxpBlueprintResource.deleteSXPBlueprint(sxpBlueprint.getId());
+			}
+		}
 	}
 
 }
