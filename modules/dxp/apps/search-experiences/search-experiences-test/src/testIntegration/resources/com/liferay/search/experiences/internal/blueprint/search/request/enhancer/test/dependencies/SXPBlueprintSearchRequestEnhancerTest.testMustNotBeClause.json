@@ -1,0 +1,21 @@
+{
+	"queryConfiguration": {
+		"applyIndexerClauses": true,
+		"queryEntries": [
+			{
+				"clauses": [
+					{
+						"context": "query",
+						"occur": "must_not",
+						"query": {
+							"multi_match": {
+								"query": "los angeles"
+							}
+						}
+					}
+				],
+				"enabled": true
+			}
+		]
+	}
+}
