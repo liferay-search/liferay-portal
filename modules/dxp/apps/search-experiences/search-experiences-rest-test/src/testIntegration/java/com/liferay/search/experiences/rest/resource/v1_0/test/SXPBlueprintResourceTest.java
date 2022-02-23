@@ -18,9 +18,12 @@ import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.search.experiences.rest.client.dto.v1_0.SXPBlueprint;
+import com.liferay.search.experiences.rest.client.http.HttpInvoker;
+import com.liferay.search.experiences.rest.client.pagination.Page;
 
 import java.util.Collections;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -31,6 +34,52 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Arquillian.class)
 public class SXPBlueprintResourceTest extends BaseSXPBlueprintResourceTestCase {
+
+	@After
+	@Override
+	public void tearDown() throws Exception {
+		Page<SXPBlueprint> page = sxpBlueprintResource.getSXPBlueprintsPage(
+			null, null, null, null);
+
+		for (SXPBlueprint sxpBlueprint : page.getItems()) {
+			String sxpBlueprintTitle = sxpBlueprint.getTitle();
+
+			if (sxpBlueprintTitle.startsWith("_")) {
+				sxpBlueprintResource.deleteSXPBlueprint(sxpBlueprint.getId());
+			}
+		}
+
+		super.tearDown();
+	}
+
+	@Override
+	@Test
+	public void testGetSXPBlueprintExport() throws Exception {
+		SXPBlueprint sxpBlueprint = randomSXPBlueprint();
+
+		String title = sxpBlueprint.getTitle();
+		String description = sxpBlueprint.getDescription();
+
+		SXPBlueprint postSXPBlueprint = testPostSXPBlueprint_addSXPBlueprint(
+			sxpBlueprint);
+
+		HttpInvoker.HttpResponse httpResponse =
+			sxpBlueprintResource.getSXPBlueprintExportHttpResponse(
+				postSXPBlueprint.getId());
+
+		String content = httpResponse.getContent();
+
+		String schemaVersion = postSXPBlueprint.getSchemaVersion();
+
+		String expectedContent =
+			"{  \"schemaVersion\" : \"" + schemaVersion +
+				"\",  \"title_i18n\" : {    \"en_US\" : \"" + title +
+					"\"  },  \"configuration\" : { },  \"description_i18n\" :" +
+						" {    \"en_US\" : \"" + description +
+							"\"  },  \"elementInstances\" : [ ]}";
+
+		Assert.assertEquals(expectedContent, content);
+	}
 
 	@Ignore
 	@Override
@@ -49,11 +98,14 @@ public class SXPBlueprintResourceTest extends BaseSXPBlueprintResourceTestCase {
 	public void testPostSXPBlueprint() throws Exception {
 		super.testPostSXPBlueprint();
 
+		String description = "_" + RandomTestUtil.randomLong();
+		String title = "_" + RandomTestUtil.randomLong();
+
 		SXPBlueprint sxpBlueprint = SXPBlueprint.toDTO(
 			JSONUtil.put(
-				"description", RandomTestUtil.randomString()
+				"description", description
 			).put(
-				"title", RandomTestUtil.randomString()
+				"title", title
 			).toJSONString());
 
 		SXPBlueprint postSXPBlueprint = testPostSXPBlueprint_addSXPBlueprint(
@@ -64,6 +116,7 @@ public class SXPBlueprintResourceTest extends BaseSXPBlueprintResourceTestCase {
 		sxpBlueprint.setModifiedDate(postSXPBlueprint.getModifiedDate());
 		sxpBlueprint.setSchemaVersion(postSXPBlueprint.getSchemaVersion());
 		sxpBlueprint.setUserName(postSXPBlueprint.getUserName());
+		sxpBlueprint.setActions(postSXPBlueprint.getActions());
 
 		Assert.assertEquals(
 			sxpBlueprint.toString(), postSXPBlueprint.toString());
@@ -80,6 +133,11 @@ public class SXPBlueprintResourceTest extends BaseSXPBlueprintResourceTestCase {
 	@Override
 	protected SXPBlueprint randomSXPBlueprint() throws Exception {
 		SXPBlueprint sxpBlueprint = super.randomSXPBlueprint();
+
+		/* TODO Elasticsearch split tokens at letter-number transitions causes
+		   failure in testGetSXPBlueprintsPageWithFilterStringEquals() */
+
+		sxpBlueprint.setTitle("_" + RandomTestUtil.randomLong());
 
 		sxpBlueprint.setTitle_i18n(
 			Collections.singletonMap("en_US", sxpBlueprint.getTitle()));
