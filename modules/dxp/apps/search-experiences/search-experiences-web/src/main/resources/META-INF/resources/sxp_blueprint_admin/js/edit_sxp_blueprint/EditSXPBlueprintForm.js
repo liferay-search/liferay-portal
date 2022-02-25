@@ -30,7 +30,11 @@ import {DEFAULT_ERROR, SIDEBARS} from '../utils/constants';
 import {fetchData, fetchPreviewSearch} from '../utils/fetch';
 import {INPUT_TYPES} from '../utils/inputTypes';
 import {TEST_IDS} from '../utils/testIds';
-import {openErrorToast, openSuccessToast} from '../utils/toasts';
+import {
+	openErrorToast,
+	openSuccessToast,
+	setInitialSuccessToast,
+} from '../utils/toasts';
 import {
 	cleanUIConfiguration,
 	filterAndSortClassNames,
@@ -201,6 +205,10 @@ function EditSXPBlueprintForm({
 				);
 			}
 			else {
+				setInitialSuccessToast(
+					Liferay.Language.get('the-blueprint-was-saved-successfully')
+				);
+
 				navigate(redirectURL);
 			}
 		}
