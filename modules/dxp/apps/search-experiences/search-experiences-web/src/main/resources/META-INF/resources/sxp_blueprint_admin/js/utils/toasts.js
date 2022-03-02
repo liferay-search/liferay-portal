@@ -11,7 +11,7 @@
 
 import {openToast} from 'frontend-js-web';
 
-export const SUCCESS_MESSAGE_SESSION_ID =
+const SUCCESS_MESSAGE_SESSION_ID =
 	'com.liferay.search.experiences.web_successMessage';
 
 export function openErrorToast(config) {
@@ -47,15 +47,8 @@ export function openInitialSuccessToast() {
 }
 
 /**
- * The redirected page must use `openInitialSuccessToast` to show the
- * success message that was set.
- *
- * Example usage:
- * setInitialSuccessToast(
- *   Liferay.Language.get('the-blueprint-was-created-successfully')
- * ).then(() => {
- *   navigate(url);
- * });
+ * Sets the success toast to appear on a redirected page. The redirected page
+ * must use `openInitialSuccessToast` to show the success message that was set.
  * @param {String} message The success message to display in the toast.
  */
 export function setInitialSuccessToast(message) {
