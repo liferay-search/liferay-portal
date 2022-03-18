@@ -656,13 +656,7 @@ public class SXPBlueprintSearchResultTest {
 
 	@Test
 	public void testLimitSearchToMyContents() throws Exception {
-		_addGroupAAndGroupB();
-
-		_setUpJournalArticles(
-			new String[] {"", "", ""},
-			new String[] {"cola coca", "cola pepsi", "cola sprite"});
-
-		_keywords = "cola";
+		_setUpLimitSearchTest();
 
 		_assertSearchIgnoreRelevance("[cola coca, cola pepsi, cola sprite]");
 
@@ -674,13 +668,7 @@ public class SXPBlueprintSearchResultTest {
 
 	@Test
 	public void testLimitSearchToMySites() throws Exception {
-		_addGroupAAndGroupB();
-
-		_setUpJournalArticles(
-			new String[] {"", "", ""},
-			new String[] {"cola coca", "cola pepsi", "cola sprite"});
-
-		_keywords = "cola";
+		_setUpLimitSearchTest();
 
 		_assertSearchIgnoreRelevance("[cola coca, cola pepsi, cola sprite]");
 
@@ -695,14 +683,24 @@ public class SXPBlueprintSearchResultTest {
 	}
 
 	@Test
+	public void testLimitSearchToTheCurrentSite() throws Exception {
+		_setUpLimitSearchTest();
+
+		_assertSearchIgnoreRelevance("[cola coca, cola pepsi, cola sprite]");
+
+		User user = UserTestUtil.addUser(_groupA.getGroupId());
+
+		_serviceContext.setUserId(user.getUserId());
+
+		_updateElementInstancesJSON(
+			null, new String[] {"Limit Search to the Current Site"});
+
+		_assertSearchIgnoreRelevance("[cola sprite]");
+	}
+
+	@Test
 	public void testLimitSearchToTheseSites() throws Exception {
-		_addGroupAAndGroupB();
-
-		_setUpJournalArticles(
-			new String[] {"", "", ""},
-			new String[] {"cola coca", "cola pepsi", "cola sprite"});
-
-		_keywords = "cola";
+		_setUpLimitSearchTest();
 
 		_assertSearchIgnoreRelevance("[cola coca, cola pepsi, cola sprite]");
 
@@ -1479,6 +1477,16 @@ public class SXPBlueprintSearchResultTest {
 			_setUpJournalArticles(
 				new String[] {""}, new String[] {journalArticleTitles[i]});
 		}
+	}
+
+	private void _setUpLimitSearchTest() throws Exception {
+		_addGroupAAndGroupB();
+
+		_setUpJournalArticles(
+			new String[] {"", "", ""},
+			new String[] {"cola coca", "cola pepsi", "cola sprite"});
+
+		_keywords = "cola";
 	}
 
 	private void _updateElementInstancesJSON(
