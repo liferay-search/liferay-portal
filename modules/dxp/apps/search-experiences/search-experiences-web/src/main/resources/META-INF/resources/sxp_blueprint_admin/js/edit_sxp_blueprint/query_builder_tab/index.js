@@ -38,6 +38,7 @@ function QueryBuilderTab({
 	onChange,
 	onDeleteSXPElement,
 	onFrameworkConfigChange,
+	refetchSearchableTypes,
 	searchableTypes = [],
 	setFieldTouched,
 	setFieldValue,
@@ -179,6 +180,9 @@ function QueryBuilderTab({
 									onFrameworkConfigChange={
 										onFrameworkConfigChange
 									}
+									refetchSearchableTypes={
+										refetchSearchableTypes
+									}
 									searchableTypes={searchableTypes}
 								/>
 							)}
@@ -205,6 +209,7 @@ QueryBuilderTab.propTypes = {
 	onDeleteSXPElement: PropTypes.func,
 	onFrameworkConfigChange: PropTypes.func,
 	openSidebar: PropTypes.string,
+	refetchSearchableTypes: PropTypes.func,
 	searchableTypes: PropTypes.arrayOf(PropTypes.object),
 	setFieldTouched: PropTypes.func,
 	setFieldValue: PropTypes.func,

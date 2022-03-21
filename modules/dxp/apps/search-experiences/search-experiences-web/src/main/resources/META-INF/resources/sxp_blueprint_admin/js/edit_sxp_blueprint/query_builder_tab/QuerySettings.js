@@ -27,6 +27,7 @@ function QuerySettings({
 	onChangeClauseContributorsVisibility,
 	onChangeIndexerClausesVisibility,
 	onFrameworkConfigChange,
+	refetchSearchableTypes,
 	searchableTypes,
 }) {
 	const [selectAllTypes, setSelectAllTypes] = useState(
@@ -113,6 +114,9 @@ function QuerySettings({
 									<SelectTypes
 										onFrameworkConfigChange={
 											onFrameworkConfigChange
+										}
+										refetchSearchableTypes={
+											refetchSearchableTypes
 										}
 										searchableTypes={searchableTypes}
 										selectedTypes={
