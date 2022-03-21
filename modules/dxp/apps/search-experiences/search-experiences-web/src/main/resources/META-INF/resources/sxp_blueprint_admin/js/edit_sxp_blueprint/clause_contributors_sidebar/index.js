@@ -9,6 +9,8 @@
  * distribution rights of the Software.
  */
 
+import ClayAlert from '@clayui/alert';
+import ClayButton from '@clayui/button';
 import {ClayCheckbox, ClayToggle} from '@clayui/form';
 import ClayList from '@clayui/list';
 import React, {useEffect, useState} from 'react';
@@ -48,6 +50,7 @@ export default function ({
 	initialClauseContributorsList = [],
 	onClose,
 	onFrameworkConfigChange,
+	refetchContributors,
 	visible,
 }) {
 	const [category, setCategory] = useState(ALL);
@@ -255,13 +258,35 @@ export default function ({
 				/>
 
 				<ClayList>
-					{contributors.map((contributor) => (
-						<React.Fragment key={contributor.label}>
-							<ClayList.Header>
-								{contributor.label}
-							</ClayList.Header>
+					{initialClauseContributorsList.some(
+						({value}) => value.length === 0
+					) && (
+						<ClayAlert
+							actions={
+								<ClayButton.Group>
+									<ClayButton
+										alert
+										onClick={refetchContributors}
+									>
+										{Liferay.Language.get('refresh')}
+									</ClayButton>
+								</ClayButton.Group>
+							}
+							displayType="danger"
+							title={Liferay.Language.get('error')}
+							variant="inline"
+						>
+							{Liferay.Language.get(
+								'an-error-has-occurred-and-we-were-unable-to-load-the-results'
+							)}
+						</ClayAlert>
+					)}
 
-							{contributor.value.map((className) => (
+					{contributors.map(({label, value}) => (
+						<React.Fragment key={label}>
+							<ClayList.Header>{label}</ClayList.Header>
+
+							{value.map((className) => (
 								<ClayList.Item
 									active={selected.includes(className)}
 									flex
