@@ -143,6 +143,50 @@ public class SXPBlueprintSearchResultTest {
 	}
 
 	@Test
+	public void testBoostAssetType() throws Exception {
+		_sxpBlueprint.setConfigurationJSON(
+			JSONUtil.put(
+				"generalConfiguration",
+				JSONUtil.put(
+					"searchableAssetTypes",
+					JSONUtil.putAll(
+						"com.liferay.journal.model.JournalArticle",
+						"com.liferay.journal.model.JournalFolder"))
+			).put(
+				"queryConfiguration", JSONUtil.put("applyIndexerClauses", true)
+			).toString());
+
+		_updateSXPBlueprint();
+
+		_journalFolder = JournalFolderServiceUtil.addFolder(
+			_group.getGroupId(), 0, "folder cola", StringPool.BLANK,
+			_serviceContext);
+
+		_setUpJournalArticles(
+			new String[] {"cola cola", ""},
+			new String[] {"coca cola", "pepsi cola"});
+
+		_updateElementInstancesJSON(
+			new Object[] {
+				HashMapBuilder.<String, Object>put(
+					"boost", 100
+				).put(
+					"entry_class_name",
+					"com.liferay.journal.model.JournalFolder"
+				).build()
+			},
+			new String[] {"Boost Asset Type"});
+
+		_keywords = "cola";
+
+		_assertSearch("[folder cola, coca cola, pepsi cola]");
+
+		_updateElementInstancesJSON(null, null);
+
+		_assertSearchIgnoreRelevance("[coca cola, folder cola, pepsi cola]");
+	}
+
+	@Test
 	public void testBoostContents() throws Exception {
 		_addAssetCategory("Important", _user);
 
