@@ -55,6 +55,7 @@ import com.liferay.portal.kernel.util.CalendarFactoryUtil;
 import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.HashMapDictionaryBuilder;
+import com.liferay.portal.kernel.util.LocaleThreadLocal;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.Time;
@@ -187,6 +188,41 @@ public class SXPBlueprintSearchResultTest {
 		_updateElementInstancesJSON(null, null);
 
 		_assertSearch("[Folder cola, Article coca cola, Article pepsi cola]");
+	}
+
+	@Test
+	public void testBoostContentsForTheCurrentLanguage() throws Exception {
+		LocaleThreadLocal.setDefaultLocale(LocaleUtil.SPAIN);
+
+		_setUpJournalArticles(
+			new String[] {"cola cola", ""},
+			new String[] {"coca cola es_ES", "pepsi cola es_ES"});
+
+		LocaleThreadLocal.setDefaultLocale(LocaleUtil.US);
+
+		_setUpJournalArticles(
+			new String[] {"cola cola", ""},
+			new String[] {"coca cola en_US", "pepsi cola en_US"});
+
+		_updateElementInstancesJSON(
+			new Object[] {
+				HashMapBuilder.<String, Object>put(
+					"boost", 100
+				).build()
+			},
+			new String[] {"Boost Contents for the Current Language"});
+
+		_keywords = "cola";
+
+		_assertSearch(
+			"[coca cola en_US, pepsi cola en_US, coca cola es_ES, pepsi cola" +
+				" es_ES]");
+
+		_updateElementInstancesJSON(null, null);
+
+		_assertSearch(
+			"[coca cola es_ES, coca cola en_US, pepsi cola es_ES, pepsi cola" +
+				" en_US]");
 	}
 
 	@Test
