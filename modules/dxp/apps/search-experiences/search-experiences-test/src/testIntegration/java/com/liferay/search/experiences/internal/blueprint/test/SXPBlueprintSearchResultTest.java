@@ -544,6 +544,33 @@ public class SXPBlueprintSearchResultTest {
 	}
 
 	@Test
+	public void testBoostLongerContents() throws Exception {
+		_setUpJournalArticles(
+			new String[] {"Content", "Content Content"},
+			new String[] {"Article alpha 1", "Article beta 2"});
+
+		_updateElementInstancesJSON(
+			new Object[] {
+				HashMapBuilder.<String, Object>put(
+					"boost", 1000
+				).put(
+					"factor", 1.5
+				).put(
+					"modifier", "ln"
+				).build()
+			},
+			new String[] {"Boost Longer Contents"});
+
+		_keywords = "Article";
+
+		_assertSearch("[Article beta 2, Article alpha 1]"); // Not working
+
+		_updateElementInstancesJSON(null, null);
+
+		_assertSearch("[Article alpha 1, Article beta 2]");
+	}
+
+	@Test
 	public void testBoostProximity() throws Exception {
 		ExpandoTable expandoTable = ExpandoTableLocalServiceUtil.fetchTable(
 			_group.getCompanyId(),
