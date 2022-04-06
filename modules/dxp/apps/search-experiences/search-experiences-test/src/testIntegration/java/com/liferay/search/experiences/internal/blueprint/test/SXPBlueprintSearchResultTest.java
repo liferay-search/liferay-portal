@@ -513,6 +513,39 @@ public class SXPBlueprintSearchResultTest {
 	}
 
 	@Test
+	public void testBoostContentsInACategoryForGuestUsers() throws Exception {
+		_user = _userLocalService.getDefaultUser(_group.getCompanyId());
+
+		_serviceContext = ServiceContextTestUtil.getServiceContext(
+			_group, _user.getUserId());
+
+		_addAssetCategory("Guest Users", _user);
+
+		_setUpJournalArticles(
+			new String[] {"alpha alpha", ""},
+			new String[] {"beta alpha", "charlie alpha"});
+
+		_updateElementInstancesJSON(
+			new Object[] {
+				HashMapBuilder.<String, Object>put(
+					"asset_category_id",
+					String.valueOf(_assetCategory.getCategoryId())
+				).put(
+					"boost", 100
+				).build()
+			},
+			new String[] {"Boost Contents in a Category for Guest Users"});
+
+		_keywords = "alpha";
+
+		_assertSearch("[charlie alpha, beta alpha]");
+
+		_updateElementInstancesJSON(null, null);
+
+		_assertSearchIgnoreRelevance("[beta alpha, charlie alpha]");
+	}
+
+	@Test
 	public void testBoostFreshness() throws Exception {
 		_addJournalArticleSleep = 3;
 
