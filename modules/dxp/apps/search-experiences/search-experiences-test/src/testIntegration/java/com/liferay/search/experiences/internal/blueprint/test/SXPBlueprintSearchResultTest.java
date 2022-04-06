@@ -474,22 +474,22 @@ public class SXPBlueprintSearchResultTest {
 	public void testBoostContentsWithMoreVersions() throws Exception {
 		_setUpJournalArticles(
 			new String[] {"Article", ""},
-			new String[] {"Article 1.0", "Article 2.0"});
+			new String[] {"Article alpha 1.0", "Article beta 2.0"});
 
 		_journalArticles.set(
 			0,
 			JournalTestUtil.updateArticle(
-				_journalArticles.get(0), "Article 1.1"));
+				_journalArticles.get(0), "Article alpha 1.1"));
 
 		_journalArticles.set(
 			1,
 			JournalTestUtil.updateArticle(
-				_journalArticles.get(1), "Article 2.1"));
+				_journalArticles.get(1), "Article beta 2.1"));
 
 		_journalArticles.set(
 			1,
 			JournalTestUtil.updateArticle(
-				_journalArticles.get(1), "Article 2.2"));
+				_journalArticles.get(1), "Article beta 2.2"));
 
 		_updateElementInstancesJSON(
 			new Object[] {
@@ -505,11 +505,11 @@ public class SXPBlueprintSearchResultTest {
 
 		_keywords = "Article";
 
-		_assertSearch("[Article 2.2, Article 1.1]");
+		_assertSearch("[Article beta 2.2, Article alpha 1.1]");
 
 		_updateElementInstancesJSON(null, null);
 
-		_assertSearch("[Article 1.1, Article 2.2]");
+		_assertSearch("[Article alpha 1.1, Article beta 2.2]");
 	}
 
 	@Test
