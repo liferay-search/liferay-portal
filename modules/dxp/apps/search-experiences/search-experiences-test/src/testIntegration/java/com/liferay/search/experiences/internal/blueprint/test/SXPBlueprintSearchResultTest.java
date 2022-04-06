@@ -513,6 +513,44 @@ public class SXPBlueprintSearchResultTest {
 	}
 
 	@Test
+	public void testBoostContentsInACategoryForTheTimeOfDay() throws Exception {
+		_addAssetCategory("Important", _user);
+
+		_setUpJournalArticles(
+			new String[] {"cola cola", ""},
+			new String[] {"coca cola", "pepsi cola"});
+
+		JournalArticle article = _journalArticles.get(1);
+
+		Date morningDate = new Date(70066372608L);
+
+		article.setCreateDate(morningDate);
+
+		JournalTestUtil.updateArticle(article, "pepsi cola");
+
+		_updateElementInstancesJSON(
+			new Object[] {
+				HashMapBuilder.<String, Object>put(
+					"asset_category_id",
+					String.valueOf(_assetCategory.getCategoryId())
+				).put(
+					"boost", 100
+				).put(
+					"time_of_day", "morning"
+				).build()
+			},
+			new String[] {"Boost Contents in a Category for the Time of Day"});
+
+		_keywords = "cola";
+
+		_assertSearch("[pepsi cola, coca cola]");
+
+		_updateElementInstancesJSON(null, null);
+
+		_assertSearchIgnoreRelevance("[coca cola, pepsi cola]");
+	}
+
+	@Test
 	public void testBoostFreshness() throws Exception {
 		_addJournalArticleSleep = 3;
 
