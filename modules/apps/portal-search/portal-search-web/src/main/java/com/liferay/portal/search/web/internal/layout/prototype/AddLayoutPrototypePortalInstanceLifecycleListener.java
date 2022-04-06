@@ -36,8 +36,6 @@ public class AddLayoutPrototypePortalInstanceLifecycleListener
 
 	@Override
 	public void portalInstanceRegistered(Company company) throws Exception {
-		searchLayoutFactory.createSearchLayoutPrototype(company);
-
 		Group guestGroup = groupLocalService.getGroup(
 			company.getCompanyId(), GroupConstants.GUEST);
 
