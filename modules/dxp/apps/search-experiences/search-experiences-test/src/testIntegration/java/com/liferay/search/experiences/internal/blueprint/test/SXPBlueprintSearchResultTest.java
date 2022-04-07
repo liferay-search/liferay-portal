@@ -473,30 +473,29 @@ public class SXPBlueprintSearchResultTest {
 	@Test
 	public void testBoostContentsWithMoreVersions() throws Exception {
 		_setUpJournalArticles(
-			new String[] {"Article", ""},
+			new String[] {"Article", "Content"},
 			new String[] {"Article 1.0", "Article 2.0"});
 
-		_journalArticles.set(
-			0,
-			JournalTestUtil.updateArticle(
-				_journalArticles.get(0), "Article 1.1"));
+		JournalArticle article1 = _journalArticles.get(0);
+		JournalArticle article2 = _journalArticles.get(1);
 
-		_journalArticles.set(
-			1,
-			JournalTestUtil.updateArticle(
-				_journalArticles.get(1), "Article 2.1"));
+		JournalTestUtil.updateArticle(
+			article1, "Article 1.1", article1.getContent());
 
-		_journalArticles.set(
-			1,
-			JournalTestUtil.updateArticle(
-				_journalArticles.get(1), "Article 2.2"));
+		article2 = JournalTestUtil.updateArticle(
+			article2, "Article 2.1", article2.getContent());
+
+		JournalTestUtil.updateArticle(
+			article2, "Article 2.2", article2.getContent());
+
+		Thread.sleep(1000);
 
 		_updateElementInstancesJSON(
 			new Object[] {
 				HashMapBuilder.<String, Object>put(
 					"boost", 100
 				).put(
-					"factor", 1.2
+					"factor", 1.5
 				).put(
 					"modifier", "sqrt"
 				).build()
