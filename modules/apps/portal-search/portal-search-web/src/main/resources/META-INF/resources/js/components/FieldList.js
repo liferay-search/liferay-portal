@@ -41,7 +41,7 @@ export const ORDERS = {
  * @param {number} to The new index that the item will be moved to.
  *  @return {Array} Array of items with new order.
  */
-export function move(list, from, to) {
+function move(list, from, to) {
 	const listWithInserted = [
 		...list.slice(0, to),
 		list[from],

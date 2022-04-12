@@ -62,17 +62,10 @@ const removeOrderFromFieldName = (fieldName) => {
 
 function SortConfigurationOptions({
 	fieldsInputName = '',
-	fieldsJSONArray = [
-		{field: '', label: 'relevance'},
-		{field: 'modified-', label: 'modified'},
-		{field: 'modified+', label: 'modified-oldest-first'},
-		{field: 'created-', label: 'created'},
-		{field: 'created+', label: 'created-oldest-first'},
-		{field: 'userName', label: 'user'},
-	],
+	fieldsJSONArray = [],
 	namespace = '',
 }) {
-	const hasRelevance = fieldsJSONArray[0].field === '';
+	const hasRelevance = fieldsJSONArray[0]?.field === '';
 
 	const [relevanceLabel, setRelevanceLabel] = useState(
 		hasRelevance ? fieldsJSONArray[0].label : 'relevance'
