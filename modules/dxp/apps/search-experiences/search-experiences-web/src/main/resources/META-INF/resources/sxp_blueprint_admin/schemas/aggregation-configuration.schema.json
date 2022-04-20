@@ -1,0 +1,10 @@
+{
+	"$id": "aggregation-configuration.schema.json",
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"properties": {
+		"aggs": {
+			"type": "object"
+		}
+	},
+	"type": "object"
+}
