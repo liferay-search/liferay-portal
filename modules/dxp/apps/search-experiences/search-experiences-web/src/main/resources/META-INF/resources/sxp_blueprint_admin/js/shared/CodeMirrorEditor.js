@@ -389,6 +389,21 @@ function getSchemaProperties(
 				schema.$ref.substring(2)
 			);
 
+			// Pass in the additionalProperties if it exists, in case a property is
+			// not defined in the $ref schema.
+
+			if (schema.additionalProperties) {
+				return getSchemaProperties(
+					{
+						...refSchema,
+						additionalProperties: schema.additionalProperties,
+					},
+					propertyPathList,
+					availableLanguages,
+					fullSchema
+				);
+			}
+
 			return getSchemaProperties(
 				refSchema,
 				propertyPathList,
@@ -476,6 +491,22 @@ function getSchemaProperties(
 				fullSchema
 			);
 		}
+	}
+
+	// If property is not available in schema's properties, persist with
+	// schema's additionalProperties instead.
+
+	if (schema.additionalProperties) {
+		if (!fullSchema) {
+			fullSchema = schema;
+		}
+
+		return getSchemaProperties(
+			schema.additionalProperties,
+			propertyPathList.slice(1),
+			availableLanguages,
+			fullSchema
+		);
 	}
 
 	return [];
