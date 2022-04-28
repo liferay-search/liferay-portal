@@ -367,6 +367,13 @@ function getSchemaProperties(
 		return [];
 	}
 
+	// Set fullSchema for recursive calls that might need to reference it.
+	// This will only be called on the first `getSchemaProperties` call.
+
+	if (!fullSchema) {
+		fullSchema = schema;
+	}
+
 	// If the schema links to a reference ($ref), forward to the referenced
 	// schema.
 
@@ -453,14 +460,6 @@ function getSchemaProperties(
 	const property = propertyPathList[0];
 
 	if (schema.properties && schema.properties[property.name]) {
-
-		// Set fullSchema for recursive calls that might need to reference it.
-		// This will only be called on the first `getSchemaProperties` call.
-
-		if (!fullSchema) {
-			fullSchema = schema;
-		}
-
 		if (property.type === 'array') {
 			return getSchemaProperties(
 				schema.properties[property.name].items,
@@ -483,10 +482,6 @@ function getSchemaProperties(
 	// schema's additionalProperties instead.
 
 	if (schema.additionalProperties) {
-		if (!fullSchema) {
-			fullSchema = schema;
-		}
-
 		return getSchemaProperties(
 			schema.additionalProperties,
 			propertyPathList.slice(1),
