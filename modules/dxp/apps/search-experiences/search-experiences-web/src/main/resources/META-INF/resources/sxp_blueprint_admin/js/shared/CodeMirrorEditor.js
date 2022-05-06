@@ -202,9 +202,11 @@ function getCodeMirrorHints(cm, autocompleteSchema, availableLanguages) {
 	// matches a property inside schemaProperties with an enum.
 
 	if (token.type === 'string') {
-		const property = list.find((item) => item.name === currentProperty[0]);
+		const property = list.find(
+			(item) => item.name === currentProperty.at(-1)
+		);
 
-		if (property?.enum && currentProperty.length === 1) {
+		if (property?.enum) {
 			let enumList = property.enum;
 
 			if (search !== null) {
@@ -549,7 +551,9 @@ function removeDuplicateProperties(items) {
 	items.forEach((item) => {
 		if (
 			uniqueProperties.findIndex(
-				({name, type}) => name === item.name && type === item.type
+				({name, type}) =>
+					name === item.name &&
+					type.toString() === item.type.toString()
 			) === -1
 		) {
 			uniqueProperties.push(item);
