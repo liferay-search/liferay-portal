@@ -76,7 +76,7 @@ public class SuggestionResourceImpl extends BaseSuggestionResourceImpl {
 		if (!GetterUtil.getBoolean(PropsUtil.get("feature.flag.LPS-152597"))) {
 			return Page.of(Collections.emptyList());
 		}
-		
+
 		LiferayRenderRequest liferayRenderRequest = _createLiferayRenderRequest(
 			currentURL, plid);
 
