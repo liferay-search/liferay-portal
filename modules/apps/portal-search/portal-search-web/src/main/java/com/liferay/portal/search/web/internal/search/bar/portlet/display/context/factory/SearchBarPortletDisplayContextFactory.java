@@ -15,7 +15,9 @@
 package com.liferay.portal.search.web.internal.search.bar.portlet.display.context.factory;
 
 import com.liferay.petra.string.CharPool;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
+import com.liferay.petra.string.StringUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
@@ -27,8 +29,10 @@ import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.theme.PortletDisplay;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HttpComponentsUtil;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.search.searcher.SearchRequest;
@@ -114,6 +118,7 @@ public class SearchBarPortletDisplayContextFactory {
 			isAvailableEverythingSearchScope());
 		searchBarPortletDisplayContext.setCurrentSiteSearchScopeParameterString(
 			SearchScope.THIS_SITE.getParameterString());
+		searchBarPortletDisplayContext.setDestination(destination);
 		searchBarPortletDisplayContext.setDisplayStyleGroupId(
 			getDisplayStyleGroupId(
 				searchBarPortletInstanceConfiguration, themeDisplay));
@@ -183,6 +188,31 @@ public class SearchBarPortletDisplayContextFactory {
 
 		if (searchBarPortletPreferences.isInvisible()) {
 			searchBarPortletDisplayContext.setRenderNothing(true);
+		}
+
+		if (!GetterUtil.getBoolean(PropsUtil.get("feature.flag.LPS-152597"))) {
+			searchBarPortletDisplayContext.setSuggestionsEnabled(false);
+		}
+		else {
+			searchBarPortletDisplayContext.
+				setSuggestionsContributorConfiguration(
+					StringBundler.concat(
+						StringPool.OPEN_BRACKET,
+						StringUtil.merge(
+							searchBarPortletInstanceConfiguration.
+								suggestionsContributorConfigurations(),
+							StringPool.COMMA),
+						StringPool.CLOSE_BRACKET));
+
+			searchBarPortletDisplayContext.setSuggestionsDisplayThreshold(
+				searchBarPortletInstanceConfiguration.
+					suggestionsDisplayThreshold());
+
+			searchBarPortletDisplayContext.setSuggestionsEnabled(
+				searchBarPortletPreferences.isSuggestionsEnabled());
+
+			searchBarPortletDisplayContext.setSuggestionsURL(
+				"/o/portal-search-rest/v1.0/suggestions");
 		}
 
 		return searchBarPortletDisplayContext;
