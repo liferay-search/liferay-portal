@@ -38,4 +38,17 @@ public interface SearchBarPortletInstanceConfiguration {
 	@Meta.AD(name = "display-style", required = false)
 	public String displayStyle();
 
+	@Meta.AD(
+		deflt = "{\"contributorName\":\"basic\"\\,\"displayGroupName\":\"suggestions\"\\,\"size\":5}",
+		name = "suggestions-contributor-configuration", required = false
+	)
+	public String[] suggestionsContributorConfigurations();
+
+	@Meta.AD(
+		deflt = "2",
+		description = "character-threshold-for-displaying-suggestions",
+		name = "suggestions-display-threshold", required = false
+	)
+	public int suggestionsDisplayThreshold();
+
 }
