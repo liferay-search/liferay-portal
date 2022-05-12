@@ -1,1 +1,5 @@
-apply plugin: "com.liferay.app.defaults.plugin"
+subprojects {
+	configurations.all {
+		resolutionStrategy.force 'com.liferay:com.liferay.portal.vulcan.api:9.3.1'
+	}
+}
