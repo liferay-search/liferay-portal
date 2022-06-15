@@ -27,7 +27,7 @@ import React, {useRef, useState} from 'react';
 export default function SearchBar({
 	destinationFriendlyURL,
 	emptySearchEnabled,
-	initialScope = '',
+	isSelectedEverythingSearchScope = false,
 	keywords = '',
 	keywordsParameterName = 'q',
 	letUserChooseScope = false,
@@ -53,7 +53,11 @@ export default function SearchBar({
 		loading: false,
 		networkStatus: 4,
 	}));
-	const [scope, setScope] = useState(initialScope);
+	const [scope, setScope] = useState(
+		isSelectedEverythingSearchScope
+			? scopeParameterStringEverything
+			: scopeParameterStringCurrentSite
+	);
 
 	const alignElementRef = useRef();
 	const dropdownRef = useRef();
