@@ -302,10 +302,14 @@ export default function SearchBar({
 											{attributes.assetSearchSummary && (
 												<div className="suggestion-item-description">
 													<div className="text-truncate-inline">
-														<div className="text-truncate">
-															{attributes.assetSearchSummary ||
-																''}
-														</div>
+														<div
+															className="text-truncate"
+															dangerouslySetInnerHTML={{
+																__html:
+																	attributes.assetSearchSummary ||
+																	'',
+															}}
+														></div>
 													</div>
 												</div>
 											)}
