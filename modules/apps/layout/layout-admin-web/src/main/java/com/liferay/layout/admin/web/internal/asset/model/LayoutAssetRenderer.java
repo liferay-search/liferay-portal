@@ -88,7 +88,7 @@ public class LayoutAssetRenderer extends BaseJSPAssetRenderer<Layout> {
 		sb.append("<strong>");
 		sb.append(LanguageUtil.get(locale, "page"));
 		sb.append(":</strong> ");
-		sb.append(_layout.getHTMLTitle(locale));
+		sb.append(HtmlUtil.escape(_layout.getHTMLTitle(locale)));
 
 		if (_layout.isTypeContent() &&
 			(_layout.isDenied() || _layout.isPending())) {
