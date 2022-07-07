@@ -206,14 +206,14 @@ public class SXPBlueprintSearchResultTest {
 	@Test
 	public void testBoostContentsForTheCurrentLanguage() throws Exception {
 		_setUpJournalArticles(
-			new String[] {"Article", ""},
-			new String[] {"Article beta en_US", "Article delta en_US"});
+			new String[] {"cola", ""},
+			new String[] {"cola cola en_US", "fanta cola en_US"});
 
 		LocaleThreadLocal.setDefaultLocale(LocaleUtil.SPAIN);
 
 		_setUpJournalArticles(
-			new String[] {"Article Article", ""},
-			new String[] {"Article alpha es_ES", "Article omega es_ES"});
+			new String[] {"cola", ""},
+			new String[] {"coca cola es_ES", "pepsi cola es_ES"});
 
 		_updateElementInstancesJSON(
 			new Object[] {
@@ -223,23 +223,23 @@ public class SXPBlueprintSearchResultTest {
 			},
 			new String[] {"Boost Contents for the Current Language"});
 
-		_keywords = "Article";
+		_keywords = "cola";
 
 		_assertSearch(
-			"[Article alpha es_ES, Article omega es_ES, Article beta en_US, " +
-				"Article delta en_US]");
+			"[coca cola es_ES, pepsi cola es_ES, cola cola en_US, fanta cola " +
+				"en_US]");
 
 		LocaleThreadLocal.setDefaultLocale(LocaleUtil.US);
 
 		_assertSearch(
-			"[Article beta en_US, Article delta en_US, Article alpha es_ES, " +
-				"Article omega es_ES]");
+			"[cola cola en_US, fanta cola en_US, coca cola es_ES, pepsi cola " +
+				"es_ES]");
 
 		_updateElementInstancesJSON(null, null);
 
 		_assertSearch(
-			"[Article alpha es_ES, Article beta en_US, Article delta en_US, " +
-				"Article omega es_ES]");
+			"[cola cola en_US, coca cola es_ES, fanta cola en_US, pepsi cola " +
+				"es_ES]");
 	}
 
 	@Test
