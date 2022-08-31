@@ -41,7 +41,7 @@ public class WorkflowedModelDocumentContributor
 
 		document.addKeyword(Field.STATUS, workflowedModel.getStatus());
 		document.addKeyword(
-			Field.STATUS_BY_USER_ID, workflowedModel.getStatusByUserId());
+			"statusByUserId", workflowedModel.getStatusByUserId());
 	}
 
 }
