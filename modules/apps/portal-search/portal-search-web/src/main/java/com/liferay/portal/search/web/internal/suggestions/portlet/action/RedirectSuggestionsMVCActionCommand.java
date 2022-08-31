@@ -123,12 +123,13 @@ public class RedirectSuggestionsMVCActionCommand extends BaseMVCActionCommand {
 
 		String path = url.substring(0, url.indexOf(friendlyURL));
 
-		Optional<String> destinationOptional =
-			searchBarPortletPreferences.getDestinationOptional();
+		Optional<String> destinationFriendlyURLOptional =
+			searchBarPortletPreferences.getDestinationFriendlyURLOptional();
 
-		String destination = destinationOptional.orElse(friendlyURL);
+		String destinationFriendlyURL = destinationFriendlyURLOptional.orElse(
+			friendlyURL);
 
-		return _getPath(path, destination);
+		return _getPath(path, destinationFriendlyURL);
 	}
 
 	private ThemeDisplay _getThemeDisplay(ActionRequest actionRequest) {
