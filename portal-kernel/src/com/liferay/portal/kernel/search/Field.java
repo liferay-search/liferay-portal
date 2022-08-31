@@ -169,6 +169,8 @@ public class Field implements Serializable {
 
 	public static final String STATUS = "status";
 
+	public static final String STATUS_BY_USER_ID = "statusByUserId";
+
 	public static final String SUBTITLE = "subtitle";
 
 	public static final String TITLE = "title";
