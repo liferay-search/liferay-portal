@@ -110,13 +110,15 @@ public class SearchBarPortletDisplayContextFactoryTest {
 
 	@Test
 	public void testDestinationUnreachable() throws PortletException {
-		String destination = RandomTestUtil.randomString();
+		String destinationFriendlyURL = RandomTestUtil.randomString();
 
-		_whenLayoutLocalServiceFetchLayoutByFriendlyURL(destination, null);
+		_whenLayoutLocalServiceFetchLayoutByFriendlyURL(
+			destinationFriendlyURL, null);
 
 		SearchBarPortletDisplayContextFactory
 			searchBarPortletDisplayContextFactory =
-				_createSearchBarPortletDisplayContextFactory(destination);
+				_createSearchBarPortletDisplayContextFactory(
+					destinationFriendlyURL);
 
 		SearchBarPortletDisplayContext searchBarPortletDisplayContext =
 			searchBarPortletDisplayContextFactory.create(
@@ -129,11 +131,12 @@ public class SearchBarPortletDisplayContextFactoryTest {
 
 	@Test
 	public void testDestinationWithLeadingSlash() throws Exception {
-		String destination = RandomTestUtil.randomString();
+		String destinationFriendlyURL = RandomTestUtil.randomString();
 
 		Layout layout = Mockito.mock(Layout.class);
 
-		_whenLayoutLocalServiceFetchLayoutByFriendlyURL(destination, layout);
+		_whenLayoutLocalServiceFetchLayoutByFriendlyURL(
+			destinationFriendlyURL, layout);
 
 		String layoutFriendlyURL = RandomTestUtil.randomString();
 
@@ -142,7 +145,7 @@ public class SearchBarPortletDisplayContextFactoryTest {
 		SearchBarPortletDisplayContextFactory
 			searchBarPortletDisplayContextFactory =
 				_createSearchBarPortletDisplayContextFactory(
-					StringPool.SLASH.concat(destination));
+					StringPool.SLASH.concat(destinationFriendlyURL));
 
 		SearchBarPortletDisplayContext searchBarPortletDisplayContext =
 			searchBarPortletDisplayContextFactory.create(
@@ -158,11 +161,12 @@ public class SearchBarPortletDisplayContextFactoryTest {
 
 	@Test
 	public void testDestinationWithoutLeadingSlash() throws Exception {
-		String destination = RandomTestUtil.randomString();
+		String destinationFriendlyURL = RandomTestUtil.randomString();
 
 		Layout layout = Mockito.mock(Layout.class);
 
-		_whenLayoutLocalServiceFetchLayoutByFriendlyURL(destination, layout);
+		_whenLayoutLocalServiceFetchLayoutByFriendlyURL(
+			destinationFriendlyURL, layout);
 
 		String layoutFriendlyURL = RandomTestUtil.randomString();
 
@@ -170,7 +174,8 @@ public class SearchBarPortletDisplayContextFactoryTest {
 
 		SearchBarPortletDisplayContextFactory
 			searchBarPortletDisplayContextFactory =
-				_createSearchBarPortletDisplayContextFactory(destination);
+				_createSearchBarPortletDisplayContextFactory(
+					destinationFriendlyURL);
 
 		SearchBarPortletDisplayContext searchBarPortletDisplayContext =
 			searchBarPortletDisplayContextFactory.create(
@@ -427,7 +432,7 @@ public class SearchBarPortletDisplayContextFactoryTest {
 		PortletPreferences portletPreferences = new PortletPreferencesImpl();
 
 		portletPreferences.setValue(
-			SearchBarPortletPreferences.PREFERENCE_KEY_DESTINATION,
+			SearchBarPortletPreferences.PREFERENCE_KEY_DESTINATION_FRIENDLY_URL,
 			destination);
 		portletPreferences.setValue(
 			SearchBarPortletPreferences.PREFERENCE_KEY_SEARCH_SCOPE, scope);

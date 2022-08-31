@@ -94,7 +94,7 @@ public class SearchBarPrecedenceHelperTest {
 	@Test
 	public void testOverlappingDestinationDifferentFederatedKey() {
 		_setThemeDisplayLayoutFriendlyURL(
-			_DESTINATION + RandomTestUtil.randomString());
+			_DESTINATION_FRIENDLY_URL + RandomTestUtil.randomString());
 
 		_addSearchBarPortletToHeader(RandomTestUtil.randomString());
 
@@ -108,7 +108,7 @@ public class SearchBarPrecedenceHelperTest {
 	@Test
 	public void testOverlappingDestinationSameFederatedKey() {
 		_setThemeDisplayLayoutFriendlyURL(
-			_DESTINATION + RandomTestUtil.randomString());
+			_DESTINATION_FRIENDLY_URL + RandomTestUtil.randomString());
 
 		String federatedSearchKey = RandomTestUtil.randomString();
 
@@ -122,7 +122,7 @@ public class SearchBarPrecedenceHelperTest {
 
 	@Test
 	public void testSameDestinationDifferentFederatedKey() {
-		_setThemeDisplayLayoutFriendlyURL(_DESTINATION);
+		_setThemeDisplayLayoutFriendlyURL(_DESTINATION_FRIENDLY_URL);
 
 		_addSearchBarPortletToHeader(RandomTestUtil.randomString());
 
@@ -135,7 +135,7 @@ public class SearchBarPrecedenceHelperTest {
 
 	@Test
 	public void testSameDestinationSameFederatedKey() {
-		_setThemeDisplayLayoutFriendlyURL(_DESTINATION);
+		_setThemeDisplayLayoutFriendlyURL(_DESTINATION_FRIENDLY_URL);
 
 		String federatedSearchKey = RandomTestUtil.randomString();
 
@@ -165,7 +165,8 @@ public class SearchBarPrecedenceHelperTest {
 
 		Mockito.doReturn(
 			Optional.ofNullable(
-				_createPortletPreferences(federatedSearchKey, _DESTINATION))
+				_createPortletPreferences(
+					federatedSearchKey, _DESTINATION_FRIENDLY_URL))
 		).when(
 			_portletPreferencesLookup
 		).fetchPreferences(
@@ -254,17 +255,18 @@ public class SearchBarPrecedenceHelperTest {
 	}
 
 	private PortletPreferences _createPortletPreferences(
-		String federatedSearchKey, String destination) {
+		String federatedSearchKey, String destinationFriendlyURL) {
 
 		PortletPreferences portletPreferences = Mockito.mock(
 			PortletPreferences.class);
 
 		Mockito.when(
 			portletPreferences.getValue(
-				SearchBarPortletPreferences.PREFERENCE_KEY_DESTINATION,
+				SearchBarPortletPreferences.
+					PREFERENCE_KEY_DESTINATION_FRIENDLY_URL,
 				StringPool.BLANK)
 		).thenReturn(
-			destination
+			destinationFriendlyURL
 		);
 
 		Mockito.when(
@@ -314,15 +316,18 @@ public class SearchBarPrecedenceHelperTest {
 		return themeDisplay;
 	}
 
-	private void _setThemeDisplayLayoutFriendlyURL(String destination) {
+	private void _setThemeDisplayLayoutFriendlyURL(
+		String destinationFriendlyURL) {
+
 		Mockito.when(
 			_themeDisplay.getLayoutFriendlyURL(_layout)
 		).thenReturn(
-			"/" + destination
+			"/" + destinationFriendlyURL
 		);
 	}
 
-	private static final String _DESTINATION = RandomTestUtil.randomString();
+	private static final String _DESTINATION_FRIENDLY_URL =
+		RandomTestUtil.randomString();
 
 	private Layout _layout;
 	private final PortletLocalService _portletLocalService = Mockito.mock(

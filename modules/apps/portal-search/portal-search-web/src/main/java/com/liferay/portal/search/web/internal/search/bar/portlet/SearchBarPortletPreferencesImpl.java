@@ -38,7 +38,8 @@ public class SearchBarPortletPreferencesImpl
 	@Override
 	public Optional<String> getDestinationFriendlyURLOptional() {
 		return _portletPreferencesHelper.getString(
-			SearchBarPortletPreferences.PREFERENCE_KEY_DESTINATION);
+			SearchBarPortletPreferences.
+				PREFERENCE_KEY_DESTINATION_FRIENDLY_URL);
 	}
 
 	@Override
