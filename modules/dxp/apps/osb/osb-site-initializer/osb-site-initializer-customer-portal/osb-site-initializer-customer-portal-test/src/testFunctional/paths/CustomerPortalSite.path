@@ -11,6 +11,11 @@
 
 <tbody>
 <tr>
+	<td>BUTTON</td>
+	<td>//*[contains(@class, btn) and text()='${key_text}']</td>
+	<td></td>
+</tr>
+<tr>
 	<td>PAGE_TITLE</td>
 	<td>//h1[text()='${key_title}']</td>
 	<td></td>
@@ -308,6 +313,11 @@
 <tr>
 	<td>ALERT_NOTIFICATIONS</td>
 	<td>//*[contains(@class, 'alert-notifications')]//*[text()='${key_alertText}']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SUPPORT_SEAT</td>
+	<td>//p[contains(text(), 'Support Seat')]//..//*[*[name()='svg'][contains(@class,'lexicon-icon-info-circle')]]</td>
 	<td></td>
 </tr>
 </tbody>

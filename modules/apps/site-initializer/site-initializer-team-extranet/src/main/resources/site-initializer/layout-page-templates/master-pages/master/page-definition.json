@@ -83,7 +83,7 @@
 										},
 										{
 											"widgetConfig": {
-												"destination": "/search",
+												"destinationFriendlyURL": "/search",
 												"displayStyle": "default",
 												"displayStyleGroupId": "[$GROUP_ID$]",
 												"federatedSearchKey": "",

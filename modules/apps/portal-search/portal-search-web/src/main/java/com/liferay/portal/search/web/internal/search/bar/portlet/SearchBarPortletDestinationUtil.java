@@ -31,12 +31,13 @@ public class SearchBarPortletDestinationUtil {
 	public static boolean isSameDestination(
 		PortletPreferences portletPreferences, ThemeDisplay themeDisplay) {
 
-		String destination = GetterUtil.getString(
-			portletPreferences.getValue("destination", StringPool.BLANK));
+		String destinationFriendlyURL = GetterUtil.getString(
+			portletPreferences.getValue(
+				"destinationFriendlyURL", StringPool.BLANK));
 
-		if (Validator.isNull(destination) ||
+		if (Validator.isNull(destinationFriendlyURL) ||
 			isSameDestination(
-				destination,
+				destinationFriendlyURL,
 				themeDisplay.getLayoutFriendlyURL(themeDisplay.getLayout()))) {
 
 			return true;
@@ -50,7 +51,7 @@ public class SearchBarPortletDestinationUtil {
 		ThemeDisplay themeDisplay) {
 
 		Optional<String> optional =
-			searchBarPortletPreferences.getDestination();
+			searchBarPortletPreferences.getDestinationFriendlyURLOptional();
 
 		if (!optional.isPresent() ||
 			isSameDestination(

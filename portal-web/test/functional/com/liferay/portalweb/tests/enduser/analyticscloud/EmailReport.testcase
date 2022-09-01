@@ -41,6 +41,68 @@ definition {
 		}
 	}
 
+	@description = "Story: LRAC-11664 | Automation ID: LRAC-11844 | Test Summary: Check that cancel button does not enable email report"
+	@priority = "3"
+	test CanCancelChangesToEmailReport {
+		task ("Sign in AC as Test Test user") {
+			ACUtils.launchAC();
+		}
+
+		task ("Go to property and Select the property you are using") {
+			ACNavigation.goToSettings();
+
+			ACSettings.goToProperties();
+
+			ACNavigation.openItem(itemName = "${assignedPropertyName}");
+		}
+
+		task ("Configure Email Report then cancel") {
+			ACEmailReport.accessEmailReportSettings();
+
+			ACEmailReport.enableEmailReportToggle();
+
+			ACUtils.selectGenericOption(optionValue = "Daily");
+
+			ACNavigation.clickCancelButton();
+		}
+
+		task ("Check that email report has been disabled") {
+			ACUtils.viewGenericText(textValueList = "Email Reports: Disabled");
+		}
+	}
+
+	@description = "Story: LRAC-11664 | Automation ID: LRAC-11845 | Test Summary: Check email report edit disabled"
+	@priority = "3"
+	test CheckEmailReportEditDisabled {
+		task ("Sign in AC as Test Test user") {
+			ACUtils.launchAC();
+		}
+
+		task ("Go to property and Select the property you are using") {
+			ACNavigation.goToSettings();
+
+			ACSettings.goToProperties();
+
+			ACNavigation.openItem(itemName = "${assignedPropertyName}");
+		}
+
+		task ("Access email report") {
+			ACEmailReport.accessEmailReportSettings();
+
+			task ("Check that the Email Reports does not allow edit when toggle is disabled") {
+				AssertElementPresent(
+					locator1 = "ACUtils#TOGGLE_ICON",
+					value = "false");
+
+				AssertVisible(
+					key_text = "Save",
+					locator1 = "Button#ANY_DISABLED");
+
+				AssertElementPresent(locator1 = "ACEmailReport#EMAIL_REPORT_FREQUENCY_DISABLED");
+			}
+		}
+	}
+
 	@description = "Story: LRAC-11663 | Automation ID: LRAC-11835 | Test Summary: Check that the Email Reports widget appears on the property settings page for all users"
 	@priority = "2"
 	test CheckEmailReportsAppearsForAllUsers {

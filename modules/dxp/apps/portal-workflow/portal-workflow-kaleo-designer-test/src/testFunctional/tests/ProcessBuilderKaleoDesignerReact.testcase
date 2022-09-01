@@ -528,12 +528,21 @@ definition {
 	}
 
 	@description = "Verify that the user is able to assign the task node to the Asset Creator"
-	@ignore = "Test Stub"
 	@priority = "4"
 	test CanAssignTaskNodeToAssetCreator {
+		property test.name.skip.portal.instance = "ProcessBuilderKaleoDesignerReact#CanAssignTaskNodeToAssetCreator";
 
-		// TODO CanAssignTaskNodeToAssetCreator pending implementation
+		Workflow.openWorkflowListView();
 
+		Workflow.addNewDefinition(workflowDefinitionTitle = "New Workflow Definition");
+
+		ProcessBuilderKaleoDesignerReact.dragSidebarNodeAndMove(
+			nodeLabel = "Task",
+			nodePosition = "0,0");
+
+		ProcessBuilderKaleoDesignerReact.viewAndFillAssignments(assignmentType = "Asset Creator");
+
+		ProcessBuilderKaleoDesignerReact.viewSelectedAssignments(selectedAssignments = "Asset Creator");
 	}
 
 	@description = "Verify that the user is able to assign the task node to a Resource Action"
@@ -557,12 +566,23 @@ definition {
 	}
 
 	@description = "Verify that the user is able to assign the task node to a Role"
-	@ignore = "Test Stub"
 	@priority = "4"
 	test CanAssignTaskNodeToRole {
+		property test.name.skip.portal.instance = "ProcessBuilderKaleoDesignerReact#CanAssignTaskNodeToRole";
 
-		// TODO CanAssignTaskNodeToRole pending implementation
+		Workflow.openWorkflowListView();
 
+		Workflow.addNewDefinition(workflowDefinitionTitle = "New Workflow Definition");
+
+		ProcessBuilderKaleoDesignerReact.dragSidebarNodeAndMove(
+			nodeLabel = "Task",
+			nodePosition = "0,0");
+
+		ProcessBuilderKaleoDesignerReact.viewAndFillAssignments(
+			assignmentType = "Role",
+			roleName = "Asset Library Member");
+
+		ProcessBuilderKaleoDesignerReact.viewSelectedAssignments(selectedAssignments = "Role: Asset Library Member");
 	}
 
 	@description = "Verify that the user is able to assign the task node to a Scripted Assignment"
@@ -3852,12 +3872,27 @@ definition {
 	}
 
 	@description = "Verify that the Role ID is a read only field"
-	@ignore = "Test Stub"
 	@priority = "3"
 	test NodeIDIsReadyOnly {
+		property test.name.skip.portal.instance = "ProcessBuilderKaleoDesignerReact#NodeIDIsReadyOnly";
 
-		// TODO NodeIDIsReadyOnly pending implementation
+		Workflow.openWorkflowListView();
 
+		Workflow.addNewDefinition(workflowDefinitionTitle = "New Workflow Definition");
+
+		ProcessBuilderKaleoDesignerReact.dragSidebarNodeAndMove(
+			nodeLabel = "Task",
+			nodePosition = "0,0");
+
+		ProcessBuilderKaleoDesignerReact.viewAndFillAssignments(
+			assignmentType = "Role",
+			roleName = "Administrator");
+
+		ProcessBuilderKaleoDesignerReact.gotoSideBarProperty(
+			propertyName = "Assignments",
+			propertyValue = "Role:Administrator");
+
+		ProcessBuilderKaleoDesignerReact.viewRoleIDDisabled();
 	}
 
 	@description = "LPS-139387 - Verify that the node info is displayed when the node is selected"

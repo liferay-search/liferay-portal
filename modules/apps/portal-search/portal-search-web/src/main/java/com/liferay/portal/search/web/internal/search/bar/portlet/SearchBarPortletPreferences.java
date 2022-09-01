@@ -23,7 +23,8 @@ import java.util.Optional;
  */
 public interface SearchBarPortletPreferences {
 
-	public static final String PREFERENCE_KEY_DESTINATION = "destination";
+	public static final String PREFERENCE_KEY_DESTINATION_FRIENDLY_URL =
+		"destinationFriendlyURL";
 
 	public static final String PREFERENCE_KEY_FEDERATED_SEARCH_KEY =
 		"federatedSearchKey";
@@ -54,9 +55,9 @@ public interface SearchBarPortletPreferences {
 	public static final String PREFERENCE_KEY_USE_ADVANCED_SEARCH_SYNTAX =
 		"useAdvancedSearchSyntax";
 
-	public Optional<String> getDestination();
+	public Optional<String> getDestinationFriendlyURLOptional();
 
-	public String getDestinationString();
+	public String getDestinationFriendlyURLString();
 
 	public Optional<String> getFederatedSearchKeyOptional();
 

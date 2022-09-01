@@ -25,7 +25,7 @@ definition {
 			panel = "Control Panel",
 			portlet = "Account Subscription Groups");
 
-		CustomerPortal.viewCPObjectInfo();
+		CustomerPortal.viewObjectInfo(index = "${index}");
 
 		CP2DXPCloudSetup.typeSetupDXPCloudInfoFields(
 			label = "activationStatus",
@@ -101,6 +101,12 @@ definition {
 		else if (isSet(idpAttributeMapping)) {
 			SAMLPortlet.addIdentityProviderConnectionAttributeMapping(idpAttributeMapping = "${idpAttributeMapping}");
 		}
+	}
+
+	macro assertButtonIsVisible {
+		var key_text = "${text}";
+
+		AssertVisible(locator1 = "CustomerPortalSite#BUTTON");
 	}
 
 	macro assertPageTitle {

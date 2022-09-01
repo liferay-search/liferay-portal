@@ -198,7 +198,7 @@
 										"definition": {
 											"widgetInstance": {
 												"widgetConfig": {
-													"destination": "",
+													"destinationFriendlyURL": "",
 													"displayStyle": "default",
 													"displayStyleGroupId": "82449",
 													"federatedSearchKey": "",

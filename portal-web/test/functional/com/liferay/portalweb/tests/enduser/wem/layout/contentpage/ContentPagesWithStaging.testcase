@@ -31,6 +31,8 @@ definition {
 			PortalInstances.tearDownCP();
 		}
 		else {
+			JSONUser.tearDownNonAdminUsers();
+
 			JSONGroup.deleteGroupByName(groupName = "Test Site Name");
 		}
 	}
@@ -39,7 +41,6 @@ definition {
 	@priority = "4"
 	test CannotPreviewAndDiscardDraftAsUserWithoutUpdatePermission {
 		property custom.properties = "jsonws.web.service.paths.excludes=";
-		property test.name.skip.portal.instance = "ContentPagesWithStaging#CannotPreviewAndDiscardDraftAsUserWithoutUpdatePermission";
 
 		task ("Add a new user") {
 			JSONUser.addUser(
@@ -222,6 +223,8 @@ definition {
 				locator1 = "PagesFinder#PAGE_ELLIPSIS_ICON");
 
 			MenuItem.viewNotVisible(menuItem = "Preview Draft");
+
+			JSONRole.deleteRole(roleTitle = "Roles Siterole Name");
 		}
 	}
 

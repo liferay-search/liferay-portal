@@ -1567,13 +1567,6 @@ public class ContentPageEditorDisplayContext {
 			DefaultFragmentRendererContext defaultFragmentRendererContext =
 				new DefaultFragmentRendererContext(fragmentEntryLink);
 
-			defaultFragmentRendererContext.
-				setCollectionStyledLayoutStructureItemIds(
-					LayoutStructureUtil.
-						getCollectionStyledLayoutStructureItemIds(
-							fragmentEntryLink.getFragmentEntryLinkId(),
-							_getLayoutStructure()));
-
 			JSONObject jsonObject =
 				_fragmentEntryLinkManager.getFragmentEntryLinkJSONObject(
 					defaultFragmentRendererContext, fragmentEntryLink,
@@ -1603,7 +1596,9 @@ public class ContentPageEditorDisplayContext {
 				FragmentEntryLocalServiceUtil.fetchFragmentEntry(
 					fragmentEntryLink.getFragmentEntryId());
 
-			if (fragmentEntry == null) {
+			if ((fragmentEntry == null) &&
+				(fragmentEntryLink.getRendererKey() == null)) {
+
 				String portletId = _getPortletId(
 					jsonObject.getString("content"));
 
