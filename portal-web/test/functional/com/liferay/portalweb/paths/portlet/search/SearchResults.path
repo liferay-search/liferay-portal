@@ -178,7 +178,7 @@
 </tr>
 <tr>
 	<td>CLASSIC_ASSET_ENTRY_TABLE_SUMMARY_SPECIFIC</td>
-	<td>//*[@data-qa-id='row' and contains(.,'${key_searchAssetTitle}')]//div[contains(.,'${key_searchAssetType}')]/../div[2]</td>
+	<td>//*[@data-qa-id='row' and contains(.,'${key_searchAssetTitle}')]//div[contains(.,'${key_searchAssetType}')]/..//span[2]</td>
 	<td></td>
 </tr>
 <tr>
