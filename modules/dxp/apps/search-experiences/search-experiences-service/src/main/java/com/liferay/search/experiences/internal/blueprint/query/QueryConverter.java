@@ -63,18 +63,12 @@ public class QueryConverter {
 		if (object instanceof JSONObject) {
 			JSONObject jsonObject2 = (JSONObject)object;
 
-			Query query = _queries.term(
+			return _queries.term(
 				field,
 				PropertyValidator.validate(
 					Objects.requireNonNull(
 						jsonObject2.get("value"),
 						"The key \"value\" is not set")));
-
-			if (jsonObject2.get("boost") != null) {
-				query.setBoost((float)jsonObject2.getDouble("boost"));
-			}
-
-			return query;
 		}
 
 		return _queries.term(field, PropertyValidator.validate(object));
