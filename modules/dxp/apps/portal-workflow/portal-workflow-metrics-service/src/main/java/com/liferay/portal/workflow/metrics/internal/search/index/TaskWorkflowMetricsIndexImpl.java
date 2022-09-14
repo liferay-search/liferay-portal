@@ -36,7 +36,7 @@ public class TaskWorkflowMetricsIndexImpl
 
 	@Override
 	public String getIndexType() {
-		return "WorkflowMetricsTaskType";
+		return "_doc";
 	}
 
 	@Reference(target = "(workflow.metrics.index.entity.name=task)")
