@@ -36,7 +36,7 @@ public class SLATaskResultWorkflowMetricsIndexImpl
 
 	@Override
 	public String getIndexType() {
-		return "WorkflowMetricsSLATaskResultType";
+		return "_doc";
 	}
 
 	@Reference(target = "(workflow.metrics.index.entity.name=sla-task-result)")
