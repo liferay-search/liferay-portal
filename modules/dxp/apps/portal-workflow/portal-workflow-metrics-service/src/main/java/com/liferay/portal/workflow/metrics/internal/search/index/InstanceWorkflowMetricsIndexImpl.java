@@ -36,7 +36,7 @@ public class InstanceWorkflowMetricsIndexImpl
 
 	@Override
 	public String getIndexType() {
-		return "WorkflowMetricsInstanceType";
+		return "_doc";
 	}
 
 	@Reference(target = "(workflow.metrics.index.entity.name=instance)")
