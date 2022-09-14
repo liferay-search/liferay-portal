@@ -36,7 +36,7 @@ public class TransitionWorkflowMetricsIndexImpl
 
 	@Override
 	public String getIndexType() {
-		return "WorkflowMetricsTransitionType";
+		return "_doc";
 	}
 
 	@Reference(target = "(workflow.metrics.index.entity.name=transition)")
