@@ -36,7 +36,7 @@ public class ProcessWorkflowMetricsIndexImpl
 
 	@Override
 	public String getIndexType() {
-		return "WorkflowMetricsProcessType";
+		return "_doc";
 	}
 
 	@Reference(target = "(workflow.metrics.index.entity.name=process)")
