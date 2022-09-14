@@ -36,7 +36,7 @@ public class NodeWorkflowMetricsIndexImpl
 
 	@Override
 	public String getIndexType() {
-		return "WorkflowMetricsNodeType";
+		return "_doc";
 	}
 
 	@Reference(target = "(workflow.metrics.index.entity.name=node)")
