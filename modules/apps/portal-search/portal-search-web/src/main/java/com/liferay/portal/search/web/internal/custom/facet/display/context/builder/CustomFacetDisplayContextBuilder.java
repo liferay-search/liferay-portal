@@ -27,6 +27,7 @@ import com.liferay.portal.search.web.internal.util.SearchStringUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -72,6 +73,10 @@ public class CustomFacetDisplayContextBuilder {
 		return customFacetDisplayContext;
 	}
 
+	public String getOrder() {
+		return _order;
+	}
+
 	public CustomFacetDisplayContextBuilder setCustomDisplayCaption(
 		Optional<String> customDisplayCaptionOptional) {
 
@@ -114,6 +119,12 @@ public class CustomFacetDisplayContextBuilder {
 
 	public CustomFacetDisplayContextBuilder setMaxTerms(int maxTerms) {
 		_maxTerms = maxTerms;
+
+		return this;
+	}
+
+	public CustomFacetDisplayContextBuilder setOrder(String order) {
+		_order = order;
 
 		return this;
 	}
@@ -194,6 +205,12 @@ public class CustomFacetDisplayContextBuilder {
 		return false;
 	}
 
+	private static int _compareDisplayNames(
+		String displayName1, String displayName2) {
+
+		return displayName1.compareTo(displayName2);
+	}
+
 	private CustomFacetTermDisplayContext _buildTermDisplayContext(
 		TermCollector termCollector) {
 
@@ -202,11 +219,11 @@ public class CustomFacetDisplayContextBuilder {
 		CustomFacetTermDisplayContext customFacetTermDisplayContext =
 			new CustomFacetTermDisplayContext();
 
+		customFacetTermDisplayContext.setFieldName(term);
 		customFacetTermDisplayContext.setFrequency(
 			termCollector.getFrequency());
 		customFacetTermDisplayContext.setFrequencyVisible(_frequenciesVisible);
 		customFacetTermDisplayContext.setSelected(isSelected(term));
-		customFacetTermDisplayContext.setFieldName(term);
 
 		return customFacetTermDisplayContext;
 	}
@@ -235,6 +252,13 @@ public class CustomFacetDisplayContextBuilder {
 				_buildTermDisplayContext(termCollector));
 		}
 
+		if (_order.equals("count:asc")) {
+			customFacetTermDisplayContexts.sort(_COMPARATOR_FREQUENCY_ASC);
+		}
+		else if (_order.equals("count:desc")) {
+			customFacetTermDisplayContexts.sort(_COMPARATOR_FREQUENCY_DESC);
+		}
+
 		return customFacetTermDisplayContexts;
 	}
 
@@ -246,10 +270,10 @@ public class CustomFacetDisplayContextBuilder {
 		CustomFacetTermDisplayContext customFacetTermDisplayContext =
 			new CustomFacetTermDisplayContext();
 
+		customFacetTermDisplayContext.setFieldName(_parameterValues.get(0));
 		customFacetTermDisplayContext.setFrequency(0);
 		customFacetTermDisplayContext.setFrequencyVisible(_frequenciesVisible);
 		customFacetTermDisplayContext.setSelected(true);
-		customFacetTermDisplayContext.setFieldName(_parameterValues.get(0));
 
 		return Collections.singletonList(customFacetTermDisplayContext);
 	}
@@ -262,6 +286,53 @@ public class CustomFacetDisplayContextBuilder {
 		return _parameterValues.get(0);
 	}
 
+	private static final Comparator<CustomFacetTermDisplayContext>
+		_COMPARATOR_FREQUENCY_ASC =
+			new Comparator<CustomFacetTermDisplayContext>() {
+
+				public int compare(
+					CustomFacetTermDisplayContext displayContext1,
+					CustomFacetTermDisplayContext displayContext2) {
+
+					int result =
+						displayContext1.getFrequency() -
+							displayContext2.getFrequency();
+
+					if (result == 0) {
+						return _compareDisplayNames(
+							displayContext1.getFieldName(),
+							displayContext2.getFieldName());
+					}
+
+					return result;
+				}
+
+			};
+
+	private static final Comparator<CustomFacetTermDisplayContext>
+		_COMPARATOR_FREQUENCY_DESC =
+			new Comparator<CustomFacetTermDisplayContext>() {
+
+				@Override
+				public int compare(
+					CustomFacetTermDisplayContext displayContext1,
+					CustomFacetTermDisplayContext displayContext2) {
+
+					int result =
+						displayContext2.getFrequency() -
+							displayContext1.getFrequency();
+
+					if (result == 0) {
+						return _compareDisplayNames(
+							displayContext1.getFieldName(),
+							displayContext2.getFieldName());
+					}
+
+					return result;
+				}
+
+			};
+
 	private String _customDisplayCaption;
 	private Facet _facet;
 	private String _fieldToAggregate;
@@ -269,6 +340,7 @@ public class CustomFacetDisplayContextBuilder {
 	private int _frequencyThreshold;
 	private final HttpServletRequest _httpServletRequest;
 	private int _maxTerms;
+	private String _order;
 	private String _paginationStartParameterName;
 	private String _parameterName;
 	private List<String> _parameterValues = Collections.emptyList();
