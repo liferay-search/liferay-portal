@@ -15,6 +15,7 @@
 package com.liferay.portal.search.web.internal.custom.facet.portlet;
 
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.search.web.internal.folder.facet.portlet.FolderFacetPortletPreferences;
 import com.liferay.portal.search.web.internal.helper.PortletPreferencesHelper;
 
 import java.util.Optional;
@@ -82,6 +83,12 @@ public class CustomFacetPortletPreferencesImpl
 	public int getMaxTerms() {
 		return _portletPreferencesHelper.getInteger(
 			CustomFacetPortletPreferences.PREFERENCE_KEY_MAX_TERMS, 10);
+	}
+
+	@Override
+	public String getOrder() {
+		return _portletPreferencesHelper.getString(
+			FolderFacetPortletPreferences.PREFERENCE_KEY_ORDER, "count:desc");
 	}
 
 	@Override
