@@ -107,6 +107,13 @@ public class CustomFacetSearchContributorImpl
 		}
 
 		@Override
+		public CustomFacetBuilder order(String order) {
+			_order = order;
+
+			return this;
+		}
+
+		@Override
 		public CustomFacetBuilder selectedValues(String... selectedValues) {
 			_selectedValues = selectedValues;
 
@@ -117,7 +124,7 @@ public class CustomFacetSearchContributorImpl
 			FacetConfiguration facetConfiguration = new FacetConfiguration();
 
 			facetConfiguration.setFieldName(facet.getFieldName());
-			facetConfiguration.setOrder("OrderHitsDesc");
+			facetConfiguration.setOrder(_order);
 			facetConfiguration.setStatic(false);
 			facetConfiguration.setWeight(1.1);
 
@@ -127,6 +134,8 @@ public class CustomFacetSearchContributorImpl
 				"frequencyThreshold", _frequencyThreshold
 			).put(
 				"maxTerms", _maxTerms
+			).put(
+				"order", _order
 			);
 
 			return facetConfiguration;
@@ -136,6 +145,7 @@ public class CustomFacetSearchContributorImpl
 		private String _fieldToAggregate;
 		private int _frequencyThreshold;
 		private int _maxTerms;
+		private String _order;
 		private final SearchContext _searchContext;
 		private String[] _selectedValues;
 
