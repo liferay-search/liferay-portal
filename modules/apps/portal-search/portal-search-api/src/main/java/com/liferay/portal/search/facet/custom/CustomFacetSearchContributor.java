@@ -41,6 +41,8 @@ public interface CustomFacetSearchContributor {
 
 		public CustomFacetBuilder maxTerms(int maxTerms);
 
+		public CustomFacetBuilder order(String order);
+
 		public CustomFacetBuilder selectedValues(String... selectedValues);
 
 	}
