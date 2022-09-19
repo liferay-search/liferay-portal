@@ -196,18 +196,16 @@ public class CustomFacetDisplayContextTest {
 		CustomFacetDisplayContextBuilder customFacetDisplayContextBuilder =
 			new CustomFacetDisplayContextBuilder(_getHttpServletRequest());
 
+		customFacetDisplayContextBuilder.setCustomDisplayCaption(
+			Optional.ofNullable(customDisplayCaption));
 		customFacetDisplayContextBuilder.setFacet(_facet);
-		customFacetDisplayContextBuilder.setParameterName("custom");
-		customFacetDisplayContextBuilder.setParameterValue(parameterValue);
+		customFacetDisplayContextBuilder.setFieldToAggregate(fieldToAggregate);
 		customFacetDisplayContextBuilder.setFrequenciesVisible(true);
-
 		customFacetDisplayContextBuilder.setFrequencyThreshold(0);
 		customFacetDisplayContextBuilder.setMaxTerms(0);
 		customFacetDisplayContextBuilder.setOrder(order);
-
-		customFacetDisplayContextBuilder.setCustomDisplayCaption(
-			Optional.ofNullable(customDisplayCaption));
-		customFacetDisplayContextBuilder.setFieldToAggregate(fieldToAggregate);
+		customFacetDisplayContextBuilder.setParameterName("custom");
+		customFacetDisplayContextBuilder.setParameterValue(parameterValue);
 
 		return customFacetDisplayContextBuilder.build();
 	}
