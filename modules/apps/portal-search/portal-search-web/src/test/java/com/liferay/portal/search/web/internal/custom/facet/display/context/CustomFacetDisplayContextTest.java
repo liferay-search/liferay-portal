@@ -65,7 +65,8 @@ public class CustomFacetDisplayContextTest {
 
 		CustomFacetDisplayContext customFacetDisplayContext =
 			_createDisplayContext(
-				customDisplayCaption, fieldToAggregate, parameterValue);
+				customDisplayCaption, fieldToAggregate, parameterValue,
+				"count:desc");
 
 		List<CustomFacetTermDisplayContext> customFacetTermDisplayContexts =
 			customFacetDisplayContext.getTermDisplayContexts();
@@ -88,7 +89,8 @@ public class CustomFacetDisplayContextTest {
 
 		CustomFacetDisplayContext customFacetDisplayContext =
 			_createDisplayContext(
-				"customDisplayCaption", "fieldToAggregate", parameterValue);
+				"customDisplayCaption", "fieldToAggregate", parameterValue,
+				"count:desc");
 
 		List<CustomFacetTermDisplayContext> customFacetTermDisplayContexts =
 			customFacetDisplayContext.getTermDisplayContexts();
@@ -123,7 +125,8 @@ public class CustomFacetDisplayContextTest {
 
 		CustomFacetDisplayContext customFacetDisplayContext =
 			_createDisplayContext(
-				"customDisplayCaption", "fieldToAggregate", parameterValue);
+				"customDisplayCaption", "fieldToAggregate", parameterValue,
+				"count:desc");
 
 		List<CustomFacetTermDisplayContext> customFacetTermDisplayContexts =
 			customFacetDisplayContext.getTermDisplayContexts();
@@ -159,7 +162,8 @@ public class CustomFacetDisplayContextTest {
 
 		CustomFacetDisplayContext customFacetDisplayContext =
 			_createDisplayContext(
-				"customDisplayCaption", "fieldToAggregate", parameterValue);
+				"customDisplayCaption", "fieldToAggregate", parameterValue,
+				"count:desc");
 
 		List<CustomFacetTermDisplayContext> customFacetTermDisplayContexts =
 			customFacetDisplayContext.getTermDisplayContexts();
@@ -186,7 +190,7 @@ public class CustomFacetDisplayContextTest {
 
 	private CustomFacetDisplayContext _createDisplayContext(
 			String customDisplayCaption, String fieldToAggregate,
-			String parameterValue)
+			String parameterValue, String order)
 		throws Exception {
 
 		CustomFacetDisplayContextBuilder customFacetDisplayContextBuilder =
@@ -199,6 +203,7 @@ public class CustomFacetDisplayContextTest {
 
 		customFacetDisplayContextBuilder.setFrequencyThreshold(0);
 		customFacetDisplayContextBuilder.setMaxTerms(0);
+		customFacetDisplayContextBuilder.setOrder(order);
 
 		customFacetDisplayContextBuilder.setCustomDisplayCaption(
 			Optional.ofNullable(customDisplayCaption));
