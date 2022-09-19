@@ -36,6 +36,11 @@ public class ModifiedFacetConfigurationImpl
 	}
 
 	@Override
+	public void setOrderJSONArray(String order) {
+		_jsonObject.put("order", order);
+	}
+
+	@Override
 	public void setRangesJSONArray(JSONArray jsonArray) {
 		_jsonObject.put("ranges", jsonArray);
 	}

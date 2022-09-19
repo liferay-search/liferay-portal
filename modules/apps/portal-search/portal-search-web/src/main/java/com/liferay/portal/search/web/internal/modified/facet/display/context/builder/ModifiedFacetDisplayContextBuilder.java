@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -126,6 +127,10 @@ public class ModifiedFacetDisplayContextBuilder implements Serializable {
 		_locale = locale;
 	}
 
+	public void setOrder(String order) {
+		_order = order;
+	}
+
 	public void setPaginationStartParameterName(
 		String paginationStartParameterName) {
 
@@ -202,6 +207,12 @@ public class ModifiedFacetDisplayContextBuilder implements Serializable {
 		}
 
 		return isNothingSelected();
+	}
+
+	private static int _compareDisplayNames(
+		String displayName1, String displayName2) {
+
+		return displayName1.compareTo(displayName2);
 	}
 
 	private ModifiedFacetCalendarDisplayContext _buildCalendarDisplayContext() {
@@ -302,6 +313,13 @@ public class ModifiedFacetDisplayContextBuilder implements Serializable {
 					jsonObject.getString("range")));
 		}
 
+		if (_order.equals("count:asc")) {
+			modifiedFacetTermDisplayContexts.sort(_COMPARATOR_FREQUENCY_ASC);
+		}
+		else if (_order.equals("count:desc")) {
+			modifiedFacetTermDisplayContexts.sort(_COMPARATOR_FREQUENCY_DESC);
+		}
+
 		return modifiedFacetTermDisplayContexts;
 	}
 
@@ -372,6 +390,53 @@ public class ModifiedFacetDisplayContextBuilder implements Serializable {
 		return true;
 	}
 
+	private static final Comparator<ModifiedFacetTermDisplayContext>
+		_COMPARATOR_FREQUENCY_ASC =
+			new Comparator<ModifiedFacetTermDisplayContext>() {
+
+				public int compare(
+					ModifiedFacetTermDisplayContext displayContext1,
+					ModifiedFacetTermDisplayContext displayContext2) {
+
+					int result =
+						displayContext1.getFrequency() -
+							displayContext2.getFrequency();
+
+					if (result == 0) {
+						return _compareDisplayNames(
+							displayContext1.getLabel(),
+							displayContext2.getLabel());
+					}
+
+					return result;
+				}
+
+			};
+
+	private static final Comparator<ModifiedFacetTermDisplayContext>
+		_COMPARATOR_FREQUENCY_DESC =
+			new Comparator<ModifiedFacetTermDisplayContext>() {
+
+				@Override
+				public int compare(
+					ModifiedFacetTermDisplayContext displayContext1,
+					ModifiedFacetTermDisplayContext displayContext2) {
+
+					int result =
+						displayContext2.getFrequency() -
+							displayContext1.getFrequency();
+
+					if (result == 0) {
+						return _compareDisplayNames(
+							displayContext1.getLabel(),
+							displayContext2.getLabel());
+					}
+
+					return result;
+				}
+
+			};
+
 	private final CalendarFactory _calendarFactory;
 	private String _currentURL;
 	private final DateFormatFactory _dateFormatFactory;
@@ -381,6 +446,7 @@ public class ModifiedFacetDisplayContextBuilder implements Serializable {
 	private Locale _locale;
 	private final ModifiedFacetPortletInstanceConfiguration
 		_modifiedFacetPortletInstanceConfiguration;
+	private String _order;
 	private String _paginationStartParameterName;
 	private String _parameterName;
 	private List<String> _selectedRanges = Collections.emptyList();

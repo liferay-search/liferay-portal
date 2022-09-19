@@ -135,6 +135,9 @@ public class ModifiedFacetPortlet extends MVCPortlet {
 
 		modifiedFacetDisplayContextBuilder.setLocale(themeDisplay.getLocale());
 
+		modifiedFacetDisplayContextBuilder.setOrder(
+			modifiedFacetPortletPreferences.getOrder());
+
 		modifiedFacetDisplayContextBuilder.setPaginationStartParameterName(
 			_getPaginationStartParameterName(portletSharedSearchResponse));
 

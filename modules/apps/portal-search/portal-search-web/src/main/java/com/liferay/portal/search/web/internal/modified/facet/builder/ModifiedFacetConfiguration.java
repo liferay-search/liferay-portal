@@ -23,6 +23,8 @@ public interface ModifiedFacetConfiguration {
 
 	public JSONArray getRangesJSONArray();
 
+	public void setOrderJSONArray(String order);
+
 	public void setRangesJSONArray(JSONArray rangesJSONArray);
 
 }

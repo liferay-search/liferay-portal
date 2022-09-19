@@ -100,6 +100,9 @@ public class ModifiedFacetPortletSharedSearchContributor
 				parameterName + "To"),
 			modifiedFacetBuilder::setCustomRangeTo);
 
+		modifiedFacetBuilder.setOrder(
+			modifiedFacetPortletPreferences.getOrder());
+
 		return modifiedFacetBuilder.build();
 	}
 
