@@ -231,8 +231,7 @@ public class CustomFacetDisplayContextTest {
 	}
 
 	private String _buildNameFrequencyString(
-			List<CustomFacetTermDisplayContext> customFacetTermDisplayContexts)
-		throws Exception {
+		List<CustomFacetTermDisplayContext> customFacetTermDisplayContexts) {
 
 		StringBundler sb = new StringBundler(
 			customFacetTermDisplayContexts.size() * 4);
@@ -319,14 +318,14 @@ public class CustomFacetDisplayContextTest {
 	}
 
 	private void _setUpTermCollectors(String... fieldNames) {
-		List<TermCollector> toBeReturned = new ArrayList<>();
+		List<TermCollector> termCollectors = new ArrayList<>();
 
 		for (int i = 0; i < fieldNames.length; i++) {
-			toBeReturned.add(_createTermCollector(fieldNames[i], i + 1));
+			termCollectors.add(_createTermCollector(fieldNames[i], i + 1));
 		}
 
 		Mockito.doReturn(
-			toBeReturned
+			termCollectors
 		).when(
 			_facetCollector
 		).getTermCollectors();
