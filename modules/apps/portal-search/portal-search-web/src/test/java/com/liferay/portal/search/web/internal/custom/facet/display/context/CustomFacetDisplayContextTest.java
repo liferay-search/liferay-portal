@@ -14,17 +14,19 @@
 
 package com.liferay.portal.search.web.internal.custom.facet.display.context;
 
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.search.facet.Facet;
 import com.liferay.portal.kernel.search.facet.collector.FacetCollector;
 import com.liferay.portal.kernel.search.facet.collector.TermCollector;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.theme.PortletDisplay;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.search.web.internal.custom.facet.display.context.builder.CustomFacetDisplayContextBuilder;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -117,9 +119,8 @@ public class CustomFacetDisplayContextTest {
 	@Test
 	public void testOneTerm() throws Exception {
 		String fieldName = RandomTestUtil.randomString();
-		int count = RandomTestUtil.randomInt();
 
-		_setUpOneTermCollector(fieldName, count);
+		_setUpTermCollectors(fieldName);
 
 		String parameterValue = "";
 
@@ -138,8 +139,7 @@ public class CustomFacetDisplayContextTest {
 		CustomFacetTermDisplayContext customFacetTermDisplayContext =
 			customFacetTermDisplayContexts.get(0);
 
-		Assert.assertEquals(
-			count, customFacetTermDisplayContext.getFrequency());
+		Assert.assertEquals(1, customFacetTermDisplayContext.getFrequency());
 		Assert.assertEquals(
 			fieldName, customFacetTermDisplayContext.getFieldName());
 		Assert.assertFalse(customFacetTermDisplayContext.isSelected());
@@ -154,9 +154,8 @@ public class CustomFacetDisplayContextTest {
 	@Test
 	public void testOneTermWithPreviousSelection() throws Exception {
 		String fieldName = RandomTestUtil.randomString();
-		int count = RandomTestUtil.randomInt();
 
-		_setUpOneTermCollector(fieldName, count);
+		_setUpTermCollectors(fieldName);
 
 		String parameterValue = fieldName;
 
@@ -175,8 +174,7 @@ public class CustomFacetDisplayContextTest {
 		CustomFacetTermDisplayContext customFacetTermDisplayContext =
 			customFacetTermDisplayContexts.get(0);
 
-		Assert.assertEquals(
-			count, customFacetTermDisplayContext.getFrequency());
+		Assert.assertEquals(1, customFacetTermDisplayContext.getFrequency());
 		Assert.assertEquals(
 			fieldName, customFacetTermDisplayContext.getFieldName());
 		Assert.assertTrue(customFacetTermDisplayContext.isSelected());
@@ -186,6 +184,71 @@ public class CustomFacetDisplayContextTest {
 			parameterValue, customFacetDisplayContext.getParameterValue());
 		Assert.assertFalse(customFacetDisplayContext.isNothingSelected());
 		Assert.assertFalse(customFacetDisplayContext.isRenderNothing());
+	}
+
+	@Test
+	public void testOrderByTermFrequencyAscending() throws Exception {
+		_setUpTermCollectors("alpha", "charlie", "bravo", "delta");
+
+		String parameterValue = "";
+
+		CustomFacetDisplayContext customFacetDisplayContext =
+			_createDisplayContext(
+				"customDisplayCaption", "fieldToAggregate", parameterValue,
+				"count:asc");
+
+		List<CustomFacetTermDisplayContext> customFacetTermDisplayContexts =
+			customFacetDisplayContext.getTermDisplayContexts();
+
+		String nameFrequencyString = _buildNameFrequencyString(
+			customFacetTermDisplayContexts);
+
+		Assert.assertEquals(
+			customFacetTermDisplayContexts.toString(),
+			"alpha:1|charlie:2|bravo:3|delta:4", nameFrequencyString);
+	}
+
+	@Test
+	public void testOrderByTermFrequencyDescending() throws Exception {
+		_setUpTermCollectors("alpha", "charlie", "bravo", "delta");
+
+		String parameterValue = "";
+
+		CustomFacetDisplayContext customFacetDisplayContext =
+			_createDisplayContext(
+				"customDisplayCaption", "fieldToAggregate", parameterValue,
+				"count:desc");
+
+		List<CustomFacetTermDisplayContext> customFacetTermDisplayContexts =
+			customFacetDisplayContext.getTermDisplayContexts();
+
+		String nameFrequencyString = _buildNameFrequencyString(
+			customFacetTermDisplayContexts);
+
+		Assert.assertEquals(
+			customFacetTermDisplayContexts.toString(),
+			"delta:4|bravo:3|charlie:2|alpha:1", nameFrequencyString);
+	}
+
+	private String _buildNameFrequencyString(
+			List<CustomFacetTermDisplayContext> customFacetTermDisplayContexts)
+		throws Exception {
+
+		StringBundler sb = new StringBundler(
+			customFacetTermDisplayContexts.size() * 4);
+
+		for (CustomFacetTermDisplayContext customFacetTermDisplayContext :
+				customFacetTermDisplayContexts) {
+
+			sb.append(customFacetTermDisplayContext.getFieldName());
+			sb.append(StringPool.COLON);
+			sb.append(customFacetTermDisplayContext.getFrequency());
+			sb.append(StringPool.PIPE);
+		}
+
+		sb.setIndex(sb.index() - 1);
+
+		return sb.toString();
 	}
 
 	private CustomFacetDisplayContext _createDisplayContext(
@@ -255,9 +318,15 @@ public class CustomFacetDisplayContextTest {
 		return themeDisplay;
 	}
 
-	private void _setUpOneTermCollector(String fieldName, int count) {
+	private void _setUpTermCollectors(String... fieldNames) {
+		List<TermCollector> toBeReturned = new ArrayList<>();
+
+		for (int i = 0; i < fieldNames.length; i++) {
+			toBeReturned.add(_createTermCollector(fieldNames[i], i + 1));
+		}
+
 		Mockito.doReturn(
-			Collections.singletonList(_createTermCollector(fieldName, count))
+			toBeReturned
 		).when(
 			_facetCollector
 		).getTermCollectors();
