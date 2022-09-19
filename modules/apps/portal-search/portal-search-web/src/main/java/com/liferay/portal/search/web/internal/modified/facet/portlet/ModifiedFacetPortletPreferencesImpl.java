@@ -42,6 +42,12 @@ public class ModifiedFacetPortletPreferencesImpl
 	}
 
 	@Override
+	public String getOrder() {
+		return _portletPreferencesHelper.getString(
+			ModifiedFacetPortletPreferences.PREFERENCE_KEY_ORDER, "OrderHitsDesc");
+	}
+
+	@Override
 	public String getParameterName() {
 		return _portletPreferencesHelper.getString(
 			ModifiedFacetPortletPreferences.PREFERENCE_KEY_PARAMETER_NAME,
