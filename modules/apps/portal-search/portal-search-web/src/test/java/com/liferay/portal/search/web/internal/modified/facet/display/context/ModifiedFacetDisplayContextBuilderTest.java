@@ -297,6 +297,7 @@ public class ModifiedFacetDisplayContextBuilderTest {
 
 		modifiedFacetDisplayContextBuilder.setFacet(_facet);
 		modifiedFacetDisplayContextBuilder.setLocale(LocaleUtil.getDefault());
+		modifiedFacetDisplayContextBuilder.setOrder("OrderHitsDesc");
 		modifiedFacetDisplayContextBuilder.setTimeZone(
 			TimeZoneUtil.getDefault());
 
