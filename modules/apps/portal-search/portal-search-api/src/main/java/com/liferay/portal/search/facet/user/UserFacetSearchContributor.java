@@ -39,6 +39,8 @@ public interface UserFacetSearchContributor {
 
 		public UserFacetBuilder maxTerms(int maxTerms);
 
+		public UserFacetBuilder order(String order);
+
 		public UserFacetBuilder selectedUserNames(String... selectedUserNames);
 
 	}
