@@ -103,7 +103,7 @@ public class ModifiedFacetDisplayContextBuilderTest {
 		_mockTermCollectorFrequency(termCollector, frequency);
 
 		ModifiedFacetDisplayContextBuilder modifiedFacetDisplayContextBuilder =
-			createDisplayContextBuilder();
+			createDisplayContextBuilder("OrderHitsDesc");
 
 		modifiedFacetDisplayContextBuilder.setFromParameterValue(from);
 		modifiedFacetDisplayContextBuilder.setToParameterValue(to);
@@ -127,7 +127,7 @@ public class ModifiedFacetDisplayContextBuilderTest {
 		_mockTermCollectorFrequency(termCollector, frequency);
 
 		ModifiedFacetDisplayContextBuilder modifiedFacetDisplayContextBuilder =
-			createDisplayContextBuilder();
+			createDisplayContextBuilder("OrderHitsDesc");
 
 		modifiedFacetDisplayContextBuilder.setFromParameterValue("2018-01-01");
 		modifiedFacetDisplayContextBuilder.setToParameterValue("2018-01-31");
@@ -146,7 +146,7 @@ public class ModifiedFacetDisplayContextBuilderTest {
 	@Test
 	public void testIsNothingSelected() {
 		ModifiedFacetDisplayContextBuilder modifiedFacetDisplayContextBuilder =
-			createDisplayContextBuilder();
+			createDisplayContextBuilder("OrderHitsDesc");
 
 		ModifiedFacetDisplayContext modifiedFacetDisplayContext =
 			modifiedFacetDisplayContextBuilder.build();
@@ -157,7 +157,7 @@ public class ModifiedFacetDisplayContextBuilderTest {
 	@Test
 	public void testIsNothingSelectedWithFromAndToAttributes() {
 		ModifiedFacetDisplayContextBuilder modifiedFacetDisplayContextBuilder =
-			createDisplayContextBuilder();
+			createDisplayContextBuilder("OrderHitsDesc");
 
 		modifiedFacetDisplayContextBuilder.setFromParameterValue("2018-01-01");
 		modifiedFacetDisplayContextBuilder.setToParameterValue("2018-01-31");
@@ -171,7 +171,7 @@ public class ModifiedFacetDisplayContextBuilderTest {
 	@Test
 	public void testIsNothingSelectedWithSelectedRange() {
 		ModifiedFacetDisplayContextBuilder modifiedFacetDisplayContextBuilder =
-			createDisplayContextBuilder();
+			createDisplayContextBuilder("OrderHitsDesc");
 
 		modifiedFacetDisplayContextBuilder.setParameterValues("past-24-hours");
 
@@ -184,7 +184,7 @@ public class ModifiedFacetDisplayContextBuilderTest {
 	@Test
 	public void testIsRenderNothingFalseWithFromAndTo() {
 		ModifiedFacetDisplayContextBuilder modifiedFacetDisplayContextBuilder =
-			createDisplayContextBuilder();
+			createDisplayContextBuilder("OrderHitsDesc");
 
 		modifiedFacetDisplayContextBuilder.setFromParameterValue("2018-01-01");
 		modifiedFacetDisplayContextBuilder.setToParameterValue("2018-01-31");
@@ -199,7 +199,7 @@ public class ModifiedFacetDisplayContextBuilderTest {
 	@Test
 	public void testIsRenderNothingFalseWithHits() {
 		ModifiedFacetDisplayContextBuilder modifiedFacetDisplayContextBuilder =
-			createDisplayContextBuilder();
+			createDisplayContextBuilder("OrderHitsDesc");
 
 		modifiedFacetDisplayContextBuilder.setTotalHits(1);
 
@@ -212,7 +212,7 @@ public class ModifiedFacetDisplayContextBuilderTest {
 	@Test
 	public void testIsRenderNothingFalseWithSelectedRange() {
 		ModifiedFacetDisplayContextBuilder modifiedFacetDisplayContextBuilder =
-			createDisplayContextBuilder();
+			createDisplayContextBuilder("OrderHitsDesc");
 
 		modifiedFacetDisplayContextBuilder.setParameterValues("past-24-hours");
 		modifiedFacetDisplayContextBuilder.setTotalHits(0);
@@ -226,7 +226,7 @@ public class ModifiedFacetDisplayContextBuilderTest {
 	@Test
 	public void testIsRenderNothingTrueWithNoHits() {
 		ModifiedFacetDisplayContextBuilder modifiedFacetDisplayContextBuilder =
-			createDisplayContextBuilder();
+			createDisplayContextBuilder("OrderHitsDesc");
 
 		modifiedFacetDisplayContextBuilder.setTotalHits(0);
 
@@ -239,7 +239,7 @@ public class ModifiedFacetDisplayContextBuilderTest {
 	@Test
 	public void testMissingFromAndToParameters() {
 		ModifiedFacetDisplayContextBuilder modifiedFacetDisplayContextBuilder =
-			createDisplayContextBuilder();
+			createDisplayContextBuilder("OrderHitsDesc");
 
 		modifiedFacetDisplayContextBuilder.setCurrentURL(
 			"/?modifiedFrom=2018-01-01&modifiedTo=2018-01-31");
@@ -254,7 +254,7 @@ public class ModifiedFacetDisplayContextBuilderTest {
 	@Test
 	public void testModifiedFacetTermDisplayContexts() {
 		ModifiedFacetDisplayContextBuilder modifiedFacetDisplayContextBuilder =
-			createDisplayContextBuilder();
+			createDisplayContextBuilder("OrderHitsDesc");
 
 		_mockFacetConfiguration(
 			"past-hour=[20180515225959 TO 20180515235959]",
@@ -289,7 +289,9 @@ public class ModifiedFacetDisplayContextBuilderTest {
 			modifiedFacetTermDisplayContext.getRange());
 	}
 
-	protected ModifiedFacetDisplayContextBuilder createDisplayContextBuilder() {
+	protected ModifiedFacetDisplayContextBuilder createDisplayContextBuilder(
+		String order) {
+
 		ModifiedFacetDisplayContextBuilder modifiedFacetDisplayContextBuilder =
 			_createModifiedFacetDisplayContextBuilder();
 
@@ -297,7 +299,7 @@ public class ModifiedFacetDisplayContextBuilderTest {
 
 		modifiedFacetDisplayContextBuilder.setFacet(_facet);
 		modifiedFacetDisplayContextBuilder.setLocale(LocaleUtil.getDefault());
-		modifiedFacetDisplayContextBuilder.setOrder("OrderHitsDesc");
+		modifiedFacetDisplayContextBuilder.setOrder(order);
 		modifiedFacetDisplayContextBuilder.setTimeZone(
 			TimeZoneUtil.getDefault());
 
@@ -404,12 +406,18 @@ public class ModifiedFacetDisplayContextBuilderTest {
 
 	private JSONArray _createRangesJSONArray(String... labelsAndRanges) {
 		JSONArray jsonArray = _jsonFactoryImpl.createJSONArray();
+		int frequency = 1;
 
 		for (String labelAndRange : labelsAndRanges) {
 			String[] labelAndRangeArray = StringUtil.split(labelAndRange, '=');
 
+			_mockTermCollectorFrequency(
+				_mockTermCollector(labelAndRangeArray[1]), frequency);
+
 			_addRangeJSONObject(
 				jsonArray, labelAndRangeArray[0], labelAndRangeArray[1]);
+
+			frequency++;
 		}
 
 		return jsonArray;
