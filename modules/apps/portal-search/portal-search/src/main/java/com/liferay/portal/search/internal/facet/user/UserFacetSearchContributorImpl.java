@@ -95,6 +95,13 @@ public class UserFacetSearchContributorImpl
 		}
 
 		@Override
+		public UserFacetBuilder order(String order) {
+			_order = order;
+
+			return this;
+		}
+
+		@Override
 		public UserFacetBuilder selectedUserNames(String... selectedUserNames) {
 			_selectedUserNames = selectedUserNames;
 
@@ -116,6 +123,8 @@ public class UserFacetSearchContributorImpl
 				"frequencyThreshold", _frequencyThreshold
 			).put(
 				"maxTerms", _maxTerms
+			).put(
+				"order", _order
 			);
 
 			return facetConfiguration;
@@ -124,6 +133,7 @@ public class UserFacetSearchContributorImpl
 		private String _aggregationName;
 		private int _frequencyThreshold;
 		private int _maxTerms;
+		private String _order;
 		private final SearchContext _searchContext;
 		private String[] _selectedUserNames;
 
