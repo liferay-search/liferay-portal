@@ -34,6 +34,8 @@ public class SynonymSetIndexCreatorImpl implements SynonymSetIndexCreator {
 		CreateIndexRequest createIndexRequest = new CreateIndexRequest(
 			synonymSetIndexName.getIndexName());
 
+		createIndexRequest.setMappings(_readIndexMappings());
+
 		createIndexRequest.setSource(_readIndexSettings());
 
 		_searchEngineAdapter.execute(createIndexRequest);
@@ -47,8 +49,15 @@ public class SynonymSetIndexCreatorImpl implements SynonymSetIndexCreator {
 		_searchEngineAdapter.execute(deleteIndexRequest);
 	}
 
+	protected static final String INDEX_MAPPINGS_RESOURCE_NAME =
+		"/META-INF/search/liferay-search-tuning-synonyms-index-mappings.json";
+
 	protected static final String INDEX_SETTINGS_RESOURCE_NAME =
-		"/META-INF/search/liferay-search-tuning-synonyms-index.json";
+		"/META-INF/search/liferay-search-tuning-synonyms-index-settings.json";
+
+	private String _readIndexMappings() {
+		return StringUtil.read(getClass(), INDEX_MAPPINGS_RESOURCE_NAME);
+	}
 
 	private String _readIndexSettings() {
 		return StringUtil.read(getClass(), INDEX_SETTINGS_RESOURCE_NAME);
