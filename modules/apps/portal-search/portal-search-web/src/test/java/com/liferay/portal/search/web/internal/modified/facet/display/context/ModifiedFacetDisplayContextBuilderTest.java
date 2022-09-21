@@ -32,6 +32,7 @@ import com.liferay.portal.kernel.util.HttpComponentsUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.TimeZoneUtil;
 import com.liferay.portal.kernel.util.Validator;
@@ -289,6 +290,64 @@ public class ModifiedFacetDisplayContextBuilderTest {
 			modifiedFacetTermDisplayContext.getRange());
 	}
 
+	@Test
+	public void testOrderFrequencyAscending() {
+		ModifiedFacetDisplayContextBuilder modifiedFacetDisplayContextBuilder =
+			createDisplayContextBuilder("count:asc");
+
+		_mockFacetConfiguration(
+			"past-hour=[20180515225959 TO 20180515235959]",
+			"past-week=[20180508235959 TO 20180508235959]",
+			"past-month=[20180508235959 TO 20180415235959]",
+			"past-24-hours=[20180508235959 TO 20180514235959]");
+
+		modifiedFacetDisplayContextBuilder.setFromParameterValue("2018-01-01");
+		modifiedFacetDisplayContextBuilder.setToParameterValue("2018-01-31");
+
+		ModifiedFacetDisplayContext modifiedFacetDisplayContext =
+			modifiedFacetDisplayContextBuilder.build();
+
+		List<ModifiedFacetTermDisplayContext> modifiedFacetTermDisplayContexts =
+			modifiedFacetDisplayContext.getModifiedFacetTermDisplayContexts();
+
+		String nameFrequencyString = _buildNameFrequencyString(
+			modifiedFacetTermDisplayContexts);
+
+		Assert.assertEquals(
+			modifiedFacetTermDisplayContexts.toString(),
+			"past-hour:1|past-week:2|past-month:3|past-24-hours:4",
+			nameFrequencyString);
+	}
+
+	@Test
+	public void testOrderFrequencyDescending() {
+		ModifiedFacetDisplayContextBuilder modifiedFacetDisplayContextBuilder =
+			createDisplayContextBuilder("count:desc");
+
+		_mockFacetConfiguration(
+			"past-hour=[20180515225959 TO 20180515235959]",
+			"past-week=[20180508235959 TO 20180508235959]",
+			"past-month=[20180508235959 TO 20180415235959]",
+			"past-24-hours=[20180508235959 TO 20180514235959]");
+
+		modifiedFacetDisplayContextBuilder.setFromParameterValue("2018-01-01");
+		modifiedFacetDisplayContextBuilder.setToParameterValue("2018-01-31");
+
+		ModifiedFacetDisplayContext modifiedFacetDisplayContext =
+			modifiedFacetDisplayContextBuilder.build();
+
+		List<ModifiedFacetTermDisplayContext> modifiedFacetTermDisplayContexts =
+			modifiedFacetDisplayContext.getModifiedFacetTermDisplayContexts();
+
+		String nameFrequencyString = _buildNameFrequencyString(
+			modifiedFacetTermDisplayContexts);
+
+		Assert.assertEquals(
+			modifiedFacetTermDisplayContexts.toString(),
+			"past-24-hours:4|past-month:3|past-week:2|past-hour:1",
+			nameFrequencyString);
+	}
+
 	protected ModifiedFacetDisplayContextBuilder createDisplayContextBuilder(
 		String order) {
 
@@ -382,6 +441,27 @@ public class ModifiedFacetDisplayContextBuilderTest {
 			_assertDoesNotHasParameter(rangeURL, "modifiedFrom");
 			_assertDoesNotHasParameter(rangeURL, "modifiedTo");
 		}
+	}
+
+	private String _buildNameFrequencyString(
+		List<ModifiedFacetTermDisplayContext>
+			modifiedFacetTermDisplayContexts) {
+
+		StringBundler sb = new StringBundler(
+			modifiedFacetTermDisplayContexts.size() * 4);
+
+		for (ModifiedFacetTermDisplayContext customFacetTermDisplayContext :
+				modifiedFacetTermDisplayContexts) {
+
+			sb.append(customFacetTermDisplayContext.getLabel());
+			sb.append(StringPool.COLON);
+			sb.append(customFacetTermDisplayContext.getFrequency());
+			sb.append(StringPool.PIPE);
+		}
+
+		sb.setIndex(sb.index() - 1);
+
+		return sb.toString();
 	}
 
 	private JSONObject _createDataJSONObject(String... labelsAndRanges) {
