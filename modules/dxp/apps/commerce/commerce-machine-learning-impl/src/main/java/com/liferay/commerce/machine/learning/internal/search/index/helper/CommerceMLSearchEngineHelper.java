@@ -54,7 +54,7 @@ public class CommerceMLSearchEngineHelper {
 
 		try {
 			createIndexRequest.setSource(
-				).put(
+				JSONUtil.put(
 					"settings",
 					_jsonFactory.createJSONObject(
 						StringUtil.read(
