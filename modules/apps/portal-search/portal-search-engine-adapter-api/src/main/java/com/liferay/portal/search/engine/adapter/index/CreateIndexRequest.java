@@ -42,8 +42,16 @@ public class CreateIndexRequest
 		return new String[] {_indexName};
 	}
 
+	public String getMappings() {
+		return _mappings;
+	}
+
 	public String getSource() {
 		return _source;
+	}
+
+	public void setMappings(String mappings) {
+		_mappings = mappings;
 	}
 
 	public void setSource(String source) {
@@ -51,6 +59,7 @@ public class CreateIndexRequest
 	}
 
 	private final String _indexName;
+	private String _mappings;
 	private String _source;
 
 }
