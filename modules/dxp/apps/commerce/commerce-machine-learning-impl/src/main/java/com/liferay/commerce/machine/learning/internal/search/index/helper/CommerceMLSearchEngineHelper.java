@@ -54,16 +54,15 @@ public class CommerceMLSearchEngineHelper {
 
 		try {
 			createIndexRequest.setSource(
-				JSONUtil.put(
-					"mappings",
-					_jsonFactory.createJSONObject(
-						StringUtil.read(getClass(), indexMappingFileName))
 				).put(
 					"settings",
 					_jsonFactory.createJSONObject(
 						StringUtil.read(
 							getClass(), "/META-INF/search/settings.json"))
 				).toString());
+
+			createIndexRequest.setMappings(
+				StringUtil.read(getClass(), indexMappingFileName));
 		}
 		catch (JSONException jsonException) {
 			_log.error(jsonException);
