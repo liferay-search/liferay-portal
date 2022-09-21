@@ -32,13 +32,18 @@ public class RankingIndexCreatorImpl implements RankingIndexCreator {
 
 	@Override
 	public void create(RankingIndexName rankingIndexName) {
-		String mappingSource = StringUtil.read(
+		String mappings = StringUtil.read(
+			getClass(), _INDEX_MAPPINGS_RESOURCE_NAME);
+
+		String source = StringUtil.read(
 			getClass(), _INDEX_SETTINGS_RESOURCE_NAME);
 
 		CreateIndexRequest createIndexRequest = new CreateIndexRequest(
 			rankingIndexName.getIndexName());
 
-		createIndexRequest.setSource(mappingSource);
+		createIndexRequest.setMappings(mappings);
+
+		createIndexRequest.setSource(source);
 
 		_searchEngineAdapter.execute(createIndexRequest);
 	}
@@ -51,8 +56,11 @@ public class RankingIndexCreatorImpl implements RankingIndexCreator {
 		_searchEngineAdapter.execute(deleteIndexRequest);
 	}
 
+	private static final String _INDEX_MAPPINGS_RESOURCE_NAME =
+		"/META-INF/search/liferay-search-tuning-rankings-index-mappings.json";
+
 	private static final String _INDEX_SETTINGS_RESOURCE_NAME =
-		"/META-INF/search/liferay-search-tuning-rankings-index.json";
+		"/META-INF/search/liferay-search-tuning-rankings-index-settings.json";
 
 	@Reference
 	private SearchEngineAdapter _searchEngineAdapter;
