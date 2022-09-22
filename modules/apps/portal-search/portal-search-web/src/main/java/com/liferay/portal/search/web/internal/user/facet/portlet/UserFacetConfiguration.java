@@ -23,8 +23,12 @@ public interface UserFacetConfiguration {
 
 	public int getMaxTerms();
 
+	public String getOrder();
+
 	public void setFrequencyThreshold(int frequencyThreshold);
 
 	public void setMaxTerms(int maxTerms);
+
+	public void setOrder(String order);
 
 }
