@@ -30,6 +30,7 @@ import com.liferay.portal.search.web.internal.user.facet.configuration.UserFacet
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -100,6 +101,10 @@ public class UserSearchFacetDisplayContextBuilder {
 		_maxTerms = maxTerms;
 	}
 
+	public void setOrder(String order) {
+		_order = order;
+	}
+
 	public void setPaginationStartParameterName(
 		String paginationStartParameterName) {
 
@@ -167,6 +172,8 @@ public class UserSearchFacetDisplayContextBuilder {
 				buildTermDisplayContext(termCollector));
 		}
 
+		userSearchFacetTermDisplayContexts.sort(_getComparator());
+
 		return userSearchFacetTermDisplayContexts;
 	}
 
@@ -230,6 +237,27 @@ public class UserSearchFacetDisplayContextBuilder {
 		return false;
 	}
 
+	private static int _compareDisplayNames(
+		String displayName1, String displayName2) {
+
+		return displayName1.compareTo(displayName2);
+	}
+
+	private Comparator<UserSearchFacetTermDisplayContext> _getComparator() {
+		if (_order.equals("key:asc")) {
+			return _ASC_TERM_COMPARATOR;
+		}
+		else if (_order.equals("key:desc")) {
+			return _DESC_TERM_COMPARATOR;
+		}
+		else if (_order.equals("count:asc")) {
+			return _ASC_FREQUENCY_COMPARATOR;
+		}
+		else {
+			return _DESC_FREQUENCY_COMPARATOR;
+		}
+	}
+
 	private String _getFirstParamValue() {
 		if (_paramValues.isEmpty()) {
 			return StringPool.BLANK;
@@ -238,10 +266,105 @@ public class UserSearchFacetDisplayContextBuilder {
 		return _paramValues.get(0);
 	}
 
+	private static final Comparator<UserSearchFacetTermDisplayContext>
+		_ASC_FREQUENCY_COMPARATOR =
+			new Comparator<UserSearchFacetTermDisplayContext>() {
+
+				@Override
+				public int compare(
+					UserSearchFacetTermDisplayContext displayContext1,
+					UserSearchFacetTermDisplayContext displayContext2) {
+
+					int result =
+						displayContext1.getFrequency() -
+							displayContext2.getFrequency();
+
+					if (result == 0) {
+						return _compareDisplayNames(
+							displayContext1.getUserName(),
+							displayContext2.getUserName());
+					}
+
+					return result;
+				}
+
+			};
+
+	private static final Comparator<UserSearchFacetTermDisplayContext>
+		_ASC_TERM_COMPARATOR =
+			new Comparator<UserSearchFacetTermDisplayContext>() {
+
+				@Override
+				public int compare(
+					UserSearchFacetTermDisplayContext displayContext1,
+					UserSearchFacetTermDisplayContext displayContext2) {
+
+					int result = _compareDisplayNames(
+						displayContext1.getUserName(),
+						displayContext2.getUserName());
+
+					if (result == 0) {
+						return displayContext2.getFrequency() -
+							displayContext1.getFrequency();
+					}
+
+					return result;
+				}
+
+			};
+
+	private static final Comparator<UserSearchFacetTermDisplayContext>
+		_DESC_FREQUENCY_COMPARATOR =
+			new Comparator<UserSearchFacetTermDisplayContext>() {
+
+				@Override
+				public int compare(
+					UserSearchFacetTermDisplayContext displayContext1,
+					UserSearchFacetTermDisplayContext displayContext2) {
+
+					int result =
+						displayContext2.getFrequency() -
+							displayContext1.getFrequency();
+
+					if (result == 0) {
+						return _compareDisplayNames(
+							displayContext1.getUserName(),
+							displayContext2.getUserName());
+					}
+
+					return result;
+				}
+
+			};
+
+	private static final Comparator<UserSearchFacetTermDisplayContext>
+		_DESC_TERM_COMPARATOR =
+			new Comparator<UserSearchFacetTermDisplayContext>() {
+
+				@Override
+				public int compare(
+					UserSearchFacetTermDisplayContext displayContext1,
+					UserSearchFacetTermDisplayContext displayContext2) {
+
+					int result = _compareDisplayNames(
+						displayContext2.getUserName(),
+						displayContext1.getUserName());
+
+					if (result == 0) {
+						return displayContext2.getFrequency() -
+							displayContext1.getFrequency();
+					}
+
+					return result;
+				}
+
+			};
+
 	private Facet _facet;
 	private boolean _frequenciesVisible;
 	private int _frequencyThreshold;
 	private int _maxTerms;
+	private String _order;
 	private String _paginationStartParameterName;
 	private String _paramName;
 	private List<String> _paramValues = Collections.emptyList();
