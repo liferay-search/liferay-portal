@@ -57,7 +57,7 @@ public class NPSNationalParksImporter {
 	public void doImport(
 			PortletRequest portletRequest, PortletResponse portletResponse,
 			List<Long> userIds, List<Long> groupIds, String languageId,
-			String fileName, InputStream file, String importType)
+			String importType)
 		throws Exception {
 
 		try {
@@ -71,8 +71,7 @@ public class NPSNationalParksImporter {
 		}
 
 		_importArticles(
-			portletRequest, userIds, groupIds, languageId, fileName, file,
-			importType);
+			portletRequest, userIds, groupIds, languageId, importType);
 	}
 
 	private void _addExpandoAttributes(
@@ -223,8 +222,7 @@ public class NPSNationalParksImporter {
 
 	private void _importArticles(
 			PortletRequest portletRequest, List<Long> userIds,
-			List<Long> groupIds, String languageId, String uploadFileName,
-			InputStream uploadInputStream, String importType)
+			List<Long> groupIds, String languageId, String importType)
 		throws Exception {
 
 		if (!importType.equals(ImportTypeKeys.NPS_NATIONAL_PARKS)) {

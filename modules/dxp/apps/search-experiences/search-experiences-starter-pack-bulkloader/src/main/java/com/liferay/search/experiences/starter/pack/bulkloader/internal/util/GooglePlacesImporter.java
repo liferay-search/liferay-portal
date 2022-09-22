@@ -32,7 +32,6 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
-import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.search.experiences.starter.pack.bulkloader.internal.constants.ImportTypeKeys;
 import com.liferay.search.experiences.starter.pack.bulkloader.internal.constants.PlacesConstants;
@@ -61,7 +60,7 @@ public class GooglePlacesImporter {
 	public void doImport(
 			PortletRequest portletRequest, PortletResponse portletResponse,
 			List<Long> userIds, List<Long> groupIds, String languageId,
-			String fileName, InputStream file, String importType)
+			String fileName, InputStream inputStream, String importType)
 		throws Exception {
 
 		try {
@@ -74,8 +73,8 @@ public class GooglePlacesImporter {
 		}
 
 		_importArticles(
-			portletRequest, userIds, groupIds, languageId, fileName, file,
-			importType);
+			portletRequest, userIds, groupIds, languageId, fileName,
+			inputStream, importType);
 	}
 
 	private void _addLocationAttribute(
@@ -240,7 +239,7 @@ public class GooglePlacesImporter {
 			}
 
 			if (importType.equals(ImportTypeKeys.FILE) &&
-				Validator.isNull(uploadInputStream)) {
+				(uploadInputStream != null)) {
 
 				continue;
 			}
@@ -305,11 +304,11 @@ public class GooglePlacesImporter {
 				_log.error(exception);
 			}
 			finally {
-				if (Validator.isNotNull(inputStream)) {
+				if (inputStream != null) {
 					inputStream.close();
 				}
 
-				if (Validator.isNotNull(uploadInputStream)) {
+				if (uploadInputStream != null) {
 					uploadInputStream.close();
 
 					break;

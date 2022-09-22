@@ -99,7 +99,7 @@ public class ImportMVCActionCommand extends BaseMVCActionCommand {
 		else if (importType.equals(ImportTypeKeys.NPS_NATIONAL_PARKS)) {
 			_npsNationalParksImporter.doImport(
 				actionRequest, actionResponse, userIds, groupIds, languageId,
-				languageId, null, importType);
+				importType);
 		}
 		else {
 			UploadPortletRequest uploadPortletRequest =
@@ -108,11 +108,12 @@ public class ImportMVCActionCommand extends BaseMVCActionCommand {
 			String fileName = GetterUtil.getString(
 				uploadPortletRequest.getFileName("file"));
 
-			InputStream file = uploadPortletRequest.getFileAsStream("file");
+			InputStream inputStream = uploadPortletRequest.getFileAsStream(
+				"file");
 
 			_googlePlacesImporter.doImport(
 				actionRequest, actionResponse, userIds, groupIds, languageId,
-				fileName, file, importType);
+				fileName, inputStream, importType);
 		}
 
 		ExportImportThreadLocal.setPortletImportInProcess(false);
