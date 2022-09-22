@@ -1,0 +1,165 @@
+{
+	"html_attributions": [
+	],
+	"results": [
+		{
+			"business_status": "OPERATIONAL",
+			"geometry": {
+				"location": {
+					"lat": 42.0568612,
+					"lng": -88.0361715
+				},
+				"viewport": {
+					"northeast": {
+						"lat": 42.05816037989273,
+						"lng": -88.03432352010726
+					},
+					"southwest": {
+						"lat": 42.05546072010728,
+						"lng": -88.03702317989271
+					}
+				}
+			},
+			"icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/shopping-71.png",
+			"icon_background_color": "#4B96F3",
+			"icon_mask_base_uri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/shopping_pinlet",
+			"name": "IKEA",
+			"opening_hours": {
+				"open_now": false
+			},
+			"photos": [
+				{
+					"height": 3120,
+					"html_attributions": [
+						"<a href=\"https://maps.google.com/maps/contrib/105398881302925344636\">nikhil.ponugoti</a>"
+					],
+					"photo_reference": "Aap_uEDF2s1Ar0a_NTanICdGPDGuX7namjCSvTId00j0MGC84kLHNFYNlBcOowFxqej-qs0zvEBt7_8HgZbzQls00YX0wIgGfxeH2ARPRjdVEm5oaHAHGlGQtCig7KxHhkbsEG_RmwTzwhglFJcF3S39UwZgAdQ3lTYrQ62be9879AAHFNzr",
+					"width": 4160
+				}
+			],
+			"place_id": "ChIJx69I9IuvD4gRDeImRmYYDBc",
+			"plus_code": {
+				"compound_code": "3X47+PG Schaumburg, Illinois, Egyesült Államok",
+				"global_code": "86JH3X47+PG"
+			},
+			"price_level": 1,
+			"rating": 4.4,
+			"reference": "ChIJx69I9IuvD4gRDeImRmYYDBc",
+			"scope": "GOOGLE",
+			"types": [
+				"furniture_store",
+				"home_goods_store",
+				"point_of_interest",
+				"store",
+				"establishment"
+			],
+			"user_ratings_total": 12047,
+			"vicinity": "1800 McConnor Pkwy, Schaumburg"
+		},
+		{
+			"business_status": "OPERATIONAL",
+			"geometry": {
+				"location": {
+					"lat": 41.7279183,
+					"lng": -88.03774659999999
+				},
+				"viewport": {
+					"northeast": {
+						"lat": 41.72894817989271,
+						"lng": -88.03634737010726
+					},
+					"southwest": {
+						"lat": 41.72624852010727,
+						"lng": -88.03904702989271
+					}
+				}
+			},
+			"icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/shopping-71.png",
+			"icon_background_color": "#4B96F3",
+			"icon_mask_base_uri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/shopping_pinlet",
+			"name": "IKEA",
+			"opening_hours": {
+				"open_now": false
+			},
+			"photos": [
+				{
+					"height": 1536,
+					"html_attributions": [
+						"<a href=\"https://maps.google.com/maps/contrib/105870775965637948851\">EnaRosa FumeroDíaz</a>"
+					],
+					"photo_reference": "Aap_uEDOOM7auerCekLuCQpX3Psfr0FjpfCedJUdvNVTYtecrEMJN4c3gWPQwohSFu6RuLXU0SQRLxSfgqBK1m39_OjJPh33PyMRDTb3P0fhSSv_qXOJnvHPH3fxl-aykl9tD0wmUwdsao6ddHxNYEVJ00pgFXKVV4U44xutfS8UeR0sbApV",
+					"width": 2048
+				}
+			],
+			"place_id": "ChIJB4XHu5NaDogRmdSLtJuvYiA",
+			"plus_code": {
+				"compound_code": "PXH6+5W Bolingbrook, Illinois, Egyesült Államok",
+				"global_code": "86HHPXH6+5W"
+			},
+			"rating": 4.3,
+			"reference": "ChIJB4XHu5NaDogRmdSLtJuvYiA",
+			"scope": "GOOGLE",
+			"types": [
+				"furniture_store",
+				"home_goods_store",
+				"point_of_interest",
+				"store",
+				"establishment"
+			],
+			"user_ratings_total": 7421,
+			"vicinity": "750 E Boughton Rd, Bolingbrook"
+		},
+		{
+			"business_status": "OPERATIONAL",
+			"geometry": {
+				"location": {
+					"lat": 41.4842185,
+					"lng": -88.0642318
+				},
+				"viewport": {
+					"northeast": {
+						"lat": 41.4864292,
+						"lng": -88.06306002010727
+					},
+					"southwest": {
+						"lat": 41.4834816,
+						"lng": -88.06575967989271
+					}
+				}
+			},
+			"icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/generic_business-71.png",
+			"icon_background_color": "#7B9EB0",
+			"icon_mask_base_uri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/generic_pinlet",
+			"name": "IKEA Distribution Center",
+			"opening_hours": {
+				"open_now": true
+			},
+			"photos": [
+				{
+					"height": 2988,
+					"html_attributions": [
+						"<a href=\"https://maps.google.com/maps/contrib/117367948682388876294\">V. Amatore</a>"
+					],
+					"photo_reference": "Aap_uECe4U4AicGH2fIA9cppUpAZ1JRIZwnIx7CcKuncIBLf9-Nq2UGcN_y7VhNRXjCY9S1YxInEQeSf25y3lQc9i-B876ztxPQdJ40AphhleFcg-QUelpKljcpupbPL_oEV40C2kU19p9Aj57hpxhIOnBt7b0gib5QfP5WWTkLJ7YSxRTJi",
+					"width": 5312
+				}
+			],
+			"place_id": "ChIJ85KNXj9kDogR4fUTlJjUbAk",
+			"plus_code": {
+				"compound_code": "FWMP+M8 Joliet, Illinois, Egyesült Államok",
+				"global_code": "86HHFWMP+M8"
+			},
+			"rating": 3.8,
+			"reference": "ChIJ85KNXj9kDogR4fUTlJjUbAk",
+			"scope": "GOOGLE",
+			"types": [
+				"storage",
+				"point_of_interest",
+				"establishment"
+			],
+			"user_ratings_total": 70,
+			"vicinity": "650 Emerald Dr, Joliet"
+		}
+	],
+	"status": "OK"
+}
