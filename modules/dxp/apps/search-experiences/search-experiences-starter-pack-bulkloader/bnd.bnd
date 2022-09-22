@@ -1,3 +1,4 @@
 Bundle-Name: Liferay Search Experiences Starter Pack Bulk Loader
 Bundle-SymbolicName: com.liferay.search.experiences.starter.pack.bulkloader
-Bundle-Version: 1.2.0-SNAPSHOT
+Bundle-Version: 1.0.0
+Liferay-Enterprise-App: dxp.only=true;product.id=22b7e30f-34d4-4a63-9696-56987ad66e4e
