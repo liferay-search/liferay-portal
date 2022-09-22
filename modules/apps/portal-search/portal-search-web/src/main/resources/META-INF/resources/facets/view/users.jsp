@@ -22,6 +22,7 @@ UserSearchFacetDisplayContextBuilder userSearchFacetDisplayContextBuilder = new 
 userSearchFacetDisplayContextBuilder.setFacet(facet);
 userSearchFacetDisplayContextBuilder.setFrequenciesVisible(dataJSONObject.getBoolean("showAssetCount", true));
 userSearchFacetDisplayContextBuilder.setFrequencyThreshold(dataJSONObject.getInt("frequencyThreshold"));
+userSearchFacetDisplayContextBuilder.setOrder(dataJSONObject.getString("order"));
 userSearchFacetDisplayContextBuilder.setMaxTerms(dataJSONObject.getInt("maxTerms", 10));
 userSearchFacetDisplayContextBuilder.setParamName(facet.getFieldId());
 userSearchFacetDisplayContextBuilder.setParamValue(fieldParam);
