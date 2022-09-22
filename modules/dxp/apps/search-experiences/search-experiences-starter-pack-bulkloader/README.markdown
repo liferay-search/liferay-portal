@@ -11,8 +11,10 @@ Imports location data imported using the Google "Places API". Adds also geopoint
 Additional data sets can be added by:
 
 1. Copying the results of a "Places API" request into a .json file
-2. Placing the .json file in the resources directory
-3. Putting an entry in ``FILENAME_TO_CITY_MAP`` in ``PlacesConstants`` class.
+
+1. Placing the .json file in the resources directory
+
+1. Putting an entry in ``FILENAME_TO_CITY_MAP`` in ``PlacesConstants`` class.
 
 An API Key is needed to perform requests, see https://liferay.slack.com/archives/C0154CEGR3Q/p1598901770005800
 

@@ -53,7 +53,9 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Petteri Karttunen
  */
-@Component(immediate = true, service = GooglePlacesImporter.class)
+@Component(
+	enabled = false, immediate = true, service = GooglePlacesImporter.class
+)
 public class GooglePlacesImporter {
 
 	public void doImport(
@@ -66,7 +68,7 @@ public class GooglePlacesImporter {
 			_createLocationExpandoField(portletRequest);
 		}
 		catch (PortalException portalException) {
-			_log.error(portalException.getMessage(), portalException);
+			_log.error(portalException);
 
 			return;
 		}
@@ -185,7 +187,7 @@ public class GooglePlacesImporter {
 		sb.append(vicinityJsonElement.getAsString());
 		sb.append(")");
 
-		return sb.toString();	
+		return sb.toString();
 	}
 
 	private UnicodeProperties _getUnicodeProperties(
@@ -238,7 +240,7 @@ public class GooglePlacesImporter {
 			}
 
 			if (importType.equals(ImportTypeKeys.FILE) &&
-				 Validator.isNull(uploadInputStream)) {
+				Validator.isNull(uploadInputStream)) {
 
 				continue;
 			}
@@ -251,8 +253,7 @@ public class GooglePlacesImporter {
 					fileName = uploadFileName;
 				}
 				else {
-					inputStream = getClass().getResourceAsStream(
-					fileName);
+					inputStream = getClass().getResourceAsStream(fileName);
 				}
 
 				if (_log.isInfoEnabled()) {
@@ -301,7 +302,7 @@ public class GooglePlacesImporter {
 				}
 			}
 			catch (Exception exception) {
-				_log.error(exception.getMessage(), exception);
+				_log.error(exception);
 			}
 			finally {
 				if (Validator.isNotNull(inputStream)) {

@@ -40,7 +40,9 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Petteri Karttunen
  */
-@Component(immediate = true, service = JournalArticleHelper.class)
+@Component(
+	enabled = false, immediate = true, service = JournalArticleHelper.class
+)
 public class JournalArticleHelper {
 
 	public JournalArticle addJournalArticle(

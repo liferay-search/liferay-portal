@@ -82,7 +82,7 @@ String type = ParamUtil.getString(request, "type");
 			let value = this.val();
 			let wikifields = A.one('#<portlet:namespace />wikifields');
 
-			if (value == '<%=ImportTypeKeys.WIKIPEDIA_ARTICLES %>') {
+			if (value == '<%= ImportTypeKeys.WIKIPEDIA_ARTICLES %>') {
 				wikifields.removeClass('hide');
 			}
 			else {

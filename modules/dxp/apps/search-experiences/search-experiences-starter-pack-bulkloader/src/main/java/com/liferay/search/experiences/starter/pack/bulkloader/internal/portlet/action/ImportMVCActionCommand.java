@@ -34,8 +34,8 @@ import com.liferay.search.experiences.starter.pack.bulkloader.internal.util.Goog
 import com.liferay.search.experiences.starter.pack.bulkloader.internal.util.NPSNationalParksImporter;
 import com.liferay.search.experiences.starter.pack.bulkloader.internal.util.WikipediaImporter;
 
-import java.io.File;
 import java.io.InputStream;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +49,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Petteri Karttunen
  */
 @Component(
-	immediate = true,
+	enabled = false, immediate = true,
 	property = {
 		"javax.portlet.name=" + BulkloaderPortletKeys.BULK_LOADER,
 		"mvc.command.name=" + MVCActionCommandNames.IMPORT

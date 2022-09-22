@@ -44,7 +44,7 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Petteri Karttunen
  */
-@Component(immediate = true, service = WikipediaImporter.class)
+@Component(enabled = false, immediate = true, service = WikipediaImporter.class)
 public class WikipediaImporter {
 
 	public void doImport(
@@ -216,7 +216,7 @@ public class WikipediaImporter {
 				importedTitles.add(title);
 			}
 			catch (Exception exception) {
-				_log.error(exception.getMessage(), exception);
+				_log.error(exception);
 			}
 
 			counter++;

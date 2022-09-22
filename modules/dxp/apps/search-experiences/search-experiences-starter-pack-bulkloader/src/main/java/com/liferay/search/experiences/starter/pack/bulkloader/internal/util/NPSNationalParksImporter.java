@@ -49,7 +49,9 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Tibor Lipusz
  */
-@Component(immediate = true, service = NPSNationalParksImporter.class)
+@Component(
+	enabled = false, immediate = true, service = NPSNationalParksImporter.class
+)
 public class NPSNationalParksImporter {
 
 	public void doImport(
@@ -63,7 +65,7 @@ public class NPSNationalParksImporter {
 			_createVisitedUserIdsExpandoField(portletRequest);
 		}
 		catch (PortalException portalException) {
-			_log.error(portalException.getMessage(), portalException);
+			_log.error(portalException);
 
 			return;
 		}
@@ -86,7 +88,7 @@ public class NPSNationalParksImporter {
 
 		expandoBridge.setAttribute(_LOCATION_EXPANDO_FIELD, jsonObject, false);
 		expandoBridge.setAttribute(
-			_VISITED_USER_ID_EXPANDO_FIELD, new Integer[] {99999,88888});
+			_VISITED_USER_ID_EXPANDO_FIELD, new Integer[] {99999, 88888});
 
 		_journalArticleHelper.updateJournalArticle(journalArticle);
 	}
@@ -116,7 +118,8 @@ public class NPSNationalParksImporter {
 		}
 	}
 
-	private void _createVisitedUserIdsExpandoField(PortletRequest portletRequest)
+	private void _createVisitedUserIdsExpandoField(
+			PortletRequest portletRequest)
 		throws PortalException {
 
 		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
@@ -205,7 +208,8 @@ public class NPSNationalParksImporter {
 		ExpandoBridge expandoBridge) {
 
 		UnicodeProperties unicodeProperties =
-			expandoBridge.getAttributeProperties(_VISITED_USER_ID_EXPANDO_FIELD);
+			expandoBridge.getAttributeProperties(
+				_VISITED_USER_ID_EXPANDO_FIELD);
 
 		unicodeProperties.setProperty(
 			ExpandoColumnConstants.INDEX_TYPE,
@@ -281,7 +285,7 @@ public class NPSNationalParksImporter {
 			}
 		}
 		catch (Exception exception) {
-			_log.error(exception.getMessage(), exception);
+			_log.error(exception);
 		}
 	}
 
