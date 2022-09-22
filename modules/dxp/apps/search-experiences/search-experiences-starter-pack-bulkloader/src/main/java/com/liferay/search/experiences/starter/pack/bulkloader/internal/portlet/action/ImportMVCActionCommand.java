@@ -26,7 +26,7 @@ import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.search.experiences.federation.ingestion.IngestorBuilderFactory;
+import com.liferay.search.experiences.federation.ingestion.FederatorFactory;
 import com.liferay.search.experiences.starter.pack.bulkloader.internal.constants.BulkloaderPortletKeys;
 import com.liferay.search.experiences.starter.pack.bulkloader.internal.constants.ImportTypeKeys;
 import com.liferay.search.experiences.starter.pack.bulkloader.internal.constants.MVCActionCommandNames;
@@ -92,9 +92,17 @@ public class ImportMVCActionCommand extends BaseMVCActionCommand {
 				actionRequest, actionResponse, userIds, groupIds, languageId);
 		}
 		else if (importType.equals(ImportTypeKeys.FEDERATED_CONTENT)) {
-			_ingestorBuilderFactory.builder(
-			).build(
-			).ingest();
+			// Disable link validation
+
+			ExportImportThreadLocal.setPortletImportInProcess(true);
+
+			if (importType.equals(ImportTypeKeys.FEDERATED_CONTENT)) {
+				_federatorFactory.builder(
+				).build(
+				).federate();
+			}
+
+			ExportImportThreadLocal.setPortletImportInProcess(false);
 		}
 		else if (importType.equals(ImportTypeKeys.NPS_NATIONAL_PARKS)) {
 			_npsNationalParksImporter.doImport(
@@ -144,7 +152,7 @@ public class ImportMVCActionCommand extends BaseMVCActionCommand {
 	private GooglePlacesImporter _googlePlacesImporter;
 
 	@Reference
-	private IngestorBuilderFactory _ingestorBuilderFactory;
+	private FederatorFactory _federatorFactory;
 
 	@Reference
 	private NPSNationalParksImporter _npsNationalParksImporter;
