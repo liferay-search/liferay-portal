@@ -2,7 +2,7 @@
 
 Creates Liferay Journal Articles from Google Places data or Wikipedia articles.
 
-**_This modules is for internal testing purposes only._**
+**_This modules is for internal testing purposes only. Requires the `search-experiences-federation-*` modules to be also deployed!_**
 
 ## Imporing Custom Google Places API Response JSON (upload)
 
