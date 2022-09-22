@@ -113,7 +113,7 @@ public class UserFacetSearchContributorImpl
 
 			facetConfiguration.setFieldName(facet.getFieldName());
 			facetConfiguration.setLabel("any-user");
-			facetConfiguration.setOrder("OrderHitsDesc");
+			facetConfiguration.setOrder(_order);
 			facetConfiguration.setStatic(false);
 			facetConfiguration.setWeight(1.1);
 
