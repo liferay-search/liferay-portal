@@ -46,26 +46,24 @@ public class LiferayHelpCenterIngestor implements Ingestor {
 
 	@Override
 	public void ingest() {
-		return;
-//
-//		String address =
-//			"https://liferay-support.zendesk.com/api/v2/help_center/en-us" +
-//				"/articles.json";
-//
-//		while (address != null) {
-//			ZendeskArticlesPage zendeskArticlesPage =
-//				ZendeskUtil.getZendeskArticlesPage(address);
-//
-//			if (ListUtil.isNotEmpty(zendeskArticlesPage.articles)) {
-//				for (ZendeskArticle zendeskArticle :
-//						zendeskArticlesPage.articles) {
-//
-//					_ingest(zendeskArticle);
-//				}
-//			}
-//
-//			address = zendeskArticlesPage.next_page;
-//		}
+		String address =
+			"https://liferay-support.zendesk.com/api/v2/help_center/en-us" +
+				"/articles.json";
+
+		while (address != null) {
+			ZendeskArticlesPage zendeskArticlesPage =
+				ZendeskUtil.getZendeskArticlesPage(address);
+
+			if (ListUtil.isNotEmpty(zendeskArticlesPage.articles)) {
+				for (ZendeskArticle zendeskArticle :
+						zendeskArticlesPage.articles) {
+
+					_ingest(zendeskArticle);
+				}
+			}
+
+			address = zendeskArticlesPage.next_page;
+		}
 	}
 
 	@Activate
