@@ -127,6 +127,8 @@ public class UserFacetPortlet extends MVCPortlet {
 			userFacetConfiguration.getFrequencyThreshold());
 		userSearchFacetDisplayContextBuilder.setMaxTerms(
 			userFacetConfiguration.getMaxTerms());
+		userSearchFacetDisplayContextBuilder.setOrder(
+			userFacetConfiguration.getOrder());
 		userSearchFacetDisplayContextBuilder.setPaginationStartParameterName(
 			_getPaginationStartParameterName(portletSharedSearchResponse));
 

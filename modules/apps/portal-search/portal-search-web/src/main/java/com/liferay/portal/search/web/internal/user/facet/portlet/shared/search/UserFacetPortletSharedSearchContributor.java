@@ -51,6 +51,8 @@ public class UserFacetPortletSharedSearchContributor
 				userFacetPortletPreferences.getFrequencyThreshold()
 			).maxTerms(
 				userFacetPortletPreferences.getMaxTerms()
+			).order(
+				userFacetPortletPreferences.getOrder()
 			).selectedUserNames(
 				portletSharedSearchSettings.getParameterValues(
 					userFacetPortletPreferences.getParameterName())
