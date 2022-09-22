@@ -21,7 +21,11 @@ import com.liferay.portal.kernel.json.JSONArray;
  */
 public interface ModifiedFacetConfiguration {
 
+	public int getFrequencyThreshold();
+
 	public JSONArray getRangesJSONArray();
+
+	public void setFrequencyThreshold(int frequencyThreshold);
 
 	public void setOrderJSONArray(String order);
 

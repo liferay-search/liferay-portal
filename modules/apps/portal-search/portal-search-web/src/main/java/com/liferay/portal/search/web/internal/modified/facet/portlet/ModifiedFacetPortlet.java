@@ -130,6 +130,8 @@ public class ModifiedFacetPortlet extends MVCPortlet {
 			portal.getCurrentURL(renderRequest));
 		modifiedFacetDisplayContextBuilder.setFacet(
 			portletSharedSearchResponse.getFacet(_getFieldName()));
+		modifiedFacetDisplayContextBuilder.setFrequencyThreshold(
+			modifiedFacetPortletPreferences.getFrequencyThreshold());
 
 		ThemeDisplay themeDisplay = _getThemeDisplay(renderRequest);
 

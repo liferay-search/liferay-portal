@@ -24,11 +24,16 @@ public interface ModifiedFacetPortletPreferences {
 	public static final String PREFERENCE_KEY_FREQUENCIES_VISIBLE =
 		"frequenciesVisible";
 
+	public static final String PREFERENCE_KEY_FREQUENCY_THRESHOLD =
+		"frequencyThreshold";
+
 	public static final String PREFERENCE_KEY_ORDER = "order";
 
 	public static final String PREFERENCE_KEY_PARAMETER_NAME = "parameterName";
 
 	public static final String PREFERENCE_KEY_RANGES = "ranges";
+
+	public int getFrequencyThreshold();
 
 	public String getOrder();
 

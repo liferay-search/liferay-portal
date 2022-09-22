@@ -119,6 +119,10 @@ public class ModifiedFacetDisplayContextBuilder implements Serializable {
 		_facet = facet;
 	}
 
+	public void setFrequencyThreshold(int frequencyThreshold) {
+		_frequencyThreshold = frequencyThreshold;
+	}
+
 	public void setFromParameterValue(String from) {
 		_from = from;
 	}
@@ -307,10 +311,16 @@ public class ModifiedFacetDisplayContextBuilder implements Serializable {
 		for (int i = 0; i < rangesJSONArray.length(); i++) {
 			JSONObject jsonObject = rangesJSONArray.getJSONObject(i);
 
+			String range = jsonObject.getString("range");
+
+			if ((_frequencyThreshold > 0) &&
+				(_frequencyThreshold > getFrequency(getTermCollector(range)))) {
+
+				continue;
+			}
+
 			modifiedFacetTermDisplayContexts.add(
-				_buildTermDisplayContext(
-					jsonObject.getString("label"),
-					jsonObject.getString("range")));
+				_buildTermDisplayContext(jsonObject.getString("label"), range));
 		}
 
 		if (_order.equals("count:asc")) {
@@ -442,6 +452,7 @@ public class ModifiedFacetDisplayContextBuilder implements Serializable {
 	private final DateFormatFactory _dateFormatFactory;
 	private final DateRangeFactory _dateRangeFactory;
 	private Facet _facet;
+	private int _frequencyThreshold;
 	private String _from;
 	private Locale _locale;
 	private final ModifiedFacetPortletInstanceConfiguration

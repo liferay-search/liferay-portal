@@ -31,8 +31,18 @@ public class ModifiedFacetConfigurationImpl
 	}
 
 	@Override
+	public int getFrequencyThreshold() {
+		return _jsonObject.getInt("frequencyThreshold");
+	}
+
+	@Override
 	public JSONArray getRangesJSONArray() {
 		return _jsonObject.getJSONArray("ranges");
+	}
+
+	@Override
+	public void setFrequencyThreshold(int frequencyThreshold) {
+		_jsonObject.put("frequencyThreshold", frequencyThreshold);
 	}
 
 	@Override
