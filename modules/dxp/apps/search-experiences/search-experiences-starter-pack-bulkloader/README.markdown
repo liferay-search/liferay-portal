@@ -12,7 +12,9 @@ Upload an arbitray JSON file containing a response from a Google Places API requ
 
 Preliminary crawler (Liferay Learn) and Zendesk API based (Liferay Help Center) ingesters to load articles from these sources and index them into Elasticsearch (no Web Content Articles created currently).
 
-Original dev branch: https://github.com/liferay-search/liferay-portal/tree/LPS-137590_Customer_Portal_Federated_Site_Search
+**_Requires further work to make them work again, ingestion fails with errors currently._**
+
+Original dev branch: https://github.com/liferay-search/liferay-portal/tree/LPS-137590_Customer_Portal_Federated_Site_Search - [LPS-137590](https://issues.liferay.com/browse/LPS-137590)
 
 ## Importing Google Places Data
 
@@ -49,7 +51,7 @@ Imports geolocation data of IKEA stores as Web Content Articles from Budapest, C
 
 Imports geolocation data of U.S. National Parks as Web Content Articles from a .geojson file (included).
 
-Original implementation can be found on the following dev branch: https://github.com/liferay-search/liferay-portal/tree/LPS-140079-blueprints-dxpc-demo-7.4.13.ep4
+Original implementation can be found on the following dev branch: https://github.com/liferay-search/liferay-portal/tree/LPS-140079-blueprints-dxpc-demo-7.4.13.ep4 - [LPS-140079](https://issues.liferay.com/browse/LPS-140079)
 
 ## Importing Wikipedia Articles
 
