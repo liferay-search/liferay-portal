@@ -84,14 +84,14 @@ UserFacetPortletPreferences userFacetPortletPreferences = new UserFacetPortletPr
 
 				<aui:input label="frequency-threshold" name="<%= PortletPreferencesJspUtil.getInputName(UserFacetPortletPreferences.PREFERENCE_KEY_FREQUENCY_THRESHOLD) %>" value="<%= userFacetPortletPreferences.getFrequencyThreshold() %>" />
 
-				<aui:input label="display-frequencies" name="<%= PortletPreferencesJspUtil.getInputName(UserFacetPortletPreferences.PREFERENCE_KEY_FREQUENCIES_VISIBLE) %>" type="checkbox" value="<%= userFacetPortletPreferences.isFrequenciesVisible() %>" />
-
 				<aui:select label="order-terms-by" name="<%= PortletPreferencesJspUtil.getInputName(UserFacetPortletPreferences.PREFERENCE_KEY_ORDER) %>" value="<%= userFacetPortletPreferences.getOrder() %>">
 					<aui:option label="term-frequency-descending" value="count:desc" />
 					<aui:option label="term-frequency-ascending" value="count:asc" />
 					<aui:option label="term-value-ascending" value="key:asc" />
 					<aui:option label="term-value-descending" value="key:desc" />
 				</aui:select>
+
+				<aui:input label="display-frequencies" name="<%= PortletPreferencesJspUtil.getInputName(UserFacetPortletPreferences.PREFERENCE_KEY_FREQUENCIES_VISIBLE) %>" type="checkbox" value="<%= userFacetPortletPreferences.isFrequenciesVisible() %>" />
 			</liferay-frontend:fieldset>
 		</liferay-frontend:fieldset-group>
 	</liferay-frontend:edit-form-body>
