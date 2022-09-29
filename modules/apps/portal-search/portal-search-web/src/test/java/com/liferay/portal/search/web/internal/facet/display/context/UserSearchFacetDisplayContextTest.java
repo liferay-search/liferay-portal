@@ -26,6 +26,7 @@ import com.liferay.portal.search.web.internal.facet.display.context.builder.User
 import com.liferay.portal.search.web.internal.user.facet.configuration.UserFacetPortletInstanceConfiguration;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -63,7 +64,7 @@ public class UserSearchFacetDisplayContextTest {
 		String paramValue = "";
 
 		UserSearchFacetDisplayContext userSearchFacetDisplayContext =
-			createDisplayContext(paramValue);
+			createDisplayContext(paramValue, "count:desc");
 
 		List<UserSearchFacetTermDisplayContext>
 			userSearchFacetTermDisplayContexts =
@@ -86,7 +87,7 @@ public class UserSearchFacetDisplayContextTest {
 		String paramValue = userName;
 
 		UserSearchFacetDisplayContext userSearchFacetDisplayContext =
-			createDisplayContext(paramValue);
+			createDisplayContext(paramValue, "count:desc");
 
 		List<UserSearchFacetTermDisplayContext>
 			userSearchFacetTermDisplayContexts =
@@ -124,7 +125,7 @@ public class UserSearchFacetDisplayContextTest {
 		String paramValue = "";
 
 		UserSearchFacetDisplayContext userSearchFacetDisplayContext =
-			createDisplayContext(paramValue);
+			createDisplayContext(paramValue, "count:desc");
 
 		List<UserSearchFacetTermDisplayContext>
 			userSearchFacetTermDisplayContexts =
@@ -162,7 +163,7 @@ public class UserSearchFacetDisplayContextTest {
 		String paramValue = userName;
 
 		UserSearchFacetDisplayContext userSearchFacetDisplayContext =
-			createDisplayContext(paramValue);
+			createDisplayContext(paramValue, "count:desc");
 
 		List<UserSearchFacetTermDisplayContext>
 			userSearchFacetTermDisplayContexts =
@@ -189,8 +190,67 @@ public class UserSearchFacetDisplayContextTest {
 		Assert.assertFalse(userSearchFacetDisplayContext.isRenderNothing());
 	}
 
+	@Test
+	public void testOrderByTermValueAscending() throws Exception {
+		String userName = RandomTestUtil.randomString();
+
+		List<TermCollector> termCollectors = createTermCollectorsList(
+			"zulu", "alpha", "delta", "beta");
+
+		setUpMultipleTermCollectors(termCollectors);
+
+		UserSearchFacetDisplayContext userSearchFacetDisplayContext =
+			createDisplayContext(userName, "key:asc");
+
+		List<UserSearchFacetTermDisplayContext>
+			userSearchFacetTermDisplayContexts =
+				userSearchFacetDisplayContext.getTermDisplayContexts();
+
+		Assert.assertEquals(
+			"[alpha, beta, delta, zulu]",
+			buildNameString(userSearchFacetTermDisplayContexts));
+	}
+
+	@Test
+	public void testOrderByTermValueDescending() throws Exception {
+		String userName = RandomTestUtil.randomString();
+
+		List<TermCollector> termCollectors = createTermCollectorsList(
+			"zulu", "alpha", "delta", "beta");
+
+		setUpMultipleTermCollectors(termCollectors);
+
+		UserSearchFacetDisplayContext userSearchFacetDisplayContext =
+			createDisplayContext(userName, "key:desc");
+
+		List<UserSearchFacetTermDisplayContext>
+			userSearchFacetTermDisplayContexts =
+				userSearchFacetDisplayContext.getTermDisplayContexts();
+
+		Assert.assertEquals(
+			"[zulu, delta, beta, alpha]",
+			buildNameString(userSearchFacetTermDisplayContexts));
+	}
+
+	protected String buildNameString(
+			List<UserSearchFacetTermDisplayContext>
+				userSearchFacetTermDisplayContexts)
+		throws Exception {
+
+		List<String> names = new ArrayList<>();
+
+		for (UserSearchFacetTermDisplayContext
+				userSearchFacetTermDisplayContext :
+					userSearchFacetTermDisplayContexts) {
+
+			names.add(userSearchFacetTermDisplayContext.getUserName());
+		}
+
+		return names.toString();
+	}
+
 	protected UserSearchFacetDisplayContext createDisplayContext(
-			String paramValue)
+			String paramValue, String order)
 		throws Exception {
 
 		UserSearchFacetDisplayContextBuilder
@@ -202,6 +262,7 @@ public class UserSearchFacetDisplayContextTest {
 		userSearchFacetDisplayContextBuilder.setFrequenciesVisible(true);
 		userSearchFacetDisplayContextBuilder.setFrequencyThreshold(0);
 		userSearchFacetDisplayContextBuilder.setMaxTerms(0);
+		userSearchFacetDisplayContextBuilder.setOrder(order);
 
 		return userSearchFacetDisplayContextBuilder.build();
 	}
@@ -222,6 +283,19 @@ public class UserSearchFacetDisplayContextTest {
 		).getTerm();
 
 		return termCollector;
+	}
+
+	protected List<TermCollector> createTermCollectorsList(
+		String... userNames) {
+
+		List<TermCollector> termCollectors = new ArrayList<>();
+
+		for (String userName : userNames) {
+			termCollectors.add(
+				createTermCollector(userName, RandomTestUtil.randomInt()));
+		}
+
+		return termCollectors;
 	}
 
 	protected PortletDisplay getPortletDisplay() throws ConfigurationException {
@@ -262,6 +336,16 @@ public class UserSearchFacetDisplayContextTest {
 		).getPortletDisplay();
 
 		return themeDisplay;
+	}
+
+	protected void setUpMultipleTermCollectors(
+		List<TermCollector> termCollectors) {
+
+		Mockito.doReturn(
+			termCollectors
+		).when(
+			_facetCollector
+		).getTermCollectors();
 	}
 
 	protected void setUpOneTermCollector(String userName, int count) {
