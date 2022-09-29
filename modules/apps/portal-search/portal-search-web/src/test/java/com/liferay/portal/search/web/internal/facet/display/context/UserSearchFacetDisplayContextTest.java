@@ -14,6 +14,8 @@
 
 package com.liferay.portal.search.web.internal.facet.display.context;
 
+import com.liferay.petra.string.StringBundler;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.module.configuration.ConfigurationException;
 import com.liferay.portal.kernel.search.facet.Facet;
 import com.liferay.portal.kernel.search.facet.collector.FacetCollector;
@@ -191,6 +193,56 @@ public class UserSearchFacetDisplayContextTest {
 	}
 
 	@Test
+	public void testOrderByTermFrequencyAscending() throws Exception {
+		String userName = RandomTestUtil.randomString();
+
+		List<TermCollector> termCollectors = new ArrayList<>();
+
+		termCollectors.add(createTermCollector("zulu", 4));
+		termCollectors.add(createTermCollector("alpha", 2));
+		termCollectors.add(createTermCollector("delta", 1));
+		termCollectors.add(createTermCollector("beta", 3));
+
+		setUpMultipleTermCollectors(termCollectors);
+
+		UserSearchFacetDisplayContext userSearchFacetDisplayContext =
+			createDisplayContext(userName, "count:asc");
+
+		List<UserSearchFacetTermDisplayContext>
+			userSearchFacetTermDisplayContexts =
+				userSearchFacetDisplayContext.getTermDisplayContexts();
+
+		Assert.assertEquals(
+			"delta:1|alpha:2|beta:3|zulu:4",
+			buildFrequencyString(userSearchFacetTermDisplayContexts));
+	}
+
+	@Test
+	public void testOrderByTermFrequencyDescending() throws Exception {
+		String userName = RandomTestUtil.randomString();
+
+		List<TermCollector> termCollectors = new ArrayList<>();
+
+		termCollectors.add(createTermCollector("zulu", 1));
+		termCollectors.add(createTermCollector("alpha", 2));
+		termCollectors.add(createTermCollector("delta", 4));
+		termCollectors.add(createTermCollector("beta", 3));
+
+		setUpMultipleTermCollectors(termCollectors);
+
+		UserSearchFacetDisplayContext userSearchFacetDisplayContext =
+			createDisplayContext(userName, "count:desc");
+
+		List<UserSearchFacetTermDisplayContext>
+			userSearchFacetTermDisplayContexts =
+				userSearchFacetDisplayContext.getTermDisplayContexts();
+
+		Assert.assertEquals(
+			"delta:4|beta:3|alpha:2|zulu:1",
+			buildFrequencyString(userSearchFacetTermDisplayContexts));
+	}
+
+	@Test
 	public void testOrderByTermValueAscending() throws Exception {
 		String userName = RandomTestUtil.randomString();
 
@@ -230,6 +282,29 @@ public class UserSearchFacetDisplayContextTest {
 		Assert.assertEquals(
 			"[zulu, delta, beta, alpha]",
 			buildNameString(userSearchFacetTermDisplayContexts));
+	}
+
+	protected String buildFrequencyString(
+			List<UserSearchFacetTermDisplayContext>
+				userSearchFacetTermDisplayContexts)
+		throws Exception {
+
+		StringBundler sb = new StringBundler(
+			userSearchFacetTermDisplayContexts.size() * 4);
+
+		for (UserSearchFacetTermDisplayContext
+				userSearchFacetTermDisplayContext :
+					userSearchFacetTermDisplayContexts) {
+
+			sb.append(userSearchFacetTermDisplayContext.getUserName());
+			sb.append(StringPool.COLON);
+			sb.append(userSearchFacetTermDisplayContext.getFrequency());
+			sb.append(StringPool.PIPE);
+		}
+
+		sb.setIndex(sb.index() - 1);
+
+		return sb.toString();
 	}
 
 	protected String buildNameString(
