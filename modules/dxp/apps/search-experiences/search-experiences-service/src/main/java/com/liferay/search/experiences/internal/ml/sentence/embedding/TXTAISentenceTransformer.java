@@ -20,6 +20,7 @@ import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.util.Http;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.URLCodec;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.search.experiences.configuration.SentenceTransformerConfiguration;
@@ -70,18 +71,31 @@ public class TXTAISentenceTransformer
 		}
 
 		try {
-			List<Double> list = JSONUtil.toDoubleList(
-				_jsonFactory.createJSONArray(
-					_http.URLtoString(
-						StringBundler.concat(
-							hostAddress, "transform?text=",
-							URLCodec.encodeURL(text, false)))));
+			String responseJSON = _http.URLtoString(
+				StringBundler.concat(
+					hostAddress, "transform?text=",
+					URLCodec.encodeURL(text, false)));
 
-			return list.toArray(new Double[0]);
+			if (_isJSONArray(responseJSON)) {
+				List<Double> list = JSONUtil.toDoubleList(
+					_jsonFactory.createJSONArray(responseJSON));
+
+				return list.toArray(new Double[0]);
+			}
+
+			throw new RuntimeException(responseJSON);
 		}
 		catch (Exception exception) {
 			return ReflectionUtil.throwException(exception);
 		}
+	}
+
+	private boolean _isJSONArray(String s) {
+		if (StringUtil.startsWith(s, "[") && StringUtil.endsWith(s, "]")) {
+			return true;
+		}
+
+		return false;
 	}
 
 	@Reference
