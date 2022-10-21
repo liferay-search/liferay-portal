@@ -36,6 +36,7 @@ const ASAH_DEFAULT_ATTRIBUTES = {
 
 const CONTRIBUTORS = {
 	ASAH_RECENT_SEARCH_KEYWORDS: 'asahRecentSearchKeywords',
+	ASAH_TOP_SEARCH_KEYWORDS: 'asahTopSearchKeywords',
 	BASIC: 'basic',
 	SXP_BLUEPRINT: 'sxpBlueprint',
 };
@@ -56,19 +57,28 @@ const SXP_BLUEPRINT_DEFAULT_ATTRIBUTES = {
  */
 const removeEmptyFields = (fields) =>
 	fields.filter(({attributes, contributorName, displayGroupName, size}) => {
-		if (
-			contributorName === CONTRIBUTORS.BASIC ||
-			contributorName === CONTRIBUTORS.ASAH_RECENT_SEARCH_KEYWORDS
-		) {
+		if (contributorName === CONTRIBUTORS.BASIC) {
 			return displayGroupName && size;
 		}
-
-		return (
-			contributorName &&
-			displayGroupName &&
-			size &&
-			attributes?.sxpBlueprintId
-		);
+		else if (
+			contributorName === CONTRIBUTORS.ASAH_RECENT_SEARCH_KEYWORDS ||
+			contributorName === CONTRIBUTORS.ASAH_TOP_SEARCH_KEYWORDS
+		) {
+			return (
+				attributes?.characterThreshold >= 0 &&
+				attributes?.count >= 0 &&
+				displayGroupName &&
+				size
+			);
+		}
+		else {
+			return (
+				attributes?.sxpBlueprintId &&
+				contributorName &&
+				displayGroupName &&
+				size
+			);
+		}
 	});
 
 function AsahContributorAttributes({onBlur, onChange, touched, value}) {
@@ -464,6 +474,16 @@ function Inputs({contributorOptions, onChange, onReplace, value = {}}) {
 				size: 3,
 			});
 		}
+		else if (
+			event.target.value === CONTRIBUTORS.ASAH_TOP_SEARCH_KEYWORDS
+		) {
+			onChange({
+				attributes: ASAH_DEFAULT_ATTRIBUTES,
+				contributorName: CONTRIBUTORS.ASAH_TOP_SEARCH_KEYWORDS,
+				displayGroupName: 'top-searches',
+				size: 3,
+			});
+		}
 		else {
 			onChange({
 				attributes: SXP_BLUEPRINT_DEFAULT_ATTRIBUTES,
@@ -560,8 +580,10 @@ function Inputs({contributorOptions, onChange, onReplace, value = {}}) {
 				</ClayInput.GroupItem>
 			</div>
 
-			{value.contributorName ===
-				CONTRIBUTORS.ASAH_RECENT_SEARCH_KEYWORDS && (
+			{(value.contributorName ===
+				CONTRIBUTORS.ASAH_RECENT_SEARCH_KEYWORDS ||
+				value.contributorName ===
+					CONTRIBUTORS.ASAH_TOP_SEARCH_KEYWORDS) && (
 				<AsahContributorAttributes
 					onBlur={_handleBlur}
 					onChange={onChange}
@@ -617,6 +639,13 @@ function SearchBarConfigurationSuggestions({
 					/>
 				)}
 
+				{isDXP && (
+					<ClaySelect.Option
+						label={Liferay.Language.get('blueprint')}
+						value={CONTRIBUTORS.SXP_BLUEPRINT}
+					/>
+				)}
+
 				{featureFlagLps159643 && isAnalyticsEnabled && (
 					<ClaySelect.Option
 						label={Liferay.Language.get('recent-searches')}
@@ -624,10 +653,10 @@ function SearchBarConfigurationSuggestions({
 					/>
 				)}
 
-				{isDXP && (
+				{featureFlagLps159643 && isAnalyticsEnabled && (
 					<ClaySelect.Option
-						label={Liferay.Language.get('blueprint')}
-						value={CONTRIBUTORS.SXP_BLUEPRINT}
+						label={Liferay.Language.get('top-searches')}
+						value={CONTRIBUTORS.ASAH_TOP_SEARCH_KEYWORDS}
 					/>
 				)}
 			</>
