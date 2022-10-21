@@ -23,6 +23,7 @@ taglib uri="http://liferay.com/tld/frontend" prefix="liferay-frontend" %><%@
 taglib uri="http://liferay.com/tld/portlet" prefix="liferay-portlet" %><%@
 taglib uri="http://liferay.com/tld/react" prefix="react" %><%@
 taglib uri="http://liferay.com/tld/template" prefix="liferay-template" %><%@
+taglib uri="http://liferay.com/tld/theme" prefix="liferay-theme" %><%@
 taglib uri="http://liferay.com/tld/ui" prefix="liferay-ui" %>
 
 <%@ page import="com.liferay.learn.LearnMessageUtil" %><%@
@@ -39,7 +40,10 @@ page import="com.liferay.portal.search.web.internal.search.bar.portlet.SearchBar
 page import="com.liferay.portal.search.web.internal.search.bar.portlet.SearchBarPortletPreferencesImpl" %><%@
 page import="com.liferay.portal.search.web.internal.search.bar.portlet.configuration.SearchBarPortletInstanceConfiguration" %><%@
 page import="com.liferay.portal.search.web.internal.search.bar.portlet.display.context.SearchBarPortletDisplayContext" %><%@
+page import="com.liferay.portal.search.web.internal.util.AsahUtil" %><%@
 page import="com.liferay.portal.search.web.internal.util.PortletPreferencesJspUtil" %>
+
+<liferay-theme:defineObjects />
 
 <portlet:defineObjects />
 
@@ -123,7 +127,7 @@ String suggestionsContributorConfiguration = StringBundler.concat(StringPool.OPE
 									).put(
 										"initialSuggestionsContributorConfiguration", suggestionsContributorConfiguration
 									).put(
-										"isAnalyticsEnabled", true
+										"isAnalyticsEnabled", AsahUtil.isAnalyticsEnabled(themeDisplay.getCompanyId(), themeDisplay.getSiteGroupId())
 									).put(
 										"isDXP", ReleaseInfo.isDXP()
 									).put(
