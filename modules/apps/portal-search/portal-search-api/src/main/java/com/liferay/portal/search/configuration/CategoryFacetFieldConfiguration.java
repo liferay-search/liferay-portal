@@ -23,7 +23,11 @@ import org.osgi.annotation.versioning.ProviderType;
 /**
  * @author Bryan Engler
  */
-@ExtendedObjectClassDefinition(category = "search")
+@ExtendedObjectClassDefinition(
+	category = "search",
+	liferayLearnMessageKey = "category-facet-field-configuration",
+	liferayLearnMessageResource = "portal-search-api"
+)
 @Meta.OCD(
 	id = "com.liferay.portal.search.configuration.CategoryFacetFieldConfiguration",
 	localization = "content/Language",

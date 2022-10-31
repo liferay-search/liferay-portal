@@ -1,0 +1,8 @@
+{
+	"category-facet-field-configuration": {
+		"en_US": {
+			"message": "Learn more, including whether a reindex is required.",
+			"url": "https://learn.liferay.com/dxp/latest/en/using-search/search-pages-and-widgets/search-facets/category-facet.html#filter-facet-terms-categories-by-vocabulary"
+		}
+	}
+}
