@@ -20,17 +20,28 @@ import {useModal} from '@clayui/modal';
 import ClayMultiSelect from '@clayui/multi-select';
 import getCN from 'classnames';
 import {fetch, sub} from 'frontend-js-web';
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 
+import LearnMessage from '../shared/LearnMessage';
 import FieldList from './FieldList';
 import SelectSXPBlueprintModal from './select_sxp_blueprint_modal/SelectSXPBlueprintModal';
 
+const LearnMessagesContext = React.createContext({});
+
+const ASAH_DEFAULT_ATTRIBUTES = {
+	characterThreshold: 0,
+	count: 10,
+	matchDisplayLanguageId: true,
+};
+
 const CONTRIBUTORS = {
+	ASAH_RECENT_SEARCH_KEYWORDS: 'asahRecentSearchKeywords',
+	ASAH_TOP_SEARCH_KEYWORDS: 'asahTopSearchKeywords',
 	BASIC: 'basic',
 	SXP_BLUEPRINT: 'sxpBlueprint',
 };
 
-const DEFAULT_ATTRIBUTES = {
+const SXP_BLUEPRINT_DEFAULT_ATTRIBUTES = {
 	fields: [],
 	includeAssetSearchSummary: true,
 	includeAssetURL: true,
@@ -49,16 +60,136 @@ const removeEmptyFields = (fields) =>
 		if (contributorName === CONTRIBUTORS.BASIC) {
 			return displayGroupName && size;
 		}
-
-		return (
-			contributorName &&
-			displayGroupName &&
-			size &&
-			attributes?.sxpBlueprintId
-		);
+		else if (
+			contributorName === CONTRIBUTORS.ASAH_RECENT_SEARCH_KEYWORDS ||
+			contributorName === CONTRIBUTORS.ASAH_TOP_SEARCH_KEYWORDS
+		) {
+			return (
+				attributes?.characterThreshold >= 0 &&
+				attributes?.count >= 0 &&
+				displayGroupName &&
+				size
+			);
+		}
+		else {
+			return (
+				attributes?.sxpBlueprintId &&
+				contributorName &&
+				displayGroupName &&
+				size
+			);
+		}
 	});
 
-function SXPBlueprintAttributes({onBlur, onChange, touched, value}) {
+function AsahContributorAttributes({onBlur, onChange, touched, value}) {
+	const {learnMessages} = useContext(LearnMessagesContext);
+
+	const _handleAttributeChange = (property) => (event) => {
+		onChange({
+			attributes: {
+				...value.attributes,
+				[property]: event.target.value,
+			},
+		});
+	};
+
+	return (
+		<>
+			<div className="form-group-autofit">
+				<ClayInput.GroupItem>
+					<label>
+						{Liferay.Language.get('match-users-language')}
+					</label>
+
+					<ClaySelect
+						aria-label={Liferay.Language.get(
+							'match-users-language'
+						)}
+						onChange={_handleAttributeChange(
+							'matchDisplayLanguageId'
+						)}
+						required
+						value={value.attributes?.matchDisplayLanguageId}
+					>
+						<ClaySelect.Option
+							label={Liferay.Language.get('true')}
+							value={true}
+						/>
+
+						<ClaySelect.Option
+							label={Liferay.Language.get('false')}
+							value={false}
+						/>
+					</ClaySelect>
+				</ClayInput.GroupItem>
+
+				<ClayInput.GroupItem
+					className={getCN({
+						'has-error':
+							value.attributes?.count < 0 && touched.count,
+					})}
+				>
+					<label>
+						{Liferay.Language.get('minimum-searches')}
+
+						<span className="reference-mark">
+							<ClayIcon symbol="asterisk" />
+						</span>
+					</label>
+
+					<ClayInput
+						aria-label={Liferay.Language.get('minimum-searches')}
+						min="0"
+						onBlur={onBlur('count')}
+						onChange={_handleAttributeChange('count')}
+						required
+						type="number"
+						value={value.attributes?.count}
+					/>
+				</ClayInput.GroupItem>
+
+				<ClayInput.GroupItem
+					className={getCN({
+						'has-error':
+							value.attributes?.characterThreshold < 0 &&
+							touched.characterThreshold,
+					})}
+				>
+					<label>
+						{Liferay.Language.get('character-threshold')}
+
+						<span className="reference-mark">
+							<ClayIcon symbol="asterisk" />
+						</span>
+					</label>
+
+					<ClayInput
+						aria-label={Liferay.Language.get('character-threshold')}
+						min="0"
+						onBlur={onBlur('characterThreshold')}
+						onChange={_handleAttributeChange('characterThreshold')}
+						required
+						type="number"
+						value={value.attributes?.characterThreshold}
+					/>
+				</ClayInput.GroupItem>
+			</div>
+
+			<p className="text-3 text-secondary">
+				{Liferay.Language.get(
+					'this-configuration-requires-liferay-analytics-cloud-to-be-enabled-and-configured'
+				)}
+			</p>
+
+			<LearnMessage
+				learnMessages={learnMessages}
+				resourceKey="search-bar-suggestions"
+			/>
+		</>
+	);
+}
+
+function SXPBlueprintContributorAttributes({onBlur, onChange, touched, value}) {
 	const [showModal, setShowModal] = useState(false);
 	const [sxpBlueprint, setSXPBlueprint] = useState({
 		loading: false,
@@ -150,7 +281,7 @@ function SXPBlueprintAttributes({onBlur, onChange, touched, value}) {
 		event.preventDefault();
 	};
 
-	const _handleChangeAttribute = (property) => (event) => {
+	const _handleAttributeChange = (property) => (event) => {
 		onChange({
 			attributes: {...value.attributes, [property]: event.target.value},
 		});
@@ -177,6 +308,7 @@ function SXPBlueprintAttributes({onBlur, onChange, touched, value}) {
 				fields: newValue.map((item) => item.value),
 			},
 		});
+
 		setMultiSelectItems(newValue);
 	};
 
@@ -247,7 +379,7 @@ function SXPBlueprintAttributes({onBlur, onChange, touched, value}) {
 
 					<ClaySelect
 						aria-label={Liferay.Language.get('include-asset-url')}
-						onChange={_handleChangeAttribute('includeAssetURL')}
+						onChange={_handleAttributeChange('includeAssetURL')}
 						value={value.attributes?.includeAssetURL}
 					>
 						<ClaySelect.Option
@@ -271,7 +403,7 @@ function SXPBlueprintAttributes({onBlur, onChange, touched, value}) {
 						aria-label={Liferay.Language.get(
 							'include-asset-summary'
 						)}
-						onChange={_handleChangeAttribute(
+						onChange={_handleAttributeChange(
 							'includeAssetSearchSummary'
 						)}
 						value={value.attributes?.includeAssetSearchSummary}
@@ -306,9 +438,12 @@ function SXPBlueprintAttributes({onBlur, onChange, touched, value}) {
 	);
 }
 
-function Inputs({onChange, onReplace, contributorOptions, value = {}}) {
+function Inputs({contributorOptions, onChange, onReplace, value = {}}) {
 	const [touched, setTouched] = useState({
+		characterThreshold: false,
+		count: false,
 		displayGroupName: false,
+		matchDisplayLanguageId: false,
 		size: false,
 		sxpBlueprintId: false,
 	});
@@ -324,14 +459,34 @@ function Inputs({onChange, onReplace, contributorOptions, value = {}}) {
 	const _handleChangeContributorName = (event) => {
 		if (event.target.value === CONTRIBUTORS.BASIC) {
 			onReplace({
-				contributorName: event.target.value,
+				contributorName: CONTRIBUTORS.BASIC,
 				displayGroupName: value.displayGroupName,
 				size: value.size,
 			});
 		}
+		else if (
+			event.target.value === CONTRIBUTORS.ASAH_RECENT_SEARCH_KEYWORDS
+		) {
+			onChange({
+				attributes: ASAH_DEFAULT_ATTRIBUTES,
+				contributorName: CONTRIBUTORS.ASAH_RECENT_SEARCH_KEYWORDS,
+				displayGroupName: 'recent-searches',
+				size: 3,
+			});
+		}
+		else if (
+			event.target.value === CONTRIBUTORS.ASAH_TOP_SEARCH_KEYWORDS
+		) {
+			onChange({
+				attributes: ASAH_DEFAULT_ATTRIBUTES,
+				contributorName: CONTRIBUTORS.ASAH_TOP_SEARCH_KEYWORDS,
+				displayGroupName: 'top-searches',
+				size: 3,
+			});
+		}
 		else {
 			onChange({
-				attributes: DEFAULT_ATTRIBUTES,
+				attributes: SXP_BLUEPRINT_DEFAULT_ATTRIBUTES,
 				contributorName: event.target.value,
 				displayGroupName: value.displayGroupName,
 				size: value.size,
@@ -425,8 +580,20 @@ function Inputs({onChange, onReplace, contributorOptions, value = {}}) {
 				</ClayInput.GroupItem>
 			</div>
 
+			{(value.contributorName ===
+				CONTRIBUTORS.ASAH_RECENT_SEARCH_KEYWORDS ||
+				value.contributorName ===
+					CONTRIBUTORS.ASAH_TOP_SEARCH_KEYWORDS) && (
+				<AsahContributorAttributes
+					onBlur={_handleBlur}
+					onChange={onChange}
+					touched={touched}
+					value={value}
+				/>
+			)}
+
 			{value.contributorName === CONTRIBUTORS.SXP_BLUEPRINT && (
-				<SXPBlueprintAttributes
+				<SXPBlueprintContributorAttributes
 					onBlur={_handleBlur}
 					onChange={onChange}
 					touched={touched}
@@ -438,8 +605,11 @@ function Inputs({onChange, onReplace, contributorOptions, value = {}}) {
 }
 
 function SearchBarConfigurationSuggestions({
+	featureFlagLps159643,
 	initialSuggestionsContributorConfiguration = '[]',
+	isAnalyticsEnabled = true,
 	isDXP = false,
+	learnMessages,
 	namespace = '',
 	suggestionsContributorConfigurationName = '',
 }) {
@@ -456,39 +626,39 @@ function SearchBarConfigurationSuggestions({
 	);
 
 	const _getContributorOptions = (index) => {
-		if (!isDXP) {
-			return (
-				<ClaySelect.Option
-					label={Liferay.Language.get('basic')}
-					value={CONTRIBUTORS.BASIC}
-				/>
-			);
-		}
-
 		const indexOfBasic = suggestionsContributorConfiguration.findIndex(
 			(value) => value.contributorName === CONTRIBUTORS.BASIC
 		);
 
-		if (indexOfBasic > -1 && index !== indexOfBasic) {
-			return (
-				<ClaySelect.Option
-					label={Liferay.Language.get('blueprint')}
-					value={CONTRIBUTORS.SXP_BLUEPRINT}
-				/>
-			);
-		}
-
 		return (
 			<>
-				<ClaySelect.Option
-					label={Liferay.Language.get('basic')}
-					value={CONTRIBUTORS.BASIC}
-				/>
+				{(indexOfBasic === -1 || index === indexOfBasic) && (
+					<ClaySelect.Option
+						label={Liferay.Language.get('basic')}
+						value={CONTRIBUTORS.BASIC}
+					/>
+				)}
 
-				<ClaySelect.Option
-					label={Liferay.Language.get('blueprint')}
-					value={CONTRIBUTORS.SXP_BLUEPRINT}
-				/>
+				{isDXP && (
+					<ClaySelect.Option
+						label={Liferay.Language.get('blueprint')}
+						value={CONTRIBUTORS.SXP_BLUEPRINT}
+					/>
+				)}
+
+				{featureFlagLps159643 && isAnalyticsEnabled && (
+					<ClaySelect.Option
+						label={Liferay.Language.get('recent-searches')}
+						value={CONTRIBUTORS.ASAH_RECENT_SEARCH_KEYWORDS}
+					/>
+				)}
+
+				{featureFlagLps159643 && isAnalyticsEnabled && (
+					<ClaySelect.Option
+						label={Liferay.Language.get('top-searches')}
+						value={CONTRIBUTORS.ASAH_TOP_SEARCH_KEYWORDS}
+					/>
+				)}
 			</>
 		);
 	};
@@ -500,7 +670,7 @@ function SearchBarConfigurationSuggestions({
 			)
 		) {
 			return {
-				attributes: DEFAULT_ATTRIBUTES,
+				attributes: SXP_BLUEPRINT_DEFAULT_ATTRIBUTES,
 				contributorName: CONTRIBUTORS.SXP_BLUEPRINT,
 				displayGroupName: '',
 				size: '',
@@ -515,47 +685,50 @@ function SearchBarConfigurationSuggestions({
 	};
 
 	return (
-		<div className="search-bar-configuration-suggestions">
-			{removeEmptyFields(suggestionsContributorConfiguration).length ? (
-				removeEmptyFields(
-					suggestionsContributorConfiguration
-				).map(({id, ...item}) => (
+		<LearnMessagesContext.Provider value={{learnMessages}}>
+			<div className="search-bar-configuration-suggestions">
+				{removeEmptyFields(suggestionsContributorConfiguration)
+					.length ? (
+					removeEmptyFields(
+						suggestionsContributorConfiguration
+					).map(({id, ...item}) => (
+						<input
+							hidden
+							key={id}
+							name={`${namespace}${suggestionsContributorConfigurationName}`}
+							readOnly
+							value={JSON.stringify(item)}
+						/>
+					))
+				) : (
 					<input
 						hidden
-						key={id}
 						name={`${namespace}${suggestionsContributorConfigurationName}`}
 						readOnly
-						value={JSON.stringify(item)}
-					/>
-				))
-			) : (
-				<input
-					hidden
-					name={`${namespace}${suggestionsContributorConfigurationName}`}
-					readOnly
-					value=""
-				/>
-			)}
-
-			<FieldList
-				addButtonLabel={Liferay.Language.get('add-contributor')}
-				defaultValue={_getDefaultValue()}
-				onChange={setSuggestionsContributorConfiguration}
-				renderInputs={({index, onChange, onReplace, value}) => (
-					<Inputs
-						contributorOptions={_getContributorOptions(index)}
-						key={index}
-						onChange={onChange}
-						onReplace={onReplace}
-						value={value}
+						value=""
 					/>
 				)}
-				showAddButton={isDXP}
-				showDeleteButton={isDXP}
-				showDragButton={isDXP}
-				value={suggestionsContributorConfiguration}
-			/>
-		</div>
+
+				<FieldList
+					addButtonLabel={Liferay.Language.get('add-contributor')}
+					defaultValue={_getDefaultValue()}
+					onChange={setSuggestionsContributorConfiguration}
+					renderInputs={({index, onChange, onReplace, value}) => (
+						<Inputs
+							contributorOptions={_getContributorOptions(index)}
+							key={index}
+							onChange={onChange}
+							onReplace={onReplace}
+							value={value}
+						/>
+					)}
+					showAddButton={isDXP}
+					showDeleteButton={isDXP}
+					showDragButton={isDXP}
+					value={suggestionsContributorConfiguration}
+				/>
+			</div>
+		</LearnMessagesContext.Provider>
 	);
 }
 

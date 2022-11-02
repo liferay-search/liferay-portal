@@ -23,20 +23,27 @@ taglib uri="http://liferay.com/tld/frontend" prefix="liferay-frontend" %><%@
 taglib uri="http://liferay.com/tld/portlet" prefix="liferay-portlet" %><%@
 taglib uri="http://liferay.com/tld/react" prefix="react" %><%@
 taglib uri="http://liferay.com/tld/template" prefix="liferay-template" %><%@
+taglib uri="http://liferay.com/tld/theme" prefix="liferay-theme" %><%@
 taglib uri="http://liferay.com/tld/ui" prefix="liferay-ui" %>
 
-<%@ page import="com.liferay.petra.string.StringBundler" %><%@
+<%@ page import="com.liferay.learn.LearnMessageUtil" %><%@
+page import="com.liferay.petra.string.StringBundler" %><%@
 page import="com.liferay.petra.string.StringPool" %><%@
 page import="com.liferay.petra.string.StringUtil" %><%@
 page import="com.liferay.portal.kernel.util.Constants" %><%@
+page import="com.liferay.portal.kernel.util.GetterUtil" %><%@
 page import="com.liferay.portal.kernel.util.HashMapBuilder" %><%@
+page import="com.liferay.portal.kernel.util.PropsUtil" %><%@
 page import="com.liferay.portal.kernel.util.ReleaseInfo" %><%@
 page import="com.liferay.portal.kernel.util.WebKeys" %><%@
 page import="com.liferay.portal.search.web.internal.search.bar.portlet.SearchBarPortletPreferences" %><%@
 page import="com.liferay.portal.search.web.internal.search.bar.portlet.SearchBarPortletPreferencesImpl" %><%@
 page import="com.liferay.portal.search.web.internal.search.bar.portlet.configuration.SearchBarPortletInstanceConfiguration" %><%@
 page import="com.liferay.portal.search.web.internal.search.bar.portlet.display.context.SearchBarPortletDisplayContext" %><%@
+page import="com.liferay.portal.search.web.internal.util.AsahUtil" %><%@
 page import="com.liferay.portal.search.web.internal.util.PortletPreferencesJspUtil" %>
+
+<liferay-theme:defineObjects />
 
 <portlet:defineObjects />
 
@@ -116,9 +123,15 @@ String suggestionsContributorConfiguration = StringBundler.concat(StringPool.OPE
 								module="js/components/SearchBarConfigurationSuggestions"
 								props='<%=
 									HashMapBuilder.<String, Object>put(
+										"featureFlagLps159643", GetterUtil.getBoolean(PropsUtil.get("feature.flag.LPS-159643"))
+									).put(
 										"initialSuggestionsContributorConfiguration", suggestionsContributorConfiguration
 									).put(
+										"isAnalyticsEnabled", AsahUtil.isAnalyticsEnabled(themeDisplay.getCompanyId(), themeDisplay.getSiteGroupId())
+									).put(
 										"isDXP", ReleaseInfo.isDXP()
+									).put(
+										"learnMessages", LearnMessageUtil.getJSONObject("portal-search-web")
 									).put(
 										"namespace", liferayPortletResponse.getNamespace()
 									).put(

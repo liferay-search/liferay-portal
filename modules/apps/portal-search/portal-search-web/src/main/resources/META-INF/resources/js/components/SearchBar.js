@@ -89,6 +89,7 @@ export default function SearchBar({
 				? destinationFriendlyURL
 				: '/search',
 			groupId: Liferay.ThemeDisplay.getScopeGroupId(),
+			keywordsParameterName,
 			plid: Liferay.ThemeDisplay.getPlid(),
 			scope,
 			search: autocompleteSearchValue,
