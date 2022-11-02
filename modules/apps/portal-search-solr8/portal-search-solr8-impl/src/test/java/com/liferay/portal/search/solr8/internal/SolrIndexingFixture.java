@@ -208,7 +208,6 @@ public class SolrIndexingFixture implements IndexingFixture {
 		SolrIndexSearcher solrIndexSearcher = new SolrIndexSearcher() {
 			{
 				setFacetProcessor(_facetProcessor);
-				setProps(createProps());
 				setSearchRequestBuilderFactory(
 					new SearchRequestBuilderFactoryImpl());
 				setSearchResponseBuilderFactory(
@@ -218,6 +217,9 @@ public class SolrIndexingFixture implements IndexingFixture {
 				activate(_properties);
 			}
 		};
+
+		ReflectionTestUtil.setFieldValue(
+			solrIndexSearcher, "_props", createProps());
 
 		ReflectionTestUtil.setFieldValue(
 			solrIndexSearcher, "_querySuggester",
