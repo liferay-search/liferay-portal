@@ -149,11 +149,6 @@ public class BaseSolrQueryAssemblerImpl implements BaseSolrQueryAssembler {
 		}
 	}
 
-	@Reference(service = CompositeFacetProcessor.class, unbind = "-")
-	protected void setFacetProcessor(FacetProcessor<SolrQuery> facetProcessor) {
-		_facetProcessor = facetProcessor;
-	}
-
 	protected void setFacets(
 		SolrQuery solrQuery, BaseSearchRequest baseSearchRequest) {
 
@@ -207,7 +202,7 @@ public class BaseSolrQueryAssemblerImpl implements BaseSolrQueryAssembler {
 			_add(filterQueries, query.getPostFilter());
 
 			if (query instanceof BooleanQuery) {
-				_add(filterQueries, (BooleanQuery)query);
+				_add(filterQueries, (BooleanQuery) query);
 			}
 		}
 
@@ -222,13 +217,6 @@ public class BaseSolrQueryAssemblerImpl implements BaseSolrQueryAssembler {
 		}
 	}
 
-	@Reference(target = "(search.engine.impl=Solr)", unbind = "-")
-	protected void setFilterTranslator(
-		FilterTranslator<String> filterTranslator) {
-
-		_filterTranslator = filterTranslator;
-	}
-
 	protected void setQuery(
 		SolrQuery solrQuery, BaseSearchRequest baseSearchRequest) {
 
@@ -239,22 +227,12 @@ public class BaseSolrQueryAssemblerImpl implements BaseSolrQueryAssembler {
 		}
 	}
 
-	@Reference(target = "(search.engine.impl=Solr)", unbind = "-")
-	protected void setQueryTranslator(QueryTranslator<String> queryTranslator) {
-		_queryTranslator = queryTranslator;
-	}
-
 	protected void setStatsRequests(
 		SolrQuery solrQuery, BaseSearchRequest baseSearchRequest) {
 
 		for (StatsRequest statsRequest : baseSearchRequest.getStatsRequests()) {
 			_statsTranslator.populateRequest(solrQuery, statsRequest);
 		}
-	}
-
-	@Reference(unbind = "-")
-	protected void setStatsTranslator(StatsTranslator statsTranslator) {
-		_statsTranslator = statsTranslator;
 	}
 
 	protected String translate(BooleanClause<Filter> booleanClause) {
@@ -294,11 +272,15 @@ public class BaseSolrQueryAssemblerImpl implements BaseSolrQueryAssembler {
 		}
 	}
 
+	@Reference(service = CompositeFacetProcessor.class)
 	private FacetProcessor<SolrQuery> _facetProcessor;
+	@Reference(target = "(search.engine.impl=Solr)")
 	private FilterTranslator<String> _filterTranslator;
+	@Reference(target = "(search.engine.impl=Solr)")
 	private QueryTranslator<String> _queryTranslator;
 	private final SolrQueryTranslator _solrQueryTranslator =
 		new SolrQueryTranslator();
+	@Reference
 	private StatsTranslator _statsTranslator;
 
 }

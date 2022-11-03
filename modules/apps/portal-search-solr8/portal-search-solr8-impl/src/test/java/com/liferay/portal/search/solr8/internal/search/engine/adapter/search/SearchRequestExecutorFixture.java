@@ -79,14 +79,15 @@ public class SearchRequestExecutorFixture {
 		FacetProcessor<SolrQuery> facetProcessor,
 		QueryTranslator<String> queryTranslator) {
 
-		return new BaseSolrQueryAssemblerImpl() {
-			{
-				setQueryTranslator(queryTranslator);
-				setStatsTranslator(createStatsTranslator());
-				setFilterTranslator(createSolrFilterTranslator());
-				setFacetProcessor(facetProcessor);
-			}
-		};
+		BaseSolrQueryAssemblerImpl baseSolrQueryAssembler =
+			new BaseSolrQueryAssemblerImpl();
+
+		ReflectionTestUtil.setFieldValue(baseSolrQueryAssembler, "_queryTranslator", queryTranslator);
+		ReflectionTestUtil.setFieldValue(baseSolrQueryAssembler, "_statsTranslator", createStatsTranslator());
+		ReflectionTestUtil.setFieldValue(baseSolrQueryAssembler, "_filterTranslator", createSolrFilterTranslator());
+		ReflectionTestUtil.setFieldValue(baseSolrQueryAssembler, "_facetProcessor", facetProcessor);
+
+		return baseSolrQueryAssembler;
 	}
 
 	protected static CountSearchRequestExecutor
