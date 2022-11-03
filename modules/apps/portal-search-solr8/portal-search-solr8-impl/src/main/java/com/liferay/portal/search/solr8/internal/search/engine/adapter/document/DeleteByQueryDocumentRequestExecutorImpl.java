@@ -91,6 +91,7 @@ public class DeleteByQueryDocumentRequestExecutorImpl
 
 	@Reference
 	private SolrClientManager _solrClientManager;
+
 	private volatile SolrConfiguration _solrConfiguration;
 
 }

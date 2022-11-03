@@ -224,8 +224,10 @@ public class SolrSpellCheckIndexWriter
 
 	private volatile String _defaultCollection;
 	private volatile boolean _logExceptionsOnly;
+
 	@Reference(target = "(search.engine.impl=Solr)")
 	private SearchEngineAdapter _searchEngineAdapter;
+
 	private volatile SolrConfiguration _solrConfiguration;
 
 }

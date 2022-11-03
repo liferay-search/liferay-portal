@@ -424,8 +424,10 @@ public class SolrQuerySuggester implements QuerySuggester {
 
 	@Reference
 	private NGramQueryBuilder _nGramQueryBuilder;
+
 	@Reference
 	private SolrClientManager _solrClientManager;
+
 	private volatile SolrConfiguration _solrConfiguration;
 
 	@Reference(

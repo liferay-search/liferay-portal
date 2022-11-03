@@ -405,8 +405,10 @@ public class SolrIndexWriter extends BaseIndexWriter {
 
 	private volatile String _defaultCollection;
 	private volatile boolean _logExceptionsOnly;
+
 	@Reference(target = "(search.engine.impl=Solr)")
 	private SearchEngineAdapter _searchEngineAdapter;
+
 	private volatile SolrConfiguration _solrConfiguration;
 
 	@Reference(target = "(search.engine.impl=Solr)")

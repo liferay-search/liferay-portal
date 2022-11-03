@@ -95,18 +95,24 @@ public class SolrDocumentRequestExecutor implements DocumentRequestExecutor {
 
 	@Reference
 	private BulkDocumentRequestExecutor _bulkDocumentRequestExecutor;
+
 	@Reference
 	private DeleteByQueryDocumentRequestExecutor
 		_deleteByQueryDocumentRequestExecutor;
+
 	@Reference
 	private DeleteDocumentRequestExecutor _deleteDocumentRequestExecutor;
+
 	@Reference
 	private GetDocumentRequestExecutor _getDocumentRequestExecutor;
+
 	@Reference
 	private IndexDocumentRequestExecutor _indexDocumentRequestExecutor;
+
 	@Reference
 	private UpdateByQueryDocumentRequestExecutor
 		_updateByQueryDocumentRequestExecutor;
+
 	@Reference
 	private UpdateDocumentRequestExecutor _updateDocumentRequestExecutor;
 

@@ -353,6 +353,7 @@ public class BulkDocumentRequestExecutorImpl
 
 	@Reference
 	private SolrClientManager _solrClientManager;
+
 	private volatile SolrConfiguration _solrConfiguration;
 
 	@Reference

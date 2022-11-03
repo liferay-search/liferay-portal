@@ -90,8 +90,10 @@ public class GetDocumentRequestExecutorImpl
 	@Reference(target = "(search.engine.impl=Solr)")
 	private BulkableDocumentRequestTranslator
 		_bulkableDocumentRequestTranslator;
+
 	@Reference
 	private DocumentBuilderFactory _documentBuilderFactory;
+
 	@Reference
 	private SolrClientManager _solrClientManager;
 

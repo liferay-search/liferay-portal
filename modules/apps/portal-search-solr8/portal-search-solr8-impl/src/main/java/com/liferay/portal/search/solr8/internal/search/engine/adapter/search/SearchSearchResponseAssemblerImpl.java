@@ -46,6 +46,7 @@ public class SearchSearchResponseAssemblerImpl
 
 	@Reference
 	private BaseSearchResponseAssembler _baseSearchResponseAssembler;
+
 	@Reference
 	private SearchSearchResponseAssemblerHelper
 		_searchSearchResponseAssemblerHelper;

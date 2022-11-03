@@ -149,16 +149,22 @@ public class SolrSearchEngineAdapterImpl implements SearchEngineAdapter {
 
 	@Reference(target = "(search.engine.impl=Solr)")
 	private ClusterRequestExecutor _clusterRequestExecutor;
+
 	@Reference(target = "(search.engine.impl=Solr)")
 	private DocumentRequestExecutor _documentRequestExecutor;
+
 	@Reference(target = "(search.engine.impl=Solr)")
 	private IndexRequestExecutor _indexRequestExecutor;
+
 	@Reference(target = "(search.engine.impl=Solr)")
 	private QueryTranslator<String> _queryTranslator;
+
 	@Reference(target = "(search.engine.impl=Solr)")
 	private SearchRequestExecutor _searchRequestExecutor;
+
 	@Reference(target = "(search.engine.impl=Solr)")
 	private SnapshotRequestExecutor _snapshotRequestExecutor;
+
 	private boolean _throwOriginalExceptions;
 
 }

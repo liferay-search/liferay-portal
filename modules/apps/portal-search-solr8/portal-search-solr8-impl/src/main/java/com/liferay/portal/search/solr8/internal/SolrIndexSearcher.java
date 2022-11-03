@@ -404,8 +404,10 @@ public class SolrIndexSearcher extends BaseIndexSearcher {
 
 	@Reference
 	private SearchRequestBuilderFactory _searchRequestBuilderFactory;
+
 	@Reference
 	private SearchResponseBuilderFactory _searchResponseBuilderFactory;
+
 	private volatile SolrConfiguration _solrConfiguration;
 
 }
