@@ -136,24 +136,22 @@ public class SolrIndexingFixture implements IndexingFixture {
 	}
 
 	protected static SolrQueryTranslator createSolrQueryTranslator() {
-		return new SolrQueryTranslator() {
-			{
-				setBooleanQueryTranslator(new BooleanQueryTranslatorImpl());
-				setDisMaxQueryTranslator(new DisMaxQueryTranslatorImpl());
-				setFuzzyQueryTranslator(new FuzzyQueryTranslatorImpl());
-				setMatchAllQueryTranslator(new MatchAllQueryTranslatorImpl());
-				setMatchQueryTranslator(new MatchQueryTranslatorImpl());
-				setMoreLikeThisQueryTranslator(
-					new MoreLikeThisQueryTranslatorImpl());
-				setMultiMatchQueryTranslator(
-					new MultiMatchQueryTranslatorImpl());
-				setNestedQueryTranslator(new NestedQueryTranslatorImpl());
-				setStringQueryTranslator(new StringQueryTranslatorImpl());
-				setTermQueryTranslator(new TermQueryTranslatorImpl());
-				setTermRangeQueryTranslator(new TermRangeQueryTranslatorImpl());
-				setWildcardQueryTranslator(new WildcardQueryTranslatorImpl());
-			}
-		};
+		SolrQueryTranslator solrQueryTranslator = new SolrQueryTranslator();
+
+		ReflectionTestUtil.setFieldValue(solrQueryTranslator, "_booleanQueryTranslator", new BooleanQueryTranslatorImpl());
+		ReflectionTestUtil.setFieldValue(solrQueryTranslator, "_disMaxQueryTranslator", new DisMaxQueryTranslatorImpl());
+		ReflectionTestUtil.setFieldValue(solrQueryTranslator, "_fuzzyQueryTranslator", new FuzzyQueryTranslatorImpl());
+		ReflectionTestUtil.setFieldValue(solrQueryTranslator, "_matchAllQueryTranslator", new MatchAllQueryTranslatorImpl());
+		ReflectionTestUtil.setFieldValue(solrQueryTranslator, "_matchQueryTranslator", new MatchQueryTranslatorImpl());
+		ReflectionTestUtil.setFieldValue(solrQueryTranslator, "_moreLikeThisQueryTranslator", new MoreLikeThisQueryTranslatorImpl());
+		ReflectionTestUtil.setFieldValue(solrQueryTranslator, "_multiMatchQueryTranslator", new MultiMatchQueryTranslatorImpl());
+		ReflectionTestUtil.setFieldValue(solrQueryTranslator, "_nestedQueryTranslator", new NestedQueryTranslatorImpl());
+		ReflectionTestUtil.setFieldValue(solrQueryTranslator, "_stringQueryTranslator", new StringQueryTranslatorImpl());
+		ReflectionTestUtil.setFieldValue(solrQueryTranslator, "_termQueryTranslator", new TermQueryTranslatorImpl());
+		ReflectionTestUtil.setFieldValue(solrQueryTranslator, "_termRangeQueryTranslator", new TermRangeQueryTranslatorImpl());
+		ReflectionTestUtil.setFieldValue(solrQueryTranslator, "_wildcardQueryTranslator", new WildcardQueryTranslatorImpl());
+
+		return solrQueryTranslator;
 	}
 
 	protected static SolrSearchEngineAdapterFixture
