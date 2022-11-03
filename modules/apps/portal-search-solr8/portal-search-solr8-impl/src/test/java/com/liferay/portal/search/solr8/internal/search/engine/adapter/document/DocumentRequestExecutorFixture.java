@@ -43,11 +43,15 @@ public class DocumentRequestExecutorFixture {
 		createBulkableDocumentRequestTranslator(
 			SolrDocumentFactory solrDocumentFactory) {
 
-		return new SolrBulkableDocumentRequestTranslator() {
-			{
-				setSolrDocumentFactory(solrDocumentFactory);
-			}
-		};
+		SolrBulkableDocumentRequestTranslator
+			solrBulkableDocumentRequestTranslator =
+			new SolrBulkableDocumentRequestTranslator();
+
+		ReflectionTestUtil.setFieldValue(
+			solrBulkableDocumentRequestTranslator, "_documentBuilderFactory",
+			new DocumentBuilderFactoryImpl());
+
+		return solrBulkableDocumentRequestTranslator;
 	}
 
 	protected static BulkDocumentRequestExecutor
