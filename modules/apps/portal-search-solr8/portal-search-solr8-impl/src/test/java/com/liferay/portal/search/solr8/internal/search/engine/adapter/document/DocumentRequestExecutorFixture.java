@@ -78,14 +78,18 @@ public class DocumentRequestExecutorFixture {
 			QueryTranslator<String> queryTranslator,
 			SolrClientManager solrClientManager) {
 
-		return new DeleteByQueryDocumentRequestExecutorImpl() {
-			{
-				setQueryTranslator(queryTranslator);
-				setSolrClientManager(solrClientManager);
+		DeleteByQueryDocumentRequestExecutorImpl
+			deleteByQueryDocumentRequestExecutor =
+			new DeleteByQueryDocumentRequestExecutorImpl() {
+				{
+					activate(_properties);
+				}
+			};
 
-				activate(_properties);
-			}
-		};
+		ReflectionTestUtil.setFieldValue(deleteByQueryDocumentRequestExecutor, "_queryTranslator", queryTranslator);
+		ReflectionTestUtil.setFieldValue(deleteByQueryDocumentRequestExecutor, "_solrClientManager", solrClientManager);
+
+		return deleteByQueryDocumentRequestExecutor;
 	}
 
 	protected static DeleteDocumentRequestExecutor
