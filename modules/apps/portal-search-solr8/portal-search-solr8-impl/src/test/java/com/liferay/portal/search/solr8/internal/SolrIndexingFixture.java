@@ -236,7 +236,7 @@ public class SolrIndexingFixture implements IndexingFixture {
 		ReflectionTestUtil.setFieldValue(solrIndexWriter, "_searchEngineAdapter", searchEngineAdapterParam);
 		ReflectionTestUtil.setFieldValue(
 			solrIndexWriter, "_spellCheckIndexWriter",
-			createSolrSpellCheckIndexWriter(searchEngineAdapter));
+			createSolrSpellCheckIndexWriter(searchEngineAdapterParam));
 
 		return solrIndexWriter;
 	}
@@ -307,18 +307,21 @@ public class SolrIndexingFixture implements IndexingFixture {
 	}
 
 	protected SolrSpellCheckIndexWriter createSolrSpellCheckIndexWriter(
-		final SearchEngineAdapter searchEngineAdapter) {
+		final SearchEngineAdapter searchEngineAdapterParam) {
 
-		return new SolrSpellCheckIndexWriter() {
-			{
-				digester = createDigester();
-				nGramHolderBuilder = new NGramHolderBuilderImpl();
+		SolrSpellCheckIndexWriter solrSpellCheckIndexWriter =
+			new SolrSpellCheckIndexWriter() {
+				{
+					digester = createDigester();
+					nGramHolderBuilder = new NGramHolderBuilderImpl();
 
-				setSearchEngineAdapter(searchEngineAdapter);
+					activate(_properties);
+				}
+			};
 
-				activate(_properties);
-			}
-		};
+		ReflectionTestUtil.setFieldValue(solrSpellCheckIndexWriter, "_searchEngineAdapter", searchEngineAdapterParam);
+
+		return solrSpellCheckIndexWriter;
 	}
 
 	private static final long _COMPANY_ID = RandomTestUtil.randomLong();
