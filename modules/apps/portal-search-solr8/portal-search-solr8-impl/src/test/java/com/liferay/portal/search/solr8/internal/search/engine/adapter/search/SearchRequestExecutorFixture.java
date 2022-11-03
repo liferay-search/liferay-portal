@@ -132,16 +132,15 @@ public class SearchRequestExecutorFixture {
 			FacetProcessor<SolrQuery> facetProcessor,
 			QueryTranslator<String> queryTranslator) {
 
-		return new SearchSearchRequestExecutorImpl() {
-			{
-				setSearchSearchResponseAssembler(
-					createSearchSearchResponseAssembler());
-				setSearchSolrQueryAssembler(
-					createSearchSolrQueryAssembler(
-						facetProcessor, queryTranslator));
-				setSolrClientManager(solrClientManager);
-			}
-		};
+		SearchSearchRequestExecutorImpl searchSearchRequestExecutor =
+			new SearchSearchRequestExecutorImpl();
+
+		ReflectionTestUtil.setFieldValue(searchSearchRequestExecutor, "_searchSearchResponseAssembler", createSearchSearchResponseAssembler());
+		ReflectionTestUtil.setFieldValue(searchSearchRequestExecutor, "_searchSolrQueryAssembler", createSearchSolrQueryAssembler(
+				facetProcessor, queryTranslator));
+		ReflectionTestUtil.setFieldValue(searchSearchRequestExecutor, "_solrClientManager", solrClientManager);
+
+		return searchSearchRequestExecutor;
 	}
 
 	protected static SearchSearchResponseAssembler
