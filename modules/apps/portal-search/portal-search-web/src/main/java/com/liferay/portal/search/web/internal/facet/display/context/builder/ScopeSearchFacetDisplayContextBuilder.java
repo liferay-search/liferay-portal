@@ -154,11 +154,11 @@ public class ScopeSearchFacetDisplayContextBuilder {
 
 		BucketDisplayContext bucketDisplayContext = new BucketDisplayContext();
 
-		bucketDisplayContext.setFrequency(count);
 		bucketDisplayContext.setBucketText(_getDescriptiveName(groupId));
 		bucketDisplayContext.setFilterValue(String.valueOf(groupId));
-		bucketDisplayContext.setSelected(selected);
+		bucketDisplayContext.setFrequency(count);
 		bucketDisplayContext.setFrequencyVisible(_showCounts);
+		bucketDisplayContext.setSelected(selected);
 
 		return bucketDisplayContext;
 	}
