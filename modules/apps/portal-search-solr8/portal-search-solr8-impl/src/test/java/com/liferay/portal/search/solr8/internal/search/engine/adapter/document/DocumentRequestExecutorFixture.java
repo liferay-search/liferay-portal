@@ -15,11 +15,13 @@
 package com.liferay.portal.search.solr8.internal.search.engine.adapter.document;
 
 import com.liferay.portal.kernel.search.query.QueryTranslator;
+import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.search.engine.adapter.document.BulkableDocumentRequestTranslator;
 import com.liferay.portal.search.engine.adapter.document.DocumentRequestExecutor;
 import com.liferay.portal.search.internal.document.DocumentBuilderFactoryImpl;
 import com.liferay.portal.search.solr8.internal.connection.SolrClientManager;
 import com.liferay.portal.search.solr8.internal.document.SolrDocumentFactory;
+import org.mockito.Mockito;
 
 import java.util.Map;
 
@@ -53,14 +55,22 @@ public class DocumentRequestExecutorFixture {
 			SolrClientManager solrClientManager,
 			SolrDocumentFactory solrDocumentFactory) {
 
-		return new BulkDocumentRequestExecutorImpl() {
-			{
-				setSolrClientManager(solrClientManager);
-				setSolrDocumentFactory(solrDocumentFactory);
+		BulkDocumentRequestExecutorImpl bulkDocumentRequestExecutor =
+			new BulkDocumentRequestExecutorImpl() {
+				{
+					activate(_properties);
+				}
+			};
 
-				activate(_properties);
-			}
-		};
+		ReflectionTestUtil.setFieldValue(
+			bulkDocumentRequestExecutor, "_solrClientManager",
+			solrClientManager);
+
+		ReflectionTestUtil.setFieldValue(
+			bulkDocumentRequestExecutor, "_solrDocumentFactory",
+			solrDocumentFactory);
+
+		return bulkDocumentRequestExecutor;
 	}
 
 	protected static DeleteByQueryDocumentRequestExecutor
