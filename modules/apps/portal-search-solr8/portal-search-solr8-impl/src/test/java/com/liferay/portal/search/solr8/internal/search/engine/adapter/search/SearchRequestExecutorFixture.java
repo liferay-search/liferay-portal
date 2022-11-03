@@ -290,7 +290,9 @@ public class SearchRequestExecutorFixture {
 		DefaultStatsTranslator defaultStatsTranslator =
 			new DefaultStatsTranslator();
 
-		ReflectionTestUtil.setFieldValue(defaultStatsTranslator, "_statsResponseBuilderFactory", new StatsResponseBuilderFactoryImpl());
+		ReflectionTestUtil.setFieldValue(
+			defaultStatsTranslator, "_statsResponseBuilderFactory",
+			new StatsResponseBuilderFactoryImpl());
 
 		return defaultStatsTranslator;
 	}

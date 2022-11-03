@@ -150,30 +150,42 @@ public class SolrIndexRequestExecutor implements IndexRequestExecutor {
 
 	@Reference
 	private AnalyzeIndexRequestExecutor _analyzeIndexRequestExecutor;
+
 	@Reference
 	private CloseIndexRequestExecutor _closeIndexRequestExecutor;
+
 	@Reference
 	private CreateIndexRequestExecutor _createIndexRequestExecutor;
+
 	@Reference
 	private DeleteIndexRequestExecutor _deleteIndexRequestExecutor;
+
 	@Reference
 	private FlushIndexRequestExecutor _flushIndexRequestExecutor;
+
 	@Reference
 	private GetFieldMappingIndexRequestExecutor
 		_getFieldMappingIndexRequestExecutor;
+
 	@Reference
 	private GetIndexIndexRequestExecutor _getIndexIndexRequestExecutor;
+
 	@Reference
 	private GetMappingIndexRequestExecutor _getMappingIndexRequestExecutor;
+
 	@Reference
 	private IndicesExistsIndexRequestExecutor
 		_indicesExistsIndexRequestExecutor;
+
 	@Reference
 	private OpenIndexRequestExecutor _openIndexRequestExecutor;
+
 	@Reference
 	private PutMappingIndexRequestExecutor _putMappingIndexRequestExecutor;
+
 	@Reference
 	private RefreshIndexRequestExecutor _refreshIndexRequestExecutor;
+
 	@Reference
 	private UpdateIndexSettingsIndexRequestExecutor
 		_updateIndexSettingsIndexRequestExecutor;
