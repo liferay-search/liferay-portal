@@ -225,16 +225,15 @@ public class SolrIndexingFixture implements IndexingFixture {
 	}
 
 	protected IndexWriter createIndexWriter(
-		final SearchEngineAdapter searchEngineAdapter) {
+		final SearchEngineAdapter searchEngineAdapterParam) {
 
 		SolrIndexWriter solrIndexWriter = new SolrIndexWriter() {
 			{
-				setSearchEngineAdapter(searchEngineAdapter);
-
 				activate(_properties);
 			}
 		};
 
+		ReflectionTestUtil.setFieldValue(solrIndexWriter, "_searchEngineAdapter", searchEngineAdapterParam);
 		ReflectionTestUtil.setFieldValue(
 			solrIndexWriter, "_spellCheckIndexWriter",
 			createSolrSpellCheckIndexWriter(searchEngineAdapter));
