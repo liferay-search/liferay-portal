@@ -287,12 +287,12 @@ public class SearchRequestExecutorFixture {
 	}
 
 	protected static StatsTranslator createStatsTranslator() {
-		return new DefaultStatsTranslator() {
-			{
-				setStatsResponseBuilderFactory(
-					new StatsResponseBuilderFactoryImpl());
-			}
-		};
+		DefaultStatsTranslator defaultStatsTranslator =
+			new DefaultStatsTranslator();
+
+		ReflectionTestUtil.setFieldValue(defaultStatsTranslator, "_statsResponseBuilderFactory", new StatsResponseBuilderFactoryImpl());
+
+		return defaultStatsTranslator;
 	}
 
 	protected void setFacetProcessor(FacetProcessor<SolrQuery> facetProcessor) {
