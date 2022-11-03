@@ -68,11 +68,12 @@ public class SearchRequestExecutorFixture {
 	protected static BaseSearchResponseAssembler
 		createBaseSearchResponseAssembler() {
 
-		return new BaseSearchResponseAssemblerImpl() {
-			{
-				setStatsTranslator(createStatsTranslator());
-			}
-		};
+		BaseSearchResponseAssemblerImpl baseSearchResponseAssembler =
+			new BaseSearchResponseAssemblerImpl();
+
+		ReflectionTestUtil.setFieldValue(baseSearchResponseAssembler, "_statsTranslator", createStatsTranslator());
+
+		return baseSearchResponseAssembler;
 	}
 
 	protected static BaseSolrQueryAssembler createBaseSolrQueryAssembler(
