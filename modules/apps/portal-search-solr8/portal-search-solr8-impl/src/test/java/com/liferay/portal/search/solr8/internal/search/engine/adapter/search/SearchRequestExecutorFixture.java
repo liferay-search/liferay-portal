@@ -178,19 +178,18 @@ public class SearchRequestExecutorFixture {
 		FacetProcessor<SolrQuery> facetProcessor,
 		QueryTranslator<String> queryTranslator) {
 
-		return new SearchSolrQueryAssemblerImpl() {
-			{
-				setBaseSolrQueryAssembler(
-					createBaseSolrQueryAssembler(
-						facetProcessor, queryTranslator));
-				setGroupByRequestFactory(new GroupByRequestFactoryImpl());
-				setGroupByTranslator(new DefaultGroupByTranslator());
-				setSortFieldTranslator(new SolrSortFieldTranslator());
-				setStatsRequestBuilderFactory(
-					new StatsRequestBuilderFactoryImpl());
-				setStatsTranslator(createStatsTranslator());
-			}
-		};
+		SearchSolrQueryAssemblerImpl searchSolrQueryAssembler =
+			new SearchSolrQueryAssemblerImpl();
+
+		ReflectionTestUtil.setFieldValue(searchSolrQueryAssembler, "_baseSolrQueryAssembler", createBaseSolrQueryAssembler(
+				facetProcessor, queryTranslator));
+		ReflectionTestUtil.setFieldValue(searchSolrQueryAssembler, "_groupByRequestFactory", new GroupByRequestFactoryImpl());
+		ReflectionTestUtil.setFieldValue(searchSolrQueryAssembler, "_groupByTranslator", new DefaultGroupByTranslator());
+		ReflectionTestUtil.setFieldValue(searchSolrQueryAssembler, "_sortFieldTranslator", new SolrSortFieldTranslator());
+		ReflectionTestUtil.setFieldValue(searchSolrQueryAssembler, "_statsRequestBuilderFactory", new StatsRequestBuilderFactoryImpl());
+		ReflectionTestUtil.setFieldValue(searchSolrQueryAssembler, "_statsTranslator", createStatsTranslator());
+
+		return searchSolrQueryAssembler;
 	}
 
 	protected static SolrFilterTranslator createSolrFilterTranslator() {

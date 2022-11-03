@@ -121,13 +121,6 @@ public class SearchSolrQueryAssemblerImpl implements SearchSolrQueryAssembler {
 		return Field.getSortFieldName(sort, scoreFieldName);
 	}
 
-	@Reference(unbind = "-")
-	protected void setBaseSolrQueryAssembler(
-		BaseSolrQueryAssembler baseSolrQueryAssembler) {
-
-		_baseSolrQueryAssembler = baseSolrQueryAssembler;
-	}
-
 	protected void setGroupBy(
 		SolrQuery solrQuery, SearchSearchRequest searchSearchRequest) {
 
@@ -143,13 +136,6 @@ public class SearchSolrQueryAssemblerImpl implements SearchSolrQueryAssembler {
 				searchSearchRequest.getHighlightFragmentSize(),
 				searchSearchRequest.getHighlightSnippetSize());
 		}
-	}
-
-	@Reference(unbind = "-")
-	protected void setGroupByRequestFactory(
-		GroupByRequestFactory groupByRequestFactory) {
-
-		_groupByRequestFactory = groupByRequestFactory;
 	}
 
 	protected void setGroupByRequests(
@@ -168,11 +154,6 @@ public class SearchSolrQueryAssemblerImpl implements SearchSolrQueryAssembler {
 				searchSearchRequest.getHighlightFragmentSize(),
 				searchSearchRequest.getHighlightSnippetSize());
 		}
-	}
-
-	@Reference(unbind = "-")
-	protected void setGroupByTranslator(GroupByTranslator groupByTranslator) {
-		_groupByTranslator = groupByTranslator;
 	}
 
 	protected void setHighlights(
@@ -241,13 +222,6 @@ public class SearchSolrQueryAssemblerImpl implements SearchSolrQueryAssembler {
 		solrQuery.setFields(selectedFieldNames.toArray(new String[0]));
 	}
 
-	@Reference(unbind = "-")
-	protected void setSortFieldTranslator(
-		SortFieldTranslator<SolrQuery.SortClause> sortFieldTranslator) {
-
-		_sortFieldTranslator = sortFieldTranslator;
-	}
-
 	protected void setSorts(
 		SolrQuery solrQuery, SearchSearchRequest searchSearchRequest) {
 
@@ -256,7 +230,7 @@ public class SearchSolrQueryAssemblerImpl implements SearchSolrQueryAssembler {
 		Stream<Sort> stream = sorts.stream();
 
 		stream.map(
-			_sortFieldTranslator::translate
+			_sortClauseSortFieldTranslator::translate
 		).forEach(
 			solrQuery::addSort
 		);
@@ -303,23 +277,18 @@ public class SearchSolrQueryAssemblerImpl implements SearchSolrQueryAssembler {
 		}
 	}
 
-	@Reference(unbind = "-")
-	protected void setStatsRequestBuilderFactory(
-		StatsRequestBuilderFactory statsRequestBuilderFactory) {
-
-		_statsRequestBuilderFactory = statsRequestBuilderFactory;
-	}
-
-	@Reference(unbind = "-")
-	protected void setStatsTranslator(StatsTranslator statsTranslator) {
-		_statsTranslator = statsTranslator;
-	}
-
+	@Reference
 	private BaseSolrQueryAssembler _baseSolrQueryAssembler;
+	@Reference
 	private GroupByRequestFactory _groupByRequestFactory;
+	@Reference
 	private GroupByTranslator _groupByTranslator;
-	private SortFieldTranslator<SolrQuery.SortClause> _sortFieldTranslator;
+	@Reference
+	private SortFieldTranslator<SolrQuery.SortClause>
+		_sortClauseSortFieldTranslator;
+	@Reference
 	private StatsRequestBuilderFactory _statsRequestBuilderFactory;
+	@Reference
 	private StatsTranslator _statsTranslator;
 
 }
