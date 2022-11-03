@@ -15,6 +15,7 @@
 package com.liferay.portal.search.solr8.internal.search.engine.adapter.search;
 
 import com.liferay.portal.kernel.search.query.QueryTranslator;
+import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.search.engine.adapter.search.SearchRequestExecutor;
 import com.liferay.portal.search.internal.groupby.GroupByResponseFactoryImpl;
 import com.liferay.portal.search.internal.hits.SearchHitBuilderFactoryImpl;
@@ -159,16 +160,18 @@ public class SearchRequestExecutorFixture {
 	protected static SearchSearchResponseAssemblerHelper
 		createSearchSearchResponseAssemblerHelper() {
 
-		return new DefaultSearchSearchResponseAssemblerHelperImpl() {
-			{
-				setDocumentBuilderFactory(new DocumentBuilderFactoryImpl());
-				setGroupByResponseFactory(new GroupByResponseFactoryImpl());
-				setSearchHitBuilderFactory(new SearchHitBuilderFactoryImpl());
-				setSearchHitsBuilderFactory(new SearchHitsBuilderFactoryImpl());
-				setStatsTranslator(createStatsTranslator());
-				setStatsResultsTranslator(new StatsResultsTranslatorImpl());
-			}
-		};
+		DefaultSearchSearchResponseAssemblerHelperImpl
+			defaultSearchSearchResponseAssemblerHelper =
+			new DefaultSearchSearchResponseAssemblerHelperImpl();
+
+		ReflectionTestUtil.setFieldValue(defaultSearchSearchResponseAssemblerHelper, "_documentBuilderFactory", new DocumentBuilderFactoryImpl());
+		ReflectionTestUtil.setFieldValue(defaultSearchSearchResponseAssemblerHelper, "_groupByResponseFactory", new GroupByResponseFactoryImpl());
+		ReflectionTestUtil.setFieldValue(defaultSearchSearchResponseAssemblerHelper, "_searchHitBuilderFactory", new SearchHitBuilderFactoryImpl());
+		ReflectionTestUtil.setFieldValue(defaultSearchSearchResponseAssemblerHelper, "_searchHitsBuilderFactory", new SearchHitsBuilderFactoryImpl());
+		ReflectionTestUtil.setFieldValue(defaultSearchSearchResponseAssemblerHelper, "_statsTranslator", createStatsTranslator());
+		ReflectionTestUtil.setFieldValue(defaultSearchSearchResponseAssemblerHelper, "_statsResultsTranslator", new StatsResultsTranslatorImpl());
+
+		return defaultSearchSearchResponseAssemblerHelper;
 	}
 
 	protected static SearchSolrQueryAssembler createSearchSolrQueryAssembler(
