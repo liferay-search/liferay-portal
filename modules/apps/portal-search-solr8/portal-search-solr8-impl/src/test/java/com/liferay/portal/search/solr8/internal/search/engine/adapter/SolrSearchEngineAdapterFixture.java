@@ -92,18 +92,24 @@ public class SolrSearchEngineAdapterFixture {
 		indexRequestExecutorFixture.setUp();
 		searchRequestExecutorFixture.setUp();
 
-		SolrSearchEngineAdapterImpl solrSearchEngineAdapter =
+		SolrSearchEngineAdapterImpl solrSearchEngineAdapterImpl =
 			new SolrSearchEngineAdapterImpl() {
 				{
 					setThrowOriginalExceptions(true);
 				}
 			};
 
-		ReflectionTestUtil.setFieldValue(solrSearchEngineAdapter, "_documentRequestExecutor", documentRequestExecutorFixture.getDocumentRequestExecutor());
-		ReflectionTestUtil.setFieldValue(solrSearchEngineAdapter, "_searchRequestExecutor", searchRequestExecutorFixture.getSearchRequestExecutor());
-		ReflectionTestUtil.setFieldValue(solrSearchEngineAdapter, "_indexRequestExecutor", indexRequestExecutorFixture.getIndexRequestExecutor());
+		ReflectionTestUtil.setFieldValue(
+			solrSearchEngineAdapterImpl, "_documentRequestExecutor",
+			documentRequestExecutorFixture.getDocumentRequestExecutor());
+		ReflectionTestUtil.setFieldValue(
+			solrSearchEngineAdapterImpl, "_searchRequestExecutor",
+			searchRequestExecutorFixture.getSearchRequestExecutor());
+		ReflectionTestUtil.setFieldValue(
+			solrSearchEngineAdapterImpl, "_indexRequestExecutor",
+			indexRequestExecutorFixture.getIndexRequestExecutor());
 
-		return solrSearchEngineAdapter;
+		return solrSearchEngineAdapterImpl;
 	}
 
 	protected void setFacetProcessor(FacetProcessor<SolrQuery> facetProcessor) {

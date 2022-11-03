@@ -136,26 +136,37 @@ public class SolrQueryTranslator
 
 	@Reference
 	private BooleanQueryTranslator _booleanQueryTranslator;
+
 	@Reference
 	private DisMaxQueryTranslator _disMaxQueryTranslator;
+
 	@Reference
 	private FuzzyQueryTranslator _fuzzyQueryTranslator;
+
 	@Reference
 	private MatchAllQueryTranslator _matchAllQueryTranslator;
+
 	@Reference
 	private MatchQueryTranslator _matchQueryTranslator;
+
 	@Reference
 	private MoreLikeThisQueryTranslator _moreLikeThisQueryTranslator;
+
 	@Reference
 	private MultiMatchQueryTranslator _multiMatchQueryTranslator;
+
 	@Reference
 	private NestedQueryTranslator _nestedQueryTranslator;
+
 	@Reference
 	private StringQueryTranslator _stringQueryTranslator;
+
 	@Reference
 	private TermQueryTranslator _termQueryTranslator;
+
 	@Reference
 	private TermRangeQueryTranslator _termRangeQueryTranslator;
+
 	@Reference
 	private WildcardQueryTranslator _wildcardQueryTranslator;
 

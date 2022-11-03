@@ -140,32 +140,44 @@ public class SolrFilterTranslator
 	}
 
 	@Reference
+	private BooleanFilterTranslator _booleanFilterTranslator;
+
+	@Reference
 	private DateRangeFilterTranslator _dateRangeFilterTranslator;
 
 	@Reference
-	private BooleanFilterTranslator _booleanFilterTranslator;
-	@Reference
 	private DateRangeTermFilterTranslator _dateRangeTermFilterTranslator;
+
 	@Reference
 	private ExistsFilterTranslator _existsFilterTranslator;
+
 	@Reference
 	private GeoBoundingBoxFilterTranslator _geoBoundingBoxFilterTranslator;
+
 	@Reference
 	private GeoDistanceFilterTranslator _geoDistanceFilterTranslator;
+
 	@Reference
 	private GeoDistanceRangeFilterTranslator _geoDistanceRangeFilterTranslator;
+
 	@Reference
 	private GeoPolygonFilterTranslator _geoPolygonFilterTranslator;
+
 	@Reference
 	private MissingFilterTranslator _missingFilterTranslator;
+
 	@Reference
 	private PrefixFilterTranslator _prefixFilterTranslator;
+
 	@Reference
 	private QueryFilterTranslator _queryFilterTranslator;
+
 	@Reference
 	private RangeTermFilterTranslator _rangeTermFilterTranslator;
+
 	@Reference
 	private TermFilterTranslator _termFilterTranslator;
+
 	@Reference
 	private TermsFilterTranslator _termsFilterTranslator;
 

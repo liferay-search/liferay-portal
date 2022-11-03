@@ -279,15 +279,20 @@ public class SearchSolrQueryAssemblerImpl implements SearchSolrQueryAssembler {
 
 	@Reference
 	private BaseSolrQueryAssembler _baseSolrQueryAssembler;
+
 	@Reference
 	private GroupByRequestFactory _groupByRequestFactory;
+
 	@Reference
 	private GroupByTranslator _groupByTranslator;
+
 	@Reference
 	private SortFieldTranslator<SolrQuery.SortClause>
 		_sortClauseSortFieldTranslator;
+
 	@Reference
 	private StatsRequestBuilderFactory _statsRequestBuilderFactory;
+
 	@Reference
 	private StatsTranslator _statsTranslator;
 

@@ -67,10 +67,13 @@ public class SolrSearchRequestExecutor implements SearchRequestExecutor {
 
 	@Reference
 	private CountSearchRequestExecutor _countSearchRequestExecutor;
+
 	@Reference
 	private MultisearchSearchRequestExecutor _multisearchSearchRequestExecutor;
+
 	@Reference
 	private SearchSearchRequestExecutor _searchSearchRequestExecutor;
+
 	@Reference
 	private SuggestSearchRequestExecutor _suggestSearchRequestExecutor;
 

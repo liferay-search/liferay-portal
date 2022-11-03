@@ -202,7 +202,7 @@ public class BaseSolrQueryAssemblerImpl implements BaseSolrQueryAssembler {
 			_add(filterQueries, query.getPostFilter());
 
 			if (query instanceof BooleanQuery) {
-				_add(filterQueries, (BooleanQuery) query);
+				_add(filterQueries, (BooleanQuery)query);
 			}
 		}
 
@@ -274,12 +274,16 @@ public class BaseSolrQueryAssemblerImpl implements BaseSolrQueryAssembler {
 
 	@Reference(service = CompositeFacetProcessor.class)
 	private FacetProcessor<SolrQuery> _facetProcessor;
+
 	@Reference(target = "(search.engine.impl=Solr)")
 	private FilterTranslator<String> _filterTranslator;
+
 	@Reference(target = "(search.engine.impl=Solr)")
 	private QueryTranslator<String> _queryTranslator;
+
 	private final SolrQueryTranslator _solrQueryTranslator =
 		new SolrQueryTranslator();
+
 	@Reference
 	private StatsTranslator _statsTranslator;
 

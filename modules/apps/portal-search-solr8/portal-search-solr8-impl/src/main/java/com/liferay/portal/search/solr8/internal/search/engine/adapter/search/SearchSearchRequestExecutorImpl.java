@@ -110,8 +110,10 @@ public class SearchSearchRequestExecutorImpl
 
 	@Reference
 	private SearchSearchResponseAssembler _searchSearchResponseAssembler;
+
 	@Reference
 	private SearchSolrQueryAssembler _searchSolrQueryAssembler;
+
 	@Reference
 	private SolrClientManager _solrClientManager;
 

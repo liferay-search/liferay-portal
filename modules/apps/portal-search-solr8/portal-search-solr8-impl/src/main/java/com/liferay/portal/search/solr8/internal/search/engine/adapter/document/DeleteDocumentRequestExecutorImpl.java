@@ -61,6 +61,7 @@ public class DeleteDocumentRequestExecutorImpl
 	@Reference(target = "(search.engine.impl=Solr)")
 	private BulkableDocumentRequestTranslator
 		_bulkableDocumentRequestTranslator;
+
 	@Reference
 	private SolrClientManager _solrClientManager;
 

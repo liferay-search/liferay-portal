@@ -61,6 +61,7 @@ public class UpdateDocumentRequestExecutorImpl
 	@Reference(target = "(search.engine.impl=Solr)")
 	private BulkableDocumentRequestTranslator
 		_bulkableDocumentRequestTranslator;
+
 	@Reference
 	private SolrClientManager _solrClientManager;
 

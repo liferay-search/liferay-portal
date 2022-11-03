@@ -100,8 +100,10 @@ public class CountSearchRequestExecutorImpl
 
 	@Reference
 	private BaseSearchResponseAssembler _baseSearchResponseAssembler;
+
 	@Reference
 	private BaseSolrQueryAssembler _baseSolrQueryAssembler;
+
 	@Reference
 	private SolrClientManager _solrClientManager;
 

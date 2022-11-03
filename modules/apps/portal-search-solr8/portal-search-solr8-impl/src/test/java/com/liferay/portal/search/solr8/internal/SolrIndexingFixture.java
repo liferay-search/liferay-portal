@@ -138,18 +138,42 @@ public class SolrIndexingFixture implements IndexingFixture {
 	protected static SolrQueryTranslator createSolrQueryTranslator() {
 		SolrQueryTranslator solrQueryTranslator = new SolrQueryTranslator();
 
-		ReflectionTestUtil.setFieldValue(solrQueryTranslator, "_booleanQueryTranslator", new BooleanQueryTranslatorImpl());
-		ReflectionTestUtil.setFieldValue(solrQueryTranslator, "_disMaxQueryTranslator", new DisMaxQueryTranslatorImpl());
-		ReflectionTestUtil.setFieldValue(solrQueryTranslator, "_fuzzyQueryTranslator", new FuzzyQueryTranslatorImpl());
-		ReflectionTestUtil.setFieldValue(solrQueryTranslator, "_matchAllQueryTranslator", new MatchAllQueryTranslatorImpl());
-		ReflectionTestUtil.setFieldValue(solrQueryTranslator, "_matchQueryTranslator", new MatchQueryTranslatorImpl());
-		ReflectionTestUtil.setFieldValue(solrQueryTranslator, "_moreLikeThisQueryTranslator", new MoreLikeThisQueryTranslatorImpl());
-		ReflectionTestUtil.setFieldValue(solrQueryTranslator, "_multiMatchQueryTranslator", new MultiMatchQueryTranslatorImpl());
-		ReflectionTestUtil.setFieldValue(solrQueryTranslator, "_nestedQueryTranslator", new NestedQueryTranslatorImpl());
-		ReflectionTestUtil.setFieldValue(solrQueryTranslator, "_stringQueryTranslator", new StringQueryTranslatorImpl());
-		ReflectionTestUtil.setFieldValue(solrQueryTranslator, "_termQueryTranslator", new TermQueryTranslatorImpl());
-		ReflectionTestUtil.setFieldValue(solrQueryTranslator, "_termRangeQueryTranslator", new TermRangeQueryTranslatorImpl());
-		ReflectionTestUtil.setFieldValue(solrQueryTranslator, "_wildcardQueryTranslator", new WildcardQueryTranslatorImpl());
+		ReflectionTestUtil.setFieldValue(
+			solrQueryTranslator, "_booleanQueryTranslator",
+			new BooleanQueryTranslatorImpl());
+		ReflectionTestUtil.setFieldValue(
+			solrQueryTranslator, "_disMaxQueryTranslator",
+			new DisMaxQueryTranslatorImpl());
+		ReflectionTestUtil.setFieldValue(
+			solrQueryTranslator, "_fuzzyQueryTranslator",
+			new FuzzyQueryTranslatorImpl());
+		ReflectionTestUtil.setFieldValue(
+			solrQueryTranslator, "_matchAllQueryTranslator",
+			new MatchAllQueryTranslatorImpl());
+		ReflectionTestUtil.setFieldValue(
+			solrQueryTranslator, "_matchQueryTranslator",
+			new MatchQueryTranslatorImpl());
+		ReflectionTestUtil.setFieldValue(
+			solrQueryTranslator, "_moreLikeThisQueryTranslator",
+			new MoreLikeThisQueryTranslatorImpl());
+		ReflectionTestUtil.setFieldValue(
+			solrQueryTranslator, "_multiMatchQueryTranslator",
+			new MultiMatchQueryTranslatorImpl());
+		ReflectionTestUtil.setFieldValue(
+			solrQueryTranslator, "_nestedQueryTranslator",
+			new NestedQueryTranslatorImpl());
+		ReflectionTestUtil.setFieldValue(
+			solrQueryTranslator, "_stringQueryTranslator",
+			new StringQueryTranslatorImpl());
+		ReflectionTestUtil.setFieldValue(
+			solrQueryTranslator, "_termQueryTranslator",
+			new TermQueryTranslatorImpl());
+		ReflectionTestUtil.setFieldValue(
+			solrQueryTranslator, "_termRangeQueryTranslator",
+			new TermRangeQueryTranslatorImpl());
+		ReflectionTestUtil.setFieldValue(
+			solrQueryTranslator, "_wildcardQueryTranslator",
+			new WildcardQueryTranslatorImpl());
 
 		return solrQueryTranslator;
 	}
@@ -200,7 +224,7 @@ public class SolrIndexingFixture implements IndexingFixture {
 	}
 
 	protected IndexSearcher createIndexSearcher(
-		final SearchEngineAdapter searchEngineAdapterParam,
+		SearchEngineAdapter searchEngineAdapterParam,
 		SolrClientManager solrClientManager) {
 
 		SolrIndexSearcher solrIndexSearcher = new SolrIndexSearcher() {
@@ -209,23 +233,28 @@ public class SolrIndexingFixture implements IndexingFixture {
 			}
 		};
 
-		ReflectionTestUtil.setFieldValue(solrIndexSearcher, "_searchEngineAdapter", searchEngineAdapterParam);
-		ReflectionTestUtil.setFieldValue(solrIndexSearcher, "_facetProcessor", _facetProcessor);
+		ReflectionTestUtil.setFieldValue(
+			solrIndexSearcher, "_searchEngineAdapter",
+			searchEngineAdapterParam);
+		ReflectionTestUtil.setFieldValue(
+			solrIndexSearcher, "_facetProcessor", _facetProcessor);
 		ReflectionTestUtil.setFieldValue(
 			solrIndexSearcher, "_props", createProps());
 		ReflectionTestUtil.setFieldValue(
 			solrIndexSearcher, "_querySuggester",
 			createSolrQuerySuggester(solrClientManager));
-		ReflectionTestUtil.setFieldValue(solrIndexSearcher, "_searchRequestBuilderFactory", new SearchRequestBuilderFactoryImpl());
-		ReflectionTestUtil.setFieldValue(solrIndexSearcher, "_searchResponseBuilderFactory", new SearchResponseBuilderFactoryImpl());
-
-
+		ReflectionTestUtil.setFieldValue(
+			solrIndexSearcher, "_searchRequestBuilderFactory",
+			new SearchRequestBuilderFactoryImpl());
+		ReflectionTestUtil.setFieldValue(
+			solrIndexSearcher, "_searchResponseBuilderFactory",
+			new SearchResponseBuilderFactoryImpl());
 
 		return solrIndexSearcher;
 	}
 
 	protected IndexWriter createIndexWriter(
-		final SearchEngineAdapter searchEngineAdapterParam) {
+		SearchEngineAdapter searchEngineAdapterParam) {
 
 		SolrIndexWriter solrIndexWriter = new SolrIndexWriter() {
 			{
@@ -233,7 +262,8 @@ public class SolrIndexingFixture implements IndexingFixture {
 			}
 		};
 
-		ReflectionTestUtil.setFieldValue(solrIndexWriter, "_searchEngineAdapter", searchEngineAdapterParam);
+		ReflectionTestUtil.setFieldValue(
+			solrIndexWriter, "_searchEngineAdapter", searchEngineAdapterParam);
 		ReflectionTestUtil.setFieldValue(
 			solrIndexWriter, "_spellCheckIndexWriter",
 			createSolrSpellCheckIndexWriter(searchEngineAdapterParam));
@@ -300,14 +330,17 @@ public class SolrIndexingFixture implements IndexingFixture {
 			}
 		};
 
-		ReflectionTestUtil.setFieldValue(solrQuerySuggester, "_nGramQueryBuilder", createNGramQueryBuilder());
-		ReflectionTestUtil.setFieldValue(solrQuerySuggester, "_solrClientManager", solrClientManagerParam);
+		ReflectionTestUtil.setFieldValue(
+			solrQuerySuggester, "_nGramQueryBuilder",
+			createNGramQueryBuilder());
+		ReflectionTestUtil.setFieldValue(
+			solrQuerySuggester, "_solrClientManager", solrClientManagerParam);
 
 		return solrQuerySuggester;
 	}
 
 	protected SolrSpellCheckIndexWriter createSolrSpellCheckIndexWriter(
-		final SearchEngineAdapter searchEngineAdapterParam) {
+		SearchEngineAdapter searchEngineAdapterParam) {
 
 		SolrSpellCheckIndexWriter solrSpellCheckIndexWriter =
 			new SolrSpellCheckIndexWriter() {
@@ -319,7 +352,9 @@ public class SolrIndexingFixture implements IndexingFixture {
 				}
 			};
 
-		ReflectionTestUtil.setFieldValue(solrSpellCheckIndexWriter, "_searchEngineAdapter", searchEngineAdapterParam);
+		ReflectionTestUtil.setFieldValue(
+			solrSpellCheckIndexWriter, "_searchEngineAdapter",
+			searchEngineAdapterParam);
 
 		return solrSpellCheckIndexWriter;
 	}

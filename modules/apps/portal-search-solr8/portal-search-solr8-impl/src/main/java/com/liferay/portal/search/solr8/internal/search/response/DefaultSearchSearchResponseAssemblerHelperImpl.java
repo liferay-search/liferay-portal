@@ -396,14 +396,19 @@ public class DefaultSearchSearchResponseAssemblerHelperImpl
 
 	@Reference
 	private DocumentBuilderFactory _documentBuilderFactory;
+
 	@Reference
 	private GroupByResponseFactory _groupByResponseFactory;
+
 	@Reference
 	private SearchHitBuilderFactory _searchHitBuilderFactory;
+
 	@Reference
 	private SearchHitsBuilderFactory _searchHitsBuilderFactory;
+
 	@Reference
 	private StatsResultsTranslator _statsResultsTranslator;
+
 	@Reference
 	private StatsTranslator _statsTranslator;
 
