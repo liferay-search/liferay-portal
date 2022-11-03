@@ -112,18 +112,18 @@ public class SearchRequestExecutorFixture {
 		FacetProcessor<SolrQuery> facetProcessor,
 		QueryTranslator<String> queryTranslator) {
 
-		return new SolrSearchRequestExecutor() {
-			{
-				setCountSearchRequestExecutor(
-					createCountSearchRequestExecutor(
-						solrClientManager, facetProcessor, queryTranslator));
-				setMultisearchSearchRequestExecutor(
-					new MultisearchSearchRequestExecutorImpl());
-				setSearchSearchRequestExecutor(
-					createSearchSearchRequestExecutor(
-						solrClientManager, facetProcessor, queryTranslator));
-			}
-		};
+		SolrSearchRequestExecutor solrSearchRequestExecutor =
+			new SolrSearchRequestExecutor();
+
+		ReflectionTestUtil.setFieldValue(solrSearchRequestExecutor, "_countSearchRequestExecutor", createCountSearchRequestExecutor(
+				solrClientManager, facetProcessor,
+				queryTranslator));
+		ReflectionTestUtil.setFieldValue(solrSearchRequestExecutor, "_multisearchSearchRequestExecutor", new MultisearchSearchRequestExecutorImpl());
+		ReflectionTestUtil.setFieldValue(solrSearchRequestExecutor, "_searchSearchRequestExecutor", createSearchSearchRequestExecutor(
+				solrClientManager, facetProcessor,
+				queryTranslator));
+
+		return solrSearchRequestExecutor;
 	}
 
 	protected static SearchSearchRequestExecutor
