@@ -191,31 +191,23 @@ public class SearchRequestExecutorFixture {
 	}
 
 	protected static SolrFilterTranslator createSolrFilterTranslator() {
-		return new SolrFilterTranslator() {
-			{
-				dateRangeFilterTranslator = new DateRangeFilterTranslatorImpl();
+		SolrFilterTranslator solrFilterTranslator = new SolrFilterTranslator();
 
-				setBooleanQueryTranslator(new BooleanFilterTranslatorImpl());
-				setDateRangeTermFilterTranslator(
-					new DateRangeTermFilterTranslatorImpl());
-				setExistsFilterTranslator(new ExistsFilterTranslatorImpl());
-				setGeoBoundingBoxFilterTranslator(
-					new GeoBoundingBoxFilterTranslatorImpl());
-				setGeoDistanceFilterTranslator(
-					new GeoDistanceFilterTranslatorImpl());
-				setGeoDistanceRangeFilterTranslator(
-					new GeoDistanceRangeFilterTranslatorImpl());
-				setGeoPolygonFilterTranslator(
-					new GeoPolygonFilterTranslatorImpl());
-				setMissingFilterTranslator(new MissingFilterTranslatorImpl());
-				setPrefixFilterTranslator(new PrefixFilterTranslatorImpl());
-				setQueryFilterTranslator(new QueryFilterTranslatorImpl());
-				setRangeTermFilterTranslator(
-					new RangeTermFilterTranslatorImpl());
-				setTermFilterTranslator(new TermFilterTranslatorImpl());
-				setTermsFilterTranslator(new TermsFilterTranslatorImpl());
-			}
-		};
+		ReflectionTestUtil.setFieldValue(solrFilterTranslator, "_rangeTermFilterTranslator", new RangeTermFilterTranslatorImpl());
+		ReflectionTestUtil.setFieldValue(solrFilterTranslator, "_booleanQueryTranslator", new BooleanFilterTranslatorImpl());
+		ReflectionTestUtil.setFieldValue(solrFilterTranslator, "_dateRangeTermFilterTranslator", new DateRangeTermFilterTranslatorImpl());
+		ReflectionTestUtil.setFieldValue(solrFilterTranslator, "_existsFilterTranslator", new ExistsFilterTranslatorImpl());
+		ReflectionTestUtil.setFieldValue(solrFilterTranslator, "_geoBoundingBoxFilterTranslator", new GeoBoundingBoxFilterTranslatorImpl());
+		ReflectionTestUtil.setFieldValue(solrFilterTranslator, "_geoDistanceFilterTranslator", new GeoDistanceFilterTranslatorImpl());
+		ReflectionTestUtil.setFieldValue(solrFilterTranslator, "_geoDistanceRangeFilterTranslator", new GeoDistanceRangeFilterTranslatorImpl());
+		ReflectionTestUtil.setFieldValue(solrFilterTranslator, "_geoPolygonFilterTranslator", new GeoPolygonFilterTranslatorImpl());
+		ReflectionTestUtil.setFieldValue(solrFilterTranslator, "_missingFilterTranslator", new MissingFilterTranslatorImpl());
+		ReflectionTestUtil.setFieldValue(solrFilterTranslator, "_prefixFilterTranslator", new PrefixFilterTranslatorImpl());
+		ReflectionTestUtil.setFieldValue(solrFilterTranslator, "_queryFilterTranslator", new QueryFilterTranslatorImpl());
+		ReflectionTestUtil.setFieldValue(solrFilterTranslator, "_termFilterTranslator", new TermFilterTranslatorImpl());
+		ReflectionTestUtil.setFieldValue(solrFilterTranslator, "_termsFilterTranslator", new TermsFilterTranslatorImpl());
+
+		return solrFilterTranslator;
 	}
 
 	protected static StatsTranslator createStatsTranslator() {
