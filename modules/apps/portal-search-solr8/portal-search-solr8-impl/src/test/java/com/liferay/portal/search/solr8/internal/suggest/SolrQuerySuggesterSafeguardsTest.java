@@ -61,7 +61,7 @@ public class SolrQuerySuggesterSafeguardsTest {
 	protected SolrQuerySuggester createSolrQuerySuggester() {
 		return new SolrQuerySuggester() {
 			{
-				setSolrClientManager(Mockito.mock(SolrClientManager.class));
+				solrClientManager = Mockito.mock(SolrClientManager.class);
 			}
 		};
 	}

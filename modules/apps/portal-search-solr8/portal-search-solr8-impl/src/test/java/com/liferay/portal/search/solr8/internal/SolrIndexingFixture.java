@@ -291,18 +291,19 @@ public class SolrIndexingFixture implements IndexingFixture {
 	}
 
 	protected SolrQuerySuggester createSolrQuerySuggester(
-		SolrClientManager solrClientManager) {
+		SolrClientManager solrClientManagerParam) {
 
-		return new SolrQuerySuggester() {
+		SolrQuerySuggester solrQuerySuggester = new SolrQuerySuggester() {
 			{
 				setLocalization(_localization);
-
-				setNGramQueryBuilder(createNGramQueryBuilder());
-				setSolrClientManager(solrClientManager);
-
 				activate(_properties);
 			}
 		};
+
+		ReflectionTestUtil.setFieldValue(solrQuerySuggester, "_nGramQueryBuilder", createNGramQueryBuilder());
+		ReflectionTestUtil.setFieldValue(solrQuerySuggester, "_solrClientManager", solrClientManagerParam);
+
+		return solrQuerySuggester;
 	}
 
 	protected SolrSpellCheckIndexWriter createSolrSpellCheckIndexWriter(
