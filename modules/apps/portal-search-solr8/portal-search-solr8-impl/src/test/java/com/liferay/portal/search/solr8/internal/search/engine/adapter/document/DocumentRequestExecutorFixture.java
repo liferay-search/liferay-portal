@@ -160,13 +160,13 @@ public class DocumentRequestExecutorFixture {
 			BulkableDocumentRequestTranslator bulkableDocumentRequestTranslator,
 			SolrClientManager solrClientManager) {
 
-		return new IndexDocumentRequestExecutorImpl() {
-			{
-				setBulkableDocumentRequestTranslator(
-					bulkableDocumentRequestTranslator);
-				setSolrClientManager(solrClientManager);
-			}
-		};
+		IndexDocumentRequestExecutorImpl indexDocumentRequestExecutor =
+			new IndexDocumentRequestExecutorImpl();
+
+		ReflectionTestUtil.setFieldValue(indexDocumentRequestExecutor, "_solrClientManager", solrClientManager);
+		ReflectionTestUtil.setFieldValue(indexDocumentRequestExecutor, "_bulkableDocumentRequestTranslator", bulkableDocumentRequestTranslator);
+
+		return indexDocumentRequestExecutor;
 	}
 
 	protected static UpdateByQueryDocumentRequestExecutor
