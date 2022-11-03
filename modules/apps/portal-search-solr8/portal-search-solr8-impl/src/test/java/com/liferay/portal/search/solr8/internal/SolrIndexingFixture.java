@@ -200,28 +200,26 @@ public class SolrIndexingFixture implements IndexingFixture {
 	}
 
 	protected IndexSearcher createIndexSearcher(
-		final SearchEngineAdapter searchEngineAdapter,
+		final SearchEngineAdapter searchEngineAdapterParam,
 		SolrClientManager solrClientManager) {
 
 		SolrIndexSearcher solrIndexSearcher = new SolrIndexSearcher() {
 			{
-				setFacetProcessor(_facetProcessor);
-				setSearchRequestBuilderFactory(
-					new SearchRequestBuilderFactoryImpl());
-				setSearchResponseBuilderFactory(
-					new SearchResponseBuilderFactoryImpl());
-				setSearchEngineAdapter(searchEngineAdapter);
-
 				activate(_properties);
 			}
 		};
 
+		ReflectionTestUtil.setFieldValue(solrIndexSearcher, "_searchEngineAdapter", searchEngineAdapterParam);
+		ReflectionTestUtil.setFieldValue(solrIndexSearcher, "_facetProcessor", _facetProcessor);
 		ReflectionTestUtil.setFieldValue(
 			solrIndexSearcher, "_props", createProps());
-
 		ReflectionTestUtil.setFieldValue(
 			solrIndexSearcher, "_querySuggester",
 			createSolrQuerySuggester(solrClientManager));
+		ReflectionTestUtil.setFieldValue(solrIndexSearcher, "_searchRequestBuilderFactory", new SearchRequestBuilderFactoryImpl());
+		ReflectionTestUtil.setFieldValue(solrIndexSearcher, "_searchResponseBuilderFactory", new SearchResponseBuilderFactoryImpl());
+
+
 
 		return solrIndexSearcher;
 	}
