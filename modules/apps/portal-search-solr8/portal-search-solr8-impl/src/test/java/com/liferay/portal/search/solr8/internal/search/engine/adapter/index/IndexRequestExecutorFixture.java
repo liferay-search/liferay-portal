@@ -34,12 +34,12 @@ public class IndexRequestExecutorFixture {
 	protected IndexRequestExecutor createIndexRequestExecutor(
 		SolrClientManager solrClientManager) {
 
-		return new SolrIndexRequestExecutor() {
-			{
-				setRefreshIndexRequestExecutor(
-					createRefreshIndexRequestExecutor(solrClientManager));
-			}
-		};
+		SolrIndexRequestExecutor solrIndexRequestExecutor =
+			new SolrIndexRequestExecutor();
+
+		ReflectionTestUtil.setFieldValue(solrIndexRequestExecutor, "_refreshIndexRequestExecutor", createRefreshIndexRequestExecutor(solrClientManager));
+
+		return solrIndexRequestExecutor;
 	}
 
 	protected RefreshIndexRequestExecutor createRefreshIndexRequestExecutor(
