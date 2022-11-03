@@ -37,7 +37,9 @@ public class IndexRequestExecutorFixture {
 		SolrIndexRequestExecutor solrIndexRequestExecutor =
 			new SolrIndexRequestExecutor();
 
-		ReflectionTestUtil.setFieldValue(solrIndexRequestExecutor, "_refreshIndexRequestExecutor", createRefreshIndexRequestExecutor(solrClientManager));
+		ReflectionTestUtil.setFieldValue(
+			solrIndexRequestExecutor, "_refreshIndexRequestExecutor",
+			createRefreshIndexRequestExecutor(solrClientManager));
 
 		return solrIndexRequestExecutor;
 	}
@@ -45,14 +47,14 @@ public class IndexRequestExecutorFixture {
 	protected RefreshIndexRequestExecutor createRefreshIndexRequestExecutor(
 		SolrClientManager solrClientManager) {
 
-		RefreshIndexRequestExecutorImpl refreshIndexRequestExecutor =
+		RefreshIndexRequestExecutorImpl refreshIndexRequestExecutorImpl =
 			new RefreshIndexRequestExecutorImpl();
 
 		ReflectionTestUtil.setFieldValue(
-			refreshIndexRequestExecutor, "_solrClientManager",
+			refreshIndexRequestExecutorImpl, "_solrClientManager",
 			solrClientManager);
 
-		return refreshIndexRequestExecutor;
+		return refreshIndexRequestExecutorImpl;
 	}
 
 	protected void setSolrClientManager(SolrClientManager solrClientManager) {

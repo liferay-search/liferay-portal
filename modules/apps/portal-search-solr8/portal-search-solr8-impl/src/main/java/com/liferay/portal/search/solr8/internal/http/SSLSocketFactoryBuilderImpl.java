@@ -143,6 +143,7 @@ public class SSLSocketFactoryBuilderImpl implements SSLSocketFactoryBuilder {
 
 	@Reference
 	private KeyStoreLoader _keyStoreLoader;
+
 	private volatile char[] _keyStorePassword;
 	private volatile String _keyStorePath;
 	private volatile String _keyStoreType = KeyStore.getDefaultType();
