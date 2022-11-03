@@ -15,6 +15,7 @@
 package com.liferay.portal.search.solr8.internal.search.engine.adapter;
 
 import com.liferay.portal.kernel.search.query.QueryTranslator;
+import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
 import com.liferay.portal.search.solr8.internal.connection.SolrClientManager;
 import com.liferay.portal.search.solr8.internal.document.SolrDocumentFactory;
@@ -91,18 +92,18 @@ public class SolrSearchEngineAdapterFixture {
 		indexRequestExecutorFixture.setUp();
 		searchRequestExecutorFixture.setUp();
 
-		return new SolrSearchEngineAdapterImpl() {
-			{
-				setDocumentRequestExecutor(
-					documentRequestExecutorFixture.
-						getDocumentRequestExecutor());
-				setSearchRequestExecutor(
-					searchRequestExecutorFixture.getSearchRequestExecutor());
-				setIndexRequestExecutor(
-					indexRequestExecutorFixture.getIndexRequestExecutor());
-				setThrowOriginalExceptions(true);
-			}
-		};
+		SolrSearchEngineAdapterImpl solrSearchEngineAdapter =
+			new SolrSearchEngineAdapterImpl() {
+				{
+					setThrowOriginalExceptions(true);
+				}
+			};
+
+		ReflectionTestUtil.setFieldValue(solrSearchEngineAdapter, "_documentRequestExecutor", documentRequestExecutorFixture.getDocumentRequestExecutor());
+		ReflectionTestUtil.setFieldValue(solrSearchEngineAdapter, "_searchRequestExecutor", searchRequestExecutorFixture.getSearchRequestExecutor());
+		ReflectionTestUtil.setFieldValue(solrSearchEngineAdapter, "_indexRequestExecutor", indexRequestExecutorFixture.getIndexRequestExecutor());
+
+		return solrSearchEngineAdapter;
 	}
 
 	protected void setFacetProcessor(FacetProcessor<SolrQuery> facetProcessor) {
