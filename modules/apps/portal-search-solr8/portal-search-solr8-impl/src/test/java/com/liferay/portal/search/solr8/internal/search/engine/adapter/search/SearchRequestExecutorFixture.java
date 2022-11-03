@@ -147,14 +147,13 @@ public class SearchRequestExecutorFixture {
 	protected static SearchSearchResponseAssembler
 		createSearchSearchResponseAssembler() {
 
-		return new SearchSearchResponseAssemblerImpl() {
-			{
-				setBaseSearchResponseAssembler(
-					createBaseSearchResponseAssembler());
-				setSearchSearchResponseAssemblerHelper(
-					createSearchSearchResponseAssemblerHelper());
-			}
-		};
+		SearchSearchResponseAssemblerImpl searchSearchResponseAssembler =
+			new SearchSearchResponseAssemblerImpl();
+
+		ReflectionTestUtil.setFieldValue(searchSearchResponseAssembler, "_baseSearchResponseAssembler", createBaseSearchResponseAssembler());
+		ReflectionTestUtil.setFieldValue(searchSearchResponseAssembler, "_searchSearchResponseAssemblerHelper", createSearchSearchResponseAssemblerHelper());
+
+		return searchSearchResponseAssembler;
 	}
 
 	protected static SearchSearchResponseAssemblerHelper
