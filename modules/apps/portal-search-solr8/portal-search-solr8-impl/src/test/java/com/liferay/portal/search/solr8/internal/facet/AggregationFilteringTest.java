@@ -51,13 +51,8 @@ public class AggregationFilteringTest extends BaseAggregationFilteringTestCase {
 		CompositeFacetProcessor compositeFacetProcessor =
 			new CompositeFacetProcessor();
 
-		DefaultFacetProcessor defaultFacetProcessor =
-			new DefaultFacetProcessor();
-
 		ReflectionTestUtil.setFieldValue(
-			defaultFacetProcessor, "_jsonFactory", _jsonFactory);
-
-		compositeFacetProcessor.setDefaultFacetProcessor(defaultFacetProcessor);
+			new DefaultFacetProcessor(), "_jsonFactory", _jsonFactory);
 
 		addFacetProcessor(
 			"com.liferay.portal.search.internal.facet.ModifiedFacetImpl",

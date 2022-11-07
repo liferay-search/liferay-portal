@@ -66,7 +66,4 @@ public class SynonymsPanelApp extends BasePanelApp {
 	)
 	private Portlet _portlet;
 
-	@Reference
-	protected SearchEngineInformation searchEngineInformation;
-
 }
