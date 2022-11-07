@@ -555,6 +555,15 @@ public class SearchPermissionCheckerImpl implements SearchPermissionChecker {
 			return null;
 		}
 
+		for (long roleId : roleIds) {
+			if (resourcePermissionLocalService.hasScopeResourcePermission(
+					companyId, className, ResourceConstants.SCOPE_GROUP, roleId,
+					ActionKeys.VIEW)) {
+
+				return null;
+			}
+		}
+
 		TermsFilter groupsTermsFilter = new TermsFilter(Field.GROUP_ID);
 
 		for (UsersGroupIdRoles usersGroupIdRoles : usersGroupIdsRoles) {
