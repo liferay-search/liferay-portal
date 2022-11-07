@@ -19,6 +19,8 @@ import com.liferay.petra.string.StringPool;
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.Language;
+import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.model.GroupConstants;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.portlet.LiferayRenderRequest;
@@ -44,8 +46,11 @@ import com.liferay.portal.vulcan.pagination.Page;
 import com.liferay.portlet.RenderRequestFactory;
 import com.liferay.portlet.RenderResponseFactory;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.LongStream;
 
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletMode;
@@ -193,7 +198,25 @@ public class SuggestionResourceImpl extends BaseSuggestionResourceImpl {
 			keywordsParameterName);
 		searchContext.setCompanyId(contextCompany.getCompanyId());
 
-		if (!StringUtil.equals(scope, "everything")) {
+		if (StringUtil.equals(scope, "everything")) {
+			List<Long> groupIds = new ArrayList<>();
+
+			List<Group> groups = groupLocalService.getGroups(
+				contextCompany.getCompanyId(),
+				GroupConstants.ANY_PARENT_GROUP_ID, true);
+
+			for (Group group : groups) {
+				groupIds.add(group.getGroupId());
+			}
+
+			LongStream longStream = groupIds.stream(
+			).mapToLong(
+				l -> l
+			);
+
+			searchContext.setGroupIds(longStream.toArray());
+		}
+		else {
 			searchContext.setGroupIds(new long[] {groupId});
 		}
 
