@@ -216,11 +216,13 @@ public class SolrIndexingFixture implements IndexingFixture {
 	}
 
 	protected FacetProcessor<SolrQuery> createFacetProcessor() {
-		return new DefaultFacetProcessor() {
-			{
-				setJSONFactory(_jsonFactory);
-			}
-		};
+		DefaultFacetProcessor defaultFacetProcessor =
+			new DefaultFacetProcessor();
+
+		ReflectionTestUtil.setFieldValue(
+			defaultFacetProcessor, "_jsonFactory", _jsonFactory);
+
+		return defaultFacetProcessor;
 	}
 
 	protected IndexSearcher createIndexSearcher(
