@@ -245,7 +245,7 @@ public class SolrIndexWriter extends BaseIndexWriter {
 		}
 		catch (Exception exception) {
 			if (_logExceptionsOnly) {
-				_log.error(exception);
+				_log.error(exception.getClass(), exception);
 			}
 			else {
 				if (exception instanceof RuntimeException) {
