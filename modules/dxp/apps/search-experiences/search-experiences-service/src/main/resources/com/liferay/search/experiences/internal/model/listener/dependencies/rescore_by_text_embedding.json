@@ -90,7 +90,7 @@
 						},
 						{
 							"defaultValue": 1,
-							"helpText": "Sets the minimum score for items to be rescored.",
+							"helpText": "Sets the minimum score of items to be rescored.",
 							"label": "Min Score",
 							"name": "min_score",
 							"type": "number",
@@ -100,7 +100,7 @@
 						},
 						{
 							"defaultValue": 0.01,
-							"helpText": "Sets the weight for the original query in the final score calculation.",
+							"helpText": "Sets the weight of the original query in the final score calculation.",
 							"label": "Query Weight",
 							"name": "query_weight",
 							"type": "slider",
@@ -122,7 +122,7 @@
 						},
 						{
 							"defaultValue": "avg",
-							"helpText": "Specifies how the computed scores for the original and rescore queries are combined.",
+							"helpText": "Specifies how the computed scores of the original and rescore queries are combined.",
 							"label": "Score Mode",
 							"name": "score_mode",
 							"type": "select",
