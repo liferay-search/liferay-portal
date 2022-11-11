@@ -14,6 +14,7 @@
 
 package com.liferay.portal.search.solr8.internal.mappings;
 
+import com.liferay.portal.kernel.search.Document;
 import com.liferay.portal.search.solr8.internal.SolrIndexingFixture;
 import com.liferay.portal.search.test.util.indexing.IndexingFixture;
 import com.liferay.portal.search.test.util.mappings.BaseDocumentMappingTestCase;
@@ -31,6 +32,23 @@ public class SolrDocumentMappingTest extends BaseDocumentMappingTestCase {
 	@Rule
 	public static final LiferayUnitTestRule liferayUnitTestRule =
 		LiferayUnitTestRule.INSTANCE;
+
+	@Override
+	protected void assertMappings(String keywords) {
+		assertSearch(
+			indexingTestHelper -> {
+				indexingTestHelper.setQuery(getQuery(keywords));
+
+				indexingTestHelper.search();
+
+				indexingTestHelper.verify(
+					hits -> {
+						for (Document document : hits.getDocs()) {
+							assertMappings(document);
+						}
+					});
+			});
+	}
 
 	@Override
 	protected IndexingFixture createIndexingFixture() {
