@@ -33,6 +33,18 @@ public class SolrDocumentCountTest extends BaseDocumentCountTestCase {
 		LiferayUnitTestRule.INSTANCE;
 
 	@Override
+	protected void assertCount(String keywords, int expectedCount) {
+		assertSearch(
+			indexingTestHelper -> {
+				indexingTestHelper.setQuery(getQuery(keywords));
+
+				indexingTestHelper.search();
+
+				indexingTestHelper.assertResultCount(expectedCount);
+			});
+	}
+
+	@Override
 	protected IndexingFixture createIndexingFixture() {
 		return new SolrIndexingFixture();
 	}
