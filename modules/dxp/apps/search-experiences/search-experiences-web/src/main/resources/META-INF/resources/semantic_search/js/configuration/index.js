@@ -226,7 +226,7 @@ export default function ({
 		<div className="semantic-search-settings-root">
 			<div className="sheet-section">
 				<h3 className="sheet-subtitle">
-					{Liferay.Language.get('transform-provider-settings')}
+					{Liferay.Language.get('sentence-transformer-settings')}
 				</h3>
 
 				<ClayForm.Group>
@@ -251,7 +251,7 @@ export default function ({
 					items={transformToLabelValueArray(
 						availableSentenceTransformProviders
 					)}
-					label={Liferay.Language.get('sentence-transform-provider')}
+					label={Liferay.Language.get('sentence-transformer')}
 					name={`${namespace}sentenceTransformProvider`}
 					onBlur={_handleInputBlur('sentenceTransformProvider')}
 					onChange={_handleInputChange('sentenceTransformProvider')}
@@ -396,7 +396,7 @@ export default function ({
 
 			<div className="sheet-section">
 				<h3 className="sheet-subtitle">
-					{Liferay.Language.get('indexing-settings')}
+					{Liferay.Language.get('index-settings')}
 				</h3>
 
 				<Input
@@ -468,21 +468,27 @@ export default function ({
 				/>
 			</div>
 
-			<Input
-				error={formik.errors.cacheTimeout}
-				helpText={Liferay.Language.get(
-					'sentence-transformer-cache-timeout-help'
-				)}
-				label={Liferay.Language.get('cache-timeout')}
-				name={`${namespace}cacheTimeout`}
-				onBlur={_handleInputBlur('cacheTimeout')}
-				onChange={_handleInputChange('cacheTimeout')}
-				options={{min: 0}}
-				required
-				touched={formik.touched.cacheTimeout}
-				type="number"
-				value={formik.values.cacheTimeout}
-			/>
+			<div className="sheet-section">
+				<h3 className="sheet-subtitle">
+					{Liferay.Language.get('search-settings')}
+				</h3>
+
+				<Input
+					error={formik.errors.cacheTimeout}
+					helpText={Liferay.Language.get(
+						'sentence-transformer-cache-timeout-help'
+					)}
+					label={Liferay.Language.get('cache-timeout')}
+					name={`${namespace}cacheTimeout`}
+					onBlur={_handleInputBlur('cacheTimeout')}
+					onChange={_handleInputChange('cacheTimeout')}
+					options={{min: 0}}
+					required
+					touched={formik.touched.cacheTimeout}
+					type="number"
+					value={formik.values.cacheTimeout}
+				/>
+			</div>
 		</div>
 	);
 }
