@@ -36,6 +36,8 @@ import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.search.BaseIndexer;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.Indexer;
+import com.liferay.portal.kernel.search.SearchEngine;
+import com.liferay.portal.kernel.search.SearchEngineHelper;
 import com.liferay.portal.kernel.search.facet.faceted.searcher.FacetedSearcherManager;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
@@ -63,6 +65,7 @@ import com.liferay.users.admin.test.util.search.GroupBlueprint;
 import com.liferay.users.admin.test.util.search.GroupSearchFixture;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import org.junit.Assert;
@@ -121,20 +124,27 @@ public class IndexerClausesComplexQueryPartTest {
 
 		assertSearch("[Gamma Article]");
 		assertSearch("[Gamma Article]", should());
-		assertSearch("[]", must());
-		assertSearch("[Gamma Article, Omega Article]", shouldAdditive());
-		assertSearch("[Omega Article]", mustAdditive());
-
+		assertSearch(getExpected("[]", "[Gamma Article]"), must());
+		assertSearch(
+			getExpected("[Gamma Article, Omega Article]", "[Gamma Article]"),
+			shouldAdditive());
+		assertSearch(
+			getExpected("[Omega Article]", "[Gamma Article]"), mustAdditive());
 		assertSearch("[Gamma Article, Omega Article]", withoutIndexerClauses());
 		assertSearch(
 			"[Gamma Article, Omega Article]", should(),
 			withoutIndexerClauses());
-		assertSearch("[Omega Article]", must(), withoutIndexerClauses());
 		assertSearch(
-			"[Gamma Article, Omega Article]", shouldAdditive(),
-			withoutIndexerClauses());
+			getExpected("[Omega Article]", "[Gamma Article, Omega Article]"),
+			must(), withoutIndexerClauses());
 		assertSearch(
-			"[Omega Article]", mustAdditive(), withoutIndexerClauses());
+			getExpected(
+				"[Gamma Article, Omega Article]",
+				"[Gamma Article, Omega Article]"),
+			shouldAdditive(), withoutIndexerClauses());
+		assertSearch(
+			getExpected("[Omega Article]", "[Gamma Article, Omega Article]"),
+			mustAdditive(), withoutIndexerClauses());
 	}
 
 	@Test
@@ -157,18 +167,24 @@ public class IndexerClausesComplexQueryPartTest {
 
 		assertSearch("[Gamma Blog]");
 		assertSearch("[Gamma Blog]", should());
-		assertSearch("[]", must());
-		assertSearch("[Gamma Blog, Omega Blog]", shouldAdditive());
-		assertSearch("[Omega Blog]", mustAdditive());
-
+		assertSearch(getExpected("[]", "[Gamma Blog]"), must());
+		assertSearch(
+			getExpected("[Gamma Blog, Omega Blog]", "[Gamma Blog]"),
+			shouldAdditive());
+		assertSearch(
+			getExpected("[Omega Blog]", "[Gamma Blog]"), mustAdditive());
 		assertSearch("[Gamma Blog, Omega Blog]", withoutIndexerClauses());
 		assertSearch(
 			"[Gamma Blog, Omega Blog]", should(), withoutIndexerClauses());
-		assertSearch("[Omega Blog]", must(), withoutIndexerClauses());
+		assertSearch(
+			getExpected("[Omega Blog]", "[Gamma Blog, Omega Blog]"), must(),
+			withoutIndexerClauses());
 		assertSearch(
 			"[Gamma Blog, Omega Blog]", shouldAdditive(),
 			withoutIndexerClauses());
-		assertSearch("[Omega Blog]", mustAdditive(), withoutIndexerClauses());
+		assertSearch(
+			getExpected("[Omega Blog]", "[Gamma Blog, Omega Blog]"),
+			mustAdditive(), withoutIndexerClauses());
 	}
 
 	@Test
@@ -191,13 +207,18 @@ public class IndexerClausesComplexQueryPartTest {
 
 		assertSearch("[Gamma Article, Gamma Blog]");
 		assertSearch("[Gamma Article, Gamma Blog]", should());
-		assertSearch("[]", must());
+		assertSearch(getExpected("[]", "[Gamma Article, Gamma Blog]"), must());
 		assertSearch(
-			"[Gamma Article, Gamma Blog, Omega Article, Omega Blog, Omega " +
-				"Message]",
+			getExpected(
+				"[Gamma Article, Gamma Blog, Omega Article, Omega Blog, " +
+					"Omega Message]",
+				"[Gamma Article, Gamma Blog]"),
 			shouldAdditive());
 		assertSearch(
-			"[Omega Article, Omega Blog, Omega Message]", mustAdditive());
+			getExpected(
+				"[Omega Article, Omega Blog, Omega Message]",
+				"[Gamma Article, Gamma Blog]"),
+			mustAdditive());
 
 		assertSearch(
 			"[Gamma Article, Gamma Blog, Omega Article, Omega Blog]",
@@ -206,14 +227,21 @@ public class IndexerClausesComplexQueryPartTest {
 			"[Gamma Article, Gamma Blog, Omega Article, Omega Blog]", should(),
 			withoutIndexerClauses());
 		assertSearch(
-			"[Omega Article, Omega Blog]", must(), withoutIndexerClauses());
+			getExpected(
+				"[Omega Article, Omega Blog]",
+				"[Gamma Article, Gamma Blog, Omega Article, Omega Blog]"),
+			must(), withoutIndexerClauses());
 		assertSearch(
-			"[Gamma Article, Gamma Blog, Omega Article, Omega Blog, Omega " +
-				"Message]",
+			getExpected(
+				"[Gamma Article, Gamma Blog, Omega Article, Omega Blog, " +
+					"Omega Message]",
+				"[Gamma Article, Gamma Blog, Omega Article, Omega Blog]"),
 			shouldAdditive(), withoutIndexerClauses());
 		assertSearch(
-			"[Omega Article, Omega Blog, Omega Message]", mustAdditive(),
-			withoutIndexerClauses());
+			getExpected(
+				"[Omega Article, Omega Blog, Omega Message]",
+				"[Gamma Article, Gamma Blog, Omega Article, Omega Blog]"),
+			mustAdditive(), withoutIndexerClauses());
 	}
 
 	@Rule
@@ -304,6 +332,18 @@ public class IndexerClausesComplexQueryPartTest {
 		).build();
 	}
 
+	protected String getExpected(
+		String elasticResultExcepted, String solrResultExpected) {
+
+		SearchEngine searchEngine = searchEngineHelper.getSearchEngine();
+
+		if (Objects.equals("Solr", searchEngine.getVendor())) {
+			return solrResultExpected;
+		}
+
+		return elasticResultExcepted;
+	}
+
 	protected Consumer<SearchRequestBuilder> must() {
 		return withPart("must", _query);
 	}
@@ -366,6 +406,9 @@ public class IndexerClausesComplexQueryPartTest {
 
 	@Inject
 	protected MBMessageLocalService mbMessageLocalService;
+
+	@Inject
+	protected SearchEngineHelper searchEngineHelper;
 
 	@Inject
 	protected Searcher searcher;

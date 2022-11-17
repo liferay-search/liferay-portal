@@ -33,6 +33,8 @@ import com.liferay.portal.kernel.model.role.RoleConstants;
 import com.liferay.portal.kernel.search.BaseIndexer;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.Indexer;
+import com.liferay.portal.kernel.search.SearchEngine;
+import com.liferay.portal.kernel.search.SearchEngineHelper;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionCheckerFactory;
 import com.liferay.portal.kernel.service.ServiceContext;
@@ -62,6 +64,7 @@ import com.liferay.users.admin.test.util.search.UserSearchFixture;
 import java.time.Month;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import org.junit.Assert;
@@ -292,7 +295,11 @@ public class IndexerClausesPermissionTest {
 
 		String evidence = "{\"terms\":{\"groupRoleId\":";
 
-		if (!requestString.contains(evidence)) {
+		SearchEngine searchEngine = searchEngineHelper.getSearchEngine();
+
+		if (!Objects.equals("Solr", searchEngine.getVendor()) &&
+			!requestString.contains(evidence)) {
+
 			Assert.assertEquals(evidence, requestString);
 		}
 
@@ -355,6 +362,9 @@ public class IndexerClausesPermissionTest {
 
 	@Inject
 	protected Queries queries;
+
+	@Inject
+	protected SearchEngineHelper searchEngineHelper;
 
 	@Inject
 	protected Searcher searcher;
