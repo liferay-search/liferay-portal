@@ -159,6 +159,8 @@ public class CategoryFacetPortlet extends MVCPortlet {
 			themeDisplay.getLocale());
 		assetCategoriesSearchFacetDisplayContextBuilder.setMaxTerms(
 			categoryFacetPortletPreferences.getMaxTerms());
+		assetCategoriesSearchFacetDisplayContextBuilder.setOrder(
+			categoryFacetPortletPreferences.getOrder());
 		assetCategoriesSearchFacetDisplayContextBuilder.
 			setPaginationStartParameterName(
 				_getPaginationStartParameterName(portletSharedSearchResponse));
