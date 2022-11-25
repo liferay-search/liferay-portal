@@ -87,6 +87,13 @@ CategoryFacetPortletPreferences categoryFacetPortletPreferences = new CategoryFa
 
 				<aui:input label="display-frequencies" name="<%= PortletPreferencesJspUtil.getInputName(CategoryFacetPortletPreferences.PREFERENCE_KEY_FREQUENCIES_VISIBLE) %>" type="checkbox" value="<%= categoryFacetPortletPreferences.isFrequenciesVisible() %>" />
 
+				<aui:select label="order-terms-by" name="<%= PortletPreferencesJspUtil.getInputName(CategoryFacetPortletPreferences.PREFERENCE_KEY_ORDER) %>" value="<%= categoryFacetPortletPreferences.getOrder() %>">
+					<aui:option label="term-frequency-descending" value="count:desc" />
+					<aui:option label="term-frequency-ascending" value="count:asc" />
+					<aui:option label="term-value-ascending" value="key:asc" />
+					<aui:option label="term-value-descending" value="key:desc" />
+				</aui:select>
+
 				<div id="<portlet:namespace />selectVocabularies">
 					<react:component
 						module="js/components/SelectVocabularies"
