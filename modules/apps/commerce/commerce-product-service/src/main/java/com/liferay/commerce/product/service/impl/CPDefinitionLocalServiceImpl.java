@@ -14,8 +14,10 @@
 
 package com.liferay.commerce.product.service.impl;
 
+import com.liferay.asset.kernel.model.AssetCategory;
 import com.liferay.asset.kernel.model.AssetEntry;
 import com.liferay.asset.kernel.model.AssetLinkConstants;
+import com.liferay.asset.kernel.service.AssetCategoryLocalService;
 import com.liferay.asset.kernel.service.AssetEntryLocalService;
 import com.liferay.asset.kernel.service.AssetLinkLocalService;
 import com.liferay.commerce.account.model.CommerceAccountGroupRel;
@@ -347,6 +349,30 @@ public class CPDefinitionLocalServiceImpl
 			cProduct.getCProductId(), newURLTitleMap, serviceContext);
 
 		// Asset
+
+		String[] assetCategoryERCs = (String[])serviceContext.getAttribute(
+			"assetCategoryERCs");
+
+		if ((assetCategoryERCs != null) && (assetCategoryERCs.length > 0)) {
+			List<Long> assetCategoryIdsByERC = new ArrayList<>();
+
+			for (String assetCategoryERC : assetCategoryERCs) {
+				AssetCategory assetCategory =
+					_assetCategoryLocalService.
+						fetchAssetCategoryByExternalReferenceCode(
+							assetCategoryERC, companyGroup.getGroupId());
+
+				if (assetCategory != null) {
+					assetCategoryIdsByERC.add(assetCategory.getCategoryId());
+				}
+
+				serviceContext.setAssetCategoryIds(
+					ArrayUtil.unique(
+						ArrayUtil.append(
+							serviceContext.getAssetCategoryIds(),
+							ArrayUtil.toLongArray(assetCategoryIdsByERC))));
+			}
+		}
 
 		updateAsset(
 			user.getUserId(), cpDefinition,
@@ -3189,6 +3215,9 @@ public class CPDefinitionLocalServiceImpl
 				CommercePriceListLocalService.class,
 				CPDefinitionLocalServiceImpl.class,
 				"_commercePriceListLocalService", true);
+
+	@Reference
+	private AssetCategoryLocalService _assetCategoryLocalService;
 
 	@Reference
 	private AssetEntryLocalService _assetEntryLocalService;
