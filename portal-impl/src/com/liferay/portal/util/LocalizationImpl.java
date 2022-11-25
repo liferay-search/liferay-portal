@@ -1140,7 +1140,17 @@ public class LocalizationImpl implements Localization {
 			Map<String, String> map = new HashMap<>();
 
 			for (Map.Entry<Locale, String> entry : localizationMap.entrySet()) {
-				Locale locale = entry.getKey();
+				Locale locale = null;
+
+				try {
+					locale = entry.getKey();
+				}
+				catch (ClassCastException classCastException) {
+					Object object = entry.getKey();
+
+					locale = LocaleUtil.fromLanguageId((String)object);
+				}
+
 				String value = entry.getValue();
 
 				if (availableLocales.contains(locale) &&
