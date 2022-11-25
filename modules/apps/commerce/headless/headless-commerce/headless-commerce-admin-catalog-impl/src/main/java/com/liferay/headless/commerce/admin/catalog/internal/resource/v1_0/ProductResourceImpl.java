@@ -496,15 +496,20 @@ public class ProductResourceImpl extends BaseProductResourceImpl {
 
 		if (categories != null) {
 			List<Long> assetCategoryIds = new ArrayList<>();
+			List<String> assetCategoryERCs = new ArrayList<>();
 
 			for (Category category : categories) {
 				if (category.getId() != null) {
 					assetCategoryIds.add(category.getId());
+					assetCategoryERCs.add(category.getExternalReferenceCode());
 				}
 			}
 
 			serviceContext.setAssetCategoryIds(
 				ArrayUtil.toLongArray(assetCategoryIds));
+			serviceContext.setAttribute(
+				"assetCategoryERCs",
+				ArrayUtil.toStringArray(assetCategoryERCs));
 		}
 		else if (cpDefinition != null) {
 			serviceContext.setAssetCategoryIds(
