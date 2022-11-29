@@ -160,7 +160,7 @@ public class LiferayLearnIngester implements Ingester {
 
 	private String _getContent(Document document) {
 		Elements elements = document.select(
-			"#docContent .article-body .section " +
+			"#docContent .article-body section " +
 				">*:not(h1:first-child):not(.landing-page):not(script):" +
 					"not(.toctree-wrapper):not(.toctree-wrapper + ul)");
 
