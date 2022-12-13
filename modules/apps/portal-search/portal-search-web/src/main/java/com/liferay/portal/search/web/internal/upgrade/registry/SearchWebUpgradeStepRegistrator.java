@@ -41,7 +41,7 @@ public class SearchWebUpgradeStepRegistrator implements UpgradeStepRegistrator {
 		registry.register("1.0.0", "2.0.0", new SearchPortletUpgradeProcess());
 
 		registry.register(
-			"1.0.0", "2.1.0",
+			"2.0.0", "2.1.0",
 			new FacetTemplateUpgradeProcess(_classNameLocalService));
 	}
 
