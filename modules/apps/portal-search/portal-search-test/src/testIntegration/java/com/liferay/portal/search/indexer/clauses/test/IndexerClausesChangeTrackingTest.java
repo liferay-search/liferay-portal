@@ -37,6 +37,8 @@ import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.search.BaseIndexer;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.Indexer;
+import com.liferay.portal.kernel.search.SearchEngine;
+import com.liferay.portal.kernel.search.SearchEngineHelper;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
@@ -57,6 +59,7 @@ import com.liferay.users.admin.test.util.search.GroupBlueprint;
 import com.liferay.users.admin.test.util.search.GroupSearchFixture;
 
 import java.util.Collections;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import org.junit.Assert;
@@ -131,8 +134,10 @@ public class IndexerClausesChangeTrackingTest {
 		assertSearch("[Gamma Article]", consumer);
 
 		assertSearch(
-			"[Gamma Article, Omega Article]", withoutIndexerClauses(),
-			consumer);
+			getExpected(
+				"[Gamma Article, Omega Article]",
+				"[Delta Article, Gamma Article, Omega Article]"),
+			withoutIndexerClauses(), consumer);
 	}
 
 	@Test
@@ -174,8 +179,10 @@ public class IndexerClausesChangeTrackingTest {
 		assertSearch("[Gamma Message]", consumer);
 
 		assertSearch(
-			"[Gamma Message, Omega Message]", withoutIndexerClauses(),
-			consumer);
+			getExpected(
+				"[Gamma Message, Omega Message]",
+				"[Delta Message, Gamma Message, Omega Message]"),
+			withoutIndexerClauses(), consumer);
 	}
 
 	@Test
@@ -218,7 +225,10 @@ public class IndexerClausesChangeTrackingTest {
 		assertSearch("[Gamma Article, Gamma Message]", consumer);
 
 		assertSearch(
-			"[Gamma Article, Gamma Message, Omega Article, Omega Message]",
+			getExpected(
+				"[Gamma Article, Gamma Message, Omega Article, Omega Message]",
+				"[Delta Article, Delta Message, Gamma Article, Gamma " +
+					"Message, Omega Article, Omega Message]"),
 			withoutIndexerClauses(), consumer);
 	}
 
@@ -288,6 +298,10 @@ public class IndexerClausesChangeTrackingTest {
 
 		String evidence = "\"ctCollectionId\"";
 
+		if (Objects.equals("Solr", getSearchEngineVendor())) {
+			evidence = "ctCollectionId";
+		}
+
 		if (!requestString.contains(evidence)) {
 			Assert.assertEquals(evidence, requestString);
 		}
@@ -295,6 +309,22 @@ public class IndexerClausesChangeTrackingTest {
 		DocumentsAssert.assertValuesIgnoreRelevance(
 			searchResponse.getRequestString(),
 			searchResponse.getDocumentsStream(), _TITLE_EN_US, expected);
+	}
+
+	protected String getExpected(
+		String elasticResultExcepted, String solrResultExpected) {
+
+		if (Objects.equals("Solr", getSearchEngineVendor())) {
+			return solrResultExpected;
+		}
+
+		return elasticResultExcepted;
+	}
+
+	protected String getSearchEngineVendor() {
+		SearchEngine searchEngine = searchEngineHelper.getSearchEngine();
+
+		return searchEngine.getVendor();
 	}
 
 	protected void updateJournalArticle(
@@ -337,6 +367,9 @@ public class IndexerClausesChangeTrackingTest {
 
 	@Inject
 	protected MBMessageLocalService mbMessageLocalService;
+
+	@Inject
+	protected SearchEngineHelper searchEngineHelper;
 
 	@Inject
 	protected Searcher searcher;

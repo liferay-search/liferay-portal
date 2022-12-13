@@ -23,6 +23,8 @@ import com.liferay.portal.kernel.model.CompanyConstants;
 import com.liferay.portal.kernel.model.UserConstants;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.IndexWriterHelper;
+import com.liferay.portal.kernel.search.SearchEngine;
+import com.liferay.portal.kernel.search.SearchEngineHelper;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
@@ -37,8 +39,11 @@ import com.liferay.portal.search.query.TermQuery;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -46,6 +51,11 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceReference;
 
 /**
  * @author Bryan Engler
@@ -60,6 +70,23 @@ public class IndexWriterHelperImplTest {
 
 	@Before
 	public void setUp() throws Exception {
+		Bundle bundle = FrameworkUtil.getBundle(
+			SearchEngineHelperImplTest.class);
+
+		BundleContext bundleContext = bundle.getBundleContext();
+
+		SearchEngine searchEngine = _searchEngineHelper.getSearchEngine();
+
+		Collection<ServiceReference<SearchEngineAdapter>> serviceReferences =
+			bundleContext.getServiceReferences(
+				SearchEngineAdapter.class,
+				"(search.engine.impl=" + searchEngine.getVendor() + ")");
+
+		Iterator<ServiceReference<SearchEngineAdapter>> iterator =
+			serviceReferences.iterator();
+
+		_searchEngineAdapter = bundleContext.getService(iterator.next());
+
 		_reindex(null);
 
 		Thread.sleep(10000);
@@ -122,6 +149,41 @@ public class IndexWriterHelperImplTest {
 				TestPropsValues.getGroupId()));
 	}
 
+	private void _assertCount(
+		String className, boolean systemIndexer, long companyId,
+		CountSearchResponse countSearchResponse) {
+
+		SearchEngine searchEngine = _searchEngineHelper.getSearchEngine();
+
+		if (Objects.equals("Solr", searchEngine.getVendor())) {
+			_assertCountGreaterThanZero(
+				className, companyId, countSearchResponse.getCount());
+
+			return;
+		}
+
+		if (systemIndexer) {
+			if (companyId == CompanyConstants.SYSTEM) {
+				_assertCountGreaterThanZero(
+					className, companyId, countSearchResponse.getCount());
+			}
+			else {
+				_assertCountEqualsZero(
+					className, companyId, countSearchResponse.getCount());
+			}
+		}
+		else {
+			if (companyId == CompanyConstants.SYSTEM) {
+				_assertCountEqualsZero(
+					className, companyId, countSearchResponse.getCount());
+			}
+			else {
+				_assertCountGreaterThanZero(
+					className, companyId, countSearchResponse.getCount());
+			}
+		}
+	}
+
 	private void _assertCountEqualsZero(
 		String className, long companyId, long count) {
 
@@ -146,7 +208,7 @@ public class IndexWriterHelperImplTest {
 		for (long companyId : _getCompanyIds()) {
 			CountSearchRequest countSearchRequest = new CountSearchRequest();
 
-			countSearchRequest.setIndexNames("liferay-" + companyId);
+			countSearchRequest.setIndexNames(_getIndexName(companyId));
 
 			TermQuery termQuery = _queries.term(
 				Field.ENTRY_CLASS_NAME, className);
@@ -176,6 +238,16 @@ public class IndexWriterHelperImplTest {
 		return companyIds;
 	}
 
+	private String _getIndexName(long companyId) {
+		SearchEngine searchEngine = _searchEngineHelper.getSearchEngine();
+
+		if (Objects.equals("Solr", searchEngine.getVendor())) {
+			return "liferay";
+		}
+
+		return "liferay-" + companyId;
+	}
+
 	private void _populateOriginalCounts(
 		Map<Long, Long> originalCounts, String className,
 		boolean systemIndexer) {
@@ -183,7 +255,7 @@ public class IndexWriterHelperImplTest {
 		for (long companyId : _getCompanyIds()) {
 			CountSearchRequest countSearchRequest = new CountSearchRequest();
 
-			countSearchRequest.setIndexNames("liferay-" + companyId);
+			countSearchRequest.setIndexNames(_getIndexName(companyId));
 
 			TermQuery termQuery = _queries.term(
 				Field.ENTRY_CLASS_NAME, className);
@@ -193,26 +265,8 @@ public class IndexWriterHelperImplTest {
 			CountSearchResponse countSearchResponse =
 				_searchEngineAdapter.execute(countSearchRequest);
 
-			if (systemIndexer) {
-				if (companyId == CompanyConstants.SYSTEM) {
-					_assertCountGreaterThanZero(
-						className, companyId, countSearchResponse.getCount());
-				}
-				else {
-					_assertCountEqualsZero(
-						className, companyId, countSearchResponse.getCount());
-				}
-			}
-			else {
-				if (companyId == CompanyConstants.SYSTEM) {
-					_assertCountEqualsZero(
-						className, companyId, countSearchResponse.getCount());
-				}
-				else {
-					_assertCountGreaterThanZero(
-						className, companyId, countSearchResponse.getCount());
-				}
-			}
+			_assertCount(
+				className, systemIndexer, companyId, countSearchResponse);
 
 			originalCounts.put(companyId, countSearchResponse.getCount());
 		}
@@ -251,7 +305,9 @@ public class IndexWriterHelperImplTest {
 	@Inject
 	private Queries _queries;
 
-	@Inject
 	private SearchEngineAdapter _searchEngineAdapter;
+
+	@Inject
+	private SearchEngineHelper _searchEngineHelper;
 
 }
