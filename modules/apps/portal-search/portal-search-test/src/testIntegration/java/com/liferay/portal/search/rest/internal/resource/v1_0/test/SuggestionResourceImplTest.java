@@ -18,6 +18,7 @@ import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.document.library.kernel.model.DLFileEntry;
 import com.liferay.document.library.kernel.model.DLFolderConstants;
 import com.liferay.document.library.kernel.service.DLAppLocalService;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.Group;
@@ -133,7 +134,8 @@ public class SuggestionResourceImplTest {
 			SCOPE_EVERYTHING);
 
 		Assert.assertEquals(
-			Arrays.toString(resultsSuggestions), 3, resultsSuggestions.length);
+			_createErrorMessage(resultsSuggestions), 3,
+			resultsSuggestions.length);
 
 		_checkFileNames(
 			resultsSuggestions,
@@ -158,7 +160,8 @@ public class SuggestionResourceImplTest {
 			SCOPE_EVERYTHING);
 
 		Assert.assertEquals(
-			Arrays.toString(resultsSuggestions), 6, resultsSuggestions.length);
+			_createErrorMessage(resultsSuggestions), 6,
+			resultsSuggestions.length);
 
 		_checkFileNames(
 			resultsSuggestions,
@@ -181,7 +184,8 @@ public class SuggestionResourceImplTest {
 			SCOPE_EVERYTHING);
 
 		Assert.assertEquals(
-			Arrays.toString(resultsSuggestions), 4, resultsSuggestions.length);
+			_createErrorMessage(resultsSuggestions), 4,
+			resultsSuggestions.length);
 
 		_checkFileNames(
 			resultsSuggestions,
@@ -200,7 +204,8 @@ public class SuggestionResourceImplTest {
 		resultsSuggestions = _getResultsSuggestions(SCOPE_EVERYTHING);
 
 		Assert.assertEquals(
-			Arrays.toString(resultsSuggestions), 5, resultsSuggestions.length);
+			_createErrorMessage(resultsSuggestions), 5,
+			resultsSuggestions.length);
 
 		_checkFileNames(
 			resultsSuggestions,
@@ -219,7 +224,8 @@ public class SuggestionResourceImplTest {
 		resultsSuggestions = _getResultsSuggestions(SCOPE_EVERYTHING);
 
 		Assert.assertEquals(
-			Arrays.toString(resultsSuggestions), 6, resultsSuggestions.length);
+			_createErrorMessage(resultsSuggestions), 6,
+			resultsSuggestions.length);
 
 		_checkFileNames(
 			resultsSuggestions,
@@ -238,7 +244,8 @@ public class SuggestionResourceImplTest {
 			SCOPE_THIS_SITE);
 
 		Assert.assertEquals(
-			Arrays.toString(resultsSuggestions), 1, resultsSuggestions.length);
+			_createErrorMessage(resultsSuggestions), 1,
+			resultsSuggestions.length);
 
 		_checkFileNames(
 			resultsSuggestions,
@@ -257,7 +264,8 @@ public class SuggestionResourceImplTest {
 			SCOPE_THIS_SITE);
 
 		Assert.assertEquals(
-			Arrays.toString(resultsSuggestions), 2, resultsSuggestions.length);
+			_createErrorMessage(resultsSuggestions), 2,
+			resultsSuggestions.length);
 
 		_checkFileNames(
 			resultsSuggestions,
@@ -276,7 +284,8 @@ public class SuggestionResourceImplTest {
 			SCOPE_THIS_SITE);
 
 		Assert.assertEquals(
-			Arrays.toString(resultsSuggestions), 2, resultsSuggestions.length);
+			_createErrorMessage(resultsSuggestions), 2,
+			resultsSuggestions.length);
 
 		_checkFileNames(
 			resultsSuggestions,
@@ -316,7 +325,7 @@ public class SuggestionResourceImplTest {
 	}
 
 	private void _addFiles() throws Exception {
-		_fileEntriesIds = new long[6];
+		_fileEntriesIds = new long[_FILES_COUNT];
 
 		long[] groupIds = {
 			TestPropsValues.getGroupId(), _group1.getGroupId(),
@@ -338,13 +347,13 @@ public class SuggestionResourceImplTest {
 
 	private void _checkFileNames(
 		Suggestion[] resultsSuggestions,
-		LinkedHashMap<Long, Boolean> groupIds) {
+		LinkedHashMap<Long, Boolean> groupIdsPermissionsMap) {
 
-		Set<Long> longSet = groupIds.keySet();
+		Set<Long> longSet = groupIdsPermissionsMap.keySet();
 
 		longSet.forEach(
 			groupId -> {
-				Boolean guestOnly = groupIds.get(groupId);
+				Boolean guestOnly = groupIdsPermissionsMap.get(groupId);
 				String fileNameGuest =
 					_KEYWORD_SEARCH + _KEYWORD_GUEST + groupId;
 
@@ -371,6 +380,22 @@ public class SuggestionResourceImplTest {
 						true);
 				}
 			});
+	}
+
+	private String _createErrorMessage(Suggestion[] suggestions) {
+		StringBundler sb = new StringBundler((suggestions.length * 2) + 2);
+
+		sb.append(suggestions.length);
+		sb.append(" files returned: ");
+
+		for (Suggestion suggestion : suggestions) {
+			sb.append(suggestion.getText());
+			sb.append(", ");
+		}
+
+		sb.setIndex(sb.index() - 1);
+
+		return sb.toString();
 	}
 
 	private Suggestion[] _getResultsSuggestions(String scope) throws Exception {
@@ -468,7 +493,11 @@ public class SuggestionResourceImplTest {
 			testName.getMethodName());
 
 		_suggestionsContributorConfiguration.setContributorName("basic");
+
+		_suggestionsContributorConfiguration.setSize(_FILES_COUNT);
 	}
+
+	private static final int _FILES_COUNT = 6;
 
 	private static final String _KEYWORD_GUEST = " guest ";
 
