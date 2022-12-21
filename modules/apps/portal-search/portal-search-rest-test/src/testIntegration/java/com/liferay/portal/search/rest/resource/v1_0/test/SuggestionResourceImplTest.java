@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.portal.search.rest.internal.resource.v1_0.test;
+package com.liferay.portal.search.rest.resource.v1_0.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.document.library.kernel.model.DLFileEntry;
