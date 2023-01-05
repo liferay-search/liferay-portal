@@ -12,9 +12,9 @@
  *
  */
 
-package com.liferay.search.experiences.internal.ml.text.embedding;
+package com.liferay.search.experiences.internal.ml.embedding.text;
 
-import com.liferay.search.experiences.configuration.SemanticSearchConfiguration;
+import com.liferay.search.experiences.rest.dto.v1_0.EmbeddingProviderConfiguration;
 
 /**
  * @author Petteri Karttunen
@@ -22,6 +22,7 @@ import com.liferay.search.experiences.configuration.SemanticSearchConfiguration;
 public interface TextEmbeddingProvider {
 
 	public Double[] getEmbedding(
-		SemanticSearchConfiguration semanticSearchConfiguration, String text);
+		EmbeddingProviderConfiguration embeddingProviderConfiguration,
+		String text);
 
 }

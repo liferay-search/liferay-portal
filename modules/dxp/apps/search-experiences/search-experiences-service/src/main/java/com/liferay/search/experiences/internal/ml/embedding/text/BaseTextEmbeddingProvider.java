@@ -12,7 +12,7 @@
  *
  */
 
-package com.liferay.search.experiences.internal.ml.text.embedding;
+package com.liferay.search.experiences.internal.ml.embedding.text;
 
 import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -37,15 +37,25 @@ public abstract class BaseTextEmbeddingProvider {
 			return text;
 		}
 
+		String sentences;
+
 		if (truncationStrategy.equals("end")) {
-			return _extractSentencesFromEnd(maxCharacterCount, text);
+			sentences = _extractSentencesFromEnd(maxCharacterCount, text);
 		}
 		else if (truncationStrategy.equals("middle")) {
-			return _extractSentencesFromMiddle(maxCharacterCount, text);
+			sentences = _extractSentencesFromMiddle(maxCharacterCount, text);
 		}
 		else {
-			return _extractSentencesFromBeginning(maxCharacterCount, text);
+			sentences = _extractSentencesFromBeginning(maxCharacterCount, text);
 		}
+
+		if ((sentences.length() == 0) ||
+			(sentences.length() >= maxCharacterCount)) {
+
+			return text.substring(0, maxCharacterCount);
+		}
+
+		return sentences;
 	}
 
 	private String _extractSentencesFromBeginning(
