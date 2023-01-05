@@ -35,8 +35,6 @@ SemanticSearchCompanyConfigurationDisplayContext semanticSearchCompanyConfigurat
 		module="semantic_search/js/configuration/index"
 		props='<%=
 			HashMapBuilder.<String, Object>put(
-				"assetEntryClassNames", semanticSearchCompanyConfigurationDisplayContext.getAssetEntryClassNames()
-			).put(
 				"availableAssetEntryClassNames", semanticSearchCompanyConfigurationDisplayContext.getAvailableAssetEntryClassNames()
 			).put(
 				"availableEmbeddingVectorDimensions", semanticSearchCompanyConfigurationDisplayContext.getAvailableEmbeddingVectorDimensions()
@@ -47,35 +45,13 @@ SemanticSearchCompanyConfigurationDisplayContext semanticSearchCompanyConfigurat
 			).put(
 				"availableTextTruncationStrategies", semanticSearchCompanyConfigurationDisplayContext.getAvailableTextTruncationStrategies()
 			).put(
-				"cacheTimeout", semanticSearchCompanyConfigurationDisplayContext.getCacheTimeout()
-			).put(
-				"embeddingVectorDimensions", semanticSearchCompanyConfigurationDisplayContext.getEmbeddingVectorDimensions()
-			).put(
-				"huggingFaceAccessToken", semanticSearchCompanyConfigurationDisplayContext.getHuggingFaceAccessToken()
-			).put(
-				"languageIds", semanticSearchCompanyConfigurationDisplayContext.getLanguageIds()
-			).put(
 				"learnMessages", LearnMessageUtil.getJSONObject("search-experiences-web")
-			).put(
-				"maxCharacterCount", semanticSearchCompanyConfigurationDisplayContext.getMaxCharacterCount()
-			).put(
-				"model", semanticSearchCompanyConfigurationDisplayContext.getModel()
-			).put(
-				"modelTimeout", semanticSearchCompanyConfigurationDisplayContext.getModelTimeout()
 			).put(
 				"namespace", liferayPortletResponse.getNamespace()
 			).put(
-				"textEmbeddingProvider", semanticSearchCompanyConfigurationDisplayContext.getTextEmbeddingProvider()
+				"textEmbeddingProviderConfigurations", semanticSearchCompanyConfigurationDisplayContext.getTextEmbeddingProviderConfigurations()
 			).put(
 				"textEmbeddingsEnabled", semanticSearchCompanyConfigurationDisplayContext.isTextEmbeddingsEnabled()
-			).put(
-				"textTruncationStrategy", semanticSearchCompanyConfigurationDisplayContext.getTextTruncationStrategy()
-			).put(
-				"txtaiHostAddress", semanticSearchCompanyConfigurationDisplayContext.getTxtaiHostAddress()
-			).put(
-				"txtaiPassword", semanticSearchCompanyConfigurationDisplayContext.getTxtaiPassword()
-			).put(
-				"txtaiUsername", semanticSearchCompanyConfigurationDisplayContext.getTxtaiUserName()
 			).build()
 		%>'
 	/>
