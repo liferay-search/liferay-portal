@@ -64,7 +64,7 @@ function TestConfigurationButton({
 	]);
 
 	/**
-	 * Used for the `/text-embedding/validate-configuration` endpoint
+	 * Used for the `/text-embeddings/validate-provider-configuration` endpoint
 	 * to conditionally send the appropriate data according to the user-selected
 	 * text embedding provider type.
 	 * @returns {object}
@@ -115,7 +115,7 @@ function TestConfigurationButton({
 		};
 
 		fetch(
-			'/o/search-experiences-rest/v1.0/text-embedding/validate-configuration',
+			'/o/search-experiences-rest/v1.0/text-embeddings/validate-provider-configuration',
 			{
 				body: JSON.stringify({
 					...generalSettings,
