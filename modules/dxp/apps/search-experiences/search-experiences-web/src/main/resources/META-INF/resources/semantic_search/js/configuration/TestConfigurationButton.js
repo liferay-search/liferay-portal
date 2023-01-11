@@ -28,16 +28,16 @@ function TestConfigurationButton({
 	cacheTimeout,
 	embeddingVectorDimensions,
 	errors,
+	hostAddress,
 	huggingFaceAccessToken,
 	languageIds,
 	maxCharacterCount,
 	model,
 	modelTimeout,
+	password,
 	textEmbeddingProvider,
 	textTruncationStrategy,
-	txtaiHostAddress,
-	txtaiPassword,
-	txtaiUsername,
+	username,
 }) {
 	const [loading, setLoading] = useState(false);
 	const [testResultsMessage, setTestResultsMessage] = useState({}); // {message, type}
@@ -58,9 +58,9 @@ function TestConfigurationButton({
 		modelTimeout,
 		textEmbeddingProvider,
 		textTruncationStrategy,
-		txtaiHostAddress,
-		txtaiPassword,
-		txtaiUsername,
+		hostAddress,
+		password,
+		username,
 	]);
 
 	/**
@@ -83,9 +83,9 @@ function TestConfigurationButton({
 
 		if (textEmbeddingProvider === TEXT_EMBEDDING_PROVIDER_TYPES.TXTAI) {
 			return {
-				txtaiHostAddress,
-				txtaiPassword,
-				txtaiUsername,
+				hostAddress,
+				password,
+				username,
 			};
 		}
 
@@ -95,33 +95,20 @@ function TestConfigurationButton({
 	const _handleTestConfigurationButtonClick = () => {
 		setLoading(true);
 
-		// Organizing fetch body property groups by how they appear in the UI.
-
-		const generalSettings = {
-			cacheTimeout,
-			textEmbeddingsEnabled: true, // Always set as `true`. LPS-167506
-		};
-
-		const generalTransformerSettings = {
-			embeddingVectorDimensions,
-			textEmbeddingProvider,
-		};
-
-		const indexingSettings = {
-			assetEntryClassNames,
-			languageIds,
-			maxCharacterCount,
-			textTruncationStrategy,
-		};
-
 		fetch(
 			'/o/search-experiences-rest/v1.0/text-embeddings/validate-provider-configuration',
 			{
 				body: JSON.stringify({
-					...generalSettings,
-					...generalTransformerSettings,
-					..._getTextEmbeddingProviderSettings(),
-					...indexingSettings,
+					attributes: {
+						assetEntryClassNames,
+						languageIds,
+						maxCharacterCount,
+						textTruncationStrategy,
+						..._getTextEmbeddingProviderSettings(),
+					},
+					cacheTimeout,
+					embeddingVectorDimensions,
+					providerName: textEmbeddingProvider,
 				}),
 				headers: new Headers({
 					'Accept': 'application/json',
@@ -269,14 +256,14 @@ function TestConfigurationButton({
 			TEXT_EMBEDDING_PROVIDER_TYPES.HUGGING_FACE_INFERENCE_API
 		) {
 			return (
-				errors.huggingFaceAccessToken ||
-				errors.model ||
-				errors.modelTimeout
+				errors?.attributes?.huggingFaceAccessToken ||
+				errors?.attributes?.model ||
+				errors?.attributes?.modelTimeout
 			);
 		}
 
 		if (textEmbeddingProvider === TEXT_EMBEDDING_PROVIDER_TYPES.TXTAI) {
-			return errors.txtaiHostAddress;
+			return errors?.attributes?.hostAddress;
 		}
 
 		return false;

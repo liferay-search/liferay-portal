@@ -45,13 +45,13 @@ SemanticSearchCompanyConfigurationDisplayContext semanticSearchCompanyConfigurat
 			).put(
 				"availableTextTruncationStrategies", semanticSearchCompanyConfigurationDisplayContext.getAvailableTextTruncationStrategies()
 			).put(
+				"initialTextEmbeddingProviderConfigurations", semanticSearchCompanyConfigurationDisplayContext.getTextEmbeddingProviderConfigurations()
+			).put(
+				"initialTextEmbeddingsEnabled", semanticSearchCompanyConfigurationDisplayContext.isTextEmbeddingsEnabled()
+			).put(
 				"learnMessages", LearnMessageUtil.getJSONObject("search-experiences-web")
 			).put(
 				"namespace", liferayPortletResponse.getNamespace()
-			).put(
-				"textEmbeddingProviderConfigurations", semanticSearchCompanyConfigurationDisplayContext.getTextEmbeddingProviderConfigurations()
-			).put(
-				"textEmbeddingsEnabled", semanticSearchCompanyConfigurationDisplayContext.isTextEmbeddingsEnabled()
 			).build()
 		%>'
 	/>
