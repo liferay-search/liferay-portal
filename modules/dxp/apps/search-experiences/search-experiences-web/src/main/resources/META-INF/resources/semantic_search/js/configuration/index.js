@@ -460,7 +460,7 @@ export default function ({
 									]?.attributes?.username
 								}
 								helpText={Liferay.Language.get(
-									'text-embedding-provider-txtai-username-help'
+									'text-embedding-provider-username-help'
 								)}
 								label={Liferay.Language.get('username')}
 								name={`textEmbeddingProviderConfigurations[${index}].attributes.username`}
@@ -486,7 +486,7 @@ export default function ({
 									]?.attributes?.password
 								}
 								helpText={Liferay.Language.get(
-									'text-embedding-provider-txtai-password-help'
+									'text-embedding-provider-password-help'
 								)}
 								label={Liferay.Language.get('password')}
 								name={`textEmbeddingProviderConfigurations[${index}].attributes.password`}
