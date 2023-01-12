@@ -142,7 +142,7 @@ export default function ({
 						index
 					].attributes.assetEntryClassNames = sub(
 						Liferay.Language.get('the-x-field-is-required'),
-						[Liferay.Language.get('asset-entry-class-names')]
+						[Liferay.Language.get('asset-types')]
 					);
 				}
 
@@ -193,7 +193,7 @@ export default function ({
 						index
 					].attributes.languageIds = sub(
 						Liferay.Language.get('the-x-field-is-required'),
-						[Liferay.Language.get('language-ids')]
+						[Liferay.Language.get('languages')]
 					);
 				}
 
@@ -804,12 +804,12 @@ export default function ({
 							]?.attributes?.assetEntryClassNames
 						}
 						helpText={Liferay.Language.get(
-							'text-embedding-provider-asset-entry-class-names-help'
+							'text-embedding-provider-asset-types-help'
 						)}
 						items={transformToLabelValueArray(
 							availableAssetEntryClassNames
 						)}
-						label={Liferay.Language.get('asset-entry-class-names')}
+						label={Liferay.Language.get('asset-types')}
 						name={`textEmbeddingProviderConfigurations[${index}].attributes.assetEntryClassNames`}
 						onBlur={_handleInputBlur(
 							`textEmbeddingProviderConfigurations[${index}].attributes.assetEntryClassNames`
@@ -838,12 +838,12 @@ export default function ({
 							]?.attributes?.languageIds
 						}
 						helpText={Liferay.Language.get(
-							'text-embedding-provider-language-ids-help'
+							'text-embedding-provider-languages-help'
 						)}
 						items={transformToLabelValueArray(
 							availableLanguageDisplayNames
 						)}
-						label={Liferay.Language.get('language-ids')}
+						label={Liferay.Language.get('languages')}
 						name={`textEmbeddingProviderConfigurations[${index}].attributes.languageIds`}
 						onBlur={_handleInputBlur(
 							`textEmbeddingProviderConfigurations[${index}].attributes.languageIds`
