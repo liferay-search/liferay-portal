@@ -58,9 +58,7 @@ public class TextEmbeddingRetrieverImpl implements TextEmbeddingRetriever {
 	public EmbeddingProviderStatus getEmbeddingProviderStatus(
 		String configurationJSON) {
 
-		if (!GetterUtil.getBoolean(PropsUtil.get("feature.flag.LPS-163688")) ||
-			!_semanticSearchConfiguration.textEmbeddingsEnabled()) {
-
+		if (!GetterUtil.getBoolean(PropsUtil.get("feature.flag.LPS-163688"))) {
 			return null;
 		}
 
@@ -102,9 +100,7 @@ public class TextEmbeddingRetrieverImpl implements TextEmbeddingRetriever {
 
 	@Override
 	public EmbeddingProviderStatus[] getEmbeddingProviderStatuses() {
-		if (!GetterUtil.getBoolean(PropsUtil.get("feature.flag.LPS-163688")) ||
-			!_semanticSearchConfiguration.textEmbeddingsEnabled()) {
-
+		if (!GetterUtil.getBoolean(PropsUtil.get("feature.flag.LPS-163688"))) {
 			return new EmbeddingProviderStatus[0];
 		}
 
@@ -125,9 +121,7 @@ public class TextEmbeddingRetrieverImpl implements TextEmbeddingRetriever {
 
 	@Override
 	public Double[] getTextEmbedding(String providerName, String text) {
-		if (!GetterUtil.getBoolean(PropsUtil.get("feature.flag.LPS-163688")) ||
-			!_semanticSearchConfiguration.textEmbeddingsEnabled()) {
-
+		if (!GetterUtil.getBoolean(PropsUtil.get("feature.flag.LPS-163688"))) {
 			return new Double[0];
 		}
 
