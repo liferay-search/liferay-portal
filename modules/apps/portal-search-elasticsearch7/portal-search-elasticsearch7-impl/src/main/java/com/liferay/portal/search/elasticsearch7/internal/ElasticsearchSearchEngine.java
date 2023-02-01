@@ -20,11 +20,13 @@ import com.liferay.portal.events.StartupHelperUtil;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.CompanyConstants;
 import com.liferay.portal.kernel.search.IndexSearcher;
 import com.liferay.portal.kernel.search.IndexWriter;
 import com.liferay.portal.kernel.search.SearchEngine;
 import com.liferay.portal.kernel.search.SearchException;
+import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.PortalRunMode;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -63,6 +65,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.elasticsearch.action.admin.indices.alias.IndicesAliasesRequest;
+import org.elasticsearch.client.IndicesClient;
+import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.Strings;
 
@@ -229,6 +234,41 @@ public class ElasticsearchSearchEngine implements SearchEngine {
 		}
 
 		initialize(CompanyConstants.SYSTEM);
+
+		for (Company company : _companyLocalService.getCompanies()) {
+			createAliasesToSystemIndex(company.getCompanyId());
+		}
+	}
+
+	protected void createAliasesToSystemIndex(long companyId) {
+		try {
+			RestHighLevelClient restHighLevelClient =
+				_elasticsearchConnectionManager.getRestHighLevelClient();
+
+			IndicesAliasesRequest request = new IndicesAliasesRequest();
+
+			IndicesAliasesRequest.AliasActions addAliasAction =
+				IndicesAliasesRequest.AliasActions.add();
+
+			IndicesAliasesRequest.AliasActions addAliasActionWithIndex =
+				addAliasAction.index(
+					_indexNameBuilder.getIndexName(CompanyConstants.SYSTEM));
+
+			request.addAliasAction(
+				addAliasActionWithIndex.alias(
+					_indexNameBuilder.getIndexName(companyId)));
+
+			IndicesClient indices = restHighLevelClient.indices();
+
+			indices.updateAliases(request, RequestOptions.DEFAULT);
+
+			restHighLevelClient.close();
+		}
+		catch (Exception exception) {
+			if (_log.isWarnEnabled()) {
+				_log.warn("Unable to create alias for " + companyId, exception);
+			}
+		}
 	}
 
 	protected void createBackupRepository() {
@@ -402,6 +442,9 @@ public class ElasticsearchSearchEngine implements SearchEngine {
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		ElasticsearchSearchEngine.class);
+
+	@Reference
+	private CompanyLocalService _companyLocalService;
 
 	@Reference(
 		cardinality = ReferenceCardinality.OPTIONAL,
