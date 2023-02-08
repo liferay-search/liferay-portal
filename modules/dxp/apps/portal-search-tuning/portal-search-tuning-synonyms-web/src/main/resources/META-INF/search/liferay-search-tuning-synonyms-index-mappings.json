@@ -1,23 +1,21 @@
 {
-	"mappings": {
-		"properties": {
-			"index": {
-				"store": true,
-				"type": "keyword"
+	"properties": {
+		"index": {
+			"store": true,
+			"type": "keyword"
+		},
+		"synonyms": {
+			"fields": {
+				"keyword": {
+					"type": "keyword"
+				}
 			},
-			"synonyms": {
-				"fields": {
-					"keyword": {
-						"type": "keyword"
-					}
-				},
-				"store": true,
-				"type": "text"
-			},
-			"uid": {
-				"store": true,
-				"type": "keyword"
-			}
+			"store": true,
+			"type": "text"
+		},
+		"uid": {
+			"store": true,
+			"type": "keyword"
 		}
 	}
 }
