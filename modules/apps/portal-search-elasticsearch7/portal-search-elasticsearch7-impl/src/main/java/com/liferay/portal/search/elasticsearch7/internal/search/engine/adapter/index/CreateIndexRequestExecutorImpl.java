@@ -65,8 +65,13 @@ public class CreateIndexRequestExecutorImpl
 				new org.elasticsearch.action.admin.indices.create.
 					CreateIndexRequest(createIndexRequest.getIndexName());
 
-		elasticsearchCreateIndexRequest.mapping(
-			"_doc", createIndexRequest.getMappings(), XContentType.JSON);
+		if (createIndexRequest.getMappings() != null) {
+			ClassLoaderUtil.getWithContextClassLoader(
+				() -> elasticsearchCreateIndexRequest.mapping(
+					"_doc", createIndexRequest.getMappings(),
+					XContentType.JSON),
+				getClass());
+		}
 
 		if (createIndexRequest.getSource() != null) {
 			ClassLoaderUtil.getWithContextClassLoader(
