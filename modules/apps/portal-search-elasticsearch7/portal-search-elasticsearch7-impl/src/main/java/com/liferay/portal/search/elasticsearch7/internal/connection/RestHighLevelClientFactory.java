@@ -15,6 +15,7 @@
 package com.liferay.portal.search.elasticsearch7.internal.connection;
 
 import com.liferay.petra.function.transform.TransformUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.search.elasticsearch7.internal.util.ClassLoaderUtil;
 
 import java.io.IOException;
@@ -70,20 +71,25 @@ public class RestHighLevelClientFactory {
 	public RestHighLevelClient newRestHighLevelClient() {
 		RestClientBuilder restClientBuilder = RestClient.builder(
 			_getHttpHosts()
-		).setDefaultHeaders(
-			new Header[] {
-				new BasicHeader(
-					HttpHeaders.ACCEPT,
-					"application/vnd.elasticsearch+json;compatible-with=7"),
-				new BasicHeader(
-					HttpHeaders.CONTENT_TYPE,
-					"application/vnd.elasticsearch+json;compatible-with=7")
-			}
 		).setHttpClientConfigCallback(
 			this::_customizeHttpClient
 		).setRequestConfigCallback(
 			this::_customizeRequestConfig
 		);
+
+		if (GetterUtil.getBoolean(
+				System.getProperty("esApiCompatibilityEnabled"))) {
+
+			restClientBuilder.setDefaultHeaders(
+				new Header[] {
+					new BasicHeader(
+						HttpHeaders.ACCEPT,
+						"application/vnd.elasticsearch+json;compatible-with=7"),
+					new BasicHeader(
+						HttpHeaders.CONTENT_TYPE,
+						"application/vnd.elasticsearch+json;compatible-with=7")
+				});
+		}
 
 		return ClassLoaderUtil.getWithContextClassLoader(
 			() -> new RestHighLevelClient(restClientBuilder), getClass());
