@@ -14,10 +14,15 @@
 
 package com.liferay.portal.search.elasticsearch7.internal.search.engine.adapter.search;
 
+import com.liferay.portal.search.elasticsearch7.internal.connection.ElasticsearchClientResolver;
 import com.liferay.portal.search.engine.adapter.search.ClearScrollRequest;
 import com.liferay.portal.search.engine.adapter.search.ClearScrollResponse;
 
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
+
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Gustavo Lima
@@ -28,7 +33,41 @@ public class ClearScrollRequestExecutorImpl
 
 	@Override
 	public ClearScrollResponse execute(ClearScrollRequest clearScrollRequest) {
-		return null;
+		org.elasticsearch.action.search.ClearScrollRequest
+			elasticsearchClearScrollRequest =
+				new org.elasticsearch.action.search.ClearScrollRequest();
+
+		elasticsearchClearScrollRequest.addScrollId(
+			clearScrollRequest.getScrollId());
+
+		org.elasticsearch.action.search.ClearScrollResponse
+			clearScrollResponse = _getClearScrollResponse(
+				clearScrollRequest, elasticsearchClearScrollRequest);
+
+		return new ClearScrollResponse(clearScrollResponse.isSucceeded());
 	}
+
+	private org.elasticsearch.action.search.ClearScrollResponse
+		_getClearScrollResponse(
+			ClearScrollRequest clearScrollRequest,
+			org.elasticsearch.action.search.ClearScrollRequest
+				elasticsearchClearScrollRequest) {
+
+		RestHighLevelClient restHighLevelClient =
+			_elasticsearchClientResolver.getRestHighLevelClient(
+				clearScrollRequest.getConnectionId(),
+				clearScrollRequest.isPreferLocalCluster());
+
+		try {
+			return restHighLevelClient.clearScroll(
+				elasticsearchClearScrollRequest, RequestOptions.DEFAULT);
+		}
+		catch (Exception exception) {
+			throw new RuntimeException(exception.getMessage(), exception);
+		}
+	}
+
+	@Reference
+	private ElasticsearchClientResolver _elasticsearchClientResolver;
 
 }
