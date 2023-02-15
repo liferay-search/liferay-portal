@@ -72,8 +72,8 @@ public class CountSearchRequestExecutorImpl
 		countSearchResponse.setCount(totalHits.value);
 
 		_commonSearchResponseAssembler.assemble(
-			searchSourceBuilder, searchResponse, countSearchRequest,
-			countSearchResponse);
+			ExecutorUtil.toString(searchSourceBuilder, _log), searchResponse,
+			countSearchRequest, countSearchResponse);
 
 		if (_log.isDebugEnabled()) {
 			_log.debug(

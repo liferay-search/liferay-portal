@@ -202,9 +202,7 @@ public class SearchSearchRequestAssemblerImpl
 		SearchTimeValue scrollTimeValue =
 			searchSearchRequest.getScrollTimeValue();
 
-		if ((scrollTimeValue != null) &&
-			(searchSearchRequest.getScrollId() == null)) {
-
+		if (scrollTimeValue != null) {
 			TimeUnit timeUnit = scrollTimeValue.getTimeUnit();
 
 			long minutes = timeUnit.toMinutes(scrollTimeValue.getDuration());

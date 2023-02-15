@@ -49,39 +49,44 @@ public class SearchSearchRequestExecutorImpl
 	public SearchSearchResponse execute(
 		SearchSearchRequest searchSearchRequest) {
 
-		SearchRequest searchRequest = new SearchRequest(
-			searchSearchRequest.getIndexNames());
-
-		if (searchSearchRequest.isRequestCache()) {
-			searchRequest.requestCache(searchSearchRequest.isRequestCache());
-		}
-
-		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-
-		_searchSearchRequestAssembler.assemble(
-			searchSourceBuilder, searchSearchRequest, searchRequest);
-
-		if (_log.isTraceEnabled()) {
-			String prettyPrintedRequestString = _getPrettyPrintedRequestString(
-				searchSourceBuilder);
-
-			_log.trace("Search query: " + prettyPrintedRequestString);
-		}
-
 		SearchResponse searchResponse = null;
+		SearchSearchResponse searchSearchResponse = new SearchSearchResponse();
+		String searchRequestString = "";
 
 		if (searchSearchRequest.getScrollId() != null) {
 			searchResponse = _getScrollSearchResponse(searchSearchRequest);
+
+			searchRequestString = searchSearchRequest.getScrollId();
 		}
 		else {
+			SearchRequest searchRequest = new SearchRequest();
+
+			if (searchSearchRequest.isRequestCache()) {
+				searchRequest.requestCache(
+					searchSearchRequest.isRequestCache());
+			}
+
+			SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+
+			_searchSearchRequestAssembler.assemble(
+				searchSourceBuilder, searchSearchRequest, searchRequest);
+
+			if (_log.isTraceEnabled()) {
+				String prettyPrintedRequestString =
+					_getPrettyPrintedRequestString(searchSourceBuilder);
+
+				_log.trace("Search query: " + prettyPrintedRequestString);
+			}
+
 			searchResponse = getSearchResponse(
 				searchRequest, searchSearchRequest);
+
+			searchRequestString = ExecutorUtil.toString(
+				searchSourceBuilder, _log);
 		}
 
-		SearchSearchResponse searchSearchResponse = new SearchSearchResponse();
-
 		_searchSearchResponseAssembler.assemble(
-			searchSourceBuilder, searchResponse, searchSearchRequest,
+			searchRequestString, searchResponse, searchSearchRequest,
 			searchSearchResponse);
 
 		if (_log.isDebugEnabled()) {

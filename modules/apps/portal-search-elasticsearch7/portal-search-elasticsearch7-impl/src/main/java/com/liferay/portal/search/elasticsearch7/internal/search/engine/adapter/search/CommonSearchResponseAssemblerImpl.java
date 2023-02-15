@@ -33,14 +33,12 @@ import java.util.Map;
 
 import org.apache.lucene.search.FuzzyQuery;
 
-import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.common.Strings;
 import org.elasticsearch.core.TimeValue;
 import org.elasticsearch.index.search.MatchQueryParser;
 import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.Aggregations;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.profile.SearchProfileShardResult;
 import org.elasticsearch.search.profile.query.QueryProfileShardResult;
 import org.elasticsearch.xcontent.ToXContent;
@@ -60,13 +58,13 @@ public class CommonSearchResponseAssemblerImpl
 
 	@Override
 	public void assemble(
-		SearchSourceBuilder searchSourceBuilder, SearchResponse searchResponse,
+		String searchRequestString, SearchResponse searchResponse,
 		BaseSearchRequest baseSearchRequest,
 		BaseSearchResponse baseSearchResponse) {
 
 		_setExecutionProfile(searchResponse, baseSearchResponse);
 		_setExecutionTime(searchResponse, baseSearchResponse);
-		_setSearchRequestString(searchSourceBuilder, baseSearchResponse);
+		_setSearchRequestString(searchRequestString, baseSearchResponse);
 		setSearchResponseString(
 			searchResponse, baseSearchRequest, baseSearchResponse);
 		_setTerminatedEarly(searchResponse, baseSearchResponse);
@@ -84,19 +82,6 @@ public class CommonSearchResponseAssemblerImpl
 		if (baseSearchRequest.isIncludeResponseString()) {
 			baseSearchResponse.setSearchResponseString(
 				searchResponse.toString());
-		}
-	}
-
-	protected String toString(SearchSourceBuilder searchSourceBuilder) {
-		try {
-			return searchSourceBuilder.toString();
-		}
-		catch (ElasticsearchException elasticsearchException) {
-			if (_log.isDebugEnabled()) {
-				_log.debug(elasticsearchException);
-			}
-
-			return elasticsearchException.getMessage();
 		}
 	}
 
@@ -198,12 +183,11 @@ public class CommonSearchResponseAssemblerImpl
 	}
 
 	private void _setSearchRequestString(
-		SearchSourceBuilder searchSourceBuilder,
-		BaseSearchResponse baseSearchResponse) {
+		String searchRequestString, BaseSearchResponse baseSearchResponse) {
 
 		baseSearchResponse.setSearchRequestString(
 			StringUtil.removeSubstrings(
-				toString(searchSourceBuilder), ADJUST_PURE_NEGATIVE_STRING,
+				searchRequestString, ADJUST_PURE_NEGATIVE_STRING,
 				AUTO_GENERATE_SYNONYMS_PHRASE_QUERY_STRING, BOOST_STRING,
 				FUZZY_TRANSPOSITIONS_STRING, LENIENT_STRING,
 				MAX_EXPANSIONS_STRING, OPERATOR_STRING, PREFIX_LENGTH_STRING,

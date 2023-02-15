@@ -14,19 +14,29 @@
 
 package com.liferay.portal.search.elasticsearch7.internal.search.engine.adapter.search;
 
-import com.liferay.portal.search.engine.adapter.search.SearchSearchRequest;
-import com.liferay.portal.search.engine.adapter.search.SearchSearchResponse;
+import com.liferay.portal.kernel.log.Log;
 
-import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.ElasticsearchException;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 
 /**
- * @author Michael C. Han
+ * @author Gustavo Lima
  */
-public interface SearchSearchResponseAssembler {
+public class ExecutorUtil {
 
-	public void assemble(
-		String searchRequestString, SearchResponse searchResponse,
-		SearchSearchRequest searchSearchRequest,
-		SearchSearchResponse searchSearchResponse);
+	protected static String toString(
+		SearchSourceBuilder searchSourceBuilder, Log log) {
+
+		try {
+			return searchSourceBuilder.toString();
+		}
+		catch (ElasticsearchException elasticsearchException) {
+			if (log.isDebugEnabled()) {
+				log.debug(elasticsearchException);
+			}
+
+			return elasticsearchException.getMessage();
+		}
+	}
 
 }
