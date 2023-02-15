@@ -119,14 +119,7 @@ public class SLAInstanceResultWorkflowMetricsReindexer
 			document -> new IndexDocumentRequest(
 				_slaInstanceResultWorkflowMetricsIndexer.getIndexName(
 					companyId),
-				document) {
-
-				{
-					setType(
-						_slaInstanceResultWorkflowMetricsIndexer.
-							getIndexType());
-				}
-			}
+				document)
 		).forEach(
 			bulkDocumentRequest::addBulkableDocumentRequest
 		);
