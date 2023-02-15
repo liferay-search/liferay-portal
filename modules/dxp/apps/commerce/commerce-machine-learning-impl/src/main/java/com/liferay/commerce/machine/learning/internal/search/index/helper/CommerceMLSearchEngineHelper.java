@@ -16,7 +16,7 @@ package com.liferay.commerce.machine.learning.internal.search.index.helper;
 
 import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactory;
-import com.liferay.portal.kernel.json.JSONUtil;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -53,17 +53,11 @@ public class CommerceMLSearchEngineHelper {
 			indexName);
 
 		try {
-			createIndexRequest.setSource(
-				JSONUtil.put(
-					"mappings",
-					_jsonFactory.createJSONObject(
-						StringUtil.read(getClass(), indexMappingFileName))
-				).put(
-					"settings",
-					_jsonFactory.createJSONObject(
-						StringUtil.read(
-							getClass(), "/META-INF/search/settings.json"))
-				).toString());
+			createIndexRequest.setMappings(
+				_readJSONResource(indexMappingFileName));
+
+			createIndexRequest.setSettings(
+				_readJSONResource("/META-INF/search/settings.json"));
 		}
 		catch (JSONException jsonException) {
 			_log.error(jsonException);
@@ -112,6 +106,13 @@ public class CommerceMLSearchEngineHelper {
 			searchEngineAdapter.execute(indicesExistsIndexRequest);
 
 		return indicesExistsIndexResponse.isExists();
+	}
+
+	private String _readJSONResource(String fileName) throws JSONException {
+		JSONObject jsonObject = _jsonFactory.createJSONObject(
+			StringUtil.read(getClass(), fileName));
+
+		return jsonObject.toString();
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
