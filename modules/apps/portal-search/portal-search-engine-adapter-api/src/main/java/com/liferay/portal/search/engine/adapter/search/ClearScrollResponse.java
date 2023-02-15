@@ -14,27 +14,19 @@
 
 package com.liferay.portal.search.engine.adapter.search;
 
-import org.osgi.annotation.versioning.ProviderType;
-
 /**
- * @author Michael C. Han
+ * @author Gustavo Lima
  */
-@ProviderType
-public interface SearchRequestExecutor {
+public class ClearScrollResponse implements SearchResponse {
 
-	public ClearScrollResponse executeSearchRequest(
-		ClearScrollRequest clearScrollRequest);
+	public ClearScrollResponse(int numFreed) {
+		_numFreed = numFreed;
+	}
 
-	public CountSearchResponse executeSearchRequest(
-		CountSearchRequest countSearchRequest);
+	public int getNumFreed() {
+		return _numFreed;
+	}
 
-	public MultisearchSearchResponse executeSearchRequest(
-		MultisearchSearchRequest multisearchSearchRequest);
-
-	public SearchSearchResponse executeSearchRequest(
-		SearchSearchRequest searchSearchRequest);
-
-	public SuggestSearchResponse executeSearchRequest(
-		SuggestSearchRequest suggestSearchRequest);
+	private final int _numFreed;
 
 }

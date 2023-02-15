@@ -14,27 +14,31 @@
 
 package com.liferay.portal.search.engine.adapter.search;
 
-import org.osgi.annotation.versioning.ProviderType;
+import com.liferay.portal.search.engine.adapter.ccr.CrossClusterRequest;
 
 /**
- * @author Michael C. Han
+ * @author Gustavo Lima
  */
-@ProviderType
-public interface SearchRequestExecutor {
+public class ClearScrollRequest
+	extends CrossClusterRequest implements SearchRequest<ClearScrollResponse> {
 
-	public ClearScrollResponse executeSearchRequest(
-		ClearScrollRequest clearScrollRequest);
+	public ClearScrollRequest(String scrollId) {
+		setPreferLocalCluster(true);
 
-	public CountSearchResponse executeSearchRequest(
-		CountSearchRequest countSearchRequest);
+		_scrollId = scrollId;
+	}
 
-	public MultisearchSearchResponse executeSearchRequest(
-		MultisearchSearchRequest multisearchSearchRequest);
+	@Override
+	public ClearScrollResponse accept(
+		SearchRequestExecutor searchRequestExecutor) {
 
-	public SearchSearchResponse executeSearchRequest(
-		SearchSearchRequest searchSearchRequest);
+		return searchRequestExecutor.executeSearchRequest(this);
+	}
 
-	public SuggestSearchResponse executeSearchRequest(
-		SuggestSearchRequest suggestSearchRequest);
+	public String getScrollId() {
+		return _scrollId;
+	}
+
+	private final String _scrollId;
 
 }
