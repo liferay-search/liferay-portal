@@ -14,6 +14,8 @@
 
 package com.liferay.portal.search.elasticsearch7.internal.search.engine.adapter.search;
 
+import com.liferay.portal.search.engine.adapter.search.ClearScrollRequest;
+import com.liferay.portal.search.engine.adapter.search.ClearScrollResponse;
 import com.liferay.portal.search.engine.adapter.search.CountSearchRequest;
 import com.liferay.portal.search.engine.adapter.search.CountSearchResponse;
 import com.liferay.portal.search.engine.adapter.search.MultisearchSearchRequest;
@@ -36,6 +38,13 @@ import org.osgi.service.component.annotations.Reference;
 )
 public class ElasticsearchSearchRequestExecutor
 	implements SearchRequestExecutor {
+
+	@Override
+	public ClearScrollResponse executeSearchRequest(
+		ClearScrollRequest clearScrollRequest) {
+
+		return _clearScrollRequestExecutor.execute(clearScrollRequest);
+	}
 
 	@Override
 	public CountSearchResponse executeSearchRequest(
@@ -65,6 +74,9 @@ public class ElasticsearchSearchRequestExecutor
 
 		return _suggestSearchRequestExecutor.execute(suggestSearchRequest);
 	}
+
+	@Reference
+	private ClearScrollRequestExecutor _clearScrollRequestExecutor;
 
 	@Reference
 	private CountSearchRequestExecutor _countSearchRequestExecutor;
