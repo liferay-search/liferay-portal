@@ -107,6 +107,10 @@ public class SearchSearchRequest
 		return _scoreEnabled;
 	}
 
+	public String getScrollId() {
+		return _scrollId;
+	}
+
 	public SearchTimeValue getScrollTimeValue() {
 		return _scrollTimeValue;
 	}
@@ -255,6 +259,10 @@ public class SearchSearchRequest
 		_scoreEnabled = scoreEnabled;
 	}
 
+	public void setScrollId(String scrollId) {
+		_scrollId = scrollId;
+	}
+
 	public void setScrollTimeValue(SearchTimeValue scrollTimeValue) {
 		_scrollTimeValue = scrollTimeValue;
 	}
@@ -314,6 +322,7 @@ public class SearchSearchRequest
 	private boolean _luceneSyntax;
 	private String _preference;
 	private Boolean _scoreEnabled;
+	private String _scrollId;
 	private SearchTimeValue _scrollTimeValue;
 	private String[] _selectedFieldNames;
 	private Integer _size;
