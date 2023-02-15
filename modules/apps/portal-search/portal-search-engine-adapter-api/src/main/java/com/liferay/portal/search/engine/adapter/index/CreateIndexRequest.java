@@ -18,6 +18,8 @@ import com.liferay.portal.search.engine.adapter.ccr.CrossClusterRequest;
 
 /**
  * @author Michael C. Han
+ * @author Joshua Cords
+ * @author Tibor Lipusz
  */
 public class CreateIndexRequest
 	extends CrossClusterRequest implements IndexRequest<CreateIndexResponse> {
@@ -46,6 +48,10 @@ public class CreateIndexRequest
 		return _mappings;
 	}
 
+	public String getSettings() {
+		return _settings;
+	}
+
 	public String getSource() {
 		return _source;
 	}
@@ -54,12 +60,17 @@ public class CreateIndexRequest
 		_mappings = mappings;
 	}
 
+	public void setSettings(String settings) {
+		_settings = settings;
+	}
+
 	public void setSource(String source) {
 		_source = source;
 	}
 
 	private final String _indexName;
 	private String _mappings;
+	private String _settings;
 	private String _source;
 
 }
