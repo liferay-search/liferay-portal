@@ -18,7 +18,6 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -82,20 +81,10 @@ public abstract class BaseWorkflowMetricsIndex implements WorkflowMetricsIndex {
 			CreateIndexRequest createIndexRequest = new CreateIndexRequest(
 				indexName);
 
-			createIndexRequest.setSource(
-				JSONUtil.put(
-					"mappings",
-					JSONUtil.put(
-						"_doc",
-						() -> {
-							JSONObject jsonObject = _readJSONObject(
-								"mappings.json");
+			createIndexRequest.setMappings(
+				_readJSONResource(getIndexType() + "-mappings.json"));
 
-							return jsonObject.get(getIndexType());
-						})
-				).put(
-					"settings", _readJSONObject("settings.json")
-				).toString());
+			createIndexRequest.setSettings(_readJSONResource("settings.json"));
 
 			searchEngineAdapter.execute(createIndexRequest);
 
@@ -118,9 +107,11 @@ public abstract class BaseWorkflowMetricsIndex implements WorkflowMetricsIndex {
 		return indicesExistsIndexResponse.isExists();
 	}
 
-	private JSONObject _readJSONObject(String fileName) throws JSONException {
-		return JSONFactoryUtil.createJSONObject(
+	private String _readJSONResource(String fileName) throws JSONException {
+		JSONObject jsonObject = JSONFactoryUtil.createJSONObject(
 			StringUtil.read(getClass(), "/META-INF/search/" + fileName));
+
+		return jsonObject.toString();
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
