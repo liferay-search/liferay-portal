@@ -14,6 +14,11 @@
 
 package com.liferay.portal.search.tuning.synonyms.web.internal.index;
 
+import com.liferay.portal.kernel.json.JSONException;
+import com.liferay.portal.kernel.json.JSONFactory;
+import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
 import com.liferay.portal.search.engine.adapter.index.CreateIndexRequest;
@@ -25,6 +30,8 @@ import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Adam Brandizzi
+ * @author Joshua Cords
+ * @author Tibor Lipusz
  */
 @Component(service = SynonymSetIndexCreator.class)
 public class SynonymSetIndexCreatorImpl implements SynonymSetIndexCreator {
@@ -34,9 +41,16 @@ public class SynonymSetIndexCreatorImpl implements SynonymSetIndexCreator {
 		CreateIndexRequest createIndexRequest = new CreateIndexRequest(
 			synonymSetIndexName.getIndexName());
 
-		createIndexRequest.setMappings(_readIndexMappings());
+		try {
+			createIndexRequest.setMappings(
+				_readJSONResource(_INDEX_MAPPINGS_RESOURCE_NAME));
 
-		createIndexRequest.setSource(_readIndexSettings());
+			createIndexRequest.setSettings(
+				_readJSONResource(_INDEX_SETTINGS_RESOURCE_NAME));
+		}
+		catch (JSONException jsonException) {
+			_log.error(jsonException);
+		}
 
 		_searchEngineAdapter.execute(createIndexRequest);
 	}
@@ -49,19 +63,24 @@ public class SynonymSetIndexCreatorImpl implements SynonymSetIndexCreator {
 		_searchEngineAdapter.execute(deleteIndexRequest);
 	}
 
-	protected static final String INDEX_MAPPINGS_RESOURCE_NAME =
+	private String _readJSONResource(String fileName) throws JSONException {
+		JSONObject jsonObject = _jsonFactory.createJSONObject(
+			StringUtil.read(getClass(), fileName));
+
+		return jsonObject.toString();
+	}
+
+	private static final String _INDEX_MAPPINGS_RESOURCE_NAME =
 		"/META-INF/search/liferay-search-tuning-synonyms-index-mappings.json";
 
-	protected static final String INDEX_SETTINGS_RESOURCE_NAME =
+	private static final String _INDEX_SETTINGS_RESOURCE_NAME =
 		"/META-INF/search/liferay-search-tuning-synonyms-index-settings.json";
 
-	private String _readIndexMappings() {
-		return StringUtil.read(getClass(), INDEX_MAPPINGS_RESOURCE_NAME);
-	}
+	private static final Log _log = LogFactoryUtil.getLog(
+		SynonymSetIndexCreatorImpl.class);
 
-	private String _readIndexSettings() {
-		return StringUtil.read(getClass(), INDEX_SETTINGS_RESOURCE_NAME);
-	}
+	@Reference
+	private JSONFactory _jsonFactory;
 
 	@Reference
 	private SearchEngineAdapter _searchEngineAdapter;
