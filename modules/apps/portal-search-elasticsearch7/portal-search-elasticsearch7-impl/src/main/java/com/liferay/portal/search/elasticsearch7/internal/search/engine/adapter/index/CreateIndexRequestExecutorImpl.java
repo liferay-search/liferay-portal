@@ -34,6 +34,8 @@ import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Michael C. Han
+ * @author Joshua Cords
+ * @author Tibor Lipusz
  */
 @Component(service = CreateIndexRequestExecutor.class)
 public class CreateIndexRequestExecutorImpl
@@ -70,6 +72,13 @@ public class CreateIndexRequestExecutorImpl
 				() -> elasticsearchCreateIndexRequest.mapping(
 					"_doc", createIndexRequest.getMappings(),
 					XContentType.JSON),
+				getClass());
+		}
+
+		if (createIndexRequest.getSettings() != null) {
+			ClassLoaderUtil.getWithContextClassLoader(
+				() -> elasticsearchCreateIndexRequest.settings(
+					createIndexRequest.getSettings(), XContentType.JSON),
 				getClass());
 		}
 
