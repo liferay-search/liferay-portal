@@ -64,31 +64,31 @@ public class CommonSearchSourceBuilderAssemblerImpl
 
 	@Override
 	public void assemble(
-		SearchSourceBuilder searchSourceBuilder,
-		BaseSearchRequest baseSearchRequest, SearchRequest searchRequest) {
+		BaseSearchRequest baseSearchRequest, SearchRequest searchRequest,
+		SearchSourceBuilder searchSourceBuilder) {
 
-		_setAggregations(searchSourceBuilder, baseSearchRequest);
-		_setExplain(searchSourceBuilder, baseSearchRequest);
-		_setFacets(searchSourceBuilder, baseSearchRequest);
-		_setIndexBoosts(searchSourceBuilder, baseSearchRequest);
-		_setIndices(searchRequest, baseSearchRequest);
-		_setMinScore(searchSourceBuilder, baseSearchRequest);
-		_setPipelineAggregations(searchSourceBuilder, baseSearchRequest);
-		_setPostFilter(searchSourceBuilder, baseSearchRequest);
-		setQuery(searchSourceBuilder, baseSearchRequest);
-		_setRequestCache(searchRequest, baseSearchRequest);
-		_setRescorer(searchSourceBuilder, baseSearchRequest);
-		_setStatsRequests(searchSourceBuilder, baseSearchRequest);
-		_setTimeout(searchSourceBuilder, baseSearchRequest);
-		_setTrackTotalHits(searchSourceBuilder, baseSearchRequest);
-		_setTypes(searchRequest, baseSearchRequest);
+		_setAggregations(baseSearchRequest, searchSourceBuilder);
+		_setExplain(baseSearchRequest, searchSourceBuilder);
+		_setFacets(baseSearchRequest, searchSourceBuilder);
+		_setIndexBoosts(baseSearchRequest, searchSourceBuilder);
+		_setIndices(baseSearchRequest, searchRequest);
+		_setMinScore(baseSearchRequest, searchSourceBuilder);
+		_setPipelineAggregations(baseSearchRequest, searchSourceBuilder);
+		_setPostFilter(baseSearchRequest, searchSourceBuilder);
+		setQuery(baseSearchRequest, searchSourceBuilder);
+		_setRequestCache(baseSearchRequest, searchRequest);
+		_setRescorer(baseSearchRequest, searchSourceBuilder);
+		_setStatsRequests(baseSearchRequest, searchSourceBuilder);
+		_setTimeout(baseSearchRequest, searchSourceBuilder);
+		_setTrackTotalHits(baseSearchRequest, searchSourceBuilder);
+		_setTypes(baseSearchRequest, searchRequest);
 
 		searchRequest.source(searchSourceBuilder);
 	}
 
 	protected void setQuery(
-		SearchSourceBuilder searchSourceBuilder,
-		BaseSearchRequest baseSearchRequest) {
+		BaseSearchRequest baseSearchRequest,
+		SearchSourceBuilder searchSourceBuilder) {
 
 		searchSourceBuilder.query(_getQueryBuilder(baseSearchRequest));
 	}
@@ -285,8 +285,8 @@ public class CommonSearchSourceBuilderAssemblerImpl
 	}
 
 	private void _setAggregations(
-		SearchSourceBuilder searchSourceBuilder,
-		BaseSearchRequest baseSearchRequest) {
+		BaseSearchRequest baseSearchRequest,
+		SearchSourceBuilder searchSourceBuilder) {
 
 		Map<String, Aggregation> aggregationsMap =
 			baseSearchRequest.getAggregationsMap();
@@ -305,8 +305,8 @@ public class CommonSearchSourceBuilderAssemblerImpl
 	}
 
 	private void _setExplain(
-		SearchSourceBuilder searchSourceBuilder,
-		BaseSearchRequest baseSearchRequest) {
+		BaseSearchRequest baseSearchRequest,
+		SearchSourceBuilder searchSourceBuilder) {
 
 		if (baseSearchRequest.getExplain() != null) {
 			searchSourceBuilder.explain(baseSearchRequest.getExplain());
@@ -314,8 +314,8 @@ public class CommonSearchSourceBuilderAssemblerImpl
 	}
 
 	private void _setFacets(
-		SearchSourceBuilder searchSourceBuilder,
-		BaseSearchRequest baseSearchRequest) {
+		BaseSearchRequest baseSearchRequest,
+		SearchSourceBuilder searchSourceBuilder) {
 
 		_facetTranslator.translate(
 			searchSourceBuilder, baseSearchRequest.getQuery71(),
@@ -324,8 +324,8 @@ public class CommonSearchSourceBuilderAssemblerImpl
 	}
 
 	private void _setIndexBoosts(
-		SearchSourceBuilder searchSourceBuilder,
-		BaseSearchRequest baseSearchRequest) {
+		BaseSearchRequest baseSearchRequest,
+		SearchSourceBuilder searchSourceBuilder) {
 
 		Map<String, Float> indexBoosts = baseSearchRequest.getIndexBoosts();
 
@@ -335,14 +335,14 @@ public class CommonSearchSourceBuilderAssemblerImpl
 	}
 
 	private void _setIndices(
-		SearchRequest searchRequest, BaseSearchRequest baseSearchRequest) {
+		BaseSearchRequest baseSearchRequest, SearchRequest searchRequest) {
 
 		searchRequest.indices(baseSearchRequest.getIndexNames());
 	}
 
 	private void _setMinScore(
-		SearchSourceBuilder searchSourceBuilder,
-		BaseSearchRequest baseSearchRequest) {
+		BaseSearchRequest baseSearchRequest,
+		SearchSourceBuilder searchSourceBuilder) {
 
 		if (baseSearchRequest.getMinimumScore() != null) {
 			searchSourceBuilder.minScore(baseSearchRequest.getMinimumScore());
@@ -350,8 +350,8 @@ public class CommonSearchSourceBuilderAssemblerImpl
 	}
 
 	private void _setPipelineAggregations(
-		SearchSourceBuilder searchSourceBuilder,
-		BaseSearchRequest baseSearchRequest) {
+		BaseSearchRequest baseSearchRequest,
+		SearchSourceBuilder searchSourceBuilder) {
 
 		Map<String, PipelineAggregation> pipelineAggregationsMap =
 			baseSearchRequest.getPipelineAggregationsMap();
@@ -372,8 +372,8 @@ public class CommonSearchSourceBuilderAssemblerImpl
 	}
 
 	private void _setPostFilter(
-		SearchSourceBuilder searchSourceBuilder,
-		BaseSearchRequest baseSearchRequest) {
+		BaseSearchRequest baseSearchRequest,
+		SearchSourceBuilder searchSourceBuilder) {
 
 		QueryBuilder queryBuilder = _buildQueryBuilder(baseSearchRequest);
 
@@ -388,7 +388,7 @@ public class CommonSearchSourceBuilderAssemblerImpl
 	}
 
 	private void _setRequestCache(
-		SearchRequest searchRequest, BaseSearchRequest baseSearchRequest) {
+		BaseSearchRequest baseSearchRequest, SearchRequest searchRequest) {
 
 		if (baseSearchRequest.getRequestCache() != null) {
 			searchRequest.requestCache(baseSearchRequest.getRequestCache());
@@ -396,8 +396,8 @@ public class CommonSearchSourceBuilderAssemblerImpl
 	}
 
 	private void _setRescorer(
-		SearchSourceBuilder searchSourceBuilder,
-		BaseSearchRequest baseSearchRequest) {
+		BaseSearchRequest baseSearchRequest,
+		SearchSourceBuilder searchSourceBuilder) {
 
 		_setRescorers(searchSourceBuilder, baseSearchRequest.getRescores());
 
@@ -453,8 +453,8 @@ public class CommonSearchSourceBuilderAssemblerImpl
 	}
 
 	private void _setStatsRequests(
-		SearchSourceBuilder searchSourceBuilder,
-		BaseSearchRequest baseSearchRequest) {
+		BaseSearchRequest baseSearchRequest,
+		SearchSourceBuilder searchSourceBuilder) {
 
 		List<StatsRequest> statsRequests = baseSearchRequest.getStatsRequests();
 
@@ -466,8 +466,8 @@ public class CommonSearchSourceBuilderAssemblerImpl
 	}
 
 	private void _setTimeout(
-		SearchSourceBuilder searchSourceBuilder,
-		BaseSearchRequest baseSearchRequest) {
+		BaseSearchRequest baseSearchRequest,
+		SearchSourceBuilder searchSourceBuilder) {
 
 		if (baseSearchRequest.getTimeoutInMilliseconds() != null) {
 			searchSourceBuilder.timeout(
@@ -477,8 +477,8 @@ public class CommonSearchSourceBuilderAssemblerImpl
 	}
 
 	private void _setTrackTotalHits(
-		SearchSourceBuilder searchSourceBuilder,
-		BaseSearchRequest baseSearchRequest) {
+		BaseSearchRequest baseSearchRequest,
+		SearchSourceBuilder searchSourceBuilder) {
 
 		if (baseSearchRequest.getTrackTotalHits() != null) {
 			searchSourceBuilder.trackTotalHits(
@@ -487,7 +487,7 @@ public class CommonSearchSourceBuilderAssemblerImpl
 	}
 
 	private void _setTypes(
-		SearchRequest searchRequest, BaseSearchRequest baseSearchRequest) {
+		BaseSearchRequest baseSearchRequest, SearchRequest searchRequest) {
 
 		if (baseSearchRequest.getTypes() != null) {
 			searchRequest.types(baseSearchRequest.getTypes());

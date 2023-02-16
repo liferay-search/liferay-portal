@@ -25,7 +25,8 @@ import org.elasticsearch.action.search.SearchResponse;
 public interface SearchResponseTranslator {
 
 	public void populate(
+		SearchResponse searchResponse,
 		SearchSearchResponse searchSearchResponse,
-		SearchResponse searchResponse, SearchSearchRequest searchSearchRequest);
+		SearchSearchRequest searchSearchRequest);
 
 }

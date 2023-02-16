@@ -58,26 +58,26 @@ public class CommonSearchResponseAssemblerImpl
 
 	@Override
 	public void assemble(
-		String searchRequestString, SearchResponse searchResponse,
-		BaseSearchRequest baseSearchRequest,
-		BaseSearchResponse baseSearchResponse) {
+		BaseSearchResponse baseSearchResponse,
+		BaseSearchRequest baseSearchRequest, SearchResponse searchResponse,
+		String searchRequestString) {
 
-		_setExecutionProfile(searchResponse, baseSearchResponse);
-		_setExecutionTime(searchResponse, baseSearchResponse);
-		_setSearchRequestString(searchRequestString, baseSearchResponse);
+		_setExecutionProfile(baseSearchResponse, searchResponse);
+		_setExecutionTime(baseSearchResponse, searchResponse);
+		_setSearchRequestString(baseSearchResponse, searchRequestString);
 		setSearchResponseString(
-			searchResponse, baseSearchRequest, baseSearchResponse);
-		_setTerminatedEarly(searchResponse, baseSearchResponse);
-		_setTimedOut(searchResponse, baseSearchResponse);
+			baseSearchResponse, baseSearchRequest, searchResponse);
+		_setTerminatedEarly(baseSearchResponse, searchResponse);
+		_setTimedOut(baseSearchResponse, searchResponse);
 
 		_updateStatsResponses(
-			baseSearchResponse, searchResponse.getAggregations(),
+			searchResponse.getAggregations(), baseSearchResponse,
 			baseSearchRequest.getStatsRequests());
 	}
 
 	protected void setSearchResponseString(
-		SearchResponse searchResponse, BaseSearchRequest baseSearchRequest,
-		BaseSearchResponse baseSearchResponse) {
+		BaseSearchResponse baseSearchResponse,
+		BaseSearchRequest baseSearchRequest, SearchResponse searchResponse) {
 
 		if (baseSearchRequest.isIncludeResponseString()) {
 			baseSearchResponse.setSearchResponseString(
@@ -145,7 +145,7 @@ public class CommonSearchResponseAssemblerImpl
 	}
 
 	private void _setExecutionProfile(
-		SearchResponse searchResponse, BaseSearchResponse baseSearchResponse) {
+		BaseSearchResponse baseSearchResponse, SearchResponse searchResponse) {
 
 		Map<String, SearchProfileShardResult> searchProfileShardResults =
 			searchResponse.getProfileResults();
@@ -175,7 +175,7 @@ public class CommonSearchResponseAssemblerImpl
 	}
 
 	private void _setExecutionTime(
-		SearchResponse searchResponse, BaseSearchResponse baseSearchResponse) {
+		BaseSearchResponse baseSearchResponse, SearchResponse searchResponse) {
 
 		TimeValue tookTimeValue = searchResponse.getTook();
 
@@ -183,7 +183,7 @@ public class CommonSearchResponseAssemblerImpl
 	}
 
 	private void _setSearchRequestString(
-		String searchRequestString, BaseSearchResponse baseSearchResponse) {
+		BaseSearchResponse baseSearchResponse, String searchRequestString) {
 
 		baseSearchResponse.setSearchRequestString(
 			StringUtil.removeSubstrings(
@@ -195,28 +195,28 @@ public class CommonSearchResponseAssemblerImpl
 	}
 
 	private void _setTerminatedEarly(
-		SearchResponse searchResponse, BaseSearchResponse baseSearchResponse) {
+		BaseSearchResponse baseSearchResponse, SearchResponse searchResponse) {
 
 		baseSearchResponse.setTerminatedEarly(
 			GetterUtil.getBoolean(searchResponse.isTerminatedEarly()));
 	}
 
 	private void _setTimedOut(
-		SearchResponse searchResponse, BaseSearchResponse baseSearchResponse) {
+		BaseSearchResponse baseSearchResponse, SearchResponse searchResponse) {
 
 		baseSearchResponse.setTimedOut(searchResponse.isTimedOut());
 	}
 
 	private void _updateStatsResponse(
-		BaseSearchResponse baseSearchResponse,
-		Map<String, Aggregation> aggregationsMap, StatsRequest statsRequest) {
+		Map<String, Aggregation> aggregationsMap,
+		BaseSearchResponse baseSearchResponse, StatsRequest statsRequest) {
 
 		baseSearchResponse.addStatsResponse(
 			_statsTranslator.translateResponse(aggregationsMap, statsRequest));
 	}
 
 	private void _updateStatsResponses(
-		BaseSearchResponse baseSearchResponse, Aggregations aggregations,
+		Aggregations aggregations, BaseSearchResponse baseSearchResponse,
 		Collection<StatsRequest> statsRequests) {
 
 		if (aggregations == null) {
@@ -224,17 +224,17 @@ public class CommonSearchResponseAssemblerImpl
 		}
 
 		_updateStatsResponses(
-			baseSearchResponse, aggregations.getAsMap(), statsRequests);
+			aggregations.getAsMap(), baseSearchResponse, statsRequests);
 	}
 
 	private void _updateStatsResponses(
-		BaseSearchResponse baseSearchResponse,
 		Map<String, Aggregation> aggregationsMap,
+		BaseSearchResponse baseSearchResponse,
 		Collection<StatsRequest> statsRequests) {
 
 		for (StatsRequest statsRequest : statsRequests) {
 			_updateStatsResponse(
-				baseSearchResponse, aggregationsMap, statsRequest);
+				aggregationsMap, baseSearchResponse, statsRequest);
 		}
 	}
 

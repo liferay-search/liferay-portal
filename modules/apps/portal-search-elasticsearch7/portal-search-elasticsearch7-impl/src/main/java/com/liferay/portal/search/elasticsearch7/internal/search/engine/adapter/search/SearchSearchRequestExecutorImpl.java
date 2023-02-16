@@ -51,7 +51,7 @@ public class SearchSearchRequestExecutorImpl
 
 		SearchResponse searchResponse = null;
 		SearchSearchResponse searchSearchResponse = new SearchSearchResponse();
-		String searchRequestString = "";
+		String searchRequestString;
 
 		if (searchSearchRequest.getScrollId() != null) {
 			searchResponse = _getScrollSearchResponse(searchSearchRequest);
@@ -69,7 +69,7 @@ public class SearchSearchRequestExecutorImpl
 			SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
 			_searchSearchRequestAssembler.assemble(
-				searchSourceBuilder, searchSearchRequest, searchRequest);
+				searchRequest, searchSourceBuilder, searchSearchRequest);
 
 			if (_log.isTraceEnabled()) {
 				String prettyPrintedRequestString =
@@ -86,7 +86,7 @@ public class SearchSearchRequestExecutorImpl
 		}
 
 		_searchSearchResponseAssembler.assemble(
-			searchRequestString, searchResponse, searchSearchRequest,
+			searchResponse, searchRequestString, searchSearchRequest,
 			searchSearchResponse);
 
 		if (_log.isDebugEnabled()) {

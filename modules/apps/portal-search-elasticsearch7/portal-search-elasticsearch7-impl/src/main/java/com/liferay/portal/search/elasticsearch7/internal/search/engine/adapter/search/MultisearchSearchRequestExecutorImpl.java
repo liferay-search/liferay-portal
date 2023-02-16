@@ -68,7 +68,7 @@ public class MultisearchSearchRequestExecutorImpl
 					new SearchSourceBuilder();
 
 				_searchSearchRequestAssembler.assemble(
-					searchSourceBuilder, searchSearchRequest, searchRequest);
+					searchRequest, searchSourceBuilder, searchSearchRequest);
 
 				SearchRequestHolder searchRequestHolder =
 					new SearchRequestHolder(
@@ -106,9 +106,10 @@ public class MultisearchSearchRequestExecutorImpl
 				searchRequestHolder.getSearchSearchRequest();
 
 			_searchSearchResponseAssembler.assemble(
+				searchResponse,
 				ExecutorUtil.toString(
 					searchRequestHolder.getSearchSourceBuilder(), _log),
-				searchResponse, searchSearchRequest, searchSearchResponse);
+				searchSearchRequest, searchSearchResponse);
 
 			if (_log.isDebugEnabled()) {
 				_log.debug(

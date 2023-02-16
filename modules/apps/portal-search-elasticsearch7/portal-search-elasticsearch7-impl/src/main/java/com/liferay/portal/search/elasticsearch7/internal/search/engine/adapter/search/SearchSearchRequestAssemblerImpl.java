@@ -58,11 +58,11 @@ public class SearchSearchRequestAssemblerImpl
 
 	@Override
 	public void assemble(
-		SearchSourceBuilder searchSourceBuilder,
-		SearchSearchRequest searchSearchRequest, SearchRequest searchRequest) {
+		SearchRequest searchRequest, SearchSourceBuilder searchSourceBuilder,
+		SearchSearchRequest searchSearchRequest) {
 
 		_commonSearchSourceBuilderAssembler.assemble(
-			searchSourceBuilder, searchSearchRequest, searchRequest);
+			searchSearchRequest, searchRequest, searchSourceBuilder);
 
 		_setFetchSource(searchSourceBuilder, searchSearchRequest);
 		_setGroupBy(searchSourceBuilder, searchSearchRequest);

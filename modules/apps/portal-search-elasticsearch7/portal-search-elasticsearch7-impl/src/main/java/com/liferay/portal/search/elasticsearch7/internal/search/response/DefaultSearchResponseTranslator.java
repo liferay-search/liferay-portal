@@ -73,8 +73,8 @@ public class DefaultSearchResponseTranslator
 
 	@Override
 	public void populate(
-		SearchSearchResponse searchSearchResponse,
 		SearchResponse searchResponse,
+		SearchSearchResponse searchSearchResponse,
 		SearchSearchRequest searchSearchRequest) {
 
 		SearchHits searchHits = searchResponse.getHits();

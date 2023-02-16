@@ -25,7 +25,7 @@ import org.elasticsearch.action.search.SearchResponse;
 public interface SearchSearchResponseAssembler {
 
 	public void assemble(
-		String searchRequestString, SearchResponse searchResponse,
+		SearchResponse searchResponse, String searchRequestString,
 		SearchSearchRequest searchSearchRequest,
 		SearchSearchResponse searchSearchResponse);
 

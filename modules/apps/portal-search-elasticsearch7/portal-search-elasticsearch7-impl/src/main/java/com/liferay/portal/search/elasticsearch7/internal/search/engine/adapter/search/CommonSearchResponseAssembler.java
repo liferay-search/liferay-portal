@@ -25,8 +25,8 @@ import org.elasticsearch.action.search.SearchResponse;
 public interface CommonSearchResponseAssembler {
 
 	public void assemble(
-		String searchRequestString, SearchResponse searchResponse,
-		BaseSearchRequest baseSearchRequest,
-		BaseSearchResponse baseSearchResponse);
+		BaseSearchResponse baseSearchResponse,
+		BaseSearchRequest baseSearchRequest, SearchResponse searchResponse,
+		String searchRequestString);
 
 }

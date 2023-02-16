@@ -25,7 +25,7 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 public interface CommonSearchSourceBuilderAssembler {
 
 	public void assemble(
-		SearchSourceBuilder searchSourceBuilder,
-		BaseSearchRequest baseSearchRequest, SearchRequest searchRequest);
+		BaseSearchRequest baseSearchRequest, SearchRequest searchRequest,
+		SearchSourceBuilder searchSourceBuilder);
 
 }

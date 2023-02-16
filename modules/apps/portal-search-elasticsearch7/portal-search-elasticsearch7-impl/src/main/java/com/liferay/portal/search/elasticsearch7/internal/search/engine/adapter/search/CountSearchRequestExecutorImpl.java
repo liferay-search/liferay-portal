@@ -54,7 +54,7 @@ public class CountSearchRequestExecutorImpl
 		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
 		_commonSearchSourceBuilderAssembler.assemble(
-			searchSourceBuilder, countSearchRequest, searchRequest);
+			countSearchRequest, searchRequest, searchSourceBuilder);
 
 		searchSourceBuilder.size(0);
 		searchSourceBuilder.trackScores(false);
@@ -72,8 +72,8 @@ public class CountSearchRequestExecutorImpl
 		countSearchResponse.setCount(totalHits.value);
 
 		_commonSearchResponseAssembler.assemble(
-			ExecutorUtil.toString(searchSourceBuilder, _log), searchResponse,
-			countSearchRequest, countSearchResponse);
+			countSearchResponse, countSearchRequest, searchResponse,
+			ExecutorUtil.toString(searchSourceBuilder, _log));
 
 		if (_log.isDebugEnabled()) {
 			_log.debug(

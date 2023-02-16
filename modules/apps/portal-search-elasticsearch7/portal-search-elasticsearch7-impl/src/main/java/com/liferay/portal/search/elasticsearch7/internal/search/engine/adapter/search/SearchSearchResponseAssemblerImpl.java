@@ -61,13 +61,13 @@ public class SearchSearchResponseAssemblerImpl
 
 	@Override
 	public void assemble(
-		String searchRequestString, SearchResponse searchResponse,
+		SearchResponse searchResponse, String searchRequestString,
 		SearchSearchRequest searchSearchRequest,
 		SearchSearchResponse searchSearchResponse) {
 
 		_commonSearchResponseAssembler.assemble(
-			searchRequestString, searchResponse, searchSearchRequest,
-			searchSearchResponse);
+			searchSearchResponse, searchSearchRequest, searchResponse,
+			searchRequestString);
 
 		_addAggregations(
 			searchResponse, searchSearchResponse, searchSearchRequest);
@@ -78,7 +78,7 @@ public class SearchSearchResponseAssemblerImpl
 		_setSearchTimeValue(searchResponse, searchSearchResponse);
 
 		_searchResponseTranslator.populate(
-			searchSearchResponse, searchResponse, searchSearchRequest);
+			searchResponse, searchSearchResponse, searchSearchRequest);
 	}
 
 	@Override

@@ -698,7 +698,7 @@ public class CommonSearchSourceBuilderAssemblerImplTest {
 		SearchRequest searchRequest = new SearchRequest();
 
 		_commonSearchSourceBuilderAssembler.assemble(
-			searchSourceBuilder, searchSearchRequest, searchRequest);
+			searchSearchRequest, searchRequest, searchSourceBuilder);
 
 		SearchAssert.assertSearch(
 			_liferayIndexFixture.getRestHighLevelClient(), searchSourceBuilder,
