@@ -199,7 +199,7 @@ public class SearchSearchRequestAssemblerImpl
 		SearchRequest searchRequest, SearchSearchRequest searchSearchRequest) {
 
 		SearchTimeValue scrollTimeValue =
-			searchSearchRequest.getScrollTimeValue();
+			searchSearchRequest.getScrollSearchTimeValue();
 
 		if (scrollTimeValue != null) {
 			searchRequest.scroll(

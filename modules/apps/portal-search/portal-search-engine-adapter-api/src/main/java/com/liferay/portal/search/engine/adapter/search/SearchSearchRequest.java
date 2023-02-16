@@ -111,8 +111,8 @@ public class SearchSearchRequest
 		return _scrollId;
 	}
 
-	public SearchTimeValue getScrollTimeValue() {
-		return _scrollTimeValue;
+	public SearchTimeValue getScrollSearchTimeValue() {
+		return _scrollSearchTimeValue;
 	}
 
 	public String[] getSelectedFieldNames() {
@@ -263,8 +263,10 @@ public class SearchSearchRequest
 		_scrollId = scrollId;
 	}
 
-	public void setScrollTimeValue(SearchTimeValue scrollTimeValue) {
-		_scrollTimeValue = scrollTimeValue;
+	public void setScrollSearchTimeValue(
+		SearchTimeValue scrollSearchTimeValue) {
+
+		_scrollSearchTimeValue = scrollSearchTimeValue;
 	}
 
 	public void setSelectedFieldNames(String... selectedFieldNames) {
@@ -323,7 +325,7 @@ public class SearchSearchRequest
 	private String _preference;
 	private Boolean _scoreEnabled;
 	private String _scrollId;
-	private SearchTimeValue _scrollTimeValue;
+	private SearchTimeValue _scrollSearchTimeValue;
 	private String[] _selectedFieldNames;
 	private Integer _size;
 	private List<Sort> _sorts = new ArrayList<>();

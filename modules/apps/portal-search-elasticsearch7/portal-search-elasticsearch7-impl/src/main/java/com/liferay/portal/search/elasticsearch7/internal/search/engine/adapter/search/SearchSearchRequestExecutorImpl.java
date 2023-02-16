@@ -139,7 +139,7 @@ public class SearchSearchRequestExecutorImpl
 		searchScrollRequest.scroll(
 			TimeValue.timeValueMinutes(
 				ExecutorUtil.getMinutes(
-					searchSearchRequest.getScrollTimeValue())));
+					searchSearchRequest.getScrollSearchTimeValue())));
 
 		try {
 			return restHighLevelClient.scroll(
