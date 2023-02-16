@@ -37,10 +37,6 @@ public class ClearScrollRequest
 		return _scrollId;
 	}
 
-	public void setScrollId(String scrollId) {
-		_scrollId = scrollId;
-	}
-
-	private String _scrollId;
+	private final String _scrollId;
 
 }
