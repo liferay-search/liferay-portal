@@ -14,6 +14,8 @@
 
 package com.liferay.portal.search.elasticsearch7.internal.search.engine.adapter.search;
 
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.search.elasticsearch7.internal.connection.ElasticsearchClientResolver;
 import com.liferay.portal.search.engine.adapter.search.ClearScrollRequest;
 import com.liferay.portal.search.engine.adapter.search.ClearScrollResponse;
@@ -44,6 +46,17 @@ public class ClearScrollRequestExecutorImpl
 			clearScrollResponse = _getClearScrollResponse(
 				clearScrollRequest, elasticsearchClearScrollRequest);
 
+		if (_log.isInfoEnabled() && clearScrollResponse.isSucceeded()) {
+			_log.info(
+				"Clear scroll request to scrollId:" +
+					clearScrollRequest.getScrollId() + " executed");
+		}
+		else if (_log.isWarnEnabled() && !clearScrollResponse.isSucceeded()) {
+			_log.warn(
+				"Clear scroll request to scrollId:" +
+					clearScrollRequest.getScrollId() + " failed");
+		}
+
 		return new ClearScrollResponse(clearScrollResponse.isSucceeded());
 	}
 
@@ -66,6 +79,9 @@ public class ClearScrollRequestExecutorImpl
 			throw new RuntimeException(exception.getMessage(), exception);
 		}
 	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		ClearScrollRequestExecutorImpl.class);
 
 	@Reference
 	private ElasticsearchClientResolver _elasticsearchClientResolver;
