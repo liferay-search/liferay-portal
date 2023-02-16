@@ -15,6 +15,9 @@
 package com.liferay.portal.search.elasticsearch7.internal.search.engine.adapter.search;
 
 import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.search.searcher.SearchTimeValue;
+
+import java.util.concurrent.TimeUnit;
 
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -23,6 +26,12 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
  * @author Gustavo Lima
  */
 public class ExecutorUtil {
+
+	protected static long getMinutes(SearchTimeValue searchTimeValue) {
+		TimeUnit timeUnit = searchTimeValue.getTimeUnit();
+
+		return timeUnit.toMinutes(searchTimeValue.getDuration());
+	}
 
 	protected static String toString(
 		SearchSourceBuilder searchSourceBuilder, Log log) {

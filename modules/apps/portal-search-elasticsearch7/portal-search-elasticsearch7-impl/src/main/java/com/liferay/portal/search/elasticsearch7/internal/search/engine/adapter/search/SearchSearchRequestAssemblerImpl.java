@@ -39,7 +39,6 @@ import com.liferay.portal.search.stats.StatsRequestBuilder;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.core.TimeValue;
@@ -203,11 +202,9 @@ public class SearchSearchRequestAssemblerImpl
 			searchSearchRequest.getScrollTimeValue();
 
 		if (scrollTimeValue != null) {
-			TimeUnit timeUnit = scrollTimeValue.getTimeUnit();
-
-			long minutes = timeUnit.toMinutes(scrollTimeValue.getDuration());
-
-			searchRequest.scroll(TimeValue.timeValueMinutes(minutes));
+			searchRequest.scroll(
+				TimeValue.timeValueMinutes(
+					ExecutorUtil.getMinutes(scrollTimeValue)));
 		}
 	}
 

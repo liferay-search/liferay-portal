@@ -21,11 +21,8 @@ import com.liferay.portal.search.elasticsearch7.internal.connection.Elasticsearc
 import com.liferay.portal.search.elasticsearch7.internal.util.JSONUtil;
 import com.liferay.portal.search.engine.adapter.search.SearchSearchRequest;
 import com.liferay.portal.search.engine.adapter.search.SearchSearchResponse;
-import com.liferay.portal.search.searcher.SearchTimeValue;
 
 import java.io.IOException;
-
-import java.util.concurrent.TimeUnit;
 
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -117,15 +114,6 @@ public class SearchSearchRequestExecutorImpl
 		}
 	}
 
-	private long _getMinutes(SearchSearchRequest searchSearchRequest) {
-		SearchTimeValue searchTimeValue =
-			searchSearchRequest.getScrollTimeValue();
-
-		TimeUnit timeUnit = searchTimeValue.getTimeUnit();
-
-		return timeUnit.toMinutes(searchTimeValue.getDuration());
-	}
-
 	private String _getPrettyPrintedRequestString(
 		SearchSourceBuilder searchSourceBuilder) {
 
@@ -149,7 +137,9 @@ public class SearchSearchRequestExecutorImpl
 			searchSearchRequest.getScrollId());
 
 		searchScrollRequest.scroll(
-			TimeValue.timeValueMinutes(_getMinutes(searchSearchRequest)));
+			TimeValue.timeValueMinutes(
+				ExecutorUtil.getMinutes(
+					searchSearchRequest.getScrollTimeValue())));
 
 		try {
 			return restHighLevelClient.scroll(
