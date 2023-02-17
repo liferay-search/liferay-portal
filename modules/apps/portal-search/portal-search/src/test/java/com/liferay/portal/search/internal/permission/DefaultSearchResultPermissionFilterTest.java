@@ -26,6 +26,9 @@ import com.liferay.portal.kernel.search.facet.FacetPostProcessor;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.util.Props;
 import com.liferay.portal.search.configuration.DefaultSearchResultPermissionFilterConfiguration;
+import com.liferay.portal.search.legacy.searcher.SearchRequestBuilderFactory;
+import com.liferay.portal.search.searcher.SearchRequest;
+import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
 
 import java.util.Arrays;
@@ -53,13 +56,17 @@ public class DefaultSearchResultPermissionFilterTest {
 	public void setUp() {
 		_mockSearchResultPermissionFilterConfiguration(0, 100);
 
+		SearchRequestBuilderFactory searchRequestBuilderFactory =
+			_getSearchRequestBuilderFactory();
+
 		_defaultSearchResultPermissionFilter =
 			new DefaultSearchResultPermissionFilter(
 				Mockito.mock(FacetPostProcessor.class),
 				Mockito.mock(IndexerRegistry.class), _permissionChecker,
 				Mockito.mock(Props.class),
 				Mockito.mock(RelatedEntryIndexerRegistry.class),
-				_searchFunction, _searchResultPermissionFilterConfiguration);
+				_searchFunction, searchRequestBuilderFactory,
+				_searchResultPermissionFilterConfiguration);
 	}
 
 	@Test
@@ -76,6 +83,7 @@ public class DefaultSearchResultPermissionFilterTest {
 		_mockGetHits(spyHits, searchContext);
 		_mockIsGroupAdmin(true, searchContext);
 		_mockQueryConfig(true, searchContext);
+		_mockSearchRequest(4, 10);
 		_mockStartAndEnd(20, searchContext, 0);
 
 		Hits resultHits = _defaultSearchResultPermissionFilter.search(
@@ -100,6 +108,7 @@ public class DefaultSearchResultPermissionFilterTest {
 		_mockGetHits(spyHits, searchContext);
 		_mockIsGroupAdmin(false, searchContext);
 		_mockQueryConfig(true, searchContext);
+		_mockSearchRequest(4, 10);
 		_mockStartAndEnd(20, searchContext, 0);
 
 		Hits resultHits = _defaultSearchResultPermissionFilter.search(
@@ -108,6 +117,28 @@ public class DefaultSearchResultPermissionFilterTest {
 		Document[] docs = resultHits.getDocs();
 
 		Assert.assertEquals(Arrays.toString(docs), 2, docs.length);
+	}
+
+	private SearchRequestBuilderFactory _getSearchRequestBuilderFactory() {
+		SearchRequestBuilderFactory searchRequestBuilderFactory = Mockito.mock(
+			SearchRequestBuilderFactory.class);
+
+		SearchRequestBuilder searchRequestBuilder = Mockito.mock(
+			SearchRequestBuilder.class);
+
+		Mockito.when(
+			searchRequestBuilderFactory.builder(Mockito.any())
+		).thenReturn(
+			searchRequestBuilder
+		);
+
+		Mockito.when(
+			searchRequestBuilder.build()
+		).thenReturn(
+			_searchRequest
+		);
+
+		return searchRequestBuilderFactory;
 	}
 
 	private void _mockFilterHits(SearchContext searchContext) {
@@ -195,6 +226,20 @@ public class DefaultSearchResultPermissionFilterTest {
 		);
 	}
 
+	private void _mockSearchRequest(int from, int size) {
+		Mockito.when(
+			_searchRequest.getFrom()
+		).thenReturn(
+			from
+		);
+
+		Mockito.when(
+			_searchRequest.getSize()
+		).thenReturn(
+			size
+		);
+	}
+
 	private void _mockSearchResultPermissionFilterConfiguration(
 		int permissionFilteredSearchResultAccurateCountThreshold,
 		int searchQueryResultWindowLimit) {
@@ -253,6 +298,9 @@ public class DefaultSearchResultPermissionFilterTest {
 
 		return document;
 	}
+
+	private static final SearchRequest _searchRequest = Mockito.mock(
+		SearchRequest.class);
 
 	private DefaultSearchResultPermissionFilter
 		_defaultSearchResultPermissionFilter;
