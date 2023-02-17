@@ -15,7 +15,6 @@
 package com.liferay.portal.search.elasticsearch7.internal;
 
 import com.liferay.petra.string.StringBundler;
-import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.search.SearchPaginationUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -30,7 +29,6 @@ import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.search.suggest.QuerySuggester;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Props;
-import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.aggregation.Aggregation;
 import com.liferay.portal.search.aggregation.pipeline.PipelineAggregation;
@@ -84,33 +82,6 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 			int start = searchContext.getStart();
 
 			SearchRequest searchRequest = _getSearchRequest(searchContext);
-
-			Integer from = searchRequest.getFrom();
-			Integer size = searchRequest.getSize();
-
-			if ((from == null) && (size != null)) {
-				end = size;
-				start = 0;
-			}
-			else if ((from != null) && (size != null)) {
-				end = from + size;
-				start = from;
-			}
-
-			if (start == QueryUtil.ALL_POS) {
-				start = 0;
-			}
-			else if (start < 0) {
-				throw new IllegalArgumentException("Invalid start " + start);
-			}
-
-			if (end == QueryUtil.ALL_POS) {
-				end = GetterUtil.getInteger(
-					_props.get(PropsKeys.INDEX_SEARCH_LIMIT));
-			}
-			else if (end < 0) {
-				throw new IllegalArgumentException("Invalid end " + end);
-			}
 
 			SearchResponseBuilder searchResponseBuilder =
 				_getSearchResponseBuilder(searchContext);
@@ -509,9 +480,6 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 
 	@Reference
 	private IndexNameBuilder _indexNameBuilder;
-
-	@Reference
-	private Props _props;
 
 	@Reference(target = "(search.engine.impl=Elasticsearch)")
 	private QuerySuggester _querySuggester;
