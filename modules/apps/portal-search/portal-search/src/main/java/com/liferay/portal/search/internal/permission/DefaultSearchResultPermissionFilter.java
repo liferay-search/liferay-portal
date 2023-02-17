@@ -93,43 +93,6 @@ public class DefaultSearchResultPermissionFilter
 		_setProps(props);
 	}
 
-	public int[] makeSureThatStartAndEndNotBeLowerThanZero(
-		int end, SearchContext searchContext, int start) {
-
-		if (_permissionFilteredSearchResultAccurateCountThreshold == 0) {
-			SearchRequest searchRequest = _getSearchRequest(searchContext);
-
-			Integer from = searchRequest.getFrom();
-			Integer size = searchRequest.getSize();
-
-			if ((from == null) && (size != null)) {
-				end = size;
-				start = 0;
-			}
-			else if ((from != null) && (size != null)) {
-				end = from + size;
-				start = from;
-			}
-		}
-
-		if (start == QueryUtil.ALL_POS) {
-			start = 0;
-		}
-		else if (start < 0) {
-			throw new IllegalArgumentException("Invalid start " + start);
-		}
-
-		if (end == QueryUtil.ALL_POS) {
-			end = GetterUtil.getInteger(
-				_props.get(PropsKeys.INDEX_SEARCH_LIMIT));
-		}
-		else if (end < 0) {
-			throw new IllegalArgumentException("Invalid end " + end);
-		}
-
-		return new int[] {start, end};
-	}
-
 	@Override
 	public Hits search(SearchContext searchContext) {
 		QueryConfig queryConfig = searchContext.getQueryConfig();
@@ -231,12 +194,11 @@ public class DefaultSearchResultPermissionFilter
 				}
 			}
 
-			int[] initialStartAndEnd = makeSureThatStartAndEndNotBeLowerThanZero( //please rename
-				start, searchContext, end);
-
-			searchContext.setStart(initialStartAndEnd[0]);
+			int[] initialStartAndEnd = _makeSureThatStartAndEndNotBeLowerThanZero( //please rename
+				end, searchContext, start);
 
 			searchContext.setEnd(initialStartAndEnd[1]);
+			searchContext.setStart(initialStartAndEnd[0]);
 		}
 
 		return _searchFunction.apply(searchContext);
@@ -380,6 +342,43 @@ public class DefaultSearchResultPermissionFilter
 		}
 
 		return false;
+	}
+
+	private int[] _makeSureThatStartAndEndNotBeLowerThanZero(
+		int end, SearchContext searchContext, int start) {
+
+		if (_permissionFilteredSearchResultAccurateCountThreshold == 0) {
+			SearchRequest searchRequest = _getSearchRequest(searchContext);
+
+			Integer from = searchRequest.getFrom();
+			Integer size = searchRequest.getSize();
+
+			if ((from == null) && (size != null)) {
+				end = size;
+				start = 0;
+			}
+			else if ((from != null) && (size != null)) {
+				end = from + size;
+				start = from;
+			}
+		}
+
+		if (start == QueryUtil.ALL_POS) {
+			start = 0;
+		}
+		else if (start < 0) {
+			throw new IllegalArgumentException("Invalid start " + start);
+		}
+
+		if (end == QueryUtil.ALL_POS) {
+			end = GetterUtil.getInteger(
+				_props.get(PropsKeys.INDEX_SEARCH_LIMIT));
+		}
+		else if (end < 0) {
+			throw new IllegalArgumentException("Invalid end " + end);
+		}
+
+		return new int[] {start, end};
 	}
 
 	private void _setProps(Props props) {
