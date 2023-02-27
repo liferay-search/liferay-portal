@@ -18,6 +18,8 @@ import com.liferay.dynamic.data.mapping.util.DDMIndexer;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.PortletPreferencesFactoryUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ArrayUtil;
@@ -74,7 +76,7 @@ public class SortPortletSharedSearchContributor
 	@Reference
 	protected DDMIndexer ddmIndexer;
 
-	private Sort _buildSort(String fieldValue, Locale locale) {
+	private Sort _buildSort(String fieldValue, long groupId, Locale locale) {
 		SortOrder sortOrder = SortOrder.ASC;
 
 		if (fieldValue.endsWith("+")) {
@@ -91,7 +93,9 @@ public class SortPortletSharedSearchContributor
 					fieldValue, locale, sortOrder);
 			}
 			catch (PortalException portalException) {
-				throw new RuntimeException(portalException);
+				if (_log.isWarnEnabled()) {
+					_log.warn(fieldValue + " is not a valid field name.");
+				}
 			}
 		}
 
@@ -122,7 +126,9 @@ public class SortPortletSharedSearchContributor
 		return stream.filter(
 			fieldValue -> !fieldValue.isEmpty()
 		).map(
-			fieldValue -> _buildSort(fieldValue, themeDisplay.getLocale())
+			fieldValue -> _buildSort(
+				fieldValue, themeDisplay.getScopeGroupId(),
+				themeDisplay.getLocale())
 		);
 	}
 
@@ -162,6 +168,9 @@ public class SortPortletSharedSearchContributor
 			throw new RuntimeException(portalException);
 		}
 	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		SortPortletSharedSearchContributor.class);
 
 	@Reference
 	private SortBuilderFactory _sortBuilderFactory;
