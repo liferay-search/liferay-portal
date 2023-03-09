@@ -49,6 +49,7 @@ import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.search.configuration.DefaultSearchResultPermissionFilterConfiguration;
+import com.liferay.portal.search.searcher.SearchRequest;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -400,7 +401,19 @@ public class DefaultSearchResultPermissionFilter
 					(oldDocs.length < amplifiedCount) ||
 					(amplifiedEnd >= hitsSize)) {
 
-					updateDocuments(filteredDocsCount, start, end);
+					SearchRequest searchRequest =
+						(SearchRequest)searchContext.getAttribute(
+							"search.request");
+
+					if ((searchRequest != null) &&
+						(searchRequest.getFrom() != null)) {
+
+						documents.addAll(0, standbyDocuments);
+						scores.addAll(0, standbyScores);
+					}
+					else {
+						updateDocuments(filteredDocsCount, start, end);
+					}
 
 					updateHits(hits, hitsSize - excludedDocsSize, startTime);
 
