@@ -24,6 +24,7 @@ import com.liferay.portal.search.elasticsearch7.internal.configuration.Elasticse
 import com.liferay.portal.search.engine.adapter.search.SearchSearchRequest;
 import com.liferay.portal.search.index.IndexNameBuilder;
 import com.liferay.portal.search.internal.legacy.searcher.SearchRequestBuilderFactoryImpl;
+import com.liferay.portal.search.internal.sort.SortsImpl;
 import com.liferay.portal.search.legacy.searcher.SearchRequestBuilderFactory;
 import com.liferay.portal.search.test.util.indexing.DocumentFixture;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
@@ -83,7 +84,9 @@ public class ElasticsearchIndexSearcherTest {
 				_searchRequestBuilderFactory.builder(
 					searchContext
 				).build(),
-				searchContext, Mockito.mock(Query.class), 0, 0);
+				searchContext, Mockito.mock(Query.class));
+
+		_elasticsearchIndexSearcher.setStartAndSize(searchSearchRequest, 0, 0);
 
 		Assert.assertTrue(searchSearchRequest.isBasicFacetSelection());
 		Assert.assertTrue(searchSearchRequest.isLuceneSyntax());
@@ -106,6 +109,8 @@ public class ElasticsearchIndexSearcherTest {
 		ReflectionTestUtil.setFieldValue(
 			elasticsearchIndexSearcher, "_searchRequestBuilderFactory",
 			searchRequestBuilderFactory);
+		ReflectionTestUtil.setFieldValue(
+			elasticsearchIndexSearcher, "_sorts", new SortsImpl());
 
 		return elasticsearchIndexSearcher;
 	}

@@ -42,6 +42,7 @@ import com.liferay.portal.search.internal.facet.ModifiedFacetImpl;
 import com.liferay.portal.search.internal.facet.NestedFacetImpl;
 import com.liferay.portal.search.internal.legacy.searcher.SearchRequestBuilderFactoryImpl;
 import com.liferay.portal.search.internal.legacy.searcher.SearchResponseBuilderFactoryImpl;
+import com.liferay.portal.search.internal.sort.SortsImpl;
 import com.liferay.portal.search.test.util.indexing.IndexingFixture;
 import com.liferay.portal.util.DigesterImpl;
 import com.liferay.portal.util.LocalizationImpl;
@@ -266,6 +267,8 @@ public class ElasticsearchIndexingFixture implements IndexingFixture {
 		ReflectionTestUtil.setFieldValue(
 			elasticsearchIndexSearcher, "_searchResponseBuilderFactory",
 			new SearchResponseBuilderFactoryImpl());
+		ReflectionTestUtil.setFieldValue(
+			elasticsearchIndexSearcher, "_sorts", new SortsImpl());
 
 		return elasticsearchIndexSearcher;
 	}
