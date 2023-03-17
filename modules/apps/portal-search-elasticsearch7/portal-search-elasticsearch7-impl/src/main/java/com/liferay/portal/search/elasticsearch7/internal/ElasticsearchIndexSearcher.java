@@ -85,6 +85,8 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 
 		stopWatch.start();
 
+		PointInTime pointInTime = null;
+
 		try {
 			int end = searchContext.getEnd();
 			int start = searchContext.getStart();
@@ -120,8 +122,6 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 
 			SearchSearchRequest searchSearchRequest = createSearchSearchRequest(
 				searchRequest, searchContext, query);
-
-			PointInTime pointInTime = null;
 
 			SearchSearchResponse searchSearchResponse = null;//why did we get rid of _getSearchResponseBuilder(), presumably because we only need to generated it once
 
@@ -172,10 +172,6 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 
 			_populateResponse(searchSearchResponse, searchContext);
 
-			if (pointInTime != null) {
-				_closePointInTime(pointInTime);
-			}
-
 			Hits hits = searchSearchResponse.getHits();//are we getting ALL the hits in the correct order? - we're just getting the last hits
 
 			hits.setStart(stopWatch.getStartTime());
@@ -199,6 +195,10 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 			return new HitsImpl();
 		}
 		finally {
+			if (pointInTime != null) {
+				_closePointInTime(pointInTime);
+			}
+
 			if (_log.isInfoEnabled()) {
 				stopWatch.stop();
 
