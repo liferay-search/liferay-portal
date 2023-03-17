@@ -121,57 +121,57 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 			SearchSearchRequest searchSearchRequest = createSearchSearchRequest(
 				searchRequest, searchContext, query);
 
-			PointInTime pointInTime = _createPointInTime(
-				searchContext, searchRequest);
+			PointInTime pointInTime = _createPointInTime(//should only create if end > maxWindow
+				searchContext, searchRequest);//we need to use PiT in our SearchSearchRequest
 
-			SearchSearchResponse searchSearchResponse = null;
+			SearchSearchResponse searchSearchResponse = null;//why did we get rid of _getSearchResponseBuilder(), presumably because we only need to generated it once
 
-			int maxWindow = 10000;
+			int maxWindow = 10000;//should be configurable from system settings
 
-			if (end > maxWindow) {
-				int searchAfterStart = 9999;
-				int maxWindowPages = end / maxWindow;
-				end = end % maxWindow;
-				size = 1;
-				start = start % maxWindow;
+			if (end > maxWindow) {//we should order the searches from earliest results to last - isn't this necessary anyways for compiling hits and dealing with searchAfter?
+				int searchAfterStart = 9999;//maxWindow - 1
+				int maxWindowPages = end / maxWindow;//is this going to round up always? Yes, so 20020 / 10000 = 2 maxWindowPages
+				end = end % maxWindow; //gets the remainder, 20020 % 10000 = 20
+				size = 1; //why?
+				start = start % maxWindow; //do we need to update the same start/end, so if start is 20, start stays 20
 
-				for (int i = 0; i < maxWindowPages; i++) {
-					setStartAndSize(
-						searchSearchRequest, searchAfterStart, size);
-
+				for (int i = 0; i < maxWindowPages; i++) {//for each windowPage
+					setStartAndSize( //don't think the method is worth it, just bring the code up
+						searchSearchRequest, searchAfterStart, size);//why is our first search start 9999 and size 1? - shouldn't it be start = start and size = maxWindow
+																	//talking with Gustavo, we're jumping to the last result - 10000. and then continuing to search after that. This causes problems for accuracy though - some of which we have already though
 					searchSearchResponse = _searchEngineAdapter.execute(
 						searchSearchRequest);
 
 					_searchAfter(searchSearchRequest, searchSearchResponse);
 
 					size = maxWindow;
-					searchAfterStart = 0;
-				}
+					searchAfterStart = 0;//and each following search start = 0? - we need to grab all results, see https://github.com/elastic/elasticsearch/issues/28068#issuecomment-375660535
+				}//maybe we could reduce the document size by modifying stored fields?
 			}
 
-			if (start != 0) {
+			if (start != 0) {//this does our first search (grabbing the first results), so if start was 20, it grabs 0-19. But why are we searching results before the requested start?
 				size = start - 1;
 
 				setStartAndSize(searchSearchRequest, 0, size);
 
-				searchSearchResponse = _searchEngineAdapter.execute(
+				searchSearchResponse = _searchEngineAdapter.execute(//won't this overwrite the previous searchSearchResponse?
 					searchSearchRequest);
 
 				_searchAfter(searchSearchRequest, searchSearchResponse);
 			}
 
-			size = end - start;
+			size = end - start;//in the case of 20 to 200020, start is still 20, end is now 20,size is now 0? This is wrong
 
 			setStartAndSize(searchSearchRequest, 0, size);
 
-			searchSearchResponse = _searchEngineAdapter.execute(
+			searchSearchResponse = _searchEngineAdapter.execute(//this looks like it wants to be the last search, searching for documents between the start and maxWindow
 				searchSearchRequest);
 
 			_populateResponse(searchSearchResponse, searchContext);
 
 			_closePointInTime(pointInTime);
 
-			Hits hits = searchSearchResponse.getHits();
+			Hits hits = searchSearchResponse.getHits();//are we getting ALL the hits in the correct order?
 
 			hits.setStart(stopWatch.getStartTime());
 
@@ -311,13 +311,13 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 		List<com.liferay.portal.search.sort.Sort> sortsSearch =
 			searchRequest.getSorts();
 
-		searchSearchRequest.setSorts(sortsKernel);
+		searchSearchRequest.setSorts(sortsKernel);//no reason to add these if they're null or empty right? looks like this could be an else with the below if
 		searchSearchRequest.setSorts(sortsSearch);
 
 		if ((sortsKernel == null) && sortsSearch.isEmpty()) {
 			searchSearchRequest.addSorts(_sorts.field("_scores"));
-			searchSearchRequest.addSorts(_sorts.field("modified_sortable"));
-		}
+			searchSearchRequest.addSorts(_sorts.field("modified_sortable"));//this tiebreaker shouldn't be necessary
+		}//	https://www.elastic.co/guide/en/elasticsearch/reference/current/paginate-search-results.html	All PIT search requests add an implicit sort tiebreaker field called _shard_doc, which can also be provided explicitly. If you cannot use a PIT, we recommend that you include a tiebreaker field in your sort. This tiebreaker field should contain a unique value for each document. If you don’t include a tiebreaker field, your paged results could miss or duplicate hits.
 
 		searchSearchRequest.setStats(searchContext.getStats());
 
@@ -411,7 +411,7 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 		PointInTime pointInTime = new PointInTime(
 			openPointInTimeResponse.pitId());
 
-		pointInTime.setKeepAlive("1m");
+		pointInTime.setKeepAlive("1m");//this should be configurable
 
 		return pointInTime;
 	}
@@ -521,7 +521,7 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 		setQuery(baseSearchRequest, searchRequest);
 	}
 
-	private void _searchAfter(
+	private void _searchAfter(//rename - _searchAfterStoreLastResult
 		SearchSearchRequest searchSearchRequest,
 		SearchSearchResponse searchSearchResponse) {
 
