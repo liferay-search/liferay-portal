@@ -121,26 +121,26 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 			SearchSearchRequest searchSearchRequest = createSearchSearchRequest(
 				searchRequest, searchContext, query);
 
-			PointInTime pointInTime = _createPointInTime(//should only create if end > maxWindow
-				searchContext, searchRequest);//we need to use PiT in our SearchSearchRequest
+			PointInTime pointInTime = null;
 
 			SearchSearchResponse searchSearchResponse = null;//why did we get rid of _getSearchResponseBuilder(), presumably because we only need to generated it once
 
 			int maxWindow = 10000;//should be configurable from system settings
 
 			if (end > maxWindow) {//we should order the searches from earliest results to last - isn't this necessary anyways for compiling hits and dealing with searchAfter?
-				int searchAfterStart = 9999;//maxWindow - 1
 				int maxWindowPages = end / maxWindow;//is this going to round up always? Yes, so 20020 / 10000 = 2 maxWindowPages
+				int searchAfterStart = 9999;//maxWindow - 1
 				end = end % maxWindow; //gets the remainder, 20020 % 10000 = 20
-				size = 1; //why?
+				pointInTime = _createPointInTime(searchContext, searchRequest);//we need to use PiT in our SearchSearchRequest
+				size = 1; //we're jumping to the last result - 10000. and then continuing to search after that. This causes problems for accuracy though - some of which we have already though
 				start = start % maxWindow; //do we need to update the same start/end, so if start is 20, start stays 20
-
+//if searching for the last page, could be just reverse the sorts??
 				for (int i = 0; i < maxWindowPages; i++) {//for each windowPage
 					setStartAndSize( //don't think the method is worth it, just bring the code up
 						searchSearchRequest, searchAfterStart, size);//why is our first search start 9999 and size 1? - shouldn't it be start = start and size = maxWindow
-																	//talking with Gustavo, we're jumping to the last result - 10000. and then continuing to search after that. This causes problems for accuracy though - some of which we have already though
+
 					searchSearchResponse = _searchEngineAdapter.execute(
-						searchSearchRequest);
+						searchSearchRequest);//we should only save a searchSearchResponse on the last search - except we need the last hit
 
 					_searchAfter(searchSearchRequest, searchSearchResponse);
 
@@ -169,9 +169,11 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 
 			_populateResponse(searchSearchResponse, searchContext);
 
-			_closePointInTime(pointInTime);
+			if (pointInTime != null) {
+				_closePointInTime(pointInTime);
+			}
 
-			Hits hits = searchSearchResponse.getHits();//are we getting ALL the hits in the correct order?
+			Hits hits = searchSearchResponse.getHits();//are we getting ALL the hits in the correct order? - we're just getting the last hits
 
 			hits.setStart(stopWatch.getStartTime());
 
