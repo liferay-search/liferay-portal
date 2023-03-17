@@ -131,7 +131,10 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 				int maxWindowPages = end / maxWindow;//is this going to round up always? Yes, so 20020 / 10000 = 2 maxWindowPages
 				int searchAfterStart = 9999;//maxWindow - 1
 				end = end % maxWindow; //gets the remainder, 20020 % 10000 = 20
-				pointInTime = _createPointInTime(searchContext, searchRequest);//we need to use PiT in our SearchSearchRequest
+
+				pointInTime = _createPointInTime(searchContext, searchRequest);
+				searchSearchRequest.setPointInTime(pointInTime);//we need to use PiT in our SearchSearchRequest
+
 				size = 1; //we're jumping to the last result - 10000. and then continuing to search after that. This causes problems for accuracy though - some of which we have already though
 				start = start % maxWindow; //do we need to update the same start/end, so if start is 20, start stays 20
 //if searching for the last page, could be just reverse the sorts??
@@ -149,12 +152,12 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 				}//maybe we could reduce the document size by modifying stored fields?
 			}
 
-			if (start != 0) {//this does our first search (grabbing the first results), so if start was 20, it grabs 0-19. But why are we searching results before the requested start?
+			if (start != 0) {//what if start was 20, it grabs 0-19. But why are we searching results here and then later? I guess we want to search everything between the large window and the last window
 				size = start - 1;
 
 				setStartAndSize(searchSearchRequest, 0, size);
 
-				searchSearchResponse = _searchEngineAdapter.execute(//won't this overwrite the previous searchSearchResponse?
+				searchSearchResponse = _searchEngineAdapter.execute(//won't this overwrite the previous searchSearchResponse? - yes
 					searchSearchRequest);
 
 				_searchAfter(searchSearchRequest, searchSearchResponse);
