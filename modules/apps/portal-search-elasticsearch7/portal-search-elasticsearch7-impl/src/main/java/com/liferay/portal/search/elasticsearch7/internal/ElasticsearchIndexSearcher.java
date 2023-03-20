@@ -129,7 +129,7 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 
 			if (end > maxWindow) {//we should order the searches from earliest results to last - isn't this necessary anyways for compiling hits and dealing with searchAfter?
 				int maxWindowPages = end / maxWindow;//is this going to round up always? Yes, so 20020 / 10000 = 2 maxWindowPages
-				int searchAfterStart = 9999;//maxWindow - 1
+				int searchAfterStart = 9999;//maxWindow - 1, couldnt this be maxWindow?
 				end = end % maxWindow; //gets the remainder, 20020 % 10000 = 20
 
 				pointInTime = _createPointInTime(searchContext, searchRequest);
@@ -140,22 +140,22 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 //if searching for the last page, could be just reverse the sorts??
 				for (int i = 0; i < maxWindowPages; i++) {//for each windowPage
 					setStartAndSize( //don't think the method is worth it, just bring the code up
-						searchSearchRequest, searchAfterStart, size);//why is our first search start 9999 and size 1? - shouldn't it be start = start and size = maxWindow
+						searchSearchRequest, searchAfterStart, size);//why is our first search start 9999 and size 1? - shouldn't it be start = start and size = maxWindow - no, we just want the last document of the first search (but the rest we need to ask for all documents)
 
 					searchSearchResponse = _searchEngineAdapter.execute(
 						searchSearchRequest);//we should only save a searchSearchResponse on the last search - except we need the last hit
 
 					_searchAfter(searchSearchRequest, searchSearchResponse);
-
+//is there a way to stop if we already hit the end result?
 					size = maxWindow;
 					searchAfterStart = 0;//and each following search start = 0? - we need to grab all results, see https://github.com/elastic/elasticsearch/issues/28068#issuecomment-375660535
 				}//maybe we could reduce the document size by modifying stored fields?
-			}
-
+			}//article 10000 is missed
+//how does this interact with DefaultPermissionFilterSearch?, this should be inside of the first if, because it relies on PiT. this searches 9980-9999 unnecessarily
 			if (start != 0) {//what if start was 20, it grabs 0-19. But why are we searching results here and then later? I guess we want to search everything between the large window and the last window
-				size = start - 1;
+				size = start - 1;//Result 20 is duplicated
 
-				setStartAndSize(searchSearchRequest, 0, size);
+				setStartAndSize(searchSearchRequest, 0, size);//this doesn't handle a basic search of page 2, Start 20 End 40
 
 				searchSearchResponse = _searchEngineAdapter.execute(//won't this overwrite the previous searchSearchResponse? - yes
 					searchSearchRequest);
