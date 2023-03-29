@@ -34,8 +34,18 @@ public class DDMTemplateUpgradeProcess extends UpgradeProcess {
 		long newClassNameId = _classNameLocalService.getClassNameId(
 			"com.liferay.portal.search.web.internal.search.bar.portlet." +
 				"SearchBarPortlet");
+
 		long resourceClassNameId = _classNameLocalService.getClassNameId(
 			"com.liferay.portlet.display.template.PortletDisplayTemplate");
+
+		_deleteOrphanedDefaultSearchBarPortletTemplate(
+			resourceClassNameId,
+			"com.liferay.portal.search.web.internal.search.bar.portlet." +
+				"display.context.SearchBarPortletDisplayContext");
+		_deleteOrphanedDefaultSearchBarPortletTemplate(
+			resourceClassNameId,
+			"com.liferay.portal.search.web.internal.search.bar.portlet." +
+				"SearchBarPortletDisplayContext");
 
 		_updateDDMTemplate(
 			newClassNameId,
@@ -49,6 +59,18 @@ public class DDMTemplateUpgradeProcess extends UpgradeProcess {
 			resourceClassNameId);
 	}
 
+	private void _deleteOrphanedDefaultSearchBarPortletTemplate(
+			long resourceClassNameId, String className)
+		throws Exception {
+
+		runSQL(
+			StringBundler.concat(
+				"delete from DDMTemplate where resourceClassNameId = ",
+				resourceClassNameId, " and classNameId = ",
+				_classNameLocalService.getClassNameId(className),
+				" and templateKey = ", _DEFAULT_SEARCH_BAR_TEMPLATE_KEY));
+	}
+
 	private void _updateDDMTemplate(
 			long newClassNameId, String oldClassName, long resourceClassNameId)
 		throws Exception {
@@ -60,6 +82,9 @@ public class DDMTemplateUpgradeProcess extends UpgradeProcess {
 				_classNameLocalService.getClassNameId(oldClassName),
 				" and resourceClassNameId = ", resourceClassNameId));
 	}
+
+	private static final String _DEFAULT_SEARCH_BAR_TEMPLATE_KEY =
+		"'SEARCH-BAR-LEFT-ALIGNED-ICON-FTL'";
 
 	private final ClassNameLocalService _classNameLocalService;
 
