@@ -14,17 +14,22 @@
 
 package com.liferay.search.experiences.ingest.web.internal.importer;
 
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.service.JournalArticleLocalService;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextFactory;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.PwdGenerator;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.Validator;
@@ -37,6 +42,8 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.portlet.PortletRequest;
+
+import org.apache.commons.lang.RandomStringUtils;
 
 /**
  * @author Petteri Karttunen
@@ -53,6 +60,8 @@ public class JournalArticleImporterImpl implements JournalArticleImporter {
 		_languageId = languageId;
 		_portletRequest = portletRequest;
 		_userIds = userIds;
+
+		_basicWebContentDDMStructureId = _getBasicWebContentDDMStructureId();
 	}
 
 	@Override
@@ -68,7 +77,8 @@ public class JournalArticleImporterImpl implements JournalArticleImporter {
 		try {
 			JournalArticle journalArticle =
 				_journalArticleLocalService.addArticle(
-					_nextUserId(), _nextGroupId(), 0,
+					RandomStringUtils.randomAlphanumeric(10), _nextUserId(),
+					_nextGroupId(), 0,
 					HashMapBuilder.put(
 						locale, title
 					).build(),
@@ -76,7 +86,7 @@ public class JournalArticleImporterImpl implements JournalArticleImporter {
 						locale, _createDescription(content)
 					).build(),
 					_createArticleXML(content, _languageId),
-					"BASIC-WEB-CONTENT", "BASIC-WEB-CONTENT",
+					_basicWebContentDDMStructureId, "BASIC-WEB-CONTENT",
 					_getServiceContext(assetTagNames, _portletRequest));
 
 			_ingestedTitles.add(title);
@@ -173,6 +183,24 @@ public class JournalArticleImporterImpl implements JournalArticleImporter {
 		return instanceId.toString();
 	}
 
+	private long _getBasicWebContentDDMStructureId() {
+		try {
+			Group globalGroup = GroupLocalServiceUtil.getCompanyGroup(
+				PortalUtil.getDefaultCompanyId());
+
+			DDMStructure ddmStructure =
+				DDMStructureLocalServiceUtil.getStructure(
+					globalGroup.getGroupId(),
+					PortalUtil.getClassNameId(JournalArticle.class.getName()),
+					"BASIC-WEB-CONTENT", true);
+
+			return ddmStructure.getStructureId();
+		}
+		catch (PortalException portalException) {
+			throw new RuntimeException(portalException);
+		}
+	}
+
 	private ServiceContext _getServiceContext(
 			String[] assetTagNames, PortletRequest portletRequest)
 		throws PortalException {
@@ -208,6 +236,7 @@ public class JournalArticleImporterImpl implements JournalArticleImporter {
 	private static final Log _log = LogFactoryUtil.getLog(
 		JournalArticleImporterImpl.class);
 
+	private final long _basicWebContentDDMStructureId;
 	private final List<String> _failedTitles = new ArrayList<>();
 	private final List<Long> _groupIds;
 	private int _groupIdx;
