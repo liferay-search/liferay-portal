@@ -28,7 +28,7 @@ public class TagUtil {
 	}
 
 	public static boolean isValidTag(String tag) {
-		if (Validator.isBlank(tag)) {
+		if (Validator.isBlank(tag) || (tag.length() > 75)) {
 			return false;
 		}
 
