@@ -162,38 +162,46 @@ public class ElasticsearchSearchEngineAdapterSearchRequestTest {
 
 	@Test
 	public void testDeepPaginationWithSearchAfter() throws IOException {
-		_indexSuggestKeyword(RandomTestUtil.randomString());
-		_indexSuggestKeyword(RandomTestUtil.randomString());
-		_indexSuggestKeyword(RandomTestUtil.randomString());
+		long startTime = System.currentTimeMillis();
 
-		SearchSearchRequest searchSearchRequest = new SearchSearchRequest();
+		for (int j = 0; j < 10; j++) {
+			for (int i = 0; i < 100; i++) {
+				_indexSuggestKeyword(RandomTestUtil.randomString());
+			}
 
-		searchSearchRequest.setIndexNames(_INDEX_NAME);
-		searchSearchRequest.setPointInTime(_getPointInTime());
-		searchSearchRequest.setQuery(new MatchAllQuery());
-		searchSearchRequest.setSize(1);
-		searchSearchRequest.setSorts(new Sort[] {new Sort("_count", true)});
-		searchSearchRequest.setStart(0);
+			SearchSearchRequest searchSearchRequest = new SearchSearchRequest();
 
-		SearchSearchResponse searchSearchResponse =
-			_searchEngineAdapter.execute(searchSearchRequest);
+			searchSearchRequest.setIndexNames(_INDEX_NAME);
+			searchSearchRequest.setPointInTime(_getPointInTime());
+			searchSearchRequest.setQuery(new MatchAllQuery());
+			searchSearchRequest.setSize(1);
+			searchSearchRequest.setSorts(new Sort[]{new Sort("_count", true)});
+			searchSearchRequest.setStart(0);
 
-		Assert.assertEquals(1, _getDocumentsLength(searchSearchResponse));
+			SearchSearchResponse searchSearchResponse =
+				_searchEngineAdapter.execute(searchSearchRequest);
 
-		searchSearchResponse = _searchAfter(
-			searchSearchRequest, _getLastSearchHit(searchSearchResponse));
+			Assert.assertEquals(1, _getDocumentsLength(searchSearchResponse));
 
-		Assert.assertEquals(1, _getDocumentsLength(searchSearchResponse));
+			while (true) {
+				SearchSearchResponse nextSearchSearchResponse =
+					_searchAfter(
+						searchSearchRequest,
+						_getLastSearchHit(searchSearchResponse));
 
-		searchSearchResponse = _searchAfter(
-			searchSearchRequest, _getLastSearchHit(searchSearchResponse));
+				if (nextSearchSearchResponse.getHits().getDocs().length == 0) {
+					break;
+				}
 
-		Assert.assertEquals(1, _getDocumentsLength(searchSearchResponse));
+				searchSearchResponse = nextSearchSearchResponse;
+			}
 
-		searchSearchResponse = _searchAfter(
-			searchSearchRequest, _getLastSearchHit(searchSearchResponse));
+			long endTime = System.currentTimeMillis();
 
-		Assert.assertEquals(0, _getDocumentsLength(searchSearchResponse));
+			System.out.println(
+				"+++++++++++++++++++++++++++++Time: " + (endTime - startTime) +
+				"ms +++++++++++++++++++++++++++++++++++++++");
+		}
 	}
 
 	@Test
