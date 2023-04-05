@@ -433,10 +433,9 @@ public class ElasticsearchSearchEngineAdapterSearchRequestTest {
 
 	private PointInTime _getPointInTime() {
 		OpenPointInTimeRequest openPointInTimeRequest =
-			new OpenPointInTimeRequest();
+			new OpenPointInTimeRequest(1);
 
 		openPointInTimeRequest.setIndices(_INDEX_NAME);
-		openPointInTimeRequest.setKeepAliveMinutes(1);
 
 		OpenPointInTimeResponse openPointInTimeResponse =
 			_searchEngineAdapter.execute(openPointInTimeRequest);
