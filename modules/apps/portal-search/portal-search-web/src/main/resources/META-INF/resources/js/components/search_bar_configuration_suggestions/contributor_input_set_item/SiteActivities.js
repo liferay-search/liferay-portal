@@ -37,7 +37,7 @@ function getSiteActivitiesContributorActivityOptions(learnMessages) {
 					{Liferay.Language.get('top-searches-help')}
 
 					<LearnMessage
-						className="ml-1"
+						className="c-ml-1"
 						learnMessages={learnMessages}
 						resourceKey="search-bar-suggestions-site-activities"
 					/>
@@ -52,7 +52,7 @@ function getSiteActivitiesContributorActivityOptions(learnMessages) {
 					{Liferay.Language.get('trending-searches-help')}
 
 					<LearnMessage
-						className="ml-1"
+						className="c-ml-1"
 						learnMessages={learnMessages}
 						resourceKey="search-bar-suggestions-site-activities"
 					/>
@@ -100,14 +100,14 @@ function SiteActivities({index, onBlur, onInputSetItemChange, touched, value}) {
 					)}
 
 					<LearnMessage
-						className="ml-1"
+						className="c-ml-1"
 						learnMessages={learnMessages}
 						resourceKey="search-bar-suggestions-site-activities"
 					/>
 				</InputSetItemHeader.Description>
 			</InputSetItemHeader>
 
-			<div className="form-group-autofit">
+			<div className="c-mb-3 form-group-autofit">
 				<ClayInput.GroupItem>
 					<label>
 						{Liferay.Language.get('activity')}
@@ -164,7 +164,7 @@ function SiteActivities({index, onBlur, onInputSetItemChange, touched, value}) {
 				</ClayInput.GroupItem>
 			</div>
 
-			<div className="form-group-autofit">
+			<div className="c-mb-3 form-group-autofit">
 				<DisplayGroupNameInput
 					onBlur={onBlur('displayGroupName')}
 					onChange={onInputSetItemChange(index, 'displayGroupName')}
@@ -180,7 +180,7 @@ function SiteActivities({index, onBlur, onInputSetItemChange, touched, value}) {
 				/>
 			</div>
 
-			<div className="form-group-autofit">
+			<div className="c-mb-0 form-group-autofit">
 				<CharacterThresholdInput
 					onBlur={onBlur('attributes.characterThreshold')}
 					onChange={_handleChangeAttribute('characterThreshold')}
@@ -194,7 +194,7 @@ function SiteActivities({index, onBlur, onInputSetItemChange, touched, value}) {
 
 						<ClayTooltipProvider>
 							<span
-								className="ml-2"
+								className="c-ml-2"
 								data-tooltip-align="top"
 								title={Liferay.Language.get(
 									'match-display-language-help'
