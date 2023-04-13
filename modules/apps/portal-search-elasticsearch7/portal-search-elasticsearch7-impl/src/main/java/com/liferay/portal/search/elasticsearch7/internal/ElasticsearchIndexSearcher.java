@@ -133,11 +133,14 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 				end = end % maxWindow; //gets the remainder, 20020 % 10000 = 20
 
 				pointInTime = _createPointInTime(searchContext, searchRequest);
+
 				searchSearchRequest.setPointInTime(pointInTime);//we need to use PiT in our SearchSearchRequest
 
 				size = 1; //we're jumping to the last result - 10000. and then continuing to search after that. This causes problems for accuracy though - some of which we have already though
 				start = start % maxWindow; //do we need to update the same start/end, so if start is 20, start stays 20
-//if searching for the last page, could be just reverse the sorts??
+
+// if searching for the last page, could be just reverse the sorts??
+
 				for (int i = 0; i < maxWindowPages; i++) {//for each windowPage
 					setStartAndSize( //don't think the method is worth it, just bring the code up
 						searchSearchRequest, searchAfterStart, size);//why is our first search start 9999 and size 1? - shouldn't it be start = start and size = maxWindow - no, we just want the last document of the first search (but the rest we need to ask for all documents)
@@ -146,12 +149,15 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 						searchSearchRequest);//we should only save a searchSearchResponse on the last search - except we need the last hit
 
 					_searchAfter(searchSearchRequest, searchSearchResponse);
-//is there a way to stop if we already hit the end result?
+
+					// is there a way to stop if we already hit the end result?
+
 					size = maxWindow;
 					searchAfterStart = 0;//and each following search start = 0? - we need to grab all results, see https://github.com/elastic/elasticsearch/issues/28068#issuecomment-375660535
 				}//maybe we could reduce the document size by modifying stored fields?
 			}//article 10000 is missed
 //how does this interact with DefaultPermissionFilterSearch?, this should be inside of the first if, because it relies on PiT. this searches 9980-9999 unnecessarily
+
 			if (start != 0) {//what if start was 20, it grabs 0-19. But why are we searching results here and then later? I guess we want to search everything between the large window and the last window
 				size = start - 1;//Result 20 is duplicated
 
@@ -322,7 +328,7 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 		if ((sortsKernel == null) && sortsSearch.isEmpty()) {
 			searchSearchRequest.addSorts(_sorts.field("_scores"));
 			searchSearchRequest.addSorts(_sorts.field("modified_sortable"));//this tiebreaker shouldn't be necessary
-		}//	https://www.elastic.co/guide/en/elasticsearch/reference/current/paginate-search-results.html	All PIT search requests add an implicit sort tiebreaker field called _shard_doc, which can also be provided explicitly. If you cannot use a PIT, we recommend that you include a tiebreaker field in your sort. This tiebreaker field should contain a unique value for each document. If you don’t include a tiebreaker field, your paged results could miss or duplicate hits.
+		}//	https://www.elastic.co/guide/en/elasticsearch/reference/current/paginate-search-results.html	All PIT search requests add an implicit sort tiebreaker field called _shard_doc, which can also be provided explicitly. If you cannot use a PIT, we recommend that you include a tiebreaker field in your sort. This tiebreaker field should contain a unique value for each document. If you don't include a tiebreaker field, your paged results could miss or duplicate hits.
 
 		searchSearchRequest.setStats(searchContext.getStats());
 
@@ -383,7 +389,7 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 
 	private void _closePointInTime(PointInTime pointInTime) {
 		ClosePointInTimeRequest closePointInTimeRequest =
-			new ClosePointInTimeRequest(pointInTime.getPitId());
+			new ClosePointInTimeRequest(pointInTime.getPointInTimeId());
 
 		_searchEngineAdapter.execute(closePointInTimeRequest);
 	}
@@ -404,11 +410,10 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 		SearchContext searchContext, SearchRequest searchRequest) {
 
 		OpenPointInTimeRequest openPointInTimeRequest =
-			new OpenPointInTimeRequest();
+			new OpenPointInTimeRequest(1);
 
 		openPointInTimeRequest.setIndices(
 			_getIndexes(searchRequest, searchContext));
-		openPointInTimeRequest.setKeepAliveMinutes(1);
 
 		OpenPointInTimeResponse openPointInTimeResponse =
 			_searchEngineAdapter.execute(openPointInTimeRequest);

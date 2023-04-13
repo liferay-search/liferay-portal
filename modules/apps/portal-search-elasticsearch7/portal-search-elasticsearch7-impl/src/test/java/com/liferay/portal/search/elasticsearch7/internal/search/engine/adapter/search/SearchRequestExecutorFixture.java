@@ -333,20 +333,6 @@ public class SearchRequestExecutorFixture {
 		return searchRequestExecutor;
 	}
 
-	private ClosePointInTimeRequestExecutor
-		_createClosePointInTimeRequestExecutor(
-			ElasticsearchClientResolver elasticsearchClientResolver) {
-
-		ClosePointInTimeRequestExecutor closePointInTimeRequestExecutor =
-			new ClosePointInTimeRequestExecutorImpl();
-
-		ReflectionTestUtil.setFieldValue(
-			closePointInTimeRequestExecutor, "_elasticsearchClientResolver",
-			elasticsearchClientResolver);
-
-		return closePointInTimeRequestExecutor;
-	}
-
 	private SearchSearchRequestAssembler _createSearchSearchRequestAssembler(
 		ElasticsearchQueryTranslator elasticsearchQueryTranslator,
 		ElasticsearchSortFieldTranslator elasticsearchSortFieldTranslator,
