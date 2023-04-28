@@ -17,6 +17,7 @@ package com.liferay.portal.search.rest.internal.resource.v1_0;
 import com.liferay.asset.kernel.AssetRendererFactoryRegistryUtil;
 import com.liferay.asset.kernel.model.AssetRenderer;
 import com.liferay.asset.kernel.model.AssetRendererFactory;
+import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONException;
@@ -38,6 +39,7 @@ import com.liferay.portal.search.document.Document;
 import com.liferay.portal.search.document.Field;
 import com.liferay.portal.search.hits.SearchHit;
 import com.liferay.portal.search.hits.SearchHits;
+import com.liferay.portal.search.rest.configuration.HeadlessSearchAPICompanyConfiguration;
 import com.liferay.portal.search.rest.dto.v1_0.Facet;
 import com.liferay.portal.search.rest.dto.v1_0.SearchRequestBody;
 import com.liferay.portal.search.rest.dto.v1_0.SearchResponse;
@@ -61,6 +63,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
 
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ServiceScope;
@@ -69,6 +72,7 @@ import org.osgi.service.component.annotations.ServiceScope;
  * @author Petteri Karttunen
  */
 @Component(
+	configurationPid = "com.liferay.portal.search.rest.configuration.HeadlessSearchAPICompanyConfiguration",
 	properties = "OSGI-INF/liferay/rest/v1_0/search-response.properties",
 	scope = ServiceScope.PROTOTYPE, service = SearchResponseResource.class
 )
@@ -137,6 +141,13 @@ public class SearchResponseResourceImpl extends BaseSearchResponseResourceImpl {
 			GetterUtil.getBoolean(includeRequest),
 			GetterUtil.getBoolean(includeResponse), Arrays.asList(resultFields),
 			_searcher.search(searchRequestBuilder.build()));
+	}
+
+	@Activate
+	protected void activate(Map<String, Object> properties) {
+		_headlessSearchAPICompanyConfiguration =
+			ConfigurableUtil.createConfigurable(
+				HeadlessSearchAPICompanyConfiguration.class, properties);
 	}
 
 	private void _addSearchContextAttributes(
@@ -259,8 +270,12 @@ public class SearchResponseResourceImpl extends BaseSearchResponseResourceImpl {
 		MapUtil.isNotEmptyForEach(
 			document.getFields(),
 			(name, field) -> {
-				if (ListUtil.isNotEmpty(resultFieldNames) &&
-					!resultFieldNames.contains(name)) {
+				if (ArrayUtil.contains(
+						_headlessSearchAPICompanyConfiguration.
+							excludedResponseDocumentFields(),
+						name) ||
+					(ListUtil.isNotEmpty(resultFieldNames) &&
+					 !resultFieldNames.contains(name))) {
 
 					return;
 				}
@@ -283,8 +298,12 @@ public class SearchResponseResourceImpl extends BaseSearchResponseResourceImpl {
 		MapUtil.isNotEmptyForEach(
 			searchHit.getSourcesMap(),
 			(name, obj) -> {
-				if (ListUtil.isNotEmpty(resultFieldNames) &&
-					!resultFieldNames.contains(name)) {
+				if (ArrayUtil.contains(
+						_headlessSearchAPICompanyConfiguration.
+							excludedResponseDocumentFields(),
+						name) ||
+					(ListUtil.isNotEmpty(resultFieldNames) &&
+					 !resultFieldNames.contains(name))) {
 
 					return;
 				}
@@ -420,6 +439,9 @@ public class SearchResponseResourceImpl extends BaseSearchResponseResourceImpl {
 
 	@Reference
 	private FacetResponseContributor _facetResponseContributor;
+
+	private volatile HeadlessSearchAPICompanyConfiguration
+		_headlessSearchAPICompanyConfiguration;
 
 	@Reference
 	private JSONFactory _jsonFactory;
