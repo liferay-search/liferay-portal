@@ -323,13 +323,6 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 		baseSearchRequest.setQuery(searchRequest.getQuery());
 	}
 
-	private void _closePointInTime(PointInTime pointInTime) {
-		ClosePointInTimeRequest closePointInTimeRequest =
-			new ClosePointInTimeRequest(pointInTime.getPointInTimeId());
-
-		_searchEngineAdapter.execute(closePointInTimeRequest);
-	}
-
 	private CountSearchRequest _createCountSearchRequest(
 		SearchContext searchContext, Query query) {
 
@@ -377,6 +370,9 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 		List<com.liferay.portal.search.sort.Sort> sorts =
 			searchRequest.getSorts();
 
+		searchSearchRequest.setSorts(kernelSearchSorts);
+		searchSearchRequest.setSorts(sorts);
+
 		if ((kernelSearchSorts == null) && sorts.isEmpty()) {
 
 			// GL: if remove sorts from the request while using search after
@@ -388,9 +384,6 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 
 			searchSearchRequest.addSorts(score, _sorts.field("_shard_doc"));
 		}
-
-		searchSearchRequest.setSorts(sorts);
-		searchSearchRequest.setSorts(kernelSearchSorts);
 
 		return searchSearchRequest;
 	}
@@ -581,12 +574,12 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 				// GL: This validation is to be able to return results between
 				// the maxResultWindow limit for example: [9999 to 10001]
 
+				searchSearchRequest.setSize(1);
+
 				if (start < maxResultWindow) {
-					searchSearchRequest.setSize(1);
 					searchSearchRequest.setStart(start - 1);
 				}
 				else {
-					searchSearchRequest.setSize(1);
 					searchSearchRequest.setStart(maxResultWindow - 1);
 
 					documentsToSkip = start % maxResultWindow;
@@ -669,7 +662,10 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 			throw runtimeException;
 		}
 		finally {
-			_closePointInTime(searchSearchRequest.getPointInTime());
+			PointInTime pointInTime = searchSearchRequest.getPointInTime();
+
+			_searchEngineAdapter.execute(
+				new ClosePointInTimeRequest(pointInTime.getPointInTimeId()));
 		}
 
 		_populateResponse(searchSearchResponse, searchResponseBuilder);
