@@ -370,9 +370,6 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 		List<com.liferay.portal.search.sort.Sort> sorts =
 			searchRequest.getSorts();
 
-		searchSearchRequest.setSorts(kernelSearchSorts);
-		searchSearchRequest.setSorts(sorts);
-
 		if ((kernelSearchSorts == null) && sorts.isEmpty()) {
 
 			// GL: if remove sorts from the request while using search after
@@ -383,7 +380,12 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 			score.setSortOrder(SortOrder.DESC);
 
 			searchSearchRequest.addSorts(score, _sorts.field("_shard_doc"));
+
+			return searchSearchRequest;
 		}
+
+		searchSearchRequest.setSorts(kernelSearchSorts);
+		searchSearchRequest.setSorts(sorts);
 
 		return searchSearchRequest;
 	}
@@ -411,6 +413,82 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 			searchContext.getCompanyId());
 
 		return new String[] {indexName};
+	}
+
+	private SearchHit _getLastSearchHit(
+		int start, SearchSearchRequest searchSearchRequest,
+		int maxResultWindow) {
+
+		int documentsToSkip = 0;
+
+		// GL: This validation is to be able to return results between
+		// the maxResultWindow limit for example: [9999 to 10001]
+
+		searchSearchRequest.setSize(1);
+
+		if (start < maxResultWindow) {
+			searchSearchRequest.setStart(start - 1);
+		}
+		else {
+			searchSearchRequest.setStart(maxResultWindow - 1);
+
+			documentsToSkip = start % maxResultWindow;
+		}
+
+		// GL: first search could be just the 10000th document
+		// or if the start is lower than 10000, the first search could
+		// be the document before the start position
+
+		SearchSearchResponse searchSearchResponse =
+			_searchEngineAdapter.execute(searchSearchRequest);
+
+		int maxResultWindowPages = start / maxResultWindow;
+
+		// GL: for each maxResultWindow before the start position,
+		// we need to execute a search to get the last document
+		// of the last page
+
+		for (int i = 1; i < maxResultWindowPages; i++) {
+			SearchHit lastSearchHit = _getLastSearchHit(searchSearchResponse);
+
+			if (lastSearchHit == null) {
+				return null;
+			}
+
+			searchSearchRequest.setSearchAfter(lastSearchHit.getSortValues());
+			searchSearchRequest.setSize(maxResultWindow);
+			searchSearchRequest.setStart(0);
+
+			searchSearchResponse = _searchEngineAdapter.execute(
+				searchSearchRequest);
+		}
+
+		SearchHit lastSearchHit = _getLastSearchHit(searchSearchResponse);
+
+		if (lastSearchHit == null) {
+			return null;
+		}
+
+		// GL: Because search after need to have start = 0
+		// we maybe need to skip some documents to get the correct
+		// start position
+
+		if (documentsToSkip > 0) {
+			searchSearchRequest.setSearchAfter(lastSearchHit.getSortValues());
+			searchSearchRequest.setSize(documentsToSkip);
+			searchSearchRequest.setStart(0);
+
+			searchSearchResponse = _searchEngineAdapter.execute(
+				searchSearchRequest);
+
+			lastSearchHit = _getLastSearchHit(searchSearchResponse);
+
+			if (lastSearchHit == null) {
+				return null;
+			}
+		}
+
+		return lastSearchHit;
 	}
 
 	private SearchHit _getLastSearchHit(
@@ -569,54 +647,8 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 
 		try {
 			if (end > maxResultWindow) {
-				int documentsToSkip = 0;
-
-				// GL: This validation is to be able to return results between
-				// the maxResultWindow limit for example: [9999 to 10001]
-
-				searchSearchRequest.setSize(1);
-
-				if (start < maxResultWindow) {
-					searchSearchRequest.setStart(start - 1);
-				}
-				else {
-					searchSearchRequest.setStart(maxResultWindow - 1);
-
-					documentsToSkip = start % maxResultWindow;
-				}
-
-				// GL: first search could be just the 10000th document
-				// or if the start is lower than 10000, the first search could
-				// be the document before the start position
-
-				searchSearchResponse = _searchEngineAdapter.execute(
-					searchSearchRequest);
-
-				int maxResultWindowPages = start / maxResultWindow;
-
-				// GL: for each maxResultWindow before the start position,
-				// we need to execute a search to get the last document
-				// of the last page
-
-				for (int i = 1; i < maxResultWindowPages; i++) {
-					SearchHit lastSearchHit = _getLastSearchHit(
-						searchSearchResponse);
-
-					if (lastSearchHit == null) {
-						return new HitsImpl();
-					}
-
-					searchSearchRequest.setSearchAfter(
-						lastSearchHit.getSortValues());
-					searchSearchRequest.setSize(maxResultWindow);
-					searchSearchRequest.setStart(0);
-
-					searchSearchResponse = _searchEngineAdapter.execute(
-						searchSearchRequest);
-				}
-
 				SearchHit lastSearchHit = _getLastSearchHit(
-					searchSearchResponse);
+					start, searchSearchRequest, maxResultWindow);
 
 				if (lastSearchHit == null) {
 					return new HitsImpl();
@@ -625,31 +657,11 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 				searchSearchRequest.setSearchAfter(
 					lastSearchHit.getSortValues());
 
-				// GL: Because search after need to have start = 0
-				// we maybe need to skip some documents to get the correct
-				// start position
-
-				if (documentsToSkip > 0) {
-					searchSearchRequest.setSize(documentsToSkip);
-					searchSearchRequest.setStart(0);
-
-					searchSearchResponse = _searchEngineAdapter.execute(
-						searchSearchRequest);
-
-					lastSearchHit = _getLastSearchHit(searchSearchResponse);
-
-					if (lastSearchHit == null) {
-						return new HitsImpl();
-					}
-
-					searchSearchRequest.setSearchAfter(
-						lastSearchHit.getSortValues());
-				}
-
 				searchSearchRequest.setStart(0);
 			}
-
-			searchSearchRequest.setStart(start);
+			else {
+				searchSearchRequest.setStart(start);
+			}
 
 			searchSearchRequest.setSize(end - start);
 
