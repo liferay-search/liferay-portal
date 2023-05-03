@@ -28,9 +28,10 @@ import com.liferay.portal.kernel.search.IndexSearcher;
 import com.liferay.portal.kernel.search.Query;
 import com.liferay.portal.kernel.search.QueryConfig;
 import com.liferay.portal.kernel.search.SearchContext;
-import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.search.suggest.QuerySuggester;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.Props;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.Validator;
@@ -363,29 +364,23 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 		SearchSearchRequest searchSearchRequest = createSearchSearchRequest(
 			searchRequest, searchContext, query);
 
-		searchSearchRequest.setPointInTime( // GL: should be configurable
+		searchSearchRequest.setPointInTime(
 			_createPointInTime(searchContext, searchRequest));
 
-		Sort[] kernelSearchSorts = searchContext.getSorts();
-		List<com.liferay.portal.search.sort.Sort> sorts =
-			searchRequest.getSorts();
+		if (ArrayUtil.isEmpty(searchContext.getSorts()) ||
+			ListUtil.isEmpty(searchRequest.getSorts())) {
 
-		if ((kernelSearchSorts == null) && sorts.isEmpty()) {
+			ScoreSort scoreSort = _sorts.score();
 
-			// GL: if remove sorts from the request while using search after
-			// almost every page will return the same results
+			scoreSort.setSortOrder(SortOrder.DESC);
 
-			ScoreSort score = _sorts.score();
-
-			score.setSortOrder(SortOrder.DESC);
-
-			searchSearchRequest.addSorts(score, _sorts.field("_shard_doc"));
+			searchSearchRequest.addSorts(scoreSort, _sorts.field("_shard_doc"));
 
 			return searchSearchRequest;
 		}
 
-		searchSearchRequest.setSorts(kernelSearchSorts);
-		searchSearchRequest.setSorts(sorts);
+		searchSearchRequest.setSorts(searchContext.getSorts());
+		searchSearchRequest.setSorts(searchRequest.getSorts());
 
 		return searchSearchRequest;
 	}
@@ -416,15 +411,10 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 	}
 
 	private SearchHit _getLastSearchHit(
-		int start, SearchSearchRequest searchSearchRequest,
-		int maxResultWindow) {
+		int maxResultWindow, SearchSearchRequest searchSearchRequest,
+		int start) {
 
 		int documentsToSkip = 0;
-
-		// GL: This validation is to be able to return results between
-		// the maxResultWindow limit for example: [9999 to 10001]
-
-		searchSearchRequest.setSize(1);
 
 		if (start < maxResultWindow) {
 			searchSearchRequest.setStart(start - 1);
@@ -435,33 +425,10 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 			documentsToSkip = start % maxResultWindow;
 		}
 
-		// GL: first search could be just the 10000th document
-		// or if the start is lower than 10000, the first search could
-		// be the document before the start position
+		searchSearchRequest.setSize(1);
 
 		SearchSearchResponse searchSearchResponse =
 			_searchEngineAdapter.execute(searchSearchRequest);
-
-		int maxResultWindowPages = start / maxResultWindow;
-
-		// GL: for each maxResultWindow before the start position,
-		// we need to execute a search to get the last document
-		// of the last page
-
-		for (int i = 1; i < maxResultWindowPages; i++) {
-			SearchHit lastSearchHit = _getLastSearchHit(searchSearchResponse);
-
-			if (lastSearchHit == null) {
-				return null;
-			}
-
-			searchSearchRequest.setSearchAfter(lastSearchHit.getSortValues());
-			searchSearchRequest.setSize(maxResultWindow);
-			searchSearchRequest.setStart(0);
-
-			searchSearchResponse = _searchEngineAdapter.execute(
-				searchSearchRequest);
-		}
 
 		SearchHit lastSearchHit = _getLastSearchHit(searchSearchResponse);
 
@@ -469,19 +436,22 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 			return null;
 		}
 
-		// GL: Because search after need to have start = 0
-		// we maybe need to skip some documents to get the correct
-		// start position
+		int maxResultWindowPages = start / maxResultWindow;
+
+		for (int i = 1; i < maxResultWindowPages; i++) {
+			lastSearchHit = _getLastSearchHit(
+				lastSearchHit.getSortValues(), searchSearchRequest,
+				maxResultWindow, 0);
+
+			if (lastSearchHit == null) {
+				return null;
+			}
+		}
 
 		if (documentsToSkip > 0) {
-			searchSearchRequest.setSearchAfter(lastSearchHit.getSortValues());
-			searchSearchRequest.setSize(documentsToSkip);
-			searchSearchRequest.setStart(0);
-
-			searchSearchResponse = _searchEngineAdapter.execute(
-				searchSearchRequest);
-
-			lastSearchHit = _getLastSearchHit(searchSearchResponse);
+			lastSearchHit = _getLastSearchHit(
+				lastSearchHit.getSortValues(), searchSearchRequest,
+				documentsToSkip, 0);
 
 			if (lastSearchHit == null) {
 				return null;
@@ -489,6 +459,23 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 		}
 
 		return lastSearchHit;
+	}
+
+	private SearchHit _getLastSearchHit(
+		Object[] searchAfter, SearchSearchRequest searchSearchRequest, int size,
+		int start) {
+
+		if (searchAfter != null) {
+			searchSearchRequest.setSearchAfter(searchAfter);
+		}
+
+		searchSearchRequest.setSize(size);
+		searchSearchRequest.setStart(start);
+
+		SearchSearchResponse searchSearchResponse =
+			_searchEngineAdapter.execute(searchSearchRequest);
+
+		return _getLastSearchHit(searchSearchResponse);
 	}
 
 	private SearchHit _getLastSearchHit(
