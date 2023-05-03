@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.portal.search.elasticsearch7.internal.configuration.deep.pagination;
+package com.liferay.portal.search.elasticsearch7.internal;
 
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.search.elasticsearch7.configuration.DeepPaginationConfiguration;
@@ -28,32 +28,24 @@ import org.osgi.service.component.annotations.Modified;
  */
 @Component(
 	configurationPid = "com.liferay.portal.search.elasticsearch7.configuration.DeepPaginationConfiguration",
-	service = DeepPaginationConfigurationHolder.class
+	service = DeepPaginationConfigurationWrapper.class
 )
-public class DeepPaginationConfigurationHolderImpl
-	implements DeepPaginationConfigurationHolder {
+public class DeepPaginationConfigurationWrapper {
 
-	@Override
 	public boolean getEnableDeepPagination() {
-		return _enableDeepPagination;
+		return _deepPaginationConfiguration.enableDeepPagination();
 	}
 
-	@Override
 	public String getPointInTimeKeepAlive() {
-		return _pointInTimeKeepAlive;
+		return _validatePointInTimeString(
+			_deepPaginationConfiguration.pointInTimeKeepAlive());
 	}
 
 	@Activate
 	@Modified
-	protected void activate(Map<String, Object> properties) {
-		DeepPaginationConfiguration deepPaginationConfiguration =
-			ConfigurableUtil.createConfigurable(
-				DeepPaginationConfiguration.class, properties);
-
-		_enableDeepPagination =
-			deepPaginationConfiguration.enableDeepPagination();
-		_pointInTimeKeepAlive = _validatePointInTimeString(
-			deepPaginationConfiguration.pointInTimeKeepAlive());
+	protected void activate(Map<String, Object> map) {
+		_deepPaginationConfiguration = ConfigurableUtil.createConfigurable(
+			DeepPaginationConfiguration.class, map);
 	}
 
 	private String _validatePointInTimeString(String pointInTimeKeepAlive) {
@@ -66,7 +58,6 @@ public class DeepPaginationConfigurationHolderImpl
 		return pointInTimeKeepAlive;
 	}
 
-	private volatile boolean _enableDeepPagination;
-	private volatile String _pointInTimeKeepAlive;
+	private volatile DeepPaginationConfiguration _deepPaginationConfiguration;
 
 }

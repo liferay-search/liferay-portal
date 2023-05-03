@@ -129,7 +129,9 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 
 			Hits hits = null;
 
-			if (FeatureFlagManagerUtil.isEnabled("LPS-172416")) {
+			if (FeatureFlagManagerUtil.isEnabled("LPS-172416") &&
+				_deepPaginationConfigurationWrapper.getEnableDeepPagination()) {
+
 				hits = _searchWithDeepPagination(
 					end, query, searchContext, searchRequest,
 					searchResponseBuilder, start);
@@ -351,7 +353,8 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 		PointInTime pointInTime = new PointInTime(
 			openPointInTimeResponse.pitId());
 
-		pointInTime.setKeepAlive("10m");
+		pointInTime.setKeepAlive(
+			_deepPaginationConfigurationWrapper.getPointInTimeKeepAlive());
 
 		return pointInTime;
 	}
@@ -713,6 +716,10 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		ElasticsearchIndexSearcher.class);
+
+	@Reference
+	private volatile DeepPaginationConfigurationWrapper
+		_deepPaginationConfigurationWrapper;
 
 	@Reference
 	private volatile ElasticsearchConfigurationWrapper
