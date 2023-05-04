@@ -628,7 +628,8 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 
 		SearchSearchResponse searchSearchResponse = null;
 
-		int maxResultWindow = 10000;
+		int maxResultWindow =
+			_elasticsearchConfigurationWrapper.indexMaxResultWindow();
 
 		try {
 			if (end > maxResultWindow) {

@@ -105,6 +105,12 @@ public interface ElasticsearchConfiguration {
 	public String truststorePassword();
 
 	@Meta.AD(
+		deflt = "10000", description = "index-max-result-window-help",
+		name = "index-max-result-window", required = false
+	)
+	public int indexMaxResultWindow();
+
+	@Meta.AD(
 		deflt = "liferay-", description = "index-name-prefix-help",
 		name = "index-name-prefix", required = false
 	)
