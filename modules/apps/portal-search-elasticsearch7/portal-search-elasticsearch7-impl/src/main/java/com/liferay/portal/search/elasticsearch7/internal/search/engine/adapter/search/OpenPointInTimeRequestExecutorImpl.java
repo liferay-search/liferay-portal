@@ -59,7 +59,7 @@ public class OpenPointInTimeRequestExecutorImpl
 				new org.elasticsearch.action.search.OpenPointInTimeRequest();
 
 		if (openPointInTimeRequest.getIndices() != null) {
-			elasticsearchOpenPointInTimeRequest.indices(
+			elasticsearchOpenPointInTimeRequest.indices(//can you even create a PiT without an Index - if so, we should just throw an Exception here. https://www.elastic.co/guide/en/elasticsearch/reference/current/point-in-time-api.html "target data stream, index, or alias."
 				openPointInTimeRequest.getIndices());
 		}
 

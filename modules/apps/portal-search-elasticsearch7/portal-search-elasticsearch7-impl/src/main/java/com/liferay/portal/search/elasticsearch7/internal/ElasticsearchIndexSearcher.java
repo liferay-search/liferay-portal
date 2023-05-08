@@ -16,17 +16,16 @@ package com.liferay.portal.search.elasticsearch7.internal;
 
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
-import com.liferay.portal.kernel.dao.search.SearchPaginationUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.search.BaseIndexSearcher;
-import com.liferay.portal.kernel.search.Document;
 import com.liferay.portal.kernel.search.Hits;
 import com.liferay.portal.kernel.search.HitsImpl;
 import com.liferay.portal.kernel.search.IndexSearcher;
 import com.liferay.portal.kernel.search.Query;
 import com.liferay.portal.kernel.search.QueryConfig;
 import com.liferay.portal.kernel.search.SearchContext;
+import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.search.suggest.QuerySuggester;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Props;
@@ -40,16 +39,23 @@ import com.liferay.portal.search.elasticsearch7.internal.configuration.Elasticse
 import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
 import com.liferay.portal.search.engine.adapter.search.BaseSearchRequest;
 import com.liferay.portal.search.engine.adapter.search.BaseSearchResponse;
+import com.liferay.portal.search.engine.adapter.search.ClosePointInTimeRequest;
 import com.liferay.portal.search.engine.adapter.search.CountSearchRequest;
 import com.liferay.portal.search.engine.adapter.search.CountSearchResponse;
+import com.liferay.portal.search.engine.adapter.search.OpenPointInTimeRequest;
+import com.liferay.portal.search.engine.adapter.search.OpenPointInTimeResponse;
 import com.liferay.portal.search.engine.adapter.search.SearchSearchRequest;
 import com.liferay.portal.search.engine.adapter.search.SearchSearchResponse;
+import com.liferay.portal.search.hits.SearchHit;
+import com.liferay.portal.search.hits.SearchHits;
 import com.liferay.portal.search.index.IndexNameBuilder;
 import com.liferay.portal.search.legacy.searcher.SearchRequestBuilderFactory;
 import com.liferay.portal.search.legacy.searcher.SearchResponseBuilderFactory;
+import com.liferay.portal.search.pit.PointInTime;
 import com.liferay.portal.search.searcher.SearchRequest;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.searcher.SearchResponseBuilder;
+import com.liferay.portal.search.sort.Sorts;
 
 import java.util.List;
 import java.util.Map;
@@ -78,6 +84,8 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 		StopWatch stopWatch = new StopWatch();
 
 		stopWatch.start();
+
+		PointInTime pointInTime = null;
 
 		try {
 			int end = searchContext.getEnd();
@@ -112,47 +120,65 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 				throw new IllegalArgumentException("Invalid end " + end);
 			}
 
-			SearchResponseBuilder searchResponseBuilder =
-				_getSearchResponseBuilder(searchContext);
+			SearchSearchRequest searchSearchRequest = createSearchSearchRequest(
+				searchRequest, searchContext, query);
 
-			Hits hits = null;
+			SearchSearchResponse searchSearchResponse = null;//why did we get rid of _getSearchResponseBuilder(), presumably because we only need to generated it once
 
-			while (true) {
-				SearchSearchRequest searchSearchRequest =
-					createSearchSearchRequest(
-						searchRequest, searchContext, query, start, end);
+			int maxWindow = 10000;//should be configurable from system settings
 
-				SearchSearchResponse searchSearchResponse =
-					_searchEngineAdapter.execute(searchSearchRequest);
+			if (end > maxWindow) {//we should order the searches from earliest results to last - isn't this necessary anyways for compiling hits and dealing with searchAfter?
+				int maxWindowPages = end / maxWindow;//is this going to round up always? Yes, so 20020 / 10000 = 2 maxWindowPages
+				int searchAfterStart = 9999;//maxWindow - 1, couldnt this be maxWindow?
+				end = end % maxWindow; //gets the remainder, 20020 % 10000 = 20
 
-				if (_log.isInfoEnabled()) {
-					_log.info(
-						StringBundler.concat(
-							"The search engine processed ",
-							searchSearchResponse.getSearchRequestString(),
-							" in ", searchSearchResponse.getExecutionTime(),
-							" ms"));
-				}
+				pointInTime = _createPointInTime(searchContext, searchRequest);
 
-				_populateResponse(searchSearchResponse, searchResponseBuilder);
+				searchSearchRequest.setPointInTime(pointInTime);//we need to use PiT in our SearchSearchRequest
 
-				searchResponseBuilder.searchHits(
-					searchSearchResponse.getSearchHits());
+				size = 1; //we're jumping to the last result - 10000. and then continuing to search after that. This causes problems for accuracy though - some of which we have already though
+				start = start % maxWindow; //do we need to update the same start/end, so if start is 20, start stays 20
 
-				hits = searchSearchResponse.getHits();
+// if searching for the last page, could be just reverse the sorts??
 
-				Document[] documents = hits.getDocs();
+				for (int i = 0; i < maxWindowPages; i++) {//for each windowPage
+					setStartAndSize( //don't think the method is worth it, just bring the code up
+						searchSearchRequest, searchAfterStart, size);//why is our first search start 9999 and size 1? - shouldn't it be start = start and size = maxWindow - no, we just want the last document of the first search (but the rest we need to ask for all documents)
 
-				if ((documents.length != 0) || (start == 0)) {
-					break;
-				}
+					searchSearchResponse = _searchEngineAdapter.execute(
+						searchSearchRequest);//we should only save a searchSearchResponse on the last search - except we need the last hit
 
-				int[] startAndEnd = SearchPaginationUtil.calculateStartAndEnd(
-					start, end, hits.getLength());
+					_searchAfter(searchSearchRequest, searchSearchResponse);
 
-				start = startAndEnd[0];
-				end = startAndEnd[1];
+					// is there a way to stop if we already hit the end result?
+
+					size = maxWindow;
+					searchAfterStart = 0;//and each following search start = 0? - we need to grab all results, see https://github.com/elastic/elasticsearch/issues/28068#issuecomment-375660535
+				}//maybe we could reduce the document size by modifying stored fields?
+			}//article 10000 is missed
+//how does this interact with DefaultPermissionFilterSearch?, this should be inside of the first if, because it relies on PiT. this searches 9980-9999 unnecessarily
+
+			if (start != 0) {//what if start was 20, it grabs 0-19. But why are we searching results here and then later? I guess we want to search everything between the large window and the last window
+				size = start - 1;//Result 20 is duplicated
+
+				setStartAndSize(searchSearchRequest, 0, size);//this doesn't handle a basic search of page 2, Start 20 End 40
+
+				searchSearchResponse = _searchEngineAdapter.execute(//won't this overwrite the previous searchSearchResponse? - yes
+					searchSearchRequest);
+
+				_searchAfter(searchSearchRequest, searchSearchResponse);
 			}
+
+			size = end - start;//in the case of 20 to 200020, start is still 20, end is now 20,size is now 0? This is wrong
+
+			setStartAndSize(searchSearchRequest, 0, size);
+
+			searchSearchResponse = _searchEngineAdapter.execute(//this looks like it wants to be the last search, searching for documents between the start and maxWindow
+				searchSearchRequest);
+
+			_populateResponse(searchSearchResponse, searchContext);
+
+			Hits hits = searchSearchResponse.getHits();//are we getting ALL the hits in the correct order? - we're just getting the last hits
 
 			hits.setStart(stopWatch.getStartTime());
 
@@ -175,6 +201,10 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 			return new HitsImpl();
 		}
 		finally {
+			if (pointInTime != null) {
+				_closePointInTime(pointInTime);
+			}
+
 			if (_log.isInfoEnabled()) {
 				stopWatch.stop();
 
@@ -235,8 +265,7 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 	}
 
 	protected SearchSearchRequest createSearchSearchRequest(
-		SearchRequest searchRequest, SearchContext searchContext, Query query,
-		int start, int end) {
+		SearchRequest searchRequest, SearchContext searchContext, Query query) {
 
 		SearchSearchRequest searchSearchRequest = new SearchSearchRequest();
 
@@ -262,6 +291,7 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 			searchRequest.getGroupByRequests());
 		searchSearchRequest.setHighlightEnabled(
 			queryConfig.isHighlightEnabled());
+
 		searchSearchRequest.setHighlightFieldNames(
 			queryConfig.getHighlightFieldNames());
 		searchSearchRequest.setHighlightFragmentSize(
@@ -288,13 +318,18 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 		searchSearchRequest.setSelectedFieldNames(
 			queryConfig.getSelectedFieldNames());
 
-		int size = end - start;
+		Sort[] sortsKernel = searchContext.getSorts();
+		List<com.liferay.portal.search.sort.Sort> sortsSearch =
+			searchRequest.getSorts();
 
-		searchSearchRequest.setSize(size);
+		searchSearchRequest.setSorts(sortsKernel);//no reason to add these if they're null or empty right? looks like this could be an else with the below if
+		searchSearchRequest.setSorts(sortsSearch);
 
-		searchSearchRequest.setStart(start);
-		searchSearchRequest.setSorts(searchContext.getSorts());
-		searchSearchRequest.setSorts(searchRequest.getSorts());
+		if ((sortsKernel == null) && sortsSearch.isEmpty()) {
+			searchSearchRequest.addSorts(_sorts.field("_scores"));
+			searchSearchRequest.addSorts(_sorts.field("modified_sortable"));//this tiebreaker shouldn't be necessary
+		}//	https://www.elastic.co/guide/en/elasticsearch/reference/current/paginate-search-results.html	All PIT search requests add an implicit sort tiebreaker field called _shard_doc, which can also be provided explicitly. If you cannot use a PIT, we recommend that you include a tiebreaker field in your sort. This tiebreaker field should contain a unique value for each document. If you don't include a tiebreaker field, your paged results could miss or duplicate hits.
+
 		searchSearchRequest.setStats(searchContext.getStats());
 
 		return searchSearchRequest;
@@ -345,6 +380,20 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 		baseSearchRequest.setQuery(searchRequest.getQuery());
 	}
 
+	protected void setStartAndSize(
+		SearchSearchRequest searchSearchRequest, int start, Integer size) {
+
+		searchSearchRequest.setStart(start);
+		searchSearchRequest.setSize(size);
+	}
+
+	private void _closePointInTime(PointInTime pointInTime) {
+		ClosePointInTimeRequest closePointInTimeRequest =
+			new ClosePointInTimeRequest(pointInTime.getPointInTimeId());
+
+		_searchEngineAdapter.execute(closePointInTimeRequest);
+	}
+
 	private CountSearchRequest _createCountSearchRequest(
 		SearchContext searchContext, Query query) {
 
@@ -355,6 +404,26 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 			searchContext);
 
 		return countSearchRequest;
+	}
+
+	private PointInTime _createPointInTime(
+		SearchContext searchContext, SearchRequest searchRequest) {
+
+		OpenPointInTimeRequest openPointInTimeRequest =
+			new OpenPointInTimeRequest(1);
+
+		openPointInTimeRequest.setIndices(
+			_getIndexes(searchRequest, searchContext));
+
+		OpenPointInTimeResponse openPointInTimeResponse =
+			_searchEngineAdapter.execute(openPointInTimeRequest);
+
+		PointInTime pointInTime = new PointInTime(
+			openPointInTimeResponse.pitId());
+
+		pointInTime.setKeepAlive("1m");//this should be configurable
+
+		return pointInTime;
 	}
 
 	private String _getExceptionMessage(RuntimeException runtimeException) {
@@ -422,7 +491,10 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 
 	private void _populateResponse(
 		SearchSearchResponse searchSearchResponse,
-		SearchResponseBuilder searchResponseBuilder) {
+		SearchContext searchContext) {
+
+		SearchResponseBuilder searchResponseBuilder = _getSearchResponseBuilder(
+			searchContext);
 
 		_populateResponse(
 			(BaseSearchResponse)searchSearchResponse, searchResponseBuilder);
@@ -457,6 +529,19 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 		_setLegacyPostFilter(baseSearchRequest, query);
 		_setPipelineAggregations(baseSearchRequest, searchRequest);
 		setQuery(baseSearchRequest, searchRequest);
+	}
+
+	private void _searchAfter(//rename - _searchAfterStoreLastResult
+		SearchSearchRequest searchSearchRequest,
+		SearchSearchResponse searchSearchResponse) {
+
+		SearchHits searchHits = searchSearchResponse.getSearchHits();
+
+		List<SearchHit> searchHitList = searchHits.getSearchHits();
+
+		SearchHit lastSearchHit = searchHitList.get(searchHitList.size() - 1);
+
+		searchSearchRequest.setSearchAfter(lastSearchHit.getSortValues());
 	}
 
 	private void _setAggregations(
@@ -524,5 +609,8 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 
 	@Reference
 	private SearchResponseBuilderFactory _searchResponseBuilderFactory;
+
+	@Reference
+	private Sorts _sorts;
 
 }

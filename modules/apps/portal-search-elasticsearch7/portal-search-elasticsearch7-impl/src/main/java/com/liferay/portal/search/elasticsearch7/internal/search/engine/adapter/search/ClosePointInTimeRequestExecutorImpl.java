@@ -39,7 +39,7 @@ public class ClosePointInTimeRequestExecutorImpl
 
 		org.elasticsearch.action.search.ClosePointInTimeRequest
 			elasticsearchClosePointInTimeRequest =
-				createClosePointInTimeRequest(closePointInTimeRequest);
+				createClosePointInTimeRequest(closePointInTimeRequest);//we could 1 line this
 
 		org.elasticsearch.action.search.ClosePointInTimeResponse
 			closePointInTimeResponse = getClosePointInTimeResponse(
