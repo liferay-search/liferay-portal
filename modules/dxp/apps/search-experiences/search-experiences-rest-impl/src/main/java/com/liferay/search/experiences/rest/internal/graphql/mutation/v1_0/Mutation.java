@@ -353,6 +353,20 @@ public class Mutation {
 	}
 
 	@GraphQLField
+	public SXPBlueprint updateSXPBlueprintByExternalReferenceCode(
+			@GraphQLName("externalReferenceCode") String externalReferenceCode,
+			@GraphQLName("sxpBlueprint") SXPBlueprint sxpBlueprint)
+		throws Exception {
+
+		return _applyComponentServiceObjects(
+			_sxpBlueprintResourceComponentServiceObjects,
+			this::_populateResourceContext,
+			sxpBlueprintResource ->
+				sxpBlueprintResource.putSXPBlueprintByExternalReferenceCode(
+					externalReferenceCode, sxpBlueprint));
+	}
+
+	@GraphQLField
 	public Response createSXPElementsPageExportBatch(
 			@GraphQLName("search") String search,
 			@GraphQLName("filter") String filterString,
