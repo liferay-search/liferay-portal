@@ -20,8 +20,6 @@
 String type = ParamUtil.getString(request, "type", "google_places");
 %>
 
-<liferay-ui:error key="noItemsWereIngested" message="no-items-were-ingested-check-input" />
-
 <%@ include file="/results.jspf" %>
 
 <portlet:actionURL name="<%= MVCActionCommandNames.INGEST %>" var="ingestActionURL" />
@@ -33,7 +31,6 @@ String type = ParamUtil.getString(request, "type", "google_places");
 		<aui:select label="ingest-type" name="type">
 			<aui:option label="google-places" value="google_places" />
 			<aui:option label="wikipedia-articles" value="wikipedia" />
-			<aui:option label="liferay-learn" value="liferay_learn" />
 			<aui:option label="liferay-help-center" value="liferay_help_center" />
 			<aui:option label="iexcloud-news" value="iexcloud_news" />
 		</aui:select>
@@ -44,10 +41,6 @@ String type = ParamUtil.getString(request, "type", "google_places");
 
 		<div class="ingestion-type iexcloud_news <%= type.equals("iexcloud_news") ? "" : "hide" %>">
 			<%@ include file="/ingester/iexcloud_news.jspf" %>
-		</div>
-
-		<div class="ingestion-type liferay_learn <%= type.equals("liferay_learn") ? "" : "hide" %>">
-			<%@ include file="/ingester/liferay_learn.jspf" %>
 		</div>
 
 		<div class="ingestion-type liferay_help_center <%= type.equals("liferay_help_center") ? "" : "hide" %>">

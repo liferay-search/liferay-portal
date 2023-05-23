@@ -32,7 +32,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Petteri Karttunen
  */
 @Component(
-	enabled = false, immediate = true,
+	enabled = false,
 	property = {
 		"javax.portlet.name=" + IngestPortletKeys.INGEST, "mvc.command.name=/"
 	},

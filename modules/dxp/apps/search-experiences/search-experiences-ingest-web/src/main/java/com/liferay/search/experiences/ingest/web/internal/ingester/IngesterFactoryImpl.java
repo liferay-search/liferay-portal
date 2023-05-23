@@ -25,7 +25,7 @@ import org.osgi.service.component.annotations.Deactivate;
 /**
  * @author Petteri Karttunen
  */
-@Component(enabled = false, immediate = true, service = IngesterFactory.class)
+@Component(enabled = false, service = IngesterFactory.class)
 public class IngesterFactoryImpl implements IngesterFactory {
 
 	@Override

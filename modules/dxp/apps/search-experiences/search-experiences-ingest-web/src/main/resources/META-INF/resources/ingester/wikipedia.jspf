@@ -19,5 +19,5 @@
 
 	<aui:input label="wikipedia-article-list" name="wikiArticles" />
 
-	<aui:input label="number-of-articles-to-ingest" name="numberOfArticles" value="10" />
+	<aui:input label="number-of-articles-to-ingest" name="numberOfWikiArticles" value="10" />
 </aui:fieldset>
