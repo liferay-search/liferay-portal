@@ -16,36 +16,30 @@ package com.liferay.search.experiences.ingest.web.internal.ingester;
 
 import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.journal.model.JournalArticle;
-import com.liferay.journal.service.JournalArticleLocalService;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
-import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Http;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.search.experiences.ingest.web.internal.importer.JournalArticleImporterImpl;
-import com.liferay.search.experiences.ingest.web.internal.util.CSVUtil;
+import com.liferay.search.experiences.ingest.web.internal.importer.JournalArticleImporter;
+import com.liferay.search.experiences.ingest.web.internal.iterator.LoopingIterator;
+import com.liferay.search.experiences.ingest.web.internal.stats.IngestionStats;
 import com.liferay.search.experiences.ingest.web.internal.util.ExpandoUtil;
+import com.liferay.search.experiences.ingest.web.internal.util.IngesterUtil;
 import com.liferay.search.experiences.ingest.web.internal.util.TagUtil;
 
-import java.io.IOException;
-
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -54,26 +48,23 @@ import org.osgi.service.component.annotations.Reference;
  * @author Petteri Karttunen
  */
 @Component(
-	enabled = false, immediate = true, property = "type=google_places",
-	service = Ingester.class
+	enabled = false, property = "type=google_places", service = Ingester.class
 )
 public class GooglePlacesIngester implements Ingester {
 
 	@Override
-	public Map<String, List<String>> ingest(
-		ActionRequest actionRequest, ActionResponse actionResponse) {
-
+	public IngestionStats ingest(ActionRequest actionRequest) {
 		try {
 			ExpandoUtil.createGeoLocationExpandoAttribute(
 				_LOCATION_EXPANDO_FIELD, JournalArticle.class, actionRequest);
+
+			return _ingest(actionRequest);
 		}
 		catch (PortalException portalException) {
 			_log.error(portalException);
-
-			return Collections.emptyMap();
 		}
 
-		return _ingest(actionRequest);
+		return new IngestionStats();
 	}
 
 	private void _addLocationExpandoAttribute(
@@ -175,29 +166,20 @@ public class GooglePlacesIngester implements Ingester {
 		return geometryJSONObject.getJSONObject("location");
 	}
 
-	private Map<String, List<String>> _ingest(ActionRequest actionRequest) {
+	private IngestionStats _ingest(ActionRequest actionRequest) {
+		IngestionStats ingestionStats = new IngestionStats();
+
 		String apiUrl = _getAPIUrl(actionRequest);
 
 		if (Validator.isBlank(apiUrl)) {
-			return Collections.emptyMap();
+			return ingestionStats;
 		}
 
-		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
+		LoopingIterator<Long> groupIdsLoopingIterator =
+			IngesterUtil.getGroupIdsLoopingIterator(actionRequest);
 
-		JournalArticleImporterImpl journalArticleImporterImpl =
-			new JournalArticleImporterImpl(
-				CSVUtil.csvToLongList(
-					ParamUtil.getString(
-						actionRequest, "groupIds",
-						String.valueOf(themeDisplay.getScopeGroupId()))),
-				_journalArticleLocalService,
-				ParamUtil.getString(actionRequest, "languageId", "en_US"),
-				actionRequest,
-				CSVUtil.csvToLongList(
-					ParamUtil.getString(
-						actionRequest, "userIds",
-						String.valueOf(themeDisplay.getUserId()))));
+		LoopingIterator<Long> userIdsLoopingIterator =
+			IngesterUtil.getUserIdsLoopingIterator(actionRequest);
 
 		try {
 			JSONObject jsonObject = _jsonFactory.createJSONObject(
@@ -205,30 +187,41 @@ public class GooglePlacesIngester implements Ingester {
 
 			JSONArray jsonArray = jsonObject.getJSONArray("results");
 
+			ServiceContext serviceContext = IngesterUtil.getServiceContext(
+				actionRequest);
+
 			for (int i = 0; i < jsonArray.length(); i++) {
 				JSONObject resultJSONObject = jsonArray.getJSONObject(i);
 
 				JSONObject locationJSONObject = _getLocationJSONObject(
 					resultJSONObject);
 
+				String title = resultJSONObject.getString("name");
+
+				serviceContext.setAssetTagNames(
+					_getAssetTagNames(resultJSONObject));
+
 				JournalArticle journalArticle =
-					journalArticleImporterImpl.addJournalArticle(
-						_getAssetTagNames(resultJSONObject),
-						_getContent(resultJSONObject),
-						resultJSONObject.getString("name"));
+					_journalArticleImporter.importBasicWebContentJournalArticle(
+						_getContent(resultJSONObject), serviceContext, title);
 
 				_addLocationExpandoAttribute(
 					journalArticle, locationJSONObject.getString("lat"),
 					locationJSONObject.getString("lng"));
 
-				journalArticleImporterImpl.updateJournalArticle(journalArticle);
+				_journalArticleImporter.updateJournalArticle(journalArticle);
+
+				serviceContext.setScopeGroupId(groupIdsLoopingIterator.next());
+				serviceContext.setUserId(userIdsLoopingIterator.next());
+
+				ingestionStats.addIngestedTitle(title);
 			}
 		}
-		catch (IOException | JSONException exception) {
+		catch (Exception exception) {
 			_log.error(exception);
 		}
 
-		return journalArticleImporterImpl.getIngestResults();
+		return ingestionStats;
 	}
 
 	private static final String _API_BASE_URL =
@@ -243,7 +236,7 @@ public class GooglePlacesIngester implements Ingester {
 	private Http _http;
 
 	@Reference
-	private JournalArticleLocalService _journalArticleLocalService;
+	private JournalArticleImporter _journalArticleImporter;
 
 	@Reference
 	private JSONFactory _jsonFactory;

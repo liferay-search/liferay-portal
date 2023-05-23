@@ -14,30 +14,25 @@
 
 package com.liferay.search.experiences.ingest.web.internal.ingester;
 
-import com.liferay.journal.service.JournalArticleLocalService;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.json.JSONArray;
-import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.util.Http;
 import com.liferay.portal.kernel.util.ParamUtil;
-import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.search.experiences.ingest.web.internal.importer.JournalArticleImporterImpl;
-import com.liferay.search.experiences.ingest.web.internal.util.CSVUtil;
+import com.liferay.search.experiences.ingest.web.internal.importer.JournalArticleImporter;
+import com.liferay.search.experiences.ingest.web.internal.iterator.LoopingIterator;
+import com.liferay.search.experiences.ingest.web.internal.stats.IngestionStats;
+import com.liferay.search.experiences.ingest.web.internal.util.IngesterUtil;
 import com.liferay.search.experiences.ingest.web.internal.util.TagUtil;
-
-import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -48,16 +43,65 @@ import org.osgi.service.component.annotations.Reference;
  * @author Gustavo Lima
  */
 @Component(
-	enabled = false, immediate = true, property = "type=liferay_help_center",
+	enabled = false, property = "type=liferay_help_center",
 	service = Ingester.class
 )
 public class LiferayHelpCenterIngester implements Ingester {
 
 	@Override
-	public Map<String, List<String>> ingest(
-		ActionRequest actionRequest, ActionResponse actionResponse) {
+	public IngestionStats ingest(ActionRequest actionRequest) {
+		IngestionStats ingestionStats = new IngestionStats();
 
-		return _ingest(actionRequest);
+		int itemsPerPage = ParamUtil.getInteger(
+			actionRequest, "liferayHelpCenterItemsPerPage", 30);
+
+		int numOfPages = ParamUtil.getInteger(
+			actionRequest, "liferayHelpCenterNumOfPages", 1);
+
+		int startPage = ParamUtil.getInteger(
+			actionRequest, "liferayHelpCenterStartPage", 1);
+
+		LoopingIterator<Long> groupIdsLoopingIterator =
+			IngesterUtil.getGroupIdsLoopingIterator(actionRequest);
+
+		LoopingIterator<Long> userIdsLoopingIterator =
+			IngesterUtil.getUserIdsLoopingIterator(actionRequest);
+
+		try {
+			ServiceContext serviceContext = IngesterUtil.getServiceContext(
+				actionRequest);
+
+			for (int i = 0; i < numOfPages; i++) {
+				JSONObject jsonObject = _jsonFactory.createJSONObject(
+					_http.URLtoString(
+						_getApiUrl(itemsPerPage, startPage + i + 1)));
+
+				JSONArray jsonArray = jsonObject.getJSONArray("articles");
+
+				for (int j = 0; j < jsonArray.length(); j++) {
+					JSONObject resultJSONObject = jsonArray.getJSONObject(j);
+
+					String title = resultJSONObject.getString("title");
+
+					serviceContext.setAssetTagNames(
+						_getAssetTagNames(resultJSONObject));
+
+					_journalArticleImporter.importBasicWebContentJournalArticle(
+						_getContent(resultJSONObject), serviceContext, title);
+
+					serviceContext.setScopeGroupId(
+						groupIdsLoopingIterator.next());
+					serviceContext.setUserId(userIdsLoopingIterator.next());
+
+					ingestionStats.addIngestedTitle(title);
+				}
+			}
+		}
+		catch (Exception exception) {
+			_log.error(exception);
+		}
+
+		return ingestionStats;
 	}
 
 	private String _getApiUrl(int itemsPerPage, int page) {
@@ -87,58 +131,6 @@ public class LiferayHelpCenterIngester implements Ingester {
 		return jsonObject.getString("body");
 	}
 
-	private Map<String, List<String>> _ingest(ActionRequest actionRequest) {
-		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
-		int itemsPerPage = ParamUtil.getInteger(
-			actionRequest, "liferayHelpCenterItemsPerPage", 30);
-
-		int numOfPages = ParamUtil.getInteger(
-			actionRequest, "liferayHelpCenterNumOfPages", 1);
-
-		int startPage = ParamUtil.getInteger(
-			actionRequest, "liferayHelpCenterStartPage", 1);
-
-		JournalArticleImporterImpl journalArticleImporterImpl =
-			new JournalArticleImporterImpl(
-				CSVUtil.csvToLongList(
-					ParamUtil.getString(
-						actionRequest, "groupIds",
-						String.valueOf(themeDisplay.getScopeGroupId()))),
-				_journalArticleLocalService,
-				ParamUtil.getString(actionRequest, "languageId", "en_US"),
-				actionRequest,
-				CSVUtil.csvToLongList(
-					ParamUtil.getString(
-						actionRequest, "userIds",
-						String.valueOf(themeDisplay.getUserId()))));
-
-		try {
-			for (int i = 0; i < numOfPages; i++) {
-				JSONObject jsonObject = _jsonFactory.createJSONObject(
-					_http.URLtoString(
-						_getApiUrl(itemsPerPage, startPage + i + 1)));
-
-				JSONArray jsonArray = jsonObject.getJSONArray("articles");
-
-				for (int j = 0; j < jsonArray.length(); j++) {
-					JSONObject resultJSONObject = jsonArray.getJSONObject(j);
-
-					journalArticleImporterImpl.addJournalArticle(
-						_getAssetTagNames(resultJSONObject),
-						_getContent(resultJSONObject),
-						resultJSONObject.getString("title"));
-				}
-			}
-		}
-		catch (IOException | JSONException exception) {
-			_log.error(exception);
-		}
-
-		return journalArticleImporterImpl.getIngestResults();
-	}
-
 	private static final String _API_URL =
 		"https://liferay-support.zendesk.com/api/v2/help_center/en-us" +
 			"/articles.json";
@@ -150,7 +142,7 @@ public class LiferayHelpCenterIngester implements Ingester {
 	private Http _http;
 
 	@Reference
-	private JournalArticleLocalService _journalArticleLocalService;
+	private JournalArticleImporter _journalArticleImporter;
 
 	@Reference
 	private JSONFactory _jsonFactory;

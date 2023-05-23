@@ -14,32 +14,26 @@
 
 package com.liferay.search.experiences.ingest.web.internal.ingester;
 
-import com.liferay.journal.service.JournalArticleLocalService;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.json.JSONArray;
-import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.util.Http;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.search.experiences.ingest.web.internal.importer.JournalArticleImporterImpl;
-import com.liferay.search.experiences.ingest.web.internal.util.CSVUtil;
+import com.liferay.search.experiences.ingest.web.internal.importer.JournalArticleImporter;
+import com.liferay.search.experiences.ingest.web.internal.iterator.LoopingIterator;
+import com.liferay.search.experiences.ingest.web.internal.stats.IngestionStats;
+import com.liferay.search.experiences.ingest.web.internal.util.IngesterUtil;
 import com.liferay.search.experiences.ingest.web.internal.util.TagUtil;
 
-import java.io.IOException;
-
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -48,16 +42,56 @@ import org.osgi.service.component.annotations.Reference;
  * @author Petteri Karttunen
  */
 @Component(
-	enabled = false, immediate = true, property = "type=iexcloud_news",
-	service = Ingester.class
+	enabled = false, property = "type=iexcloud_news", service = Ingester.class
 )
 public class IEXCloudNewsIngester implements Ingester {
 
 	@Override
-	public Map<String, List<String>> ingest(
-		ActionRequest actionRequest, ActionResponse actionResponse) {
+	public IngestionStats ingest(ActionRequest actionRequest) {
+		IngestionStats ingestionStats = new IngestionStats();
 
-		return _ingest(actionRequest);
+		String apiUrl = _getAPIUrl(actionRequest);
+
+		if (Validator.isBlank(apiUrl)) {
+			return ingestionStats;
+		}
+
+		LoopingIterator<Long> groupIdsLoopingIterator =
+			IngesterUtil.getGroupIdsLoopingIterator(actionRequest);
+
+		LoopingIterator<Long> userIdsLoopingIterator =
+			IngesterUtil.getUserIdsLoopingIterator(actionRequest);
+
+		try {
+			JSONArray jsonArray = _jsonFactory.createJSONArray(
+				_http.URLtoString(apiUrl));
+
+			ServiceContext serviceContext = IngesterUtil.getServiceContext(
+				actionRequest);
+
+			for (int i = 0; i < jsonArray.length(); i++) {
+				JSONObject resultJSONObject = jsonArray.getJSONObject(i);
+
+				String title = resultJSONObject.getString("headline");
+
+				serviceContext.setAssetTagNames(
+					_getAssetTagNames(resultJSONObject));
+
+				_journalArticleImporter.importBasicWebContentJournalArticle(
+					resultJSONObject.getString("summary"), serviceContext,
+					title);
+
+				serviceContext.setScopeGroupId(groupIdsLoopingIterator.next());
+				serviceContext.setUserId(userIdsLoopingIterator.next());
+
+				ingestionStats.addIngestedTitle(title);
+			}
+		}
+		catch (Exception exception) {
+			_log.error(exception);
+		}
+
+		return ingestionStats;
 	}
 
 	private String _getAPIUrl(ActionRequest actionRequest) {
@@ -124,50 +158,6 @@ public class IEXCloudNewsIngester implements Ingester {
 		return assetTagNames.toArray(new String[0]);
 	}
 
-	private Map<String, List<String>> _ingest(ActionRequest actionRequest) {
-		String apiUrl = _getAPIUrl(actionRequest);
-
-		if (Validator.isBlank(apiUrl)) {
-			return Collections.emptyMap();
-		}
-
-		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
-		JournalArticleImporterImpl journalArticleImporterImpl =
-			new JournalArticleImporterImpl(
-				CSVUtil.csvToLongList(
-					ParamUtil.getString(
-						actionRequest, "groupIds",
-						String.valueOf(themeDisplay.getScopeGroupId()))),
-				_journalArticleLocalService,
-				ParamUtil.getString(actionRequest, "languageId", "en_US"),
-				actionRequest,
-				CSVUtil.csvToLongList(
-					ParamUtil.getString(
-						actionRequest, "userIds",
-						String.valueOf(themeDisplay.getUserId()))));
-
-		try {
-			JSONArray jsonArray = _jsonFactory.createJSONArray(
-				_http.URLtoString(apiUrl));
-
-			for (int i = 0; i < jsonArray.length(); i++) {
-				JSONObject resultJSONObject = jsonArray.getJSONObject(i);
-
-				journalArticleImporterImpl.addJournalArticle(
-					_getAssetTagNames(resultJSONObject),
-					resultJSONObject.getString("summary"),
-					resultJSONObject.getString("headline"));
-			}
-		}
-		catch (IOException | JSONException exception) {
-			_log.error(exception);
-		}
-
-		return journalArticleImporterImpl.getIngestResults();
-	}
-
 	private static final Log _log = LogFactoryUtil.getLog(
 		IEXCloudNewsIngester.class);
 
@@ -175,7 +165,7 @@ public class IEXCloudNewsIngester implements Ingester {
 	private Http _http;
 
 	@Reference
-	private JournalArticleLocalService _journalArticleLocalService;
+	private JournalArticleImporter _journalArticleImporter;
 
 	@Reference
 	private JSONFactory _jsonFactory;
