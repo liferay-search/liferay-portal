@@ -15,19 +15,14 @@
 package com.liferay.search.experiences.ingest.web.internal.portlet.action;
 
 import com.liferay.exportimport.kernel.lar.ExportImportThreadLocal;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
-import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.search.experiences.ingest.web.internal.constants.IngestPortletKeys;
 import com.liferay.search.experiences.ingest.web.internal.constants.MVCActionCommandNames;
 import com.liferay.search.experiences.ingest.web.internal.ingester.Ingester;
 import com.liferay.search.experiences.ingest.web.internal.ingester.IngesterFactory;
-
-import java.util.List;
-import java.util.Map;
+import com.liferay.search.experiences.ingest.web.internal.stats.IngestionStats;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -39,7 +34,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Petteri Karttunen
  */
 @Component(
-	enabled = false, immediate = true,
+	enabled = false,
 	property = {
 		"javax.portlet.name=" + IngestPortletKeys.INGEST,
 		"mvc.command.name=" + MVCActionCommandNames.INGEST
@@ -53,50 +48,22 @@ public class IngestMVCActionCommand extends BaseMVCActionCommand {
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
 
-		Ingester dataIngestor = _ingesterFactory.getIngester(
-			ParamUtil.getString(actionRequest, "type"));
-
 		ExportImportThreadLocal.setPortletImportInProcess(true);
 
-		long timeMillis = System.currentTimeMillis();
+		long startTimeMillis = System.currentTimeMillis();
 
-		Map<String, List<String>> results = dataIngestor.ingest(
-			actionRequest, actionResponse);
+		Ingester ingester = _ingesterFactory.getIngester(
+			ParamUtil.getString(actionRequest, "type"));
 
-		if (_log.isInfoEnabled()) {
-			_log.info("Finished ingestion in " + (timeMillis / 1000) + " s");
-		}
+		IngestionStats ingestionStats = ingester.ingest(actionRequest);
+
+		ingestionStats.setSecondsElapsed(
+			(System.currentTimeMillis() - startTimeMillis) / 1000);
 
 		ExportImportThreadLocal.setPortletImportInProcess(false);
 
-		_setResultsInfo(actionRequest, results);
+		actionRequest.setAttribute("ingestionStats", ingestionStats);
 	}
-
-	private void _setResultsInfo(
-		ActionRequest actionRequest, Map<String, List<String>> results) {
-
-		if (results.isEmpty()) {
-			SessionErrors.add(actionRequest, "noItemsWereIngested");
-		}
-		else {
-			List<String> failedTitles = results.get("failedTitles");
-
-			actionRequest.setAttribute("failedTitles", failedTitles);
-
-			actionRequest.setAttribute(
-				"failedTitlesCount", failedTitles.size());
-
-			List<String> ingestedTitles = results.get("ingestedTitles");
-
-			actionRequest.setAttribute("ingestedTitles", ingestedTitles);
-
-			actionRequest.setAttribute(
-				"ingestedTitlesCount", ingestedTitles.size());
-		}
-	}
-
-	private static final Log _log = LogFactoryUtil.getLog(
-		IngestMVCActionCommand.class);
 
 	@Reference
 	private IngesterFactory _ingesterFactory;
