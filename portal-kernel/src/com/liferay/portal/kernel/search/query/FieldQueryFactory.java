@@ -21,7 +21,6 @@ import com.liferay.portal.kernel.search.Query;
  */
 public interface FieldQueryFactory {
 
-	public Query createQuery(
-		String field, String value, boolean like, boolean splitKeywords);
+	public Query createQuery(String field, String value);
 
 }

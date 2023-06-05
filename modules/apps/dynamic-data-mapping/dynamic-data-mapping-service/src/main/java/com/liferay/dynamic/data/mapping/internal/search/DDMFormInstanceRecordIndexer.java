@@ -148,7 +148,7 @@ public class DDMFormInstanceRecordIndexer
 			SearchContext searchContext)
 		throws Exception {
 
-		addSearchTerm(searchQuery, searchContext, Field.USER_NAME, false);
+		addSearchTerm(searchQuery, searchContext, Field.USER_NAME);
 
 		_addContentSearchTerm(searchQuery, searchContext);
 	}
@@ -281,7 +281,7 @@ public class DDMFormInstanceRecordIndexer
 
 		addSearchTerm(
 			searchQuery, searchContext,
-			"ddmContent_ " + LocaleUtil.toLanguageId(locale), false);
+			"ddmContent_ " + LocaleUtil.toLanguageId(locale));
 	}
 
 	private String _extractContent(

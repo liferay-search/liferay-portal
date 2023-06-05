@@ -34,10 +34,7 @@ import org.osgi.service.component.annotations.Reference;
 public class FieldQueryFactoryImpl implements FieldQueryFactory {
 
 	@Override
-	public Query createQuery(
-		String fieldName, String keywords, boolean like,
-		boolean splitKeywords) {
-
+	public Query createQuery(String fieldName, String keywords) {
 		FieldQueryBuilder fieldQueryBuilder = _getQueryBuilder(fieldName);
 
 		return fieldQueryBuilder.build(fieldName, keywords);

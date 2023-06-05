@@ -68,12 +68,11 @@ public class CommercePricingClassIndexer
 			SearchContext searchContext)
 		throws Exception {
 
-		addSearchLocalizedTerm(
-			searchQuery, searchContext, Field.DESCRIPTION, false);
-		addSearchTerm(searchQuery, searchContext, Field.ENTRY_CLASS_PK, false);
-		addSearchTerm(searchQuery, searchContext, Field.TITLE, false);
-		addSearchLocalizedTerm(searchQuery, searchContext, Field.TITLE, false);
-		addSearchTerm(searchQuery, searchContext, Field.USER_NAME, false);
+		addSearchLocalizedTerm(searchQuery, searchContext, Field.DESCRIPTION);
+		addSearchTerm(searchQuery, searchContext, Field.ENTRY_CLASS_PK);
+		addSearchTerm(searchQuery, searchContext, Field.TITLE);
+		addSearchLocalizedTerm(searchQuery, searchContext, Field.TITLE);
+		addSearchTerm(searchQuery, searchContext, Field.USER_NAME);
 	}
 
 	@Override

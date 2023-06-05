@@ -89,10 +89,10 @@ public class CommerceTierPriceEntryIndexer
 			SearchContext searchContext)
 		throws Exception {
 
-		addSearchTerm(searchQuery, searchContext, Field.ENTRY_CLASS_PK, false);
-		addSearchTerm(searchQuery, searchContext, Field.USER_NAME, false);
+		addSearchTerm(searchQuery, searchContext, Field.ENTRY_CLASS_PK);
+		addSearchTerm(searchQuery, searchContext, Field.USER_NAME);
 		addSearchTerm(
-			searchQuery, searchContext, FIELD_EXTERNAL_REFERENCE_CODE, false);
+			searchQuery, searchContext, FIELD_EXTERNAL_REFERENCE_CODE);
 
 		LinkedHashMap<String, Object> params =
 			(LinkedHashMap<String, Object>)searchContext.getAttribute("params");

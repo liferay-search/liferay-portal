@@ -102,26 +102,19 @@ public class ExpandoQueryContributorHelperImpl
 			return;
 		}
 
-		boolean like = false;
-
-		if (indexType == ExpandoColumnConstants.INDEX_TYPE_TEXT) {
-			like = true;
-		}
-
 		if (searchContext.isAndSearch()) {
-			booleanQuery.addRequiredTerm(fieldName, keywords, like);
+			booleanQuery.addRequiredTerm(fieldName, keywords);
 		}
 		else {
-			_addTerm(booleanQuery, fieldName, keywords, like);
+			_addTerm(booleanQuery, fieldName, keywords);
 		}
 	}
 
 	private Query _addTerm(
-		BooleanQuery booleanQuery, String fieldName, String keywords,
-		boolean like) {
+		BooleanQuery booleanQuery, String fieldName, String keywords) {
 
 		try {
-			return booleanQuery.addTerm(fieldName, keywords, like);
+			return booleanQuery.addTerm(fieldName, keywords);
 		}
 		catch (ParseException parseException) {
 			throw new RuntimeException(parseException);

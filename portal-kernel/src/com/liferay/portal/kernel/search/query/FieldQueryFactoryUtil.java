@@ -22,11 +22,8 @@ import com.liferay.portal.kernel.util.ServiceProxyFactory;
  */
 public class FieldQueryFactoryUtil {
 
-	public static Query createQuery(
-		String field, String value, boolean like, boolean splitKeywords) {
-
-		return _fieldQueryFactory.createQuery(
-			field, value, like, splitKeywords);
+	public static Query createQuery(String field, String value) {
+		return _fieldQueryFactory.createQuery(field, value);
 	}
 
 	private static volatile FieldQueryFactory _fieldQueryFactory =

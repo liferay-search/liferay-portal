@@ -61,8 +61,8 @@ public class ClientExtensionEntryIndexer
 			SearchContext searchContext)
 		throws Exception {
 
-		addSearchTerm(searchQuery, searchContext, Field.ENTRY_CLASS_PK, false);
-		addSearchTerm(searchQuery, searchContext, Field.NAME, true);
+		addSearchTerm(searchQuery, searchContext, Field.ENTRY_CLASS_PK);
+		addSearchTerm(searchQuery, searchContext, Field.NAME);
 	}
 
 	@Override

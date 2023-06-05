@@ -271,9 +271,9 @@ public class CommerceDiscountIndexer extends BaseIndexer<CommerceDiscount> {
 			SearchContext searchContext)
 		throws Exception {
 
-		addSearchTerm(searchQuery, searchContext, Field.ENTRY_CLASS_PK, false);
-		addSearchTerm(searchQuery, searchContext, Field.NAME, false);
-		addSearchTerm(searchQuery, searchContext, Field.USER_NAME, false);
+		addSearchTerm(searchQuery, searchContext, Field.ENTRY_CLASS_PK);
+		addSearchTerm(searchQuery, searchContext, Field.NAME);
+		addSearchTerm(searchQuery, searchContext, Field.USER_NAME);
 
 		LinkedHashMap<String, Object> params =
 			(LinkedHashMap<String, Object>)searchContext.getAttribute("params");

@@ -319,21 +319,18 @@ public class CPDefinitionIndexer extends BaseIndexer<CPDefinition> {
 		throws Exception {
 
 		addSearchTerm(
-			searchQuery, searchContext, CPField.EXTERNAL_REFERENCE_CODE, false);
+			searchQuery, searchContext, CPField.EXTERNAL_REFERENCE_CODE);
 		addSearchLocalizedTerm(
-			searchQuery, searchContext, CPField.SHORT_DESCRIPTION, false);
-		addSearchTerm(searchQuery, searchContext, CPField.SKUS, false);
+			searchQuery, searchContext, CPField.SHORT_DESCRIPTION);
+		addSearchTerm(searchQuery, searchContext, CPField.SKUS);
 		addSearchLocalizedTerm(
-			searchQuery, searchContext, CPField.SPECIFICATION_VALUES_NAMES,
-			false);
-		addSearchLocalizedTerm(
-			searchQuery, searchContext, Field.CONTENT, false);
-		addSearchLocalizedTerm(
-			searchQuery, searchContext, Field.DESCRIPTION, false);
-		addSearchTerm(searchQuery, searchContext, Field.ENTRY_CLASS_PK, false);
-		addSearchTerm(searchQuery, searchContext, Field.NAME, false);
-		addSearchLocalizedTerm(searchQuery, searchContext, Field.NAME, false);
-		addSearchTerm(searchQuery, searchContext, Field.USER_NAME, false);
+			searchQuery, searchContext, CPField.SPECIFICATION_VALUES_NAMES);
+		addSearchLocalizedTerm(searchQuery, searchContext, Field.CONTENT);
+		addSearchLocalizedTerm(searchQuery, searchContext, Field.DESCRIPTION);
+		addSearchTerm(searchQuery, searchContext, Field.ENTRY_CLASS_PK);
+		addSearchTerm(searchQuery, searchContext, Field.NAME);
+		addSearchLocalizedTerm(searchQuery, searchContext, Field.NAME);
+		addSearchTerm(searchQuery, searchContext, Field.USER_NAME);
 
 		LinkedHashMap<String, Object> params =
 			(LinkedHashMap<String, Object>)searchContext.getAttribute("params");

@@ -164,14 +164,14 @@ public class JournalArticleKeywordQueryContributor
 		BooleanQuery booleanQuery, String field, String value) {
 
 		try {
-			booleanQuery.addTerm(field, value, false);
+			booleanQuery.addTerm(field, value);
 		}
 		catch (ParseException parseException) {
 			if (_log.isDebugEnabled()) {
 				_log.debug(
 					StringBundler.concat(
 						"Unable to add search term to query field:", field,
-						" value:", value, " like:", false),
+						" value:", value),
 					parseException);
 			}
 		}

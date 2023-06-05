@@ -132,11 +132,11 @@ public class CommerceShipmentIndexer extends BaseIndexer<CommerceShipment> {
 		super.postProcessSearchQuery(
 			searchQuery, fullQueryBooleanFilter, searchContext);
 
-		addSearchTerm(searchQuery, searchContext, Field.ENTRY_CLASS_PK, false);
-		addSearchTerm(searchQuery, searchContext, "commerceAccountName", false);
-		addSearchTerm(searchQuery, searchContext, "commerceChannelName", false);
-		addSearchTerm(searchQuery, searchContext, "oneLineAddress", false);
-		addSearchTerm(searchQuery, searchContext, "trackingNumber", false);
+		addSearchTerm(searchQuery, searchContext, Field.ENTRY_CLASS_PK);
+		addSearchTerm(searchQuery, searchContext, "commerceAccountName");
+		addSearchTerm(searchQuery, searchContext, "commerceChannelName");
+		addSearchTerm(searchQuery, searchContext, "oneLineAddress");
+		addSearchTerm(searchQuery, searchContext, "trackingNumber");
 	}
 
 	@Override

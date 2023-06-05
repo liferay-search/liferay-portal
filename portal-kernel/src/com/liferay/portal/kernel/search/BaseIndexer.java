@@ -380,9 +380,9 @@ public abstract class BaseIndexer<T> implements Indexer<T> {
 		throws Exception {
 
 		if (Validator.isNull(searchContext.getKeywords())) {
-			addSearchTerm(searchQuery, searchContext, Field.DESCRIPTION, false);
-			addSearchTerm(searchQuery, searchContext, Field.TITLE, false);
-			addSearchTerm(searchQuery, searchContext, Field.USER_NAME, false);
+			addSearchTerm(searchQuery, searchContext, Field.DESCRIPTION);
+			addSearchTerm(searchQuery, searchContext, Field.TITLE);
+			addSearchTerm(searchQuery, searchContext, Field.USER_NAME);
 		}
 	}
 
@@ -806,20 +806,18 @@ public abstract class BaseIndexer<T> implements Indexer<T> {
 	}
 
 	protected Map<String, Query> addSearchLocalizedTerm(
-			BooleanQuery searchQuery, SearchContext searchContext, String field,
-			boolean like)
+			BooleanQuery searchQuery, SearchContext searchContext, String field)
 		throws Exception {
 
 		Map<String, Query> queries = new HashMap<>();
 
-		queries.put(
-			field, addSearchTerm(searchQuery, searchContext, field, like));
+		queries.put(field, addSearchTerm(searchQuery, searchContext, field));
 
 		String localizedFieldName = Field.getLocalizedName(
 			searchContext.getLocale(), field);
 
 		Query localizedQuery = addSearchTerm(
-			searchQuery, searchContext, localizedFieldName, like);
+			searchQuery, searchContext, localizedFieldName);
 
 		queries.put(localizedFieldName, localizedQuery);
 
@@ -827,8 +825,7 @@ public abstract class BaseIndexer<T> implements Indexer<T> {
 	}
 
 	protected Query addSearchTerm(
-			BooleanQuery searchQuery, SearchContext searchContext, String field,
-			boolean like)
+			BooleanQuery searchQuery, SearchContext searchContext, String field)
 		throws Exception {
 
 		if (Validator.isNull(field)) {
@@ -870,10 +867,10 @@ public abstract class BaseIndexer<T> implements Indexer<T> {
 		Query query = null;
 
 		if (searchContext.isAndSearch()) {
-			query = searchQuery.addRequiredTerm(field, value, like);
+			query = searchQuery.addRequiredTerm(field, value);
 		}
 		else {
-			query = searchQuery.addTerm(field, value, like);
+			query = searchQuery.addTerm(field, value);
 		}
 
 		return query;

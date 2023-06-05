@@ -90,17 +90,15 @@ public class CPDefinitionOptionRelIndexer
 
 		addSearchTerm(
 			searchQuery, searchContext,
-			CPField.DEFINITION_OPTION_VALUE_REL_NAME, false);
+			CPField.DEFINITION_OPTION_VALUE_REL_NAME);
 		addSearchLocalizedTerm(
 			searchQuery, searchContext,
-			CPField.DEFINITION_OPTION_VALUE_REL_NAME, false);
-		addSearchLocalizedTerm(
-			searchQuery, searchContext, Field.CONTENT, false);
-		addSearchLocalizedTerm(
-			searchQuery, searchContext, Field.DESCRIPTION, false);
-		addSearchTerm(searchQuery, searchContext, Field.ENTRY_CLASS_PK, false);
-		addSearchLocalizedTerm(searchQuery, searchContext, Field.NAME, false);
-		addSearchTerm(searchQuery, searchContext, Field.USER_NAME, false);
+			CPField.DEFINITION_OPTION_VALUE_REL_NAME);
+		addSearchLocalizedTerm(searchQuery, searchContext, Field.CONTENT);
+		addSearchLocalizedTerm(searchQuery, searchContext, Field.DESCRIPTION);
+		addSearchTerm(searchQuery, searchContext, Field.ENTRY_CLASS_PK);
+		addSearchLocalizedTerm(searchQuery, searchContext, Field.NAME);
+		addSearchTerm(searchQuery, searchContext, Field.USER_NAME);
 
 		LinkedHashMap<String, Object> params =
 			(LinkedHashMap<String, Object>)searchContext.getAttribute("params");

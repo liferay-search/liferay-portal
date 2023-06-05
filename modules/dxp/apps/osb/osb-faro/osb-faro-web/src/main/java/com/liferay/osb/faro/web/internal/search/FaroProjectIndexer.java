@@ -82,11 +82,11 @@ public class FaroProjectIndexer extends BaseIndexer<FaroProject> {
 		throws Exception {
 
 		if (Validator.isNotNull(searchContext.getKeywords())) {
-			addSearchTerm(searchQuery, searchContext, Field.GROUP_ID, false);
-			addSearchTerm(searchQuery, searchContext, Field.NAME, true);
-			addSearchTerm(searchQuery, searchContext, "corpProjectName", true);
-			addSearchTerm(searchQuery, searchContext, "corpProjectUuid", false);
-			addSearchTerm(searchQuery, searchContext, "weDeployKey", false);
+			addSearchTerm(searchQuery, searchContext, Field.GROUP_ID);
+			addSearchTerm(searchQuery, searchContext, Field.NAME);
+			addSearchTerm(searchQuery, searchContext, "corpProjectName");
+			addSearchTerm(searchQuery, searchContext, "corpProjectUuid");
+			addSearchTerm(searchQuery, searchContext, "weDeployKey");
 		}
 
 		long faroProjectId = GetterUtil.getLong(

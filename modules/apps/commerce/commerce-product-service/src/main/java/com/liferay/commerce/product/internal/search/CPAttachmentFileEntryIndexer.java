@@ -154,14 +154,12 @@ public class CPAttachmentFileEntryIndexer
 		throws Exception {
 
 		addSearchTerm(
-			searchQuery, searchContext, CPField.RELATED_ENTITY_CLASS_NAME_ID,
-			false);
+			searchQuery, searchContext, CPField.RELATED_ENTITY_CLASS_NAME_ID);
 		addSearchTerm(
-			searchQuery, searchContext, CPField.RELATED_ENTITY_CLASS_PK, false);
-		addSearchLocalizedTerm(
-			searchQuery, searchContext, Field.CONTENT, false);
-		addSearchTerm(searchQuery, searchContext, Field.ENTRY_CLASS_PK, false);
-		addSearchTerm(searchQuery, searchContext, Field.USER_NAME, false);
+			searchQuery, searchContext, CPField.RELATED_ENTITY_CLASS_PK);
+		addSearchLocalizedTerm(searchQuery, searchContext, Field.CONTENT);
+		addSearchTerm(searchQuery, searchContext, Field.ENTRY_CLASS_PK);
+		addSearchTerm(searchQuery, searchContext, Field.USER_NAME);
 
 		LinkedHashMap<String, Object> params =
 			(LinkedHashMap<String, Object>)searchContext.getAttribute("params");

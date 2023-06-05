@@ -87,11 +87,11 @@ public class CPDefinitionOptionValueRelIndexer
 			SearchContext searchContext)
 		throws Exception {
 
-		addSearchTerm(searchQuery, searchContext, CPField.KEY, false);
-		addSearchTerm(searchQuery, searchContext, Field.ENTRY_CLASS_PK, false);
-		addSearchLocalizedTerm(searchQuery, searchContext, Field.NAME, false);
-		addSearchTerm(searchQuery, searchContext, Field.USER_NAME, false);
-		addSearchTerm(searchQuery, searchContext, "sku", false);
+		addSearchTerm(searchQuery, searchContext, CPField.KEY);
+		addSearchTerm(searchQuery, searchContext, Field.ENTRY_CLASS_PK);
+		addSearchLocalizedTerm(searchQuery, searchContext, Field.NAME);
+		addSearchTerm(searchQuery, searchContext, Field.USER_NAME);
+		addSearchTerm(searchQuery, searchContext, "sku");
 
 		LinkedHashMap<String, Object> params =
 			(LinkedHashMap<String, Object>)searchContext.getAttribute("params");

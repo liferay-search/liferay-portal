@@ -70,17 +70,15 @@ public class CPOptionIndexer extends BaseIndexer<CPOption> {
 			SearchContext searchContext)
 		throws Exception {
 
-		addSearchTerm(searchQuery, searchContext, CPField.KEY, false);
-		addSearchTerm(
-			searchQuery, searchContext, CPField.OPTION_VALUE_NAME, false);
+		addSearchTerm(searchQuery, searchContext, CPField.KEY);
+		addSearchTerm(searchQuery, searchContext, CPField.OPTION_VALUE_NAME);
 		addSearchLocalizedTerm(
-			searchQuery, searchContext, CPField.OPTION_VALUE_NAME, false);
-		addSearchLocalizedTerm(
-			searchQuery, searchContext, Field.DESCRIPTION, false);
-		addSearchTerm(searchQuery, searchContext, Field.ENTRY_CLASS_PK, false);
-		addSearchTerm(searchQuery, searchContext, Field.NAME, false);
-		addSearchLocalizedTerm(searchQuery, searchContext, Field.NAME, false);
-		addSearchTerm(searchQuery, searchContext, Field.USER_NAME, false);
+			searchQuery, searchContext, CPField.OPTION_VALUE_NAME);
+		addSearchLocalizedTerm(searchQuery, searchContext, Field.DESCRIPTION);
+		addSearchTerm(searchQuery, searchContext, Field.ENTRY_CLASS_PK);
+		addSearchTerm(searchQuery, searchContext, Field.NAME);
+		addSearchLocalizedTerm(searchQuery, searchContext, Field.NAME);
+		addSearchTerm(searchQuery, searchContext, Field.USER_NAME);
 
 		LinkedHashMap<String, Object> params =
 			(LinkedHashMap<String, Object>)searchContext.getAttribute("params");

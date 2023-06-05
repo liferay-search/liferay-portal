@@ -91,11 +91,11 @@ public class QueryHelperImpl implements QueryHelper {
 		Query query = null;
 
 		if (searchContext.isAndSearch()) {
-			query = searchQuery.addRequiredTerm(field, value, like);
+			query = searchQuery.addRequiredTerm(field, value);
 		}
 		else {
 			try {
-				query = searchQuery.addTerm(field, value, like);
+				query = searchQuery.addTerm(field, value);
 			}
 			catch (ParseException parseException) {
 				throw new SystemException(parseException);

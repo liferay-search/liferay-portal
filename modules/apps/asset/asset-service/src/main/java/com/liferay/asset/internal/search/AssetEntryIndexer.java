@@ -60,9 +60,9 @@ public class AssetEntryIndexer extends BaseIndexer<AssetEntry> {
 			return;
 		}
 
-		addSearchTerm(searchQuery, searchContext, Field.DESCRIPTION, false);
-		addSearchTerm(searchQuery, searchContext, Field.TITLE, false);
-		addSearchTerm(searchQuery, searchContext, Field.USER_NAME, false);
+		addSearchTerm(searchQuery, searchContext, Field.DESCRIPTION);
+		addSearchTerm(searchQuery, searchContext, Field.TITLE);
+		addSearchTerm(searchQuery, searchContext, Field.USER_NAME);
 	}
 
 	@Override

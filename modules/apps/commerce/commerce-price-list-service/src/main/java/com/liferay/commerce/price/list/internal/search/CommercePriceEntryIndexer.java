@@ -89,16 +89,14 @@ public class CommercePriceEntryIndexer extends BaseIndexer<CommercePriceEntry> {
 			SearchContext searchContext)
 		throws Exception {
 
-		addSearchTerm(searchQuery, searchContext, Field.ENTRY_CLASS_PK, false);
-		addSearchTerm(searchQuery, searchContext, Field.USER_NAME, false);
+		addSearchTerm(searchQuery, searchContext, Field.ENTRY_CLASS_PK);
+		addSearchTerm(searchQuery, searchContext, Field.USER_NAME);
 		addSearchTerm(
-			searchQuery, searchContext, FIELD_EXTERNAL_REFERENCE_CODE, false);
+			searchQuery, searchContext, FIELD_EXTERNAL_REFERENCE_CODE);
 
-		addSearchLocalizedTerm(
-			searchQuery, searchContext, "cpDefinitionName", false);
-		addSearchTerm(searchQuery, searchContext, "sku", false);
-		addSearchTerm(
-			searchQuery, searchContext, "skuExternalReferenceCode", false);
+		addSearchLocalizedTerm(searchQuery, searchContext, "cpDefinitionName");
+		addSearchTerm(searchQuery, searchContext, "sku");
+		addSearchTerm(searchQuery, searchContext, "skuExternalReferenceCode");
 
 		LinkedHashMap<String, Object> params =
 			(LinkedHashMap<String, Object>)searchContext.getAttribute("params");

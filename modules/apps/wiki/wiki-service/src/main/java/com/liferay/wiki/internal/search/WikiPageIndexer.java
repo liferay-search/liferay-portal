@@ -215,9 +215,8 @@ public class WikiPageIndexer
 			SearchContext searchContext)
 		throws Exception {
 
-		addSearchLocalizedTerm(
-			searchQuery, searchContext, Field.CONTENT, false);
-		addSearchLocalizedTerm(searchQuery, searchContext, Field.TITLE, false);
+		addSearchLocalizedTerm(searchQuery, searchContext, Field.CONTENT);
+		addSearchLocalizedTerm(searchQuery, searchContext, Field.TITLE);
 
 		QueryConfig queryConfig = searchContext.getQueryConfig();
 

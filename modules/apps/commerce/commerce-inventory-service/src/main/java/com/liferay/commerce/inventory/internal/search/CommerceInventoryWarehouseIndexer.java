@@ -105,14 +105,13 @@ public class CommerceInventoryWarehouseIndexer
 		super.postProcessSearchQuery(
 			searchQuery, fullQueryBooleanFilter, searchContext);
 
-		addSearchTerm(searchQuery, searchContext, Field.ENTRY_CLASS_PK, false);
-		addSearchTerm(searchQuery, searchContext, Field.NAME, false);
-		addSearchTerm(searchQuery, searchContext, FIELD_CITY, false);
-		addSearchTerm(searchQuery, searchContext, FIELD_STREET_1, false);
-		addSearchTerm(searchQuery, searchContext, FIELD_ZIP, false);
+		addSearchTerm(searchQuery, searchContext, Field.ENTRY_CLASS_PK);
+		addSearchTerm(searchQuery, searchContext, Field.NAME);
+		addSearchTerm(searchQuery, searchContext, FIELD_CITY);
+		addSearchTerm(searchQuery, searchContext, FIELD_STREET_1);
+		addSearchTerm(searchQuery, searchContext, FIELD_ZIP);
 		addSearchTerm(
-			searchQuery, searchContext, FIELD_COUNTRY_TWO_LETTERS_ISO_CODE,
-			false);
+			searchQuery, searchContext, FIELD_COUNTRY_TWO_LETTERS_ISO_CODE);
 	}
 
 	@Override

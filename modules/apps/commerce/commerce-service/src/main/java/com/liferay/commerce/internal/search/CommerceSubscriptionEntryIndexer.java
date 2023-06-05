@@ -99,12 +99,11 @@ public class CommerceSubscriptionEntryIndexer
 			SearchContext searchContext)
 		throws Exception {
 
-		addSearchTerm(searchQuery, searchContext, Field.ENTRY_CLASS_PK, false);
-		addSearchLocalizedTerm(searchQuery, searchContext, Field.NAME, false);
-		addSearchTerm(
-			searchQuery, searchContext, FIELD_COMMERCE_ORDER_ITEM_ID, false);
-		addSearchTerm(searchQuery, searchContext, FIELD_CP_INSTANCE_ID, false);
-		addSearchTerm(searchQuery, searchContext, FIELD_SKU, false);
+		addSearchTerm(searchQuery, searchContext, Field.ENTRY_CLASS_PK);
+		addSearchLocalizedTerm(searchQuery, searchContext, Field.NAME);
+		addSearchTerm(searchQuery, searchContext, FIELD_COMMERCE_ORDER_ITEM_ID);
+		addSearchTerm(searchQuery, searchContext, FIELD_CP_INSTANCE_ID);
+		addSearchTerm(searchQuery, searchContext, FIELD_SKU);
 	}
 
 	@Override

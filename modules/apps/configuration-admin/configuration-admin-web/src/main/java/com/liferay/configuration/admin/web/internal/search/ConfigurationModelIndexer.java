@@ -220,23 +220,20 @@ public class ConfigurationModelIndexer extends BaseIndexer<ConfigurationModel> {
 		BooleanQuery searchQuery = new BooleanQueryImpl();
 
 		addSearchLocalizedTerm(
-			searchQuery, searchContext, FieldNames.CONFIGURATION_CATEGORY,
-			false);
-		addSearchLocalizedTerm(
-			searchQuery, searchContext, Field.DESCRIPTION, false);
-		addSearchLocalizedTerm(searchQuery, searchContext, Field.TITLE, false);
+			searchQuery, searchContext, FieldNames.CONFIGURATION_CATEGORY);
+		addSearchLocalizedTerm(searchQuery, searchContext, Field.DESCRIPTION);
+		addSearchLocalizedTerm(searchQuery, searchContext, Field.TITLE);
 		addSearchLocalizedTerm(
 			searchQuery, searchContext,
-			FieldNames.CONFIGURATION_MODEL_ATTRIBUTE_DESCRIPTION, false);
+			FieldNames.CONFIGURATION_MODEL_ATTRIBUTE_DESCRIPTION);
 		addSearchLocalizedTerm(
 			searchQuery, searchContext,
-			FieldNames.CONFIGURATION_MODEL_ATTRIBUTE_NAME, false);
+			FieldNames.CONFIGURATION_MODEL_ATTRIBUTE_NAME);
 		addSearchTerm(
 			searchQuery, searchContext,
-			FieldNames.CONFIGURATION_MODEL_FACTORY_PID, false);
+			FieldNames.CONFIGURATION_MODEL_FACTORY_PID);
 		addSearchTerm(
-			searchQuery, searchContext, FieldNames.CONFIGURATION_MODEL_ID,
-			false);
+			searchQuery, searchContext, FieldNames.CONFIGURATION_MODEL_ID);
 
 		BooleanQuery fullBooleanQuery = new BooleanQueryImpl();
 

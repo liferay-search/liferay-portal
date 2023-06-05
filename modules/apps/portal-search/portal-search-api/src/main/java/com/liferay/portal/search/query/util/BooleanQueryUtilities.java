@@ -76,23 +76,10 @@ public interface BooleanQueryUtilities {
 	public BooleanQuery addRequiredTerm(
 		BooleanQuery booleanQuery, String field, String value);
 
-	public BooleanQuery addRequiredTerm(
-		BooleanQuery booleanQuery, String field, String value, boolean like);
-
 	public BooleanQuery addTerm(
 		BooleanQuery booleanQuery, String field, String value);
 
-	public BooleanQuery addTerm(
-		BooleanQuery booleanQuery, String field, String value, boolean like);
-
-	public BooleanQuery addTerm(
-		BooleanQuery booleanQuery, String field, String value, boolean like,
-		boolean parseKeywords);
-
 	public BooleanQuery addTerms(
 		BooleanQuery booleanQuery, String[] fields, String value);
-
-	public BooleanQuery addTerms(
-		BooleanQuery booleanQuery, String[] fields, String value, boolean like);
 
 }

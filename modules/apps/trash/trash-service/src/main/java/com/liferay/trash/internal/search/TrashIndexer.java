@@ -133,14 +133,12 @@ public class TrashIndexer extends BaseIndexer<TrashEntry> {
 			return;
 		}
 
-		addSearchLocalizedTerm(searchQuery, searchContext, Field.CONTENT, true);
-		addSearchLocalizedTerm(
-			searchQuery, searchContext, Field.DESCRIPTION, true);
-		addSearchTerm(
-			searchQuery, searchContext, Field.REMOVED_BY_USER_NAME, true);
-		addSearchLocalizedTerm(searchQuery, searchContext, Field.TITLE, true);
-		addSearchTerm(searchQuery, searchContext, Field.TYPE, false);
-		addSearchTerm(searchQuery, searchContext, Field.USER_NAME, true);
+		addSearchLocalizedTerm(searchQuery, searchContext, Field.CONTENT);
+		addSearchLocalizedTerm(searchQuery, searchContext, Field.DESCRIPTION);
+		addSearchTerm(searchQuery, searchContext, Field.REMOVED_BY_USER_NAME);
+		addSearchLocalizedTerm(searchQuery, searchContext, Field.TITLE);
+		addSearchTerm(searchQuery, searchContext, Field.TYPE);
+		addSearchTerm(searchQuery, searchContext, Field.USER_NAME);
 	}
 
 	@Override

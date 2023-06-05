@@ -231,7 +231,7 @@ public class AssetSearcher extends BaseSearcher {
 		String field = Field.getLocalizedName(
 			searchContext.getLocale(), "localized_title");
 
-		Query query = searchQuery.addTerm(field, keywords, true);
+		Query query = searchQuery.addTerm(field, keywords);
 
 		queries.put(field, query);
 

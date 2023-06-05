@@ -146,22 +146,7 @@ public class BooleanQueryUtilitiesImpl implements BooleanQueryUtilities {
 	public BooleanQuery addRequiredTerm(
 		BooleanQuery booleanQuery, String field, String value) {
 
-		return addRequiredTerm(booleanQuery, field, (Object)value);
-	}
-
-	@Override
-	public BooleanQuery addRequiredTerm(
-		BooleanQuery booleanQuery, String field, String value, boolean like) {
-
-		return addRequiredTerm(booleanQuery, field, value, like, false);
-	}
-
-	public BooleanQuery addRequiredTerm(
-		BooleanQuery booleanQuery, String field, String value, boolean like,
-		boolean parseKeywords) {
-
-		Query query = _fieldQueryFactory.createQuery(
-			field, value, like, parseKeywords);
+		Query query = _fieldQueryFactory.createQuery(field, value);
 
 		return booleanQuery.addMustQueryClauses(query);
 	}
@@ -170,22 +155,7 @@ public class BooleanQueryUtilitiesImpl implements BooleanQueryUtilities {
 	public BooleanQuery addTerm(
 		BooleanQuery booleanQuery, String field, String value) {
 
-		return addTerm(booleanQuery, field, value, false);
-	}
-
-	@Override
-	public BooleanQuery addTerm(
-		BooleanQuery booleanQuery, String field, String value, boolean like) {
-
-		return addTerm(booleanQuery, field, value, like, false);
-	}
-
-	@Override
-	public BooleanQuery addTerm(
-		BooleanQuery booleanQuery, String field, String value, boolean like,
-		boolean parseKeywords) {
-
-		Query query = _fieldQueryFactory.createQuery(field, value, like, false);
+		Query query = _fieldQueryFactory.createQuery(field, value);
 
 		return booleanQuery.addShouldQueryClauses(query);
 	}
@@ -199,27 +169,7 @@ public class BooleanQueryUtilitiesImpl implements BooleanQueryUtilities {
 		}
 
 		for (String field : fields) {
-			Query query = _fieldQueryFactory.createQuery(
-				field, value, false, false);
-
-			booleanQuery.addShouldQueryClauses(query);
-		}
-
-		return booleanQuery;
-	}
-
-	@Override
-	public BooleanQuery addTerms(
-		BooleanQuery booleanQuery, String[] fields, String value,
-		boolean like) {
-
-		if (Validator.isNull(value) || ArrayUtil.isEmpty(fields)) {
-			return booleanQuery;
-		}
-
-		for (String field : fields) {
-			Query query = _fieldQueryFactory.createQuery(
-				field, value, like, false);
+			Query query = _fieldQueryFactory.createQuery(field, value);
 
 			booleanQuery.addShouldQueryClauses(query);
 		}

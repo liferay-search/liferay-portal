@@ -246,104 +246,76 @@ public class BooleanQueryImpl extends BaseBooleanQueryImpl {
 
 	@Override
 	public Query addRequiredTerm(String field, boolean value) {
-		return addRequiredTerm(field, String.valueOf(value), false);
+		return addRequiredTerm(field, String.valueOf(value));
 	}
 
 	@Override
 	public Query addRequiredTerm(String field, Boolean value) {
-		return addRequiredTerm(field, String.valueOf(value), false);
+		return addRequiredTerm(field, String.valueOf(value));
 	}
 
 	@Override
 	public Query addRequiredTerm(String field, double value) {
-		return addRequiredTerm(field, String.valueOf(value), false);
+		return addRequiredTerm(field, String.valueOf(value));
 	}
 
 	@Override
 	public Query addRequiredTerm(String field, Double value) {
-		return addRequiredTerm(field, String.valueOf(value), false);
+		return addRequiredTerm(field, String.valueOf(value));
 	}
 
 	@Override
 	public Query addRequiredTerm(String field, int value) {
-		return addRequiredTerm(field, String.valueOf(value), false);
+		return addRequiredTerm(field, String.valueOf(value));
 	}
 
 	@Override
 	public Query addRequiredTerm(String field, Integer value) {
-		return addRequiredTerm(field, String.valueOf(value), false);
+		return addRequiredTerm(field, String.valueOf(value));
 	}
 
 	@Override
 	public Query addRequiredTerm(String field, long value) {
-		return addRequiredTerm(field, String.valueOf(value), false);
+		return addRequiredTerm(field, String.valueOf(value));
 	}
 
 	@Override
 	public Query addRequiredTerm(String field, Long value) {
-		return addRequiredTerm(field, String.valueOf(value), false);
+		return addRequiredTerm(field, String.valueOf(value));
 	}
 
 	@Override
 	public Query addRequiredTerm(String field, short value) {
-		return addRequiredTerm(field, String.valueOf(value), false);
+		return addRequiredTerm(field, String.valueOf(value));
 	}
 
 	@Override
 	public Query addRequiredTerm(String field, Short value) {
-		return addRequiredTerm(field, String.valueOf(value), false);
+		return addRequiredTerm(field, String.valueOf(value));
 	}
 
 	@Override
 	public Query addRequiredTerm(String field, String value) {
-		return addRequiredTerm(field, value, false);
-	}
-
-	@Override
-	public Query addRequiredTerm(String field, String value, boolean like) {
-		return addRequiredTerm(field, value, like, false);
-	}
-
-	public Query addRequiredTerm(
-		String field, String value, boolean like, boolean parseKeywords) {
-
-		Query query = FieldQueryFactoryUtil.createQuery(
-			field, value, like, parseKeywords);
+		Query query = FieldQueryFactoryUtil.createQuery(field, value);
 
 		return add(query, BooleanClauseOccur.MUST);
 	}
 
 	@Override
 	public Query addTerm(String field, long value) {
-		return addTerm(field, String.valueOf(value), false);
+		return addTerm(field, String.valueOf(value));
 	}
 
 	@Override
 	public Query addTerm(String field, String value) {
-		return addTerm(field, value, false);
-	}
-
-	@Override
-	public Query addTerm(String field, String value, boolean like) {
-		return addTerm(field, value, like, BooleanClauseOccur.SHOULD);
-	}
-
-	public Query addTerm(
-		String field, String value, boolean like, boolean parseKeywords) {
-
-		Query query = FieldQueryFactoryUtil.createQuery(
-			field, value, like, parseKeywords);
-
-		return add(query, BooleanClauseOccur.SHOULD);
+		return addTerm(field, value, BooleanClauseOccur.SHOULD);
 	}
 
 	@Override
 	public Query addTerm(
-		String field, String value, boolean like,
-		BooleanClauseOccur booleanClauseOccur) {
+		String field, String value, BooleanClauseOccur booleanClauseOccur) {
 
-		Query query = FieldQueryFactoryUtil.createQuery(
-			field, value, like, false);
+		Query query = FieldQueryFactoryUtil.createQuery(field, value);
 
 		return add(query, booleanClauseOccur);
 	}

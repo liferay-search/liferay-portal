@@ -86,12 +86,11 @@ public class CommerceShippingFixedOptionIndexer
 		super.postProcessSearchQuery(
 			searchQuery, fullQueryBooleanFilter, searchContext);
 
-		addSearchTerm(searchQuery, searchContext, Field.ENTRY_CLASS_PK, false);
-		addSearchLocalizedTerm(searchQuery, searchContext, Field.NAME, true);
-		addSearchTerm(
-			searchQuery, searchContext, "commerceShippingMethodId", false);
-		addSearchTerm(searchQuery, searchContext, "description", false);
-		addSearchTerm(searchQuery, searchContext, "key", true);
+		addSearchTerm(searchQuery, searchContext, Field.ENTRY_CLASS_PK);
+		addSearchLocalizedTerm(searchQuery, searchContext, Field.NAME);
+		addSearchTerm(searchQuery, searchContext, "commerceShippingMethodId");
+		addSearchTerm(searchQuery, searchContext, "description");
+		addSearchTerm(searchQuery, searchContext, "key");
 	}
 
 	@Override

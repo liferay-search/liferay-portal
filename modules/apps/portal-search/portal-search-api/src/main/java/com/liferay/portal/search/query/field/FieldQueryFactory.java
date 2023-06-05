@@ -24,7 +24,6 @@ import org.osgi.annotation.versioning.ProviderType;
 @ProviderType
 public interface FieldQueryFactory {
 
-	public Query createQuery(
-		String field, String value, boolean like, boolean splitKeywords);
+	public Query createQuery(String field, String value);
 
 }

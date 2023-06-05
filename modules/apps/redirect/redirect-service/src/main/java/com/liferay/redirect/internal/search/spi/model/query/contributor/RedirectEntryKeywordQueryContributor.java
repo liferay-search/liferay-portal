@@ -79,8 +79,7 @@ public class RedirectEntryKeywordQueryContributor
 
 				Query query = fieldQueryFactory.createQuery(
 					"sourceURL",
-					StringUtil.removeSubstring(keywords, groupBaseURL), false,
-					false);
+					StringUtil.removeSubstring(keywords, groupBaseURL));
 
 				booleanQuery.add(query, BooleanClauseOccur.SHOULD);
 			}

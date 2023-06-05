@@ -160,13 +160,12 @@ public class CPInstanceIndexer extends BaseIndexer<CPInstance> {
 		throws Exception {
 
 		addSearchTerm(
-			searchQuery, searchContext, CPField.EXTERNAL_REFERENCE_CODE, false);
-		addSearchLocalizedTerm(
-			searchQuery, searchContext, Field.CONTENT, false);
-		addSearchTerm(searchQuery, searchContext, Field.ENTRY_CLASS_PK, false);
-		addSearchTerm(searchQuery, searchContext, Field.NAME, false);
-		addSearchLocalizedTerm(searchQuery, searchContext, Field.NAME, false);
-		addSearchTerm(searchQuery, searchContext, Field.USER_NAME, false);
+			searchQuery, searchContext, CPField.EXTERNAL_REFERENCE_CODE);
+		addSearchLocalizedTerm(searchQuery, searchContext, Field.CONTENT);
+		addSearchTerm(searchQuery, searchContext, Field.ENTRY_CLASS_PK);
+		addSearchTerm(searchQuery, searchContext, Field.NAME);
+		addSearchLocalizedTerm(searchQuery, searchContext, Field.NAME);
+		addSearchTerm(searchQuery, searchContext, Field.USER_NAME);
 
 		LinkedHashMap<String, Object> params =
 			(LinkedHashMap<String, Object>)searchContext.getAttribute("params");

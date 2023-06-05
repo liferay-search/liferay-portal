@@ -105,25 +105,15 @@ public interface BooleanQuery extends Query {
 
 	public Query addRequiredTerm(String field, String value);
 
-	public Query addRequiredTerm(String field, String value, boolean like);
-
 	public Query addTerm(String field, long value) throws ParseException;
 
 	public Query addTerm(String field, String value) throws ParseException;
 
-	public Query addTerm(String field, String value, boolean like)
-		throws ParseException;
-
 	public Query addTerm(
-			String field, String value, boolean like,
-			BooleanClauseOccur booleanClauseOccur)
+			String field, String value, BooleanClauseOccur booleanClauseOccur)
 		throws ParseException;
 
 	public Map<String, Query> addTerms(String[] fields, String values)
-		throws ParseException;
-
-	public Map<String, Query> addTerms(
-			String[] fields, String value, boolean like)
 		throws ParseException;
 
 	public List<BooleanClause<Query>> clauses();

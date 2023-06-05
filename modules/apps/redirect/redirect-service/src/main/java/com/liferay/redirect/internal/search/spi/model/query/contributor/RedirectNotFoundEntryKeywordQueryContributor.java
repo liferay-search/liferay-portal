@@ -72,8 +72,7 @@ public class RedirectNotFoundEntryKeywordQueryContributor
 
 				Query query = fieldQueryFactory.createQuery(
 					Field.URL,
-					StringUtil.removeSubstring(keywords, groupBaseURL), false,
-					false);
+					StringUtil.removeSubstring(keywords, groupBaseURL));
 
 				booleanQuery.add(query, BooleanClauseOccur.SHOULD);
 			}

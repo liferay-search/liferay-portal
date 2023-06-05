@@ -55,26 +55,6 @@ public abstract class BaseBooleanQueryImpl
 		return queries;
 	}
 
-	@Override
-	public Map<String, Query> addTerms(
-			String[] fields, String value, boolean like)
-		throws ParseException {
-
-		if (Validator.isNull(value)) {
-			return Collections.emptyMap();
-		}
-
-		Map<String, Query> queries = new HashMap<>((int)(fields.length / .75));
-
-		for (String field : fields) {
-			Query query = addTerm(field, value, like);
-
-			queries.put(field, query);
-		}
-
-		return queries;
-	}
-
 	protected Map<String, List<Query>> addTerms(
 			String[] fields, Map<String, List<String>> termFieldsValuesMap)
 		throws ParseException {

@@ -93,20 +93,17 @@ public class CPSpecificationOptionIndexer
 		throws Exception {
 
 		addSearchTerm(
-			searchQuery, searchContext, CPField.CP_OPTION_CATEGORY_ID, false);
+			searchQuery, searchContext, CPField.CP_OPTION_CATEGORY_ID);
 		addSearchTerm(
-			searchQuery, searchContext, CPField.CP_OPTION_CATEGORY_TITLE,
-			false);
+			searchQuery, searchContext, CPField.CP_OPTION_CATEGORY_TITLE);
 		addSearchLocalizedTerm(
-			searchQuery, searchContext, CPField.CP_OPTION_CATEGORY_TITLE,
-			false);
-		addSearchTerm(searchQuery, searchContext, CPField.KEY, false);
-		addSearchLocalizedTerm(
-			searchQuery, searchContext, Field.DESCRIPTION, false);
-		addSearchTerm(searchQuery, searchContext, Field.ENTRY_CLASS_PK, false);
-		addSearchTerm(searchQuery, searchContext, Field.TITLE, false);
-		addSearchLocalizedTerm(searchQuery, searchContext, Field.TITLE, false);
-		addSearchTerm(searchQuery, searchContext, Field.USER_NAME, false);
+			searchQuery, searchContext, CPField.CP_OPTION_CATEGORY_TITLE);
+		addSearchTerm(searchQuery, searchContext, CPField.KEY);
+		addSearchLocalizedTerm(searchQuery, searchContext, Field.DESCRIPTION);
+		addSearchTerm(searchQuery, searchContext, Field.ENTRY_CLASS_PK);
+		addSearchTerm(searchQuery, searchContext, Field.TITLE);
+		addSearchLocalizedTerm(searchQuery, searchContext, Field.TITLE);
+		addSearchTerm(searchQuery, searchContext, Field.USER_NAME);
 
 		LinkedHashMap<String, Object> params =
 			(LinkedHashMap<String, Object>)searchContext.getAttribute("params");
