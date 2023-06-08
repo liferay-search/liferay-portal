@@ -52,6 +52,7 @@ import com.liferay.portal.search.rest.client.dto.v1_0.FacetConfiguration;
 import com.liferay.portal.search.rest.client.dto.v1_0.SearchRequestBody;
 import com.liferay.portal.search.rest.client.dto.v1_0.SearchResult;
 import com.liferay.portal.search.rest.client.pagination.Page;
+import com.liferay.portal.search.rest.client.resource.v1_0.SearchResultResource;
 import com.liferay.portal.test.rule.FeatureFlags;
 import com.liferay.portal.test.rule.Inject;
 
@@ -252,19 +253,27 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 	private Page<SearchResult> _postSearchPage(String keywords)
 		throws Exception {
 
-		return _postSearchPage(null, null, keywords, new SearchRequestBody());
+		return _postSearchPage(null, keywords, null, new SearchRequestBody());
 	}
 
 	private Page<SearchResult> _postSearchPage(
-			String[] documentFields, String[] entryClassNames, String keywords,
+			String entryClassNames, String keywords, String nestedFields,
 			SearchRequestBody searchRequestBody)
 		throws Exception {
 
+		SearchResultResource.Builder builder = SearchResultResource.builder();
+
+		searchResultResource = builder.authentication(
+			"test@liferay.com", "test"
+		).locale(
+			LocaleUtil.getDefault()
+		).parameters(
+			"nestedFields", nestedFields
+		).build();
+
 		return searchResultResource.postSearchPage(
-			StringUtil.merge(documentFields, ","),
-			StringUtil.merge(entryClassNames, ","),
-			String.valueOf(testGroup.getGroupId()), keywords, null, null, null,
-			searchRequestBody);
+			entryClassNames, String.valueOf(testGroup.getGroupId()), keywords,
+			null, null, null, searchRequestBody);
 	}
 
 	private Page<SearchResult> _postSearchPageWithFacetConfiguration(
@@ -359,8 +368,7 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 		Class<?> clazz = User.class;
 
 		Page<SearchResult> page = _postSearchPage(
-			new String[] {Field.ENTRY_CLASS_NAME},
-			new String[] {clazz.getName()}, null,
+			clazz.getName(), null, "documentField." + Field.ENTRY_CLASS_NAME,
 			new SearchRequestBody() {
 				{
 					attributes = HashMapBuilder.<String, Object>put(
