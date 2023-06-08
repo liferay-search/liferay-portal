@@ -93,6 +93,14 @@ public interface SXPBlueprintResource {
 
 	public Response getSXPBlueprintExport(Long sxpBlueprintId) throws Exception;
 
+	public SXPBlueprint getSXPBlueprintByExternalReferenceCode(
+			String externalReferenceCode)
+		throws Exception;
+
+	public SXPBlueprint putSXPBlueprintByExternalReferenceCode(
+			String externalReferenceCode, SXPBlueprint sxpBlueprint)
+		throws Exception;
+
 	public default void setContextAcceptLanguage(
 		AcceptLanguage contextAcceptLanguage) {
 	}
