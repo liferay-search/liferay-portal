@@ -30,6 +30,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.io.Serializable;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
@@ -46,36 +50,91 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @generated
  */
 @Generated("")
-@GraphQLName("SearchResponse")
+@GraphQLName("SearchResult")
 @JsonFilter("Liferay.Vulcan")
-@XmlRootElement(name = "SearchResponse")
-public class SearchResponse implements Serializable {
+@XmlRootElement(name = "SearchResult")
+public class SearchResult implements Serializable {
 
-	public static SearchResponse toDTO(String json) {
-		return ObjectMapperUtil.readValue(SearchResponse.class, json);
+	public static SearchResult toDTO(String json) {
+		return ObjectMapperUtil.readValue(SearchResult.class, json);
 	}
 
-	public static SearchResponse unsafeToDTO(String json) {
-		return ObjectMapperUtil.unsafeReadValue(SearchResponse.class, json);
+	public static SearchResult unsafeToDTO(String json) {
+		return ObjectMapperUtil.unsafeReadValue(SearchResult.class, json);
 	}
+
+	@Schema(description = "The last time the item was changed.")
+	public Date getDateModified() {
+		return dateModified;
+	}
+
+	public void setDateModified(Date dateModified) {
+		this.dateModified = dateModified;
+	}
+
+	@JsonIgnore
+	public void setDateModified(
+		UnsafeSupplier<Date, Exception> dateModifiedUnsafeSupplier) {
+
+		try {
+			dateModified = dateModifiedUnsafeSupplier.get();
+		}
+		catch (RuntimeException re) {
+			throw re;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@GraphQLField(description = "The last time the item was changed.")
+	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	protected Date dateModified;
+
+	@Schema(description = "The item's description.")
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	@JsonIgnore
+	public void setDescription(
+		UnsafeSupplier<String, Exception> descriptionUnsafeSupplier) {
+
+		try {
+			description = descriptionUnsafeSupplier.get();
+		}
+		catch (RuntimeException re) {
+			throw re;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@GraphQLField(description = "The item's description.")
+	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	protected String description;
 
 	@Schema
 	@Valid
-	public Map<String, Object> getAggregationResults() {
-		return aggregationResults;
+	public Object getDocumentFields() {
+		return documentFields;
 	}
 
-	public void setAggregationResults(Map<String, Object> aggregationResults) {
-		this.aggregationResults = aggregationResults;
+	public void setDocumentFields(Object documentFields) {
+		this.documentFields = documentFields;
 	}
 
 	@JsonIgnore
-	public void setAggregationResults(
-		UnsafeSupplier<Map<String, Object>, Exception>
-			aggregationResultsUnsafeSupplier) {
+	public void setDocumentFields(
+		UnsafeSupplier<Object, Exception> documentFieldsUnsafeSupplier) {
 
 		try {
-			aggregationResults = aggregationResultsUnsafeSupplier.get();
+			documentFields = documentFieldsUnsafeSupplier.get();
 		}
 		catch (RuntimeException re) {
 			throw re;
@@ -87,24 +146,24 @@ public class SearchResponse implements Serializable {
 
 	@GraphQLField
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected Map<String, Object> aggregationResults;
+	protected Object documentFields;
 
 	@Schema
 	@Valid
-	public Object[] getDocuments() {
-		return documents;
+	public Object getEmbedded() {
+		return embedded;
 	}
 
-	public void setDocuments(Object[] documents) {
-		this.documents = documents;
+	public void setEmbedded(Object embedded) {
+		this.embedded = embedded;
 	}
 
 	@JsonIgnore
-	public void setDocuments(
-		UnsafeSupplier<Object[], Exception> documentsUnsafeSupplier) {
+	public void setEmbedded(
+		UnsafeSupplier<Object, Exception> embeddedUnsafeSupplier) {
 
 		try {
-			documents = documentsUnsafeSupplier.get();
+			embedded = embeddedUnsafeSupplier.get();
 		}
 		catch (RuntimeException re) {
 			throw re;
@@ -116,24 +175,50 @@ public class SearchResponse implements Serializable {
 
 	@GraphQLField
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected Object[] documents;
+	protected Object embedded;
 
-	@Schema
+	@Schema(description = "The link to the embedded item.")
+	public String getItemURL() {
+		return itemURL;
+	}
+
+	public void setItemURL(String itemURL) {
+		this.itemURL = itemURL;
+	}
+
+	@JsonIgnore
+	public void setItemURL(
+		UnsafeSupplier<String, Exception> itemURLUnsafeSupplier) {
+
+		try {
+			itemURL = itemURLUnsafeSupplier.get();
+		}
+		catch (RuntimeException re) {
+			throw re;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@GraphQLField(description = "The link to the embedded item.")
+	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	protected String itemURL;
+
+	@Schema(description = "The item's score.")
 	@Valid
-	public Map<String, Object> getFacets() {
-		return facets;
+	public Float getScore() {
+		return score;
 	}
 
-	public void setFacets(Map<String, Object> facets) {
-		this.facets = facets;
+	public void setScore(Float score) {
+		this.score = score;
 	}
 
 	@JsonIgnore
-	public void setFacets(
-		UnsafeSupplier<Map<String, Object>, Exception> facetsUnsafeSupplier) {
-
+	public void setScore(UnsafeSupplier<Float, Exception> scoreUnsafeSupplier) {
 		try {
-			facets = facetsUnsafeSupplier.get();
+			score = scoreUnsafeSupplier.get();
 		}
 		catch (RuntimeException re) {
 			throw re;
@@ -143,26 +228,25 @@ public class SearchResponse implements Serializable {
 		}
 	}
 
-	@GraphQLField
+	@GraphQLField(description = "The item's score.")
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected Map<String, Object> facets;
+	protected Float score;
 
-	@Schema
-	@Valid
-	public Float getMaxScore() {
-		return maxScore;
+	@Schema(description = "The item's title.")
+	public String getTitle() {
+		return title;
 	}
 
-	public void setMaxScore(Float maxScore) {
-		this.maxScore = maxScore;
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
 	@JsonIgnore
-	public void setMaxScore(
-		UnsafeSupplier<Float, Exception> maxScoreUnsafeSupplier) {
+	public void setTitle(
+		UnsafeSupplier<String, Exception> titleUnsafeSupplier) {
 
 		try {
-			maxScore = maxScoreUnsafeSupplier.get();
+			title = titleUnsafeSupplier.get();
 		}
 		catch (RuntimeException re) {
 			throw re;
@@ -172,149 +256,9 @@ public class SearchResponse implements Serializable {
 		}
 	}
 
-	@GraphQLField
+	@GraphQLField(description = "The item's title.")
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected Float maxScore;
-
-	@Schema
-	public Integer getPage() {
-		return page;
-	}
-
-	public void setPage(Integer page) {
-		this.page = page;
-	}
-
-	@JsonIgnore
-	public void setPage(UnsafeSupplier<Integer, Exception> pageUnsafeSupplier) {
-		try {
-			page = pageUnsafeSupplier.get();
-		}
-		catch (RuntimeException re) {
-			throw re;
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	@GraphQLField
-	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected Integer page;
-
-	@Schema
-	public Integer getPageSize() {
-		return pageSize;
-	}
-
-	public void setPageSize(Integer pageSize) {
-		this.pageSize = pageSize;
-	}
-
-	@JsonIgnore
-	public void setPageSize(
-		UnsafeSupplier<Integer, Exception> pageSizeUnsafeSupplier) {
-
-		try {
-			pageSize = pageSizeUnsafeSupplier.get();
-		}
-		catch (RuntimeException re) {
-			throw re;
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	@GraphQLField
-	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected Integer pageSize;
-
-	@Schema
-	@Valid
-	public Object getRequest() {
-		return request;
-	}
-
-	public void setRequest(Object request) {
-		this.request = request;
-	}
-
-	@JsonIgnore
-	public void setRequest(
-		UnsafeSupplier<Object, Exception> requestUnsafeSupplier) {
-
-		try {
-			request = requestUnsafeSupplier.get();
-		}
-		catch (RuntimeException re) {
-			throw re;
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	@GraphQLField
-	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected Object request;
-
-	@Schema
-	@Valid
-	public Object getResponse() {
-		return response;
-	}
-
-	public void setResponse(Object response) {
-		this.response = response;
-	}
-
-	@JsonIgnore
-	public void setResponse(
-		UnsafeSupplier<Object, Exception> responseUnsafeSupplier) {
-
-		try {
-			response = responseUnsafeSupplier.get();
-		}
-		catch (RuntimeException re) {
-			throw re;
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	@GraphQLField
-	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected Object response;
-
-	@Schema
-	public Long getTotalHits() {
-		return totalHits;
-	}
-
-	public void setTotalHits(Long totalHits) {
-		this.totalHits = totalHits;
-	}
-
-	@JsonIgnore
-	public void setTotalHits(
-		UnsafeSupplier<Long, Exception> totalHitsUnsafeSupplier) {
-
-		try {
-			totalHits = totalHitsUnsafeSupplier.get();
-		}
-		catch (RuntimeException re) {
-			throw re;
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	@GraphQLField
-	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected Long totalHits;
+	protected String title;
 
 	@Override
 	public boolean equals(Object object) {
@@ -322,13 +266,13 @@ public class SearchResponse implements Serializable {
 			return true;
 		}
 
-		if (!(object instanceof SearchResponse)) {
+		if (!(object instanceof SearchResult)) {
 			return false;
 		}
 
-		SearchResponse searchResponse = (SearchResponse)object;
+		SearchResult searchResult = (SearchResult)object;
 
-		return Objects.equals(toString(), searchResponse.toString());
+		return Objects.equals(toString(), searchResult.toString());
 	}
 
 	@Override
@@ -343,129 +287,116 @@ public class SearchResponse implements Serializable {
 
 		sb.append("{");
 
-		if (aggregationResults != null) {
+		DateFormat liferayToJSONDateFormat = new SimpleDateFormat(
+			"yyyy-MM-dd'T'HH:mm:ss'Z'");
+
+		if (dateModified != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"aggregationResults\": ");
+			sb.append("\"dateModified\": ");
 
-			sb.append(_toJSON(aggregationResults));
+			sb.append("\"");
+
+			sb.append(liferayToJSONDateFormat.format(dateModified));
+
+			sb.append("\"");
 		}
 
-		if (documents != null) {
+		if (description != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"documents\": ");
+			sb.append("\"description\": ");
 
-			sb.append("[");
+			sb.append("\"");
 
-			for (int i = 0; i < documents.length; i++) {
-				sb.append("\"");
+			sb.append(_escape(description));
 
-				sb.append(_escape(documents[i]));
-
-				sb.append("\"");
-
-				if ((i + 1) < documents.length) {
-					sb.append(", ");
-				}
-			}
-
-			sb.append("]");
+			sb.append("\"");
 		}
 
-		if (facets != null) {
+		if (documentFields != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"facets\": ");
+			sb.append("\"documentFields\": ");
 
-			sb.append(_toJSON(facets));
-		}
-
-		if (maxScore != null) {
-			if (sb.length() > 1) {
-				sb.append(", ");
-			}
-
-			sb.append("\"maxScore\": ");
-
-			sb.append(maxScore);
-		}
-
-		if (page != null) {
-			if (sb.length() > 1) {
-				sb.append(", ");
-			}
-
-			sb.append("\"page\": ");
-
-			sb.append(page);
-		}
-
-		if (pageSize != null) {
-			if (sb.length() > 1) {
-				sb.append(", ");
-			}
-
-			sb.append("\"pageSize\": ");
-
-			sb.append(pageSize);
-		}
-
-		if (request != null) {
-			if (sb.length() > 1) {
-				sb.append(", ");
-			}
-
-			sb.append("\"request\": ");
-
-			if (request instanceof Map) {
-				sb.append(JSONFactoryUtil.createJSONObject((Map<?, ?>)request));
-			}
-			else if (request instanceof String) {
-				sb.append("\"");
-				sb.append(_escape((String)request));
-				sb.append("\"");
-			}
-			else {
-				sb.append(request);
-			}
-		}
-
-		if (response != null) {
-			if (sb.length() > 1) {
-				sb.append(", ");
-			}
-
-			sb.append("\"response\": ");
-
-			if (response instanceof Map) {
+			if (documentFields instanceof Map) {
 				sb.append(
-					JSONFactoryUtil.createJSONObject((Map<?, ?>)response));
+					JSONFactoryUtil.createJSONObject(
+						(Map<?, ?>)documentFields));
 			}
-			else if (response instanceof String) {
+			else if (documentFields instanceof String) {
 				sb.append("\"");
-				sb.append(_escape((String)response));
+				sb.append(_escape((String)documentFields));
 				sb.append("\"");
 			}
 			else {
-				sb.append(response);
+				sb.append(documentFields);
 			}
 		}
 
-		if (totalHits != null) {
+		if (embedded != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"totalHits\": ");
+			sb.append("\"embedded\": ");
 
-			sb.append(totalHits);
+			if (embedded instanceof Map) {
+				sb.append(
+					JSONFactoryUtil.createJSONObject((Map<?, ?>)embedded));
+			}
+			else if (embedded instanceof String) {
+				sb.append("\"");
+				sb.append(_escape((String)embedded));
+				sb.append("\"");
+			}
+			else {
+				sb.append(embedded);
+			}
+		}
+
+		if (itemURL != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"itemURL\": ");
+
+			sb.append("\"");
+
+			sb.append(_escape(itemURL));
+
+			sb.append("\"");
+		}
+
+		if (score != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"score\": ");
+
+			sb.append(score);
+		}
+
+		if (title != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"title\": ");
+
+			sb.append("\"");
+
+			sb.append(_escape(title));
+
+			sb.append("\"");
 		}
 
 		sb.append("}");
@@ -475,7 +406,7 @@ public class SearchResponse implements Serializable {
 
 	@Schema(
 		accessMode = Schema.AccessMode.READ_ONLY,
-		defaultValue = "com.liferay.portal.search.rest.dto.v1_0.SearchResponse",
+		defaultValue = "com.liferay.portal.search.rest.dto.v1_0.SearchResult",
 		name = "x-class-name"
 	)
 	public String xClassName;
