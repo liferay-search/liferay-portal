@@ -192,6 +192,11 @@ public class ServletDataImpl implements ServletData {
 							SXPBlueprintResourceImpl.class,
 							"postSXPBlueprintBatch"));
 					put(
+						"mutation#updateSXPBlueprintByExternalReferenceCode",
+						new ObjectValuePair<>(
+							SXPBlueprintResourceImpl.class,
+							"putSXPBlueprintByExternalReferenceCode"));
+					put(
 						"mutation#createSXPBlueprintValidate",
 						new ObjectValuePair<>(
 							SXPBlueprintResourceImpl.class,
@@ -216,11 +221,6 @@ public class ServletDataImpl implements ServletData {
 						new ObjectValuePair<>(
 							SXPBlueprintResourceImpl.class,
 							"postSXPBlueprintCopy"));
-					put(
-						"mutation#updateSXPBlueprintByExternalReferenceCode",
-						new ObjectValuePair<>(
-							SXPBlueprintResourceImpl.class,
-							"putSXPBlueprintByExternalReferenceCode"));
 					put(
 						"mutation#createSXPElementsPageExportBatch",
 						new ObjectValuePair<>(
@@ -314,6 +314,11 @@ public class ServletDataImpl implements ServletData {
 							SXPBlueprintResourceImpl.class,
 							"getSXPBlueprintsPage"));
 					put(
+						"query#sXPBlueprintByExternalReferenceCode",
+						new ObjectValuePair<>(
+							SXPBlueprintResourceImpl.class,
+							"getSXPBlueprintByExternalReferenceCode"));
+					put(
 						"query#sXPBlueprint",
 						new ObjectValuePair<>(
 							SXPBlueprintResourceImpl.class, "getSXPBlueprint"));
@@ -322,11 +327,6 @@ public class ServletDataImpl implements ServletData {
 						new ObjectValuePair<>(
 							SXPBlueprintResourceImpl.class,
 							"getSXPBlueprintExport"));
-					put(
-						"query#sXPBlueprintByExternalReferenceCode",
-						new ObjectValuePair<>(
-							SXPBlueprintResourceImpl.class,
-							"getSXPBlueprintByExternalReferenceCode"));
 					put(
 						"query#sXPElements",
 						new ObjectValuePair<>(
