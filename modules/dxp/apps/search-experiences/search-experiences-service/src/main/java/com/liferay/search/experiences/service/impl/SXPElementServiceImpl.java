@@ -80,9 +80,41 @@ public class SXPElementServiceImpl extends SXPElementServiceBaseImpl {
 	}
 
 	@Override
+	public SXPElement fetchSXPElementByExternalReferenceCode(
+			long companyId, String externalReferenceCode)
+		throws PortalException {
+
+		SXPElement sxpElement =
+			sxpElementLocalService.fetchSXPElementByExternalReferenceCode(
+				externalReferenceCode, companyId);
+
+		if (sxpElement != null) {
+			_sxpElementModelResourcePermission.check(
+				getPermissionChecker(), sxpElement, ActionKeys.VIEW);
+		}
+
+		return sxpElement;
+	}
+
+	@Override
 	public SXPElement getSXPElement(long sxpElementId) throws PortalException {
 		SXPElement sxpElement = sxpElementLocalService.getSXPElement(
 			sxpElementId);
+
+		_sxpElementModelResourcePermission.check(
+			getPermissionChecker(), sxpElement, ActionKeys.VIEW);
+
+		return sxpElement;
+	}
+
+	@Override
+	public SXPElement getSXPElementByExternalReferenceCode(
+			long companyId, String externalReferenceCode)
+		throws PortalException {
+
+		SXPElement sxpElement =
+			sxpElementLocalService.getSXPElementByExternalReferenceCode(
+				externalReferenceCode, companyId);
 
 		_sxpElementModelResourcePermission.check(
 			getPermissionChecker(), sxpElement, ActionKeys.VIEW);
@@ -96,6 +128,13 @@ public class SXPElementServiceImpl extends SXPElementServiceBaseImpl {
 			String elementDefinitionJSON, String schemaVersion, boolean hidden,
 			Map<Locale, String> titleMap, ServiceContext serviceContext)
 		throws PortalException {
+
+		SXPElement sxpElement = sxpElementPersistence.findByPrimaryKey(
+			sxpElementId);
+
+		if (sxpElement.isReadOnly()) {
+			throw new SXPElementReadOnlyException();
+		}
 
 		_sxpElementModelResourcePermission.check(
 			getPermissionChecker(), sxpElementId, ActionKeys.UPDATE);
