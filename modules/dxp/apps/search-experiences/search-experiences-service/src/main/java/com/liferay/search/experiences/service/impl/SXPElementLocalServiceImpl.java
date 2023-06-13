@@ -27,6 +27,7 @@ import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.search.experiences.exception.SXPElementReadOnlyException;
 import com.liferay.search.experiences.exception.SXPElementTitleException;
 import com.liferay.search.experiences.model.SXPElement;
 import com.liferay.search.experiences.service.base.SXPElementLocalServiceBaseImpl;
@@ -120,6 +121,10 @@ public class SXPElementLocalServiceImpl extends SXPElementLocalServiceBaseImpl {
 	public SXPElement deleteSXPElement(SXPElement sxpElement)
 		throws PortalException {
 
+		if (sxpElement.isReadOnly()) {
+			throw new SXPElementReadOnlyException();
+		}
+
 		sxpElement = sxpElementPersistence.remove(sxpElement);
 
 		_resourceLocalService.deleteResource(
@@ -159,6 +164,10 @@ public class SXPElementLocalServiceImpl extends SXPElementLocalServiceBaseImpl {
 		throws PortalException {
 
 		SXPElement sxpElement = getSXPElement(sxpElementId);
+
+		if (sxpElement.isReadOnly()) {
+			throw new SXPElementReadOnlyException();
+		}
 
 		_validate(titleMap, sxpElement.getType(), serviceContext);
 

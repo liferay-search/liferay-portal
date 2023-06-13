@@ -22,7 +22,6 @@ import com.liferay.portal.kernel.security.permission.resource.PortletResourcePer
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.search.experiences.constants.SXPActionKeys;
 import com.liferay.search.experiences.constants.SXPConstants;
-import com.liferay.search.experiences.exception.SXPElementReadOnlyException;
 import com.liferay.search.experiences.model.SXPElement;
 import com.liferay.search.experiences.service.base.SXPElementServiceBaseImpl;
 
@@ -71,10 +70,6 @@ public class SXPElementServiceImpl extends SXPElementServiceBaseImpl {
 
 		SXPElement sxpElement = sxpElementPersistence.findByPrimaryKey(
 			sxpElementId);
-
-		if (sxpElement.isReadOnly()) {
-			throw new SXPElementReadOnlyException();
-		}
 
 		return sxpElementLocalService.deleteSXPElement(sxpElement);
 	}
@@ -128,13 +123,6 @@ public class SXPElementServiceImpl extends SXPElementServiceBaseImpl {
 			String elementDefinitionJSON, String schemaVersion, boolean hidden,
 			Map<Locale, String> titleMap, ServiceContext serviceContext)
 		throws PortalException {
-
-		SXPElement sxpElement = sxpElementPersistence.findByPrimaryKey(
-			sxpElementId);
-
-		if (sxpElement.isReadOnly()) {
-			throw new SXPElementReadOnlyException();
-		}
 
 		_sxpElementModelResourcePermission.check(
 			getPermissionChecker(), sxpElementId, ActionKeys.UPDATE);
