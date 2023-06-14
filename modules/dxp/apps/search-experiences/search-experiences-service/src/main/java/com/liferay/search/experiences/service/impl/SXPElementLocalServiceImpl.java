@@ -14,6 +14,7 @@
 
 package com.liferay.search.experiences.service.impl;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.ResourceConstants;
@@ -122,7 +123,8 @@ public class SXPElementLocalServiceImpl extends SXPElementLocalServiceBaseImpl {
 		throws PortalException {
 
 		if (sxpElement.isReadOnly()) {
-			throw new SXPElementReadOnlyException();
+			throw new SXPElementReadOnlyException(
+				"This SXPElement is ReadOnly and is not allowed to be Deleted");
 		}
 
 		sxpElement = sxpElementPersistence.remove(sxpElement);
@@ -166,7 +168,11 @@ public class SXPElementLocalServiceImpl extends SXPElementLocalServiceBaseImpl {
 		SXPElement sxpElement = getSXPElement(sxpElementId);
 
 		if (sxpElement.isReadOnly()) {
-			throw new SXPElementReadOnlyException();
+			throw new SXPElementReadOnlyException(
+				StringBundler.concat(
+					"SXPElement with External Reference Code ",
+					sxpElement.getExternalReferenceCode(),
+					" is ReadOnly and is not allowed to be Updated"));
 		}
 
 		_validate(titleMap, sxpElement.getType(), serviceContext);
