@@ -15,7 +15,6 @@
 package com.liferay.portal.search.elasticsearch7.internal.deep.pagination.configuration;
 
 import com.liferay.petra.reflect.ReflectionUtil;
-import com.liferay.portal.kernel.model.CompanyConstants;
 import com.liferay.portal.kernel.module.configuration.ConfigurationException;
 import com.liferay.portal.kernel.module.configuration.ConfigurationProvider;
 import com.liferay.portal.search.elasticsearch7.configuration.DeepPaginationConfiguration;
@@ -36,14 +35,16 @@ public class DeepPaginationConfigurationWrapper {
 		long companyId) {
 
 		try {
-			if (companyId > CompanyConstants.SYSTEM) {  //this will not work, improve logic
+			DeepPaginationConfiguration deepPaginationConfiguration =
+				_configurationProvider.getSystemConfiguration(
+					DeepPaginationConfiguration.class);
 
+			if (!deepPaginationConfiguration.enableDeepPagination()) {
 				return _configurationProvider.getCompanyConfiguration(
 					DeepPaginationConfiguration.class, companyId);
 			}
 
-			return _configurationProvider.getSystemConfiguration(
-				DeepPaginationConfiguration.class);
+			return deepPaginationConfiguration;
 		}
 		catch (ConfigurationException configurationException) {
 			return ReflectionUtil.throwException(configurationException);
