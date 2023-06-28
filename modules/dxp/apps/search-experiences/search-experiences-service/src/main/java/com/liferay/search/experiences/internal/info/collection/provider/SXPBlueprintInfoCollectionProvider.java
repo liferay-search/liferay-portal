@@ -163,13 +163,13 @@ public class SXPBlueprintInfoCollectionProvider
 		ServiceContext serviceContext =
 			ServiceContextThreadLocal.getServiceContext();
 
+		ThemeDisplay themeDisplay = serviceContext.getThemeDisplay();
+
 		List<SelectInfoFieldType.Option> options = ListUtil.fromArray(
 			new SelectInfoFieldType.Option(
 				true,
 				new ResourceBundleInfoLocalizedValue(getClass(), "This Site"),
-				String.valueOf(serviceContext.getScopeGroupId())));
-
-		ThemeDisplay themeDisplay = serviceContext.getThemeDisplay();
+				String.valueOf(themeDisplay.getScopeGroupId())));
 
 		List<Group> groups = _groupLocalService.getActiveGroups(
 			themeDisplay.getCompanyId(), true);
@@ -221,7 +221,7 @@ public class SXPBlueprintInfoCollectionProvider
 
 		ThemeDisplay themeDisplay = serviceContext.getThemeDisplay();
 
-		if (scopes == null) {
+		if (scopes[0].equals("null")) {
 			scopes = new String[] {
 				String.valueOf(themeDisplay.getScopeGroupId())
 			};
