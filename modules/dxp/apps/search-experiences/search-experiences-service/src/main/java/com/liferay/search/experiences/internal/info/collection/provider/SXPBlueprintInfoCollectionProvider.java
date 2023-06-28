@@ -38,10 +38,11 @@ import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Group;
-import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
+import com.liferay.portal.kernel.service.permission.GroupPermissionUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -177,34 +178,28 @@ public class SXPBlueprintInfoCollectionProvider
 				new ResourceBundleInfoLocalizedValue(getClass(), "Everything"),
 				"Everything"));
 
-		List<Group> groups = _groupLocalService.getActiveGroups(
-			themeDisplay.getCompanyId(), true);
+		try {
+			List<Group> groups = _groupLocalService.getActiveGroups(
+				themeDisplay.getCompanyId(), true);
 
-		for (Group group : groups) {
-			if ((group == null) || group.isGuest() || !group.isSite()) {
-				continue;
-			}
-
-			User user = themeDisplay.getUser();
-
-			try {
-				List<Group> siteGroups = user.getSiteGroups();
-
-				if (!ArrayUtil.contains(
-						siteGroups.toArray(new Group[0]), group)) {
+			for (Group group : groups) {
+				if ((group == null) || group.isGuest() || !group.isSite() ||
+					!GroupPermissionUtil.contains(
+						PermissionThreadLocal.getPermissionChecker(),
+						group.getGroupId(), "VIEW")) {
 
 					continue;
 				}
-			}
-			catch (PortalException portalException) {
-				_log.error(portalException);
-			}
 
-			options.add(
-				new SelectInfoFieldType.Option(
-					new ResourceBundleInfoLocalizedValue(
-						getClass(), group.getNameCurrentValue()),
-					String.valueOf(group.getGroupId())));
+				options.add(
+					new SelectInfoFieldType.Option(
+						new ResourceBundleInfoLocalizedValue(
+							getClass(), group.getNameCurrentValue()),
+						String.valueOf(group.getGroupId())));
+			}
+		}
+		catch (PortalException portalException) {
+			_log.error(portalException);
 		}
 
 		return options;
