@@ -215,6 +215,14 @@ public class ElasticsearchIndexSearcherSearchAfterTest {
 		};
 	}
 
+	private static SearchContext _getSearchContext() {
+		SearchContext searchContext = new SearchContext();
+
+		searchContext.setCompanyId(_indexingFixture.getCompanyId());
+
+		return searchContext;
+	}
+
 	private static void _setUpDeepPagination() {
 		DeepPaginationConfigurationWrapper deepPaginationConfigurationWrapper =
 			Mockito.mock(DeepPaginationConfigurationWrapper.class);
@@ -223,7 +231,9 @@ public class ElasticsearchIndexSearcherSearchAfterTest {
 			true
 		).when(
 			deepPaginationConfigurationWrapper
-		).getEnableDeepPagination();
+		).getEnableDeepPagination(
+			_getSearchContext().getCompanyId()
+		);
 
 		Mockito.doReturn(
 			60
@@ -409,14 +419,6 @@ public class ElasticsearchIndexSearcherSearchAfterTest {
 		document.addText(fieldName2, fieldValue2);
 
 		return document;
-	}
-
-	private SearchContext _getSearchContext() {
-		SearchContext searchContext = new SearchContext();
-
-		searchContext.setCompanyId(_indexingFixture.getCompanyId());
-
-		return searchContext;
 	}
 
 	private static final int _INDEX_MAX_RESULT_WINDOW = 3;
