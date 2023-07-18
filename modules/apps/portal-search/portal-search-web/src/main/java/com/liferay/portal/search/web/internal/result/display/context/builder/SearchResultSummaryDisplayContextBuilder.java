@@ -44,6 +44,7 @@ import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.FastDateFormatConstants;
 import com.liferay.portal.kernel.util.FastDateFormatFactory;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -352,7 +353,7 @@ public class SearchResultSummaryDisplayContextBuilder {
 		searchResultSummaryDisplayContext.setClassPK(classPK);
 
 		if (Validator.isNotNull(summary.getContent())) {
-			searchResultSummaryDisplayContext.setContent(summary.getContent());
+			searchResultSummaryDisplayContext.setContent(HtmlUtil.unescape(summary.getContent()));
 			searchResultSummaryDisplayContext.setContentVisible(true);
 		}
 
