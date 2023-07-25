@@ -112,6 +112,11 @@ public class ModelSearchRegistrarHelperImpl
 		}
 
 		@Override
+		public void setPermissionAware(boolean permissionAware) {
+			_modelSearchSettingsImpl.setPermissionAware(permissionAware);
+		}
+
+		@Override
 		public void setSearchResultPermissionFilterSuppressed(
 			boolean searchResultPermissionFilterSuppressed) {
 
