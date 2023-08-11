@@ -8,6 +8,9 @@ package com.liferay.portal.search.rest.internal.resource.v1_0;
 import com.liferay.asset.kernel.AssetRendererFactoryRegistryUtil;
 import com.liferay.asset.kernel.model.AssetRenderer;
 import com.liferay.asset.kernel.model.AssetRendererFactory;
+import com.liferay.object.model.ObjectDefinition;
+import com.liferay.object.model.ObjectEntry;
+import com.liferay.object.service.ObjectEntryService;
 import com.liferay.petra.function.UnsafeConsumer;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.log.Log;
@@ -234,6 +237,14 @@ public class SearchResultResourceImpl extends BaseSearchResultResourceImpl {
 		}
 	}
 
+	private String _getDTOClassName(String entryClassName) {
+		if (entryClassName.startsWith(ObjectDefinition.class.getName() + "#")) {
+			return ObjectEntry.class.getName();
+		}
+
+		return entryClassName;
+	}
+
 	private String _getEntryClassName(Document document) {
 		Map<String, Field> fields = document.getFields();
 
@@ -296,6 +307,51 @@ public class SearchResultResourceImpl extends BaseSearchResultResourceImpl {
 		}
 	}
 
+	private void _setDateModified(
+		Document document, List<String> fields, SearchResult searchResult) {
+
+		String modifiedDate = document.getString(
+			com.liferay.portal.kernel.search.Field.MODIFIED_DATE);
+
+		if ((fields.isEmpty() || fields.contains("dateModified")) &&
+			(modifiedDate != null)) {
+
+			searchResult.setDateModified(
+				_parseDateStringFieldValue(
+					document.getString(
+						com.liferay.portal.kernel.search.Field.MODIFIED_DATE)));
+		}
+	}
+
+	@SuppressWarnings("rawtypes")
+	private void _setEmbedded(
+			DTOConverter dtoConverter, Long entryClassPK, String entryClassName,
+			SearchResult searchResult)
+		throws Exception {
+
+		if (entryClassName.startsWith(ObjectDefinition.class.getName())) {
+			searchResult.setEmbedded(
+				dtoConverter.toDTO(
+					new DefaultDTOConverterContext(
+						contextAcceptLanguage.isAcceptAllLanguages(),
+						new HashMap<>(), _dtoConverterRegistry,
+						contextHttpServletRequest, entryClassPK,
+						contextAcceptLanguage.getPreferredLocale(),
+						contextUriInfo, contextUser),
+					_objectEntryService.fetchObjectEntry(entryClassPK)));
+		}
+		else {
+			searchResult.setEmbedded(
+				dtoConverter.toDTO(
+					new DefaultDTOConverterContext(
+						contextAcceptLanguage.isAcceptAllLanguages(),
+						new HashMap<>(), _dtoConverterRegistry,
+						contextHttpServletRequest, entryClassPK,
+						contextAcceptLanguage.getPreferredLocale(),
+						contextUriInfo, contextUser)));
+		}
+	}
+
 	private void _setFetchSourceIncludes(
 		List<String> fields, SearchRequestBuilder searchRequestBuilder) {
 
@@ -335,6 +391,7 @@ public class SearchResultResourceImpl extends BaseSearchResultResourceImpl {
 		return csvString.split("\\s*,\\s*");
 	}
 
+	@SuppressWarnings("rawtypes")
 	private SearchPage<SearchResult> _toSearchPage(
 			FacetConfiguration[] facetConfigurations, List<String> fields,
 			Pagination pagination, SearchResponse searchResponse)
@@ -347,10 +404,9 @@ public class SearchResultResourceImpl extends BaseSearchResultResourceImpl {
 		for (SearchHit searchHit : searchHits.getSearchHits()) {
 			SearchResult searchResult = new SearchResult();
 
-			boolean embedded = _isEmbedded();
-
 			Document document = searchHit.getDocument();
 
+			boolean embedded = _isEmbedded();
 			String entryClassName = _getEntryClassName(document);
 			Long entryClassPK = _getEntryClassPK(document);
 
@@ -378,24 +434,13 @@ public class SearchResultResourceImpl extends BaseSearchResultResourceImpl {
 						contextAcceptLanguage.getPreferredLocale()));
 			}
 
-			String modifiedDate = document.getString(
-				com.liferay.portal.kernel.search.Field.MODIFIED_DATE);
+			_setDateModified(document, fields, searchResult);
 
-			if ((fields.isEmpty() || fields.contains("dateModified")) &&
-				(modifiedDate != null)) {
-
-				searchResult.setDateModified(
-					_parseDateStringFieldValue(
-						document.getString(
-							com.liferay.portal.kernel.search.Field.
-								MODIFIED_DATE)));
-			}
-
-			DTOConverter<?, ?> dtoConverter = null;
+			DTOConverter dtoConverter = null;
 
 			if (embedded || fields.isEmpty()) {
 				dtoConverter = _dtoConverterRegistry.getDTOConverter(
-					entryClassName);
+					_getDTOClassName(entryClassName));
 			}
 
 			if (fields.isEmpty() && (dtoConverter != null) &&
@@ -410,14 +455,8 @@ public class SearchResultResourceImpl extends BaseSearchResultResourceImpl {
 			}
 
 			if (embedded && (dtoConverter != null) && (assetRenderer != null)) {
-				searchResult.setEmbedded(
-					dtoConverter.toDTO(
-						new DefaultDTOConverterContext(
-							contextAcceptLanguage.isAcceptAllLanguages(),
-							new HashMap<>(), _dtoConverterRegistry,
-							contextHttpServletRequest, entryClassPK,
-							contextAcceptLanguage.getPreferredLocale(),
-							contextUriInfo, contextUser)));
+				_setEmbedded(
+					dtoConverter, entryClassPK, entryClassName, searchResult);
 			}
 
 			if (fields.isEmpty() || fields.contains("score")) {
@@ -447,6 +486,9 @@ public class SearchResultResourceImpl extends BaseSearchResultResourceImpl {
 
 	@Reference
 	private FacetResponseProcessor _facetResponseProcessor;
+
+	@Reference
+	private ObjectEntryService _objectEntryService;
 
 	@Reference
 	private Searcher _searcher;
