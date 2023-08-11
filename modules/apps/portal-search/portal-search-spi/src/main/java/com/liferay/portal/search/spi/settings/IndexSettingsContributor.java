@@ -10,7 +10,7 @@ package com.liferay.portal.search.spi.settings;
  */
 public interface IndexSettingsContributor {
 
-	public void contribute(
+	public void contributeMappings(
 		String indexName, TypeMappingsHelper typeMappingsHelper);
 
 	public void populate(IndexSettingsHelper indexSettingsHelper);
