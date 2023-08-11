@@ -13,6 +13,6 @@ public interface IndexSettingsContributor {
 	public void contributeMappings(
 		String indexName, TypeMappingsHelper typeMappingsHelper);
 
-	public void populate(IndexSettingsHelper indexSettingsHelper);
+	public void contributeSettings(IndexSettingsHelper indexSettingsHelper);
 
 }
