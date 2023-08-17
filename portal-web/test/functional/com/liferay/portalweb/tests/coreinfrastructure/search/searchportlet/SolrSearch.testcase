@@ -145,7 +145,7 @@ definition {
 			panel = "Control Panel",
 			portlet = "Search");
 
-		SearchAdministration.executeReindex(action = "Reindex spell-check dictionaries.");
+		SearchAdministration.executeReindex(action = "Reindex spell-check dictionaries");
 
 		AssertConsoleTextPresent(value1 = "Finished indexing dictionary spellchecker/dictionary_de_DE.txt");
 
