@@ -165,7 +165,7 @@ definition {
 
 	@priority = 4
 	test CanReindexWithConcurrentExecutionMode {
-		property custom.properties = "feature.flag.LPS-177664=true";
+		property custom.properties = "feature.flag.LPS-177664=true${line.separator}feature.flag.LPS-183661=true";
 		property search.environment.suite.exclude = "true";
 		property test.liferay.virtual.instance = "false";
 
@@ -176,7 +176,7 @@ definition {
 			groupName = "Guest",
 			title = "WC Title");
 
-		SearchAdministration.executeReindex(concurrentReindex = "true");
+		SearchAdministration.executeReindex(reindexMode = "Concurrent");
 
 		task ("Assert that the web content shows up after the concurrent reindex completes") {
 			Navigator.openURL();
