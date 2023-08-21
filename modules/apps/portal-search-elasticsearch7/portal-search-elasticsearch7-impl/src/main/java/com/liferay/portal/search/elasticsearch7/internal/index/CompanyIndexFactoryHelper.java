@@ -462,9 +462,9 @@ public class CompanyIndexFactoryHelper {
 			indicesClient.putSettings(
 				updateSettingsRequest, RequestOptions.DEFAULT);
 		}
-		catch (IOException ioException) {
+		catch (Exception exception) {
 			_log.error(
-				"Unable to put settings for index " + indexName, ioException);
+				"Unable to put settings for index " + indexName, exception);
 		}
 	}
 
