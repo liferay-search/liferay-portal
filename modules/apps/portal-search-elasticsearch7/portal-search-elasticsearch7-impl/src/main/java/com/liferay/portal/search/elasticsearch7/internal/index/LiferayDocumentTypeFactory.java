@@ -82,8 +82,9 @@ public class LiferayDocumentTypeFactory implements TypeMappingsHelper {
 
 			SearchLogHelperUtil.logActionResponse(_log, actionResponse);
 		}
-		catch (IOException ioException) {
-			throw new RuntimeException(ioException);
+		catch (Exception exception) {
+			_log.error(
+				"Unable to put mappings for index " + _indexName, exception);
 		}
 	}
 
