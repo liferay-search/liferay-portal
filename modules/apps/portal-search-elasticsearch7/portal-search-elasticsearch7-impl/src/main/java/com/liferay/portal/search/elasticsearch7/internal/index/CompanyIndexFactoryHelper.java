@@ -297,7 +297,7 @@ public class CompanyIndexFactoryHelper {
 				_indexConfigurationContributorServiceTrackerList) {
 
 			indexConfigurationContributor.contributeMappings(
-				indexName, liferayDocumentTypeFactory);
+				liferayDocumentTypeFactory);
 		}
 	}
 
@@ -335,7 +335,7 @@ public class CompanyIndexFactoryHelper {
 					_jsonFactory);
 
 			indexConfigurationContributor.contributeMappings(
-				getIndexName(companyId), liferayDocumentTypeFactory);
+				liferayDocumentTypeFactory);
 		}
 	}
 
