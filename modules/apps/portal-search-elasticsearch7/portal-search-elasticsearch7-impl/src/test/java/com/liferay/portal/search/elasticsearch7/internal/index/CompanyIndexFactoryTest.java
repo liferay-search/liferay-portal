@@ -385,8 +385,8 @@ public class CompanyIndexFactoryTest {
 						String indexName,
 						TypeMappingsHelper typeMappingsHelper) {
 
-						typeMappingsHelper.addTypeMappings(
-							indexName, _replaceAnalyzer(mappings, "brazilian"));
+						typeMappingsHelper.putTypeMappings(
+							_replaceAnalyzer(mappings, "brazilian"));
 					}
 
 					@Override
