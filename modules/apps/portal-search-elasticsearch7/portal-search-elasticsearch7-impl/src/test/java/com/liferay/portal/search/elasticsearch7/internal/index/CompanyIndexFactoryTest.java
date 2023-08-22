@@ -339,7 +339,6 @@ public class CompanyIndexFactoryTest {
 
 					@Override
 					public void contributeMappings(
-						String indexName,
 						TypeMappingsHelper typeMappingsHelper) {
 					}
 
@@ -382,7 +381,6 @@ public class CompanyIndexFactoryTest {
 
 					@Override
 					public void contributeMappings(
-						String indexName,
 						TypeMappingsHelper typeMappingsHelper) {
 
 						typeMappingsHelper.putTypeMappings(
@@ -625,8 +623,7 @@ public class CompanyIndexFactoryTest {
 		implements IndexConfigurationContributor {
 
 		@Override
-		public void contributeMappings(
-			String indexName, TypeMappingsHelper typeMappingsHelper) {
+		public void contributeMappings(TypeMappingsHelper typeMappingsHelper) {
 		}
 
 		@Override
