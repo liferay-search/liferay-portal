@@ -93,10 +93,10 @@ public class LiferayDocumentTypeFactory implements TypeMappingsHelper {
 		JSONObject mappingsJSONObject = createJSONObject(mappings);
 
 		if (mappingsJSONObject.has(
-				LiferayTypeMappingsConstants.LIFERAY_LEGACY_DOCUMENT_TYPE)) {
+				LiferayTypeMappingsConstants.LEGACY_LIFERAY_DOCUMENT_TYPE)) {
 
 			mappingsJSONObject = mappingsJSONObject.getJSONObject(
-				LiferayTypeMappingsConstants.LIFERAY_LEGACY_DOCUMENT_TYPE);
+				LiferayTypeMappingsConstants.LEGACY_LIFERAY_DOCUMENT_TYPE);
 		}
 
 		createIndexRequest.mapping(
@@ -104,15 +104,12 @@ public class LiferayDocumentTypeFactory implements TypeMappingsHelper {
 	}
 
 	public void putDefaultTypeMappingTemplate() {
-		String name = StringUtil.replace(
+		String defaultMappingTemplate = ResourceUtil.getResourceAsString(
+			getClass(),
 			LiferayTypeMappingsConstants.
-				LIFERAY_DOCUMENT_TYPE_MAPPING_FILE_NAME,
-			".json", "-default-template.json");
+				LIFERAY_DOCUMENT_TYPE_MAPPING_DEFAULT_TEMPLATE_FILE_NAME);
 
-		String defaultTypeMappingTemplate = ResourceUtil.getResourceAsString(
-			getClass(), name);
-
-		putTypeMappings(defaultTypeMappingTemplate);
+		putTypeMappings(defaultMappingTemplate);
 	}
 
 	protected JSONObject createJSONObject(String mappings) {
@@ -183,10 +180,10 @@ public class LiferayDocumentTypeFactory implements TypeMappingsHelper {
 		JSONObject sourceTypeJSONObject = sourceJSONObject;
 
 		if (sourceJSONObject.has(
-				LiferayTypeMappingsConstants.LIFERAY_LEGACY_DOCUMENT_TYPE)) {
+				LiferayTypeMappingsConstants.LEGACY_LIFERAY_DOCUMENT_TYPE)) {
 
 			sourceTypeJSONObject = sourceJSONObject.getJSONObject(
-				LiferayTypeMappingsConstants.LIFERAY_LEGACY_DOCUMENT_TYPE);
+				LiferayTypeMappingsConstants.LEGACY_LIFERAY_DOCUMENT_TYPE);
 		}
 
 		JSONArray sourceTypeTemplatesJSONArray =
@@ -202,10 +199,10 @@ public class LiferayDocumentTypeFactory implements TypeMappingsHelper {
 		JSONObject mappingsTypeJSONObject = mappingsJSONObject;
 
 		if (mappingsJSONObject.has(
-				LiferayTypeMappingsConstants.LIFERAY_LEGACY_DOCUMENT_TYPE)) {
+				LiferayTypeMappingsConstants.LEGACY_LIFERAY_DOCUMENT_TYPE)) {
 
 			mappingsTypeJSONObject = mappingsJSONObject.getJSONObject(
-				LiferayTypeMappingsConstants.LIFERAY_LEGACY_DOCUMENT_TYPE);
+				LiferayTypeMappingsConstants.LEGACY_LIFERAY_DOCUMENT_TYPE);
 		}
 
 		JSONArray typeTemplatesJSONArray = mappingsTypeJSONObject.getJSONArray(
@@ -232,10 +229,10 @@ public class LiferayDocumentTypeFactory implements TypeMappingsHelper {
 
 	private String _removeLegacyDocumentType(JSONObject sourceJSONObject) {
 		if (sourceJSONObject.has(
-				LiferayTypeMappingsConstants.LIFERAY_LEGACY_DOCUMENT_TYPE)) {
+				LiferayTypeMappingsConstants.LEGACY_LIFERAY_DOCUMENT_TYPE)) {
 
 			sourceJSONObject = sourceJSONObject.getJSONObject(
-				LiferayTypeMappingsConstants.LIFERAY_LEGACY_DOCUMENT_TYPE);
+				LiferayTypeMappingsConstants.LEGACY_LIFERAY_DOCUMENT_TYPE);
 		}
 
 		return sourceJSONObject.toString();
