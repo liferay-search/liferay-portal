@@ -51,7 +51,8 @@ public class LiferayDocumentTypeFactory implements TypeMappingsHelper {
 
 	public void loadDefaultAnalyzers(SettingsBuilder settingsBuilder) {
 		String defaultAnalyzers = ResourceUtil.getResourceAsString(
-			getClass(), IndexSettingsConstants.INDEX_SETTINGS_FILE_NAME);
+			getClass(),
+			IndexSettingsConstants.INDEX_SETTINGS_ANALYSIS_FILE_NAME);
 
 		settingsBuilder.loadFromSource(defaultAnalyzers);
 	}

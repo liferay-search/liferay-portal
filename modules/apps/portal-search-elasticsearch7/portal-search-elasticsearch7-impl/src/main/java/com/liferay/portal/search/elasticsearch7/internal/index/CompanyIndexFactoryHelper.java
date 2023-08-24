@@ -20,6 +20,7 @@ import com.liferay.portal.search.elasticsearch7.internal.configuration.Elasticse
 import com.liferay.portal.search.elasticsearch7.internal.connection.ElasticsearchConnectionManager;
 import com.liferay.portal.search.elasticsearch7.internal.connection.ElasticsearchConnectionNotInitializedException;
 import com.liferay.portal.search.elasticsearch7.internal.helper.SearchLogHelperUtil;
+import com.liferay.portal.search.elasticsearch7.internal.index.constants.IndexSettingsConstants;
 import com.liferay.portal.search.elasticsearch7.internal.index.util.IndexFactoryCompanyIdRegistryUtil;
 import com.liferay.portal.search.elasticsearch7.internal.settings.SettingsBuilder;
 import com.liferay.portal.search.elasticsearch7.internal.util.ResourceUtil;
@@ -270,7 +271,8 @@ public class CompanyIndexFactoryHelper {
 		liferayDocumentTypeFactory.loadDefaultAnalyzers(settingsBuilder);
 
 		String defaultIndexSettings = ResourceUtil.getResourceAsString(
-			getClass(), "/META-INF/settings/index-settings-defaults.json");
+			getClass(),
+			IndexSettingsConstants.INDEX_SETTINGS_DEFAULTS_FILE_NAME);
 
 		settingsBuilder.loadFromSource(defaultIndexSettings);
 	}
