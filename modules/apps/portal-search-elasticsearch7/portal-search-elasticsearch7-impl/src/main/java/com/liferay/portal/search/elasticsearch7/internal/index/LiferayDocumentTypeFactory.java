@@ -105,10 +105,10 @@ public class LiferayDocumentTypeFactory implements TypeMappingsHelper {
 		JSONObject mappingsJSONObject = createJSONObject(mappings);
 
 		if (mappingsJSONObject.has(
-				LiferayTypeMappingsConstants.LIFERAY_LEGACY_DOCUMENT_TYPE)) {
+				LiferayTypeMappingsConstants.LEGACY_LIFERAY_DOCUMENT_TYPE)) {
 
 			mappingsJSONObject = mappingsJSONObject.getJSONObject(
-				LiferayTypeMappingsConstants.LIFERAY_LEGACY_DOCUMENT_TYPE);
+				LiferayTypeMappingsConstants.LEGACY_LIFERAY_DOCUMENT_TYPE);
 		}
 
 		createIndexRequest.mapping(
@@ -183,10 +183,10 @@ public class LiferayDocumentTypeFactory implements TypeMappingsHelper {
 		JSONObject sourceTypeJSONObject = sourceJSONObject;
 
 		if (sourceJSONObject.has(
-				LiferayTypeMappingsConstants.LIFERAY_LEGACY_DOCUMENT_TYPE)) {
+				LiferayTypeMappingsConstants.LEGACY_LIFERAY_DOCUMENT_TYPE)) {
 
 			sourceTypeJSONObject = sourceJSONObject.getJSONObject(
-				LiferayTypeMappingsConstants.LIFERAY_LEGACY_DOCUMENT_TYPE);
+				LiferayTypeMappingsConstants.LEGACY_LIFERAY_DOCUMENT_TYPE);
 		}
 
 		JSONArray sourceTypeTemplatesJSONArray =
@@ -202,10 +202,10 @@ public class LiferayDocumentTypeFactory implements TypeMappingsHelper {
 		JSONObject mappingsTypeJSONObject = mappingsJSONObject;
 
 		if (mappingsJSONObject.has(
-				LiferayTypeMappingsConstants.LIFERAY_LEGACY_DOCUMENT_TYPE)) {
+				LiferayTypeMappingsConstants.LEGACY_LIFERAY_DOCUMENT_TYPE)) {
 
 			mappingsTypeJSONObject = mappingsJSONObject.getJSONObject(
-				LiferayTypeMappingsConstants.LIFERAY_LEGACY_DOCUMENT_TYPE);
+				LiferayTypeMappingsConstants.LEGACY_LIFERAY_DOCUMENT_TYPE);
 		}
 
 		JSONArray typeTemplatesJSONArray = mappingsTypeJSONObject.getJSONArray(
@@ -232,10 +232,10 @@ public class LiferayDocumentTypeFactory implements TypeMappingsHelper {
 
 	private String _removeLegacyDocumentType(JSONObject sourceJSONObject) {
 		if (sourceJSONObject.has(
-				LiferayTypeMappingsConstants.LIFERAY_LEGACY_DOCUMENT_TYPE)) {
+				LiferayTypeMappingsConstants.LEGACY_LIFERAY_DOCUMENT_TYPE)) {
 
 			sourceJSONObject = sourceJSONObject.getJSONObject(
-				LiferayTypeMappingsConstants.LIFERAY_LEGACY_DOCUMENT_TYPE);
+				LiferayTypeMappingsConstants.LEGACY_LIFERAY_DOCUMENT_TYPE);
 		}
 
 		return sourceJSONObject.toString();
