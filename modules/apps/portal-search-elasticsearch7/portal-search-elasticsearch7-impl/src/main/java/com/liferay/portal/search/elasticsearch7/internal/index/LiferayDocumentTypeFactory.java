@@ -11,7 +11,6 @@ import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.elasticsearch7.internal.helper.SearchLogHelperUtil;
 import com.liferay.portal.search.elasticsearch7.internal.index.constants.IndexSettingsConstants;
@@ -52,7 +51,8 @@ public class LiferayDocumentTypeFactory implements TypeMappingsHelper {
 
 	public void loadDefaultAnalyzers(SettingsBuilder settingsBuilder) {
 		String defaultAnalyzers = ResourceUtil.getResourceAsString(
-			getClass(), IndexSettingsConstants.INDEX_SETTINGS_FILE_NAME);
+			getClass(),
+			IndexSettingsConstants.INDEX_SETTINGS_ANALYSIS_FILE_NAME);
 
 		settingsBuilder.loadFromSource(defaultAnalyzers);
 	}
