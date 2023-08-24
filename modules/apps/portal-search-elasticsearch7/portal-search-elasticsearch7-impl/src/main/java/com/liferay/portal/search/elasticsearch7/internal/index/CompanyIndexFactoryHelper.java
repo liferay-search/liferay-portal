@@ -74,7 +74,7 @@ public class CompanyIndexFactoryHelper {
 			throw new RuntimeException(ioException);
 		}
 
-		_updateLiferayDocumentType(liferayDocumentTypeFactory);
+		_updateMappings(liferayDocumentTypeFactory);
 
 		_executeCompanyIndexListenersAfterCreate(indexName);
 	}
@@ -419,7 +419,7 @@ public class CompanyIndexFactoryHelper {
 		createIndexRequest.settings(settingsBuilder.getBuilder());
 	}
 
-	private void _updateLiferayDocumentType(
+	private void _updateMappings(
 		LiferayDocumentTypeFactory liferayDocumentTypeFactory) {
 
 		if (Validator.isNotNull(
