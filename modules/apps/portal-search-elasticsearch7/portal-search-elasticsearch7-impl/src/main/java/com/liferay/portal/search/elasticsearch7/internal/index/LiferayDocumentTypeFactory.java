@@ -74,7 +74,9 @@ public class LiferayDocumentTypeFactory implements TypeMappingsHelper {
 		PutMappingRequest putMappingRequest = new PutMappingRequest(_indexName);
 
 		putMappingRequest.source(
-			_mergeDynamicTemplates(source, _indexName), XContentType.JSON);
+			_getMappingsToPutWithMergedDynamicTemplates(
+				_getCurrentMappings(_indexName), source),
+			XContentType.JSON);
 
 		try {
 			ActionResponse actionResponse = _indicesClient.putMapping(
@@ -93,26 +95,10 @@ public class LiferayDocumentTypeFactory implements TypeMappingsHelper {
 	}
 
 	public void setMappings(
-		CreateIndexRequest createIndexRequest, String mappings) {
-
-		if (Validator.isNull(mappings)) {
-			mappings = ResourceUtil.getResourceAsString(
-				getClass(),
-				LiferayTypeMappingsConstants.
-					LIFERAY_DOCUMENT_TYPE_MAPPING_FILE_NAME);
-		}
-
-		JSONObject mappingsJSONObject = createJSONObject(mappings);
-
-		if (mappingsJSONObject.has(
-				LiferayTypeMappingsConstants.LEGACY_LIFERAY_DOCUMENT_TYPE)) {
-
-			mappingsJSONObject = mappingsJSONObject.getJSONObject(
-				LiferayTypeMappingsConstants.LEGACY_LIFERAY_DOCUMENT_TYPE);
-		}
+		CreateIndexRequest createIndexRequest, String overrideMappings) {
 
 		createIndexRequest.mapping(
-			"_doc", mappingsJSONObject.toString(), XContentType.JSON);
+			"_doc", _getMappings(overrideMappings), XContentType.JSON);
 	}
 
 	protected JSONObject createJSONObject(String mappings) {
@@ -124,7 +110,7 @@ public class LiferayDocumentTypeFactory implements TypeMappingsHelper {
 		}
 	}
 
-	protected String getMappings(String indexName) {
+	private String _getCurrentMappings(String indexName) {
 		GetMappingsRequest getMappingsRequest = new GetMappingsRequest();
 
 		getMappingsRequest.indices(indexName);
@@ -148,14 +134,59 @@ public class LiferayDocumentTypeFactory implements TypeMappingsHelper {
 		return compressedXContent.toString();
 	}
 
-	private JSONArray _merge(JSONArray jsonArray1, JSONArray jsonArray2) {
+	private String _getMappings(String overrideMappings) {
+		if (Validator.isNotNull(overrideMappings)) {
+			JSONObject jsonObject = _removeLegacyDocumentType(overrideMappings);
+
+			return jsonObject.toString();
+		}
+
+		String defaultMappings = ResourceUtil.getResourceAsString(
+			getClass(),
+			LiferayTypeMappingsConstants.
+				LIFERAY_DOCUMENT_TYPE_MAPPING_FILE_NAME);
+		String defaultMappingTemplate = ResourceUtil.getResourceAsString(
+			getClass(),
+			LiferayTypeMappingsConstants.
+				LIFERAY_DOCUMENT_TYPE_MAPPING_DEFAULT_TEMPLATE_FILE_NAME);
+
+		return _getMappingsToPutWithMergedDynamicTemplates(
+			defaultMappingTemplate, defaultMappings);
+	}
+
+	private String _getMappingsToPutWithMergedDynamicTemplates(
+		String currentMappings, String mappingsToPut) {
+
+		JSONObject currentMappingsJSONObject = _removeLegacyDocumentType(
+			currentMappings);
+		JSONObject mappingsToPutJSONObject = _removeLegacyDocumentType(
+			mappingsToPut);
+
+		mappingsToPutJSONObject.put(
+			"dynamic_templates",
+			_mergeDynamicTemplates(
+				mappingsToPutJSONObject.getJSONArray("dynamic_templates"),
+				currentMappingsJSONObject.getJSONArray("dynamic_templates")));
+
+		return mappingsToPutJSONObject.toString();
+	}
+
+	private JSONArray _mergeDynamicTemplates(
+		JSONArray dynamicTemplatesToPutJSONArray,
+		JSONArray currentDynamicTemplatesJSONArray) {
+
+		if (dynamicTemplatesToPutJSONArray == null) {
+			return currentDynamicTemplatesJSONArray;
+		}
+
 		LinkedHashMap<String, JSONObject> linkedHashMap = new LinkedHashMap<>();
 
-		_putAll(linkedHashMap, jsonArray1);
+		_putAll(linkedHashMap, dynamicTemplatesToPutJSONArray);
 
-		_putAll(linkedHashMap, jsonArray2);
+		_putAll(linkedHashMap, currentDynamicTemplatesJSONArray);
 
-		JSONArray jsonArray3 = _jsonFactory.createJSONArray();
+		JSONArray mergedDynamicTemplatesJSONArray =
+			_jsonFactory.createJSONArray();
 
 		JSONObject defaultTemplateJSONObject = null;
 
@@ -166,59 +197,22 @@ public class LiferayDocumentTypeFactory implements TypeMappingsHelper {
 				defaultTemplateJSONObject = entry.getValue();
 			}
 			else {
-				jsonArray3.put(entry.getValue());
+				mergedDynamicTemplatesJSONArray.put(entry.getValue());
 			}
 		}
 
 		if (defaultTemplateJSONObject != null) {
-			jsonArray3.put(defaultTemplateJSONObject);
+			mergedDynamicTemplatesJSONArray.put(defaultTemplateJSONObject);
 		}
 
-		return jsonArray3;
-	}
-
-	private String _mergeDynamicTemplates(String source, String indexName) {
-		JSONObject sourceJSONObject = createJSONObject(source);
-
-		JSONObject sourceTypeJSONObject = sourceJSONObject;
-
-		if (sourceJSONObject.has(
-				LiferayTypeMappingsConstants.LEGACY_LIFERAY_DOCUMENT_TYPE)) {
-
-			sourceTypeJSONObject = sourceJSONObject.getJSONObject(
-				LiferayTypeMappingsConstants.LEGACY_LIFERAY_DOCUMENT_TYPE);
-		}
-
-		JSONArray sourceTypeTemplatesJSONArray =
-			sourceTypeJSONObject.getJSONArray("dynamic_templates");
-
-		if (sourceTypeTemplatesJSONArray == null) {
-			return _removeLegacyDocumentType(sourceJSONObject);
-		}
-
-		JSONObject mappingsJSONObject = createJSONObject(
-			getMappings(indexName));
-
-		JSONObject mappingsTypeJSONObject = mappingsJSONObject;
-
-		if (mappingsJSONObject.has(
-				LiferayTypeMappingsConstants.LEGACY_LIFERAY_DOCUMENT_TYPE)) {
-
-			mappingsTypeJSONObject = mappingsJSONObject.getJSONObject(
-				LiferayTypeMappingsConstants.LEGACY_LIFERAY_DOCUMENT_TYPE);
-		}
-
-		JSONArray typeTemplatesJSONArray = mappingsTypeJSONObject.getJSONArray(
-			"dynamic_templates");
-
-		sourceTypeJSONObject.put(
-			"dynamic_templates",
-			_merge(typeTemplatesJSONArray, sourceTypeTemplatesJSONArray));
-
-		return _removeLegacyDocumentType(sourceJSONObject);
+		return mergedDynamicTemplatesJSONArray;
 	}
 
 	private void _putAll(Map<String, JSONObject> map, JSONArray jsonArray) {
+		if (jsonArray == null) {
+			return;
+		}
+
 		for (int i = 0; i < jsonArray.length(); i++) {
 			JSONObject jsonObject = jsonArray.getJSONObject(i);
 
@@ -230,15 +224,17 @@ public class LiferayDocumentTypeFactory implements TypeMappingsHelper {
 		}
 	}
 
-	private String _removeLegacyDocumentType(JSONObject sourceJSONObject) {
-		if (sourceJSONObject.has(
+	private JSONObject _removeLegacyDocumentType(String source) {
+		JSONObject jsonObject = createJSONObject(source);
+
+		if (jsonObject.has(
 				LiferayTypeMappingsConstants.LEGACY_LIFERAY_DOCUMENT_TYPE)) {
 
-			sourceJSONObject = sourceJSONObject.getJSONObject(
+			return jsonObject.getJSONObject(
 				LiferayTypeMappingsConstants.LEGACY_LIFERAY_DOCUMENT_TYPE);
 		}
 
-		return sourceJSONObject.toString();
+		return jsonObject;
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
