@@ -49,6 +49,13 @@ public class LiferayDocumentTypeFactory implements TypeMappingsHelper {
 		_jsonFactory = jsonFactory;
 	}
 
+	public void loadDefaultAnalyzers(SettingsBuilder settingsBuilder) {
+		String defaultAnalyzers = ResourceUtil.getResourceAsString(
+			getClass(), IndexSettingsConstants.INDEX_SETTINGS_FILE_NAME);
+
+		settingsBuilder.loadFromSource(defaultAnalyzers);
+	}
+
 	@Override
 	public void putTypeMappings(String source) {
 		PutMappingRequest putMappingRequest = new PutMappingRequest(_indexName);
@@ -93,13 +100,6 @@ public class LiferayDocumentTypeFactory implements TypeMappingsHelper {
 			getClass(), name);
 
 		putTypeMappings(defaultTypeMappingTemplate);
-	}
-
-	public void loadDefaultAnalyzers(SettingsBuilder settingsBuilder) {
-		String defaultAnalyzers = ResourceUtil.getResourceAsString(
-			getClass(), IndexSettingsConstants.INDEX_SETTINGS_FILE_NAME);
-
-		settingsBuilder.loadFromSource(defaultAnalyzers);
 	}
 
 	public void createRequiredDefaultTypeMappings(
