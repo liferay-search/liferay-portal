@@ -142,7 +142,7 @@ public class CompanyIndexFactory
 		CompanyIndexListener companyIndexListener, String indexName) {
 
 		try {
-			companyIndexListener.onBeforeRemove(indexName);
+			companyIndexListener.onBeforeDelete(indexName);
 		}
 		catch (Throwable throwable) {
 			_log.error(
