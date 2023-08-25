@@ -383,8 +383,7 @@ public class CompanyIndexFactoryHelper {
 		SettingsBuilder settingsBuilder = new SettingsBuilder(
 			Settings.builder());
 
-		liferayDocumentTypeFactory.createRequiredDefaultAnalyzers(
-			settingsBuilder);
+		liferayDocumentTypeFactory.loadDefaultAnalyzers(settingsBuilder);
 
 		_loadDefaultIndexSettings(settingsBuilder);
 

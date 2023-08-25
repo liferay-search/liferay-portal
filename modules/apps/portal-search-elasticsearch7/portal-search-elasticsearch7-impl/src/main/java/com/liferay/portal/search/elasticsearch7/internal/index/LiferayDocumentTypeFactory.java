@@ -95,13 +95,11 @@ public class LiferayDocumentTypeFactory implements TypeMappingsHelper {
 		putTypeMappings(defaultTypeMappingTemplate);
 	}
 
-	public void createRequiredDefaultAnalyzers(
-		SettingsBuilder settingsBuilder) {
-
-		String requiredDefaultAnalyzers = ResourceUtil.getResourceAsString(
+	public void loadDefaultAnalyzers(SettingsBuilder settingsBuilder) {
+		String defaultAnalyzers = ResourceUtil.getResourceAsString(
 			getClass(), IndexSettingsConstants.INDEX_SETTINGS_FILE_NAME);
 
-		settingsBuilder.loadFromSource(requiredDefaultAnalyzers);
+		settingsBuilder.loadFromSource(defaultAnalyzers);
 	}
 
 	public void createRequiredDefaultTypeMappings(
