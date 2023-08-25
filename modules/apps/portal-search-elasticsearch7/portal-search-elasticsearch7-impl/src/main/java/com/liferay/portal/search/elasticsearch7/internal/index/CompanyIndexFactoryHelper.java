@@ -64,8 +64,7 @@ public class CompanyIndexFactoryHelper {
 
 		_setSettings(createIndexRequest, liferayDocumentTypeFactory);
 
-		_addLiferayDocumentTypeMappings(
-			createIndexRequest, liferayDocumentTypeFactory);
+		_setMappings(createIndexRequest, liferayDocumentTypeFactory);
 
 		try {
 			ActionResponse actionResponse = indicesClient.create(
@@ -188,7 +187,7 @@ public class CompanyIndexFactoryHelper {
 		}
 	}
 
-	private void _addLiferayDocumentTypeMappings(
+	private void _setMappings(
 		CreateIndexRequest createIndexRequest,
 		LiferayDocumentTypeFactory liferayDocumentTypeFactory) {
 
