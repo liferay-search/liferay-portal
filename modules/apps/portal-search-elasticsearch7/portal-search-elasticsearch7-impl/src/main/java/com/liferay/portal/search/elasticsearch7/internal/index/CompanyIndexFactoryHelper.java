@@ -76,7 +76,7 @@ public class CompanyIndexFactoryHelper {
 			throw new RuntimeException(ioException);
 		}
 
-		_updateLiferayDocumentType(indexName, liferayDocumentTypeFactory);
+		_updateLiferayDocumentType(liferayDocumentTypeFactory);
 
 		_executeCompanyIndexListenersAfterCreate(indexName);
 	}
@@ -188,7 +188,6 @@ public class CompanyIndexFactoryHelper {
 	}
 
 	protected void loadAdditionalTypeMappings(
-		String indexName,
 		LiferayDocumentTypeFactory liferayDocumentTypeFactory) {
 
 		if (Validator.isNull(
@@ -292,7 +291,6 @@ public class CompanyIndexFactoryHelper {
 	}
 
 	private void _loadTypeMappingsContributors(
-		String indexName,
 		LiferayDocumentTypeFactory liferayDocumentTypeFactory) {
 
 		for (IndexConfigurationContributor indexConfigurationContributor :
@@ -371,7 +369,6 @@ public class CompanyIndexFactoryHelper {
 	}
 
 	private void _updateLiferayDocumentType(
-		String indexName,
 		LiferayDocumentTypeFactory liferayDocumentTypeFactory) {
 
 		if (Validator.isNotNull(
@@ -380,11 +377,11 @@ public class CompanyIndexFactoryHelper {
 			return;
 		}
 
-		loadAdditionalTypeMappings(indexName, liferayDocumentTypeFactory);
+		loadAdditionalTypeMappings(liferayDocumentTypeFactory);
 
-		_loadTypeMappingsContributors(indexName, liferayDocumentTypeFactory);
+		_loadTypeMappingsContributors(liferayDocumentTypeFactory);
 
-		liferayDocumentTypeFactory.createOptionalDefaultTypeMappings(indexName);
+		liferayDocumentTypeFactory.createOptionalDefaultTypeMappings();
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
