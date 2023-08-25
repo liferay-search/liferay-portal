@@ -24,7 +24,7 @@ import com.liferay.portal.search.elasticsearch7.internal.index.util.IndexFactory
 import com.liferay.portal.search.elasticsearch7.internal.settings.SettingsBuilder;
 import com.liferay.portal.search.elasticsearch7.internal.util.ResourceUtil;
 import com.liferay.portal.search.index.IndexNameBuilder;
-import com.liferay.portal.search.spi.model.index.contributor.IndexContributor;
+import com.liferay.portal.search.spi.index.listener.CompanyIndexListener;
 import com.liferay.portal.search.spi.settings.IndexSettingsContributor;
 
 import java.io.IOException;
@@ -78,7 +78,7 @@ public class CompanyIndexFactoryHelper {
 
 		_updateLiferayDocumentType(indexName, liferayDocumentTypeFactory);
 
-		_executeIndexContributorsAfterCreate(indexName);
+		_executeCompanyIndexListenersAfterCreate(indexName);
 	}
 
 	public void deleteIndex(
@@ -109,8 +109,8 @@ public class CompanyIndexFactoryHelper {
 		}
 	}
 
-	public List<IndexContributor> getIndexContributors() {
-		return _indexContributorServiceTrackerList.toList();
+	public List<CompanyIndexListener> getCompanyIndexListener() {
+		return _companyIndexListeners.toList();
 	}
 
 	public String getIndexName(long companyId) {
@@ -131,8 +131,8 @@ public class CompanyIndexFactoryHelper {
 
 	@Activate
 	protected void activate(BundleContext bundleContext) {
-		_indexContributorServiceTrackerList = ServiceTrackerListFactory.open(
-			bundleContext, IndexContributor.class);
+		_companyIndexListeners = ServiceTrackerListFactory.open(
+			bundleContext, CompanyIndexListener.class);
 
 		_indexSettingsContributorServiceTrackerList =
 			ServiceTrackerListFactory.open(
@@ -174,8 +174,8 @@ public class CompanyIndexFactoryHelper {
 
 	@Deactivate
 	protected void deactivate() {
-		if (_indexContributorServiceTrackerList != null) {
-			_indexContributorServiceTrackerList.close();
+		if (_companyIndexListeners != null) {
+			_companyIndexListeners.close();
 		}
 
 		if (_indexSettingsContributorServiceTrackerList != null) {
@@ -215,26 +215,27 @@ public class CompanyIndexFactoryHelper {
 		}
 	}
 
-	private void _executeIndexContributorAfterCreate(
-		IndexContributor indexContributor, String indexName) {
+	private void _executeCompanyIndexListenerAfterCreate(
+		CompanyIndexListener companyIndexListener, String indexName) {
 
 		try {
-			indexContributor.onAfterCreate(indexName);
+			companyIndexListener.onAfterCreate(indexName);
 		}
 		catch (Throwable throwable) {
 			_log.error(
 				StringBundler.concat(
-					"Unable to apply contributor ", indexContributor,
+					"Unable to apply contributor ", companyIndexListener,
 					"to index ", indexName),
 				throwable);
 		}
 	}
 
-	private void _executeIndexContributorsAfterCreate(String indexName) {
-		for (IndexContributor indexContributor :
-				_indexContributorServiceTrackerList) {
+	private void _executeCompanyIndexListenersAfterCreate(String indexName) {
+		for (CompanyIndexListener companyIndexListener :
+				_companyIndexListeners) {
 
-			_executeIndexContributorAfterCreate(indexContributor, indexName);
+			_executeCompanyIndexListenerAfterCreate(
+				companyIndexListener, indexName);
 		}
 	}
 
@@ -382,6 +383,8 @@ public class CompanyIndexFactoryHelper {
 	private static final Log _log = LogFactoryUtil.getLog(
 		CompanyIndexFactoryHelper.class);
 
+	private ServiceTrackerList<CompanyIndexListener> _companyIndexListeners;
+
 	@Reference
 	private CompanyLocalService _companyLocalService;
 
@@ -391,9 +394,6 @@ public class CompanyIndexFactoryHelper {
 
 	@Reference
 	private ElasticsearchConnectionManager _elasticsearchConnectionManager;
-
-	private ServiceTrackerList<IndexContributor>
-		_indexContributorServiceTrackerList;
 
 	@Reference
 	private IndexNameBuilder _indexNameBuilder;

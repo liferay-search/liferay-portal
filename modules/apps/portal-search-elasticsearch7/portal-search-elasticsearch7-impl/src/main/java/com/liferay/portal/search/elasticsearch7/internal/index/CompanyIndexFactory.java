@@ -18,7 +18,7 @@ import com.liferay.portal.search.elasticsearch7.internal.index.util.IndexFactory
 import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
 import com.liferay.portal.search.engine.adapter.index.UpdateIndexSettingsIndexRequest;
 import com.liferay.portal.search.index.IndexNameBuilder;
-import com.liferay.portal.search.spi.model.index.contributor.IndexContributor;
+import com.liferay.portal.search.spi.index.listener.CompanyIndexListener;
 
 import org.elasticsearch.client.IndicesClient;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -73,7 +73,7 @@ public class CompanyIndexFactory
 			return false;
 		}
 
-		_executeIndexContributorsBeforeRemove(indexName);
+		_executeCompanyIndexListenersBeforeRemove(indexName);
 
 		_companyIndexFactoryHelper.deleteIndex(
 			indexName, indicesClient, companyId, true);
@@ -135,26 +135,27 @@ public class CompanyIndexFactory
 		}
 	}
 
-	private void _executeIndexContributorBeforeRemove(
-		IndexContributor indexContributor, String indexName) {
+	private void _executeCompanyIndexListenerBeforeRemove(
+		CompanyIndexListener companyIndexListener, String indexName) {
 
 		try {
-			indexContributor.onBeforeRemove(indexName);
+			companyIndexListener.onBeforeRemove(indexName);
 		}
 		catch (Throwable throwable) {
 			_log.error(
 				StringBundler.concat(
-					"Unable to apply contributor ", indexContributor,
+					"Unable to apply contributor ", companyIndexListener,
 					" when removing index ", indexName),
 				throwable);
 		}
 	}
 
-	private void _executeIndexContributorsBeforeRemove(String indexName) {
-		for (IndexContributor indexContributor :
-				_companyIndexFactoryHelper.getIndexContributors()) {
+	private void _executeCompanyIndexListenersBeforeRemove(String indexName) {
+		for (CompanyIndexListener companyIndexListener :
+				_companyIndexFactoryHelper.getCompanyIndexListener()) {
 
-			_executeIndexContributorBeforeRemove(indexContributor, indexName);
+			_executeCompanyIndexListenerBeforeRemove(
+				companyIndexListener, indexName);
 		}
 	}
 
