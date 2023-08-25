@@ -7,7 +7,7 @@ package com.liferay.portal.search.tuning.synonyms.web.internal.index.creation.co
 
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.search.engine.SearchEngineInformation;
-import com.liferay.portal.search.spi.model.index.contributor.IndexContributor;
+import com.liferay.portal.search.spi.index.listener.CompanyIndexListener;
 import com.liferay.portal.search.tuning.synonyms.index.name.SynonymSetIndexName;
 import com.liferay.portal.search.tuning.synonyms.web.internal.index.SynonymSetIndexReader;
 import com.liferay.portal.search.tuning.synonyms.web.internal.synchronizer.IndexToFilterSynchronizer;
@@ -20,9 +20,8 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Adam Brandizzi
  */
-@Component(service = IndexContributor.class)
-public class SynonymSetIndexCreationIndexContributor
-	implements IndexContributor {
+@Component(service = CompanyIndexListener.class)
+public class SynonymSetCompanyIndexListener implements CompanyIndexListener {
 
 	@Override
 	public void onAfterCreate(String companyIndexName) {
