@@ -455,7 +455,8 @@ public class Sidecar {
 		try (URLClassLoader urlClassLoader = new URLClassLoader(
 				new URL[] {bundleURL})) {
 
-			return urlClassLoader.findResource("META-INF/sidecar.policy");
+			return urlClassLoader.findResource(
+				SidecarConstants.SIDECAR_POLICY_FILE_NAME);
 		}
 		catch (IOException ioException) {
 			throw new RuntimeException(ioException);
