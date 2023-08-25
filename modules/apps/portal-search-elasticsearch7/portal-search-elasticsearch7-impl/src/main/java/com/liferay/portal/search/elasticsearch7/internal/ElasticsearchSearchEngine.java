@@ -167,14 +167,18 @@ public class ElasticsearchSearchEngine
 		RestHighLevelClient restHighLevelClient =
 			_elasticsearchConnectionManager.getRestHighLevelClient();
 
-		boolean created = _indexFactory.createIndices(
+		boolean created = _indexFactory.initializeIndex(
 			restHighLevelClient.indices(), companyId);
-
-		_indexFactory.registerCompanyId(companyId);
 
 		if (created) {
 			_waitForYellowStatus();
 		}
+
+		_putTimestampPipeline();
+
+		_indexFactory.initializeIndex(restHighLevelClient.indices(), companyId);
+
+		_indexFactory.registerCompanyId(companyId);
 
 		_indexConfigurationDynamicUpdatesExecutor.execute(companyId);
 
@@ -232,8 +236,7 @@ public class ElasticsearchSearchEngine
 			RestHighLevelClient restHighLevelClient =
 				_elasticsearchConnectionManager.getRestHighLevelClient();
 
-			_indexFactory.deleteIndices(
-				restHighLevelClient.indices(), companyId);
+			_indexFactory.deleteIndex(restHighLevelClient.indices(), companyId);
 
 			_indexFactory.unregisterCompanyId(companyId);
 		}
