@@ -184,19 +184,6 @@ public class CompanyIndexFactoryHelper {
 		}
 	}
 
-	private void _putAdditionalTypeMappings(
-		LiferayDocumentTypeFactory liferayDocumentTypeFactory) {
-
-		if (Validator.isNull(
-				_elasticsearchConfigurationWrapper.additionalTypeMappings())) {
-
-			return;
-		}
-
-		liferayDocumentTypeFactory.putTypeMappings(
-			_elasticsearchConfigurationWrapper.additionalTypeMappings());
-	}
-
 	private void _addLiferayDocumentTypeMappings(
 		CreateIndexRequest createIndexRequest,
 		LiferayDocumentTypeFactory liferayDocumentTypeFactory) {
@@ -358,6 +345,19 @@ public class CompanyIndexFactoryHelper {
 			indexConfigurationContributor.contributeMappings(
 				liferayDocumentTypeFactory);
 		}
+	}
+
+	private void _putAdditionalTypeMappings(
+		LiferayDocumentTypeFactory liferayDocumentTypeFactory) {
+
+		if (Validator.isNull(
+				_elasticsearchConfigurationWrapper.additionalTypeMappings())) {
+
+			return;
+		}
+
+		liferayDocumentTypeFactory.putTypeMappings(
+			_elasticsearchConfigurationWrapper.additionalTypeMappings());
 	}
 
 	private void _setSettings(
