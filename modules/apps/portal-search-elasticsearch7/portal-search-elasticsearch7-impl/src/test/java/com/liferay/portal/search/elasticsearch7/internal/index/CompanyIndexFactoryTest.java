@@ -364,7 +364,7 @@ public class CompanyIndexFactoryTest {
 					}
 
 					@Override
-					public void populate(
+					public void contributeSettings(
 						IndexSettingsHelper indexSettingsHelper) {
 
 						indexSettingsHelper.put(
@@ -408,7 +408,7 @@ public class CompanyIndexFactoryTest {
 					}
 
 					@Override
-					public void populate(
+					public void contributeSettings(
 						IndexSettingsHelper indexSettingsHelper) {
 					}
 
@@ -626,7 +626,8 @@ public class CompanyIndexFactoryTest {
 		}
 
 		@Override
-		public void populate(IndexSettingsHelper indexSettingsHelper) {
+		public void contributeSettings(
+			IndexSettingsHelper indexSettingsHelper) {
 		}
 
 	}
