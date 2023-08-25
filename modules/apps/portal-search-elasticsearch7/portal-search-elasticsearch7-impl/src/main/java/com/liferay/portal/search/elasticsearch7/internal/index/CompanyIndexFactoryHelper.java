@@ -315,7 +315,7 @@ public class CompanyIndexFactoryHelper {
 		for (IndexSettingsContributor indexSettingsContributor :
 				_indexSettingsContributorServiceTrackerList) {
 
-			indexSettingsContributor.contribute(
+			indexSettingsContributor.contributeMappings(
 				indexName, liferayDocumentTypeFactory);
 		}
 	}
@@ -352,7 +352,7 @@ public class CompanyIndexFactoryHelper {
 		for (Long companyId :
 				IndexFactoryCompanyIdRegistryUtil.getCompanyIds()) {
 
-			indexSettingsContributor.contribute(
+			indexSettingsContributor.contributeMappings(
 				getIndexName(companyId), liferayDocumentTypeFactory);
 		}
 	}
