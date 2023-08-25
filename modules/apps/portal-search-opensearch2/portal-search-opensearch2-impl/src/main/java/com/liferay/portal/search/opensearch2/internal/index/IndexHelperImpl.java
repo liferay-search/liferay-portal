@@ -28,8 +28,8 @@ import com.liferay.portal.search.opensearch2.internal.connection.OpenSearchConne
 import com.liferay.portal.search.opensearch2.internal.index.util.IndexFactoryCompanyIdRegistryUtil;
 import com.liferay.portal.search.opensearch2.internal.util.IndexUtil;
 import com.liferay.portal.search.opensearch2.internal.util.JsonpUtil;
+import com.liferay.portal.search.spi.index.configuration.contributor.IndexConfigurationContributor;
 import com.liferay.portal.search.spi.index.listener.CompanyIndexListener;
-import com.liferay.portal.search.spi.settings.IndexSettingsContributor;
 
 import jakarta.json.spi.JsonProvider;
 
@@ -171,42 +171,45 @@ public class IndexHelperImpl implements IndexHelper {
 		_companyIndexListeners = ServiceTrackerListFactory.open(
 			bundleContext, CompanyIndexListener.class);
 
-		_indexSettingsContributorServiceTrackerList =
-			ServiceTrackerListFactory.open(
-				bundleContext, IndexSettingsContributor.class, null,
-				new EagerServiceTrackerCustomizer
-					<IndexSettingsContributor, IndexSettingsContributor>() {
+		_indexConfigurationContributors = ServiceTrackerListFactory.open(
+			bundleContext, IndexConfigurationContributor.class, null,
+			new EagerServiceTrackerCustomizer
+				<IndexConfigurationContributor,
+				 IndexConfigurationContributor>() {
 
-					@Override
-					public IndexSettingsContributor addingService(
-						ServiceReference<IndexSettingsContributor>
-							serviceReference) {
+				@Override
+				public IndexConfigurationContributor addingService(
+					ServiceReference<IndexConfigurationContributor>
+						serviceReference) {
 
-						IndexSettingsContributor indexSettingsContributor =
+					IndexConfigurationContributor
+						indexConfigurationContributor =
 							bundleContext.getService(serviceReference);
 
-						_processContributions(indexSettingsContributor);
+					_processContributions(indexConfigurationContributor);
 
-						return indexSettingsContributor;
-					}
+					return indexConfigurationContributor;
+				}
 
-					@Override
-					public void modifiedService(
-						ServiceReference<IndexSettingsContributor>
-							serviceReference,
-						IndexSettingsContributor indexSettingsContributor) {
-					}
+				@Override
+				public void modifiedService(
+					ServiceReference<IndexConfigurationContributor>
+						serviceReference,
+					IndexConfigurationContributor
+						indexConfigurationContributor) {
+				}
 
-					@Override
-					public void removedService(
-						ServiceReference<IndexSettingsContributor>
-							serviceReference,
-						IndexSettingsContributor indexSettingsContributor) {
+				@Override
+				public void removedService(
+					ServiceReference<IndexConfigurationContributor>
+						serviceReference,
+					IndexConfigurationContributor
+						indexConfigurationContributor) {
 
-						bundleContext.ungetService(serviceReference);
-					}
+					bundleContext.ungetService(serviceReference);
+				}
 
-				});
+			});
 	}
 
 	@Deactivate
@@ -215,8 +218,8 @@ public class IndexHelperImpl implements IndexHelper {
 			_companyIndexListeners.close();
 		}
 
-		if (_indexSettingsContributorServiceTrackerList != null) {
-			_indexSettingsContributorServiceTrackerList.close();
+		if (_indexConfigurationContributors != null) {
+			_indexConfigurationContributors.close();
 		}
 	}
 
@@ -284,7 +287,7 @@ public class IndexHelperImpl implements IndexHelper {
 
 		JSONObject settingsJSONObject = settingsFactory.getSettingsJSONObject();
 
-		_executeIndexSettingsContributors(settingsJSONObject);
+		_executeIndexConfigurationContributors(settingsJSONObject);
 
 		JSONObject indexJSONObject = settingsJSONObject.getJSONObject("index");
 
@@ -347,15 +350,15 @@ public class IndexHelperImpl implements IndexHelper {
 		}
 	}
 
-	private void _executeIndexSettingsContributors(
+	private void _executeIndexConfigurationContributors(
 		JSONObject indexSettingsJSONObject) {
 
 		Map<String, String> contributedSettings = new HashMap<>();
 
-		for (IndexSettingsContributor indexSettingsContributor :
-				_indexSettingsContributorServiceTrackerList) {
+		for (IndexConfigurationContributor indexConfigurationContributor :
+				_indexConfigurationContributors) {
 
-			indexSettingsContributor.populate(contributedSettings::put);
+			indexConfigurationContributor.populate(contributedSettings::put);
 		}
 
 		if (MapUtil.isEmpty(contributedSettings)) {
@@ -370,10 +373,11 @@ public class IndexHelperImpl implements IndexHelper {
 	private void _executeMappingsContributors(
 		String indexName, MappingsFactory mappingsFactory) {
 
-		for (IndexSettingsContributor indexSettingsContributor :
-				_indexSettingsContributorServiceTrackerList) {
+		for (IndexConfigurationContributor indexConfigurationContributor :
+				_indexConfigurationContributors) {
 
-			indexSettingsContributor.contribute(indexName, mappingsFactory);
+			indexConfigurationContributor.contribute(
+				indexName, mappingsFactory);
 		}
 	}
 
@@ -390,7 +394,7 @@ public class IndexHelperImpl implements IndexHelper {
 	}
 
 	private void _processContributions(
-		IndexSettingsContributor indexSettingsContributor) {
+		IndexConfigurationContributor indexConfigurationContributor) {
 
 		if (Validator.isNotNull(
 				_openSearchConfigurationWrapper.overrideTypeMappings())) {
@@ -407,7 +411,7 @@ public class IndexHelperImpl implements IndexHelper {
 				_openSearchConfigurationWrapper);
 
 			_companyLocalService.forEachCompanyId(
-				companyId -> indexSettingsContributor.contribute(
+				companyId -> indexConfigurationContributor.contribute(
 					getIndexName(companyId), mappingsFactory),
 				IndexFactoryCompanyIdRegistryUtil.getCompanyIds());
 		}
@@ -462,11 +466,11 @@ public class IndexHelperImpl implements IndexHelper {
 	@Reference
 	private CompanyLocalService _companyLocalService;
 
+	private ServiceTrackerList<IndexConfigurationContributor>
+		_indexConfigurationContributors;
+
 	@Reference
 	private IndexNameBuilder _indexNameBuilder;
-
-	private ServiceTrackerList<IndexSettingsContributor>
-		_indexSettingsContributorServiceTrackerList;
 
 	@Reference
 	private JSONFactory _jsonFactory;
