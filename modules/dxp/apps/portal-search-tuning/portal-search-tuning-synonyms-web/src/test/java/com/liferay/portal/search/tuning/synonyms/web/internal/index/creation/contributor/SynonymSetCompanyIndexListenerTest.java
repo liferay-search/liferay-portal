@@ -21,7 +21,7 @@ import org.mockito.Mockito;
 /**
  * @author Wade Cao
  */
-public class SynonymSetIndexCreationIndexContributorTest
+public class SynonymSetCompanyIndexListenerTest
 	extends BaseSynonymsWebTestCase {
 
 	@ClassRule
@@ -31,17 +31,16 @@ public class SynonymSetIndexCreationIndexContributorTest
 
 	@Before
 	public void setUp() throws Exception {
-		_synonymSetIndexCreationIndexContributor =
-			new SynonymSetIndexCreationIndexContributor();
+		_synonymSetCompanyIndexListener = new SynonymSetCompanyIndexListener();
 
 		ReflectionTestUtil.setFieldValue(
-			_synonymSetIndexCreationIndexContributor,
-			"_indexToFilterSynchronizer", _indexToFilterSynchronizer);
+			_synonymSetCompanyIndexListener, "_indexToFilterSynchronizer",
+			_indexToFilterSynchronizer);
 		ReflectionTestUtil.setFieldValue(
-			_synonymSetIndexCreationIndexContributor,
-			"_searchEngineInformation", _searchEngineInformation);
+			_synonymSetCompanyIndexListener, "_searchEngineInformation",
+			_searchEngineInformation);
 		ReflectionTestUtil.setFieldValue(
-			_synonymSetIndexCreationIndexContributor, "_synonymSetIndexReader",
+			_synonymSetCompanyIndexListener, "_synonymSetIndexReader",
 			synonymSetIndexReader);
 	}
 
@@ -49,8 +48,7 @@ public class SynonymSetIndexCreationIndexContributorTest
 	public void testOnAfterCreateIndexNameExists() {
 		setUpSynonymSetIndexReader(true);
 
-		_synonymSetIndexCreationIndexContributor.onAfterCreate(
-			"companyIndexName");
+		_synonymSetCompanyIndexListener.onAfterCreate("companyIndexName");
 
 		Mockito.verify(
 			_indexToFilterSynchronizer, Mockito.times(1)
@@ -61,8 +59,7 @@ public class SynonymSetIndexCreationIndexContributorTest
 
 	@Test
 	public void testOnAfterCreateIndexNameNotExists() {
-		_synonymSetIndexCreationIndexContributor.onAfterCreate(
-			"companyIndexName");
+		_synonymSetCompanyIndexListener.onAfterCreate("companyIndexName");
 
 		Mockito.verify(
 			_indexToFilterSynchronizer, Mockito.never()
@@ -75,7 +72,6 @@ public class SynonymSetIndexCreationIndexContributorTest
 		Mockito.mock(IndexToFilterSynchronizer.class);
 	private final SearchEngineInformation _searchEngineInformation =
 		Mockito.mock(SearchEngineInformation.class);
-	private SynonymSetIndexCreationIndexContributor
-		_synonymSetIndexCreationIndexContributor;
+	private SynonymSetCompanyIndexListener _synonymSetCompanyIndexListener;
 
 }
