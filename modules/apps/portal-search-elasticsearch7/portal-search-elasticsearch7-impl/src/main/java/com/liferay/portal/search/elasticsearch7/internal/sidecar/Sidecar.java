@@ -22,7 +22,7 @@ import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.elasticsearch7.internal.configuration.ElasticsearchConfigurationWrapper;
-import com.liferay.portal.search.elasticsearch7.internal.sidecar.constants.SidecarVersionConstants;
+import com.liferay.portal.search.elasticsearch7.internal.sidecar.constants.SidecarConstants;
 import com.liferay.portal.search.elasticsearch7.internal.util.ResourceUtil;
 
 import java.io.File;
@@ -283,7 +283,7 @@ public class Sidecar {
 
 	private Distribution _getElasticsearchDistribution() {
 		String versionNumber = ResourceUtil.getResourceAsString(
-			getClass(), SidecarVersionConstants.SIDECAR_VERSION_FILE_NAME);
+			getClass(), SidecarConstants.SIDECAR_VERSION_FILE_NAME);
 
 		if (versionNumber.equals(ElasticsearchDistribution.VERSION)) {
 			return new ElasticsearchDistribution();
