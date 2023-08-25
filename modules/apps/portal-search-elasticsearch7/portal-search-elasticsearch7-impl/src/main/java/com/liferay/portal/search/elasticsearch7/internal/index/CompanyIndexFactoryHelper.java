@@ -277,6 +277,17 @@ public class CompanyIndexFactoryHelper {
 		settingsBuilder.loadFromSource(defaultIndexSettings);
 	}
 
+	private void _loadIndexConfigurationContributors(
+		SettingsBuilder settingsBuilder) {
+
+		for (IndexConfigurationContributor indexConfigurationContributor :
+				_indexConfigurationContributorServiceTrackerList) {
+
+			indexConfigurationContributor.contributeSettings(
+				settingsBuilder::put);
+		}
+	}
+
 	private void _loadIndexConfigurations(SettingsBuilder settingsBuilder) {
 		settingsBuilder.put(
 			"index.number_of_replicas",
@@ -288,17 +299,6 @@ public class CompanyIndexFactoryHelper {
 			"index.max_result_window",
 			String.valueOf(
 				_elasticsearchConfigurationWrapper.indexMaxResultWindow()));
-	}
-
-	private void _loadIndexConfigurationContributors(
-		SettingsBuilder settingsBuilder) {
-
-		for (IndexConfigurationContributor indexConfigurationContributor :
-				_indexConfigurationContributorServiceTrackerList) {
-
-			indexConfigurationContributor.contributeSettings(
-				settingsBuilder::put);
-		}
 	}
 
 	private void _loadTestModeIndexSettings(SettingsBuilder settingsBuilder) {
@@ -382,7 +382,7 @@ public class CompanyIndexFactoryHelper {
 		_loadIndexConfigurationContributors(settingsBuilder);
 
 		if (Validator.isNotNull(
-			settingsBuilder.get("index.number_of_replicas"))) {
+				settingsBuilder.get("index.number_of_replicas"))) {
 
 			settingsBuilder.put("index.auto_expand_replicas", false);
 		}
