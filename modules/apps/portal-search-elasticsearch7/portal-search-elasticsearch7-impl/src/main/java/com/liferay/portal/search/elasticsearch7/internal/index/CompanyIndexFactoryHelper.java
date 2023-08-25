@@ -446,8 +446,6 @@ public class CompanyIndexFactoryHelper {
 		_putAdditionalTypeMappings(liferayDocumentTypeFactory);
 
 		_putContributedTypeMappings(liferayDocumentTypeFactory);
-
-		liferayDocumentTypeFactory.putDefaultTypeMappingTemplate();
 	}
 
 	private void _updateSettings(
