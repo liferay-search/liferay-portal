@@ -20,7 +20,7 @@ public class CommerceIndexSettingsContributor
 	implements IndexSettingsContributor {
 
 	@Override
-	public void contribute(
+	public void contributeMappings(
 		String indexName, TypeMappingsHelper typeMappingsHelper) {
 
 		String typeMappings = StringUtil.read(
