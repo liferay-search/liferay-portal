@@ -367,17 +367,9 @@ public class CompanyIndexFactoryHelper {
 		CreateIndexRequest createIndexRequest,
 		LiferayDocumentTypeFactory liferayDocumentTypeFactory) {
 
-		if (Validator.isNotNull(
-				_elasticsearchConfigurationWrapper.overrideTypeMappings())) {
-
-			liferayDocumentTypeFactory.createLiferayDocumentTypeMappings(
-				createIndexRequest,
-				_elasticsearchConfigurationWrapper.overrideTypeMappings());
-		}
-		else {
-			liferayDocumentTypeFactory.createRequiredDefaultTypeMappings(
-				createIndexRequest);
-		}
+		liferayDocumentTypeFactory.setMappings(
+			createIndexRequest,
+			_elasticsearchConfigurationWrapper.overrideTypeMappings());
 	}
 
 	private void _setSettings(
