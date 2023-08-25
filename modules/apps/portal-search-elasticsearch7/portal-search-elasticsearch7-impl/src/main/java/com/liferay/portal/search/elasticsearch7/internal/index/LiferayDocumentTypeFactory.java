@@ -89,15 +89,6 @@ public class LiferayDocumentTypeFactory implements TypeMappingsHelper {
 			"_doc", _getMappings(overrideMappings), XContentType.JSON);
 	}
 
-	public void putDefaultTypeMappingTemplate() {
-		String defaultMappingTemplate = ResourceUtil.getResourceAsString(
-			getClass(),
-			LiferayTypeMappingsConstants.
-				LIFERAY_DOCUMENT_TYPE_MAPPING_DEFAULT_TEMPLATE_FILE_NAME);
-
-		putTypeMappings(defaultMappingTemplate);
-	}
-
 	protected JSONObject createJSONObject(String mappings) {
 		try {
 			return _jsonFactory.createJSONObject(mappings);
