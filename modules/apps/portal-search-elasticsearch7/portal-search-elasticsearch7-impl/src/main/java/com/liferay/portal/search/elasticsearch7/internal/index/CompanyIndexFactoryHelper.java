@@ -293,7 +293,7 @@ public class CompanyIndexFactoryHelper {
 		for (IndexSettingsContributor indexSettingsContributor :
 				_indexSettingsContributorServiceTrackerList) {
 
-			indexSettingsContributor.populate(builder::put);
+			indexSettingsContributor.contributeSettings(builder::put);
 		}
 	}
 
