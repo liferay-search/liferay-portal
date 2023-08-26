@@ -157,7 +157,8 @@ public class CompanyIndexFactoryHelper {
 							indexConfigurationContributor =
 								bundleContext.getService(serviceReference);
 
-						_processContributions(indexConfigurationContributor);
+						_processIndexConfigurationContributor(
+							indexConfigurationContributor);
 
 						return indexConfigurationContributor;
 					}
@@ -249,6 +250,21 @@ public class CompanyIndexFactoryHelper {
 			_elasticsearchConfigurationWrapper.additionalIndexConfigurations());
 	}
 
+	private void _loadConfigurationIndexSettings(
+		SettingsBuilder settingsBuilder) {
+
+		settingsBuilder.put(
+			"index.number_of_replicas",
+			_elasticsearchConfigurationWrapper.indexNumberOfReplicas());
+		settingsBuilder.put(
+			"index.number_of_shards",
+			_elasticsearchConfigurationWrapper.indexNumberOfShards());
+		settingsBuilder.put(
+			"index.max_result_window",
+			String.valueOf(
+				_elasticsearchConfigurationWrapper.indexMaxResultWindow()));
+	}
+
 	private void _loadDefaultIndexSettings(
 		SettingsBuilder settingsBuilder,
 		LiferayDocumentTypeFactory liferayDocumentTypeFactory) {
@@ -272,19 +288,6 @@ public class CompanyIndexFactoryHelper {
 		}
 	}
 
-	private void _loadIndexConfigurations(SettingsBuilder settingsBuilder) {
-		settingsBuilder.put(
-			"index.number_of_replicas",
-			_elasticsearchConfigurationWrapper.indexNumberOfReplicas());
-		settingsBuilder.put(
-			"index.number_of_shards",
-			_elasticsearchConfigurationWrapper.indexNumberOfShards());
-		settingsBuilder.put(
-			"index.max_result_window",
-			String.valueOf(
-				_elasticsearchConfigurationWrapper.indexMaxResultWindow()));
-	}
-
 	private void _loadTestModeIndexSettings(SettingsBuilder settingsBuilder) {
 		if (!PortalRunMode.isTestMode()) {
 			return;
@@ -297,7 +300,7 @@ public class CompanyIndexFactoryHelper {
 	}
 
 	private void _loadUserDefinedSettings(SettingsBuilder settingsBuilder) {
-		_loadIndexConfigurations(settingsBuilder);
+		_loadConfigurationIndexSettings(settingsBuilder);
 
 		_loadAdditionalIndexConfigurations(settingsBuilder);
 
@@ -310,7 +313,7 @@ public class CompanyIndexFactoryHelper {
 		}
 	}
 
-	private void _processContributions(
+	private void _processIndexConfigurationContributor(
 		IndexConfigurationContributor indexConfigurationContributor) {
 
 		RestHighLevelClient restHighLevelClient = null;
