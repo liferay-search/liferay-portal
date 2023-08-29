@@ -21,7 +21,7 @@ public class RedirectIndexConfigurationContributor
 
 	@Override
 	public void contributeMappings(MappingsHelper mappingsHelper) {
-		mappingsHelper.putTypeMappings(
+		mappingsHelper.putMappings(
 			StringUtil.read(
 				getClass(), "dependencies/additional-type-mappings.json"));
 	}
