@@ -382,7 +382,7 @@ public class CompanyIndexFactoryTest {
 					public void contributeMappings(
 						MappingsHelper mappingsHelper) {
 
-						mappingsHelper.putTypeMappings(
+						mappingsHelper.putMappings(
 							_replaceAnalyzer(mappings, "brazilian"));
 					}
 
