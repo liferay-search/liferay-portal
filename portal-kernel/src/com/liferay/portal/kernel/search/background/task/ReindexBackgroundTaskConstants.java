@@ -20,6 +20,10 @@ public class ReindexBackgroundTaskConstants {
 
 	public static final String EXECUTION_MODE = "executionMode";
 
+	public static final String INDEX_REINDEXER_END = "indexReindexerEnd";
+
+	public static final String INDEX_REINDEXER_START = "indexReindexerStart";
+
 	public static final String PHASE = "phase";
 
 	public static final String PORTAL_END = "portalEnd";
