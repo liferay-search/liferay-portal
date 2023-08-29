@@ -27,7 +27,7 @@ public class DefaultMappingsAndSettingsIndexConfigurationContributor
 			LiferayTypeMappingsConstants.
 				LIFERAY_DOCUMENT_TYPE_MAPPING_FILE_NAME);
 
-		mappingsHelper.putTypeMappings(mappings);
+		mappingsHelper.putMappings(mappings);
 	}
 
 	@Override

@@ -58,7 +58,7 @@ public class LiferayDocumentTypeFactory implements MappingsHelper {
 	}
 
 	@Override
-	public void putTypeMappings(String source) {
+	public void putMappings(String source) {
 		PutMappingRequest putMappingRequest = new PutMappingRequest(_indexName);
 
 		putMappingRequest.source(
