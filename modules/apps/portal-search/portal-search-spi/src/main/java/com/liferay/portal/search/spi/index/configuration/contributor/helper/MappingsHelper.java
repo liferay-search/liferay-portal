@@ -10,6 +10,6 @@ package com.liferay.portal.search.spi.index.configuration.contributor.helper;
  */
 public interface MappingsHelper {
 
-	public void putTypeMappings(String source);
+	public void putMappings(String source);
 
 }
