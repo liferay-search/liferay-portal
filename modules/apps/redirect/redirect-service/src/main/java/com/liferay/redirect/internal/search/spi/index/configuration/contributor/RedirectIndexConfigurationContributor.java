@@ -7,8 +7,8 @@ package com.liferay.redirect.internal.search.spi.index.configuration.contributor
 
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.spi.index.configuration.contributor.IndexConfigurationContributor;
-import com.liferay.portal.search.spi.index.configuration.contributor.helper.IndexSettingsHelper;
 import com.liferay.portal.search.spi.index.configuration.contributor.helper.MappingsHelper;
+import com.liferay.portal.search.spi.index.configuration.contributor.helper.SettingsHelper;
 
 import org.osgi.service.component.annotations.Component;
 
@@ -27,7 +27,7 @@ public class RedirectIndexConfigurationContributor
 	}
 
 	@Override
-	public void contributeSettings(IndexSettingsHelper indexSettingsHelper) {
+	public void contributeSettings(SettingsHelper settingsHelper) {
 	}
 
 }
