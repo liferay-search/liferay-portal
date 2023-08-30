@@ -7,8 +7,8 @@ package com.liferay.commerce.elasticsearch7.internal.index.configuration.contrib
 
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.spi.index.configuration.contributor.IndexConfigurationContributor;
-import com.liferay.portal.search.spi.index.configuration.contributor.helper.IndexSettingsHelper;
 import com.liferay.portal.search.spi.index.configuration.contributor.helper.MappingsHelper;
+import com.liferay.portal.search.spi.index.configuration.contributor.helper.SettingsHelper;
 
 import org.osgi.service.component.annotations.Component;
 
@@ -28,7 +28,7 @@ public class CommerceIndexConfigurationContributor
 	}
 
 	@Override
-	public void contributeSettings(IndexSettingsHelper indexSettingsHelper) {
+	public void contributeSettings(SettingsHelper settingsHelper) {
 	}
 
 }
