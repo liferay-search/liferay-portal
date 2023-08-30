@@ -30,7 +30,7 @@ public class ObjectIndexSettingsContributor
 	}
 
 	@Override
-	public void populate(IndexSettingsHelper indexSettingsHelper) {
+	public void contributeSettings(IndexSettingsHelper indexSettingsHelper) {
 	}
 
 }
