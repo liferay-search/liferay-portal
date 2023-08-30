@@ -18,7 +18,7 @@ import com.liferay.portal.search.elasticsearch7.internal.index.constants.IndexSe
 import com.liferay.portal.search.elasticsearch7.internal.index.constants.LiferayTypeMappingsConstants;
 import com.liferay.portal.search.elasticsearch7.internal.settings.SettingsBuilder;
 import com.liferay.portal.search.elasticsearch7.internal.util.ResourceUtil;
-import com.liferay.portal.search.spi.index.configuration.contributor.helper.TypeMappingsHelper;
+import com.liferay.portal.search.spi.index.configuration.contributor.helper.MappingsHelper;
 
 import java.io.IOException;
 
@@ -39,7 +39,7 @@ import org.elasticsearch.xcontent.XContentType;
 /**
  * @author André de Oliveira
  */
-public class LiferayDocumentTypeFactory implements TypeMappingsHelper {
+public class LiferayDocumentTypeFactory implements MappingsHelper {
 
 	public LiferayDocumentTypeFactory(
 		String indexName, IndicesClient indicesClient,
@@ -58,7 +58,7 @@ public class LiferayDocumentTypeFactory implements TypeMappingsHelper {
 	}
 
 	@Override
-	public void putTypeMappings(String source) {
+	public void putMappings(String source) {
 		PutMappingRequest putMappingRequest = new PutMappingRequest(_indexName);
 
 		putMappingRequest.source(

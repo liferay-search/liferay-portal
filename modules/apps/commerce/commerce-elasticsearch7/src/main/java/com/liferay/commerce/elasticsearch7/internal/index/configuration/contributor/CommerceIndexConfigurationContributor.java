@@ -7,8 +7,8 @@ package com.liferay.commerce.elasticsearch7.internal.index.configuration.contrib
 
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.spi.index.configuration.contributor.IndexConfigurationContributor;
-import com.liferay.portal.search.spi.index.configuration.contributor.helper.IndexSettingsHelper;
-import com.liferay.portal.search.spi.index.configuration.contributor.helper.TypeMappingsHelper;
+import com.liferay.portal.search.spi.index.configuration.contributor.helper.MappingsHelper;
+import com.liferay.portal.search.spi.index.configuration.contributor.helper.SettingsHelper;
 
 import org.osgi.service.component.annotations.Component;
 
@@ -20,15 +20,15 @@ public class CommerceIndexConfigurationContributor
 	implements IndexConfigurationContributor {
 
 	@Override
-	public void contributeMappings(TypeMappingsHelper typeMappingsHelper) {
+	public void contributeMappings(MappingsHelper mappingsHelper) {
 		String typeMappings = StringUtil.read(
 			getClass(), "dependencies/additional-type-mappings.json");
 
-		typeMappingsHelper.putTypeMappings(typeMappings);
+		mappingsHelper.putMappings(typeMappings);
 	}
 
 	@Override
-	public void contributeSettings(IndexSettingsHelper indexSettingsHelper) {
+	public void contributeSettings(SettingsHelper settingsHelper) {
 	}
 
 }
