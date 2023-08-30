@@ -22,8 +22,8 @@ import com.liferay.portal.search.opensearch2.internal.document.SingleFieldFixtur
 import com.liferay.portal.search.opensearch2.internal.query.QueryFactories;
 import com.liferay.portal.search.opensearch2.internal.util.ResourceUtil;
 import com.liferay.portal.search.spi.index.configuration.contributor.IndexConfigurationContributor;
-import com.liferay.portal.search.spi.index.configuration.contributor.helper.IndexSettingsHelper;
-import com.liferay.portal.search.spi.index.configuration.contributor.helper.TypeMappingsHelper;
+import com.liferay.portal.search.spi.index.configuration.contributor.helper.MappingsHelper;
+import com.liferay.portal.search.spi.index.configuration.contributor.helper.SettingsHelper;
 import com.liferay.portal.search.spi.index.listener.CompanyIndexListener;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
 
@@ -360,16 +360,15 @@ public class CompanyIndexFactoryTest extends BaseOpenSearchTestCase {
 
 					@Override
 					public void contributeMappings(
-						TypeMappingsHelper typeMappingsHelper) {
+						MappingsHelper mappingsHelper) {
 					}
 
 					@Override
 					public void contributeSettings(
-						IndexSettingsHelper indexSettingsHelper) {
+						SettingsHelper settingsHelper) {
 
-						indexSettingsHelper.put(
-							"index.number_of_replicas", "2");
-						indexSettingsHelper.put("index.number_of_shards", "3");
+						settingsHelper.put("index.number_of_replicas", "2");
+						settingsHelper.put("index.number_of_shards", "3");
 					}
 
 				},
@@ -408,15 +407,15 @@ public class CompanyIndexFactoryTest extends BaseOpenSearchTestCase {
 
 					@Override
 					public void contributeMappings(
-						TypeMappingsHelper typeMappingsHelper) {
+						MappingsHelper mappingsHelper) {
 
-						typeMappingsHelper.putTypeMappings(
+						mappingsHelper.putMappings(
 							_replaceAnalyzer("brazilian", mappings));
 					}
 
 					@Override
 					public void contributeSettings(
-						IndexSettingsHelper indexSettingsHelper) {
+						SettingsHelper settingsHelper) {
 					}
 
 				},
@@ -661,12 +660,11 @@ public class CompanyIndexFactoryTest extends BaseOpenSearchTestCase {
 		implements IndexConfigurationContributor {
 
 		@Override
-		public void contributeMappings(TypeMappingsHelper typeMappingsHelper) {
+		public void contributeMappings(MappingsHelper mappingsHelper) {
 		}
 
 		@Override
-		public void contributeSettings(
-			IndexSettingsHelper indexSettingsHelper) {
+		public void contributeSettings(SettingsHelper settingsHelper) {
 		}
 
 	}

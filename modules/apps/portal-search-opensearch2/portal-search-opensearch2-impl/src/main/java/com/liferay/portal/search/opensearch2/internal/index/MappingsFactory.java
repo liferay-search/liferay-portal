@@ -18,7 +18,7 @@ import com.liferay.portal.search.opensearch2.internal.index.constants.MappingsCo
 import com.liferay.portal.search.opensearch2.internal.util.IndexUtil;
 import com.liferay.portal.search.opensearch2.internal.util.JsonpUtil;
 import com.liferay.portal.search.opensearch2.internal.util.ResourceUtil;
-import com.liferay.portal.search.spi.index.configuration.contributor.helper.TypeMappingsHelper;
+import com.liferay.portal.search.spi.index.configuration.contributor.helper.MappingsHelper;
 
 import java.io.IOException;
 
@@ -38,7 +38,7 @@ import org.opensearch.client.opensearch.indices.get_mapping.IndexMappingRecord;
  * @author André de Oliveira
  * @author Petteri Karttunen
  */
-public class MappingsFactory implements TypeMappingsHelper {
+public class MappingsFactory implements MappingsHelper {
 
 	public MappingsFactory(
 		String indexName, JSONFactory jsonFactory,
@@ -56,7 +56,7 @@ public class MappingsFactory implements TypeMappingsHelper {
 			MappingsConstants.LIFERAY_MAPPING_FILE_NAME, ".json",
 			"-optional-defaults.json");
 
-		putTypeMappings(ResourceUtil.getResourceAsString(getClass(), name));
+		putMappings(ResourceUtil.getResourceAsString(getClass(), name));
 	}
 
 	public String getMappings(String indexName) {
@@ -103,7 +103,7 @@ public class MappingsFactory implements TypeMappingsHelper {
 	}
 
 	@Override
-	public void putTypeMappings(String source) {
+	public void putMappings(String source) {
 		PutMappingRequest.Builder builder = new PutMappingRequest.Builder();
 
 		builder.index(_indexName);
