@@ -5,8 +5,8 @@
 
 package com.liferay.portal.search.spi.index.configuration.contributor;
 
-import com.liferay.portal.search.spi.index.configuration.contributor.helper.IndexSettingsHelper;
 import com.liferay.portal.search.spi.index.configuration.contributor.helper.MappingsHelper;
+import com.liferay.portal.search.spi.index.configuration.contributor.helper.SettingsHelper;
 
 /**
  * @author Adam Brandizzi
@@ -15,6 +15,6 @@ public interface IndexConfigurationContributor {
 
 	public void contributeMappings(MappingsHelper mappingsHelper);
 
-	public void contributeSettings(IndexSettingsHelper indexSettingsHelper);
+	public void contributeSettings(SettingsHelper settingsHelper);
 
 }
