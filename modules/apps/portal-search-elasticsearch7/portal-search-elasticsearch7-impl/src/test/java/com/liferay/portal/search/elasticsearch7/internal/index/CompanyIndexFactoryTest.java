@@ -22,7 +22,7 @@ import com.liferay.portal.search.elasticsearch7.internal.query.QueryBuilderFacto
 import com.liferay.portal.search.elasticsearch7.internal.util.ResourceUtil;
 import com.liferay.portal.search.spi.index.configuration.contributor.IndexConfigurationContributor;
 import com.liferay.portal.search.spi.index.configuration.contributor.helper.IndexSettingsHelper;
-import com.liferay.portal.search.spi.index.configuration.contributor.helper.TypeMappingsHelper;
+import com.liferay.portal.search.spi.index.configuration.contributor.helper.MappingsHelper;
 import com.liferay.portal.search.spi.index.listener.CompanyIndexListener;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
 
@@ -339,7 +339,7 @@ public class CompanyIndexFactoryTest {
 
 					@Override
 					public void contributeMappings(
-						TypeMappingsHelper typeMappingsHelper) {
+						MappingsHelper mappingsHelper) {
 					}
 
 					@Override
@@ -381,9 +381,9 @@ public class CompanyIndexFactoryTest {
 
 					@Override
 					public void contributeMappings(
-						TypeMappingsHelper typeMappingsHelper) {
+						MappingsHelper mappingsHelper) {
 
-						typeMappingsHelper.putTypeMappings(
+						mappingsHelper.putTypeMappings(
 							_replaceAnalyzer(mappings, "brazilian"));
 					}
 
@@ -623,7 +623,7 @@ public class CompanyIndexFactoryTest {
 		implements IndexConfigurationContributor {
 
 		@Override
-		public void contributeMappings(TypeMappingsHelper typeMappingsHelper) {
+		public void contributeMappings(MappingsHelper mappingsHelper) {
 		}
 
 		@Override
