@@ -8,7 +8,7 @@ package com.liferay.portal.search.spi.index.configuration.contributor.helper;
 /**
  * @author Adam Brandizzi
  */
-public interface IndexSettingsHelper {
+public interface SettingsHelper {
 
 	public void put(String setting, String value);
 
