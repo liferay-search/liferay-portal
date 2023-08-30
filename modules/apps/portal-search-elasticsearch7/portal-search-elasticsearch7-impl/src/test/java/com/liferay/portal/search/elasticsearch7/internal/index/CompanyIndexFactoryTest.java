@@ -21,8 +21,8 @@ import com.liferay.portal.search.elasticsearch7.internal.index.constants.Liferay
 import com.liferay.portal.search.elasticsearch7.internal.query.QueryBuilderFactories;
 import com.liferay.portal.search.elasticsearch7.internal.util.ResourceUtil;
 import com.liferay.portal.search.spi.index.configuration.contributor.IndexConfigurationContributor;
-import com.liferay.portal.search.spi.index.configuration.contributor.helper.IndexSettingsHelper;
-import com.liferay.portal.search.spi.index.configuration.contributor.helper.TypeMappingsHelper;
+import com.liferay.portal.search.spi.index.configuration.contributor.helper.MappingsHelper;
+import com.liferay.portal.search.spi.index.configuration.contributor.helper.SettingsHelper;
 import com.liferay.portal.search.spi.index.listener.CompanyIndexListener;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
 
@@ -339,16 +339,15 @@ public class CompanyIndexFactoryTest {
 
 					@Override
 					public void contributeMappings(
-						TypeMappingsHelper typeMappingsHelper) {
+						MappingsHelper mappingsHelper) {
 					}
 
 					@Override
 					public void contributeSettings(
-						IndexSettingsHelper indexSettingsHelper) {
+						SettingsHelper settingsHelper) {
 
-						indexSettingsHelper.put(
-							"index.number_of_replicas", "2");
-						indexSettingsHelper.put("index.number_of_shards", "3");
+						settingsHelper.put("index.number_of_replicas", "2");
+						settingsHelper.put("index.number_of_shards", "3");
 					}
 
 				},
@@ -381,15 +380,15 @@ public class CompanyIndexFactoryTest {
 
 					@Override
 					public void contributeMappings(
-						TypeMappingsHelper typeMappingsHelper) {
+						MappingsHelper mappingsHelper) {
 
-						typeMappingsHelper.putTypeMappings(
+						mappingsHelper.putMappings(
 							_replaceAnalyzer(mappings, "brazilian"));
 					}
 
 					@Override
 					public void contributeSettings(
-						IndexSettingsHelper indexSettingsHelper) {
+						SettingsHelper settingsHelper) {
 					}
 
 				},
@@ -623,12 +622,11 @@ public class CompanyIndexFactoryTest {
 		implements IndexConfigurationContributor {
 
 		@Override
-		public void contributeMappings(TypeMappingsHelper typeMappingsHelper) {
+		public void contributeMappings(MappingsHelper mappingsHelper) {
 		}
 
 		@Override
-		public void contributeSettings(
-			IndexSettingsHelper indexSettingsHelper) {
+		public void contributeSettings(SettingsHelper settingsHelper) {
 		}
 
 	}

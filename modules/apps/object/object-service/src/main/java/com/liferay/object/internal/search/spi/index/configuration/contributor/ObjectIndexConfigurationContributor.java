@@ -7,8 +7,8 @@ package com.liferay.object.internal.search.spi.index.configuration.contributor;
 
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.spi.index.configuration.contributor.IndexConfigurationContributor;
-import com.liferay.portal.search.spi.index.configuration.contributor.helper.IndexSettingsHelper;
-import com.liferay.portal.search.spi.index.configuration.contributor.helper.TypeMappingsHelper;
+import com.liferay.portal.search.spi.index.configuration.contributor.helper.MappingsHelper;
+import com.liferay.portal.search.spi.index.configuration.contributor.helper.SettingsHelper;
 
 import org.osgi.service.component.annotations.Component;
 
@@ -20,14 +20,14 @@ public class ObjectIndexConfigurationContributor
 	implements IndexConfigurationContributor {
 
 	@Override
-	public void contributeMappings(TypeMappingsHelper typeMappingsHelper) {
-		typeMappingsHelper.putTypeMappings(
+	public void contributeMappings(MappingsHelper mappingsHelper) {
+		mappingsHelper.putMappings(
 			StringUtil.read(
 				getClass(), "dependencies/additional-type-mappings.json"));
 	}
 
 	@Override
-	public void contributeSettings(IndexSettingsHelper indexSettingsHelper) {
+	public void contributeSettings(SettingsHelper settingsHelper) {
 	}
 
 }
