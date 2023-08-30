@@ -8,7 +8,7 @@ package com.liferay.redirect.internal.search.spi.index.configuration.contributor
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.spi.index.configuration.contributor.IndexConfigurationContributor;
 import com.liferay.portal.search.spi.index.configuration.contributor.helper.IndexSettingsHelper;
-import com.liferay.portal.search.spi.index.configuration.contributor.helper.TypeMappingsHelper;
+import com.liferay.portal.search.spi.index.configuration.contributor.helper.MappingsHelper;
 
 import org.osgi.service.component.annotations.Component;
 
@@ -20,8 +20,8 @@ public class RedirectIndexConfigurationContributor
 	implements IndexConfigurationContributor {
 
 	@Override
-	public void contributeMappings(TypeMappingsHelper typeMappingsHelper) {
-		typeMappingsHelper.putTypeMappings(
+	public void contributeMappings(MappingsHelper mappingsHelper) {
+		mappingsHelper.putTypeMappings(
 			StringUtil.read(
 				getClass(), "dependencies/additional-type-mappings.json"));
 	}
