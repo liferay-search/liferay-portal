@@ -68,7 +68,6 @@ import org.apache.commons.lang3.time.DateFormatUtils;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -95,7 +94,6 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 	// LPS-186696
 
 	@FeatureFlags("LPS-179669")
-	@Ignore
 	@Override
 	@Test
 	public void testPostSearchPage() throws Exception {
@@ -202,14 +200,14 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 				}
 			});
 
-		Map<String, Object> facetsMap = (Map<String, Object>)page.getFacets();
+		Map<String, Object> facetsMap =
+			(Map<String, Object>)page.getSearchFacets();
 
 		Assert.assertTrue(facetsMap.containsKey(facetName));
 
 		List<String> termValuesList = new ArrayList<>();
 
-		JSONArray termJSONArray = _jsonFactory.createJSONArray(
-			(Object[])facetsMap.get(facetName));
+		JSONArray termJSONArray = (JSONArray)facetsMap.get(facetName);
 
 		for (int i = 0; i < termJSONArray.length(); i++) {
 			JSONObject termJSONObject = _jsonFactory.createJSONObject(
