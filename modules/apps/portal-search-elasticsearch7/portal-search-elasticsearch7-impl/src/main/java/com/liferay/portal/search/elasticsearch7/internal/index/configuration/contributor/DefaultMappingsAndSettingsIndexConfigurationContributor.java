@@ -9,7 +9,7 @@ import com.liferay.portal.search.elasticsearch7.internal.index.constants.Liferay
 import com.liferay.portal.search.elasticsearch7.internal.util.ResourceUtil;
 import com.liferay.portal.search.spi.index.configuration.contributor.IndexConfigurationContributor;
 import com.liferay.portal.search.spi.index.configuration.contributor.helper.IndexSettingsHelper;
-import com.liferay.portal.search.spi.index.configuration.contributor.helper.TypeMappingsHelper;
+import com.liferay.portal.search.spi.index.configuration.contributor.helper.MappingsHelper;
 
 import org.osgi.service.component.annotations.Component;
 
@@ -21,13 +21,13 @@ public class DefaultMappingsAndSettingsIndexConfigurationContributor
 	implements IndexConfigurationContributor {
 
 	@Override
-	public void contributeMappings(TypeMappingsHelper typeMappingsHelper) {
+	public void contributeMappings(MappingsHelper mappingsHelper) {
 		String mappings = ResourceUtil.getResourceAsString(
 			getClass(),
 			LiferayTypeMappingsConstants.
 				LIFERAY_DOCUMENT_TYPE_MAPPING_FILE_NAME);
 
-		typeMappingsHelper.putTypeMappings(mappings);
+		mappingsHelper.putTypeMappings(mappings);
 	}
 
 	@Override
