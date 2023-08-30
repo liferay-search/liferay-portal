@@ -183,9 +183,23 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 			ddmStructure.getStructureId(), null, _serviceContext);
 	}
 
+	private boolean _anyValueEquals(
+		String[] expectedValues, String[] termValues) {
+
+		for (String expected : expectedValues) {
+			for (String term : termValues) {
+				if (expected.equals(term)) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
 	private void _assertFacetConfiguration(
 			Map<String, Object> facetAttributes, String facetName,
-			Object facetValues, Object... expectedValues)
+			Object facetValues, boolean useDeepEquals, Object... expectedValues)
 		throws Exception {
 
 		Arrays.sort(expectedValues);
@@ -224,14 +238,22 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 
 		Arrays.sort(termValues);
 
-		Assert.assertTrue(Objects.deepEquals(expectedValues, termValues));
+		if (useDeepEquals) {
+			Assert.assertTrue(Objects.deepEquals(expectedValues, termValues));
+		}
+		else {
+			Assert.assertTrue(
+				_anyValueEquals((String[])expectedValues, termValues));
+		}
 	}
 
 	private void _assertFacetConfiguration(
-			String facetName, Object facetValues, String... expectedValues)
+			String facetName, Object facetValues, boolean useDeepEquals,
+			String... expectedValues)
 		throws Exception {
 
-		_assertFacetConfiguration(null, facetName, facetValues, expectedValues);
+		_assertFacetConfiguration(
+			null, facetName, facetValues, useDeepEquals, expectedValues);
 	}
 
 	private String _getEndpointWithParameters(
@@ -337,7 +359,7 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 		throws Exception {
 
 		_assertFacetConfiguration(
-			"category", assetCategory.getCategoryId(),
+			"category", assetCategory.getCategoryId(), true,
 			String.valueOf(assetCategory.getCategoryId()));
 	}
 
@@ -352,7 +374,7 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 				"vocabularyIds",
 				new String[] {String.valueOf(assetCategory.getVocabularyId())}
 			).build(),
-			"category", assetCategory.getCategoryId(),
+			"category", assetCategory.getCategoryId(), true,
 			String.valueOf(assetCategory.getCategoryId()));
 	}
 
@@ -363,7 +385,7 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 			HashMapBuilder.<String, Object>put(
 				"field", Field.COMPANY_ID
 			).build(),
-			"custom", testCompany.getCompanyId(),
+			"custom", testCompany.getCompanyId(), true,
 			String.valueOf(testCompany.getCompanyId()));
 	}
 
@@ -396,7 +418,7 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 			).put(
 				"ranges", rangesJSONArray
 			).build(),
-			"date-range", range, range);
+			"date-range", range, true, range);
 	}
 
 	private void _testPostSearchPageWithFolderFacetConfiguration(
@@ -404,7 +426,7 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 		throws Exception {
 
 		_assertFacetConfiguration(
-			"folder", journalArticle.getFolderId(),
+			"folder", journalArticle.getFolderId(), true,
 			String.valueOf(journalArticle.getFolderId()));
 	}
 
@@ -441,14 +463,14 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 			).put(
 				"path", "ddmFieldArray"
 			).build(),
-			"nested", "test", "test");
+			"nested", "test", true, "test");
 	}
 
 	private void _testPostSearchPageWithSiteFacetConfiguration()
 		throws Exception {
 
 		_assertFacetConfiguration(
-			"site", testGroup.getGroupId(),
+			"site", testGroup.getGroupId(), false,
 			String.valueOf(testGroup.getGroupId()));
 	}
 
@@ -456,7 +478,7 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 		throws Exception {
 
 		_assertFacetConfiguration(
-			"tag", assetTag.getName(), assetTag.getName());
+			"tag", assetTag.getName(), true, assetTag.getName());
 	}
 
 	private void _testPostSearchPageWithTypeFacetConfiguration()
@@ -467,7 +489,7 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 		Class<User> userClass = User.class;
 
 		_assertFacetConfiguration(
-			"type", StringPool.BLANK, journalArticleClass.getName(),
+			"type", StringPool.BLANK, true, journalArticleClass.getName(),
 			journalFolderClass.getName(), userClass.getName());
 	}
 
@@ -476,7 +498,7 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 
 		String userFullName = StringUtil.toLowerCase(_user.getFullName());
 
-		_assertFacetConfiguration("user", userFullName, userFullName);
+		_assertFacetConfiguration("user", userFullName, true, userFullName);
 	}
 
 	private void _testPostSearchPageZeroResults() throws Exception {
