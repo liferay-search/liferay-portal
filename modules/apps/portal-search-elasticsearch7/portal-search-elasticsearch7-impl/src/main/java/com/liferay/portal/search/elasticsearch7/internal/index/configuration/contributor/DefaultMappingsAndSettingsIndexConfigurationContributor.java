@@ -8,8 +8,8 @@ package com.liferay.portal.search.elasticsearch7.internal.index.configuration.co
 import com.liferay.portal.search.elasticsearch7.internal.index.constants.LiferayTypeMappingsConstants;
 import com.liferay.portal.search.elasticsearch7.internal.util.ResourceUtil;
 import com.liferay.portal.search.spi.index.configuration.contributor.IndexConfigurationContributor;
-import com.liferay.portal.search.spi.index.configuration.contributor.helper.IndexSettingsHelper;
 import com.liferay.portal.search.spi.index.configuration.contributor.helper.MappingsHelper;
+import com.liferay.portal.search.spi.index.configuration.contributor.helper.SettingsHelper;
 
 import org.osgi.service.component.annotations.Component;
 
@@ -31,8 +31,8 @@ public class DefaultMappingsAndSettingsIndexConfigurationContributor
 	}
 
 	@Override
-	public void contributeSettings(IndexSettingsHelper indexSettingsHelper) {
-		indexSettingsHelper.put("index.default_pipeline", "timestamp");
+	public void contributeSettings(SettingsHelper settingsHelper) {
+		settingsHelper.put("index.default_pipeline", "timestamp");
 	}
 
 }
