@@ -300,11 +300,11 @@ public class CompanyIndexFactoryHelper {
 	}
 
 	private void _loadUserDefinedSettings(SettingsBuilder settingsBuilder) {
+		_loadIndexConfigurationContributors(settingsBuilder);
+
 		_loadConfigurationIndexSettings(settingsBuilder);
 
 		_loadAdditionalIndexConfigurations(settingsBuilder);
-
-		_loadIndexConfigurationContributors(settingsBuilder);
 
 		if (Validator.isNotNull(
 				settingsBuilder.get("index.number_of_replicas"))) {
