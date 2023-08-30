@@ -331,28 +331,6 @@ public class CompanyIndexFactoryTest {
 	}
 
 	@Test
-	public void testIndexConfigurations() throws Exception {
-		Mockito.when(
-			_elasticsearchConfigurationWrapper.indexNumberOfReplicas()
-		).thenReturn(
-			"1"
-		);
-
-		Mockito.when(
-			_elasticsearchConfigurationWrapper.indexNumberOfShards()
-		).thenReturn(
-			"2"
-		);
-
-		createIndices();
-
-		Settings settings = _getIndexSettings();
-
-		Assert.assertEquals("1", settings.get("index.number_of_replicas"));
-		Assert.assertEquals("2", settings.get("index.number_of_shards"));
-	}
-
-	@Test
 	public void testIndexConfigurationContributor() throws Exception {
 		_serviceRegistrations.add(
 			_bundleContext.registerService(
@@ -432,6 +410,28 @@ public class CompanyIndexFactoryTest {
 		_indexOneDocument(field);
 
 		assertAnalyzer(field, "brazilian");
+	}
+
+	@Test
+	public void testIndexConfigurations() throws Exception {
+		Mockito.when(
+			_elasticsearchConfigurationWrapper.indexNumberOfReplicas()
+		).thenReturn(
+			"1"
+		);
+
+		Mockito.when(
+			_elasticsearchConfigurationWrapper.indexNumberOfShards()
+		).thenReturn(
+			"2"
+		);
+
+		createIndices();
+
+		Settings settings = _getIndexSettings();
+
+		Assert.assertEquals("1", settings.get("index.number_of_replicas"));
+		Assert.assertEquals("2", settings.get("index.number_of_shards"));
 	}
 
 	@Test
