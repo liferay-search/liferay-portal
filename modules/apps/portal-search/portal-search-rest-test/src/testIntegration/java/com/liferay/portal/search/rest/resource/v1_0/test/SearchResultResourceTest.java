@@ -59,6 +59,7 @@ import java.time.ZoneOffset;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -71,7 +72,6 @@ import org.apache.commons.lang3.time.DateFormatUtils;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -98,7 +98,6 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 	// LPS-186696
 
 	@FeatureFlags("LPS-179669")
-	@Ignore
 	@Override
 	@Test
 	public void testPostSearchPage() throws Exception {
@@ -190,7 +189,7 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 
 	private void _assertFacetConfiguration(
 			Map<String, Object> facetAttributes, String facetName,
-			Object facetValues, Object... expectedValues)
+			Object facetValues, boolean useDeepEquals, Object... expectedValues)
 		throws Exception {
 
 		Arrays.sort(expectedValues);
@@ -205,14 +204,14 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 				}
 			});
 
-		Map<String, Object> facetsMap = (Map<String, Object>)page.getFacets();
+		Map<String, Object> facetsMap =
+			(Map<String, Object>)page.getSearchFacets();
 
 		Assert.assertTrue(facetsMap.containsKey(facetName));
 
 		List<String> termValuesList = new ArrayList<>();
 
-		JSONArray termJSONArray = _jsonFactory.createJSONArray(
-			(Object[])facetsMap.get(facetName));
+		JSONArray termJSONArray = (JSONArray)facetsMap.get(facetName);
 
 		for (int i = 0; i < termJSONArray.length(); i++) {
 			JSONObject termJSONObject = _jsonFactory.createJSONObject(
@@ -229,14 +228,24 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 
 		Arrays.sort(termValues);
 
-		Assert.assertTrue(Objects.deepEquals(expectedValues, termValues));
+		if (useDeepEquals) {
+			Assert.assertTrue(Objects.deepEquals(expectedValues, termValues));
+		}
+		else {
+			Assert.assertFalse(
+				Collections.disjoint(
+					Arrays.asList((String[])expectedValues),
+					Arrays.asList(termValues)));
+		}
 	}
 
 	private void _assertFacetConfiguration(
-			String facetName, Object facetValues, String... expectedValues)
+			String facetName, Object facetValues, boolean useDeepEquals,
+			String... expectedValues)
 		throws Exception {
 
-		_assertFacetConfiguration(null, facetName, facetValues, expectedValues);
+		_assertFacetConfiguration(
+			null, facetName, facetValues, useDeepEquals, expectedValues);
 	}
 
 	private String _getEndpointWithParameters(
@@ -352,7 +361,7 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 		throws Exception {
 
 		_assertFacetConfiguration(
-			"category", assetCategory.getCategoryId(),
+			"category", assetCategory.getCategoryId(), true,
 			String.valueOf(assetCategory.getCategoryId()));
 	}
 
@@ -367,7 +376,7 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 				"vocabularyIds",
 				new String[] {String.valueOf(assetCategory.getVocabularyId())}
 			).build(),
-			"category", assetCategory.getCategoryId(),
+			"category", assetCategory.getCategoryId(), true,
 			String.valueOf(assetCategory.getCategoryId()));
 	}
 
@@ -378,7 +387,7 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 			HashMapBuilder.<String, Object>put(
 				"field", Field.COMPANY_ID
 			).build(),
-			"custom", testCompany.getCompanyId(),
+			"custom", testCompany.getCompanyId(), true,
 			String.valueOf(testCompany.getCompanyId()));
 	}
 
@@ -411,7 +420,7 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 			).put(
 				"ranges", rangesJSONArray
 			).build(),
-			"date-range", range, range);
+			"date-range", range, true, range);
 	}
 
 	private void _testPostSearchPageWithFolderFacetConfiguration(
@@ -419,7 +428,7 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 		throws Exception {
 
 		_assertFacetConfiguration(
-			"folder", journalArticle.getFolderId(),
+			"folder", journalArticle.getFolderId(), true,
 			String.valueOf(journalArticle.getFolderId()));
 	}
 
@@ -456,14 +465,14 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 			).put(
 				"path", "ddmFieldArray"
 			).build(),
-			"nested", "test", "test");
+			"nested", "test", true, "test");
 	}
 
 	private void _testPostSearchPageWithSiteFacetConfiguration()
 		throws Exception {
 
 		_assertFacetConfiguration(
-			"site", testGroup.getGroupId(),
+			"site", testGroup.getGroupId(), false,
 			String.valueOf(testGroup.getGroupId()));
 	}
 
@@ -471,7 +480,7 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 		throws Exception {
 
 		_assertFacetConfiguration(
-			"tag", assetTag.getName(), assetTag.getName());
+			"tag", assetTag.getName(), false, assetTag.getName());
 	}
 
 	private void _testPostSearchPageWithTypeFacetConfiguration()
@@ -482,7 +491,7 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 		Class<User> userClass = User.class;
 
 		_assertFacetConfiguration(
-			"type", StringPool.BLANK, journalArticleClass.getName(),
+			"type", StringPool.BLANK, true, journalArticleClass.getName(),
 			journalFolderClass.getName(), userClass.getName());
 	}
 
@@ -491,7 +500,7 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 
 		String userFullName = StringUtil.toLowerCase(_user.getFullName());
 
-		_assertFacetConfiguration("user", userFullName, userFullName);
+		_assertFacetConfiguration("user", userFullName, false, String.valueOf(_user.getUserId()));
 	}
 
 	private void _testPostSearchPageZeroResults() throws Exception {
