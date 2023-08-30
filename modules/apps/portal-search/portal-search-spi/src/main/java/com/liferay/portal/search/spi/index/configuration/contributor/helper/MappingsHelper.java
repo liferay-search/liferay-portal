@@ -8,7 +8,7 @@ package com.liferay.portal.search.spi.index.configuration.contributor.helper;
 /**
  * @author Adam Brandizzi
  */
-public interface TypeMappingsHelper {
+public interface MappingsHelper {
 
 	public void putTypeMappings(String source);
 
