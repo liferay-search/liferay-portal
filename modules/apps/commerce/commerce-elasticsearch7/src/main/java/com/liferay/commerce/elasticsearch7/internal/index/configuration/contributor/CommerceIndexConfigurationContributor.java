@@ -21,10 +21,9 @@ public class CommerceIndexConfigurationContributor
 
 	@Override
 	public void contributeMappings(MappingsHelper mappingsHelper) {
-		String typeMappings = StringUtil.read(
-			getClass(), "dependencies/additional-type-mappings.json");
-
-		mappingsHelper.putMappings(typeMappings);
+		mappingsHelper.putMappings(
+			StringUtil.read(
+				getClass(), "dependencies/additional-type-mappings.json"));
 	}
 
 	@Override
