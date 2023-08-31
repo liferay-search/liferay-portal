@@ -12,6 +12,8 @@ import com.liferay.portal.kernel.backgroundtask.BackgroundTaskExecutor;
 import com.liferay.portal.kernel.backgroundtask.constants.BackgroundTaskConstants;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.search.background.task.ReindexBackgroundTaskConstants;
+import com.liferay.portal.kernel.search.background.task.ReindexStatusMessageSender;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.spi.reindexer.IndexReindexer;
 import com.liferay.portal.search.spi.reindexer.IndexReindexerRegistry;
@@ -88,6 +90,10 @@ public class ReindexIndexReindexerBackgroundTaskExecutor
 		throws Exception {
 
 		for (long companyId : companyIds) {
+			_reindexStatusMessageSender.sendStatusMessage(
+				ReindexBackgroundTaskConstants.INDEX_REINDEXER_START, companyId,
+				companyIds);
+
 			if (_log.isInfoEnabled()) {
 				_log.info(
 					StringBundler.concat(
@@ -97,6 +103,10 @@ public class ReindexIndexReindexerBackgroundTaskExecutor
 			}
 
 			indexReindexer.reindex(companyId, executionMode);
+
+			_reindexStatusMessageSender.sendStatusMessage(
+				ReindexBackgroundTaskConstants.INDEX_REINDEXER_END, companyId,
+				companyIds);
 
 			if (_log.isInfoEnabled()) {
 				_log.info(
@@ -113,5 +123,8 @@ public class ReindexIndexReindexerBackgroundTaskExecutor
 
 	@Reference
 	private IndexReindexerRegistry _indexReindexerRegistry;
+
+	@Reference
+	private ReindexStatusMessageSender _reindexStatusMessageSender;
 
 }
