@@ -6,7 +6,6 @@
 package com.liferay.portal.search.internal.background.task;
 
 import com.liferay.petra.string.StringBundler;
-import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.backgroundtask.BackgroundTask;
 import com.liferay.portal.kernel.backgroundtask.BackgroundTaskExecutor;
 import com.liferay.portal.kernel.backgroundtask.constants.BackgroundTaskConstants;
@@ -64,7 +63,7 @@ public class ReindexIndexReindexerBackgroundTaskExecutor
 			String className, long[] companyIds, String executionMode)
 		throws Exception {
 
-		if (className.equals(StringPool.BLANK)) {
+		if (Validator.isBlank(className)) {
 			Collection<IndexReindexer> indexReindexers =
 				_indexReindexerRegistry.getIndexReindexers();
 
