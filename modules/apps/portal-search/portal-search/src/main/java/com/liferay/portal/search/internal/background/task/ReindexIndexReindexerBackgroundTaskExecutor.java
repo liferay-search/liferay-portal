@@ -69,7 +69,10 @@ public class ReindexIndexReindexerBackgroundTaskExecutor
 				_indexReindexerRegistry.getIndexReindexers();
 
 			for (IndexReindexer indexReindexer : indexReindexers) {
-				_reindex(className, companyIds, executionMode, indexReindexer);
+				_reindex(
+					className, companyIds, executionMode, indexReindexer,
+					ReindexBackgroundTaskConstants.PORTAL_START,
+					ReindexBackgroundTaskConstants.PORTAL_END);
 			}
 		}
 		else {
@@ -80,19 +83,22 @@ public class ReindexIndexReindexerBackgroundTaskExecutor
 				return;
 			}
 
-			_reindex(className, companyIds, executionMode, indexReindexer);
+			_reindex(
+				className, companyIds, executionMode, indexReindexer,
+				ReindexBackgroundTaskConstants.INDEX_REINDEXER_START,
+				ReindexBackgroundTaskConstants.INDEX_REINDEXER_END);
 		}
 	}
 
 	private void _reindex(
 			String className, long[] companyIds, String executionMode,
-			IndexReindexer indexReindexer)
+			IndexReindexer indexReindexer, String messageStart,
+			String messageEnd)
 		throws Exception {
 
 		for (long companyId : companyIds) {
 			_reindexStatusMessageSender.sendStatusMessage(
-				ReindexBackgroundTaskConstants.INDEX_REINDEXER_START, companyId,
-				companyIds);
+				messageStart, companyId, companyIds);
 
 			if (_log.isInfoEnabled()) {
 				_log.info(
@@ -105,8 +111,7 @@ public class ReindexIndexReindexerBackgroundTaskExecutor
 			indexReindexer.reindex(companyId, executionMode);
 
 			_reindexStatusMessageSender.sendStatusMessage(
-				ReindexBackgroundTaskConstants.INDEX_REINDEXER_END, companyId,
-				companyIds);
+				messageEnd, companyId, companyIds);
 
 			if (_log.isInfoEnabled()) {
 				_log.info(

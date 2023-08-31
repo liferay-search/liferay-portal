@@ -13,9 +13,13 @@ import com.liferay.portal.kernel.search.IndexerRegistryUtil;
 import com.liferay.portal.kernel.search.background.task.ReindexBackgroundTaskConstants;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ServiceProxyFactory;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.search.spi.reindexer.IndexReindexer;
+import com.liferay.portal.search.spi.reindexer.IndexReindexerRegistry;
 
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -101,11 +105,17 @@ public class ReindexBackgroundTaskStatusMessageTranslator
 
 			Set<Indexer<?>> indexers = IndexerRegistryUtil.getIndexers();
 
+			Collection<IndexReindexer> indexReindexers =
+				_indexReindexerRegistry.getIndexReindexers();
+
 			percentage = _getPercentage(
-				companyCount, companyIds.length, indexerCount, indexers.size(),
-				count, total);
+				companyCount, companyIds.length, indexerCount,
+				indexers.size() + indexReindexers.size(), count, total);
 		}
-		else if (phase.equals(ReindexBackgroundTaskConstants.SINGLE_START)) {
+		else if (phase.equals(ReindexBackgroundTaskConstants.SINGLE_START) ||
+				 phase.equals(
+					 ReindexBackgroundTaskConstants.INDEX_REINDEXER_START)) {
+
 			percentage = _getPercentage(
 				companyCount, companyIds.length, 0, 1, count, total);
 		}
@@ -151,5 +161,11 @@ public class ReindexBackgroundTaskStatusMessageTranslator
 			ReindexBackgroundTaskConstants.PHASE,
 			message.getString(ReindexBackgroundTaskConstants.PHASE));
 	}
+
+	private static volatile IndexReindexerRegistry _indexReindexerRegistry =
+		ServiceProxyFactory.newServiceTrackedInstance(
+			IndexReindexerRegistry.class,
+			ReindexBackgroundTaskStatusMessageTranslator.class,
+			"_indexReindexerRegistry", false);
 
 }
