@@ -3,12 +3,13 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
-package com.liferay.portal.search.admin.web.internal.reindexer;
+package com.liferay.portal.search.internal.reindexer;
 
 import com.liferay.osgi.service.tracker.collections.map.ServiceReferenceMapperFactory;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 import com.liferay.portal.search.spi.reindexer.IndexReindexer;
+import com.liferay.portal.search.spi.reindexer.IndexReindexerRegistry;
 
 import java.util.Collection;
 import java.util.Set;
@@ -16,21 +17,23 @@ import java.util.Set;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
+import org.osgi.service.component.annotations.Component;
 
 /**
- * @author Jiaxu Wei
+ * @author Gustavo Lima
  */
-public class IndexReindexerRegistryUtil {
+@Component(service = IndexReindexerRegistry.class)
+public class IndexReindexerRegistryImpl implements IndexReindexerRegistry {
 
-	public static IndexReindexer getIndexReindexer(String className) {
+	public IndexReindexer getIndexReindexer(String className) {
 		return _serviceTrackerMap.getService(className);
 	}
 
-	public static Set<String> getIndexReindexerClassNames() {
+	public Set<String> getIndexReindexerClassNames() {
 		return _serviceTrackerMap.keySet();
 	}
 
-	public static Collection<IndexReindexer> getIndexReindexers() {
+	public Collection<IndexReindexer> getIndexReindexers() {
 		return _serviceTrackerMap.values();
 	}
 
@@ -38,8 +41,7 @@ public class IndexReindexerRegistryUtil {
 		_serviceTrackerMap;
 
 	static {
-		Bundle bundle = FrameworkUtil.getBundle(
-			IndexReindexerRegistryUtil.class);
+		Bundle bundle = FrameworkUtil.getBundle(IndexReindexerRegistry.class);
 
 		BundleContext bundleContext = bundle.getBundleContext();
 
