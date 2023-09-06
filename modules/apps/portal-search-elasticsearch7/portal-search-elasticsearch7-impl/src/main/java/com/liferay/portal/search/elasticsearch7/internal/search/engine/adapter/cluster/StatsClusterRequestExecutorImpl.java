@@ -72,8 +72,8 @@ public class StatsClusterRequestExecutorImpl
 
 			JSONObject fsJSONObject = nodesJSONObject.getJSONObject("fs");
 
-			Long availableSpace = fsJSONObject.getLong("available_in_bytes");
-			Long totalSpace = fsJSONObject.getLong("total_in_bytes");
+			long availableSpace = fsJSONObject.getLong("available_in_bytes");
+			long totalSpace = fsJSONObject.getLong("total_in_bytes");
 
 			ClusterHealthStatus clusterHealthStatus = null;
 
