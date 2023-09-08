@@ -8,6 +8,7 @@ package com.liferay.portal.search.admin.web.internal.portlet.action;
 import com.liferay.portal.instances.service.PortalInstancesLocalService;
 import com.liferay.portal.kernel.backgroundtask.BackgroundTaskManager;
 import com.liferay.portal.kernel.backgroundtask.constants.BackgroundTaskConstants;
+import com.liferay.portal.kernel.backgroundtask.constants.BackgroundTaskContextMapConstants;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.messaging.DestinationNames;
 import com.liferay.portal.kernel.messaging.MessageListener;
@@ -219,6 +220,8 @@ public class EditMVCActionCommand extends BaseMVCActionCommand {
 			"com.liferay.portal.search.internal.background.task." +
 				"ReindexIndexReindexerBackgroundTaskExecutor",
 			HashMapBuilder.<String, Serializable>put(
+				BackgroundTaskContextMapConstants.DELETE_ON_SUCCESS, true
+			).put(
 				ReindexBackgroundTaskConstants.CLASS_NAME,
 				ParamUtil.getString(actionRequest, "className")
 			).put(
