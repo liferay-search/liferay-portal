@@ -27,7 +27,7 @@ public abstract class BaseReindexBackgroundTaskExecutor
 	public BaseReindexBackgroundTaskExecutor() {
 		setBackgroundTaskStatusMessageTranslator(
 			new ReindexBackgroundTaskStatusMessageTranslator());
-		setIsolationLevel(BackgroundTaskConstants.ISOLATION_LEVEL_COMPANY);
+		setIsolationLevel(BackgroundTaskConstants.ISOLATION_LEVEL_CUSTOM);
 	}
 
 	@Override
@@ -47,6 +47,11 @@ public abstract class BaseReindexBackgroundTaskExecutor
 		reindex(className, companyIds, executionMode);
 
 		return BackgroundTaskResult.SUCCESS;
+	}
+
+	@Override
+	public String generateLockKey(BackgroundTask backgroundTask) {
+		return "reindex";
 	}
 
 	@Override
