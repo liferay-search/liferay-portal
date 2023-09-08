@@ -88,8 +88,6 @@ public class EditMVCActionCommand extends BaseMVCActionCommand {
 
 		if (cmd.equals("reindex")) {
 			_reindex(actionRequest);
-
-			_reindexIndexReindexer(actionRequest);
 		}
 		else if (cmd.equals("reindexDictionaries")) {
 			_reindexDictionaries(actionRequest);
