@@ -270,12 +270,12 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 			parameters.add("filter=" + filter);
 		}
 
-		if (Validator.isNotNull(nestedFields)) {
-			parameters.add("nestedFields=" + nestedFields);
-		}
-
 		if (Validator.isNotNull(keywords)) {
 			parameters.add("search=" + keywords);
+		}
+
+		if (Validator.isNotNull(nestedFields)) {
+			parameters.add("nestedFields=" + nestedFields);
 		}
 
 		String endpoint = "portal-search-rest/v1.0/search";
