@@ -257,8 +257,8 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 	}
 
 	private String _getEndpointURL(
-		String entryClassNames, String filter, String nestedFields,
-		String keywords) {
+		String entryClassNames, String filter, String keywords,
+		String nestedFields) {
 
 		List<String> parameters = new ArrayList<>();
 
@@ -312,21 +312,21 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 	private SearchPage<SearchResult> _postSearchPage(String keywords)
 		throws Exception {
 
-		return _postSearchPage(null, keywords, null, new SearchRequestBody());
+		return _postSearchPage(
+			null,
+			"groupIds/any(g:g%20eq%20" +
+				String.valueOf(testGroup.getGroupId()) + ")",
+			keywords, null, new SearchRequestBody());
 	}
 
 	private SearchPage<SearchResult> _postSearchPage(
-			String entryClassNames, String keywords, String nestedFields,
-			SearchRequestBody searchRequestBody)
+			String entryClassNames, String filter, String keywords,
+			String nestedFields, SearchRequestBody searchRequestBody)
 		throws Exception {
-
-		String filter =
-			"groupIds/any(g:g%20eq%20" +
-				String.valueOf(testGroup.getGroupId()) + ")";
 
 		JSONObject jsonObject = HTTPTestUtil.invokeToJSONObject(
 			searchRequestBody.toString(),
-			_getEndpointURL(entryClassNames, filter, nestedFields, keywords),
+			_getEndpointURL(entryClassNames, filter, keywords, nestedFields),
 			Http.Method.POST);
 
 		return _toSearchPage(jsonObject);
@@ -350,7 +350,11 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 			}
 		};
 
-		return _postSearchPage(null, null, null, searchRequestBody);
+		return _postSearchPage(
+			null,
+			"groupIds/any(g:g%20eq%20" +
+				String.valueOf(testGroup.getGroupId()) + ")",
+			null, null, searchRequestBody);
 	}
 
 	private void _testPostSearchPageWithCategoryFacetConfiguration(
