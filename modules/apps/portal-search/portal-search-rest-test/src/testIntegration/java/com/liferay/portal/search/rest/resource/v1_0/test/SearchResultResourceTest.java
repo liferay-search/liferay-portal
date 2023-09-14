@@ -49,6 +49,8 @@ import com.liferay.portal.test.rule.FeatureFlags;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.vulcan.pagination.Pagination;
 
+import java.net.URLEncoder;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -257,25 +259,32 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 	}
 
 	private String _getEndpointURL(
-		String entryClassNames, String filter, String keywords,
-		String nestedFields) {
+			String entryClassNames, String filter, String keywords,
+			String nestedFields)
+		throws Exception {
 
 		List<String> parameters = new ArrayList<>();
 
 		if (Validator.isNotNull(entryClassNames)) {
-			parameters.add("entryClassNames=" + entryClassNames);
+			parameters.add(
+				"entryClassNames=" +
+					URLEncoder.encode(entryClassNames, StringPool.UTF8));
 		}
 
 		if (Validator.isNotNull(filter)) {
-			parameters.add("filter=" + filter);
+			parameters.add(
+				"filter=" + URLEncoder.encode(filter, StringPool.UTF8));
 		}
 
 		if (Validator.isNotNull(keywords)) {
-			parameters.add("search=" + keywords);
+			parameters.add(
+				"search=" + URLEncoder.encode(keywords, StringPool.UTF8));
 		}
 
 		if (Validator.isNotNull(nestedFields)) {
-			parameters.add("nestedFields=" + nestedFields);
+			parameters.add(
+				"nestedFields=" +
+					URLEncoder.encode(nestedFields, StringPool.UTF8));
 		}
 
 		String endpoint = "portal-search-rest/v1.0/search";
@@ -314,8 +323,8 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 
 		return _postSearchPage(
 			null,
-			"groupIds/any(g:g%20eq%20" +
-				String.valueOf(testGroup.getGroupId()) + ")",
+			"groupIds/any(g:g eq " + String.valueOf(testGroup.getGroupId()) +
+				")",
 			keywords, null, new SearchRequestBody());
 	}
 
@@ -352,8 +361,8 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 
 		return _postSearchPage(
 			null,
-			"groupIds/any(g:g%20eq%20" +
-				String.valueOf(testGroup.getGroupId()) + ")",
+			"groupIds/any(g:g eq " + String.valueOf(testGroup.getGroupId()) +
+				")",
 			null, null, searchRequestBody);
 	}
 
