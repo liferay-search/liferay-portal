@@ -1,9 +1,9 @@
 /**
- * SPDX-FileCopyrightText: (c) 2000 Liferay, Inc. https://liferay.com
+ * SPDX-FileCopyrightText: (c) 2023 Liferay, Inc. https://liferay.com
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
-package com.liferay.portal.search.web.internal.modified.facet.builder;
+package com.liferay.portal.search.web.internal.date;
 
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
@@ -127,6 +127,40 @@ public class DateRangeFactory {
 			).getString(
 				"range"
 			);
+
+			String from = range.split("TO")[0].trim();
+
+			from = from.substring(1);
+
+			_validateDateFormat(from);
+
+			String to = range.split("TO")[1].trim();
+
+			to = to.substring(0, to.length() - 1);
+
+			_validateDateFormat(to);
+		}
+	}
+
+	public void validateRangeSyntax(String ranges)
+		throws JSONException, ParseException {
+
+		JSONArray rangesJSONArray = JSONFactoryUtil.createJSONArray(ranges);
+
+		for (int i = 0; i < rangesJSONArray.length(); i++) {
+			String range = rangesJSONArray.getJSONObject(
+				i
+			).getString(
+				"range"
+			);
+
+			if (!StringUtil.contains(range, " TO ") ||
+				!StringUtil.startsWith(range, "[") ||
+				!StringUtil.endsWith(range, "]")) {
+
+				throw new IllegalArgumentException(
+					"Invalid range syntax " + range);
+			}
 
 			String from = range.split("TO")[0].trim();
 

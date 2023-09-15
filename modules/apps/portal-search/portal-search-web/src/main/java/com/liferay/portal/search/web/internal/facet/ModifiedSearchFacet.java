@@ -19,7 +19,7 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.facet.modified.ModifiedFacetFactory;
 import com.liferay.portal.search.web.facet.BaseJSPSearchFacet;
 import com.liferay.portal.search.web.facet.SearchFacet;
-import com.liferay.portal.search.web.internal.modified.facet.builder.DateRangeFactory;
+import com.liferay.portal.search.web.internal.date.DateRangeFactory;
 
 import javax.portlet.ActionRequest;
 

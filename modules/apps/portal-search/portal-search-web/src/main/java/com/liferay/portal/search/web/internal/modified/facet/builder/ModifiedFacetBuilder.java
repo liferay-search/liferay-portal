@@ -16,6 +16,7 @@ import com.liferay.portal.kernel.util.DateFormatFactory;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.facet.Facet;
 import com.liferay.portal.search.facet.modified.ModifiedFacetFactory;
+import com.liferay.portal.search.web.internal.date.DateRangeFactory;
 
 import java.util.Calendar;
 import java.util.HashMap;

@@ -10,7 +10,7 @@ import com.liferay.portal.kernel.search.facet.Facet;
 import com.liferay.portal.kernel.util.CalendarFactoryUtil;
 import com.liferay.portal.kernel.util.DateFormatFactory;
 import com.liferay.portal.search.facet.modified.ModifiedFacetFactory;
-import com.liferay.portal.search.web.internal.modified.facet.builder.DateRangeFactory;
+import com.liferay.portal.search.web.internal.date.DateRangeFactory;
 import com.liferay.portal.search.web.internal.modified.facet.builder.ModifiedFacetBuilder;
 import com.liferay.portal.search.web.internal.modified.facet.constants.ModifiedFacetPortletKeys;
 import com.liferay.portal.search.web.internal.modified.facet.portlet.ModifiedFacetPortletPreferences;
