@@ -7,7 +7,6 @@ package com.liferay.portal.search.internal.facet.range;
 
 import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.search.facet.Facet;
-import com.liferay.portal.search.facet.FacetFactory;
 import com.liferay.portal.search.facet.range.RangeFacetFactory;
 import com.liferay.portal.search.filter.FilterBuilders;
 import com.liferay.portal.search.internal.facet.RangeFacetImpl;
@@ -18,7 +17,7 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Petteri Karttunen
  */
-@Component(service = {FacetFactory.class, RangeFacetFactory.class})
+@Component(service = RangeFacetFactory.class)
 public class RangeFacetFactoryImpl implements RangeFacetFactory {
 
 	@Override
