@@ -104,7 +104,7 @@ page import="java.util.Map" %>
 					<c:when test='<%= FeatureFlagManagerUtil.isEnabled("LPS-183661") %>'>
 						<clay:sheet>
 							<h2 class="sheet-title">
-								<liferay-ui:message key="reindex-actions" />
+								<liferay-ui:message key="actions" />
 							</h2>
 
 							<ul class="list-group">
@@ -139,7 +139,7 @@ page import="java.util.Map" %>
 												long timeout = ParamUtil.getLong(request, "timeout");
 												%>
 
-												<aui:button cssClass="save-server-button" data-blocking='<%= ParamUtil.getBoolean(request, "blocking") %>' data-cmd="reindex" data-timeout="<%= (timeout == 0) ? StringPool.BLANK : timeout %>" disabled="<%= !reindexSingleBackgroundTasks.isEmpty() %>" value="execute" />
+												<aui:button cssClass="save-server-button" data-blocking='<%= ParamUtil.getBoolean(request, "blocking") %>' data-cmd="reindex" data-timeout="<%= (timeout == 0) ? StringPool.BLANK : timeout %>" disabled="<%= !reindexSingleBackgroundTasks.isEmpty() %>" value="reindex" />
 											</c:when>
 											<c:otherwise>
 												<%= backgroundTaskDisplay.renderDisplayTemplate() %>
@@ -155,7 +155,7 @@ page import="java.util.Map" %>
 									</div>
 
 									<div class="autofit-col index-action-wrapper" data-type="spellCheck">
-										<aui:button cssClass="save-server-button" data-cmd="reindexDictionaries" data-concurrent-disabled="<%= true %>" disabled="<%= !reindexPortalBackgroundTasks.isEmpty() %>" value="execute" />
+										<aui:button cssClass="save-server-button" data-cmd="reindexDictionaries" data-concurrent-disabled="<%= true %>" disabled="<%= !reindexPortalBackgroundTasks.isEmpty() %>" value="reindex" />
 									</div>
 								</li>
 
@@ -187,7 +187,7 @@ page import="java.util.Map" %>
 											<div class="autofit-col index-action-wrapper" data-type="<%= indexer.getClassName() %>">
 												<c:choose>
 													<c:when test="<%= (backgroundTaskDisplay == null) || !backgroundTaskDisplay.hasPercentage() %>">
-														<aui:button cssClass="save-server-button" data-classname="<%= indexer.getClassName() %>" data-cmd="reindex" data-concurrent-disabled="<%= true %>" data-displayname='<%= LanguageUtil.get(request, "model.resource." + indexer.getClassName()) %>' disabled="<%= !indexer.isIndexerEnabled() || !reindexPortalBackgroundTasks.isEmpty() %>" value="execute" />
+														<aui:button cssClass="save-server-button" data-classname="<%= indexer.getClassName() %>" data-cmd="reindex" data-concurrent-disabled="<%= true %>" data-displayname='<%= LanguageUtil.get(request, "model.resource." + indexer.getClassName()) %>' disabled="<%= !indexer.isIndexerEnabled() || !reindexPortalBackgroundTasks.isEmpty() %>" value="reindex" />
 													</c:when>
 													<c:otherwise>
 														<%= backgroundTaskDisplay.renderDisplayTemplate() %>
@@ -221,7 +221,7 @@ page import="java.util.Map" %>
 										</div>
 
 										<div class="autofit-col index-action-wrapper" data-type="<%= indexReindexerClassName %>">
-											<aui:button cssClass="save-server-button" data-classname="<%= indexReindexerClassName %>" data-cmd="reindexIndexReindexer" data-concurrent-disabled="<%= true %>" data-displayname='<%= LanguageUtil.get(request, "model.resource." + indexReindexerClassName) %>' disabled="<%= !reindexPortalBackgroundTasks.isEmpty() %>" value="execute" />
+											<aui:button cssClass="save-server-button" data-classname="<%= indexReindexerClassName %>" data-cmd="reindexIndexReindexer" data-concurrent-disabled="<%= true %>" data-displayname='<%= LanguageUtil.get(request, "model.resource." + indexReindexerClassName) %>' disabled="<%= !reindexPortalBackgroundTasks.isEmpty() %>" value="reindex" />
 										</div>
 									</li>
 
@@ -265,7 +265,7 @@ page import="java.util.Map" %>
 												long timeout = ParamUtil.getLong(request, "timeout");
 												%>
 
-												<aui:button cssClass="save-server-button" data-blocking='<%= ParamUtil.getBoolean(request, "blocking") %>' data-cmd="reindex" data-timeout="<%= (timeout == 0) ? StringPool.BLANK : timeout %>" value="execute" />
+												<aui:button cssClass="save-server-button" data-blocking='<%= ParamUtil.getBoolean(request, "blocking") %>' data-cmd="reindex" data-timeout="<%= (timeout == 0) ? StringPool.BLANK : timeout %>" value="reindex" />
 											</c:when>
 											<c:otherwise>
 												<%= backgroundTaskDisplay.renderDisplayTemplate() %>
@@ -281,7 +281,7 @@ page import="java.util.Map" %>
 									</div>
 
 									<div class="autofit-col">
-										<aui:button cssClass="save-server-button" data-cmd="reindexDictionaries" data-concurrent-disabled="" value="execute" />
+										<aui:button cssClass="save-server-button" data-cmd="reindexDictionaries" data-concurrent-disabled="" value="reindex" />
 									</div>
 								</li>
 
@@ -304,7 +304,7 @@ page import="java.util.Map" %>
 										<div class="autofit-col index-action-wrapper" data-type="<%= indexer.getClassName() %>">
 											<c:choose>
 												<c:when test="<%= (backgroundTaskDisplay == null) || !backgroundTaskDisplay.hasPercentage() %>">
-													<aui:button cssClass="save-server-button" data-classname="<%= indexer.getClassName() %>" data-cmd="reindex" data-concurrent-disabled="" disabled="<%= !indexer.isIndexerEnabled() %>" value="execute" />
+													<aui:button cssClass="save-server-button" data-classname="<%= indexer.getClassName() %>" data-cmd="reindex" data-concurrent-disabled="" disabled="<%= !indexer.isIndexerEnabled() %>" value="reindex" />
 												</c:when>
 												<c:otherwise>
 													<%= backgroundTaskDisplay.renderDisplayTemplate() %>
@@ -329,7 +329,7 @@ page import="java.util.Map" %>
 										</div>
 
 										<div class="autofit-col index-action-wrapper" data-type="<%= indexReindexerClassName %>">
-											<aui:button cssClass="save-server-button" data-classname="<%= indexReindexerClassName %>" data-cmd="reindexIndexReindexer" data-concurrent-disabled="" value="execute" />
+											<aui:button cssClass="save-server-button" data-classname="<%= indexReindexerClassName %>" data-cmd="reindexIndexReindexer" data-concurrent-disabled="" value="reindex" />
 										</div>
 									</li>
 
