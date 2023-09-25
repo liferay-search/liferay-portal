@@ -13,7 +13,6 @@ import com.liferay.portal.kernel.backgroundtask.BackgroundTask;
 import com.liferay.portal.kernel.backgroundtask.BackgroundTaskExecutor;
 import com.liferay.portal.kernel.backgroundtask.constants.BackgroundTaskConstants;
 import com.liferay.portal.kernel.change.tracking.sql.CTSQLModeThreadLocal;
-import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.CompanyConstants;
@@ -118,11 +117,7 @@ public class ReindexSingleIndexerBackgroundTaskExecutor
 			if (_log.isInfoEnabled()) {
 				String logMessage = StringBundler.concat(
 					"Start reindexing company ", companyId, " for class name ",
-					className);
-
-				if (FeatureFlagManagerUtil.isEnabled("LPS-183661")) {
-					logMessage += " with execution mode " + executionMode;
-				}
+					className, " with execution mode ", executionMode);
 
 				_log.info(logMessage);
 			}
@@ -174,11 +169,8 @@ public class ReindexSingleIndexerBackgroundTaskExecutor
 				if (_log.isInfoEnabled()) {
 					String logMessage = StringBundler.concat(
 						"Finished reindexing company ", companyId,
-						" for class name ", className);
-
-					if (FeatureFlagManagerUtil.isEnabled("LPS-183661")) {
-						logMessage += " with execution mode " + executionMode;
-					}
+						" for class name ", className, " with execution mode ",
+						executionMode);
 
 					_log.info(logMessage);
 				}
