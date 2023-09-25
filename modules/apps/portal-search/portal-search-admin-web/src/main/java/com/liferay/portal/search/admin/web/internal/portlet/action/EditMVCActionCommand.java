@@ -8,7 +8,6 @@ package com.liferay.portal.search.admin.web.internal.portlet.action;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.instances.service.PortalInstancesLocalService;
 import com.liferay.portal.kernel.backgroundtask.constants.BackgroundTaskConstants;
-import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.messaging.DestinationNames;
@@ -22,6 +21,7 @@ import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.Constants;
+import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.HttpComponentsUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
@@ -36,7 +36,6 @@ import com.liferay.portal.search.spi.reindexer.IndexReindexer;
 
 import java.io.Serializable;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -128,13 +127,11 @@ public class EditMVCActionCommand extends BaseMVCActionCommand {
 
 		String className = ParamUtil.getString(actionRequest, "className");
 
-		Map<String, Serializable> taskContextMap = new HashMap<>();
-
-		if (FeatureFlagManagerUtil.isEnabled("LPS-183661")) {
-			taskContextMap.put(
+		Map<String, Serializable> taskContextMap =
+			new HashMapBuilder<>().<String, Serializable>put(
 				ReindexBackgroundTaskConstants.EXECUTION_MODE,
-				ParamUtil.getString(actionRequest, "executionMode"));
-		}
+				ParamUtil.getString(actionRequest, "executionMode")
+			).build();
 
 		if (!ParamUtil.getBoolean(actionRequest, "blocking")) {
 			_indexWriterHelper.reindex(
