@@ -59,8 +59,7 @@ public class RankingJSONStorageHelper {
 			).put(
 				"rankingDocumentId", rankingDocumentId
 			).put(
-				"scope",
-				ranking.getScope()
+				"scope", ranking.getScope()
 			).put(
 				"sxpBlueprintExternalReferenceCode",
 				ranking.getSXPBlueprintExternalReferenceCode()
@@ -98,8 +97,7 @@ public class RankingJSONStorageHelper {
 		).put(
 			"pins", _getPinsJSONArray(ranking)
 		).put(
-			"scope",
-			ranking.getScope()
+			"scope", ranking.getScope()
 		).put(
 			"sxpBlueprintExternalReferenceCode",
 			ranking.getSXPBlueprintExternalReferenceCode()
