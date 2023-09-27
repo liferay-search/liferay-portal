@@ -193,6 +193,8 @@ public class EditRankingMVCActionCommand extends BaseMVCActionCommand {
 			editRankingMVCActionRequest.getQueryString()
 		).sxpBlueprintExternalReferenceCode(
 			editRankingMVCActionRequest.getSXPBlueprintExternalReferenceCode()
+		).scope(
+			editRankingMVCActionRequest.getScope()
 		);
 
 		Ranking ranking = rankingBuilder.build();
@@ -306,6 +308,8 @@ public class EditRankingMVCActionCommand extends BaseMVCActionCommand {
 					ranking.getSXPBlueprintExternalReferenceCode()
 				).unlessRankingDocumentId(
 					ranking.getRankingDocumentId()
+				).scope(
+					ranking.getScope()
 				).build());
 
 		return ListUtil.isNotEmpty(duplicateQueryStrings);
@@ -599,8 +603,13 @@ public class EditRankingMVCActionCommand extends BaseMVCActionCommand {
 			_redirect = ParamUtil.getString(actionRequest, "redirect");
 			_resultsRankingUid = ParamUtil.getString(
 				actionRequest, "resultsRankingUid");
+
 			_sxpBlueprintExternalReferenceCode = ParamUtil.getString(
 				actionRequest, "sxpBlueprintExternalReferenceCode");
+
+			_scope = RankingUtil.getScope(
+				_groupExternalReferenceCode,
+				_sxpBlueprintExternalReferenceCode);
 		}
 
 		public List<String> getAliases() {
@@ -627,6 +636,10 @@ public class EditRankingMVCActionCommand extends BaseMVCActionCommand {
 			return _resultsRankingUid;
 		}
 
+		public String getScope() {
+			return _scope;
+		}
+
 		public String getSXPBlueprintExternalReferenceCode() {
 			return _sxpBlueprintExternalReferenceCode;
 		}
@@ -642,6 +655,7 @@ public class EditRankingMVCActionCommand extends BaseMVCActionCommand {
 		private final String _queryString;
 		private final String _redirect;
 		private final String _resultsRankingUid;
+		private final String _scope;
 		private final String _sxpBlueprintExternalReferenceCode;
 
 	}

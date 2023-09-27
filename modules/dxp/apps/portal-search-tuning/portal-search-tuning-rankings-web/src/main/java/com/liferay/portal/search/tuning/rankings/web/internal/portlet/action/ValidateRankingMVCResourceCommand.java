@@ -160,6 +160,8 @@ public class ValidateRankingMVCResourceCommand implements MVCResourceCommand {
 					getSXPBlueprintExternalReferenceCode()
 			).unlessRankingDocumentId(
 				validateRankingMVCResourceRequest.getResultsRankingUid()
+			).scope(
+				validateRankingMVCResourceRequest.getScope()
 			).build());
 	}
 
@@ -202,8 +204,13 @@ public class ValidateRankingMVCResourceCommand implements MVCResourceCommand {
 			_queryString = ParamUtil.getString(resourceRequest, "keywords");
 			_resultsRankingUid = ParamUtil.getString(
 				resourceRequest, "resultsRankingUid");
+
 			_sxpBlueprintExternalReferenceCode = ParamUtil.getString(
 				resourceRequest, "sxpBlueprintExternalReferenceCode");
+
+			_scope = RankingUtil.getScope(
+				_sxpBlueprintExternalReferenceCode,
+				_groupExternalReferenceCode);
 		}
 
 		public List<String> getAliases() {
@@ -226,6 +233,10 @@ public class ValidateRankingMVCResourceCommand implements MVCResourceCommand {
 			return _resultsRankingUid;
 		}
 
+		public String getScope() {
+			return _scope;
+		}
+
 		public String getSXPBlueprintExternalReferenceCode() {
 			return _sxpBlueprintExternalReferenceCode;
 		}
@@ -235,6 +246,7 @@ public class ValidateRankingMVCResourceCommand implements MVCResourceCommand {
 		private final boolean _inactive;
 		private final String _queryString;
 		private final String _resultsRankingUid;
+		private final String _scope;
 		private final String _sxpBlueprintExternalReferenceCode;
 
 	}

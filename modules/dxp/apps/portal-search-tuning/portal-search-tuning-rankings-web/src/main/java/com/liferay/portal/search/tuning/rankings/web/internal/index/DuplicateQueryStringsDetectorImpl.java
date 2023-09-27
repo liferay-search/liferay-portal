@@ -107,6 +107,11 @@ public class DuplicateQueryStringsDetectorImpl
 		}
 
 		@Override
+		public String getScope() {
+			return _scope;
+		}
+
+		@Override
 		public String getSXPBlueprintExternalReferenceCode() {
 			return _sxpBlueprintExternalReferenceCode;
 		}
@@ -122,6 +127,7 @@ public class DuplicateQueryStringsDetectorImpl
 			}
 
 			_index = criteriaImpl._index;
+			_scope = criteriaImpl._scope;
 			_queryStrings = new HashSet<>(criteriaImpl._queryStrings);
 			_rankingIndexName = criteriaImpl._rankingIndexName;
 			_unlessRankingDocumentId = criteriaImpl._unlessRankingDocumentId;
@@ -175,6 +181,13 @@ public class DuplicateQueryStringsDetectorImpl
 			}
 
 			@Override
+			public BuilderImpl scope(String scope) {
+				_criteriaImpl._scope = scope;
+
+				return this;
+			}
+
+			@Override
 			public BuilderImpl sxpBlueprintExternalReferenceCode(
 				String sxpBlueprintExternalReferenceCode) {
 
@@ -202,6 +215,7 @@ public class DuplicateQueryStringsDetectorImpl
 		private String _index;
 		private Collection<String> _queryStrings = new HashSet<>();
 		private RankingIndexName _rankingIndexName;
+		private String _scope;
 		private String _sxpBlueprintExternalReferenceCode;
 		private String _unlessRankingDocumentId;
 
@@ -222,7 +236,8 @@ public class DuplicateQueryStringsDetectorImpl
 			booleanQuery::addFilterQueryClauses,
 			_getGroupExternalReferenceCodeQuery(criteria),
 			_getIndexQuery(criteria), _getQueryStringsQuery(criteria),
-			_getSXPBlueprintExternalReferenceCodeQuery(criteria));
+			_getSXPBlueprintExternalReferenceCodeQuery(criteria),
+			_getScopeQuery(criteria));
 		_addQueryClauses(
 			booleanQuery::addMustNotQueryClauses,
 			queries.term(RankingFields.INACTIVE, true),
@@ -271,6 +286,14 @@ public class DuplicateQueryStringsDetectorImpl
 		termsQuery.addValues(queryStrings.toArray());
 
 		return termsQuery;
+	}
+
+	private Query _getScopeQuery(Criteria criteria) {
+		if (Validator.isBlank(criteria.getScope())) {
+			return null;
+		}
+
+		return queries.match(RankingFields.SCOPE, criteria.getScope());
 	}
 
 	private Query _getSXPBlueprintExternalReferenceCodeQuery(

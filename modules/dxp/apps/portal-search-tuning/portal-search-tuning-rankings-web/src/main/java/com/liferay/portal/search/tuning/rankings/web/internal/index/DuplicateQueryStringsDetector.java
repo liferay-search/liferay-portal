@@ -29,6 +29,8 @@ public interface DuplicateQueryStringsDetector {
 
 		public RankingIndexName getRankingIndexName();
 
+		public String getScope();
+
 		public String getSXPBlueprintExternalReferenceCode();
 
 		public String getUnlessRankingDocumentId();
@@ -45,6 +47,8 @@ public interface DuplicateQueryStringsDetector {
 			public Builder queryStrings(Collection<String> queryStrings);
 
 			public Builder rankingIndexName(RankingIndexName rankingIndexName);
+
+			public Builder scope(String scope);
 
 			public Builder sxpBlueprintExternalReferenceCode(
 				String sxpBlueprintExternalReferenceCode);
