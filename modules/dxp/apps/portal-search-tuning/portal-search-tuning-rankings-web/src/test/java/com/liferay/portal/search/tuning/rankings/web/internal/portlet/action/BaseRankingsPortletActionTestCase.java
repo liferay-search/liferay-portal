@@ -70,6 +70,14 @@ public abstract class BaseRankingsPortletActionTestCase
 			builder
 		).when(
 			builder
+		).scope(
+			Mockito.anyString()
+		);
+
+		Mockito.doReturn(
+			builder
+		).when(
+			builder
 		).sxpBlueprintExternalReferenceCode(
 			Mockito.anyString()
 		);
