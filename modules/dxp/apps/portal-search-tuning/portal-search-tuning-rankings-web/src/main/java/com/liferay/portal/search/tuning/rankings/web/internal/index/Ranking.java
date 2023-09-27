@@ -242,4 +242,6 @@ public class Ranking {
 	private String _rankingDocumentId;
 	private String _sxpBlueprintExternalReferenceCode;
 
+	
+
 }
