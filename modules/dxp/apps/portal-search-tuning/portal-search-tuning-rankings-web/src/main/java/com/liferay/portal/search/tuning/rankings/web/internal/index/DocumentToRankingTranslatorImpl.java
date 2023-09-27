@@ -48,6 +48,8 @@ public class DocumentToRankingTranslatorImpl
 		).sxpBlueprintExternalReferenceCode(
 			document.getString(
 				RankingFields.SXP_BLUEPRINT_EXTERNAL_REFERENCE_CODE)
+		).scope(
+			document.getString(RankingFields.SCOPE)
 		).build();
 	}
 

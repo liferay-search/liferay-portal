@@ -35,6 +35,8 @@ public class RankingFields {
 
 	public static final String QUERY_STRINGS_KEYWORD = "queryStrings.keyword";
 
+	public static final String SCOPE = "scope";
+
 	public static final String SXP_BLUEPRINT_EXTERNAL_REFERENCE_CODE =
 		"sxpBlueprintExternalReferenceCode";
 

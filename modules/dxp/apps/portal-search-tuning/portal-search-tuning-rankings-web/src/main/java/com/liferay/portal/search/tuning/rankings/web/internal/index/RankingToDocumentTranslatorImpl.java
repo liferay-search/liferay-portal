@@ -49,6 +49,8 @@ public class RankingToDocumentTranslatorImpl
 			RankingFields.QUERY_STRINGS,
 			ArrayUtil.toStringArray(ranking.getQueryStrings())
 		).setString(
+			RankingFields.SCOPE, ranking.getScope()
+		).setString(
 			RankingFields.SXP_BLUEPRINT_EXTERNAL_REFERENCE_CODE,
 			ranking.getSXPBlueprintExternalReferenceCode()
 		).setString(

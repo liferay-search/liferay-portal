@@ -36,6 +36,7 @@ public class Ranking {
 		_rankingDocumentId = ranking._rankingDocumentId;
 		_sxpBlueprintExternalReferenceCode =
 			ranking._sxpBlueprintExternalReferenceCode;
+		_scope = ranking._scope;
 	}
 
 	public List<String> getAliases() {
@@ -86,6 +87,10 @@ public class Ranking {
 
 	public String getRankingDocumentId() {
 		return _rankingDocumentId;
+	}
+
+	public String getScope() {
+		return _scope;
 	}
 
 	public String getSXPBlueprintExternalReferenceCode() {
@@ -206,6 +211,12 @@ public class Ranking {
 			return this;
 		}
 
+		public RankingBuilder scope(String scope) {
+			_ranking._scope = scope;
+
+			return this;
+		}
+
 		public RankingBuilder sxpBlueprintExternalReferenceCode(
 			String sxpBlueprintExternalReferenceCode) {
 
@@ -240,8 +251,7 @@ public class Ranking {
 	private List<Pin> _pins = new ArrayList<>();
 	private String _queryString;
 	private String _rankingDocumentId;
+	private String _scope;
 	private String _sxpBlueprintExternalReferenceCode;
-
-	
 
 }
