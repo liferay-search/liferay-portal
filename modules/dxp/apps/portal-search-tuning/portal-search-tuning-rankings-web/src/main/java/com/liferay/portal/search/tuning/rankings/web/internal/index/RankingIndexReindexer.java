@@ -21,6 +21,7 @@ import com.liferay.portal.search.index.SyncReindexManager;
 import com.liferay.portal.search.spi.reindexer.IndexReindexer;
 import com.liferay.portal.search.tuning.rankings.web.internal.index.name.RankingIndexName;
 import com.liferay.portal.search.tuning.rankings.web.internal.index.name.RankingIndexNameBuilder;
+import com.liferay.portal.search.tuning.rankings.web.internal.util.RankingUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -161,6 +162,10 @@ public class RankingIndexReindexer implements IndexReindexer {
 			jsonObject.getString("queryString")
 		).sxpBlueprintExternalReferenceCode(
 			jsonObject.getString("sxpBlueprintExternalReferenceCode")
+		).scope(
+			RankingUtil.getScope(
+				jsonObject.getString("sxpBlueprintExternalReferenceCode"),
+				jsonObject.getString("groupExternalReferenceCode"))
 		);
 
 		return rankingBuilder.build();
