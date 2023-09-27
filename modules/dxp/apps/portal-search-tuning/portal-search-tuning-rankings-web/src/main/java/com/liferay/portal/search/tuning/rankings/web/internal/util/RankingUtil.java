@@ -37,4 +37,18 @@ public class RankingUtil {
 		return ListUtil.sort(new ArrayList<>(queryStrings));
 	}
 
+	public static String getScope(
+		String groupExternalReferenceCode,
+		String sxpBlueprintExternalReferenceCode) {
+
+		if (!Validator.isBlank(groupExternalReferenceCode)) {
+			return "Sites";
+		}
+		else if (!Validator.isBlank(sxpBlueprintExternalReferenceCode)) {
+			return "Blueprint";
+		}
+
+		return "Everything";
+	}
+
 }
