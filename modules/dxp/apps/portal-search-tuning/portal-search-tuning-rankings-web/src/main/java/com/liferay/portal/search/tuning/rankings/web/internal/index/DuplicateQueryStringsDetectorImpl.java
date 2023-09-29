@@ -241,10 +241,6 @@ public class DuplicateQueryStringsDetectorImpl
 	}
 
 	private Query _getGroupExternalReferenceCodeQuery(Criteria criteria) {
-		if (Validator.isBlank(criteria.getGroupExternalReferenceCode())) {
-			return null;
-		}
-
 		return queries.term(
 			RankingFields.GROUP_EXTERNAL_REFERENCE_CODE,
 			criteria.getGroupExternalReferenceCode());
@@ -271,12 +267,6 @@ public class DuplicateQueryStringsDetectorImpl
 
 	private Query _getSXPBlueprintExternalReferenceCodeQuery(
 		Criteria criteria) {
-
-		if (Validator.isBlank(
-				criteria.getSXPBlueprintExternalReferenceCode())) {
-
-			return null;
-		}
 
 		return queries.term(
 			RankingFields.SXP_BLUEPRINT_EXTERNAL_REFERENCE_CODE,
