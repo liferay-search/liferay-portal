@@ -6,7 +6,9 @@
 package com.liferay.search.experiences.service.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.CompanyTestUtil;
@@ -58,8 +60,9 @@ public class SXPBlueprintLocalServiceTest {
 
 		// Duplicate external reference code in a different company
 
-		User user = UserTestUtil.addCompanyAdminUser(
-			CompanyTestUtil.addCompany());
+		Company company = CompanyTestUtil.addCompany();
+
+		User user = UserTestUtil.addCompanyAdminUser(company);
 
 		SXPBlueprint differentCompanySXPBlueprint = _addSXPBlueprint(
 			sxpBlueprint.getExternalReferenceCode(), user.getUserId());
@@ -88,6 +91,8 @@ public class SXPBlueprintLocalServiceTest {
 
 		Assert.assertNotNull(sxpBlueprint.getExternalReferenceCode());
 		Assert.assertEquals("1.0", sxpBlueprint.getVersion());
+
+		_companyLocalService.deleteCompany(company.getCompanyId());
 	}
 
 	@Test
@@ -178,6 +183,9 @@ public class SXPBlueprintLocalServiceTest {
 
 		return sxpBlueprint;
 	}
+
+	@Inject
+	private CompanyLocalService _companyLocalService;
 
 	@Inject
 	private SXPBlueprintLocalService _sxpBlueprintLocalService;
