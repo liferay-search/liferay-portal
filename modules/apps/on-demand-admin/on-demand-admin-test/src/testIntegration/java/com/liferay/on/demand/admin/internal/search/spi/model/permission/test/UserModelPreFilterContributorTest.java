@@ -13,6 +13,8 @@ import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.search.BaseModelSearchResult;
 import com.liferay.portal.kernel.search.Sort;
+import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
+import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.util.CompanyTestUtil;
@@ -20,10 +22,13 @@ import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
+import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
 
 import java.util.LinkedHashMap;
 
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -38,25 +43,40 @@ public class UserModelPreFilterContributorTest {
 	@ClassRule
 	@Rule
 	public static final AggregateTestRule aggregateTestRule =
-		new LiferayIntegrationTestRule();
+		new AggregateTestRule(
+			new LiferayIntegrationTestRule(),
+			PermissionCheckerMethodTestRule.INSTANCE);
+
+	@BeforeClass
+	public static void setUpClass() throws Exception {
+		_company = CompanyTestUtil.addCompany();
+	}
+
+	@AfterClass
+	public static void tearDownClass() throws Exception {
+		PrincipalThreadLocal.setName(
+			UserTestUtil.addUser(
+				_company
+			).getUserId());
+		_companyLocalService.deleteCompany(_company.getCompanyId());
+	}
 
 	@Test
 	public void testSearchUsers() throws Exception {
-		Company company = CompanyTestUtil.addCompany();
-
-		OnDemandAdminTestUtil.addOnDemandAdminUser(company);
-		OnDemandAdminTestUtil.addOnDemandAdminUser(company);
-		UserTestUtil.addUser(company);
-		UserTestUtil.addUser(company);
+		OnDemandAdminTestUtil.addOnDemandAdminUser(_company);
+		OnDemandAdminTestUtil.addOnDemandAdminUser(_company);
+		UserTestUtil.addUser(_company);
+		UserTestUtil.addUser(_company);
 
 		BaseModelSearchResult<User> baseModelSearchResult =
 			_userLocalService.searchUsers(
-				company.getCompanyId(), null, WorkflowConstants.STATUS_APPROVED,
+				_company.getCompanyId(), null,
+				WorkflowConstants.STATUS_APPROVED,
 				new LinkedHashMap<String, Object>(), QueryUtil.ALL_POS,
 				QueryUtil.ALL_POS, new Sort("userId", false));
 
 		int companyUsersCount = _userLocalService.getCompanyUsersCount(
-			company.getCompanyId());
+			_company.getCompanyId());
 
 		Assert.assertEquals(
 			companyUsersCount - 2, baseModelSearchResult.getLength());
@@ -65,6 +85,11 @@ public class UserModelPreFilterContributorTest {
 			Assert.assertFalse(_onDemandAdminManager.isOnDemandAdminUser(user));
 		}
 	}
+
+	private static Company _company;
+
+	@Inject
+	private static CompanyLocalService _companyLocalService;
 
 	@Inject
 	private OnDemandAdminManager _onDemandAdminManager;
