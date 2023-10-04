@@ -24,12 +24,14 @@ import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
 import com.liferay.portal.kernel.security.permission.PermissionCheckerFactoryUtil;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
+import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.Sync;
 import com.liferay.portal.kernel.test.util.CompanyTestUtil;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
+import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
@@ -42,7 +44,6 @@ import org.frutilla.FrutillaRule;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -62,21 +63,15 @@ public class CommercePriceListIndexerTest {
 			new LiferayIntegrationTestRule(),
 			PermissionCheckerMethodTestRule.INSTANCE);
 
-	@BeforeClass
-	public static void setUpClass() throws Exception {
+	@Before
+	public void setUp() throws Exception {
 		_company = CompanyTestUtil.addCompany();
 
 		_user = UserTestUtil.addUser(_company);
 
 		_indexer = _indexerRegistry.getIndexer(CommercePriceList.class);
-	}
 
-	@Before
-	public void setUp() throws Exception {
-		PermissionThreadLocal.setPermissionChecker(
-			PermissionCheckerFactoryUtil.create(_user));
-
-		PrincipalThreadLocal.setName(_user.getUserId());
+		_setUserToPermissionChecker(_user);
 
 		_group = GroupTestUtil.addGroup(
 			_company.getCompanyId(), _user.getUserId(), 0);
@@ -86,6 +81,10 @@ public class CommercePriceListIndexerTest {
 	public void tearDown() throws Exception {
 		_commercePriceListLocalService.deleteCommercePriceLists(
 			_company.getCompanyId());
+
+		_setUserToPermissionChecker(TestPropsValues.getUser());
+
+		_companyLocalService.deleteCompany(_company);
 	}
 
 	@Test
@@ -141,6 +140,13 @@ public class CommercePriceListIndexerTest {
 	@Rule
 	public FrutillaRule frutillaRule = new FrutillaRule();
 
+	private void _setUserToPermissionChecker(User user) {
+		PermissionThreadLocal.setPermissionChecker(
+			PermissionCheckerFactoryUtil.create(user));
+
+		PrincipalThreadLocal.setName(user.getUserId());
+	}
+
 	private static Company _company;
 	private static Indexer<CommercePriceList> _indexer;
 
@@ -151,6 +157,9 @@ public class CommercePriceListIndexerTest {
 
 	@Inject
 	private CommercePriceListLocalService _commercePriceListLocalService;
+
+	@Inject
+	private CompanyLocalService _companyLocalService;
 
 	private Group _group;
 
