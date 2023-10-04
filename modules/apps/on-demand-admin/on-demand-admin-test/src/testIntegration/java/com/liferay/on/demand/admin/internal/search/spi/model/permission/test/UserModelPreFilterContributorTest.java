@@ -13,6 +13,7 @@ import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.search.BaseModelSearchResult;
 import com.liferay.portal.kernel.search.Sort;
+import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.util.CompanyTestUtil;
@@ -20,6 +21,7 @@ import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
+import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
 
 import java.util.LinkedHashMap;
 
@@ -64,7 +66,12 @@ public class UserModelPreFilterContributorTest {
 		for (User user : baseModelSearchResult.getBaseModels()) {
 			Assert.assertFalse(_onDemandAdminManager.isOnDemandAdminUser(user));
 		}
+
+		_companyLocalService.deleteCompany(company.getCompanyId());
 	}
+
+	@Inject
+	private CompanyLocalService _companyLocalService;
 
 	@Inject
 	private OnDemandAdminManager _onDemandAdminManager;
