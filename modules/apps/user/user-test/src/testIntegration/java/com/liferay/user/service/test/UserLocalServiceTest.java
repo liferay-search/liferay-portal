@@ -34,6 +34,7 @@ import com.liferay.portal.kernel.security.permission.PermissionCheckerFactoryUti
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.security.pwd.PasswordEncryptor;
 import com.liferay.portal.kernel.security.pwd.PasswordEncryptorUtil;
+import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.PasswordPolicyLocalService;
 import com.liferay.portal.kernel.service.PortalPreferencesLocalService;
@@ -71,6 +72,7 @@ import com.liferay.portal.security.audit.AuditMessageProcessor;
 import com.liferay.portal.security.audit.event.generators.constants.EventTypes;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
+import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
 import com.liferay.portal.util.PropsValues;
 
 import java.lang.reflect.Field;
@@ -245,6 +247,8 @@ public class UserLocalServiceTest {
 		User user = companyUsers.get(0);
 
 		Assert.assertFalse(user.isGuestUser());
+
+		_companyLocalService.deleteCompany(company);
 	}
 
 	@Test
@@ -870,6 +874,9 @@ public class UserLocalServiceTest {
 	private AuditMessageProcessor _auditMessageProcessor;
 	private BundleActivator _bundleActivator;
 	private BundleContext _bundleContext;
+
+	@Inject
+	private CompanyLocalService _companyLocalService;
 
 	@Inject
 	private GroupLocalService _groupLocalService;
