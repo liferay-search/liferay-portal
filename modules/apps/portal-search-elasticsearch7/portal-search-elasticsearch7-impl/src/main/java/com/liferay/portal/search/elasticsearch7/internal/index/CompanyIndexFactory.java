@@ -5,7 +5,6 @@
 
 package com.liferay.portal.search.elasticsearch7.internal.index;
 
-import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Company;
@@ -15,9 +14,6 @@ import com.liferay.portal.search.elasticsearch7.internal.configuration.Elasticse
 import com.liferay.portal.search.elasticsearch7.internal.configuration.ElasticsearchConfigurationWrapper;
 import com.liferay.portal.search.elasticsearch7.internal.connection.ElasticsearchConnectionManager;
 import com.liferay.portal.search.elasticsearch7.internal.index.util.IndexFactoryCompanyIdRegistryUtil;
-import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
-import com.liferay.portal.search.engine.adapter.index.UpdateIndexSettingsIndexRequest;
-import com.liferay.portal.search.index.IndexNameBuilder;
 
 import org.elasticsearch.client.IndicesClient;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -90,8 +86,6 @@ public class CompanyIndexFactory
 	@Override
 	public void onElasticsearchConfigurationUpdate() {
 		_initializeCompanyIndexes();
-
-		_updateMaxResultWindow();
 	}
 
 	@Override
@@ -136,32 +130,6 @@ public class CompanyIndexFactory
 		}
 	}
 
-	private void _updateMaxResultWindow() {
-		int maxResultWindow =
-			_elasticsearchConfigurationWrapper.indexMaxResultWindow();
-
-		for (Long companyId :
-				IndexFactoryCompanyIdRegistryUtil.getCompanyIds()) {
-
-			String indexName = _indexNameBuilder.getIndexName(companyId);
-
-			UpdateIndexSettingsIndexRequest updateIndexSettingsIndexRequest =
-				new UpdateIndexSettingsIndexRequest(indexName);
-
-			updateIndexSettingsIndexRequest.setSettings(
-				"{\"index.max_result_window\": " + maxResultWindow + "}");
-
-			_searchEngineAdapter.execute(updateIndexSettingsIndexRequest);
-
-			if (_log.isInfoEnabled()) {
-				_log.info(
-					StringBundler.concat(
-						"Updated index.max_result_window to ", maxResultWindow,
-						" for index ", indexName));
-			}
-		}
-	}
-
 	private static final Log _log = LogFactoryUtil.getLog(
 		CompanyIndexFactory.class);
 
@@ -177,11 +145,5 @@ public class CompanyIndexFactory
 
 	@Reference
 	private ElasticsearchConnectionManager _elasticsearchConnectionManager;
-
-	@Reference
-	private IndexNameBuilder _indexNameBuilder;
-
-	@Reference
-	private SearchEngineAdapter _searchEngineAdapter;
 
 }

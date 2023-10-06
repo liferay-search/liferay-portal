@@ -296,6 +296,20 @@ public class CompanyIndexFactoryHelper {
 		settingsBuilder.put("index.translog.sync_interval", "100ms");
 	}
 
+	private void _loadUserDefinedSettings(SettingsBuilder settingsBuilder) {
+		_loadIndexConfigurations(settingsBuilder);
+
+		_loadAdditionalIndexConfigurations(settingsBuilder);
+
+		_loadIndexConfigurationContributors(settingsBuilder);
+
+		if (Validator.isNotNull(
+				settingsBuilder.get("index.number_of_replicas"))) {
+
+			settingsBuilder.put("index.auto_expand_replicas", false);
+		}
+	}
+
 	private void _putContributedTypeMappings(
 		LiferayDocumentTypeFactory liferayDocumentTypeFactory) {
 
@@ -414,17 +428,7 @@ public class CompanyIndexFactoryHelper {
 
 		_loadTestModeIndexSettings(settingsBuilder);
 
-		_loadIndexConfigurations(settingsBuilder);
-
-		_loadAdditionalIndexConfigurations(settingsBuilder);
-
-		_loadIndexConfigurationContributors(settingsBuilder);
-
-		if (Validator.isNotNull(
-			settingsBuilder.get("index.number_of_replicas"))) {
-
-			settingsBuilder.put("index.auto_expand_replicas", false);
-		}
+		_loadUserDefinedSettings(settingsBuilder);
 
 		createIndexRequest.settings(settingsBuilder.getBuilder());
 	}
@@ -451,7 +455,7 @@ public class CompanyIndexFactoryHelper {
 		SettingsBuilder settingsBuilder = new SettingsBuilder(
 			Settings.builder());
 
-		_loadIndexSettingsContributors(settingsBuilder);
+		_loadUserDefinedSettings(settingsBuilder);
 
 		UpdateSettingsRequest updateSettingsRequest = new UpdateSettingsRequest(
 			indexName);
