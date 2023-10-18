@@ -24,6 +24,8 @@ import com.liferay.search.experiences.service.SXPElementLocalService;
 
 import java.util.Locale;
 
+import org.apache.commons.lang.StringUtils;
+
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -119,6 +121,19 @@ public class SXPBlueprintDTOConverter
 		};
 	}
 
+	private String _getTranslatedField(
+		String defaultLanguageId, Locale locale, String field,
+		String fieldXML) {
+
+		if (!StringUtils.isBlank(field)) {
+			return _language.get(locale, field);
+		}
+
+		return _language.get(
+			LocaleUtil.fromLanguageId(defaultLanguageId),
+			_localization.getLocalization(fieldXML, LocaleUtil.US.toString()));
+	}
+
 	private Configuration _toConfiguration(String json) {
 		try {
 			return ConfigurationUtil.toConfiguration(json);
@@ -160,12 +175,22 @@ public class SXPBlueprintDTOConverter
 							_sxpElementLocalService.getSXPElement(sxpElementId);
 
 					sxpElement.setDescription(
-						_language.get(
+						_getTranslatedField(
+							serviceBuilderSXPElement.getDefaultLanguageId(),
 							locale,
-							serviceBuilderSXPElement.getDescription(locale)));
+							serviceBuilderSXPElement.getDescription(
+								serviceBuilderSXPElement.
+									getDefaultLanguageId()),
+							serviceBuilderSXPElement.getDescription()));
+
 					sxpElement.setTitle(
-						_language.get(
-							locale, serviceBuilderSXPElement.getTitle(locale)));
+						_getTranslatedField(
+							serviceBuilderSXPElement.getDefaultLanguageId(),
+							locale,
+							serviceBuilderSXPElement.getDescription(
+								serviceBuilderSXPElement.
+									getDefaultLanguageId()),
+							serviceBuilderSXPElement.getDescription()));
 				}
 				else {
 					String descriptionXml = _localization.getXml(

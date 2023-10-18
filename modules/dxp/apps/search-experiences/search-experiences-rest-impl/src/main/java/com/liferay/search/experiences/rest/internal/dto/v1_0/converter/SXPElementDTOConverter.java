@@ -8,6 +8,8 @@ package com.liferay.search.experiences.rest.internal.dto.v1_0.converter;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.Localization;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.vulcan.dto.converter.DTOConverter;
 import com.liferay.portal.vulcan.dto.converter.DTOConverterContext;
@@ -21,6 +23,8 @@ import com.liferay.search.experiences.rest.dto.v1_0.util.ElementDefinitionUtil;
 import com.liferay.search.experiences.service.SXPElementLocalService;
 
 import java.util.Locale;
+
+import org.apache.commons.lang.StringUtils;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -62,10 +66,12 @@ public class SXPElementDTOConverter
 		return new SXPElement() {
 			{
 				createDate = sxpElement.getCreateDate();
-				description = _language.get(
+				description = _getTranslatedField(
+					sxpElement.getDefaultLanguageId(),
 					dtoConverterContext.getLocale(),
 					sxpElement.getDescription(
-						sxpElement.getDefaultLanguageId()));
+						sxpElement.getDefaultLanguageId()),
+					sxpElement.getDescription());
 				description_i18n = LocalizedMapUtil.getI18nMap(
 					true, sxpElement.getDescriptionMap());
 				elementDefinition = _toElementDefinition(
@@ -76,9 +82,11 @@ public class SXPElementDTOConverter
 				modifiedDate = sxpElement.getModifiedDate();
 				readOnly = sxpElement.getReadOnly();
 				schemaVersion = sxpElement.getSchemaVersion();
-				title = _language.get(
+				title = _getTranslatedField(
+					sxpElement.getDefaultLanguageId(),
 					dtoConverterContext.getLocale(),
-					sxpElement.getTitle(sxpElement.getDefaultLanguageId()));
+					sxpElement.getTitle(sxpElement.getDefaultLanguageId()),
+					sxpElement.getTitle());
 				title_i18n = LocalizedMapUtil.getI18nMap(
 					true, sxpElement.getTitleMap());
 				type = sxpElement.getType();
@@ -86,6 +94,19 @@ public class SXPElementDTOConverter
 				version = sxpElement.getVersion();
 			}
 		};
+	}
+
+	private String _getTranslatedField(
+		String defaultLanguageId, Locale locale, String field,
+		String fieldXML) {
+
+		if (!StringUtils.isBlank(field)) {
+			return _language.get(locale, field);
+		}
+
+		return _language.get(
+			LocaleUtil.fromLanguageId(defaultLanguageId),
+			_localization.getLocalization(fieldXML, LocaleUtil.US.toString()));
 	}
 
 	private ElementDefinition _toElementDefinition(String json, Locale locale) {
@@ -138,6 +159,9 @@ public class SXPElementDTOConverter
 
 	@Reference
 	private Language _language;
+
+	@Reference
+	private Localization _localization;
 
 	@Reference
 	private SXPElementLocalService _sxpElementLocalService;
