@@ -27,6 +27,8 @@ public @interface ExpectedLog {
 
 	public String expectedLog();
 
+	public boolean solrTest() default false;
+
 	public enum Level {
 
 		FINE, FINEST, INFO, WARNING
