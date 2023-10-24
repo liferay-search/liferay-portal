@@ -23,7 +23,7 @@ import com.liferay.portal.test.rule.LiferayUnitTestRule;
 import java.util.Collections;
 
 import org.junit.Assume;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -39,8 +39,8 @@ public class SolrIndexWriterLoggingTest extends BaseIndexingTestCase {
 		new AggregateTestRule(
 			ExpectedLogMethodTestRule.INSTANCE, LiferayUnitTestRule.INSTANCE);
 
-	@BeforeClass
-	public static void setUpClass() {
+	@Before
+	public void setUp() {
 		Assume.assumeTrue(
 			SolrUnitTestRequirements.isSolrExternallyStartedByDeveloper());
 	}
@@ -48,7 +48,7 @@ public class SolrIndexWriterLoggingTest extends BaseIndexingTestCase {
 	@ExpectedLog(
 		expectedClass = BulkDocumentRequestExecutorImpl.class,
 		expectedLevel = ExpectedLog.Level.INFO,
-		expectedLog = "response={responseHeader={status=0"
+		expectedLog = "response={responseHeader={status=0", solrTest = true
 	)
 	@Test
 	public void testBulkDocumentRequestExecutorLogs() {

@@ -28,7 +28,7 @@ import java.util.Collections;
 
 import org.junit.After;
 import org.junit.Assume;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -44,8 +44,8 @@ public class SolrIndexWriterLogExceptionsOnlyTest extends BaseIndexingTestCase {
 		new AggregateTestRule(
 			ExpectedLogMethodTestRule.INSTANCE, LiferayUnitTestRule.INSTANCE);
 
-	@BeforeClass
-	public static void setUpClass() {
+	@Before
+	public void setUp() {
 		Assume.assumeTrue(
 			SolrUnitTestRequirements.isSolrExternallyStartedByDeveloper());
 	}
@@ -57,7 +57,8 @@ public class SolrIndexWriterLogExceptionsOnlyTest extends BaseIndexingTestCase {
 
 	@ExpectedLog(
 		expectedClass = SolrIndexWriter.class,
-		expectedLevel = ExpectedLog.Level.WARNING, expectedLog = "404 Not Found"
+		expectedLevel = ExpectedLog.Level.WARNING,
+		expectedLog = "404 Not Found", solrTest = true
 	)
 	@Test
 	public void testAddDocument() throws Exception {
@@ -69,7 +70,7 @@ public class SolrIndexWriterLogExceptionsOnlyTest extends BaseIndexingTestCase {
 	@ExpectedLog(
 		expectedClass = SolrIndexWriter.class,
 		expectedLevel = ExpectedLog.Level.WARNING,
-		expectedLog = "Bulk add failed"
+		expectedLog = "Bulk add failed", solrTest = true
 	)
 	@Test
 	public void testAddDocuments() {
@@ -86,7 +87,8 @@ public class SolrIndexWriterLogExceptionsOnlyTest extends BaseIndexingTestCase {
 
 	@ExpectedLog(
 		expectedClass = BulkDocumentRequestExecutorImpl.class,
-		expectedLevel = ExpectedLog.Level.WARNING, expectedLog = "404 Not Found"
+		expectedLevel = ExpectedLog.Level.WARNING,
+		expectedLog = "404 Not Found", solrTest = true
 	)
 	@Test
 	public void testAddDocumentsBulkExecutor() {
@@ -103,7 +105,8 @@ public class SolrIndexWriterLogExceptionsOnlyTest extends BaseIndexingTestCase {
 
 	@ExpectedLog(
 		expectedClass = SolrIndexWriter.class,
-		expectedLevel = ExpectedLog.Level.WARNING, expectedLog = "404 Not Found"
+		expectedLevel = ExpectedLog.Level.WARNING,
+		expectedLog = "404 Not Found", solrTest = true
 	)
 	@Test
 	public void testCommit() {
@@ -118,7 +121,8 @@ public class SolrIndexWriterLogExceptionsOnlyTest extends BaseIndexingTestCase {
 
 	@ExpectedLog(
 		expectedClass = SolrIndexWriter.class,
-		expectedLevel = ExpectedLog.Level.WARNING, expectedLog = "404 Not Found"
+		expectedLevel = ExpectedLog.Level.WARNING,
+		expectedLog = "404 Not Found", solrTest = true
 	)
 	@Test
 	public void testDeleteDocument() {
@@ -134,7 +138,7 @@ public class SolrIndexWriterLogExceptionsOnlyTest extends BaseIndexingTestCase {
 	@ExpectedLog(
 		expectedClass = SolrIndexWriter.class,
 		expectedLevel = ExpectedLog.Level.WARNING,
-		expectedLog = "Bulk delete failed"
+		expectedLog = "Bulk delete failed", solrTest = true
 	)
 	@Test
 	public void testDeleteDocuments() {
@@ -150,7 +154,8 @@ public class SolrIndexWriterLogExceptionsOnlyTest extends BaseIndexingTestCase {
 
 	@ExpectedLog(
 		expectedClass = BulkDocumentRequestExecutorImpl.class,
-		expectedLevel = ExpectedLog.Level.WARNING, expectedLog = "404 Not Found"
+		expectedLevel = ExpectedLog.Level.WARNING,
+		expectedLog = "404 Not Found", solrTest = true
 	)
 	@Test
 	public void testDeleteDocumentsBulkExecutor() {
@@ -166,7 +171,8 @@ public class SolrIndexWriterLogExceptionsOnlyTest extends BaseIndexingTestCase {
 
 	@ExpectedLog(
 		expectedClass = SolrIndexWriter.class,
-		expectedLevel = ExpectedLog.Level.WARNING, expectedLog = "null"
+		expectedLevel = ExpectedLog.Level.WARNING, expectedLog = "null",
+		solrTest = true
 	)
 	@Test
 	public void testDeleteEntityDocuments() {
@@ -181,7 +187,8 @@ public class SolrIndexWriterLogExceptionsOnlyTest extends BaseIndexingTestCase {
 
 	@ExpectedLog(
 		expectedClass = SolrIndexWriter.class,
-		expectedLevel = ExpectedLog.Level.WARNING, expectedLog = "404 Not Found"
+		expectedLevel = ExpectedLog.Level.WARNING,
+		expectedLog = "404 Not Found", solrTest = true
 	)
 	@Test
 	public void testPartiallyUpdateDocument() {
@@ -198,7 +205,7 @@ public class SolrIndexWriterLogExceptionsOnlyTest extends BaseIndexingTestCase {
 	@ExpectedLog(
 		expectedClass = SolrIndexWriter.class,
 		expectedLevel = ExpectedLog.Level.WARNING,
-		expectedLog = "Bulk partial update failed"
+		expectedLog = "Bulk partial update failed", solrTest = true
 	)
 	@Test
 	public void testPartiallyUpdateDocuments() {
@@ -215,7 +222,8 @@ public class SolrIndexWriterLogExceptionsOnlyTest extends BaseIndexingTestCase {
 
 	@ExpectedLog(
 		expectedClass = BulkDocumentRequestExecutorImpl.class,
-		expectedLevel = ExpectedLog.Level.WARNING, expectedLog = "404 Not Found"
+		expectedLevel = ExpectedLog.Level.WARNING,
+		expectedLog = "404 Not Found", solrTest = true
 	)
 	@Test
 	public void testPartiallyUpdateDocumentsBulkExecutor() {
@@ -232,7 +240,8 @@ public class SolrIndexWriterLogExceptionsOnlyTest extends BaseIndexingTestCase {
 
 	@ExpectedLog(
 		expectedClass = SolrIndexWriter.class,
-		expectedLevel = ExpectedLog.Level.WARNING, expectedLog = "Update failed"
+		expectedLevel = ExpectedLog.Level.WARNING,
+		expectedLog = "Update failed", solrTest = true
 	)
 	@Test
 	public void testUpdateDocument() {
@@ -248,7 +257,8 @@ public class SolrIndexWriterLogExceptionsOnlyTest extends BaseIndexingTestCase {
 
 	@ExpectedLog(
 		expectedClass = BulkDocumentRequestExecutorImpl.class,
-		expectedLevel = ExpectedLog.Level.WARNING, expectedLog = "404 Not Found"
+		expectedLevel = ExpectedLog.Level.WARNING,
+		expectedLog = "404 Not Found", solrTest = true
 	)
 	@Test
 	public void testUpdateDocumentBulkExecutor() {
@@ -264,7 +274,8 @@ public class SolrIndexWriterLogExceptionsOnlyTest extends BaseIndexingTestCase {
 
 	@ExpectedLog(
 		expectedClass = SolrIndexWriter.class,
-		expectedLevel = ExpectedLog.Level.WARNING, expectedLog = "Update failed"
+		expectedLevel = ExpectedLog.Level.WARNING,
+		expectedLog = "Update failed", solrTest = true
 	)
 	@Test
 	public void testUpdateDocuments() {
@@ -281,7 +292,8 @@ public class SolrIndexWriterLogExceptionsOnlyTest extends BaseIndexingTestCase {
 
 	@ExpectedLog(
 		expectedClass = BulkDocumentRequestExecutorImpl.class,
-		expectedLevel = ExpectedLog.Level.WARNING, expectedLog = "404 Not Found"
+		expectedLevel = ExpectedLog.Level.WARNING,
+		expectedLog = "404 Not Found", solrTest = true
 	)
 	@Test
 	public void testUpdateDocumentsBulkExecutor() {

@@ -19,7 +19,7 @@ import com.liferay.portal.search.test.util.logging.ExpectedLogMethodTestRule;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
 
 import org.junit.Assume;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -35,8 +35,8 @@ public class SolrIndexSearcherLoggingTest extends BaseIndexingTestCase {
 		new AggregateTestRule(
 			ExpectedLogMethodTestRule.INSTANCE, LiferayUnitTestRule.INSTANCE);
 
-	@BeforeClass
-	public static void setUpClass() {
+	@Before
+	public void setUp() {
 		Assume.assumeTrue(
 			SolrUnitTestRequirements.isSolrExternallyStartedByDeveloper());
 	}
@@ -44,7 +44,7 @@ public class SolrIndexSearcherLoggingTest extends BaseIndexingTestCase {
 	@ExpectedLog(
 		expectedClass = CountSearchRequestExecutorImpl.class,
 		expectedLevel = ExpectedLog.Level.FINE,
-		expectedLog = "The search engine processed"
+		expectedLog = "The search engine processed", solrTest = true
 	)
 	@Test
 	public void testCountSearchRequestExecutorLogsViaIndexer() {
@@ -54,7 +54,7 @@ public class SolrIndexSearcherLoggingTest extends BaseIndexingTestCase {
 	@ExpectedLog(
 		expectedClass = SolrIndexSearcher.class,
 		expectedLevel = ExpectedLog.Level.INFO,
-		expectedLog = "The search engine processed"
+		expectedLog = "The search engine processed", solrTest = true
 	)
 	@Test
 	public void testIndexerSearchCountLogs() {
@@ -64,7 +64,7 @@ public class SolrIndexSearcherLoggingTest extends BaseIndexingTestCase {
 	@ExpectedLog(
 		expectedClass = SolrIndexSearcher.class,
 		expectedLevel = ExpectedLog.Level.INFO,
-		expectedLog = "The search engine processed"
+		expectedLog = "The search engine processed", solrTest = true
 	)
 	@Test
 	public void testIndexerSearchLogs() {
@@ -74,7 +74,7 @@ public class SolrIndexSearcherLoggingTest extends BaseIndexingTestCase {
 	@ExpectedLog(
 		expectedClass = SearchSearchRequestExecutorImpl.class,
 		expectedLevel = ExpectedLog.Level.FINE,
-		expectedLog = "The search engine processed"
+		expectedLog = "The search engine processed", solrTest = true
 	)
 	@Test
 	public void testSearchSearchRequestExecutorLogsViaIndexer() {

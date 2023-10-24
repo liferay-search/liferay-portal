@@ -21,7 +21,7 @@ import com.liferay.portal.search.test.util.logging.ExpectedLogMethodTestRule;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
 
 import org.junit.Assume;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -38,8 +38,8 @@ public class SolrIndexSearcherLogExceptionsOnlyTest
 		new AggregateTestRule(
 			ExpectedLogMethodTestRule.INSTANCE, LiferayUnitTestRule.INSTANCE);
 
-	@BeforeClass
-	public static void setUpClass() {
+	@Before
+	public void setUp() {
 		Assume.assumeTrue(
 			SolrUnitTestRequirements.isSolrExternallyStartedByDeveloper());
 	}
@@ -47,7 +47,7 @@ public class SolrIndexSearcherLogExceptionsOnlyTest
 	@ExpectedLog(
 		expectedClass = SolrIndexSearcher.class,
 		expectedLevel = ExpectedLog.Level.WARNING,
-		expectedLog = "Cannot parse '+f^eld:text'"
+		expectedLog = "Cannot parse '+f^eld:text'", solrTest = true
 	)
 	@Test
 	public void testExceptionOnlyLoggedWhenQueryMalformedSearch() {
@@ -57,7 +57,7 @@ public class SolrIndexSearcherLogExceptionsOnlyTest
 	@ExpectedLog(
 		expectedClass = SolrIndexSearcher.class,
 		expectedLevel = ExpectedLog.Level.WARNING,
-		expectedLog = "Cannot parse '+f^eld:text'"
+		expectedLog = "Cannot parse '+f^eld:text'", solrTest = true
 	)
 	@Test
 	public void testExceptionOnlyLoggedWhenQueryMalformedSearchCount() {
