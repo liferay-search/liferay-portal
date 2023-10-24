@@ -47,7 +47,9 @@ public class ExpectedLogMethodTestRule extends MethodTestRule<Void> {
 
 		ExpectedLog expectedLog = description.getAnnotation(ExpectedLog.class);
 
-		if (expectedLog == null) {
+		if ((expectedLog == null) ||
+			(!_SOLR_AVAILABLE && expectedLog.solrTest())) {
+
 			return;
 		}
 
@@ -203,6 +205,14 @@ public class ExpectedLogMethodTestRule extends MethodTestRule<Void> {
 		closeCaptureHandler();
 
 		openCaptureHandler(name, level);
+	}
+
+	private static final boolean _SOLR_AVAILABLE;
+
+	static {
+		_SOLR_AVAILABLE = Boolean.valueOf(
+			System.getProperty(
+				"com.liferay.portal.search.solr8.test.unit.started"));
 	}
 
 	private LogCapture _logCapture;
