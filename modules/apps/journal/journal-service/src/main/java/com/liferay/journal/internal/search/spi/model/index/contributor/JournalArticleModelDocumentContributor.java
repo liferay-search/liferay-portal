@@ -32,6 +32,7 @@ import com.liferay.trash.TrashHelper;
 
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -99,20 +100,17 @@ public class JournalArticleModelDocumentContributor
 			document.addDate(Field.CREATE_DATE, journalArticle.getCreateDate());
 		}
 
-		String[] descriptionAvailableLanguageIds =
-			_localization.getAvailableLanguageIds(
-				journalArticle.getDescriptionMapAsXML());
+		Map<Locale, String> descriptionMap =
+			_localization.populateLocalizationMap(
+				journalArticle.getDescriptionMap(),
+				journalArticle.getDefaultLanguageId(),
+				journalArticle.getGroupId());
 
-		for (String descriptionAvailableLanguageId :
-				descriptionAvailableLanguageIds) {
-
-			String description = HtmlUtil.stripHtml(
-				journalArticle.getDescription(descriptionAvailableLanguageId));
-
+		for (Map.Entry<Locale, String> entry : descriptionMap.entrySet()) {
 			document.addText(
 				_localization.getLocalizedName(
-					Field.DESCRIPTION, descriptionAvailableLanguageId),
-				description);
+					Field.DESCRIPTION, LocaleUtil.toLanguageId(entry.getKey())),
+				HtmlUtil.stripHtml(entry.getValue()));
 		}
 
 		document.addDate(Field.DISPLAY_DATE, journalArticle.getDisplayDate());
@@ -121,14 +119,13 @@ public class JournalArticleModelDocumentContributor
 		document.addKeyword(Field.FOLDER_ID, journalArticle.getFolderId());
 		document.addKeyword(Field.LAYOUT_UUID, journalArticle.getLayoutUuid());
 
+		Map<Locale, String> titleMap = _localization.populateLocalizationMap(
+			journalArticle.getTitleMap(), journalArticle.getDefaultLanguageId(),
+			journalArticle.getGroupId());
+
 		if (!document.hasField("localized_title")) {
 			document.addLocalizedKeyword(
-				"localized_title",
-				_localization.populateLocalizationMap(
-					journalArticle.getTitleMap(),
-					journalArticle.getDefaultLanguageId(),
-					journalArticle.getGroupId()),
-				true, true);
+				"localized_title", titleMap, true, true);
 		}
 
 		if (!document.hasField(Field.MODIFIED_DATE)) {
@@ -146,17 +143,11 @@ public class JournalArticleModelDocumentContributor
 			}
 		}
 
-		String[] titleAvailableLanguageIds =
-			_localization.getAvailableLanguageIds(
-				journalArticle.getTitleMapAsXML());
-
-		for (String titleAvailableLanguageId : titleAvailableLanguageIds) {
-			String title = journalArticle.getTitle(titleAvailableLanguageId);
-
+		for (Map.Entry<Locale, String> entry : titleMap.entrySet()) {
 			document.addText(
 				_localization.getLocalizedName(
-					Field.TITLE, titleAvailableLanguageId),
-				title);
+					Field.TITLE, LocaleUtil.toLanguageId(entry.getKey())),
+				entry.getValue());
 		}
 
 		document.addKeyword(
@@ -198,13 +189,12 @@ public class JournalArticleModelDocumentContributor
 			}
 		}
 
-		for (String titleAvailableLanguageId : titleAvailableLanguageIds) {
+		for (Locale locale : titleMap.keySet()) {
 			try {
 				document.addKeywordSortable(
 					_localization.getLocalizedName(
-						"urlTitle", titleAvailableLanguageId),
-					journalArticle.getUrlTitle(
-						LocaleUtil.fromLanguageId(titleAvailableLanguageId)));
+						"urlTitle", LocaleUtil.toLanguageId(locale)),
+					journalArticle.getUrlTitle(locale));
 			}
 			catch (PortalException portalException) {
 				if (_log.isDebugEnabled()) {
@@ -212,7 +202,7 @@ public class JournalArticleModelDocumentContributor
 						StringBundler.concat(
 							"Unable to get friendly URL for article ID ",
 							journalArticle.getId(), " and language ID ",
-							titleAvailableLanguageId),
+							locale),
 						portalException);
 				}
 			}
