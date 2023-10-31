@@ -223,10 +223,22 @@ public class SXPBlueprintSearchResultTest {
 			"coca cola es_ES"
 		).setContent(
 			"cola"
+		).setTitleMap(
+			HashMapBuilder.put(
+				LocaleUtil.SPAIN, "coca cola es_ES"
+			).put(
+				LocaleUtil.US, "coca cola es_ES"
+			).build()
 		).build();
 
 		_journalArticleBuilder.setTitle(
 			"pepsi cola es_ES"
+		).setTitleMap(
+			HashMapBuilder.put(
+				LocaleUtil.SPAIN, "pepsi cola es_ES"
+			).put(
+				LocaleUtil.US, "pepsi cola es_ES"
+			).build()
 		).build();
 
 		_updateElementInstancesJSON(
