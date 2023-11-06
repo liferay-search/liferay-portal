@@ -149,7 +149,7 @@ public abstract class BaseAsahSuggestionsContributor {
 				).score(
 					1.0F
 				).text(
-					getText(destinationBaseURL, itemJSONObject)
+					getText(itemJSONObject)
 				).build());
 		}
 
@@ -203,9 +203,7 @@ public abstract class BaseAsahSuggestionsContributor {
 		).build();
 	}
 
-	protected String getText(
-		String destinationBaseURL, JSONObject itemJSONObject) {
-
+	protected String getText(JSONObject itemJSONObject) {
 		return itemJSONObject.getString("keywords");
 	}
 

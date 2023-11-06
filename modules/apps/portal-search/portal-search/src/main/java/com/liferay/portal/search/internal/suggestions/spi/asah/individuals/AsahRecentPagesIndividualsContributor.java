@@ -7,15 +7,18 @@ package com.liferay.portal.search.internal.suggestions.spi.asah.individuals;
 
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.search.SearchContext;
+import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.search.rest.dto.v1_0.SuggestionsContributorConfiguration;
 import com.liferay.portal.search.spi.suggestions.SuggestionsContributor;
 import com.liferay.portal.search.suggestions.SuggestionsContributorResults;
 import com.liferay.portal.search.suggestions.spi.constants.AsahSuggestionsConstants;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Gustavo Lima
@@ -42,22 +45,25 @@ public class AsahRecentPagesIndividualsContributor
 				AsahSuggestionsConstants.INDIVIDUALS, "/",
 				getHashedEmail(portal.getUserId(liferayPortletRequest))),
 			AsahSuggestionsConstants.RECENT_PAGES, searchContext,
-			"visits,displayLanguageId,lastVisitDate,firstVisitDate,url",
+			"lastVisitDate,visits,displayLanguageId,firstVisitDate,url",
 			suggestionsContributorConfiguration);
 	}
 
 	protected String getAssetURL(
 		String destinationBaseURL, JSONObject itemJSONObject) {
 
-		// api not return the title
-
 		return itemJSONObject.getString("url");
 	}
 
-	protected String getText(
-		String destinationBaseURL, JSONObject itemJSONObject) {
+	protected String getText(JSONObject itemJSONObject) {
+		Layout layout = _layoutLocalService.fetchLayoutByFriendlyURL(
+			itemJSONObject.getLong("groupId"), true,
+			itemJSONObject.getString("url"));
 
-		return itemJSONObject.getString("title");
+		return layout.getName();
 	}
+
+	@Reference
+	private LayoutLocalService _layoutLocalService;
 
 }
