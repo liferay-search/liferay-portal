@@ -3,31 +3,29 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
-package com.liferay.portal.search.internal.suggestions.spi;
+package com.liferay.portal.search.internal.suggestions.spi.asah.individuals;
 
-import com.liferay.analytics.settings.rest.manager.AnalyticsSettingsManager;
+import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.search.SearchContext;
-import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.search.rest.dto.v1_0.SuggestionsContributorConfiguration;
 import com.liferay.portal.search.spi.suggestions.SuggestionsContributor;
-import com.liferay.portal.search.suggestions.SuggestionBuilderFactory;
 import com.liferay.portal.search.suggestions.SuggestionsContributorResults;
-import com.liferay.portal.search.suggestions.SuggestionsContributorResultsBuilderFactory;
+import com.liferay.portal.search.suggestions.spi.constants.AsahSuggestionsConstants;
 
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Gustavo Lima
  */
 @Component(
 	configurationPid = "com.liferay.portal.search.internal.configuration.AsahIndividualsConfiguration",
-	property = "search.suggestions.contributor.name=asahRecentSearches",
+	property = "search.suggestions.contributor.name=asahRecentAssets",
 	service = SuggestionsContributor.class
 )
-public class AsahRecentSearchIndividualsContributor
+public class AsahRecentlyViewedIndividualsContributor
 	extends BaseAsahIndividualsSuggestionsContributor
 	implements SuggestionsContributor {
 
@@ -40,26 +38,26 @@ public class AsahRecentSearchIndividualsContributor
 			suggestionsContributorConfiguration) {
 
 		return getSuggestionsContributorResults(
-			_analyticsSettingsManager, "search-keywords", "individuals",
-			searchContext,
-			"counts,displayLanguageId,keywords,lastModifiedDate,createDate" +
-				",groupId",
-			_suggestionBuilderFactory, suggestionsContributorConfiguration,
-			_suggestionsContributorResultsBuilderFactory,
-			_portalUtil.getUserId(liferayPortletRequest));
+			StringBundler.concat(
+				AsahSuggestionsConstants.INDIVIDUALS, "/",
+				getHashedEmail(portal.getUserId(liferayPortletRequest))),
+			AsahSuggestionsConstants.RECENT_ASSETS, searchContext,
+			"visits,lastVisitDate,firstVisitDate,url,assetTitle,assetId",
+			suggestionsContributorConfiguration);
 	}
 
-	@Reference
-	private AnalyticsSettingsManager _analyticsSettingsManager;
+	protected String getAssetURL(
+		String destinationBaseURL, JSONObject itemJSONObject) {
 
-	@Reference
-	private PortalUtil _portalUtil;
+		return itemJSONObject.getString("url");
+	}
 
-	@Reference
-	private SuggestionBuilderFactory _suggestionBuilderFactory;
+	protected String getText(
+		String destinationBaseURL, JSONObject itemJSONObject) {
 
-	@Reference
-	private SuggestionsContributorResultsBuilderFactory
-		_suggestionsContributorResultsBuilderFactory;
+		// URL is returning /search when web-content dont have a page
+
+		return itemJSONObject.getString("assetTitle");
+	}
 
 }
