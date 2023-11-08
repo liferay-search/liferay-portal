@@ -10,7 +10,6 @@ import com.liferay.asset.kernel.model.AssetRenderer;
 import com.liferay.asset.kernel.service.AssetEntryLocalService;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.service.JournalArticleLocalService;
-import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -51,9 +50,7 @@ public class AsahRecentlyViewedIndividualsContributor
 		_liferayPortletResponse = liferayPortletResponse;
 
 		return getSuggestionsContributorResults(
-			StringBundler.concat(
-				AsahSuggestionsConstants.INDIVIDUALS, "/",
-				getHashedEmail(portal.getUserId(liferayPortletRequest))),
+			AsahSuggestionsConstants.INDIVIDUALS,
 			AsahSuggestionsConstants.RECENT_ASSETS, searchContext,
 			"lastVisitDate,visits,assetTitle,firstVisitDate,url,assetId",
 			suggestionsContributorConfiguration);

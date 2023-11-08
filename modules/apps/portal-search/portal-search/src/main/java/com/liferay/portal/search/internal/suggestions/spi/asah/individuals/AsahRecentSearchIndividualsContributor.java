@@ -5,7 +5,6 @@
 
 package com.liferay.portal.search.internal.suggestions.spi.asah.individuals;
 
-import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.search.SearchContext;
@@ -37,9 +36,7 @@ public class AsahRecentSearchIndividualsContributor
 			suggestionsContributorConfiguration) {
 
 		return getSuggestionsContributorResults(
-			StringBundler.concat(
-				AsahSuggestionsConstants.INDIVIDUALS, "/",
-				getHashedEmail(portal.getUserId(liferayPortletRequest))),
+			AsahSuggestionsConstants.INDIVIDUALS,
 			AsahSuggestionsConstants.SEARCH_KEYWORDS, searchContext,
 			"counts,displayLanguageId,keywords,lastModifiedDate,createDate" +
 				",groupId",

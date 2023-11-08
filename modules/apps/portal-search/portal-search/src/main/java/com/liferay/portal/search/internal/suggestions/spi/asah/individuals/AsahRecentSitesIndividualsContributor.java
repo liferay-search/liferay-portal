@@ -5,7 +5,6 @@
 
 package com.liferay.portal.search.internal.suggestions.spi.asah.individuals;
 
-import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.model.Group;
@@ -46,9 +45,7 @@ public class AsahRecentSitesIndividualsContributor
 		_locale = searchContext.getLocale();
 
 		return getSuggestionsContributorResults(
-			StringBundler.concat(
-				AsahSuggestionsConstants.INDIVIDUALS, "/",
-				getHashedEmail(portal.getUserId(liferayPortletRequest))),
+			AsahSuggestionsConstants.INDIVIDUALS,
 			AsahSuggestionsConstants.RECENT_SITES, searchContext,
 			"lastVisitDate,visits,firstVisitDate,groupId",
 			suggestionsContributorConfiguration);
