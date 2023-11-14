@@ -33,8 +33,8 @@ public class DocumentToRankingTranslatorImpl
 			document.getString(RankingFields.GROUP_EXTERNAL_REFERENCE_CODE)
 		).hiddenDocumentIds(
 			document.getStrings(RankingFields.BLOCKS)
-		).inactive(
-			document.getBoolean(RankingFields.INACTIVE)
+		).status(
+			document.getString(RankingFields.STATUS)
 		).indexName(
 			document.getString("index")
 		).name(

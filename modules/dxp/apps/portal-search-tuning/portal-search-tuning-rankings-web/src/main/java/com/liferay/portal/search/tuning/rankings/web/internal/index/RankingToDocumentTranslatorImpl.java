@@ -35,8 +35,8 @@ public class RankingToDocumentTranslatorImpl
 		).setString(
 			RankingFields.GROUP_EXTERNAL_REFERENCE_CODE,
 			ranking.getGroupExternalReferenceCode()
-		).setBoolean(
-			RankingFields.INACTIVE, ranking.isInactive()
+		).setString(
+			RankingFields.STATUS, ranking.getStatus()
 		).setString(
 			RankingFields.INDEX, ranking.getIndexName()
 		).setString(

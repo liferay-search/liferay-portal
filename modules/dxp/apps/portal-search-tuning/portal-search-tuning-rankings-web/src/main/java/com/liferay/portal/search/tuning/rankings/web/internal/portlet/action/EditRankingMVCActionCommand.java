@@ -90,14 +90,14 @@ public class EditRankingMVCActionCommand extends BaseMVCActionCommand {
 
 			_deactivate(
 				actionRequest, actionResponse, editRankingMVCActionRequest,
-				true);
+				ResultRankingsConstants.INACTIVE);
 		}
 		else if (editRankingMVCActionRequest.isCmd(
 					ResultRankingsConstants.ACTIVATE)) {
 
 			_deactivate(
 				actionRequest, actionResponse, editRankingMVCActionRequest,
-				false);
+				ResultRankingsConstants.ACTIVE);
 		}
 	}
 
@@ -191,6 +191,8 @@ public class EditRankingMVCActionCommand extends BaseMVCActionCommand {
 			editRankingMVCActionRequest.getQueryString()
 		).queryString(
 			editRankingMVCActionRequest.getQueryString()
+		).status(
+			editRankingMVCActionRequest.getStatus()
 		).sxpBlueprintExternalReferenceCode(
 			editRankingMVCActionRequest.getSXPBlueprintExternalReferenceCode()
 		);
@@ -209,11 +211,11 @@ public class EditRankingMVCActionCommand extends BaseMVCActionCommand {
 	private void _deactivate(
 			ActionRequest actionRequest, ActionResponse actionResponse,
 			EditRankingMVCActionRequest editRankingMVCActionRequest,
-			boolean inactive)
+			String status)
 		throws Exception {
 
 		try {
-			_deactivate(actionRequest, editRankingMVCActionRequest, inactive);
+			_deactivate(actionRequest, editRankingMVCActionRequest, status);
 
 			sendRedirect(
 				actionRequest, actionResponse,
@@ -241,13 +243,13 @@ public class EditRankingMVCActionCommand extends BaseMVCActionCommand {
 	private void _deactivate(
 			ActionRequest actionRequest,
 			EditRankingMVCActionRequest editRankingMVCActionRequest,
-			boolean inactive)
+			String status)
 		throws PortalException {
 
 		List<Ranking> rankings = _getRankings(
 			actionRequest, editRankingMVCActionRequest);
 
-		if (!inactive) {
+		if (status.equals(ResultRankingsConstants.ACTIVE)) {
 			_guardDuplicateQueryStrings(editRankingMVCActionRequest, rankings);
 		}
 
@@ -255,7 +257,7 @@ public class EditRankingMVCActionCommand extends BaseMVCActionCommand {
 			Ranking.RankingBuilder rankingBuilder = new Ranking.RankingBuilder(
 				ranking);
 
-			rankingBuilder.inactive(inactive);
+			rankingBuilder.status(status);
 
 			rankingStorageAdapter.update(
 				rankingBuilder.build(), getRankingIndexName());
@@ -452,7 +454,14 @@ public class EditRankingMVCActionCommand extends BaseMVCActionCommand {
 	private boolean _isInactive(
 		EditRankingMVCActionRequest editRankingMVCActionRequest) {
 
-		return editRankingMVCActionRequest.getInactive();
+		if (Objects.equals(
+				editRankingMVCActionRequest.getStatus(),
+				ResultRankingsConstants.ACTIVE)) {
+
+			return false;
+		}
+
+		return true;
 	}
 
 	private boolean _isUpdateSpecial(String string) {
@@ -527,8 +536,8 @@ public class EditRankingMVCActionCommand extends BaseMVCActionCommand {
 			_updateHiddenIds(
 				addedHiddenIds, ranking.getHiddenDocumentIds(),
 				removedHiddenIds)
-		).inactive(
-			_isInactive(editRankingMVCActionRequest)
+		).status(
+			editRankingMVCActionRequest.getStatus()
 		).indexName(
 			getIndexName(actionRequest)
 		).name(
@@ -596,7 +605,7 @@ public class EditRankingMVCActionCommand extends BaseMVCActionCommand {
 			_cmd = ParamUtil.getString(actionRequest, Constants.CMD);
 			_groupExternalReferenceCode = ParamUtil.getString(
 				actionRequest, "groupExternalReferenceCode");
-			_inactive = ParamUtil.getBoolean(actionRequest, "inactive");
+			_status = ParamUtil.getString(actionRequest, "status");
 			_queryString = ParamUtil.getString(actionRequest, PARAM_KEYWORDS);
 			_redirect = ParamUtil.getString(actionRequest, "redirect");
 			_resultsRankingUid = ParamUtil.getString(
@@ -613,10 +622,6 @@ public class EditRankingMVCActionCommand extends BaseMVCActionCommand {
 			return _groupExternalReferenceCode;
 		}
 
-		public boolean getInactive() {
-			return _inactive;
-		}
-
 		public String getQueryString() {
 			return _queryString;
 		}
@@ -627,6 +632,10 @@ public class EditRankingMVCActionCommand extends BaseMVCActionCommand {
 
 		public String getResultsRankingUid() {
 			return _resultsRankingUid;
+		}
+
+		public String getStatus() {
+			return _status;
 		}
 
 		public String getSXPBlueprintExternalReferenceCode() {
@@ -640,10 +649,10 @@ public class EditRankingMVCActionCommand extends BaseMVCActionCommand {
 		private final List<String> _aliases;
 		private final String _cmd;
 		private final String _groupExternalReferenceCode;
-		private final boolean _inactive;
 		private final String _queryString;
 		private final String _redirect;
 		private final String _resultsRankingUid;
+		private final String _status;
 		private final String _sxpBlueprintExternalReferenceCode;
 
 	}
