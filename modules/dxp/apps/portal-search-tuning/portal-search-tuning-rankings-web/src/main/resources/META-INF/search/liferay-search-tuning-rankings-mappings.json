@@ -12,10 +12,6 @@
 			"store": true,
 			"type": "keyword"
 		},
-		"inactive": {
-			"store": true,
-			"type": "boolean"
-		},
 		"index": {
 			"store": true,
 			"type": "keyword"
@@ -57,6 +53,10 @@
 					"type": "keyword"
 				}
 			},
+			"store": true,
+			"type": "text"
+		},
+		"status": {
 			"store": true,
 			"type": "text"
 		},
