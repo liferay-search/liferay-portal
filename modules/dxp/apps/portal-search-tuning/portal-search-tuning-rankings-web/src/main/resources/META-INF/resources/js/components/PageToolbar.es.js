@@ -92,7 +92,18 @@ class PageToolbar extends Component {
 						</ManagementToolbar.Item>
 					)}
 
-					{resultRankingStatus !== 'not-applicable' && (
+					{resultRankingStatus === 'not-applicable' ? (
+						<ManagementToolbar.Item>
+							<ClayButton
+								displayType="secondary"
+								onClick={onPublish}
+								small
+								type="submit"
+							>
+								{Liferay.Language.get('delete')}
+							</ClayButton>
+						</ManagementToolbar.Item>
+					) : (
 						<ManagementToolbar.Item>
 							<ClayButton
 								disabled={submitDisabled}
