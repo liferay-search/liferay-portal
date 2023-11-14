@@ -2688,7 +2688,7 @@ public class SXPBlueprintSearchResultTest {
 				HashMapBuilder.put(
 					LocaleUtil.US, content
 				).build(),
-				LocaleUtil.getSiteDefault(), workflowEnabled, approved,
+				LocaleUtil.getDefault(), workflowEnabled, approved,
 				_serviceContext);
 		}
 
@@ -2707,7 +2707,7 @@ public class SXPBlueprintSearchResultTest {
 				HashMapBuilder.put(
 					LocaleUtil.US, content
 				).build(),
-				LocaleUtil.getSiteDefault(), workflowEnabled, approved,
+				LocaleUtil.getDefault(), workflowEnabled, approved,
 				_serviceContext);
 		}
 
