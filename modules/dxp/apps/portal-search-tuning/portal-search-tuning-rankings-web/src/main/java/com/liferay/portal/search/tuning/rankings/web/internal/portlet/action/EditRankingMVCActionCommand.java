@@ -27,6 +27,7 @@ import com.liferay.portal.search.tuning.rankings.web.internal.configuration.Defa
 import com.liferay.portal.search.tuning.rankings.web.internal.configuration.ResultRankingsConfiguration;
 import com.liferay.portal.search.tuning.rankings.web.internal.constants.ResultRankingsConstants;
 import com.liferay.portal.search.tuning.rankings.web.internal.constants.ResultRankingsPortletKeys;
+import com.liferay.portal.search.tuning.rankings.web.internal.exception.ArchivedRankingStatusChangeException;
 import com.liferay.portal.search.tuning.rankings.web.internal.exception.DuplicateAliasStringException;
 import com.liferay.portal.search.tuning.rankings.web.internal.exception.DuplicateQueryStringException;
 import com.liferay.portal.search.tuning.rankings.web.internal.index.DuplicateQueryStringsDetector;
@@ -222,7 +223,11 @@ public class EditRankingMVCActionCommand extends BaseMVCActionCommand {
 				editRankingMVCActionRequest.getRedirect());
 		}
 		catch (Exception exception) {
-			if (exception instanceof DuplicateAliasStringException) {
+			if (exception instanceof ArchivedRankingStatusChangeException) {
+				SessionErrors.add(
+					actionRequest, ArchivedRankingStatusChangeException.class);
+			}
+			else if (exception instanceof DuplicateAliasStringException) {
 				SessionErrors.add(
 					actionRequest, DuplicateAliasStringException.class);
 			}
@@ -253,7 +258,18 @@ public class EditRankingMVCActionCommand extends BaseMVCActionCommand {
 			_guardDuplicateQueryStrings(editRankingMVCActionRequest, rankings);
 		}
 
+		boolean notApplicableStatus = false;
+
 		for (Ranking ranking : rankings) {
+			if (Objects.equals(
+					ranking.getStatus(),
+					ResultRankingsConstants.NOT_APPLICABLE)) {
+
+				notApplicableStatus = true;
+
+				continue;
+			}
+
 			Ranking.RankingBuilder rankingBuilder = new Ranking.RankingBuilder(
 				ranking);
 
@@ -261,6 +277,10 @@ public class EditRankingMVCActionCommand extends BaseMVCActionCommand {
 
 			rankingStorageAdapter.update(
 				rankingBuilder.build(), getRankingIndexName());
+		}
+
+		if (notApplicableStatus) {
+			throw new ArchivedRankingStatusChangeException();
 		}
 	}
 
@@ -516,6 +536,12 @@ public class EditRankingMVCActionCommand extends BaseMVCActionCommand {
 
 		if (ranking == null) {
 			return;
+		}
+
+		if (Objects.equals(
+				ranking.getStatus(), ResultRankingsConstants.NOT_APPLICABLE)) {
+
+			throw new ArchivedRankingStatusChangeException();
 		}
 
 		_guardDuplicateQueryStrings(editRankingMVCActionRequest, ranking);
