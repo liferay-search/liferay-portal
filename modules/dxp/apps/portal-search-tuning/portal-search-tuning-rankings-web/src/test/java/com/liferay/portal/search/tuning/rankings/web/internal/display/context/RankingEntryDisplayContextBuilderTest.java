@@ -5,6 +5,7 @@
 
 package com.liferay.portal.search.tuning.rankings.web.internal.display.context;
 
+import com.liferay.portal.search.tuning.rankings.web.internal.constants.ResultRankingsConstants;
 import com.liferay.portal.search.tuning.rankings.web.internal.index.Ranking;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
 
@@ -55,10 +56,10 @@ public class RankingEntryDisplayContextBuilderTest {
 		).getHiddenDocumentIds();
 
 		Mockito.doReturn(
-			false
+			"active"
 		).when(
 			_ranking
-		).isInactive();
+		).getStatus();
 
 		Mockito.doReturn(
 			"indexName"
@@ -110,7 +111,9 @@ public class RankingEntryDisplayContextBuilderTest {
 		Assert.assertEquals(
 			"rankingDocumentId", rankingEntryDisplayContext.getUid());
 
-		Assert.assertFalse(rankingEntryDisplayContext.getInactive());
+		Assert.assertEquals(
+			ResultRankingsConstants.ACTIVE,
+			rankingEntryDisplayContext.getStatus());
 	}
 
 	private final Ranking _ranking = Mockito.mock(Ranking.class);

@@ -5,6 +5,7 @@
 
 package com.liferay.portal.search.tuning.rankings.web.internal.display.context;
 
+import com.liferay.portal.search.tuning.rankings.web.internal.constants.ResultRankingsConstants;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
 
 import org.junit.Assert;
@@ -30,7 +31,7 @@ public class RankingEntryDisplayContextTest {
 		_rankingEntryDisplayContext.setGroupExternalReferenceCode(
 			"groupExternalReferenceCode");
 		_rankingEntryDisplayContext.setHiddenResultsCount("hiddenResultsCount");
-		_rankingEntryDisplayContext.setInactive(false);
+		_rankingEntryDisplayContext.setStatus(ResultRankingsConstants.ACTIVE);
 		_rankingEntryDisplayContext.setIndex("index");
 		_rankingEntryDisplayContext.setKeywords("keywords");
 		_rankingEntryDisplayContext.setPinnedResultsCount("pinnedResultsCount");
@@ -46,7 +47,9 @@ public class RankingEntryDisplayContextTest {
 		Assert.assertEquals(
 			"hiddenResultsCount",
 			_rankingEntryDisplayContext.getHiddenResultsCount());
-		Assert.assertFalse(_rankingEntryDisplayContext.getInactive());
+		Assert.assertEquals(
+			ResultRankingsConstants.ACTIVE,
+			_rankingEntryDisplayContext.getStatus());
 		Assert.assertEquals("index", _rankingEntryDisplayContext.getIndex());
 		Assert.assertEquals(
 			"keywords", _rankingEntryDisplayContext.getKeywords());
