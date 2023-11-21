@@ -33,6 +33,7 @@ import com.liferay.search.experiences.rest.dto.v1_0.util.ElementDefinitionUtil;
 import com.liferay.search.experiences.rest.dto.v1_0.util.SXPElementUtil;
 import com.liferay.search.experiences.rest.internal.dto.v1_0.converter.util.SXPDTOConverterUtil;
 import com.liferay.search.experiences.rest.internal.odata.entity.v1_0.SXPElementEntityModel;
+import com.liferay.search.experiences.rest.internal.resource.v1_0.util.DecodeSXPUtil;
 import com.liferay.search.experiences.rest.internal.resource.v1_0.util.SearchUtil;
 import com.liferay.search.experiences.rest.internal.resource.v1_0.util.TitleMapUtil;
 import com.liferay.search.experiences.rest.resource.v1_0.SXPElementResource;
@@ -231,6 +232,8 @@ public class SXPElementResourceImpl extends BaseSXPElementResourceImpl {
 
 	@Override
 	public SXPElement postSXPElement(SXPElement sxpElement) throws Exception {
+		DecodeSXPUtil.decodeSXPElement(sxpElement);
+
 		return _sxpElementDTOConverter.toDTO(
 			new DefaultDTOConverterContext(
 				contextAcceptLanguage.isAcceptAllLanguages(), new HashMap<>(),
@@ -282,6 +285,8 @@ public class SXPElementResourceImpl extends BaseSXPElementResourceImpl {
 	public SXPElement postSXPElementPreview(SXPElement sxpElement)
 		throws Exception {
 
+		DecodeSXPUtil.decodeSXPElement(sxpElement);
+
 		Locale locale = LocaleUtil.fromLanguageId(
 			contextAcceptLanguage.getPreferredLanguageId());
 
@@ -305,6 +310,8 @@ public class SXPElementResourceImpl extends BaseSXPElementResourceImpl {
 	public SXPElement postSXPElementValidate(String json) throws Exception {
 		SXPElement sxpElement = SXPElementUtil.toSXPElement(json);
 
+		DecodeSXPUtil.decodeSXPElement(sxpElement);
+
 		_validateSXPElementExternalReferenceCode(sxpElement);
 
 		return sxpElement;
@@ -313,6 +320,8 @@ public class SXPElementResourceImpl extends BaseSXPElementResourceImpl {
 	@Override
 	public SXPElement putSXPElement(Long sxpElementId, SXPElement sxpElement)
 		throws Exception {
+
+		DecodeSXPUtil.decodeSXPElement(sxpElement);
 
 		com.liferay.search.experiences.model.SXPElement
 			serviceBuilderSXPElement = _sxpElementService.fetchSXPElement(
@@ -325,6 +334,8 @@ public class SXPElementResourceImpl extends BaseSXPElementResourceImpl {
 	public SXPElement putSXPElementByExternalReferenceCode(
 			String externalReferenceCode, SXPElement sxpElement)
 		throws Exception {
+
+		DecodeSXPUtil.decodeSXPElement(sxpElement);
 
 		com.liferay.search.experiences.model.SXPElement
 			serviceBuilderSXPElement =
