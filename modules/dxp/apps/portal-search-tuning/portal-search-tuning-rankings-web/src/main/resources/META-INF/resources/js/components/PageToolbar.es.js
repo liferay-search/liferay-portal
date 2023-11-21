@@ -101,6 +101,7 @@ class PageToolbar extends Component {
 					{status === STATUS_TYPES.NOT_APPLICABLE ? (
 						<ManagementToolbar.Item>
 							<ClayButton
+								className="link-outline-secondary"
 								displayType="secondary"
 								onClick={onPublish}
 								small
