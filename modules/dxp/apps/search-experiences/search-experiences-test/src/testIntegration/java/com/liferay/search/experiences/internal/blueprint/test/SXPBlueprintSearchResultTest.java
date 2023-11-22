@@ -207,8 +207,9 @@ public class SXPBlueprintSearchResultTest {
 
 	@Test
 	public void testBoostContentsForTheCurrentLanguage() throws Exception {
+		_languageLogs();
 		LocaleThreadLocal.setDefaultLocale(LocaleUtil.US);
-
+		_languageLogs();
 		_journalArticleBuilder.setTitle(
 			"cola cola en_US"
 		).setContent(
@@ -220,7 +221,7 @@ public class SXPBlueprintSearchResultTest {
 		).build();
 
 		LocaleThreadLocal.setDefaultLocale(LocaleUtil.SPAIN);
-
+		_languageLogs();
 		_journalArticleBuilder.setTitle(
 			"coca cola es_ES"
 		).setContent(
@@ -246,7 +247,7 @@ public class SXPBlueprintSearchResultTest {
 				"en_US]");
 
 		LocaleThreadLocal.setDefaultLocale(LocaleUtil.US);
-
+		_languageLogs();
 		_assertSearch(
 			"[cola cola en_US, fanta cola en_US, coca cola es_ES, pepsi cola " +
 				"es_ES]");
@@ -2420,6 +2421,19 @@ public class SXPBlueprintSearchResultTest {
 		}
 
 		return false;
+	}
+
+	private void _languageLogs() {
+		System.out.println("----------- start language logs --------------");
+
+		System.out.println(
+			"Default Locale = " + LocaleThreadLocal.getDefaultLocale());
+
+		System.out.println("User Language Id = " + _user.getLanguageId());
+
+		System.out.println("User Locale " + _user.getLocale());
+
+		System.out.println("---------- end of Language logs ---------------");
 	}
 
 	private void _setCurrentUser(User user) {
