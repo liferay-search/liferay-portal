@@ -207,6 +207,8 @@ public class SXPBlueprintSearchResultTest {
 
 	@Test
 	public void testBoostContentsForTheCurrentLanguage() throws Exception {
+		LocaleThreadLocal.setDefaultLocale(LocaleUtil.US);
+
 		_journalArticleBuilder.setTitle(
 			"cola cola en_US"
 		).setContent(
