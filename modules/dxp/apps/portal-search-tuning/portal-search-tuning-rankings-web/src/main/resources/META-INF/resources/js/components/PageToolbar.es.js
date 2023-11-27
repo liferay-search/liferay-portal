@@ -61,12 +61,8 @@ class PageToolbar extends Component {
 
 								<span className="toggle-switch-text-right">
 									{status === STATUS_TYPES.ACTIVE
-										? Liferay.Language.get(
-												STATUS_TYPES.ACTIVE
-										  )
-										: Liferay.Language.get(
-												STATUS_TYPES.INACTIVE
-										  )}
+										? Liferay.Language.get('active')
+										: Liferay.Language.get('inactive')}
 								</span>
 							</label>
 						</ManagementToolbar.Item>
