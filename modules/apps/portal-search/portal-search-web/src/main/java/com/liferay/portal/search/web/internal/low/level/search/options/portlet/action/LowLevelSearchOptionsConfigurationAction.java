@@ -5,11 +5,12 @@
 
 package com.liferay.portal.search.web.internal.low.level.search.options.portlet.action;
 
+import com.liferay.portal.kernel.model.Role;
+import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.model.role.RoleConstants;
 import com.liferay.portal.kernel.portlet.ConfigurationAction;
 import com.liferay.portal.kernel.portlet.DefaultConfigurationAction;
 import com.liferay.portal.kernel.security.auth.PrincipalException;
-import com.liferay.portal.kernel.security.permission.PermissionChecker;
-import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.search.engine.ConnectionInformation;
@@ -18,6 +19,7 @@ import com.liferay.portal.search.web.internal.low.level.search.options.constants
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -36,10 +38,9 @@ public class LowLevelSearchOptionsConfigurationAction
 
 	@Override
 	public String getJspPath(HttpServletRequest httpServletRequest) {
-		PermissionChecker permissionChecker =
-			PermissionThreadLocal.getPermissionChecker();
+		User user = (User)httpServletRequest.getAttribute(WebKeys.USER);
 
-		if (!permissionChecker.isOmniadmin()) {
+		if (!_isAdmin(user)) {
 			SessionErrors.add(
 				httpServletRequest, PrincipalException.class.getName());
 
@@ -72,5 +73,18 @@ public class LowLevelSearchOptionsConfigurationAction
 
 	@Reference
 	protected SearchEngineInformation searchEngineInformation;
+
+	private boolean _isAdmin(User user) {
+		if (user == null) {
+			return false;
+		}
+
+		List<Role> roles = user.getRoles();
+
+		return roles.stream(
+		).anyMatch(
+			role -> Objects.equals(role.getName(), RoleConstants.ADMINISTRATOR)
+		);
+	}
 
 }
