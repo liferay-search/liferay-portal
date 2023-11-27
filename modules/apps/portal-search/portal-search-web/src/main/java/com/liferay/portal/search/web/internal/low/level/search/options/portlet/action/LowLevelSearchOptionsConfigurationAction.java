@@ -39,7 +39,7 @@ public class LowLevelSearchOptionsConfigurationAction
 		PermissionChecker permissionChecker =
 			PermissionThreadLocal.getPermissionChecker();
 
-		if (!permissionChecker.isOmniadmin()) {
+		if (!permissionChecker.isCompanyAdmin()) {
 			SessionErrors.add(
 				httpServletRequest, PrincipalException.class.getName());
 
