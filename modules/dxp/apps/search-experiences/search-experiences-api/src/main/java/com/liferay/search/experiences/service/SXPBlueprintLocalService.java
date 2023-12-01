@@ -63,6 +63,7 @@ public interface SXPBlueprintLocalService
 	public SXPBlueprint addSXPBlueprint(
 			String externalReferenceCode, long userId, String configurationJSON,
 			Map<Locale, String> descriptionMap, String elementInstancesJSON,
+			String fallbackDescription, String fallbackTitle,
 			String schemaVersion, Map<Locale, String> titleMap,
 			ServiceContext serviceContext)
 		throws PortalException;

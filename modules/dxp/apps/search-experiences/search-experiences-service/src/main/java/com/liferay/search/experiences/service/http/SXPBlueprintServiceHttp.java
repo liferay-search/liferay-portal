@@ -46,7 +46,8 @@ public class SXPBlueprintServiceHttp {
 				HttpPrincipal httpPrincipal, String externalReferenceCode,
 				String configurationJSON,
 				java.util.Map<java.util.Locale, String> descriptionMap,
-				String elementInstancesJSON, String schemaVersion,
+				String elementInstancesJSON, String fallbackDescription,
+				String fallbackTitle, String schemaVersion,
 				java.util.Map<java.util.Locale, String> titleMap,
 				com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
@@ -58,8 +59,8 @@ public class SXPBlueprintServiceHttp {
 
 			MethodHandler methodHandler = new MethodHandler(
 				methodKey, externalReferenceCode, configurationJSON,
-				descriptionMap, elementInstancesJSON, schemaVersion, titleMap,
-				serviceContext);
+				descriptionMap, elementInstancesJSON, fallbackDescription,
+				fallbackTitle, schemaVersion, titleMap, serviceContext);
 
 			Object returnObj = null;
 
@@ -349,7 +350,7 @@ public class SXPBlueprintServiceHttp {
 	private static final Class<?>[] _addSXPBlueprintParameterTypes0 =
 		new Class[] {
 			String.class, String.class, java.util.Map.class, String.class,
-			String.class, java.util.Map.class,
+			String.class, String.class, String.class, java.util.Map.class,
 			com.liferay.portal.kernel.service.ServiceContext.class
 		};
 	private static final Class<?>[] _deleteSXPBlueprintParameterTypes1 =
