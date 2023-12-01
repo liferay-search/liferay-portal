@@ -66,10 +66,10 @@ public class SXPBlueprintDTOConverter
 				configuration = _toConfiguration(
 					sxpBlueprint.getConfigurationJSON());
 				createDate = sxpBlueprint.getCreateDate();
-				description = _language.get(
+				description = SXPDTOConverterUtil.translate(
+					sxpBlueprint.getFallbackDescription(), _language,
 					dtoConverterContext.getLocale(),
-					sxpBlueprint.getDescription(
-						dtoConverterContext.getLocale()));
+					sxpBlueprint.getDescriptionMap());
 				description_i18n = LocalizedMapUtil.getI18nMap(
 					dtoConverterContext.isAcceptAllLanguages(),
 					sxpBlueprint.getDescriptionMap());
@@ -80,9 +80,10 @@ public class SXPBlueprintDTOConverter
 				id = sxpBlueprint.getSXPBlueprintId();
 				modifiedDate = sxpBlueprint.getModifiedDate();
 				schemaVersion = sxpBlueprint.getSchemaVersion();
-				title = _language.get(
+				title = SXPDTOConverterUtil.translate(
+					sxpBlueprint.getFallbackTitle(), _language,
 					dtoConverterContext.getLocale(),
-					sxpBlueprint.getTitle(dtoConverterContext.getLocale()));
+					sxpBlueprint.getTitleMap());
 				title_i18n = LocalizedMapUtil.getI18nMap(
 					dtoConverterContext.isAcceptAllLanguages(),
 					sxpBlueprint.getTitleMap());
