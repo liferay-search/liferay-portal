@@ -68,6 +68,8 @@ public class SXPBlueprintLocalServiceImpl
 		sxpBlueprint.setConfigurationJSON(configurationJSON);
 		sxpBlueprint.setDescriptionMap(descriptionMap);
 		sxpBlueprint.setElementInstancesJSON(elementInstancesJSON);
+		sxpBlueprint.setFallbackDescription(fallbackDescription);
+		sxpBlueprint.setFallbackTitle(fallbackTitle);
 		sxpBlueprint.setSchemaVersion(schemaVersion);
 		sxpBlueprint.setTitleMap(titleMap);
 		sxpBlueprint.setVersion(

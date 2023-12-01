@@ -157,7 +157,9 @@ public class SXPBlueprintSearchResultTest {
 			_group, _journalArticles, _serviceContext, _user);
 		_sxpBlueprint = _sxpBlueprintLocalService.addSXPBlueprint(
 			null, _user.getUserId(), _configurationJSONObject.toString(),
-			Collections.singletonMap(LocaleUtil.US, ""), null, "",
+			Collections.singletonMap(LocaleUtil.US, ""),
+			RandomTestUtil.randomString(), RandomTestUtil.randomString(), null,
+			"",
 			Collections.singletonMap(
 				LocaleUtil.US, RandomTestUtil.randomString()),
 			_serviceContext);

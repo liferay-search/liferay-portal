@@ -87,6 +87,7 @@ public class SXPParameterDataCreatorTest {
 				"queryConfiguration", JSONUtil.put("applyIndexerClauses", true)
 			).toString(),
 			Collections.singletonMap(LocaleUtil.US, StringPool.BLANK),
+			RandomTestUtil.randomString(), RandomTestUtil.randomString(),
 			StringPool.BLANK, StringPool.BLANK,
 			Collections.singletonMap(
 				LocaleUtil.US, RandomTestUtil.randomString()),

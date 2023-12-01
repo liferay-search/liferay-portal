@@ -110,7 +110,8 @@ public class SXPBlueprintSearchRequestContributorFederatedTest {
 					testName.getMethodName(), ".json")),
 			Collections.singletonMap(
 				LocaleUtil.US, RandomTestUtil.randomString()),
-			"", "",
+			RandomTestUtil.randomString(), RandomTestUtil.randomString(), "",
+			"",
 			Collections.singletonMap(
 				LocaleUtil.US, RandomTestUtil.randomString()),
 			ServiceContextTestUtil.getServiceContext(

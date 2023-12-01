@@ -235,7 +235,9 @@ public class SXPBlueprintResourceImpl extends BaseSXPBlueprintResourceImpl {
 					contextAcceptLanguage.getPreferredLocale(),
 					sxpBlueprint.getDescription(),
 					sxpBlueprint.getDescription_i18n()),
-				_getElementInstancesJSON(sxpBlueprint), _getSchemaVersion(),
+				_getElementInstancesJSON(sxpBlueprint),
+				sxpBlueprint.getFallbackDescription(),
+				sxpBlueprint.getFallbackTitle(), _getSchemaVersion(),
 				LocalizedMapUtil.getLocalizedMap(
 					contextAcceptLanguage.getPreferredLocale(),
 					sxpBlueprint.getTitle(), sxpBlueprint.getTitle_i18n()),
@@ -260,6 +262,8 @@ public class SXPBlueprintResourceImpl extends BaseSXPBlueprintResourceImpl {
 				null, sxpBlueprint.getConfigurationJSON(),
 				sxpBlueprint.getDescriptionMap(),
 				sxpBlueprint.getElementInstancesJSON(),
+				sxpBlueprint.getFallbackDescription(),
+				sxpBlueprint.getFallbackTitle(),
 				sxpBlueprint.getSchemaVersion(),
 				TitleMapUtil.copy(sxpBlueprint.getTitleMap()),
 				ServiceContextFactory.getInstance(contextHttpServletRequest)));

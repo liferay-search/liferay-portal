@@ -226,6 +226,7 @@ public class SXPBlueprintLocalServiceTest {
 
 		SXPBlueprint sxpBlueprint = _sxpBlueprintLocalService.addSXPBlueprint(
 			externalReferenceCode, userId, "{}", descriptionMap, null,
+			RandomTestUtil.randomString(), RandomTestUtil.randomString(),
 			StringPool.BLANK, titleMap, serviceContext);
 
 		_sxpBlueprints.add(sxpBlueprint);
