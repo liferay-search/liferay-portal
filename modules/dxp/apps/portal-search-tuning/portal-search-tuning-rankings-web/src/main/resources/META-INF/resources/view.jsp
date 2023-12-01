@@ -48,7 +48,7 @@ page import="com.liferay.search.experiences.service.SXPBlueprintLocalServiceUtil
 		Liferay.Util.openToast({
 			message:
 				'<liferay-ui:message key="the-selected-action-could-not-be-executed-on-entries-in-not-applicable-status" />',
-			title: Liferay.Language.get('warning'),
+			title: '<liferay-ui:message key="warning" />',
 			toastProps: {
 				autoClose: 5000,
 			},
