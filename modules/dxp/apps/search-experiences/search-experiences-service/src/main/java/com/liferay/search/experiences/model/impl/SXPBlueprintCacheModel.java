@@ -68,7 +68,7 @@ public class SXPBlueprintCacheModel
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(39);
+		StringBundler sb = new StringBundler(43);
 
 		sb.append("{mvccVersion=");
 		sb.append(mvccVersion);
@@ -94,6 +94,10 @@ public class SXPBlueprintCacheModel
 		sb.append(description);
 		sb.append(", elementInstancesJSON=");
 		sb.append(elementInstancesJSON);
+		sb.append(", fallbackDescription=");
+		sb.append(fallbackDescription);
+		sb.append(", fallbackTitle=");
+		sb.append(fallbackTitle);
 		sb.append(", schemaVersion=");
 		sb.append(schemaVersion);
 		sb.append(", title=");
@@ -179,6 +183,20 @@ public class SXPBlueprintCacheModel
 			sxpBlueprintImpl.setElementInstancesJSON(elementInstancesJSON);
 		}
 
+		if (fallbackDescription == null) {
+			sxpBlueprintImpl.setFallbackDescription("");
+		}
+		else {
+			sxpBlueprintImpl.setFallbackDescription(fallbackDescription);
+		}
+
+		if (fallbackTitle == null) {
+			sxpBlueprintImpl.setFallbackTitle("");
+		}
+		else {
+			sxpBlueprintImpl.setFallbackTitle(fallbackTitle);
+		}
+
 		if (schemaVersion == null) {
 			sxpBlueprintImpl.setSchemaVersion("");
 		}
@@ -241,6 +259,8 @@ public class SXPBlueprintCacheModel
 		configurationJSON = (String)objectInput.readObject();
 		description = objectInput.readUTF();
 		elementInstancesJSON = (String)objectInput.readObject();
+		fallbackDescription = objectInput.readUTF();
+		fallbackTitle = objectInput.readUTF();
 		schemaVersion = objectInput.readUTF();
 		title = objectInput.readUTF();
 		version = objectInput.readUTF();
@@ -307,6 +327,20 @@ public class SXPBlueprintCacheModel
 			objectOutput.writeObject(elementInstancesJSON);
 		}
 
+		if (fallbackDescription == null) {
+			objectOutput.writeUTF("");
+		}
+		else {
+			objectOutput.writeUTF(fallbackDescription);
+		}
+
+		if (fallbackTitle == null) {
+			objectOutput.writeUTF("");
+		}
+		else {
+			objectOutput.writeUTF(fallbackTitle);
+		}
+
 		if (schemaVersion == null) {
 			objectOutput.writeUTF("");
 		}
@@ -354,6 +388,8 @@ public class SXPBlueprintCacheModel
 	public String configurationJSON;
 	public String description;
 	public String elementInstancesJSON;
+	public String fallbackDescription;
+	public String fallbackTitle;
 	public String schemaVersion;
 	public String title;
 	public String version;

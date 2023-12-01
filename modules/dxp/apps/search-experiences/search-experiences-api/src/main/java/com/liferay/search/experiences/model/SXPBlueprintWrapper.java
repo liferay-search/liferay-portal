@@ -46,6 +46,8 @@ public class SXPBlueprintWrapper
 		attributes.put("configurationJSON", getConfigurationJSON());
 		attributes.put("description", getDescription());
 		attributes.put("elementInstancesJSON", getElementInstancesJSON());
+		attributes.put("fallbackDescription", getFallbackDescription());
+		attributes.put("fallbackTitle", getFallbackTitle());
 		attributes.put("schemaVersion", getSchemaVersion());
 		attributes.put("title", getTitle());
 		attributes.put("version", getVersion());
@@ -131,6 +133,19 @@ public class SXPBlueprintWrapper
 
 		if (elementInstancesJSON != null) {
 			setElementInstancesJSON(elementInstancesJSON);
+		}
+
+		String fallbackDescription = (String)attributes.get(
+			"fallbackDescription");
+
+		if (fallbackDescription != null) {
+			setFallbackDescription(fallbackDescription);
+		}
+
+		String fallbackTitle = (String)attributes.get("fallbackTitle");
+
+		if (fallbackTitle != null) {
+			setFallbackTitle(fallbackTitle);
 		}
 
 		String schemaVersion = (String)attributes.get("schemaVersion");
@@ -315,6 +330,26 @@ public class SXPBlueprintWrapper
 	@Override
 	public String getExternalReferenceCode() {
 		return model.getExternalReferenceCode();
+	}
+
+	/**
+	 * Returns the fallback description of this sxp blueprint.
+	 *
+	 * @return the fallback description of this sxp blueprint
+	 */
+	@Override
+	public String getFallbackDescription() {
+		return model.getFallbackDescription();
+	}
+
+	/**
+	 * Returns the fallback title of this sxp blueprint.
+	 *
+	 * @return the fallback title of this sxp blueprint
+	 */
+	@Override
+	public String getFallbackTitle() {
+		return model.getFallbackTitle();
 	}
 
 	/**
@@ -758,6 +793,26 @@ public class SXPBlueprintWrapper
 	@Override
 	public void setExternalReferenceCode(String externalReferenceCode) {
 		model.setExternalReferenceCode(externalReferenceCode);
+	}
+
+	/**
+	 * Sets the fallback description of this sxp blueprint.
+	 *
+	 * @param fallbackDescription the fallback description of this sxp blueprint
+	 */
+	@Override
+	public void setFallbackDescription(String fallbackDescription) {
+		model.setFallbackDescription(fallbackDescription);
+	}
+
+	/**
+	 * Sets the fallback title of this sxp blueprint.
+	 *
+	 * @param fallbackTitle the fallback title of this sxp blueprint
+	 */
+	@Override
+	public void setFallbackTitle(String fallbackTitle) {
+		model.setFallbackTitle(fallbackTitle);
 	}
 
 	/**

@@ -11,6 +11,8 @@ create table SXPBlueprint (
 	configurationJSON TEXT null,
 	description STRING null,
 	elementInstancesJSON TEXT null,
+	fallbackDescription STRING null,
+	fallbackTitle VARCHAR(500) null,
 	schemaVersion VARCHAR(75) null,
 	title STRING null,
 	version VARCHAR(75) null,

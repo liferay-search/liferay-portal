@@ -78,7 +78,9 @@ public class SXPBlueprintModelImpl
 		{"userId", Types.BIGINT}, {"userName", Types.VARCHAR},
 		{"createDate", Types.TIMESTAMP}, {"modifiedDate", Types.TIMESTAMP},
 		{"configurationJSON", Types.CLOB}, {"description", Types.VARCHAR},
-		{"elementInstancesJSON", Types.CLOB}, {"schemaVersion", Types.VARCHAR},
+		{"elementInstancesJSON", Types.CLOB},
+		{"fallbackDescription", Types.VARCHAR},
+		{"fallbackTitle", Types.VARCHAR}, {"schemaVersion", Types.VARCHAR},
 		{"title", Types.VARCHAR}, {"version", Types.VARCHAR},
 		{"status", Types.INTEGER}, {"statusByUserId", Types.BIGINT},
 		{"statusByUserName", Types.VARCHAR}, {"statusDate", Types.TIMESTAMP}
@@ -100,6 +102,8 @@ public class SXPBlueprintModelImpl
 		TABLE_COLUMNS_MAP.put("configurationJSON", Types.CLOB);
 		TABLE_COLUMNS_MAP.put("description", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("elementInstancesJSON", Types.CLOB);
+		TABLE_COLUMNS_MAP.put("fallbackDescription", Types.VARCHAR);
+		TABLE_COLUMNS_MAP.put("fallbackTitle", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("schemaVersion", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("title", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("version", Types.VARCHAR);
@@ -110,7 +114,7 @@ public class SXPBlueprintModelImpl
 	}
 
 	public static final String TABLE_SQL_CREATE =
-		"create table SXPBlueprint (mvccVersion LONG default 0 not null,uuid_ VARCHAR(75) null,externalReferenceCode VARCHAR(75) null,sxpBlueprintId LONG not null primary key,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,configurationJSON TEXT null,description STRING null,elementInstancesJSON TEXT null,schemaVersion VARCHAR(75) null,title STRING null,version VARCHAR(75) null,status INTEGER,statusByUserId LONG,statusByUserName VARCHAR(75) null,statusDate DATE null)";
+		"create table SXPBlueprint (mvccVersion LONG default 0 not null,uuid_ VARCHAR(75) null,externalReferenceCode VARCHAR(75) null,sxpBlueprintId LONG not null primary key,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,configurationJSON TEXT null,description STRING null,elementInstancesJSON TEXT null,fallbackDescription STRING null,fallbackTitle VARCHAR(500) null,schemaVersion VARCHAR(75) null,title STRING null,version VARCHAR(75) null,status INTEGER,statusByUserId LONG,statusByUserName VARCHAR(75) null,statusDate DATE null)";
 
 	public static final String TABLE_SQL_DROP = "drop table SXPBlueprint";
 
@@ -283,6 +287,10 @@ public class SXPBlueprintModelImpl
 			attributeGetterFunctions.put(
 				"elementInstancesJSON", SXPBlueprint::getElementInstancesJSON);
 			attributeGetterFunctions.put(
+				"fallbackDescription", SXPBlueprint::getFallbackDescription);
+			attributeGetterFunctions.put(
+				"fallbackTitle", SXPBlueprint::getFallbackTitle);
+			attributeGetterFunctions.put(
 				"schemaVersion", SXPBlueprint::getSchemaVersion);
 			attributeGetterFunctions.put("title", SXPBlueprint::getTitle);
 			attributeGetterFunctions.put("version", SXPBlueprint::getVersion);
@@ -350,6 +358,14 @@ public class SXPBlueprintModelImpl
 				"elementInstancesJSON",
 				(BiConsumer<SXPBlueprint, String>)
 					SXPBlueprint::setElementInstancesJSON);
+			attributeSetterBiConsumers.put(
+				"fallbackDescription",
+				(BiConsumer<SXPBlueprint, String>)
+					SXPBlueprint::setFallbackDescription);
+			attributeSetterBiConsumers.put(
+				"fallbackTitle",
+				(BiConsumer<SXPBlueprint, String>)
+					SXPBlueprint::setFallbackTitle);
 			attributeSetterBiConsumers.put(
 				"schemaVersion",
 				(BiConsumer<SXPBlueprint, String>)
@@ -731,6 +747,46 @@ public class SXPBlueprintModelImpl
 		}
 
 		_elementInstancesJSON = elementInstancesJSON;
+	}
+
+	@JSON
+	@Override
+	public String getFallbackDescription() {
+		if (_fallbackDescription == null) {
+			return "";
+		}
+		else {
+			return _fallbackDescription;
+		}
+	}
+
+	@Override
+	public void setFallbackDescription(String fallbackDescription) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
+		_fallbackDescription = fallbackDescription;
+	}
+
+	@JSON
+	@Override
+	public String getFallbackTitle() {
+		if (_fallbackTitle == null) {
+			return "";
+		}
+		else {
+			return _fallbackTitle;
+		}
+	}
+
+	@Override
+	public void setFallbackTitle(String fallbackTitle) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
+		_fallbackTitle = fallbackTitle;
 	}
 
 	@JSON
@@ -1205,6 +1261,8 @@ public class SXPBlueprintModelImpl
 		sxpBlueprintImpl.setConfigurationJSON(getConfigurationJSON());
 		sxpBlueprintImpl.setDescription(getDescription());
 		sxpBlueprintImpl.setElementInstancesJSON(getElementInstancesJSON());
+		sxpBlueprintImpl.setFallbackDescription(getFallbackDescription());
+		sxpBlueprintImpl.setFallbackTitle(getFallbackTitle());
 		sxpBlueprintImpl.setSchemaVersion(getSchemaVersion());
 		sxpBlueprintImpl.setTitle(getTitle());
 		sxpBlueprintImpl.setVersion(getVersion());
@@ -1244,6 +1302,10 @@ public class SXPBlueprintModelImpl
 			this.<String>getColumnOriginalValue("description"));
 		sxpBlueprintImpl.setElementInstancesJSON(
 			this.<String>getColumnOriginalValue("elementInstancesJSON"));
+		sxpBlueprintImpl.setFallbackDescription(
+			this.<String>getColumnOriginalValue("fallbackDescription"));
+		sxpBlueprintImpl.setFallbackTitle(
+			this.<String>getColumnOriginalValue("fallbackTitle"));
 		sxpBlueprintImpl.setSchemaVersion(
 			this.<String>getColumnOriginalValue("schemaVersion"));
 		sxpBlueprintImpl.setTitle(this.<String>getColumnOriginalValue("title"));
@@ -1416,6 +1478,24 @@ public class SXPBlueprintModelImpl
 			sxpBlueprintCacheModel.elementInstancesJSON = null;
 		}
 
+		sxpBlueprintCacheModel.fallbackDescription = getFallbackDescription();
+
+		String fallbackDescription = sxpBlueprintCacheModel.fallbackDescription;
+
+		if ((fallbackDescription != null) &&
+			(fallbackDescription.length() == 0)) {
+
+			sxpBlueprintCacheModel.fallbackDescription = null;
+		}
+
+		sxpBlueprintCacheModel.fallbackTitle = getFallbackTitle();
+
+		String fallbackTitle = sxpBlueprintCacheModel.fallbackTitle;
+
+		if ((fallbackTitle != null) && (fallbackTitle.length() == 0)) {
+			sxpBlueprintCacheModel.fallbackTitle = null;
+		}
+
 		sxpBlueprintCacheModel.schemaVersion = getSchemaVersion();
 
 		String schemaVersion = sxpBlueprintCacheModel.schemaVersion;
@@ -1536,6 +1616,8 @@ public class SXPBlueprintModelImpl
 	private String _description;
 	private String _descriptionCurrentLanguageId;
 	private String _elementInstancesJSON;
+	private String _fallbackDescription;
+	private String _fallbackTitle;
 	private String _schemaVersion;
 	private String _title;
 	private String _titleCurrentLanguageId;
@@ -1589,6 +1671,8 @@ public class SXPBlueprintModelImpl
 		_columnOriginalValues.put("description", _description);
 		_columnOriginalValues.put(
 			"elementInstancesJSON", _elementInstancesJSON);
+		_columnOriginalValues.put("fallbackDescription", _fallbackDescription);
+		_columnOriginalValues.put("fallbackTitle", _fallbackTitle);
 		_columnOriginalValues.put("schemaVersion", _schemaVersion);
 		_columnOriginalValues.put("title", _title);
 		_columnOriginalValues.put("version", _version);
@@ -1643,19 +1727,23 @@ public class SXPBlueprintModelImpl
 
 		columnBitmasks.put("elementInstancesJSON", 2048L);
 
-		columnBitmasks.put("schemaVersion", 4096L);
+		columnBitmasks.put("fallbackDescription", 4096L);
 
-		columnBitmasks.put("title", 8192L);
+		columnBitmasks.put("fallbackTitle", 8192L);
 
-		columnBitmasks.put("version", 16384L);
+		columnBitmasks.put("schemaVersion", 16384L);
 
-		columnBitmasks.put("status", 32768L);
+		columnBitmasks.put("title", 32768L);
 
-		columnBitmasks.put("statusByUserId", 65536L);
+		columnBitmasks.put("version", 65536L);
 
-		columnBitmasks.put("statusByUserName", 131072L);
+		columnBitmasks.put("status", 131072L);
 
-		columnBitmasks.put("statusDate", 262144L);
+		columnBitmasks.put("statusByUserId", 262144L);
+
+		columnBitmasks.put("statusByUserName", 524288L);
+
+		columnBitmasks.put("statusDate", 1048576L);
 
 		_columnBitmasks = Collections.unmodifiableMap(columnBitmasks);
 	}

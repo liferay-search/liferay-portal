@@ -350,6 +350,36 @@ public interface SXPBlueprintModel
 	public void setElementInstancesJSON(String elementInstancesJSON);
 
 	/**
+	 * Returns the fallback description of this sxp blueprint.
+	 *
+	 * @return the fallback description of this sxp blueprint
+	 */
+	@AutoEscape
+	public String getFallbackDescription();
+
+	/**
+	 * Sets the fallback description of this sxp blueprint.
+	 *
+	 * @param fallbackDescription the fallback description of this sxp blueprint
+	 */
+	public void setFallbackDescription(String fallbackDescription);
+
+	/**
+	 * Returns the fallback title of this sxp blueprint.
+	 *
+	 * @return the fallback title of this sxp blueprint
+	 */
+	@AutoEscape
+	public String getFallbackTitle();
+
+	/**
+	 * Sets the fallback title of this sxp blueprint.
+	 *
+	 * @param fallbackTitle the fallback title of this sxp blueprint
+	 */
+	public void setFallbackTitle(String fallbackTitle);
+
+	/**
 	 * Returns the schema version of this sxp blueprint.
 	 *
 	 * @return the schema version of this sxp blueprint
