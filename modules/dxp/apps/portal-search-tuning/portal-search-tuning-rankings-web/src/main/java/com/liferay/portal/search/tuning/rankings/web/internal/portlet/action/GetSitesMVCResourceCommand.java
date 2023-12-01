@@ -149,7 +149,16 @@ public class GetSitesMVCResourceCommand implements MVCResourceCommand {
 					return jsonObject.put("parentName", parentName);
 				})
 		).put(
-			"total", allGroups.size()
+			"lastPage",
+			(int)Math.ceil(
+				(double)allGroups.size() /
+					ParamUtil.getInteger(resourceRequest, "pageSize"))
+		).put(
+			"page", ParamUtil.getInteger(resourceRequest, "page")
+		).put(
+			"pageSize", ParamUtil.getInteger(resourceRequest, "pageSize")
+		).put(
+			"totalCount", allGroups.size()
 		);
 	}
 
