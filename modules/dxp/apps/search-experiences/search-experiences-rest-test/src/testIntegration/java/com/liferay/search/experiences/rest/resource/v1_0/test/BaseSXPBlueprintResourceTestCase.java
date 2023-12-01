@@ -179,6 +179,8 @@ public abstract class BaseSXPBlueprintResourceTestCase {
 
 		sxpBlueprint.setDescription(regex);
 		sxpBlueprint.setExternalReferenceCode(regex);
+		sxpBlueprint.setFallbackDescription(regex);
+		sxpBlueprint.setFallbackTitle(regex);
 		sxpBlueprint.setSchemaVersion(regex);
 		sxpBlueprint.setTitle(regex);
 		sxpBlueprint.setUserName(regex);
@@ -192,6 +194,8 @@ public abstract class BaseSXPBlueprintResourceTestCase {
 
 		Assert.assertEquals(regex, sxpBlueprint.getDescription());
 		Assert.assertEquals(regex, sxpBlueprint.getExternalReferenceCode());
+		Assert.assertEquals(regex, sxpBlueprint.getFallbackDescription());
+		Assert.assertEquals(regex, sxpBlueprint.getFallbackTitle());
 		Assert.assertEquals(regex, sxpBlueprint.getSchemaVersion());
 		Assert.assertEquals(regex, sxpBlueprint.getTitle());
 		Assert.assertEquals(regex, sxpBlueprint.getUserName());
@@ -1041,6 +1045,24 @@ public abstract class BaseSXPBlueprintResourceTestCase {
 				continue;
 			}
 
+			if (Objects.equals(
+					"fallbackDescription", additionalAssertFieldName)) {
+
+				if (sxpBlueprint.getFallbackDescription() == null) {
+					valid = false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals("fallbackTitle", additionalAssertFieldName)) {
+				if (sxpBlueprint.getFallbackTitle() == null) {
+					valid = false;
+				}
+
+				continue;
+			}
+
 			if (Objects.equals("modifiedDate", additionalAssertFieldName)) {
 				if (sxpBlueprint.getModifiedDate() == null) {
 					valid = false;
@@ -1280,6 +1302,30 @@ public abstract class BaseSXPBlueprintResourceTestCase {
 				if (!Objects.deepEquals(
 						sxpBlueprint1.getExternalReferenceCode(),
 						sxpBlueprint2.getExternalReferenceCode())) {
+
+					return false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals(
+					"fallbackDescription", additionalAssertFieldName)) {
+
+				if (!Objects.deepEquals(
+						sxpBlueprint1.getFallbackDescription(),
+						sxpBlueprint2.getFallbackDescription())) {
+
+					return false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals("fallbackTitle", additionalAssertFieldName)) {
+				if (!Objects.deepEquals(
+						sxpBlueprint1.getFallbackTitle(),
+						sxpBlueprint2.getFallbackTitle())) {
 
 					return false;
 				}
@@ -1609,6 +1655,98 @@ public abstract class BaseSXPBlueprintResourceTestCase {
 			return sb.toString();
 		}
 
+		if (entityFieldName.equals("fallbackDescription")) {
+			Object object = sxpBlueprint.getFallbackDescription();
+
+			String value = String.valueOf(object);
+
+			if (operator.equals("contains")) {
+				sb = new StringBundler();
+
+				sb.append("contains(");
+				sb.append(entityFieldName);
+				sb.append(",'");
+
+				if ((object != null) && (value.length() > 2)) {
+					sb.append(value.substring(1, value.length() - 1));
+				}
+				else {
+					sb.append(value);
+				}
+
+				sb.append("')");
+			}
+			else if (operator.equals("startswith")) {
+				sb = new StringBundler();
+
+				sb.append("startswith(");
+				sb.append(entityFieldName);
+				sb.append(",'");
+
+				if ((object != null) && (value.length() > 1)) {
+					sb.append(value.substring(0, value.length() - 1));
+				}
+				else {
+					sb.append(value);
+				}
+
+				sb.append("')");
+			}
+			else {
+				sb.append("'");
+				sb.append(value);
+				sb.append("'");
+			}
+
+			return sb.toString();
+		}
+
+		if (entityFieldName.equals("fallbackTitle")) {
+			Object object = sxpBlueprint.getFallbackTitle();
+
+			String value = String.valueOf(object);
+
+			if (operator.equals("contains")) {
+				sb = new StringBundler();
+
+				sb.append("contains(");
+				sb.append(entityFieldName);
+				sb.append(",'");
+
+				if ((object != null) && (value.length() > 2)) {
+					sb.append(value.substring(1, value.length() - 1));
+				}
+				else {
+					sb.append(value);
+				}
+
+				sb.append("')");
+			}
+			else if (operator.equals("startswith")) {
+				sb = new StringBundler();
+
+				sb.append("startswith(");
+				sb.append(entityFieldName);
+				sb.append(",'");
+
+				if ((object != null) && (value.length() > 1)) {
+					sb.append(value.substring(0, value.length() - 1));
+				}
+				else {
+					sb.append(value);
+				}
+
+				sb.append("')");
+			}
+			else {
+				sb.append("'");
+				sb.append(value);
+				sb.append("'");
+			}
+
+			return sb.toString();
+		}
+
 		if (entityFieldName.equals("id")) {
 			throw new IllegalArgumentException(
 				"Invalid entity field " + entityFieldName);
@@ -1884,6 +2022,10 @@ public abstract class BaseSXPBlueprintResourceTestCase {
 				description = StringUtil.toLowerCase(
 					RandomTestUtil.randomString());
 				externalReferenceCode = StringUtil.toLowerCase(
+					RandomTestUtil.randomString());
+				fallbackDescription = StringUtil.toLowerCase(
+					RandomTestUtil.randomString());
+				fallbackTitle = StringUtil.toLowerCase(
 					RandomTestUtil.randomString());
 				id = RandomTestUtil.randomLong();
 				modifiedDate = RandomTestUtil.nextDate();

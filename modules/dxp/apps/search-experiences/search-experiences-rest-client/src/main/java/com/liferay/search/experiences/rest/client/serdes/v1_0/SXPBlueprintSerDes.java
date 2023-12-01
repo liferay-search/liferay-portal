@@ -149,6 +149,34 @@ public class SXPBlueprintSerDes {
 			sb.append("\"");
 		}
 
+		if (sxpBlueprint.getFallbackDescription() != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"fallbackDescription\": ");
+
+			sb.append("\"");
+
+			sb.append(_escape(sxpBlueprint.getFallbackDescription()));
+
+			sb.append("\"");
+		}
+
+		if (sxpBlueprint.getFallbackTitle() != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"fallbackTitle\": ");
+
+			sb.append("\"");
+
+			sb.append(_escape(sxpBlueprint.getFallbackTitle()));
+
+			sb.append("\"");
+		}
+
 		if (sxpBlueprint.getId() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
@@ -322,6 +350,24 @@ public class SXPBlueprintSerDes {
 				String.valueOf(sxpBlueprint.getExternalReferenceCode()));
 		}
 
+		if (sxpBlueprint.getFallbackDescription() == null) {
+			map.put("fallbackDescription", null);
+		}
+		else {
+			map.put(
+				"fallbackDescription",
+				String.valueOf(sxpBlueprint.getFallbackDescription()));
+		}
+
+		if (sxpBlueprint.getFallbackTitle() == null) {
+			map.put("fallbackTitle", null);
+		}
+		else {
+			map.put(
+				"fallbackTitle",
+				String.valueOf(sxpBlueprint.getFallbackTitle()));
+		}
+
 		if (sxpBlueprint.getId() == null) {
 			map.put("id", null);
 		}
@@ -450,6 +496,19 @@ public class SXPBlueprintSerDes {
 				if (jsonParserFieldValue != null) {
 					sxpBlueprint.setExternalReferenceCode(
 						(String)jsonParserFieldValue);
+				}
+			}
+			else if (Objects.equals(
+						jsonParserFieldName, "fallbackDescription")) {
+
+				if (jsonParserFieldValue != null) {
+					sxpBlueprint.setFallbackDescription(
+						(String)jsonParserFieldValue);
+				}
+			}
+			else if (Objects.equals(jsonParserFieldName, "fallbackTitle")) {
+				if (jsonParserFieldValue != null) {
+					sxpBlueprint.setFallbackTitle((String)jsonParserFieldValue);
 				}
 			}
 			else if (Objects.equals(jsonParserFieldName, "id")) {
