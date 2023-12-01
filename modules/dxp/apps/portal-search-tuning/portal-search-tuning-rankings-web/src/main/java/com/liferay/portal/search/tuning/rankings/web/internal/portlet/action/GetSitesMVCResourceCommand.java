@@ -5,6 +5,7 @@
 
 package com.liferay.portal.search.tuning.rankings.web.internal.portlet.action;
 
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
@@ -125,16 +126,28 @@ public class GetSitesMVCResourceCommand implements MVCResourceCommand {
 			"items",
 			JSONUtil.toJSONArray(
 				allGroups,
-				group -> JSONUtil.put(
-					"descriptiveName",
-					group.getDescriptiveName(themeDisplay.getLocale())
-				).put(
-					"externalReferenceCode", group.getExternalReferenceCode()
-				).put(
-					"groupId", group.getGroupId()
-				).put(
-					"name", group.getName(themeDisplay.getLocale())
-				))
+				group -> {
+					JSONObject jsonObject = JSONUtil.put(
+						"descriptiveName",
+						group.getDescriptiveName(themeDisplay.getLocale())
+					).put(
+						"externalReferenceCode",
+						group.getExternalReferenceCode()
+					).put(
+						"groupId", group.getGroupId()
+					).put(
+						"name", group.getName(themeDisplay.getLocale())
+					);
+
+					String parentName = StringPool.BLANK;
+
+					if (group.getParentGroupId() != 0) {
+						parentName = group.getParentGroup(
+						).getDescriptiveName();
+					}
+
+					return jsonObject.put("parentName", parentName);
+				})
 		).put(
 			"total", allGroups.size()
 		);
