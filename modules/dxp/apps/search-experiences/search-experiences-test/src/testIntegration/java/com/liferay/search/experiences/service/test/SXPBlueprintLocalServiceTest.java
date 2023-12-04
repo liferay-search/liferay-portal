@@ -69,6 +69,7 @@ public class SXPBlueprintLocalServiceTest {
 		SXPBlueprint differentCompanySXPBlueprint = _addSXPBlueprint(
 			sxpBlueprint.getExternalReferenceCode(), user.getUserId(),
 			Collections.singletonMap(LocaleUtil.US, StringPool.BLANK),
+			RandomTestUtil.randomString(), RandomTestUtil.randomString(),
 			Collections.singletonMap(
 				LocaleUtil.US, RandomTestUtil.randomString()),
 			ServiceContextTestUtil.getServiceContext());
@@ -98,6 +99,36 @@ public class SXPBlueprintLocalServiceTest {
 		Assert.assertNotNull(sxpBlueprint.getExternalReferenceCode());
 		Assert.assertEquals("1.0", sxpBlueprint.getVersion());
 
+		// Fallback description and fallback title
+
+		String fallbackDescription = RandomTestUtil.randomString();
+		String fallbackTitle = RandomTestUtil.randomString();
+
+		sxpBlueprint = _addSXPBlueprint(
+			RandomTestUtil.randomString(), TestPropsValues.getUserId(),
+			Collections.singletonMap(
+				LocaleUtil.US, RandomTestUtil.randomString()),
+			fallbackDescription, fallbackTitle,
+			Collections.singletonMap(
+				LocaleUtil.US, RandomTestUtil.randomString()),
+			ServiceContextTestUtil.getServiceContext());
+
+		Assert.assertEquals(
+			fallbackDescription, sxpBlueprint.getFallbackDescription());
+		Assert.assertEquals(fallbackTitle, sxpBlueprint.getFallbackTitle());
+
+		String title = RandomTestUtil.randomString();
+		String description = RandomTestUtil.randomString();
+
+		sxpBlueprint = _addSXPBlueprint(
+			RandomTestUtil.randomString(), TestPropsValues.getUserId(),
+			Collections.singletonMap(LocaleUtil.US, description), null, null,
+			Collections.singletonMap(LocaleUtil.US, title),
+			ServiceContextTestUtil.getServiceContext());
+
+		Assert.assertEquals(description, sxpBlueprint.getFallbackDescription());
+		Assert.assertEquals(title, sxpBlueprint.getFallbackTitle());
+
 		// Title
 
 		ServiceContext serviceContext =
@@ -107,6 +138,7 @@ public class SXPBlueprintLocalServiceTest {
 			_addSXPBlueprint(
 				RandomTestUtil.randomString(), TestPropsValues.getUserId(),
 				Collections.singletonMap(LocaleUtil.US, StringPool.BLANK),
+				RandomTestUtil.randomString(), RandomTestUtil.randomString(),
 				Collections.emptyMap(), serviceContext);
 		}
 		catch (SXPBlueprintTitleException sxpBlueprintTitleException) {
@@ -125,6 +157,7 @@ public class SXPBlueprintLocalServiceTest {
 			_addSXPBlueprint(
 				RandomTestUtil.randomString(), TestPropsValues.getUserId(),
 				Collections.singletonMap(LocaleUtil.US, StringPool.BLANK),
+				RandomTestUtil.randomString(), RandomTestUtil.randomString(),
 				Collections.emptyMap(), serviceContext);
 		}
 		catch (SXPBlueprintTitleException sxpBlueprintTitleException) {
@@ -136,6 +169,7 @@ public class SXPBlueprintLocalServiceTest {
 		sxpBlueprint = _addSXPBlueprint(
 			RandomTestUtil.randomString(), TestPropsValues.getUserId(),
 			Collections.singletonMap(LocaleUtil.US, StringPool.BLANK),
+			RandomTestUtil.randomString(), RandomTestUtil.randomString(),
 			Collections.emptyMap(), serviceContext);
 
 		Assert.assertEquals(Collections.emptyMap(), sxpBlueprint.getTitleMap());
@@ -213,6 +247,7 @@ public class SXPBlueprintLocalServiceTest {
 		return _addSXPBlueprint(
 			externalReferenceCode, TestPropsValues.getUserId(),
 			Collections.singletonMap(LocaleUtil.US, StringPool.BLANK),
+			RandomTestUtil.randomString(), RandomTestUtil.randomString(),
 			Collections.singletonMap(
 				LocaleUtil.US, RandomTestUtil.randomString()),
 			ServiceContextTestUtil.getServiceContext());
@@ -220,14 +255,15 @@ public class SXPBlueprintLocalServiceTest {
 
 	private SXPBlueprint _addSXPBlueprint(
 			String externalReferenceCode, long userId,
-			Map<Locale, String> descriptionMap, Map<Locale, String> titleMap,
+			Map<Locale, String> descriptionMap, String fallbackDescription,
+			String fallbackTitle, Map<Locale, String> titleMap,
 			ServiceContext serviceContext)
 		throws Exception {
 
 		SXPBlueprint sxpBlueprint = _sxpBlueprintLocalService.addSXPBlueprint(
 			externalReferenceCode, userId, "{}", descriptionMap, null,
-			RandomTestUtil.randomString(), RandomTestUtil.randomString(),
-			StringPool.BLANK, titleMap, serviceContext);
+			fallbackDescription, fallbackTitle, StringPool.BLANK, titleMap,
+			serviceContext);
 
 		_sxpBlueprints.add(sxpBlueprint);
 
