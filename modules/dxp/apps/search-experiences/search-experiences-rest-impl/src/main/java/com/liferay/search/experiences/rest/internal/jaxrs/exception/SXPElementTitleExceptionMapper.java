@@ -22,12 +22,12 @@ import org.osgi.service.component.annotations.Component;
 	property = {
 		"osgi.jaxrs.application.select=(osgi.jaxrs.name=Liferay.Search.Experiences.REST)",
 		"osgi.jaxrs.extension=true",
-		"osgi.jaxrs.name=Liferay.Search.Experiences.REST.SXPElementTitleExceptionExceptionMapper"
+		"osgi.jaxrs.name=Liferay.Search.Experiences.REST.SXPElementTitleExceptionMapper"
 	},
 	service = ExceptionMapper.class
 )
 @Provider
-public class SXPElementTitleExceptionExceptionMapper
+public class SXPElementTitleExceptionMapper
 	extends BaseExceptionMapper<SXPElementTitleException> {
 
 	@Override
