@@ -104,6 +104,9 @@ const ImportSXPBlueprintModal = ({portletNamespace, redirectURL}) => {
 						else if (
 							responseContent.type.includes(
 								'SXPElementTitleException'
+							) ||
+							responseContent.type.includes(
+								'SXPBlueprintTitleException'
 							)
 						) {
 							_handleFormError(
