@@ -128,6 +128,10 @@ public class SXPBlueprintResourceImpl extends BaseSXPBlueprintResourceImpl {
 			).put(
 				"externalReferenceCode", sxpBlueprint.getExternalReferenceCode()
 			).put(
+				"fallbackDescription", sxpBlueprint.getFallbackDescription()
+			).put(
+				"fallbackTitle", sxpBlueprint.getFallbackTitle()
+			).put(
 				"schemaVersion", sxpBlueprint.getSchemaVersion()
 			).put(
 				"title_i18n",
