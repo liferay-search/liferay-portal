@@ -53,6 +53,10 @@ public class SXPBlueprintResourceTest extends BaseSXPBlueprintResourceTestCase {
 					"externalReferenceCode",
 					sxpBlueprint.getExternalReferenceCode()
 				).put(
+					"fallbackDescription", sxpBlueprint.getFallbackDescription()
+				).put(
+					"fallbackTitle", sxpBlueprint.getFallbackTitle()
+				).put(
 					"schemaVersion", postSXPBlueprint.getSchemaVersion()
 				).put(
 					"title_i18n", JSONUtil.put("en_US", sxpBlueprint.getTitle())
@@ -122,15 +126,23 @@ public class SXPBlueprintResourceTest extends BaseSXPBlueprintResourceTestCase {
 	public void testPostSXPBlueprint() throws Exception {
 		super.testPostSXPBlueprint();
 
-		SXPBlueprint sxpBlueprint = SXPBlueprint.toDTO(
-			JSONUtil.put(
-				"description", RandomTestUtil.randomString()
-			).put(
-				"title", RandomTestUtil.randomString()
-			).toString());
+		String description = RandomTestUtil.randomString();
+		String title = RandomTestUtil.randomString();
 
 		SXPBlueprint postSXPBlueprint = testPostSXPBlueprint_addSXPBlueprint(
-			sxpBlueprint);
+			SXPBlueprint.toDTO(
+				JSONUtil.put(
+					"description_i18n", JSONUtil.put("en_US", description)
+				).put(
+					"title_i18n", JSONUtil.put("en_US", title)
+				).toString()));
+
+		SXPBlueprint sxpBlueprint = SXPBlueprint.toDTO(
+			JSONUtil.put(
+				"description", description
+			).put(
+				"title", title
+			).toString());
 
 		sxpBlueprint.setCreateDate(postSXPBlueprint.getCreateDate());
 		sxpBlueprint.setExternalReferenceCode(
@@ -236,14 +248,6 @@ public class SXPBlueprintResourceTest extends BaseSXPBlueprintResourceTestCase {
 	@Override
 	protected SXPBlueprint
 			testPutSXPBlueprintByExternalReferenceCode_addSXPBlueprint()
-		throws Exception {
-
-		return _addSXPBlueprint(randomSXPBlueprint());
-	}
-
-	@Override
-	protected SXPBlueprint
-			testPutSXPBlueprintByExternalReferenceCode_createSXPBlueprint()
 		throws Exception {
 
 		return _addSXPBlueprint(randomSXPBlueprint());
