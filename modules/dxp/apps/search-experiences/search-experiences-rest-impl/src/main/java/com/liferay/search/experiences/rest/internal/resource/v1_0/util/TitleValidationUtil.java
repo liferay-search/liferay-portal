@@ -20,11 +20,13 @@ public class TitleValidationUtil {
 	public static void validateTitleI18n(Map<String, String> titleI18n)
 		throws Exception {
 
-		if (Validator.isBlank(titleI18n.get(
-				LocaleUtil.getDefault(
-				).toString())) &&
-			Validator.isBlank(titleI18n.get(
-				LocaleUtil.toBCP47LanguageId(LocaleUtil.getDefault())))) {
+		if (Validator.isBlank(
+				titleI18n.get(
+					LocaleUtil.getDefault(
+					).toString())) &&
+			Validator.isBlank(
+				titleI18n.get(
+					LocaleUtil.toBCP47LanguageId(LocaleUtil.getDefault())))) {
 
 			throw new SXPBlueprintTitleException(
 				"The title for the default locale " +
