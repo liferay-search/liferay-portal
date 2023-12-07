@@ -96,9 +96,9 @@ public class ViewSXPBlueprintsDisplayContext {
 				LanguageUtil.get(_sxpRequestHelper.getRequest(), "edit"), "get",
 				"get", null),
 			new FDSActionDropdownItem(
-				getAPIURL() + "/{id}/copy", "copy", "copy",
-				LanguageUtil.get(_sxpRequestHelper.getRequest(), "copy"),
-				"post", "create", "async"),
+				"#", "copy", "copy",
+				LanguageUtil.get(_sxpRequestHelper.getRequest(), "copy"), null,
+				"create", null),
 			new FDSActionDropdownItem(
 				"#", "export", "export",
 				LanguageUtil.get(_sxpRequestHelper.getRequest(), "export"),

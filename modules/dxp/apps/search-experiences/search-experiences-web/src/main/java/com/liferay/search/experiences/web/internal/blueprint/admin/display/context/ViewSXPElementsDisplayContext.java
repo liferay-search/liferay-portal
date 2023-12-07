@@ -94,9 +94,9 @@ public class ViewSXPElementsDisplayContext {
 				LanguageUtil.get(_sxpRequestHelper.getRequest(), "view"), "get",
 				"get", null),
 			new FDSActionDropdownItem(
-				getAPIURL() + "/{id}/copy", "copy", "copy",
-				LanguageUtil.get(_sxpRequestHelper.getRequest(), "copy"),
-				"post", "create", "async"),
+				"#", "copy", "copy",
+				LanguageUtil.get(_sxpRequestHelper.getRequest(), "copy"), null,
+				"create", null),
 			new FDSActionDropdownItem(
 				"#", "export", "export",
 				LanguageUtil.get(_sxpRequestHelper.getRequest(), "export"),
