@@ -25,7 +25,6 @@ import Sidebar from '../shared/Sidebar';
 import SubmitWarningModal from '../shared/SubmitWarningModal';
 import ThemeContext from '../shared/ThemeContext';
 import {DEFAULT_INDEX_CONFIGURATION} from '../utils/constants';
-import {DEFAULT_ERROR} from '../utils/errorMessages';
 import addParams from '../utils/fetch/add_params';
 import fetchData, {DEFAULT_HEADERS} from '../utils/fetch/fetch_data';
 import fetchPreviewSearch from '../utils/fetch/fetch_preview_search';
@@ -201,7 +200,7 @@ function EditSXPBlueprintForm({
 						method: 'POST',
 					}
 				).then((response) => response.json());
-			*/
+				*/
 
 				if (validateErrors.errors?.length) {
 					setErrors(validateErrors.errors);
@@ -211,7 +210,7 @@ function EditSXPBlueprintForm({
 				}
 			}
 
-			const responseContent = await fetch(
+			const {ok, responseContent} = await fetch(
 				`/o/search-experiences-rest/v1.0/sxp-blueprints/${sxpBlueprintId}`,
 				{
 					body: JSON.stringify({
@@ -232,21 +231,23 @@ function EditSXPBlueprintForm({
 					method: 'PUT',
 				}
 			).then((response) => {
-				if (!response.ok) {
-					setShowSubmitWarningModal(false);
-
-					throw DEFAULT_ERROR;
-				}
-
-				return response.json();
+				return response.json().then((data) => ({
+					ok: response.ok,
+					responseContent: data,
+				}));
 			});
 
-			if (
-				Object.prototype.hasOwnProperty.call(responseContent, 'errors')
-			) {
-				responseContent.errors.forEach((message) =>
-					openErrorToast({message})
-				);
+			if (!ok) {
+				if (Object.hasOwn(responseContent, 'title')) {
+					openErrorToast({
+						message: responseContent.title,
+					});
+				}
+				else if (Object.hasOwn(responseContent, 'errors')) {
+					responseContent.errors.forEach((message) =>
+						openErrorToast({message})
+					);
+				}
 			}
 			else {
 				setInitialSuccessToast(

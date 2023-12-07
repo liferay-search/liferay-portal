@@ -8,6 +8,31 @@ import {fetch} from 'frontend-js-web';
 import {DEFAULT_ERROR} from '../utils/errorMessages';
 import {openErrorToast, openSuccessToast} from '../utils/toasts';
 
+export function copy(url, parameters, loadData) {
+	fetch(url, parameters)
+		.then((response) => {
+			return response.json().then((data) => ({
+				ok: response.ok,
+				responseContent: data,
+			}));
+		})
+		.then(({ok, responseContent}) => {
+			if (!ok) {
+				openErrorToast({
+					message: responseContent.title || DEFAULT_ERROR,
+				});
+			}
+			else {
+				loadData();
+
+				openSuccessToast();
+			}
+		})
+		.catch(() => {
+			openErrorToast();
+		});
+}
+
 export function download(url, parameters, title) {
 	fetch(url, parameters)
 		.then((response) => {
