@@ -25,6 +25,7 @@ import Sidebar from '../shared/Sidebar';
 import SubmitWarningModal from '../shared/SubmitWarningModal';
 import ThemeContext from '../shared/ThemeContext';
 import {DEFAULT_INDEX_CONFIGURATION} from '../utils/constants';
+import {DEFAULT_ERROR} from '../utils/errorMessages';
 import addParams from '../utils/fetch/add_params';
 import fetchData, {DEFAULT_HEADERS} from '../utils/fetch/fetch_data';
 import fetchPreviewSearch from '../utils/fetch/fetch_preview_search';
@@ -247,6 +248,9 @@ function EditSXPBlueprintForm({
 					responseContent.errors.forEach((message) =>
 						openErrorToast({message})
 					);
+				}
+				else {
+					throw DEFAULT_ERROR;
 				}
 			}
 			else {

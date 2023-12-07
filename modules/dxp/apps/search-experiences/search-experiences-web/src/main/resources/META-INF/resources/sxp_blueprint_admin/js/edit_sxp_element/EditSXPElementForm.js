@@ -31,6 +31,7 @@ import Sidebar from '../shared/Sidebar';
 import SubmitWarningModal from '../shared/SubmitWarningModal';
 import ThemeContext from '../shared/ThemeContext';
 import {CONFIG_PREFIX} from '../utils/constants';
+import {DEFAULT_ERROR} from '../utils/errorMessages';
 import {DEFAULT_HEADERS} from '../utils/fetch/fetch_data';
 import isDefined from '../utils/functions/is_defined';
 import formatLocaleWithDashes from '../utils/language/format_locale_with_dashes';
@@ -468,6 +469,9 @@ function EditSXPElementForm({
 					responseContent.errors.forEach((message) =>
 						openErrorToast({message})
 					);
+				}
+				else {
+					throw DEFAULT_ERROR;
 				}
 
 				setIsSubmitting(false);
