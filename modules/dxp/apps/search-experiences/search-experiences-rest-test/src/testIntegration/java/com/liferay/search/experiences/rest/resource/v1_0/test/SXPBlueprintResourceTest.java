@@ -6,6 +6,7 @@
 package com.liferay.search.experiences.rest.resource.v1_0.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
@@ -13,6 +14,7 @@ import com.liferay.portal.odata.entity.EntityField;
 import com.liferay.search.experiences.rest.client.dto.v1_0.SXPBlueprint;
 import com.liferay.search.experiences.rest.client.http.HttpInvoker;
 import com.liferay.search.experiences.rest.client.pagination.Page;
+import com.liferay.search.experiences.rest.client.problem.Problem;
 
 import java.util.Collections;
 
@@ -157,12 +159,68 @@ public class SXPBlueprintResourceTest extends BaseSXPBlueprintResourceTestCase {
 			sxpBlueprint.toString(), postSXPBlueprint.toString());
 
 		assertValid(postSXPBlueprint);
+
+		try {
+			testPostSXPBlueprint_addSXPBlueprint(
+				SXPBlueprint.toDTO(
+					JSONUtil.put(
+						"title_i18n", JSONUtil.put("en_US", StringPool.BLANK)
+					).toString()));
+		}
+		catch (Problem.ProblemException problemException) {
+			Assert.assertNotNull(problemException);
+		}
 	}
 
 	@Override
 	@Test
 	public void testPostSXPBlueprintValidate() throws Exception {
 		sxpBlueprintResource.postSXPBlueprintValidate("{}");
+
+		SXPBlueprint sxpBlueprint1 =
+			testPostSXPBlueprintValidate_addSXPBlueprint(randomSXPBlueprint());
+
+		SXPBlueprint postSXPBlueprintValidate =
+			sxpBlueprintResource.postSXPBlueprintValidate(
+				sxpBlueprint1.toString());
+
+		Assert.assertEquals(
+			sxpBlueprint1.toString(), postSXPBlueprintValidate.toString());
+
+		// Duplicate external reference code in the same company
+
+		SXPBlueprint sxpBlueprint2 =
+			testPostSXPBlueprintValidate_addSXPBlueprint(randomSXPBlueprint());
+
+		sxpBlueprint2.setExternalReferenceCode(
+			sxpBlueprint1.getExternalReferenceCode());
+
+		try {
+			sxpBlueprintResource.postSXPBlueprintValidate(
+				sxpBlueprint2.toString());
+		}
+		catch (Problem.ProblemException problemException) {
+			Assert.assertNotNull(problemException);
+		}
+	}
+
+	@Override
+	@Test
+	public void testPutSXPBlueprintByExternalReferenceCode() throws Exception {
+		super.testPutSXPBlueprintByExternalReferenceCode();
+
+		try {
+			sxpBlueprintResource.putSXPBlueprintByExternalReferenceCode(
+				testPutSXPBlueprintByExternalReferenceCode_addSXPBlueprint().
+					getExternalReferenceCode(),
+				SXPBlueprint.toDTO(
+					JSONUtil.put(
+						"title_i18n", JSONUtil.put("en_US", StringPool.BLANK)
+					).toString()));
+		}
+		catch (Problem.ProblemException problemException) {
+			Assert.assertNotNull(problemException);
+		}
 	}
 
 	@Override
@@ -236,6 +294,14 @@ public class SXPBlueprintResourceTest extends BaseSXPBlueprintResourceTestCase {
 		throws Exception {
 
 		return _addSXPBlueprint(sxpBlueprint);
+	}
+
+	@Override
+	protected SXPBlueprint testPostSXPBlueprintValidate_addSXPBlueprint(
+			SXPBlueprint sxpBlueprint)
+		throws Exception {
+
+		return _addSXPBlueprint(randomSXPBlueprint());
 	}
 
 	@Override
