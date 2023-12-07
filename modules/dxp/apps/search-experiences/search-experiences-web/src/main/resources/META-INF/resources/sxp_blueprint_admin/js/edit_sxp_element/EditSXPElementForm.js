@@ -31,7 +31,6 @@ import Sidebar from '../shared/Sidebar';
 import SubmitWarningModal from '../shared/SubmitWarningModal';
 import ThemeContext from '../shared/ThemeContext';
 import {CONFIG_PREFIX} from '../utils/constants';
-import {DEFAULT_ERROR} from '../utils/errorMessages';
 import {DEFAULT_HEADERS} from '../utils/fetch/fetch_data';
 import isDefined from '../utils/functions/is_defined';
 import formatLocaleWithDashes from '../utils/language/format_locale_with_dashes';
@@ -180,7 +179,7 @@ function EditSXPElementForm({
 	type,
 	sxpElementId,
 }) {
-	const {defaultLocale, redirectURL} = useContext(ThemeContext);
+	const {redirectURL} = useContext(ThemeContext);
 
 	const formRef = useRef();
 	const elementJSONEditorRef = useRef();
@@ -389,14 +388,6 @@ function EditSXPElementForm({
 				sxpElementJSONObjectNew.elementDefinition?.configuration,
 				sxpElementJSONObjectNew.elementDefinition?.uiConfiguration
 			);
-
-			if (!Object.keys(sxpElementJSONObjectNew.title_i18n).length) {
-				throw Liferay.Language.get('error.title-empty');
-			}
-
-			if (!sxpElementJSONObjectNew.title_i18n[defaultLocale]) {
-				throw Liferay.Language.get('error.default-locale-title-blank');
-			}
 		}
 		catch (error) {
 			openErrorToast({
@@ -445,7 +436,7 @@ function EditSXPElementForm({
 				}
 			}
 
-			const responseContent = await fetch(
+			const {ok, responseContent} = await fetch(
 				`/o/search-experiences-rest/v1.0/sxp-elements/${sxpElementId}`,
 				{
 					body: JSON.stringify({
@@ -461,21 +452,23 @@ function EditSXPElementForm({
 					method: 'PUT',
 				}
 			).then((response) => {
-				if (!response.ok) {
-					setShowSubmitWarningModal(false);
-
-					throw DEFAULT_ERROR;
-				}
-
-				return response.json();
+				return response.json().then((data) => ({
+					ok: response.ok,
+					responseContent: data,
+				}));
 			});
 
-			if (
-				Object.prototype.hasOwnProperty.call(responseContent, 'errors')
-			) {
-				responseContent.errors.forEach((message) =>
-					openErrorToast({message})
-				);
+			if (!ok) {
+				if (Object.hasOwn(responseContent, 'title')) {
+					openErrorToast({
+						message: responseContent.title,
+					});
+				}
+				else if (Object.hasOwn(responseContent, 'errors')) {
+					responseContent.errors.forEach((message) =>
+						openErrorToast({message})
+					);
+				}
 
 				setIsSubmitting(false);
 			}
