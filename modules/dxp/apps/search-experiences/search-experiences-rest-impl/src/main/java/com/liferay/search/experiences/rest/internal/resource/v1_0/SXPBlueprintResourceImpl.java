@@ -16,7 +16,6 @@ import com.liferay.portal.kernel.service.ServiceContextFactory;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
-import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.odata.entity.EntityModel;
 import com.liferay.portal.vulcan.dto.converter.DTOConverter;
@@ -28,20 +27,19 @@ import com.liferay.portal.vulcan.util.LocalizedMapUtil;
 import com.liferay.search.experiences.constants.SXPActionKeys;
 import com.liferay.search.experiences.constants.SXPConstants;
 import com.liferay.search.experiences.exception.DuplicateSXPBlueprintExternalReferenceCodeException;
-import com.liferay.search.experiences.exception.SXPBlueprintTitleException;
 import com.liferay.search.experiences.rest.dto.v1_0.SXPBlueprint;
 import com.liferay.search.experiences.rest.dto.v1_0.util.ElementInstanceUtil;
 import com.liferay.search.experiences.rest.dto.v1_0.util.SXPBlueprintUtil;
 import com.liferay.search.experiences.rest.internal.odata.entity.v1_0.SXPBlueprintEntityModel;
 import com.liferay.search.experiences.rest.internal.resource.v1_0.util.SearchUtil;
 import com.liferay.search.experiences.rest.internal.resource.v1_0.util.TitleMapUtil;
+import com.liferay.search.experiences.rest.internal.resource.v1_0.util.TitleValidationUtil;
 import com.liferay.search.experiences.rest.resource.v1_0.SXPBlueprintResource;
 import com.liferay.search.experiences.service.SXPBlueprintService;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 import javax.ws.rs.core.MultivaluedMap;
@@ -228,7 +226,7 @@ public class SXPBlueprintResourceImpl extends BaseSXPBlueprintResourceImpl {
 
 		SXPBlueprintUtil.unpack(sxpBlueprint);
 
-		_validateTitleI18n(sxpBlueprint.getTitle_i18n());
+		TitleValidationUtil.validateTitleI18n(sxpBlueprint.getTitle_i18n());
 
 		return _sxpBlueprintDTOConverter.toDTO(
 			new DefaultDTOConverterContext(
@@ -352,7 +350,7 @@ public class SXPBlueprintResourceImpl extends BaseSXPBlueprintResourceImpl {
 			Long sxpBlueprintId, SXPBlueprint sxpBlueprint)
 		throws Exception {
 
-		_validateTitleI18n(sxpBlueprint.getTitle_i18n());
+		TitleValidationUtil.validateTitleI18n(sxpBlueprint.getTitle_i18n());
 
 		return _sxpBlueprintDTOConverter.toDTO(
 			new DefaultDTOConverterContext(
@@ -396,22 +394,6 @@ public class SXPBlueprintResourceImpl extends BaseSXPBlueprintResourceImpl {
 				sxpBlueprint.getId())) {
 
 			throw new DuplicateSXPBlueprintExternalReferenceCodeException();
-		}
-	}
-
-	private void _validateTitleI18n(Map<String, String> titleI18n)
-		throws Exception {
-
-		if (!titleI18n.containsKey(
-				LocaleUtil.getDefault(
-				).toString()) &&
-			!titleI18n.containsKey(
-				LocaleUtil.toBCP47LanguageId(LocaleUtil.getDefault()))) {
-
-			throw new SXPBlueprintTitleException(
-				"The title for the default locale " +
-					LocaleUtil.toLanguageId(LocaleUtil.getDefault()) +
-						" cannot be blank");
 		}
 	}
 
