@@ -13,6 +13,7 @@ import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.search.filter.Filter;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextFactory;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
@@ -261,6 +262,14 @@ public class SXPElementResourceImpl extends BaseSXPElementResourceImpl {
 		com.liferay.search.experiences.model.SXPElement sxpElement =
 			_sxpElementService.getSXPElement(sxpElementId);
 
+		ServiceContext serviceContext = ServiceContextFactory.getInstance(
+			contextHttpServletRequest);
+
+		serviceContext.setAttribute(
+			"com.liferay.search.experiences.service.impl." +
+				"SXPElementLocalServiceImpl#_validate",
+			Boolean.FALSE);
+
 		return _sxpElementDTOConverter.toDTO(
 			new DefaultDTOConverterContext(
 				contextAcceptLanguage.isAcceptAllLanguages(), new HashMap<>(),
@@ -277,8 +286,7 @@ public class SXPElementResourceImpl extends BaseSXPElementResourceImpl {
 					sxpElement.getFallbackTitle()),
 				false, sxpElement.getSchemaVersion(),
 				TitleMapUtil.copy(sxpElement.getTitleMap()),
-				sxpElement.getType(),
-				ServiceContextFactory.getInstance(contextHttpServletRequest)));
+				sxpElement.getType(), serviceContext));
 	}
 
 	@Override

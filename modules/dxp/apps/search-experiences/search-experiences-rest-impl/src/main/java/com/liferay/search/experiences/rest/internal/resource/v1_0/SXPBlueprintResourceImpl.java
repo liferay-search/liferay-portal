@@ -12,6 +12,7 @@ import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.search.filter.Filter;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextFactory;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -258,6 +259,14 @@ public class SXPBlueprintResourceImpl extends BaseSXPBlueprintResourceImpl {
 		com.liferay.search.experiences.model.SXPBlueprint sxpBlueprint =
 			_sxpBlueprintService.getSXPBlueprint(sxpBlueprintId);
 
+		ServiceContext serviceContext = ServiceContextFactory.getInstance(
+			contextHttpServletRequest);
+
+		serviceContext.setAttribute(
+			"com.liferay.search.experiences.service.impl." +
+				"SXPBlueprintLocalServiceImpl#_validate",
+			Boolean.FALSE);
+
 		return _sxpBlueprintDTOConverter.toDTO(
 			new DefaultDTOConverterContext(
 				contextAcceptLanguage.isAcceptAllLanguages(), new HashMap<>(),
@@ -272,8 +281,7 @@ public class SXPBlueprintResourceImpl extends BaseSXPBlueprintResourceImpl {
 				sxpBlueprint.getFallbackDescription(),
 				sxpBlueprint.getFallbackTitle(),
 				sxpBlueprint.getSchemaVersion(),
-				TitleMapUtil.copy(sxpBlueprint.getTitleMap()),
-				ServiceContextFactory.getInstance(contextHttpServletRequest)));
+				TitleMapUtil.copy(sxpBlueprint.getTitleMap()), serviceContext));
 	}
 
 	@Override
