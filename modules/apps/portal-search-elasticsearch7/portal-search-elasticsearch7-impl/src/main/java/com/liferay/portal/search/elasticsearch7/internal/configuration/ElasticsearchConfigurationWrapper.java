@@ -7,6 +7,8 @@ package com.liferay.portal.search.elasticsearch7.internal.configuration;
 
 import com.liferay.petra.string.CharPool;
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.Props;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
@@ -283,9 +285,17 @@ public class ElasticsearchConfigurationWrapper
 			ElasticsearchConfiguration.class, propsMap);
 		_propsMap = propsMap;
 
+		if (_log.isInfoEnabled()) {
+			_log.info("Start Update Elasticsearch Configuration");
+		}
+
 		_elasticsearchConfigurationObservers.forEach(
 			ElasticsearchConfigurationObserver::
 				onElasticsearchConfigurationUpdate);
+
+		if (_log.isInfoEnabled()) {
+			_log.info("Finish Update Elasticsearch Configuration");
+		}
 	}
 
 	protected void setElasticsearchConfiguration(
@@ -323,6 +333,9 @@ public class ElasticsearchConfigurationWrapper
 	}
 
 	private static final String[] _PROPS_KEYS = {"sidecarJVMOptions"};
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		ElasticsearchConfigurationWrapper.class);
 
 	private volatile ElasticsearchConfiguration _elasticsearchConfiguration;
 	private final Set<ElasticsearchConfigurationObserver>

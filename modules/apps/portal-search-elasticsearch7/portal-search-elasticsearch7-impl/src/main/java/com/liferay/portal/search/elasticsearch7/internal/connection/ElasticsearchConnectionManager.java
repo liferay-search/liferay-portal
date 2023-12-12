@@ -55,6 +55,10 @@ public class ElasticsearchConnectionManager
 	public void addElasticsearchConnection(
 		ElasticsearchConnection elasticsearchConnection) {
 
+		if (_log.isInfoEnabled()) {
+			_log.info("Start Adding Elasticsearch Connection");
+		}
+
 		String connectionId = elasticsearchConnection.getConnectionId();
 
 		if (connectionId == null) {
@@ -113,6 +117,10 @@ public class ElasticsearchConnectionManager
 
 		_elasticsearchConnectionSuppliers.put(
 			connectionId, elasticsearchConnectionSupplier);
+
+		if (_log.isInfoEnabled()) {
+			_log.info("Finish Adding Elasticsearch Connection");
+		}
 	}
 
 	@Override
@@ -275,6 +283,12 @@ public class ElasticsearchConnectionManager
 	}
 
 	public void removeElasticsearchConnection(String connectionId) {
+		if (_log.isInfoEnabled()) {
+			_log.info(
+				"Start Removing Elasticsearch Connection with connection ID: " +
+					connectionId);
+		}
+
 		if (connectionId == null) {
 			return;
 		}
@@ -292,6 +306,12 @@ public class ElasticsearchConnectionManager
 		elasticsearchConnection.close();
 
 		_elasticsearchConnectionSuppliers.remove(connectionId);
+
+		if (_log.isInfoEnabled()) {
+			_log.info(
+				"Removed Elasticsearch Connection with connection ID: " +
+					connectionId);
+		}
 	}
 
 	@Activate
@@ -306,12 +326,26 @@ public class ElasticsearchConnectionManager
 			elasticsearchConfigurationWrapper.restClientLoggerLevel());
 
 		if (operationModeResolver.isProductionModeEnabled()) {
-			if (Validator.isBlank(
-					elasticsearchConfigurationWrapper.
-						remoteClusterConnectionId())) {
+			String remoteClusterConnectionId =
+				elasticsearchConfigurationWrapper.remoteClusterConnectionId();
 
-				addElasticsearchConnection(
-					_createRemoteElasticsearchConnection());
+			if (Validator.isBlank(remoteClusterConnectionId)) {
+				if (_log.isInfoEnabled()) {
+					_log.info(
+						"Start applying Configurations to Remote Cluster " +
+							"with Connection ID: " + remoteClusterConnectionId);
+				}
+
+				ElasticsearchConnection elasticsearchConnection =
+					_createRemoteElasticsearchConnection();
+
+				addElasticsearchConnection(elasticsearchConnection);
+
+				if (_log.isInfoEnabled()) {
+					_log.info(
+						"Finish to apply Configurations to Remote Cluster " +
+							"with Connection ID: " + remoteClusterConnectionId);
+				}
 			}
 		}
 		else {
