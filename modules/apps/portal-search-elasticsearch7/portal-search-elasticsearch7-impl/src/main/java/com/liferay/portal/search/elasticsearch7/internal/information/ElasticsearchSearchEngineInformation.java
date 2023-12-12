@@ -190,6 +190,10 @@ public class ElasticsearchSearchEngineInformation
 			filterString);
 
 		if (ArrayUtil.isEmpty(configurations)) {
+			if (_log.isInfoEnabled()) {
+				_log.info("No active connections found");
+			}
+
 			return;
 		}
 
@@ -218,6 +222,12 @@ public class ElasticsearchSearchEngineInformation
 		ElasticsearchConnection elasticsearchConnection,
 		List<ConnectionInformation> connectionInformationList,
 		String... labels) {
+
+		if (_log.isInfoEnabled()) {
+			_log.info(
+				"Adding Connection Information to connection with ID: " +
+					elasticsearchConnection.getConnectionId());
+		}
 
 		if (elasticsearchConnection == null) {
 			return;
@@ -261,6 +271,12 @@ public class ElasticsearchSearchEngineInformation
 		}
 
 		connectionInformationList.add(connectionInformationBuilder.build());
+
+		if (_log.isInfoEnabled()) {
+			_log.info(
+				"Added Connection Information to connection with ID: " +
+					elasticsearchConnection.getConnectionId());
+		}
 	}
 
 	private void _addMainConnection(
