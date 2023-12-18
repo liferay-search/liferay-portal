@@ -181,9 +181,9 @@ public class LiferayDocumentTypeFactory implements MappingsHelper {
 
 		LinkedHashMap<String, JSONObject> linkedHashMap = new LinkedHashMap<>();
 
-		_putAll(linkedHashMap, dynamicTemplatesToPutJSONArray);
-
 		_putAll(linkedHashMap, currentDynamicTemplatesJSONArray);
+
+		_putAll(linkedHashMap, dynamicTemplatesToPutJSONArray);
 
 		JSONArray mergedDynamicTemplatesJSONArray =
 			_jsonFactory.createJSONArray();
