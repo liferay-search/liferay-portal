@@ -353,12 +353,6 @@ public class CompanyIndexFactoryTest {
 				},
 				null));
 
-		Mockito.when(
-			_elasticsearchConfigurationWrapper.additionalIndexConfigurations()
-		).thenReturn(
-			"index.number_of_replicas: 0\nindex.number_of_shards: 0"
-		);
-
 		createIndices();
 
 		Settings settings = _getIndexSettings();
