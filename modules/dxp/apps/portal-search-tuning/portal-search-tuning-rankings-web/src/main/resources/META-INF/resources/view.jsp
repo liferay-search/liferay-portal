@@ -5,8 +5,6 @@
  */
 --%>
 
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-
 <%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet" %>
 
 <%@ taglib uri="http://liferay.com/tld/aui" prefix="aui" %><%@
@@ -15,20 +13,14 @@ taglib uri="http://liferay.com/tld/frontend" prefix="liferay-frontend" %><%@
 taglib uri="http://liferay.com/tld/theme" prefix="liferay-theme" %><%@
 taglib uri="http://liferay.com/tld/ui" prefix="liferay-ui" %>
 
-<%@ page import="com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil" %><%@
-page import="com.liferay.portal.kernel.model.Group" %><%@
-page import="com.liferay.portal.kernel.service.GroupLocalServiceUtil" %><%@
-page import="com.liferay.portal.kernel.util.Constants" %><%@
+<%@ page import="com.liferay.portal.kernel.util.Constants" %><%@
 page import="com.liferay.portal.kernel.util.HashMapBuilder" %><%@
 page import="com.liferay.portal.kernel.util.HtmlUtil" %><%@
-page import="com.liferay.portal.kernel.util.Validator" %><%@
 page import="com.liferay.portal.search.tuning.rankings.web.internal.constants.ResultRankingsConstants" %><%@
 page import="com.liferay.portal.search.tuning.rankings.web.internal.constants.ResultRankingsPortletKeys" %><%@
 page import="com.liferay.portal.search.tuning.rankings.web.internal.display.context.RankingEntryDisplayContext" %><%@
 page import="com.liferay.portal.search.tuning.rankings.web.internal.display.context.RankingPortletDisplayContext" %><%@
-page import="com.liferay.portal.search.tuning.rankings.web.internal.exception.DuplicateQueryStringException" %><%@
-page import="com.liferay.search.experiences.model.SXPBlueprint" %><%@
-page import="com.liferay.search.experiences.service.SXPBlueprintLocalServiceUtil" %>
+page import="com.liferay.portal.search.tuning.rankings.web.internal.exception.DuplicateQueryStringException" %>
 
 <liferay-frontend:defineObjects />
 
@@ -135,39 +127,6 @@ RankingPortletDisplayContext rankingPortletDisplayContext = (RankingPortletDispl
 				name="hidden-results"
 				value="<%= rankingEntryDisplayContext.getHiddenResultsCount() %>"
 			/>
-
-			<c:if test='<%= FeatureFlagManagerUtil.isEnabled("LPS-157988") || FeatureFlagManagerUtil.isEnabled("LPS-159650") %>'>
-				<liferay-ui:search-container-column-text
-					cssClass="table-cell-expand-smallest table-cell-minw-150"
-					name="scope"
-				>
-					<c:choose>
-						<c:when test="<%= Validator.isNotNull(rankingEntryDisplayContext.getGroupExternalReferenceCode()) %>">
-
-							<%
-							Group group = GroupLocalServiceUtil.fetchGroupByExternalReferenceCode(rankingEntryDisplayContext.getGroupExternalReferenceCode(), themeDisplay.getCompanyId());
-							%>
-
-							<span class="lfr-portal-tooltip" data-title='<%= HtmlUtil.escape(group.getDescriptiveName(locale)) %>'>
-								<liferay-ui:message key="site" />
-							</span>
-						</c:when>
-						<c:when test="<%= Validator.isNotNull(rankingEntryDisplayContext.getSXPBlueprintExternalReferenceCode()) %>">
-
-							<%
-							SXPBlueprint sxpBlueprint = SXPBlueprintLocalServiceUtil.getSXPBlueprintByExternalReferenceCode(rankingEntryDisplayContext.getSXPBlueprintExternalReferenceCode(), themeDisplay.getCompanyId());
-							%>
-
-							<span class="lfr-portal-tooltip" data-title='<%= HtmlUtil.escape(sxpBlueprint.getTitle(locale)) %>'>
-								<liferay-ui:message key="blueprint" />
-							</span>
-						</c:when>
-						<c:otherwise>
-							<liferay-ui:message key="everything" />
-						</c:otherwise>
-					</c:choose>
-				</liferay-ui:search-container-column-text>
-			</c:if>
 
 			<liferay-ui:search-container-column-text
 				cssClass="table-cell-expand-smallest table-cell-minw-150"
