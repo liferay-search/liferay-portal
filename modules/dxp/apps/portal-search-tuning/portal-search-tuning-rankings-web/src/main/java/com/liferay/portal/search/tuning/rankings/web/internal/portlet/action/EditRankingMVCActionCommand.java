@@ -27,13 +27,13 @@ import com.liferay.portal.search.tuning.rankings.index.Ranking;
 import com.liferay.portal.search.tuning.rankings.index.RankingIndexReader;
 import com.liferay.portal.search.tuning.rankings.index.name.RankingIndexName;
 import com.liferay.portal.search.tuning.rankings.index.name.RankingIndexNameBuilder;
+import com.liferay.portal.search.tuning.rankings.storage.RankingStorageAdapter;
 import com.liferay.portal.search.tuning.rankings.util.RankingUtil;
 import com.liferay.portal.search.tuning.rankings.web.internal.constants.ResultRankingsConstants;
 import com.liferay.portal.search.tuning.rankings.web.internal.constants.ResultRankingsPortletKeys;
 import com.liferay.portal.search.tuning.rankings.web.internal.exception.DuplicateQueryStringException;
 import com.liferay.portal.search.tuning.rankings.web.internal.exception.NotApplicableStatusException;
 import com.liferay.portal.search.tuning.rankings.web.internal.index.DuplicateQueryStringsDetector;
-import com.liferay.portal.search.tuning.rankings.web.internal.storage.RankingStorageAdapter;
 
 import java.io.IOException;
 

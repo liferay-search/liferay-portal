@@ -9,9 +9,9 @@ import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.search.index.IndexNameBuilder;
 import com.liferay.portal.search.tuning.rankings.index.Ranking;
 import com.liferay.portal.search.tuning.rankings.index.RankingIndexReader;
+import com.liferay.portal.search.tuning.rankings.storage.RankingStorageAdapter;
 import com.liferay.portal.search.tuning.rankings.web.internal.BaseRankingsWebTestCase;
 import com.liferay.portal.search.tuning.rankings.web.internal.index.DuplicateQueryStringsDetector;
-import com.liferay.portal.search.tuning.rankings.web.internal.storage.RankingStorageAdapter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
