@@ -53,8 +53,8 @@ import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.searcher.SearchRequestBuilderFactory;
 import com.liferay.portal.search.searcher.SearchResponse;
 import com.liferay.portal.search.searcher.Searcher;
-import com.liferay.portal.search.tuning.rankings.web.internal.index.name.RankingIndexName;
-import com.liferay.portal.search.tuning.rankings.web.internal.index.name.RankingIndexNameBuilder;
+import com.liferay.portal.search.tuning.rankings.index.name.RankingIndexName;
+import com.liferay.portal.search.tuning.rankings.index.name.RankingIndexNameBuilder;
 import com.liferay.portal.search.web.interpreter.SearchResultInterpreterProvider;
 
 import java.text.SimpleDateFormat;
