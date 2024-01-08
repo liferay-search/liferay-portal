@@ -8,8 +8,8 @@ package com.liferay.portal.search.tuning.rankings.web.internal.searcher.helper;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.search.filter.ComplexQueryPartBuilder;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
+import com.liferay.portal.search.tuning.rankings.index.Ranking;
 import com.liferay.portal.search.tuning.rankings.web.internal.BaseRankingsWebTestCase;
-import com.liferay.portal.search.tuning.rankings.web.internal.index.Ranking;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
 
 import java.util.Arrays;
