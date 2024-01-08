@@ -7,6 +7,7 @@ package com.liferay.portal.search.tuning.rankings.web.internal.index;
 
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.search.document.Document;
+import com.liferay.portal.search.tuning.rankings.index.Ranking;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
 
 import java.util.Arrays;
