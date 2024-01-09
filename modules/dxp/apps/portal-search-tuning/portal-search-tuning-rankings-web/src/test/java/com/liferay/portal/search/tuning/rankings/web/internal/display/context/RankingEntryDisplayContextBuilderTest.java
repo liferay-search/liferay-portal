@@ -32,7 +32,7 @@ public class RankingEntryDisplayContextBuilderTest {
 	@Before
 	public void setUp() throws Exception {
 		_rankingEntryDisplayContextBuilder =
-			new RankingEntryDisplayContextBuilder(_ranking);
+			new RankingEntryDisplayContextBuilder(_ranking, "");
 	}
 
 	@Test

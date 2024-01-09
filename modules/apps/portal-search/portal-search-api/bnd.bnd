@@ -22,6 +22,7 @@ Export-Package:\
 	com.liferay.portal.search.document,\
 	com.liferay.portal.search.engine,\
 	com.liferay.portal.search.expando,\
+	com.liferay.portal.search.experiences,\
 	com.liferay.portal.search.facet,\
 	com.liferay.portal.search.facet.category,\
 	com.liferay.portal.search.facet.custom,\

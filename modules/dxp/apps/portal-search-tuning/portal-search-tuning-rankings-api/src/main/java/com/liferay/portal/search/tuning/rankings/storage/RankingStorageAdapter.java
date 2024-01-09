@@ -8,10 +8,12 @@ package com.liferay.portal.search.tuning.rankings.storage;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.search.tuning.rankings.index.Ranking;
 import com.liferay.portal.search.tuning.rankings.index.name.RankingIndexName;
+import org.osgi.annotation.versioning.ProviderType;
 
 /**
  * @author Almir Ferreira
  */
+@ProviderType
 public interface RankingStorageAdapter {
 
 	public String create(Ranking ranking, RankingIndexName rankingIndexName);
