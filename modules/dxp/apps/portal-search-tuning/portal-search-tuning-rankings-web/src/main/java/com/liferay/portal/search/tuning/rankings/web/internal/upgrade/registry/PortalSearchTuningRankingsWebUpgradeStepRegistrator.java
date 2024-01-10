@@ -5,9 +5,11 @@
 
 package com.liferay.portal.search.tuning.rankings.web.internal.upgrade.registry;
 
+import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.upgrade.registry.UpgradeStepRegistrator;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Almir Ferreira
@@ -23,7 +25,10 @@ public class PortalSearchTuningRankingsWebUpgradeStepRegistrator
 		registry.register(
 			"0.0.1", "1.0.0",
 			new com.liferay.portal.search.tuning.rankings.web.internal.upgrade.
-				v1_0_0.RankingUpgradeProcess());
+				v1_0_0.RankingUpgradeProcess(_classNameLocalService));
 	}
+
+	@Reference
+	private ClassNameLocalService _classNameLocalService;
 
 }
