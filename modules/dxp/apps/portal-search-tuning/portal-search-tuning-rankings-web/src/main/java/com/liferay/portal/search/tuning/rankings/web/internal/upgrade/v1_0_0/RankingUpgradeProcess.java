@@ -8,8 +8,10 @@ package com.liferay.portal.search.tuning.rankings.web.internal.upgrade.v1_0_0;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.jdbc.AutoBatchPreparedStatementUtil;
+import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 import com.liferay.portal.search.tuning.rankings.web.internal.constants.ResultRankingsConstants;
+import com.liferay.portal.search.tuning.rankings.web.internal.index.Ranking;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,18 +21,25 @@ import java.sql.ResultSet;
  */
 public class RankingUpgradeProcess extends UpgradeProcess {
 
+	public RankingUpgradeProcess(ClassNameLocalService classNameLocalService) {
+		_classNameLocalService = classNameLocalService;
+	}
+
 	@Override
 	protected void doUpgrade() throws Exception {
 		try (PreparedStatement preparedStatement1 = connection.prepareStatement(
 				"select jsonStorageEntryId, valueString from " +
-					"jsonStorageEntry where key_ = ?");
+					"jsonStorageEntry where classNameId = ? and key_ = ?");
 			PreparedStatement preparedStatement2 =
 				AutoBatchPreparedStatementUtil.concurrentAutoBatch(
 					connection,
 					"update jsonStorageEntry set key_ = ?, valueString = ? " +
 						"where jsonStorageEntryId = ?")) {
 
-			preparedStatement1.setString(1, "inactive");
+			preparedStatement1.setLong(
+				1, _classNameLocalService.getClassNameId(Ranking.class));
+
+			preparedStatement1.setString(2, "inactive");
 
 			ResultSet resultSet = preparedStatement1.executeQuery();
 
@@ -61,5 +70,7 @@ public class RankingUpgradeProcess extends UpgradeProcess {
 			}
 		}
 	}
+
+	private final ClassNameLocalService _classNameLocalService;
 
 }
