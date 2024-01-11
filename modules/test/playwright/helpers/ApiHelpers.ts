@@ -8,17 +8,20 @@ import {Page} from '@playwright/test';
 import {liferayConfig} from '../liferay.config';
 import {FeatureFlagApiHelper} from './FeatureFlagApiHelper';
 import {ObjectAdminApiHelper} from './ObjectAdminApiHelper';
+import {SearchExperiencesApiHelper} from './SearchExperiencesApiHelper';
 
 export class ApiHelpers {
 	readonly baseUrl: string;
 	readonly featureFlag: FeatureFlagApiHelper;
 	readonly objectAdmin: ObjectAdminApiHelper;
+	readonly searchExperiences: SearchExperiencesApiHelper;
 	readonly page: Page;
 
 	constructor(page: Page) {
 		this.baseUrl = liferayConfig.environment.baseUrl + '/o/';
 		this.featureFlag = new FeatureFlagApiHelper(page);
 		this.objectAdmin = new ObjectAdminApiHelper(this);
+		this.searchExperiences = new SearchExperiencesApiHelper(this, page);
 		this.page = page;
 	}
 

@@ -11,6 +11,7 @@ export class ApplicationsMenuPage {
 	readonly instanceSettingsLink: Locator;
 	readonly objectsLink: Locator;
 	readonly objectsMenuItem: Locator;
+	readonly resultRankingsMenuItem: Locator;
 	readonly page: Page;
 	readonly signInButton: Locator;
 	readonly usersAndOrganizationsItem: Locator;
@@ -28,6 +29,10 @@ export class ApplicationsMenuPage {
 		this.objectsMenuItem = page.getByRole('menuitem', {
 			exact: true,
 			name: 'Objects',
+		});
+		this.resultRankingsMenuItem = page.getByRole('menuitem', {
+			exact: true,
+			name: 'Result Rankings',
 		});
 		this.page = page;
 		this.signInButton = page.getByRole('button', {name: 'Sign In'});
@@ -62,5 +67,11 @@ export class ApplicationsMenuPage {
 		await this.applicationMenuButton.click();
 		await this.controlPanelButton.click();
 		await this.usersAndOrganizationsItem.click();
+	}
+
+	async goToResultRankings() {
+		await this.goto();
+		await this.applicationMenuButton.click();
+		await this.resultRankingsMenuItem.click();
 	}
 }
