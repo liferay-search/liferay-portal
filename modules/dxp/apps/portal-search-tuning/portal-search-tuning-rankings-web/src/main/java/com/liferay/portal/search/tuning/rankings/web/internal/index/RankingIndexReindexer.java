@@ -21,6 +21,7 @@ import com.liferay.portal.search.capabilities.SearchCapabilities;
 import com.liferay.portal.search.index.SyncReindexManager;
 import com.liferay.portal.search.spi.reindexer.IndexReindexer;
 import com.liferay.portal.search.tuning.rankings.constants.ResultRankingsConstants;
+import com.liferay.portal.search.tuning.rankings.helper.RankingHelper;
 import com.liferay.portal.search.tuning.rankings.index.Ranking;
 import com.liferay.portal.search.tuning.rankings.index.name.RankingIndexName;
 import com.liferay.portal.search.tuning.rankings.index.name.RankingIndexNameBuilder;
@@ -117,6 +118,9 @@ public class RankingIndexReindexer implements IndexReindexer {
 	protected JSONStorageEntryLocalService jsonStorageEntryLocalService;
 
 	@Reference
+	protected RankingHelper rankingHelper;
+
+	@Reference
 	protected RankingIndexCreator rankingIndexCreator;
 
 	@Reference
@@ -132,7 +136,8 @@ public class RankingIndexReindexer implements IndexReindexer {
 		JSONObject jsonObject = jsonStorageEntryLocalService.getJSONObject(
 			classNameLocalService.getClassNameId(Ranking.class), classPK);
 
-		Ranking.RankingBuilder rankingBuilder = new Ranking.RankingBuilder();
+		Ranking.RankingBuilder rankingBuilder = new Ranking.RankingBuilder(
+			rankingHelper);
 
 		rankingBuilder.aliases(
 			JSONUtil.toStringList(jsonObject.getJSONArray("aliases"))

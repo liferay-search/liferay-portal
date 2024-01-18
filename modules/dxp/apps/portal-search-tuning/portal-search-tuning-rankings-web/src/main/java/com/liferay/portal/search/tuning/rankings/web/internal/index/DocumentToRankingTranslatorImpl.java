@@ -11,6 +11,7 @@ import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.document.Document;
 import com.liferay.portal.search.tuning.rankings.constants.ResultRankingsConstants;
+import com.liferay.portal.search.tuning.rankings.helper.RankingHelper;
 import com.liferay.portal.search.tuning.rankings.index.Ranking;
 
 import java.util.Collections;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author André de Oliveira
@@ -54,7 +56,7 @@ public class DocumentToRankingTranslatorImpl
 	}
 
 	protected Ranking.RankingBuilder builder() {
-		return new Ranking.RankingBuilder();
+		return new Ranking.RankingBuilder(_rankingHelper);
 	}
 
 	private List<String> _getAliases(Document document) {
@@ -125,5 +127,8 @@ public class DocumentToRankingTranslatorImpl
 		return new Ranking.Pin(
 			GetterUtil.getInteger(map.get("position")), map.get("uid"));
 	}
+
+	@Reference
+	private RankingHelper _rankingHelper;
 
 }
