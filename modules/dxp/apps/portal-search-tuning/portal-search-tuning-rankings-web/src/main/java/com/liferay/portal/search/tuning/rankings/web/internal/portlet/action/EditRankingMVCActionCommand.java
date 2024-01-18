@@ -24,12 +24,12 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.search.index.IndexNameBuilder;
 import com.liferay.portal.search.tuning.rankings.constants.ResultRankingsConstants;
+import com.liferay.portal.search.tuning.rankings.helper.RankingHelper;
 import com.liferay.portal.search.tuning.rankings.index.Ranking;
 import com.liferay.portal.search.tuning.rankings.index.RankingIndexReader;
 import com.liferay.portal.search.tuning.rankings.index.name.RankingIndexName;
 import com.liferay.portal.search.tuning.rankings.index.name.RankingIndexNameBuilder;
 import com.liferay.portal.search.tuning.rankings.storage.RankingStorageAdapter;
-import com.liferay.portal.search.tuning.rankings.util.RankingUtil;
 import com.liferay.portal.search.tuning.rankings.web.internal.constants.ResultRankingsPortletKeys;
 import com.liferay.portal.search.tuning.rankings.web.internal.exception.DuplicateQueryStringException;
 import com.liferay.portal.search.tuning.rankings.web.internal.exception.NotApplicableStatusException;
@@ -114,6 +114,9 @@ public class EditRankingMVCActionCommand extends BaseMVCActionCommand {
 	protected Portal portal;
 
 	@Reference
+	protected RankingHelper rankingHelper;
+
+	@Reference
 	protected RankingIndexNameBuilder rankingIndexNameBuilder;
 
 	@Reference
@@ -159,7 +162,8 @@ public class EditRankingMVCActionCommand extends BaseMVCActionCommand {
 		ActionRequest actionRequest,
 		EditRankingMVCActionRequest editRankingMVCActionRequest) {
 
-		Ranking.RankingBuilder rankingBuilder = new Ranking.RankingBuilder();
+		Ranking.RankingBuilder rankingBuilder = new Ranking.RankingBuilder(
+			rankingHelper);
 
 		String resultActionCmd = ParamUtil.getString(
 			actionRequest, "resultActionCmd");
@@ -381,7 +385,7 @@ public class EditRankingMVCActionCommand extends BaseMVCActionCommand {
 				return false;
 			}
 
-			queryStrings = RankingUtil.getQueryStrings(
+			queryStrings = rankingHelper.getQueryStrings(
 				ranking.getQueryString(),
 				_getAliases(editRankingMVCActionRequest));
 		}
@@ -527,7 +531,7 @@ public class EditRankingMVCActionCommand extends BaseMVCActionCommand {
 			hiddenIdsUpdated = Arrays.asList(addedHiddenIds);
 		}
 		else {
-			hiddenIdsUpdated = RankingUtil.translateDocumentIds(
+			hiddenIdsUpdated = rankingHelper.translateDocumentIds(
 				currentHiddenIds);
 
 			Collections.addAll(hiddenIdsUpdated, addedHiddenIds);

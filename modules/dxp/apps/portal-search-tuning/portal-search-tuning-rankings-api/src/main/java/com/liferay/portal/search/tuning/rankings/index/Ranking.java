@@ -7,7 +7,7 @@ package com.liferay.portal.search.tuning.rankings.index;
 
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
-import com.liferay.portal.search.tuning.rankings.util.RankingUtil;
+import com.liferay.portal.search.tuning.rankings.helper.RankingHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,6 +33,7 @@ public class Ranking {
 		_pins = new ArrayList<>(ranking._pins);
 		_queryString = ranking._queryString;
 		_rankingDocumentId = ranking._rankingDocumentId;
+		_rankingHelper = ranking._rankingHelper;
 		_status = ranking._status;
 		_sxpBlueprintExternalReferenceCode =
 			ranking._sxpBlueprintExternalReferenceCode;
@@ -81,7 +82,7 @@ public class Ranking {
 	}
 
 	public Collection<String> getQueryStrings() {
-		return RankingUtil.getQueryStrings(_queryString, _aliases);
+		return _rankingHelper.getQueryStrings(_queryString, _aliases);
 	}
 
 	public String getRankingDocumentId() {
@@ -103,7 +104,7 @@ public class Ranking {
 
 		for (String pinnedDocumentId : _pinnedDocumentIds) {
 			if (documentId.equals(
-					RankingUtil.getDocumentId(pinnedDocumentId))) {
+					_rankingHelper.getDocumentId(pinnedDocumentId))) {
 
 				return true;
 			}
@@ -134,12 +135,14 @@ public class Ranking {
 
 	public static class RankingBuilder {
 
-		public RankingBuilder() {
-			_ranking = new Ranking();
-		}
-
 		public RankingBuilder(Ranking ranking) {
 			_ranking = ranking;
+		}
+
+		public RankingBuilder(RankingHelper rankingHelper) {
+			_ranking = new Ranking();
+
+			_ranking._rankingHelper = rankingHelper;
 		}
 
 		public RankingBuilder aliases(List<String> aliases) {
@@ -251,6 +254,7 @@ public class Ranking {
 	private List<Pin> _pins = new ArrayList<>();
 	private String _queryString;
 	private String _rankingDocumentId;
+	private RankingHelper _rankingHelper;
 	private String _status;
 	private String _sxpBlueprintExternalReferenceCode;
 
