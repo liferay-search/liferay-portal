@@ -22,9 +22,9 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.index.IndexNameBuilder;
 import com.liferay.portal.search.searcher.SearchRequestBuilderFactory;
 import com.liferay.portal.search.tuning.rankings.constants.ResultRankingsConstants;
+import com.liferay.portal.search.tuning.rankings.helper.RankingHelper;
 import com.liferay.portal.search.tuning.rankings.index.name.RankingIndexName;
 import com.liferay.portal.search.tuning.rankings.index.name.RankingIndexNameBuilder;
-import com.liferay.portal.search.tuning.rankings.util.RankingUtil;
 import com.liferay.portal.search.tuning.rankings.web.internal.constants.ResultRankingsPortletKeys;
 import com.liferay.portal.search.tuning.rankings.web.internal.index.DuplicateQueryStringsDetector;
 
@@ -155,7 +155,7 @@ public class ValidateRankingMVCResourceCommand implements MVCResourceCommand {
 				validateRankingMVCResourceRequest.
 					getGroupExternalReferenceCode()
 			).queryStrings(
-				RankingUtil.getQueryStrings(
+				_rankingHelper.getQueryStrings(
 					validateRankingMVCResourceRequest.getQueryString(),
 					_getAliases(validateRankingMVCResourceRequest))
 			).rankingIndexName(
@@ -193,6 +193,9 @@ public class ValidateRankingMVCResourceCommand implements MVCResourceCommand {
 
 	@Reference
 	private Language _language;
+
+	@Reference
+	private RankingHelper _rankingHelper;
 
 	private class ValidateRankingMVCResourceRequest {
 
