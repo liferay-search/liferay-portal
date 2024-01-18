@@ -38,6 +38,8 @@ public class RankingSearchRequestHelperTest extends BaseRankingsWebTestCase {
 			complexQueryPartBuilderFactory);
 		ReflectionTestUtil.setFieldValue(
 			_rankingSearchRequestHelper, "queries", queries);
+		ReflectionTestUtil.setFieldValue(
+			_rankingSearchRequestHelper, "rankingHelper", rankingHelper);
 	}
 
 	@Test

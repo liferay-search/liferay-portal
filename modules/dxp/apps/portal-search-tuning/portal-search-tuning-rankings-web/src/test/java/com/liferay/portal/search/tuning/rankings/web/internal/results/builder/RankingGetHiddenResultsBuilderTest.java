@@ -8,6 +8,7 @@ package com.liferay.portal.search.tuning.rankings.web.internal.results.builder;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.search.tuning.rankings.index.Ranking;
+import com.liferay.portal.search.tuning.rankings.web.internal.helper.RankingHelperImpl;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
 
 import java.util.Arrays;
@@ -34,9 +35,10 @@ public class RankingGetHiddenResultsBuilderTest
 	@Before
 	public void setUp() throws Exception {
 		_rankingGetHiddenResultsBuilder = new RankingGetHiddenResultsBuilder(
-			dlAppLocalService, fastDateFormatFactory, queries, rankingIndexName,
-			rankingIndexReader, resourceActions, resourceRequest,
-			resourceResponse, searchEngineAdapter);
+			dlAppLocalService, fastDateFormatFactory, queries,
+			new RankingHelperImpl(), rankingIndexName, rankingIndexReader,
+			resourceActions, resourceRequest, resourceResponse,
+			searchEngineAdapter);
 
 		_rankingGetHiddenResultsBuilder.from(
 			0
