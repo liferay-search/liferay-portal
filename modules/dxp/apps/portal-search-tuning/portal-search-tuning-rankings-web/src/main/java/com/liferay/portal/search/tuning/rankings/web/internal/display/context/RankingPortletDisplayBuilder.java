@@ -15,6 +15,7 @@ import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.search.EmptyOnClickRowChecker;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
+import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.portlet.SearchDisplayStyleUtil;
@@ -208,14 +209,22 @@ public class RankingPortletDisplayBuilder {
 	}
 
 	protected List<DropdownItem> getFilterItemsDropdownItems() {
-		return DropdownItemListBuilder.addGroup(
-			dropdownGroupItem -> {
-				dropdownGroupItem.setDropdownItems(
-					_getFilterScopeDropdownItems());
-				dropdownGroupItem.setLabel(
-					LanguageUtil.get(_httpServletRequest, "filter-by-scope"));
-			}
-		).addGroup(
+		DropdownItemListBuilder.DropdownItemListWrapper
+			dropdownItemListWrapper =
+				new DropdownItemListBuilder.DropdownItemListWrapper();
+
+		if (FeatureFlagManagerUtil.isEnabled("LPD-6368")) {
+			dropdownItemListWrapper.addGroup(
+				dropdownGroupItem -> {
+					dropdownGroupItem.setDropdownItems(
+						_getFilterScopeDropdownItems());
+					dropdownGroupItem.setLabel(
+						LanguageUtil.get(
+							_httpServletRequest, "filter-by-scope"));
+				});
+		}
+
+		return dropdownItemListWrapper.addGroup(
 			dropdownGroupItem -> {
 				dropdownGroupItem.setDropdownItems(
 					_getFilterStatusDropdownItems());
@@ -354,7 +363,11 @@ public class RankingPortletDisplayBuilder {
 	private List<DropdownItem> _getFilterStatusDropdownItems() {
 		String status = _getStatus();
 
-		return DropdownItemListBuilder.add(
+		DropdownItemListBuilder.DropdownItemListWrapper
+			dropdownItemListWrapper =
+				new DropdownItemListBuilder.DropdownItemListWrapper();
+
+		dropdownItemListWrapper.add(
 			dropdownItem -> {
 				dropdownItem.setActive(status.equals("all"));
 				dropdownItem.setHref(
@@ -386,20 +399,26 @@ public class RankingPortletDisplayBuilder {
 						_httpServletRequest,
 						ResultRankingsConstants.STATUS_INACTIVE));
 			}
-		).add(
-			dropdownItem -> {
-				dropdownItem.setActive(
-					status.equals(
-						ResultRankingsConstants.STATUS_NOT_APPLICABLE));
-				dropdownItem.setHref(
-					_getPortletURL(getKeywords()), "status",
-					ResultRankingsConstants.STATUS_NOT_APPLICABLE);
-				dropdownItem.setLabel(
-					LanguageUtil.get(
-						_httpServletRequest,
-						ResultRankingsConstants.STATUS_NOT_APPLICABLE));
-			}
-		).build();
+		);
+
+		if (FeatureFlagManagerUtil.isEnabled("LPD-6368")) {
+			return dropdownItemListWrapper.add(
+				dropdownItem -> {
+					dropdownItem.setActive(
+						status.equals(
+							ResultRankingsConstants.STATUS_NOT_APPLICABLE));
+					dropdownItem.setHref(
+						_getPortletURL(getKeywords()), "status",
+						ResultRankingsConstants.STATUS_NOT_APPLICABLE);
+					dropdownItem.setLabel(
+						LanguageUtil.get(
+							_httpServletRequest,
+							ResultRankingsConstants.STATUS_NOT_APPLICABLE));
+				}
+			).build();
+		}
+
+		return dropdownItemListWrapper.build();
 	}
 
 	private String _getOrderByCol() {
