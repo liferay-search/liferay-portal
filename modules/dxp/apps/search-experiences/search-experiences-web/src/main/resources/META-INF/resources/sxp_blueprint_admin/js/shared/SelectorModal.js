@@ -352,7 +352,7 @@ export default function ({
 	fetchItemsURL,
 	initialSelected,
 	locator,
-	namespaceParams = true, // To allow removing the namespace on `page` and `pageSize` for a headless API
+	namespaceParams = true,
 	multiple = false,
 	onSubmit,
 	title,
