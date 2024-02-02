@@ -33,7 +33,7 @@ public class RenameRankingUpgradeProcess extends UpgradeProcess {
 				"com.liferay.portal.search.tuning.rankings.web.internal." +
 					"index.Ranking");
 
-			if (className != null) {
+			if ((className != null) && hasTable("JSONStorageEntry")) {
 				_classNameLocalService.deleteClassName(className);
 
 				ClassName newClassName = _classNameLocalService.getClassName(
