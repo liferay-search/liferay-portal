@@ -43,7 +43,7 @@ public class RenameRankingUpgradeProcess extends UpgradeProcess {
 
 				preparedStatement.setLong(2, className.getClassNameId());
 
-				preparedStatement.execute();
+				preparedStatement.executeUpdate();
 			}
 		}
 	}
