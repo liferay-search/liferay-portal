@@ -38,6 +38,10 @@ public class RankingJSONStorageEntryUpgradeProcess extends UpgradeProcess {
 					"update JSONStorageEntry set key_ = ?, valueString = ? " +
 						"where jsonStorageEntryId = ?")) {
 
+			if (!hasTable("JSONStorageEntry")) {
+				return;
+			}
+
 			preparedStatement1.setLong(
 				1, _classNameLocalService.getClassNameId(Ranking.class));
 
