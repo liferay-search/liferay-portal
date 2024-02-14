@@ -6,6 +6,7 @@
 package com.liferay.portal.search.web.internal.search.results.portlet.shared.search;
 
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.searcher.SearchRequestBuilderFactory;
 import com.liferay.portal.search.web.constants.SearchResultsPortletKeys;
@@ -62,8 +63,13 @@ public class SearchResultsPortletSharedSearchContributor
 		PortletSharedSearchSettings portletSharedSearchSettings,
 		SearchRequestBuilder searchRequestBuilder) {
 
-		String paginationStartParameterName =
-			searchResultsPortletPreferences.getPaginationStartParameterName();
+		String namespace = _portal.getPortletNamespace(
+			portletSharedSearchSettings.getPortletId());
+
+		String paginationStartParameterName = namespace.concat(
+			searchResultsPortletPreferences.getPaginationStartParameterName());
+		String paginationDeltaParameterName = namespace.concat(
+			searchResultsPortletPreferences.getPaginationDeltaParameterName());
 
 		portletSharedSearchSettings.setPaginationStartParameterName(
 			paginationStartParameterName);
@@ -72,8 +78,7 @@ public class SearchResultsPortletSharedSearchContributor
 
 		int paginationDelta = GetterUtil.getInteger(
 			portletSharedSearchSettings.getParameter(
-				searchResultsPortletPreferences.
-					getPaginationDeltaParameterName()),
+				paginationDeltaParameterName),
 			searchResultsPortletPreferences.getPaginationDelta());
 
 		portletSharedSearchSettings.setPaginationDelta(paginationDelta);
@@ -89,5 +94,8 @@ public class SearchResultsPortletSharedSearchContributor
 			searchRequestBuilder.from((paginationStart - 1) * paginationDelta);
 		}
 	}
+
+	@Reference
+	private Portal _portal;
 
 }

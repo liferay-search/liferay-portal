@@ -72,7 +72,7 @@ SearchContainer<Document> searchContainer = searchResultsPortletDisplayContext.g
 		/>
 
 		<c:if test="<%= searchResultsPortletDisplayContext.isShowPagination() %>">
-			<aui:form action="#" useNamespace="<%= false %>">
+			<aui:form action="#" useNamespace="<%= true %>">
 				<liferay-ui:search-paginator
 					id='<%= liferayPortletResponse.getNamespace() + "searchContainerTag" %>'
 					markupView="lexicon"
