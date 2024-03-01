@@ -37,6 +37,7 @@ import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.SearchEngine;
 import com.liferay.portal.kernel.search.SearchEngineHelper;
+import com.liferay.portal.kernel.search.highlight.HighlightUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.test.util.HTTPTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
@@ -119,26 +120,16 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 		JournalArticle journalArticle = _addJournalArticle(
 			assetCategory, assetTag);
 
-		ObjectDefinition objectDefinition =
-			_addObjectDefinitionWithObjectEntry();
-
-		SXPBlueprint sxpBlueprintWithHighlightConfiguration = _addSXPBlueprint(
-			true);
-		SXPBlueprint sxpBlueprintWithoutHighlightConfiguration =
-			_addSXPBlueprint(false);
-
 		_testPostSearchPageWithCategoryFacetConfiguration(assetCategory);
 		_testPostSearchPageWithCategoryTreeFacetConfiguration(assetCategory);
 		_testPostSearchPageWithCustomFacetConfiguration();
 		_testPostSearchPageWithDateRangeFacetConfiguration();
-		_testPostSearchPageWithEmbeddedNestedFields(objectDefinition);
+		_testPostSearchPageWithEmbeddedNestedFields();
 		_testPostSearchPageWithFolderFacetConfiguration(journalArticle);
-		_testPostSearchPageWithHighlightConfiguration(
-			sxpBlueprintWithHighlightConfiguration);
+		_testPostSearchPageWithHighlightConfiguration();
 		_testPostSearchPageWithKeywords(journalArticle);
 		_testPostSearchPageWithNestedFacetConfiguration(ddmStructure);
-		_testPostSearchPageWithoutHighlightConfiguration(
-			sxpBlueprintWithoutHighlightConfiguration);
+		_testPostSearchPageWithoutHighlightConfiguration();
 		_testPostSearchPageWithSiteFacetConfiguration();
 		_testPostSearchPageWithTagFacetConfiguration(assetTag);
 		_testPostSearchPageWithTypeFacetConfiguration();
@@ -228,7 +219,7 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 		return objectDefinition;
 	}
 
-	private SXPBlueprint _addSXPBlueprint(boolean highlightConfiguration)
+	private SXPBlueprint _addSXPBlueprint(boolean highlightingEnabled)
 		throws Exception {
 
 		JSONObject configurationJSONObject = JSONUtil.put(
@@ -253,7 +244,7 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 			"queryConfiguration", JSONUtil.put("applyIndexerClauses", true)
 		);
 
-		if (highlightConfiguration) {
+		if (highlightingEnabled) {
 			configurationJSONObject.put(
 				"highlightConfiguration",
 				_createSXPBlueprintHighlightConfigurationJSON());
@@ -331,16 +322,15 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 	}
 
 	private JSONObject _createSXPBlueprintHighlightConfigurationJSON() {
-		JSONObject fieldsJSONObject = JSONUtil.put(
-			"fullName",
-			JSONUtil.put(
-				"fragment_size", 100
-			).put(
-				"number_of_fragments", 10
-			));
-
 		return JSONUtil.put(
-			"fields", fieldsJSONObject
+			"fields",
+			JSONUtil.put(
+				"fullName",
+				JSONUtil.put(
+					"fragment_size", 100
+				).put(
+					"number_of_fragments", 10
+				))
 		).put(
 			"post_tags",
 			JSONFactoryUtil.createJSONArray(
@@ -405,14 +395,13 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 		}
 
 		HashMap<String, JSONArray> map = new HashMap<>();
+
 		Iterator<String> iterator = searchFacetsJSONObject.keys();
 
 		while (iterator.hasNext()) {
 			String key = iterator.next();
 
-			JSONArray valueJSONArray = searchFacetsJSONObject.getJSONArray(key);
-
-			map.put(key, valueJSONArray);
+			map.put(key, searchFacetsJSONObject.getJSONArray(key));
 		}
 
 		return map;
@@ -420,8 +409,10 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 
 	private String _getUserHighlightedFullName() {
 		return StringBundler.concat(
-			"<liferay-hl>", _user.getFirstName(), "</liferay-hl> ",
-			"<liferay-hl>", _user.getLastName(), "</liferay-hl>");
+			HighlightUtil.HIGHLIGHT_TAG_OPEN, _user.getFirstName(),
+			HighlightUtil.HIGHLIGHT_TAG_CLOSE, StringPool.SPACE,
+			HighlightUtil.HIGHLIGHT_TAG_OPEN, _user.getLastName(),
+			HighlightUtil.HIGHLIGHT_TAG_CLOSE);
 	}
 
 	private SearchPage<SearchResult> _postSearchPage(String keywords)
@@ -439,12 +430,12 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 			String nestedFields, SearchRequestBody searchRequestBody)
 		throws Exception {
 
-		JSONObject jsonObject = HTTPTestUtil.invokeToJSONObject(
-			searchRequestBody.toString(),
-			_getEndpointURL(entryClassNames, filter, keywords, nestedFields),
-			Http.Method.POST);
-
-		return _toSearchPage(jsonObject);
+		return _toSearchPage(
+			HTTPTestUtil.invokeToJSONObject(
+				searchRequestBody.toString(),
+				_getEndpointURL(
+					entryClassNames, filter, keywords, nestedFields),
+				Http.Method.POST));
 	}
 
 	private SearchPage<SearchResult> _postSearchPageWithFacetConfiguration(
@@ -565,20 +556,24 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 
 		JSONArray termJSONArray = (JSONArray)facetsMap.get("date-range");
 
-		JSONObject termJSONObject = _jsonFactory.createJSONObject(
-			termJSONArray.getString(0));
-
-		Assert.assertEquals("1", termJSONObject.getString("displayName"));
+		Assert.assertEquals(
+			"1",
+			_jsonFactory.createJSONObject(
+				termJSONArray.getString(0)
+			).getString(
+				"displayName"
+			));
 	}
 
-	private void _testPostSearchPageWithEmbeddedNestedFields(
-			ObjectDefinition objectDefinition)
+	private void _testPostSearchPageWithEmbeddedNestedFields()
 		throws Exception {
 
-		String entryClassName = objectDefinition.getClassName();
+		ObjectDefinition objectDefinition =
+			_addObjectDefinitionWithObjectEntry();
 
 		SearchPage<SearchResult> page = _postSearchPage(
-			entryClassName, null, objectDefinition.getUserName(), "embedded",
+			objectDefinition.getClassName(), null,
+			objectDefinition.getUserName(), "embedded",
 			new SearchRequestBody());
 
 		Collection<SearchResult> items = page.getItems();
@@ -599,13 +594,13 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 			String.valueOf(journalArticle.getFolderId()));
 	}
 
-	private void _testPostSearchPageWithHighlightConfiguration(
-			SXPBlueprint sxpBlueprint)
+	private void _testPostSearchPageWithHighlightConfiguration()
 		throws Exception {
 
 		SearchPage<SearchResult> page =
 			_postSearchPageWithSXPBlueprintConfiguration(
-				_user.getModelClassName(), _user.getFullName(), sxpBlueprint);
+				_user.getModelClassName(), _user.getFullName(),
+				_addSXPBlueprint(true));
 
 		List<SearchResult> searchResults = ListUtil.fromCollection(
 			page.getItems());
@@ -657,13 +652,13 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 			"nested", "test", "test");
 	}
 
-	private void _testPostSearchPageWithoutHighlightConfiguration(
-			SXPBlueprint sxpBlueprint)
+	private void _testPostSearchPageWithoutHighlightConfiguration()
 		throws Exception {
 
 		SearchPage<SearchResult> page =
 			_postSearchPageWithSXPBlueprintConfiguration(
-				_user.getModelClassName(), _user.getFullName(), sxpBlueprint);
+				_user.getModelClassName(), _user.getFullName(),
+				_addSXPBlueprint(false));
 
 		List<SearchResult> searchResults = ListUtil.fromCollection(
 			page.getItems());
@@ -714,10 +709,9 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 	private void _testPostSearchPageWithUserFacetConfiguration()
 		throws Exception {
 
-		String userFullName = StringUtil.toLowerCase(_user.getFullName());
-
 		_assertFacetConfiguration(
-			true, "user", userFullName, String.valueOf(_user.getUserId()));
+			true, "user", StringUtil.toLowerCase(_user.getFullName()),
+			String.valueOf(_user.getUserId()));
 	}
 
 	private void _testPostSearchPageZeroResults() throws Exception {
@@ -728,26 +722,23 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 	}
 
 	private SearchPage<SearchResult> _toSearchPage(JSONObject jsonObject) {
-		Pagination pagination = Pagination.of(
-			jsonObject.getInt("page"), jsonObject.getInt("pageSize"));
-
 		JSONArray itemsJSONArray = jsonObject.getJSONArray("items");
 
 		List<SearchResult> searchResults = new ArrayList<>();
 
 		for (int i = 0; i < itemsJSONArray.length(); i++) {
-			Object item = itemsJSONArray.get(i);
-
-			SearchResult searchResult = SearchResult.toDTO(item.toString());
-
-			searchResults.add(searchResult);
+			searchResults.add(
+				SearchResult.toDTO(
+					itemsJSONArray.get(
+						i
+					).toString()));
 		}
 
-		long totalCount = jsonObject.getLong("totalCount");
-
 		return SearchPage.of(
-			null, null, _getSearchFacets(jsonObject), searchResults, pagination,
-			totalCount);
+			null, null, _getSearchFacets(jsonObject), searchResults,
+			Pagination.of(
+				jsonObject.getInt("page"), jsonObject.getInt("pageSize")),
+			jsonObject.getLong("totalCount"));
 	}
 
 	@Inject
