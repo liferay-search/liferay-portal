@@ -225,7 +225,9 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 			"generalConfiguration",
 			JSONUtil.put(
 				"searchableAssetTypes",
-				JSONUtil.put("com.liferay.portal.kernel.model.User"))
+				JSONUtil.putAll(
+					JournalArticle.class.getName(),
+					JournalFolder.class.getName(), User.class.getName()))
 		).put(
 			"queryConfiguration", JSONUtil.put("applyIndexerClauses", true)
 		);
@@ -633,7 +635,7 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 		throws Exception {
 
 		_assertFacetConfiguration(
-			false, null, "type", StringPool.BLANK, null,
+			false, null, "type", StringPool.BLANK, _addSXPBlueprint(false),
 			JournalArticle.class.getName(), JournalFolder.class.getName(),
 			User.class.getName());
 	}
