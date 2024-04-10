@@ -246,19 +246,22 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 
 	private SearchPage<SearchResult> _assertFacetConfiguration(
 			boolean anyMatch, Map<String, Object> facetAttributes,
-			String facetName, Object facetValues, String... expectedValues)
+			String facetName, Object facetValues, SXPBlueprint sxpBlueprint,
+			String... expectedValues)
 		throws Exception {
 
-		SearchPage<SearchResult> searchPage =
-			_postSearchPageWithFacetConfiguration(
-				new FacetConfiguration() {
-					{
-						attributes = facetAttributes;
-						frequencyThreshold = 1;
-						name = facetName;
-						values = new Object[] {facetValues};
-					}
-				});
+		SearchPage<SearchResult> searchPage = _postSearchPage(
+			null,
+			new FacetConfiguration() {
+				{
+					attributes = facetAttributes;
+					frequencyThreshold = 1;
+					name = facetName;
+					values = new Object[] {facetValues};
+				}
+			},
+			"groupIds/any(g:g eq " + testGroup.getGroupId() + ")", null, null,
+			sxpBlueprint);
 
 		Map<String, Object> searchFacets =
 			(Map<String, Object>)searchPage.getSearchFacets();
@@ -391,14 +394,34 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 		throws Exception {
 
 		return _postSearchPage(
-			null, "groupIds/any(g:g eq " + testGroup.getGroupId() + ")",
-			keywords, null, new SearchRequestBody());
+			null, null, "groupIds/any(g:g eq " + testGroup.getGroupId() + ")",
+			keywords, null, null);
 	}
 
 	private SearchPage<SearchResult> _postSearchPage(
-			String entryClassNames, String filterString, String keywords,
-			String nestedFields, SearchRequestBody searchRequestBody)
+			String entryClassNames, FacetConfiguration facetConfiguration,
+			String filterString, String keywords, String nestedFields,
+			SXPBlueprint sxpBlueprint)
 		throws Exception {
+
+		SearchRequestBody searchRequestBody = new SearchRequestBody();
+		Map<String, Object> attributes = new HashMap<>();
+
+		if (facetConfiguration != null) {
+			attributes.put("search.empty.search", true);
+			facetConfiguration.setFrequencyThreshold(0);
+
+			searchRequestBody.setFacetConfigurations(
+				new FacetConfiguration[] {facetConfiguration});
+		}
+
+		if (sxpBlueprint != null) {
+			attributes.put(
+				"search.experiences.blueprint.external.reference.code",
+				sxpBlueprint.getExternalReferenceCode());
+		}
+
+		searchRequestBody.setAttributes(attributes);
 
 		return _toSearchPage(
 			HTTPTestUtil.invokeToJSONObject(
@@ -406,48 +429,6 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 				_getEndpoint(
 					entryClassNames, filterString, keywords, nestedFields),
 				Http.Method.POST));
-	}
-
-	private SearchPage<SearchResult> _postSearchPageWithFacetConfiguration(
-			FacetConfiguration facetConfiguration)
-		throws Exception {
-
-		facetConfiguration.setFrequencyThreshold(0);
-
-		SearchRequestBody searchRequestBody = new SearchRequestBody() {
-			{
-				attributes = HashMapBuilder.<String, Object>put(
-					"search.empty.search", true
-				).build();
-
-				facetConfigurations = new FacetConfiguration[] {
-					facetConfiguration
-				};
-			}
-		};
-
-		return _postSearchPage(
-			null, "groupIds/any(g:g eq " + testGroup.getGroupId() + ")", null,
-			null, searchRequestBody);
-	}
-
-	private SearchPage<SearchResult>
-			_postSearchPageWithSXPBlueprintConfiguration(
-				String entryClassNames, String keywords,
-				SXPBlueprint sxpBlueprint)
-		throws Exception {
-
-		SearchRequestBody searchRequestBody = new SearchRequestBody() {
-			{
-				attributes = HashMapBuilder.<String, Object>put(
-					"search.experiences.blueprint.external.reference.code",
-					sxpBlueprint.getExternalReferenceCode()
-				).build();
-			}
-		};
-
-		return _postSearchPage(
-			entryClassNames, null, keywords, null, searchRequestBody);
 	}
 
 	private void _testPostSearchPageWithCategoryTreeFacetConfiguration()
@@ -461,7 +442,7 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 				"vocabularyIds",
 				new String[] {String.valueOf(_assetCategory.getVocabularyId())}
 			).build(),
-			"category", _assetCategory.getCategoryId(),
+			"category", _assetCategory.getCategoryId(), null,
 			String.valueOf(_assetCategory.getCategoryId()));
 	}
 
@@ -473,7 +454,7 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 			HashMapBuilder.<String, Object>put(
 				"field", Field.COMPANY_ID
 			).build(),
-			"custom", testCompany.getCompanyId(),
+			"custom", testCompany.getCompanyId(), null,
 			String.valueOf(testCompany.getCompanyId()));
 	}
 
@@ -508,7 +489,7 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 			).put(
 				"ranges", rangesJSONArray
 			).build(),
-			"date-range", range, range);
+			"date-range", range, null, range);
 
 		Map<String, Object> searchFacets =
 			(Map<String, Object>)searchPage.getSearchFacets();
@@ -542,9 +523,8 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 			objectDefinition, "test", RandomTestUtil.randomString());
 
 		SearchPage<SearchResult> searchPage = _postSearchPage(
-			objectDefinition.getClassName(), null,
-			objectDefinition.getUserName(), "embedded",
-			new SearchRequestBody());
+			objectDefinition.getClassName(), null, null,
+			objectDefinition.getUserName(), "embedded", null);
 
 		Collection<SearchResult> searchResults = searchPage.getItems();
 
@@ -559,17 +539,16 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 		throws Exception {
 
 		_assertFacetConfiguration(
-			false, null, "folder", _journalArticle.getFolderId(),
+			false, null, "folder", _journalArticle.getFolderId(), null,
 			String.valueOf(_journalArticle.getFolderId()));
 	}
 
 	private void _testPostSearchPageWithHighlightConfiguration()
 		throws Exception {
 
-		SearchPage<SearchResult> searchPage =
-			_postSearchPageWithSXPBlueprintConfiguration(
-				_user.getModelClassName(), _user.getFullName(),
-				_addSXPBlueprint(true));
+		SearchPage<SearchResult> searchPage = _postSearchPage(
+			_user.getModelClassName(), null, null, _user.getFullName(), null,
+			_addSXPBlueprint(true));
 
 		List<SearchResult> searchResults = ListUtil.fromCollection(
 			searchPage.getItems());
@@ -608,16 +587,15 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 			).put(
 				"path", "ddmFieldArray"
 			).build(),
-			"nested", "test", "test");
+			"nested", "test", null, "test");
 	}
 
 	private void _testPostSearchPageWithoutHighlightConfiguration()
 		throws Exception {
 
-		SearchPage<SearchResult> searchPage =
-			_postSearchPageWithSXPBlueprintConfiguration(
-				_user.getModelClassName(), _user.getFullName(),
-				_addSXPBlueprint(false));
+		SearchPage<SearchResult> searchPage = _postSearchPage(
+			_user.getModelClassName(), null, null, _user.getFullName(), null,
+			_addSXPBlueprint(false));
 
 		List<SearchResult> searchResults = ListUtil.fromCollection(
 			searchPage.getItems());
@@ -640,7 +618,7 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 		throws Exception {
 
 		_assertFacetConfiguration(
-			true, null, "site", testGroup.getGroupId(),
+			true, null, "site", testGroup.getGroupId(), null,
 			String.valueOf(testGroup.getGroupId()));
 	}
 
@@ -648,14 +626,14 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 		throws Exception {
 
 		_assertFacetConfiguration(
-			true, null, "tag", _assetTag.getName(), _assetTag.getName());
+			true, null, "tag", _assetTag.getName(), null, _assetTag.getName());
 	}
 
 	private void _testPostSearchPageWithTypeFacetConfiguration()
 		throws Exception {
 
 		_assertFacetConfiguration(
-			false, null, "type", StringPool.BLANK,
+			false, null, "type", StringPool.BLANK, null,
 			JournalArticle.class.getName(), JournalFolder.class.getName(),
 			User.class.getName());
 	}
@@ -665,7 +643,7 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 
 		_assertFacetConfiguration(
 			true, null, "user", StringUtil.toLowerCase(_user.getFullName()),
-			String.valueOf(_user.getUserId()));
+			null, String.valueOf(_user.getUserId()));
 	}
 
 	private void _testPostSearchPageZeroResults() throws Exception {
