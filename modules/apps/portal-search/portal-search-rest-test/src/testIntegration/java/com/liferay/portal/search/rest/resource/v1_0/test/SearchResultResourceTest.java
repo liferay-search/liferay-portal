@@ -240,8 +240,8 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 
 		return _sxpBlueprintLocalService.addSXPBlueprint(
 			null, _user.getUserId(), configurationJSONObject.toString(),
-			Collections.singletonMap(_locale, StringPool.BLANK), null,
-			StringPool.BLANK,
+			Collections.singletonMap(_locale, StringPool.BLANK),
+			_createSXPBlueprintElementInstancesJSON(), StringPool.BLANK,
 			Collections.singletonMap(_locale, RandomTestUtil.randomString()),
 			_serviceContext);
 	}
@@ -302,6 +302,16 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 		}
 
 		return searchPage;
+	}
+
+	private String _createSXPBlueprintElementInstancesJSON() {
+		return StringBundler.concat(
+			"\"elementDefinition\": { \"category\": \"filter\", ",
+			"\"configuration\": { \"queryConfiguration\": { \"queryEntries\": ",
+			"[ { \"clauses\": [ { \"context\": \"query\", \"occur\": ",
+			"\"filter\", \"query\": { \"term\": { \"scopeGroupId\": \"",
+			testGroup.getGroupId(),
+			"\" } } } ] } ] } }, \"icon\": \"filter\" }");
 	}
 
 	private JSONObject _createSXPBlueprintHighlightConfigurationJSON() {
