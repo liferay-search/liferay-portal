@@ -6,6 +6,7 @@
 package com.liferay.portal.search.elasticsearch7.internal.index;
 
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.search.elasticsearch7.internal.connection.ElasticsearchClientResolver;
 import com.liferay.portal.search.index.IndexInformation;
 import com.liferay.portal.search.index.IndexNameBuilder;
@@ -14,6 +15,8 @@ import java.io.IOException;
 
 import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsRequest;
 import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsResponse;
+import org.elasticsearch.action.admin.indices.settings.get.GetSettingsRequest;
+import org.elasticsearch.action.admin.indices.settings.get.GetSettingsResponse;
 import org.elasticsearch.client.IndicesClient;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -56,6 +59,19 @@ public class ElasticsearchIndexInformation implements IndexInformation {
 		return getIndexResponse.getIndices();
 	}
 
+	@Override
+	public int getMaxTermsCount(String indexName) {
+		GetSettingsRequest getSettingsRequest = new GetSettingsRequest();
+
+		getSettingsRequest.indices(indexName);
+
+		GetSettingsResponse getSettingsResponse = getSettingsResponse(
+			getSettingsRequest);
+
+		return GetterUtil.getInteger(
+			getSettingsResponse.getSetting(indexName, "index.max_terms_count"));
+	}
+
 	protected GetIndexResponse getIndexResponse(
 		GetIndexRequest getIndexRequest) {
 
@@ -77,6 +93,20 @@ public class ElasticsearchIndexInformation implements IndexInformation {
 		try {
 			return indicesClient.getMapping(
 				getMappingsRequest, RequestOptions.DEFAULT);
+		}
+		catch (IOException ioException) {
+			throw new RuntimeException(ioException);
+		}
+	}
+
+	protected GetSettingsResponse getSettingsResponse(
+		GetSettingsRequest getSettingsRequest) {
+
+		IndicesClient indicesClient = _getIndicesClient();
+
+		try {
+			return indicesClient.getSettings(
+				getSettingsRequest, RequestOptions.DEFAULT);
 		}
 		catch (IOException ioException) {
 			throw new RuntimeException(ioException);
