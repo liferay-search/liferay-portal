@@ -19,4 +19,6 @@ public interface IndexInformation {
 
 	public String[] getIndexNames();
 
+	public int getMaxTermsCount(String indexName);
+
 }
