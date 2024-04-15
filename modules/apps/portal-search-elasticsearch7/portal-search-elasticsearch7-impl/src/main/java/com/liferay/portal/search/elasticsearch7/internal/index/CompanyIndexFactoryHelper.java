@@ -262,6 +262,10 @@ public class CompanyIndexFactoryHelper {
 			"index.number_of_shards",
 			_elasticsearchConfigurationWrapper.indexNumberOfShards());
 		settingsBuilder.put(
+			"index.max_terms_count",
+			String.valueOf(
+				_elasticsearchConfigurationWrapper.indexMaxTermsCount()));
+		settingsBuilder.put(
 			"index.max_result_window",
 			String.valueOf(
 				_elasticsearchConfigurationWrapper.indexMaxResultWindow()));

@@ -90,7 +90,10 @@ public class CompanyIndexFactory
 	public void onElasticsearchConfigurationUpdate() {
 		_createCompanyIndexes();
 
+		_updateMaxTermsCount();
+
 		_updateMaxResultWindow();
+
 	}
 
 	@Override
@@ -179,6 +182,32 @@ public class CompanyIndexFactory
 				_log.info(
 					StringBundler.concat(
 						"Updated index.max_result_window to ", maxResultWindow,
+						" for index ", indexName));
+			}
+		}
+	}
+
+	private void _updateMaxTermsCount() {
+		int indexMaxTermsCount =
+			_elasticsearchConfigurationWrapper.indexMaxTermsCount();
+
+		for (Long companyId :
+			IndexFactoryCompanyIdRegistryUtil.getCompanyIds()) {
+
+			String indexName = _indexNameBuilder.getIndexName(companyId);
+
+			UpdateIndexSettingsIndexRequest updateIndexSettingsIndexRequest =
+				new UpdateIndexSettingsIndexRequest(indexName);
+
+			updateIndexSettingsIndexRequest.setSettings(
+				"{\"index.max_terms_count\": " + indexMaxTermsCount + "}");
+
+			_searchEngineAdapter.execute(updateIndexSettingsIndexRequest);
+
+			if (_log.isInfoEnabled()) {
+				_log.info(
+					StringBundler.concat(
+						"Updated index.max_terms_count to ", indexMaxTermsCount,
 						" for index ", indexName));
 			}
 		}
