@@ -15,7 +15,9 @@ import com.liferay.portal.kernel.search.filter.BooleanFilter;
 import com.liferay.portal.kernel.search.filter.TermsFilter;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.search.index.IndexInformation;
 import com.liferay.portal.search.spi.model.query.contributor.QueryPreFilterContributor;
 
 import java.util.List;
@@ -98,8 +100,10 @@ public class GroupIdQueryPreFilterContributor
 	private void _addInactiveGroupsBooleanFilter(
 		BooleanFilter booleanFilter, SearchContext searchContext) {
 
+		long companyId = searchContext.getCompanyId();
+
 		List<Long> inactiveGroupIds = _groupLocalService.getGroupIds(
-			searchContext.getCompanyId(), false);
+			companyId, false);
 
 		if (ListUtil.isEmpty(inactiveGroupIds)) {
 			return;
@@ -107,7 +111,9 @@ public class GroupIdQueryPreFilterContributor
 
 		TermsFilter groupIdTermsFilter = new TermsFilter(Field.GROUP_ID);
 
-		int maxTermsCount = 65536; //Could be set by a config
+		int maxTermsCount = GetterUtil.getInteger(
+			_indexInformation.getMaxTermsCount(
+				_indexInformation.getCompanyIndexName(companyId)));
 
 		if (inactiveGroupIds.size() <= maxTermsCount) {
 			groupIdTermsFilter.addValues(
@@ -153,5 +159,8 @@ public class GroupIdQueryPreFilterContributor
 
 	@Reference
 	private GroupLocalService _groupLocalService;
+
+	@Reference
+	private IndexInformation _indexInformation;
 
 }
