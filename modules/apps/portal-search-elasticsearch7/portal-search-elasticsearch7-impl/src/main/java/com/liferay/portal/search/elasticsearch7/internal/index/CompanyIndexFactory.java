@@ -90,10 +90,15 @@ public class CompanyIndexFactory
 	public void onElasticsearchConfigurationUpdate() {
 		_createCompanyIndexes();
 
-		_updateMaxTermsCount();
+		for (Long companyId :
+				IndexFactoryCompanyIdRegistryUtil.getCompanyIds()) {
 
-		_updateMaxResultWindow();
+			String indexName = _indexNameBuilder.getIndexName(companyId);
 
+			_updateMaxTermsCount(indexName);
+
+			_updateMaxResultWindow(indexName);
+		}
 	}
 
 	@Override
@@ -118,21 +123,25 @@ public class CompanyIndexFactory
 		_elasticsearchConfigurationWrapper.unregister(this);
 	}
 
-	private synchronized void _createCompanyIndexes() {
-		for (Long companyId :
-				IndexFactoryCompanyIdRegistryUtil.getCompanyIds()) {
+	private void _createCompanyIndexes() {
+		synchronized (this) {
+			for (Long companyId :
+					IndexFactoryCompanyIdRegistryUtil.getCompanyIds()) {
 
-			try {
-				RestHighLevelClient restHighLevelClient =
-					_elasticsearchConnectionManager.getRestHighLevelClient();
+				try {
+					RestHighLevelClient restHighLevelClient =
+						_elasticsearchConnectionManager.
+							getRestHighLevelClient();
 
-				createIndices(restHighLevelClient.indices(), companyId);
-			}
-			catch (Exception exception) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(
-						"Unable to reinitialize index for company " + companyId,
-						exception);
+					createIndices(restHighLevelClient.indices(), companyId);
+				}
+				catch (Exception exception) {
+					if (_log.isWarnEnabled()) {
+						_log.warn(
+							"Unable to reinitialize index for company " +
+								companyId,
+							exception);
+					}
 				}
 			}
 		}
@@ -161,55 +170,43 @@ public class CompanyIndexFactory
 		}
 	}
 
-	private void _updateMaxResultWindow() {
+	private void _updateMaxResultWindow(String indexName) {
+		UpdateIndexSettingsIndexRequest updateIndexSettingsIndexRequest =
+			new UpdateIndexSettingsIndexRequest(indexName);
+
 		int maxResultWindow =
 			_elasticsearchConfigurationWrapper.indexMaxResultWindow();
 
-		for (Long companyId :
-				IndexFactoryCompanyIdRegistryUtil.getCompanyIds()) {
+		updateIndexSettingsIndexRequest.setSettings(
+			"{\"index.max_result_window\": " + maxResultWindow + "}");
 
-			String indexName = _indexNameBuilder.getIndexName(companyId);
+		_searchEngineAdapter.execute(updateIndexSettingsIndexRequest);
 
-			UpdateIndexSettingsIndexRequest updateIndexSettingsIndexRequest =
-				new UpdateIndexSettingsIndexRequest(indexName);
-
-			updateIndexSettingsIndexRequest.setSettings(
-				"{\"index.max_result_window\": " + maxResultWindow + "}");
-
-			_searchEngineAdapter.execute(updateIndexSettingsIndexRequest);
-
-			if (_log.isInfoEnabled()) {
-				_log.info(
-					StringBundler.concat(
-						"Updated index.max_result_window to ", maxResultWindow,
-						" for index ", indexName));
-			}
+		if (_log.isInfoEnabled()) {
+			_log.info(
+				StringBundler.concat(
+					"Updated index.max_result_window to ", maxResultWindow,
+					" for index ", indexName));
 		}
 	}
 
-	private void _updateMaxTermsCount() {
-		int indexMaxTermsCount =
+	private void _updateMaxTermsCount(String indexName) {
+		UpdateIndexSettingsIndexRequest updateIndexSettingsIndexRequest =
+			new UpdateIndexSettingsIndexRequest(indexName);
+
+		int maxTermsCount =
 			_elasticsearchConfigurationWrapper.indexMaxTermsCount();
 
-		for (Long companyId :
-			IndexFactoryCompanyIdRegistryUtil.getCompanyIds()) {
+		updateIndexSettingsIndexRequest.setSettings(
+			"{\"index.max_terms_count\": " + maxTermsCount + "}");
 
-			String indexName = _indexNameBuilder.getIndexName(companyId);
+		_searchEngineAdapter.execute(updateIndexSettingsIndexRequest);
 
-			UpdateIndexSettingsIndexRequest updateIndexSettingsIndexRequest =
-				new UpdateIndexSettingsIndexRequest(indexName);
-
-			updateIndexSettingsIndexRequest.setSettings(
-				"{\"index.max_terms_count\": " + indexMaxTermsCount + "}");
-
-			_searchEngineAdapter.execute(updateIndexSettingsIndexRequest);
-
-			if (_log.isInfoEnabled()) {
-				_log.info(
-					StringBundler.concat(
-						"Updated index.max_terms_count to ", indexMaxTermsCount,
-						" for index ", indexName));
-			}
+		if (_log.isInfoEnabled()) {
+			_log.info(
+				StringBundler.concat(
+					"Updated index.max_terms_count to ", maxTermsCount,
+					" for index ", indexName));
 		}
 	}
 
