@@ -109,6 +109,10 @@ public class ElasticsearchConfigurationWrapper
 		return _elasticsearchConfiguration.indexMaxResultWindow();
 	}
 
+	public int indexMaxTermsCount() {
+		return _elasticsearchConfiguration.indexMaxTermsCount();
+	}
+
 	public String indexNamePrefix() {
 		return _elasticsearchConfiguration.indexNamePrefix();
 	}
