@@ -120,6 +120,12 @@ public interface ElasticsearchConfiguration {
 	public int indexMaxResultWindow();
 
 	@Meta.AD(
+		deflt = "65536", description = "index-max-terms-count-help",
+		name = "index-max-terms-count", required = false
+	)
+	public int indexMaxTermsCount();
+
+	@Meta.AD(
 		description = "additional-index-configurations-help",
 		name = "additional-index-configurations", required = false
 	)
