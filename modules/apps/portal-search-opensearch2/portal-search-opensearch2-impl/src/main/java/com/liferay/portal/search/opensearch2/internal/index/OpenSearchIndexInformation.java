@@ -20,7 +20,10 @@ import java.util.Set;
 import org.opensearch.client.opensearch.OpenSearchClient;
 import org.opensearch.client.opensearch.indices.GetIndexRequest;
 import org.opensearch.client.opensearch.indices.GetIndexResponse;
+import org.opensearch.client.opensearch.indices.GetIndicesSettingsRequest;
+import org.opensearch.client.opensearch.indices.GetIndicesSettingsResponse;
 import org.opensearch.client.opensearch.indices.GetMappingRequest;
+import org.opensearch.client.opensearch.indices.IndexSettings;
 import org.opensearch.client.opensearch.indices.IndexState;
 import org.opensearch.client.opensearch.indices.OpenSearchIndicesClient;
 
@@ -80,11 +83,50 @@ public class OpenSearchIndexInformation implements IndexInformation {
 		}
 	}
 
+	@Override
+	public int getMaxTermsCount(String indexName) {
+		GetIndicesSettingsRequest.Builder getIndicesSettingsRequestBuilder =
+			new GetIndicesSettingsRequest.Builder();
+
+		getIndicesSettingsRequestBuilder.index(indexName);
+
+		GetIndicesSettingsResponse getIndicesSettingsResponse =
+			_getSettingsResponse(getIndicesSettingsRequestBuilder.build());
+
+		Map<String, IndexState> indexStates =
+			getIndicesSettingsResponse.result();
+
+		IndexState indexState1 = indexStates.get(indexName);
+
+		IndexSettings indexSettings = indexState1.settings();
+
+		if (indexSettings != null) {
+			return indexSettings.maxTermsCount();
+		}
+
+		return 65536;
+	}
+
 	private OpenSearchIndicesClient _getOpenSearchIndicesClient() {
 		OpenSearchClient openSearchClient =
 			_openSearchConnectionManager.getOpenSearchClient(null, true);
 
 		return openSearchClient.indices();
+	}
+
+	private GetIndicesSettingsResponse _getSettingsResponse(
+		GetIndicesSettingsRequest getIndicesSettingsRequest) {
+
+		OpenSearchIndicesClient openSearchIndicesClient =
+			_getOpenSearchIndicesClient();
+
+		try {
+			return openSearchIndicesClient.getSettings(
+				getIndicesSettingsRequest);
+		}
+		catch (IOException ioException) {
+			throw new RuntimeException(ioException);
+		}
 	}
 
 	@Reference
