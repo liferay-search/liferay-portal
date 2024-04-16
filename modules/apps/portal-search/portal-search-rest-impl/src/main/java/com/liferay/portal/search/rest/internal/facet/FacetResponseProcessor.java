@@ -257,6 +257,20 @@ public class FacetResponseProcessor {
 		}
 	}
 
+	private boolean _isTermSelected(
+		FacetConfiguration facetConfiguration, String term) {
+
+		String[] selectedTerms = ArrayUtil.toStringArray(
+			facetConfiguration.getValues());
+
+		if (selectedTerms.length == 0) {
+			return true;
+		}
+
+		return ArrayUtil.contains(
+			selectedTerms, _getTerm(facetConfiguration, term));
+	}
+
 	private SearchResponse _searchFolder(
 		long companyId, long folderId, Locale locale, long userId) {
 
@@ -345,16 +359,18 @@ public class FacetResponseProcessor {
 		for (int i = 0; i < termCollectors.size(); i++) {
 			TermCollector termCollector = termCollectors.get(i);
 
+			String term = termCollector.getTerm();
+
 			if ((facetConfiguration.getFrequencyThreshold() >
 					termCollector.getFrequency()) ||
-				(i >= facetConfiguration.getMaxTerms())) {
+				(i >= facetConfiguration.getMaxTerms()) ||
+				!_isTermSelected(facetConfiguration, term)) {
 
 				continue;
 			}
 
 			String displayName = _getDisplayName(
-				companyId, facetConfiguration, locale, termCollector.getTerm(),
-				userId);
+				companyId, facetConfiguration, locale, term, userId);
 
 			if (Validator.isBlank(displayName)) {
 				continue;
@@ -366,8 +382,7 @@ public class FacetResponseProcessor {
 				).put(
 					"frequency", termCollector.getFrequency()
 				).put(
-					"term",
-					_getTerm(facetConfiguration, termCollector.getTerm())
+					"term", _getTerm(facetConfiguration, term)
 				));
 		}
 
