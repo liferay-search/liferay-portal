@@ -9,10 +9,13 @@ import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.search.BooleanClause;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.SearchContext;
+import com.liferay.portal.kernel.search.SearchEngine;
 import com.liferay.portal.kernel.search.filter.BooleanFilter;
 import com.liferay.portal.kernel.search.filter.Filter;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
+import com.liferay.portal.kernel.test.util.RandomTestUtil;
+import com.liferay.portal.search.index.IndexInformation;
 import com.liferay.portal.search.internal.spi.model.query.contributor.GroupIdQueryPreFilterContributor;
 import com.liferay.portal.search.test.util.DocumentsAssert;
 import com.liferay.portal.search.test.util.indexing.BaseIndexingTestCase;
@@ -86,6 +89,22 @@ public abstract class BaseGroupIdQueryPreFilterContributorTestCase
 
 	@Test
 	public void testScopeEverythingWithInactiveGroups() {
+		Mockito.doReturn(
+			65536
+		).when(
+			indexInformation
+		).getMaxTermsCount(
+			Mockito.anyString()
+		);
+
+		Mockito.doReturn(
+			RandomTestUtil.randomString()
+		).when(
+			indexInformation
+		).getCompanyIndexName(
+			Mockito.anyLong()
+		);
+
 		addDocuments(1, 2, 3, INACTIVE_GROUP_ID1, INACTIVE_GROUP_ID2);
 
 		assertSearch(0, "[1, 2, 3]");
@@ -165,6 +184,12 @@ public abstract class BaseGroupIdQueryPreFilterContributorTestCase
 		ReflectionTestUtil.setFieldValue(
 			contributor, "_groupLocalService", groupLocalService);
 
+		ReflectionTestUtil.setFieldValue(
+			contributor, "_indexInformation", indexInformation);
+
+		ReflectionTestUtil.setFieldValue(
+			contributor, "_searchEngine", searchEngine);
+
 		BooleanFilter booleanFilter = new BooleanFilter();
 
 		contributor.contribute(booleanFilter, searchContext);
@@ -178,5 +203,8 @@ public abstract class BaseGroupIdQueryPreFilterContributorTestCase
 
 	protected GroupLocalService groupLocalService = Mockito.mock(
 		GroupLocalService.class);
+	protected IndexInformation indexInformation = Mockito.mock(
+		IndexInformation.class);
+	protected SearchEngine searchEngine = Mockito.mock(SearchEngine.class);
 
 }
