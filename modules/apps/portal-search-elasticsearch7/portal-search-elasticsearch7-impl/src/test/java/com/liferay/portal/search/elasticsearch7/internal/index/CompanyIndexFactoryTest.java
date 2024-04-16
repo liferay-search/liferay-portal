@@ -120,6 +120,12 @@ public class CompanyIndexFactoryTest {
 			10000
 		);
 
+		Mockito.when(
+			_elasticsearchConfigurationWrapper.indexMaxTermsCount()
+		).thenReturn(
+			65536
+		);
+
 		_singleFieldFixture = new SingleFieldFixture(
 			_elasticsearchFixture.getRestHighLevelClient(),
 			new IndexName(_companyIndexFactoryFixture.getIndexName()),
