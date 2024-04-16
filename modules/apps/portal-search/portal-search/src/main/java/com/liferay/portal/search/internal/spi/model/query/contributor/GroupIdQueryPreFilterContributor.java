@@ -11,16 +11,17 @@ import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.search.BooleanClauseOccur;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.SearchContext;
+import com.liferay.portal.kernel.search.SearchEngine;
 import com.liferay.portal.kernel.search.filter.BooleanFilter;
 import com.liferay.portal.kernel.search.filter.TermsFilter;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.util.ArrayUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.search.index.IndexInformation;
 import com.liferay.portal.search.spi.model.query.contributor.QueryPreFilterContributor;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -111,25 +112,27 @@ public class GroupIdQueryPreFilterContributor
 
 		TermsFilter groupIdTermsFilter = new TermsFilter(Field.GROUP_ID);
 
-		int maxTermsCount = GetterUtil.getInteger(
-			_indexInformation.getMaxTermsCount(
-				_indexInformation.getCompanyIndexName(companyId)));
+		int maxTermsCount = 0;
 
-		if (inactiveGroupIds.size() <= maxTermsCount) {
+		if (_isElasticsearch()) {
+			maxTermsCount = _indexInformation.getMaxTermsCount(
+				_indexInformation.getCompanyIndexName(companyId));
+		}
+
+		if ((inactiveGroupIds.size() <= maxTermsCount) || !_isElasticsearch()) {
 			groupIdTermsFilter.addValues(
 				ArrayUtil.toStringArray(inactiveGroupIds.toArray(new Long[0])));
 		}
-		else {
-			for (int i = 0; i < inactiveGroupIds.size(); i++) {
-				groupIdTermsFilter.addValue(
-					String.valueOf(inactiveGroupIds.get(i)));
 
-				if (((i + 1) % maxTermsCount) == 0) {
-					booleanFilter.add(
-						groupIdTermsFilter, BooleanClauseOccur.MUST_NOT);
+		for (int i = 0; i < inactiveGroupIds.size(); i++) {
+			groupIdTermsFilter.addValue(
+				String.valueOf(inactiveGroupIds.get(i)));
 
-					groupIdTermsFilter = new TermsFilter(Field.GROUP_ID);
-				}
+			if (((i + 1) % maxTermsCount) == 0) {
+				booleanFilter.add(
+					groupIdTermsFilter, BooleanClauseOccur.MUST_NOT);
+
+				groupIdTermsFilter = new TermsFilter(Field.GROUP_ID);
 			}
 		}
 
@@ -157,10 +160,17 @@ public class GroupIdQueryPreFilterContributor
 		}
 	}
 
+	private boolean _isElasticsearch() {
+		return Objects.equals(_searchEngine.getVendor(), "Elasticsearch");
+	}
+
 	@Reference
 	private GroupLocalService _groupLocalService;
 
 	@Reference
 	private IndexInformation _indexInformation;
+
+	@Reference
+	private SearchEngine _searchEngine;
 
 }
