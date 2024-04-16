@@ -412,8 +412,6 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 			FacetConfiguration facetConfiguration)
 		throws Exception {
 
-		facetConfiguration.setFrequencyThreshold(0);
-
 		SearchRequestBody searchRequestBody = new SearchRequestBody() {
 			{
 				attributes = HashMapBuilder.<String, Object>put(
@@ -655,16 +653,15 @@ public class SearchResultResourceTest extends BaseSearchResultResourceTestCase {
 		throws Exception {
 
 		_assertFacetConfiguration(
-			false, null, "type", StringPool.BLANK,
-			JournalArticle.class.getName(), JournalFolder.class.getName(),
-			User.class.getName());
+			false, null, "type", JournalFolder.class.getName(),
+			JournalFolder.class.getName());
 	}
 
 	private void _testPostSearchPageWithUserFacetConfiguration()
 		throws Exception {
 
 		_assertFacetConfiguration(
-			true, null, "user", StringUtil.toLowerCase(_user.getFullName()),
+			true, null, "user", _user.getUserId(),
 			String.valueOf(_user.getUserId()));
 	}
 
