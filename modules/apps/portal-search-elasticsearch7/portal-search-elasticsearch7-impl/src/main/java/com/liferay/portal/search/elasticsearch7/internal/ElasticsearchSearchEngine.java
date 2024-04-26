@@ -180,8 +180,6 @@ public class ElasticsearchSearchEngine
 
 		_indexFactory.registerCompanyId(companyId);
 
-		_indexConfigurationDynamicUpdatesExecutor.execute(companyId);
-
 		CrossClusterReplicationHelper crossClusterReplicationHelper =
 			_crossClusterReplicationHelperSnapshot.get();
 

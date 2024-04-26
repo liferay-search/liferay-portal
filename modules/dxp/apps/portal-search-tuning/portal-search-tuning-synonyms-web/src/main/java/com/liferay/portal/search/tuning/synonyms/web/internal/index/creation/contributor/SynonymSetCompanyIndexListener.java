@@ -8,6 +8,7 @@ package com.liferay.portal.search.tuning.synonyms.web.internal.index.creation.co
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.search.engine.SearchEngineInformation;
+import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
 import com.liferay.portal.search.spi.index.listener.CompanyIndexListener;
 import com.liferay.portal.search.tuning.synonyms.index.name.SynonymSetIndexName;
 import com.liferay.portal.search.tuning.synonyms.web.internal.configuration.SynonymsConfiguration;

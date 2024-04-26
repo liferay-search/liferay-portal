@@ -57,18 +57,6 @@ public class LiferayDocumentTypeFactory implements MappingsHelper {
 		settingsBuilder.loadFromSource(defaultAnalyzers);
 	}
 
-	public void putDefaultTypeMappingTemplate() {
-		String name = StringUtil.replace(
-			LiferayTypeMappingsConstants.
-				LIFERAY_DOCUMENT_TYPE_MAPPING_FILE_NAME,
-			".json", "-default-template.json");
-
-		String defaultTypeMappingTemplate = ResourceUtil.getResourceAsString(
-			getClass(), name);
-
-		putTypeMappings(defaultTypeMappingTemplate);
-	}
-
 	@Override
 	public void putMappings(String source) {
 		PutMappingRequest putMappingRequest = new PutMappingRequest(_indexName);
