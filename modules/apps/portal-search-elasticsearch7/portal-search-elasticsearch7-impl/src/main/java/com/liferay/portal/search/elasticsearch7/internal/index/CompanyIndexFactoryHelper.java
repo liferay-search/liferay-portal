@@ -286,17 +286,6 @@ public class CompanyIndexFactoryHelper {
 		settingsBuilder.put("index.translog.sync_interval", "100ms");
 	}
 
-	private void _putContributedTypeMappings(
-		LiferayDocumentTypeFactory liferayDocumentTypeFactory) {
-
-		for (IndexConfigurationContributor indexConfigurationContributor :
-				_indexConfigurationContributorServiceTrackerList) {
-
-			indexConfigurationContributor.contributeMappings(
-				liferayDocumentTypeFactory);
-		}
-	}
-
 	private void _processContributions(
 		IndexConfigurationContributor indexConfigurationContributor) {
 
@@ -382,6 +371,17 @@ public class CompanyIndexFactoryHelper {
 
 		liferayDocumentTypeFactory.putTypeMappings(
 			_elasticsearchConfigurationWrapper.additionalTypeMappings());
+	}
+
+	private void _putContributedTypeMappings(
+		LiferayDocumentTypeFactory liferayDocumentTypeFactory) {
+
+		for (IndexConfigurationContributor indexConfigurationContributor :
+				_indexConfigurationContributorServiceTrackerList) {
+
+			indexConfigurationContributor.contributeMappings(
+				liferayDocumentTypeFactory);
+		}
 	}
 
 	private void _setMappings(

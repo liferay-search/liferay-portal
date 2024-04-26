@@ -57,6 +57,18 @@ public class LiferayDocumentTypeFactory implements TypeMappingsHelper {
 		settingsBuilder.loadFromSource(defaultAnalyzers);
 	}
 
+	public void putDefaultTypeMappingTemplate() {
+		String name = StringUtil.replace(
+			LiferayTypeMappingsConstants.
+				LIFERAY_DOCUMENT_TYPE_MAPPING_FILE_NAME,
+			".json", "-default-template.json");
+
+		String defaultTypeMappingTemplate = ResourceUtil.getResourceAsString(
+			getClass(), name);
+
+		putTypeMappings(defaultTypeMappingTemplate);
+	}
+
 	@Override
 	public void putTypeMappings(String source) {
 		PutMappingRequest putMappingRequest = new PutMappingRequest(_indexName);
@@ -100,18 +112,6 @@ public class LiferayDocumentTypeFactory implements TypeMappingsHelper {
 
 		createIndexRequest.mapping(
 			"_doc", mappingsJSONObject.toString(), XContentType.JSON);
-	}
-
-	public void putDefaultTypeMappingTemplate() {
-		String name = StringUtil.replace(
-			LiferayTypeMappingsConstants.
-				LIFERAY_DOCUMENT_TYPE_MAPPING_FILE_NAME,
-			".json", "-default-template.json");
-
-		String defaultTypeMappingTemplate = ResourceUtil.getResourceAsString(
-			getClass(), name);
-
-		putTypeMappings(defaultTypeMappingTemplate);
 	}
 
 	protected JSONObject createJSONObject(String mappings) {
