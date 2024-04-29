@@ -48,6 +48,12 @@ public abstract class BaseGroupIdQueryPreFilterContributorTestCase
 			Mockito.anyLong(), Mockito.eq(false)
 		);
 
+		Mockito.doReturn(
+			getVendor()
+		).when(
+			searchEngine
+		).getVendor();
+
 		_groupIdQueryPreFilterContributor =
 			new GroupIdQueryPreFilterContributor();
 
@@ -160,6 +166,8 @@ public abstract class BaseGroupIdQueryPreFilterContributorTestCase
 
 		_assertSearch(2, "[2]");
 	}
+
+	protected abstract String getVendor();
 
 	protected SearchEngine searchEngine = Mockito.mock(SearchEngine.class);
 

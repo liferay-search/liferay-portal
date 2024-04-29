@@ -43,4 +43,9 @@ public class GroupIdQueryPreFilterContributorTest
 		return new SolrIndexingFixture();
 	}
 
+	@Override
+	protected String getVendor() {
+		return "Solr";
+	}
+
 }

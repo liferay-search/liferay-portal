@@ -10,11 +10,8 @@ import com.liferay.portal.search.test.util.filter.groupid.BaseGroupIdQueryPreFil
 import com.liferay.portal.search.test.util.indexing.IndexingFixture;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
 
-import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
-
-import org.mockito.Mockito;
 
 /**
  * @author Tibor Lipusz
@@ -27,21 +24,14 @@ public class GroupIdQueryPreFilterContributorTest
 	public static final LiferayUnitTestRule liferayUnitTestRule =
 		LiferayUnitTestRule.INSTANCE;
 
-	@Before
-	@Override
-	public void setUp() throws Exception {
-		super.setUp();
-
-		Mockito.doReturn(
-			"Elasticsearch"
-		).when(
-			searchEngine
-		).getVendor();
-	}
-
 	@Override
 	protected IndexingFixture createIndexingFixture() throws Exception {
 		return LiferayElasticsearchIndexingFixtureFactory.getInstance();
+	}
+
+	@Override
+	protected String getVendor() {
+		return "Elasticsearch";
 	}
 
 }
