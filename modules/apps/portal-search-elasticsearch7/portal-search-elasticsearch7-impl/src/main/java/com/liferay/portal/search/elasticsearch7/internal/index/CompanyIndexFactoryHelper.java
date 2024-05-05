@@ -125,6 +125,16 @@ public class CompanyIndexFactoryHelper {
 		}
 	}
 
+	public void updateIndex(String indexName, IndicesClient indicesClient) {
+		LiferayDocumentTypeFactory liferayDocumentTypeFactory =
+			new LiferayDocumentTypeFactory(
+				indexName, indicesClient, _jsonFactory);
+
+		_updateSettings(indexName, indicesClient);
+
+		_updateMappings(liferayDocumentTypeFactory);
+	}
+
 	@Activate
 	protected void activate(BundleContext bundleContext) {
 		_companyIndexListenerServiceTrackerList =
@@ -433,6 +443,29 @@ public class CompanyIndexFactoryHelper {
 		_putContributedTypeMappings(liferayDocumentTypeFactory);
 
 		liferayDocumentTypeFactory.putDefaultTypeMappingTemplate();
+	}
+
+	private void _updateSettings(
+		String indexName, IndicesClient indicesClient) {
+
+		SettingsBuilder settingsBuilder = new SettingsBuilder(
+			Settings.builder());
+
+		_loadIndexSettingsContributors(settingsBuilder);
+
+		UpdateSettingsRequest updateSettingsRequest = new UpdateSettingsRequest(
+			indexName);
+
+		updateSettingsRequest.settings(settingsBuilder.getBuilder());
+
+		try {
+			indicesClient.putSettings(
+				updateSettingsRequest, RequestOptions.DEFAULT);
+		}
+		catch (IOException ioException) {
+			_log.error(
+				"Unable to put settings for index " + indexName, ioException);
+		}
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
