@@ -18,7 +18,7 @@ import com.liferay.portal.search.opensearch2.internal.index.constants.MappingsCo
 import com.liferay.portal.search.opensearch2.internal.util.IndexUtil;
 import com.liferay.portal.search.opensearch2.internal.util.JsonpUtil;
 import com.liferay.portal.search.opensearch2.internal.util.ResourceUtil;
-import com.liferay.portal.search.spi.settings.TypeMappingsHelper;
+import com.liferay.portal.search.spi.index.configuration.contributor.helper.MappingsHelper;
 
 import java.io.IOException;
 
@@ -38,25 +38,25 @@ import org.opensearch.client.opensearch.indices.get_mapping.IndexMappingRecord;
  * @author André de Oliveira
  * @author Petteri Karttunen
  */
-public class MappingsFactory implements TypeMappingsHelper {
+public class MappingsFactory implements MappingsHelper {
 
 	public MappingsFactory(
-		JSONFactory jsonFactory,
+		String indexName, JSONFactory jsonFactory,
 		OpenSearchIndicesClient openSearchIndicesClient,
 		OpenSearchConfigurationWrapper openSearchConfigurationWrapper) {
 
+		_indexName = indexName;
 		_jsonFactory = jsonFactory;
 		_openSearchIndicesClient = openSearchIndicesClient;
 		_openSearchConfigurationWrapper = openSearchConfigurationWrapper;
 	}
 
-	public void addOptionalDefaultMappings(String indexName) {
+	public void addOptionalDefaultMappings() {
 		String name = StringUtil.replace(
 			MappingsConstants.LIFERAY_MAPPING_FILE_NAME, ".json",
 			"-optional-defaults.json");
 
-		putTypeMappings(
-			indexName, ResourceUtil.getResourceAsString(getClass(), name));
+		putMappings(ResourceUtil.getResourceAsString(getClass(), name));
 	}
 
 	public String getMappings(String indexName) {
@@ -103,15 +103,15 @@ public class MappingsFactory implements TypeMappingsHelper {
 	}
 
 	@Override
-	public void putTypeMappings(String indexName, String source) {
+	public void putMappings(String source) {
 		PutMappingRequest.Builder builder = new PutMappingRequest.Builder();
 
-		builder.index(indexName);
+		builder.index(_indexName);
 
 		JSONObject mappingsJSONObject = _removeLegacyDocumentType(
 			_createJSONObject(source));
 
-		_mergeExistingDynamicTemplates(indexName, mappingsJSONObject);
+		_mergeExistingDynamicTemplates(mappingsJSONObject);
 
 		List<Map<String, DynamicTemplate>> dynamicTemplates =
 			IndexUtil.getDynamicTemplatesMap(mappingsJSONObject);
@@ -159,9 +159,7 @@ public class MappingsFactory implements TypeMappingsHelper {
 			mappingsJSONObject);
 	}
 
-	private void _mergeExistingDynamicTemplates(
-		String indexName, JSONObject mappingsJSONObject) {
-
+	private void _mergeExistingDynamicTemplates(JSONObject mappingsJSONObject) {
 		JSONArray dynamicTemplatesJSONArray = mappingsJSONObject.getJSONArray(
 			"dynamic_templates");
 
@@ -170,7 +168,7 @@ public class MappingsFactory implements TypeMappingsHelper {
 		}
 
 		JSONObject existingMappingsJSONObject = _createJSONObject(
-			getMappings(indexName));
+			getMappings(_indexName));
 
 		JSONArray existingDynamicTemplatesJSONArray =
 			existingMappingsJSONObject.getJSONArray("dynamic_templates");
@@ -203,6 +201,7 @@ public class MappingsFactory implements TypeMappingsHelper {
 	private static final Log _log = LogFactoryUtil.getLog(
 		MappingsFactory.class);
 
+	private final String _indexName;
 	private final JSONFactory _jsonFactory;
 	private final OpenSearchConfigurationWrapper
 		_openSearchConfigurationWrapper;
