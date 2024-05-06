@@ -87,7 +87,7 @@ public class IndexHelperImpl implements IndexHelper {
 		if (Validator.isNull(
 				_openSearchConfigurationWrapper.overrideTypeMappings())) {
 
-			_executeMappingsContributors(indexName, mappingsFactory);
+			_executeMappingsContributors(mappingsFactory);
 
 			mappingsFactory.addOptionalDefaultMappings(indexName);
 		}
@@ -372,14 +372,11 @@ public class IndexHelperImpl implements IndexHelper {
 			_dotNotationSettingsToJSONObject(contributedSettings));
 	}
 
-	private void _executeMappingsContributors(
-		String indexName, MappingsFactory mappingsFactory) {
-
+	private void _executeMappingsContributors(MappingsFactory mappingsFactory) {
 		for (IndexConfigurationContributor indexSettingsContributor :
 				_indexSettingsContributorServiceTrackerList) {
 
-			indexSettingsContributor.contributeMappings(
-				indexName, mappingsFactory);
+			indexSettingsContributor.contributeMappings(mappingsFactory);
 		}
 	}
 
@@ -414,7 +411,7 @@ public class IndexHelperImpl implements IndexHelper {
 
 			_companyLocalService.forEachCompanyId(
 				companyId -> indexSettingsContributor.contributeMappings(
-					getIndexName(companyId), mappingsFactory),
+					mappingsFactory),
 				IndexFactoryCompanyIdRegistryUtil.getCompanyIds());
 		}
 		catch (OpenSearchConnectionNotInitializedException

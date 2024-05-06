@@ -23,7 +23,7 @@ import com.liferay.portal.search.opensearch2.internal.query.QueryFactories;
 import com.liferay.portal.search.opensearch2.internal.util.ResourceUtil;
 import com.liferay.portal.search.spi.index.configuration.contributor.IndexConfigurationContributor;
 import com.liferay.portal.search.spi.index.configuration.contributor.helper.IndexSettingsHelper;
-import com.liferay.portal.search.spi.index.configuration.contributor.helper.TypeMappingsHelper;
+import com.liferay.portal.search.spi.index.configuration.contributor.helper.MappingsHelper;
 import com.liferay.portal.search.spi.index.listener.CompanyIndexListener;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
 
@@ -340,8 +340,7 @@ public class CompanyIndexFactoryTest extends BaseOpenSearchTestCase {
 
 					@Override
 					public void contributeMappings(
-						String indexName,
-						TypeMappingsHelper typeMappingsHelper) {
+						MappingsHelper mappingsHelper) {
 					}
 
 					@Override
@@ -389,10 +388,9 @@ public class CompanyIndexFactoryTest extends BaseOpenSearchTestCase {
 
 					@Override
 					public void contributeMappings(
-						String indexName,
-						TypeMappingsHelper typeMappingsHelper) {
+						MappingsHelper mappingsHelper) {
 
-						typeMappingsHelper.addTypeMappings(
+						mappingsHelper.putTypeMappings(
 							indexName, _replaceAnalyzer("brazilian", mappings));
 					}
 
@@ -643,8 +641,7 @@ public class CompanyIndexFactoryTest extends BaseOpenSearchTestCase {
 		implements IndexConfigurationContributor {
 
 		@Override
-		public void contributeMappings(
-			String indexName, TypeMappingsHelper typeMappingsHelper) {
+		public void contributeMappings(MappingsHelper mappingsHelper) {
 		}
 
 		@Override
