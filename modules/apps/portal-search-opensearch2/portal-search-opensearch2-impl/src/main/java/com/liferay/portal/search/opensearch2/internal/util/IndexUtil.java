@@ -124,15 +124,21 @@ public class IndexUtil {
 	}
 
 	public static JSONArray mergeDynamicTemplates(
-		JSONArray jsonArray1, JSONArray jsonArray2) {
+		JSONArray currentDynamicTemplatesJSONArray,
+		JSONArray dynamicTemplatesToPutJSONArray) {
+
+		if (dynamicTemplatesToPutJSONArray == null) {
+			return currentDynamicTemplatesJSONArray;
+		}
 
 		LinkedHashMap<String, JSONObject> linkedHashMap = new LinkedHashMap<>();
 
-		_putAll(jsonArray1, linkedHashMap);
+		_putAll(currentDynamicTemplatesJSONArray, linkedHashMap);
 
-		_putAll(jsonArray2, linkedHashMap);
+		_putAll(dynamicTemplatesToPutJSONArray, linkedHashMap);
 
-		JSONArray jsonArray3 = JSONFactoryUtil.createJSONArray();
+		JSONArray mergedDynamicTemplatesJSONArray =
+			JSONFactoryUtil.createJSONArray();
 
 		JSONObject defaultTemplateJSONObject = null;
 
@@ -143,47 +149,56 @@ public class IndexUtil {
 				defaultTemplateJSONObject = entry.getValue();
 			}
 			else {
-				jsonArray3.put(entry.getValue());
+				mergedDynamicTemplatesJSONArray.put(entry.getValue());
 			}
 		}
 
 		if (defaultTemplateJSONObject != null) {
-			jsonArray3.put(defaultTemplateJSONObject);
+			mergedDynamicTemplatesJSONArray.put(defaultTemplateJSONObject);
 		}
 
-		return jsonArray3;
+		return mergedDynamicTemplatesJSONArray;
 	}
 
 	public static void mergeToJsonObject(
-		JSONObject jsonObject, JSONObject mergeJSONObject) {
+		JSONObject currentDynamicTemplatesJSONObject,
+		JSONObject dynamicTemplatesToPutJSONObject) {
 
-		if ((jsonObject == null) || (mergeJSONObject == null)) {
+		if ((currentDynamicTemplatesJSONObject == null) ||
+			(dynamicTemplatesToPutJSONObject == null)) {
+
 			return;
 		}
 
-		Iterator<String> iterator = mergeJSONObject.keys();
+		Iterator<String> iterator = dynamicTemplatesToPutJSONObject.keys();
 
 		while (iterator.hasNext()) {
 			String key = iterator.next();
 
-			Object object1 = jsonObject.get(key);
-			Object object2 = mergeJSONObject.get(key);
+			Object currentDynamicTemplatesObject =
+				currentDynamicTemplatesJSONObject.get(key);
+			Object dynamicTemplatesToPutObject =
+				dynamicTemplatesToPutJSONObject.get(key);
 
-			if ((object1 instanceof JSONObject) &&
-				(object2 instanceof JSONObject)) {
+			if ((currentDynamicTemplatesObject instanceof JSONObject) &&
+				(dynamicTemplatesToPutObject instanceof JSONObject)) {
 
-				mergeToJsonObject((JSONObject)object1, (JSONObject)object2);
+				mergeToJsonObject(
+					(JSONObject)currentDynamicTemplatesObject,
+					(JSONObject)dynamicTemplatesToPutObject);
 			}
-			else if ((object1 instanceof JSONArray) &&
-					 (object2 instanceof JSONArray)) {
+			else if ((currentDynamicTemplatesObject instanceof JSONArray) &&
+					 (dynamicTemplatesToPutObject instanceof JSONArray)) {
 
-				jsonObject.put(
+				currentDynamicTemplatesJSONObject.put(
 					key,
 					mergeDynamicTemplates(
-						(JSONArray)object1, (JSONArray)object2));
+						(JSONArray)dynamicTemplatesToPutObject,
+						(JSONArray)currentDynamicTemplatesObject));
 			}
 			else {
-				jsonObject.put(key, mergeJSONObject.get(key));
+				currentDynamicTemplatesJSONObject.put(
+					key, dynamicTemplatesToPutJSONObject.get(key));
 			}
 		}
 	}
