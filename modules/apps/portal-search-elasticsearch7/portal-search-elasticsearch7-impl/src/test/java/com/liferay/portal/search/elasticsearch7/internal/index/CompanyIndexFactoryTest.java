@@ -12,11 +12,11 @@ import com.liferay.portal.kernel.module.util.SystemBundleUtil;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
-import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.elasticsearch7.internal.configuration.ElasticsearchConfigurationWrapper;
 import com.liferay.portal.search.elasticsearch7.internal.connection.ElasticsearchFixture;
 import com.liferay.portal.search.elasticsearch7.internal.connection.IndexName;
 import com.liferay.portal.search.elasticsearch7.internal.document.SingleFieldFixture;
+import com.liferay.portal.search.elasticsearch7.internal.index.configuration.contributor.DefaultMappingsAndSettingsIndexConfigurationContributor;
 import com.liferay.portal.search.elasticsearch7.internal.index.constants.LiferayTypeMappingsConstants;
 import com.liferay.portal.search.elasticsearch7.internal.query.QueryBuilderFactories;
 import com.liferay.portal.search.elasticsearch7.internal.util.ResourceUtil;
@@ -126,6 +126,12 @@ public class CompanyIndexFactoryTest {
 			LiferayTypeMappingsConstants.LIFERAY_DOCUMENT_TYPE);
 
 		_singleFieldFixture.setQueryBuilderFactory(QueryBuilderFactories.MATCH);
+
+		_serviceRegistrations.add(
+			_bundleContext.registerService(
+				IndexConfigurationContributor.class,
+				new DefaultMappingsAndSettingsIndexConfigurationContributor(),
+				null));
 	}
 
 	@After
@@ -331,7 +337,45 @@ public class CompanyIndexFactoryTest {
 	}
 
 	@Test
-	public void testIndexConfigurationContributor() throws Exception {
+	public void testIndexConfigurationContributorContributeMappings()
+		throws Exception {
+
+		_serviceRegistrations.add(
+			_bundleContext.registerService(
+				IndexConfigurationContributor.class,
+				new IndexConfigurationContributor() {
+
+					@Override
+					public void contributeMappings(
+						MappingsHelper mappingsHelper) {
+
+						mappingsHelper.putMappings(
+							loadAdditionalTypeMappings());
+					}
+
+					@Override
+					public void contributeSettings(
+						SettingsHelper settingsHelper) {
+					}
+
+				},
+				null));
+
+		Mockito.when(
+			_elasticsearchConfigurationWrapper.additionalTypeMappings()
+		).thenReturn(
+			StringPool.BLANK
+		);
+
+		createIndices();
+
+		_assertAdditionalTypeMappings();
+	}
+
+	@Test
+	public void testIndexConfigurationContributorContributeSettings()
+		throws Exception {
+
 		_serviceRegistrations.add(
 			_bundleContext.registerService(
 				IndexConfigurationContributor.class,
@@ -359,48 +403,6 @@ public class CompanyIndexFactoryTest {
 
 		Assert.assertEquals("2", settings.get("index.number_of_replicas"));
 		Assert.assertEquals("3", settings.get("index.number_of_shards"));
-	}
-
-	@Test
-	public void testIndexConfigurationContributorTypeMappings()
-		throws Exception {
-
-		String mappings = loadAdditionalTypeMappings();
-
-		_serviceRegistrations.add(
-			_bundleContext.registerService(
-				IndexConfigurationContributor.class,
-				new IndexConfigurationContributor() {
-
-					@Override
-					public void contributeMappings(
-						MappingsHelper mappingsHelper) {
-
-						mappingsHelper.putMappings(
-							_replaceAnalyzer(mappings, "brazilian"));
-					}
-
-					@Override
-					public void contributeSettings(
-						SettingsHelper settingsHelper) {
-					}
-
-				},
-				null));
-
-		Mockito.when(
-			_elasticsearchConfigurationWrapper.additionalTypeMappings()
-		).thenReturn(
-			_replaceAnalyzer(mappings, "portuguese")
-		);
-
-		createIndices();
-
-		String field = RandomTestUtil.randomString() + "_ja";
-
-		_indexOneDocument(field);
-
-		assertAnalyzer(field, "brazilian");
 	}
 
 	@Test
@@ -683,12 +685,6 @@ public class CompanyIndexFactoryTest {
 		_indexOneDocument(intactFieldName);
 
 		assertAnalyzer(intactFieldName, "english");
-
-		String replacedFieldName = RandomTestUtil.randomString() + "_ja";
-
-		_indexOneDocument(replacedFieldName);
-
-		assertAnalyzer(replacedFieldName, "kuromoji_liferay_custom");
 	}
 
 	private void _assertHasIndex(String indexName) {
@@ -777,11 +773,6 @@ public class CompanyIndexFactoryTest {
 	private String _loadOverrideTypeMappings() throws Exception {
 		return ResourceUtil.getResourceAsString(
 			getClass(), "CompanyIndexFactoryTest-overrideTypeMappings.json");
-	}
-
-	private String _replaceAnalyzer(String mappings, String analyzer) {
-		return StringUtil.replace(
-			mappings, "kuromoji_liferay_custom", analyzer);
 	}
 
 	private static final BundleContext _bundleContext =
