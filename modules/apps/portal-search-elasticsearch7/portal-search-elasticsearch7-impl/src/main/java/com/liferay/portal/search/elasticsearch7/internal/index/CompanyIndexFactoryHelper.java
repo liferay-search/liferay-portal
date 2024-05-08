@@ -20,10 +20,8 @@ import com.liferay.portal.search.elasticsearch7.internal.configuration.Elasticse
 import com.liferay.portal.search.elasticsearch7.internal.connection.ElasticsearchConnectionManager;
 import com.liferay.portal.search.elasticsearch7.internal.connection.ElasticsearchConnectionNotInitializedException;
 import com.liferay.portal.search.elasticsearch7.internal.helper.SearchLogHelperUtil;
-import com.liferay.portal.search.elasticsearch7.internal.index.constants.IndexSettingsConstants;
 import com.liferay.portal.search.elasticsearch7.internal.index.util.IndexFactoryCompanyIdRegistryUtil;
 import com.liferay.portal.search.elasticsearch7.internal.settings.SettingsBuilder;
-import com.liferay.portal.search.elasticsearch7.internal.util.ResourceUtil;
 import com.liferay.portal.search.index.IndexNameBuilder;
 import com.liferay.portal.search.spi.index.configuration.contributor.IndexConfigurationContributor;
 import com.liferay.portal.search.spi.index.listener.CompanyIndexListener;
@@ -33,10 +31,12 @@ import java.io.IOException;
 import org.elasticsearch.action.ActionResponse;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
+import org.elasticsearch.action.admin.indices.open.OpenIndexRequest;
 import org.elasticsearch.action.admin.indices.settings.put.UpdateSettingsRequest;
 import org.elasticsearch.client.IndicesClient;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.indices.CloseIndexRequest;
 import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.common.settings.Settings;
 
@@ -131,7 +131,7 @@ public class CompanyIndexFactoryHelper {
 			new LiferayDocumentTypeFactory(
 				indexName, indicesClient, _jsonFactory);
 
-		_updateSettings(indexName, indicesClient);
+		_updateSettings(indexName, indicesClient, liferayDocumentTypeFactory);
 
 		_updateMappings(liferayDocumentTypeFactory);
 	}
@@ -193,6 +193,16 @@ public class CompanyIndexFactoryHelper {
 
 		if (_indexConfigurationContributorServiceTrackerList != null) {
 			_indexConfigurationContributorServiceTrackerList.close();
+		}
+	}
+
+	private void _closeIndex(String indexName, IndicesClient indicesClient) {
+		try {
+			indicesClient.close(
+				new CloseIndexRequest(indexName), RequestOptions.DEFAULT);
+		}
+		catch (Exception exception) {
+			_log.error("Unable to close index " + indexName, exception);
 		}
 	}
 
@@ -266,27 +276,13 @@ public class CompanyIndexFactoryHelper {
 				_elasticsearchConfigurationWrapper.indexMaxResultWindow()));
 	}
 
-	private void _loadDefaultIndexSettings(
-		SettingsBuilder settingsBuilder,
-		LiferayDocumentTypeFactory liferayDocumentTypeFactory) {
-
-		liferayDocumentTypeFactory.loadDefaultAnalyzers(settingsBuilder);
-
-		String defaultIndexSettings = ResourceUtil.getResourceAsString(
-			getClass(),
-			IndexSettingsConstants.INDEX_SETTINGS_DEFAULTS_FILE_NAME);
-
-		settingsBuilder.loadFromSource(defaultIndexSettings);
-	}
-
 	private void _loadIndexConfigurationContributors(
 		SettingsBuilder settingsBuilder) {
 
 		for (IndexConfigurationContributor indexConfigurationContributor :
 				_indexConfigurationContributorServiceTrackerList) {
 
-			indexConfigurationContributor.contributeSettings(
-				settingsBuilder::put);
+			indexConfigurationContributor.contributeSettings(settingsBuilder);
 		}
 	}
 
@@ -315,6 +311,16 @@ public class CompanyIndexFactoryHelper {
 		}
 	}
 
+	private void _openIndex(String indexName, IndicesClient indicesClient) {
+		try {
+			indicesClient.open(
+				new OpenIndexRequest(indexName), RequestOptions.DEFAULT);
+		}
+		catch (Exception exception) {
+			_log.error("Unable to open index " + indexName, exception);
+		}
+	}
+
 	private void _processIndexConfigurationContributor(
 		IndexConfigurationContributor indexConfigurationContributor) {
 
@@ -338,7 +344,7 @@ public class CompanyIndexFactoryHelper {
 		SettingsBuilder settingsBuilder = new SettingsBuilder(
 			Settings.builder());
 
-		indexConfigurationContributor.contributeSettings(settingsBuilder::put);
+		indexConfigurationContributor.contributeSettings(settingsBuilder);
 
 		Settings settings = settingsBuilder.build();
 
@@ -429,7 +435,7 @@ public class CompanyIndexFactoryHelper {
 		SettingsBuilder settingsBuilder = new SettingsBuilder(
 			Settings.builder());
 
-		_loadDefaultIndexSettings(settingsBuilder, liferayDocumentTypeFactory);
+		liferayDocumentTypeFactory.loadDefaultAnalyzers(settingsBuilder);
 
 		_loadTestModeIndexSettings(settingsBuilder);
 
@@ -453,10 +459,13 @@ public class CompanyIndexFactoryHelper {
 	}
 
 	private void _updateSettings(
-		String indexName, IndicesClient indicesClient) {
+		String indexName, IndicesClient indicesClient,
+		LiferayDocumentTypeFactory liferayDocumentTypeFactory) {
 
 		SettingsBuilder settingsBuilder = new SettingsBuilder(
 			Settings.builder());
+
+		liferayDocumentTypeFactory.loadDefaultAnalyzers(settingsBuilder);
 
 		_loadUserDefinedSettings(settingsBuilder);
 
@@ -466,8 +475,12 @@ public class CompanyIndexFactoryHelper {
 		updateSettingsRequest.settings(settingsBuilder.getBuilder());
 
 		try {
+			_closeIndex(indexName, indicesClient);
+
 			indicesClient.putSettings(
 				updateSettingsRequest, RequestOptions.DEFAULT);
+
+			_openIndex(indexName, indicesClient);
 		}
 		catch (Exception exception) {
 			_log.error(
