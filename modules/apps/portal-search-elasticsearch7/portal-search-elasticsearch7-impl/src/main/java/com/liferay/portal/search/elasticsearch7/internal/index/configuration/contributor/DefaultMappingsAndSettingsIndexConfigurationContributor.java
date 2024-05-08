@@ -5,6 +5,7 @@
 
 package com.liferay.portal.search.elasticsearch7.internal.index.configuration.contributor;
 
+import com.liferay.portal.search.elasticsearch7.internal.index.constants.IndexSettingsConstants;
 import com.liferay.portal.search.elasticsearch7.internal.index.constants.LiferayTypeMappingsConstants;
 import com.liferay.portal.search.elasticsearch7.internal.util.ResourceUtil;
 import com.liferay.portal.search.spi.index.configuration.contributor.IndexConfigurationContributor;
@@ -22,17 +23,19 @@ public class DefaultMappingsAndSettingsIndexConfigurationContributor
 
 	@Override
 	public void contributeMappings(MappingsHelper mappingsHelper) {
-		String mappings = ResourceUtil.getResourceAsString(
-			getClass(),
-			LiferayTypeMappingsConstants.
-				LIFERAY_DOCUMENT_TYPE_MAPPING_FILE_NAME);
-
-		mappingsHelper.putMappings(mappings);
+		mappingsHelper.putMappings(
+			ResourceUtil.getResourceAsString(
+				getClass(),
+				LiferayTypeMappingsConstants.
+					LIFERAY_DOCUMENT_TYPE_MAPPING_FILE_NAME));
 	}
 
 	@Override
 	public void contributeSettings(SettingsHelper settingsHelper) {
-		settingsHelper.put("index.default_pipeline", "timestamp");
+		settingsHelper.loadFromSource(
+			ResourceUtil.getResourceAsString(
+				getClass(),
+				IndexSettingsConstants.INDEX_SETTINGS_DEFAULTS_FILE_NAME));
 	}
 
 }
