@@ -261,7 +261,17 @@ public class CompanyIndexFactoryHelper {
 			_elasticsearchConfigurationWrapper.additionalIndexConfigurations());
 	}
 
-	private void _loadConfigurationIndexSettings(
+	private void _loadIndexConfigurationContributors(
+		SettingsBuilder settingsBuilder) {
+
+		for (IndexConfigurationContributor indexConfigurationContributor :
+				_indexConfigurationContributorServiceTrackerList) {
+
+			indexConfigurationContributor.contributeSettings(settingsBuilder);
+		}
+	}
+
+	private void _loadIndexSettingsConfigurations(
 		SettingsBuilder settingsBuilder) {
 
 		settingsBuilder.put(
@@ -276,16 +286,6 @@ public class CompanyIndexFactoryHelper {
 				_elasticsearchConfigurationWrapper.indexMaxResultWindow()));
 	}
 
-	private void _loadIndexConfigurationContributors(
-		SettingsBuilder settingsBuilder) {
-
-		for (IndexConfigurationContributor indexConfigurationContributor :
-				_indexConfigurationContributorServiceTrackerList) {
-
-			indexConfigurationContributor.contributeSettings(settingsBuilder);
-		}
-	}
-
 	private void _loadTestModeIndexSettings(SettingsBuilder settingsBuilder) {
 		if (!PortalRunMode.isTestMode()) {
 			return;
@@ -297,10 +297,16 @@ public class CompanyIndexFactoryHelper {
 		settingsBuilder.put("index.translog.sync_interval", "100ms");
 	}
 
-	private void _loadUserDefinedSettings(SettingsBuilder settingsBuilder) {
+	private void _loadUserDefinedSettings(
+		SettingsBuilder settingsBuilder, boolean staticSettings) {
+
 		_loadIndexConfigurationContributors(settingsBuilder);
 
-		_loadConfigurationIndexSettings(settingsBuilder);
+		_loadIndexSettingsConfigurations(settingsBuilder);
+
+		if (!staticSettings) {
+			settingsBuilder.remove("index.number_of_shards");
+		}
 
 		_loadAdditionalIndexConfigurations(settingsBuilder);
 
@@ -439,7 +445,7 @@ public class CompanyIndexFactoryHelper {
 
 		_loadTestModeIndexSettings(settingsBuilder);
 
-		_loadUserDefinedSettings(settingsBuilder);
+		_loadUserDefinedSettings(settingsBuilder, true);
 
 		createIndexRequest.settings(settingsBuilder.getBuilder());
 	}
@@ -467,7 +473,7 @@ public class CompanyIndexFactoryHelper {
 
 		liferayDocumentTypeFactory.loadDefaultAnalyzers(settingsBuilder);
 
-		_loadUserDefinedSettings(settingsBuilder);
+		_loadUserDefinedSettings(settingsBuilder, false);
 
 		UpdateSettingsRequest updateSettingsRequest = new UpdateSettingsRequest(
 			indexName);

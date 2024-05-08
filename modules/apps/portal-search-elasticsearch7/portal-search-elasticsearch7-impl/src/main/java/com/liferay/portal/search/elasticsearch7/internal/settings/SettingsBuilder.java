@@ -65,6 +65,10 @@ public class SettingsBuilder implements SettingsHelper {
 		_builder.putList(setting, values);
 	}
 
+	public void remove(String key) {
+		_builder.remove(key);
+	}
+
 	private final Settings.Builder _builder;
 
 }
