@@ -6,6 +6,7 @@
 package com.liferay.portal.search.elasticsearch7.internal.settings;
 
 import com.liferay.petra.string.CharPool;
+import com.liferay.portal.search.spi.index.configuration.contributor.helper.SettingsHelper;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -15,7 +16,7 @@ import org.elasticsearch.xcontent.XContentType;
 /**
  * @author André de Oliveira
  */
-public class SettingsBuilder {
+public class SettingsBuilder implements SettingsHelper {
 
 	public SettingsBuilder(Settings.Builder builder) {
 		_builder = builder;
@@ -33,6 +34,7 @@ public class SettingsBuilder {
 		return _builder;
 	}
 
+	@Override
 	public void loadFromSource(String source) {
 		if (StringUtils.isBlank(source)) {
 			return;
@@ -52,6 +54,7 @@ public class SettingsBuilder {
 		_builder.put(key, value);
 	}
 
+	@Override
 	public void put(String key, String value) {
 		if (!StringUtils.isBlank(value)) {
 			_builder.put(key, value);
