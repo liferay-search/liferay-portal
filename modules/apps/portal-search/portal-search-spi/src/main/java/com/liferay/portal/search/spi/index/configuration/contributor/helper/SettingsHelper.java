@@ -12,4 +12,6 @@ public interface SettingsHelper {
 
 	public void put(String setting, String value);
 
+	public void loadFromSource(String source);
+
 }
