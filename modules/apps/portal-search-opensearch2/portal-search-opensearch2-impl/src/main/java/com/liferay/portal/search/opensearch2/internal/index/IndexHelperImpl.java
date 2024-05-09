@@ -339,7 +339,7 @@ public class IndexHelperImpl implements IndexHelper {
 			_log.error(
 				StringBundler.concat(
 					"Unable to apply contributor ", companyIndexListener,
-					"to index ", indexName),
+					" after creating index ", indexName),
 				throwable);
 		}
 	}
@@ -354,7 +354,7 @@ public class IndexHelperImpl implements IndexHelper {
 			_log.error(
 				StringBundler.concat(
 					"Unable to apply contributor ", companyIndexListener,
-					" when removing index ", indexName),
+					" before deleting index ", indexName),
 				throwable);
 		}
 	}
