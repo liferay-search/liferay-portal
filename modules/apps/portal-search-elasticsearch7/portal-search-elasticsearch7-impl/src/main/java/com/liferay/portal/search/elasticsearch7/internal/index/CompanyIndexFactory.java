@@ -117,26 +117,6 @@ public class CompanyIndexFactory
 		_elasticsearchConfigurationWrapper.unregister(this);
 	}
 
-	private synchronized void _initializeCompanyIndexes() {
-		for (Long companyId :
-				IndexFactoryCompanyIdRegistryUtil.getCompanyIds()) {
-
-			try {
-				RestHighLevelClient restHighLevelClient =
-					_elasticsearchConnectionManager.getRestHighLevelClient();
-
-				initializeIndex(restHighLevelClient.indices(), companyId);
-			}
-			catch (Exception exception) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(
-						"Unable to reinitialize index for company " + companyId,
-						exception);
-				}
-			}
-		}
-	}
-
 	private void _executeCompanyIndexListenerBeforeRemove(
 		CompanyIndexListener companyIndexListener, String indexName) {
 
@@ -158,6 +138,26 @@ public class CompanyIndexFactory
 
 			_executeCompanyIndexListenerBeforeRemove(
 				companyIndexListener, indexName);
+		}
+	}
+
+	private synchronized void _initializeCompanyIndexes() {
+		for (Long companyId :
+				IndexFactoryCompanyIdRegistryUtil.getCompanyIds()) {
+
+			try {
+				RestHighLevelClient restHighLevelClient =
+					_elasticsearchConnectionManager.getRestHighLevelClient();
+
+				initializeIndex(restHighLevelClient.indices(), companyId);
+			}
+			catch (Exception exception) {
+				if (_log.isWarnEnabled()) {
+					_log.warn(
+						"Unable to reinitialize index for company " + companyId,
+						exception);
+				}
+			}
 		}
 	}
 
