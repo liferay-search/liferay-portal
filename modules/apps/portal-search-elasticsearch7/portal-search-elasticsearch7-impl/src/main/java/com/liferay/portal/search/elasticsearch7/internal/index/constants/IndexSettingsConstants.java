@@ -13,7 +13,4 @@ public class IndexSettingsConstants {
 	public static final String INDEX_SETTINGS_ANALYSIS_FILE_NAME =
 		"/META-INF/settings/index-settings-analysis.json";
 
-	public static final String INDEX_SETTINGS_DEFAULTS_FILE_NAME =
-		"/META-INF/settings/index-settings-defaults.json";
-
 }

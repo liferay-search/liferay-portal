@@ -5,6 +5,7 @@
 
 package com.liferay.portal.search.elasticsearch7.internal.index;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactory;
@@ -13,9 +14,7 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.elasticsearch7.internal.helper.SearchLogHelperUtil;
-import com.liferay.portal.search.elasticsearch7.internal.index.constants.IndexSettingsConstants;
 import com.liferay.portal.search.elasticsearch7.internal.index.constants.LiferayTypeMappingsConstants;
-import com.liferay.portal.search.elasticsearch7.internal.settings.SettingsBuilder;
 import com.liferay.portal.search.elasticsearch7.internal.util.ResourceUtil;
 import com.liferay.portal.search.spi.index.configuration.contributor.helper.MappingsHelper;
 
@@ -49,12 +48,24 @@ public class MappingsHelperImpl implements MappingsHelper {
 		_jsonFactory = jsonFactory;
 	}
 
-	public void loadDefaultAnalyzers(SettingsBuilder settingsBuilder) {
-		String defaultAnalyzers = ResourceUtil.getResourceAsString(
-			getClass(),
-			IndexSettingsConstants.INDEX_SETTINGS_ANALYSIS_FILE_NAME);
+	public String getMappings(String overrideMappings) {
+		if (Validator.isNotNull(overrideMappings)) {
+			JSONObject jsonObject = _removeLegacyDocumentType(overrideMappings);
 
-		settingsBuilder.loadFromSource(defaultAnalyzers);
+			return jsonObject.toString();
+		}
+
+		String defaultMappings = ResourceUtil.getResourceAsString(
+			getClass(),
+			LiferayTypeMappingsConstants.
+				LIFERAY_DOCUMENT_TYPE_MAPPING_FILE_NAME);
+		String defaultMappingTemplate = ResourceUtil.getResourceAsString(
+			getClass(),
+			LiferayTypeMappingsConstants.
+				LIFERAY_DOCUMENT_TYPE_MAPPING_DEFAULT_TEMPLATE_FILE_NAME);
+
+		return _getMappingsToPutWithMergedDynamicTemplates(
+			defaultMappingTemplate, defaultMappings);
 	}
 
 	@Override
@@ -73,23 +84,26 @@ public class MappingsHelperImpl implements MappingsHelper {
 			SearchLogHelperUtil.logActionResponse(_log, actionResponse);
 		}
 		catch (Exception exception) {
-			_log.error(
-				"Unable to put mappings for index " + _indexName, exception);
+			if (_log.isWarnEnabled()) {
+				_log.warn(
+					StringBundler.concat(
+						"The attempted mappings update for index ", _indexName,
+						" is not compatiable with its current mappings. ",
+						"Please recreate the index, or modify the attempted ",
+						"updates"),
+					exception);
+			}
 		}
-	}
-
-	public void setMappings(CreateIndexRequest createIndexRequest) {
-		setMappings(createIndexRequest, null);
 	}
 
 	public void setMappings(
 		CreateIndexRequest createIndexRequest, String overrideMappings) {
 
 		createIndexRequest.mapping(
-			_getMappings(overrideMappings), XContentType.JSON);
+			getMappings(overrideMappings), XContentType.JSON);
 	}
 
-	protected JSONObject createJSONObject(String mappings) {
+	private JSONObject _createJSONObject(String mappings) {
 		try {
 			return _jsonFactory.createJSONObject(mappings);
 		}
@@ -120,26 +134,6 @@ public class MappingsHelperImpl implements MappingsHelper {
 		CompressedXContent compressedXContent = mappingMetadata.source();
 
 		return compressedXContent.toString();
-	}
-
-	private String _getMappings(String overrideMappings) {
-		if (Validator.isNotNull(overrideMappings)) {
-			JSONObject jsonObject = _removeLegacyDocumentType(overrideMappings);
-
-			return jsonObject.toString();
-		}
-
-		String defaultMappings = ResourceUtil.getResourceAsString(
-			getClass(),
-			LiferayTypeMappingsConstants.
-				LIFERAY_DOCUMENT_TYPE_MAPPING_FILE_NAME);
-		String defaultMappingTemplate = ResourceUtil.getResourceAsString(
-			getClass(),
-			LiferayTypeMappingsConstants.
-				LIFERAY_DOCUMENT_TYPE_MAPPING_DEFAULT_TEMPLATE_FILE_NAME);
-
-		return _getMappingsToPutWithMergedDynamicTemplates(
-			defaultMappingTemplate, defaultMappings);
 	}
 
 	private String _getMappingsToPutWithMergedDynamicTemplates(
@@ -213,7 +207,7 @@ public class MappingsHelperImpl implements MappingsHelper {
 	}
 
 	private JSONObject _removeLegacyDocumentType(String source) {
-		JSONObject jsonObject = createJSONObject(source);
+		JSONObject jsonObject = _createJSONObject(source);
 
 		if (jsonObject.has(
 				LiferayTypeMappingsConstants.LEGACY_LIFERAY_DOCUMENT_TYPE)) {

@@ -448,7 +448,8 @@ public class ElasticsearchSearchEngine
 	private Collection<Long> _getIndexedCompanyIds() {
 		Collection<Long> companyIds = new ArrayList<>();
 
-		String firstIndexName = _indexNameBuilder.getIndexName(0);
+		String firstIndexName = _indexNameBuilder.getIndexName(
+			CompanyConstants.SYSTEM);
 
 		String prefix = firstIndexName.substring(
 			0, firstIndexName.length() - 1);

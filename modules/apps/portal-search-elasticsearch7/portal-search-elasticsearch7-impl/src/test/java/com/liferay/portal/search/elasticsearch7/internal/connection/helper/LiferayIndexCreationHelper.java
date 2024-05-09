@@ -8,7 +8,9 @@ package com.liferay.portal.search.elasticsearch7.internal.connection.helper;
 import com.liferay.portal.json.JSONFactoryImpl;
 import com.liferay.portal.search.elasticsearch7.internal.connection.ElasticsearchClientResolver;
 import com.liferay.portal.search.elasticsearch7.internal.index.MappingsHelperImpl;
-import com.liferay.portal.search.elasticsearch7.internal.settings.SettingsBuilder;
+import com.liferay.portal.search.elasticsearch7.internal.index.constants.IndexSettingsConstants;
+import com.liferay.portal.search.elasticsearch7.internal.settings.SettingsHelperImpl;
+import com.liferay.portal.search.elasticsearch7.internal.util.ResourceUtil;
 
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.CreateIndexRequest;
@@ -26,28 +28,25 @@ public class LiferayIndexCreationHelper implements IndexCreationHelper {
 
 	@Override
 	public void contribute(CreateIndexRequest createIndexRequest) {
-		MappingsHelperImpl mappingsHelperImpl = _getMappingsHelperImpl(null);
+		RestHighLevelClient restHighLevelClient =
+			_elasticsearchClientResolver.getRestHighLevelClient();
 
-		mappingsHelperImpl.setMappings(createIndexRequest);
+		MappingsHelperImpl mappingsHelperImpl = new MappingsHelperImpl(
+			null, restHighLevelClient.indices(), new JSONFactoryImpl());
+
+		mappingsHelperImpl.setMappings(createIndexRequest, null);
 	}
 
 	@Override
-	public void contributeIndexSettings(SettingsBuilder settingsBuilder) {
-		MappingsHelperImpl mappingsHelperImpl = _getMappingsHelperImpl(null);
-
-		mappingsHelperImpl.loadDefaultAnalyzers(settingsBuilder);
+	public void contributeIndexSettings(SettingsHelperImpl settingsHelperImpl) {
+		settingsHelperImpl.loadFromSource(
+			ResourceUtil.getResourceAsString(
+				getClass(),
+				IndexSettingsConstants.INDEX_SETTINGS_ANALYSIS_FILE_NAME));
 	}
 
 	@Override
 	public void whenIndexCreated(String indexName) {
-	}
-
-	private MappingsHelperImpl _getMappingsHelperImpl(String indexName) {
-		RestHighLevelClient restHighLevelClient =
-			_elasticsearchClientResolver.getRestHighLevelClient();
-
-		return new MappingsHelperImpl(
-			indexName, restHighLevelClient.indices(), new JSONFactoryImpl());
 	}
 
 	private final ElasticsearchClientResolver _elasticsearchClientResolver;
