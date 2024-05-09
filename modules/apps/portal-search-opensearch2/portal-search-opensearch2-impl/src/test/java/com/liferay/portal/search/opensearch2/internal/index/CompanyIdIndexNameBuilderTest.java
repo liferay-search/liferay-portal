@@ -200,7 +200,7 @@ public class CompanyIdIndexNameBuilderTest extends BaseOpenSearchTestCase {
 		OpenSearchClient openSearchClient =
 			openSearchConnectionManager.getOpenSearchClient();
 
-		_companyIndexFactory.createIndices(
+		_companyIndexFactory.initializeIndex(
 			companyId, openSearchClient.indices());
 	}
 

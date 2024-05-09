@@ -48,7 +48,7 @@ public class CompanyIndexFactoryFixture {
 		OpenSearchClient openSearchClient =
 			_openSearchConnectionManager.getOpenSearchClient();
 
-		companyIndexFactory.createIndices(
+		companyIndexFactory.initializeIndex(
 			RandomTestUtil.randomLong(), openSearchClient.indices());
 	}
 
@@ -58,7 +58,7 @@ public class CompanyIndexFactoryFixture {
 		OpenSearchClient openSearchClient =
 			_openSearchConnectionManager.getOpenSearchClient();
 
-		companyIndexFactory.deleteIndices(
+		companyIndexFactory.deleteIndex(
 			RandomTestUtil.randomLong(), openSearchClient.indices());
 	}
 

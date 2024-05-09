@@ -167,7 +167,7 @@ public class OpenSearchSearchEngine
 		OpenSearchClient openSearchClient =
 			_openSearchConnectionManager.getOpenSearchClient();
 
-		boolean created = _indexFactory.createIndices(
+		boolean created = _indexFactory.initializeIndex(
 			companyId, openSearchClient.indices());
 
 		_indexFactory.registerCompanyId(companyId);
@@ -232,7 +232,7 @@ public class OpenSearchSearchEngine
 			OpenSearchClient openSearchClient =
 				_openSearchConnectionManager.getOpenSearchClient();
 
-			_indexFactory.deleteIndices(companyId, openSearchClient.indices());
+			_indexFactory.deleteIndex(companyId, openSearchClient.indices());
 
 			_indexFactory.unregisterCompanyId(companyId);
 		}

@@ -155,7 +155,7 @@ public class CompanyIndexFactoryTest extends BaseOpenSearchTestCase {
 
 		_assertIndexSettings(1, 2);
 
-		deleteIndices();
+		deleteIndex();
 	}
 
 	@Test
@@ -251,7 +251,7 @@ public class CompanyIndexFactoryTest extends BaseOpenSearchTestCase {
 
 		_assertHasIndex(_companyIndexFactoryFixture.getIndexName());
 
-		deleteIndices();
+		deleteIndex();
 
 		_assertNoIndex(_companyIndexFactoryFixture.getIndexName());
 	}
@@ -274,7 +274,7 @@ public class CompanyIndexFactoryTest extends BaseOpenSearchTestCase {
 			});
 
 		createIndices();
-		deleteIndices();
+		deleteIndex();
 	}
 
 	@Test
@@ -304,13 +304,13 @@ public class CompanyIndexFactoryTest extends BaseOpenSearchTestCase {
 		);
 
 		createIndices();
-		deleteIndices();
+		deleteIndex();
 	}
 
 	@Test
 	public void testCreateIndicesWithEmptyConfiguration() throws Exception {
 		createIndices();
-		deleteIndices();
+		deleteIndex();
 	}
 
 	@Test
@@ -319,7 +319,7 @@ public class CompanyIndexFactoryTest extends BaseOpenSearchTestCase {
 
 		_assertIndexSettings(0, 1);
 
-		deleteIndices();
+		deleteIndex();
 	}
 
 	@Test
@@ -328,7 +328,7 @@ public class CompanyIndexFactoryTest extends BaseOpenSearchTestCase {
 
 		_assertMappings(Field.COMPANY_ID, Field.ENTRY_CLASS_NAME);
 
-		deleteIndices();
+		deleteIndex();
 	}
 
 	@Test
@@ -371,7 +371,7 @@ public class CompanyIndexFactoryTest extends BaseOpenSearchTestCase {
 
 		_assertIndexSettings(2, 3);
 
-		deleteIndices();
+		deleteIndex();
 	}
 
 	@Test
@@ -415,7 +415,7 @@ public class CompanyIndexFactoryTest extends BaseOpenSearchTestCase {
 
 		assertAnalyzer("brazilian", field);
 
-		deleteIndices();
+		deleteIndex();
 	}
 
 	@Test
@@ -436,7 +436,7 @@ public class CompanyIndexFactoryTest extends BaseOpenSearchTestCase {
 
 		_assertIndexSettings(0, 3);
 
-		deleteIndices();
+		deleteIndex();
 	}
 
 	@Test
@@ -457,7 +457,7 @@ public class CompanyIndexFactoryTest extends BaseOpenSearchTestCase {
 		assertType("match_additional_mapping", "keyword");
 		assertType("match_catch_all", "text");
 
-		deleteIndices();
+		deleteIndex();
 	}
 
 	@Test
@@ -488,7 +488,7 @@ public class CompanyIndexFactoryTest extends BaseOpenSearchTestCase {
 
 		_assertNoAnalyzer(field2);
 
-		deleteIndices();
+		deleteIndex();
 	}
 
 	@Test
@@ -519,7 +519,7 @@ public class CompanyIndexFactoryTest extends BaseOpenSearchTestCase {
 
 		_assertNoAnalyzer(field2);
 
-		deleteIndices();
+		deleteIndex();
 	}
 
 	@Test
@@ -540,7 +540,7 @@ public class CompanyIndexFactoryTest extends BaseOpenSearchTestCase {
 
 		_assertMappings(Field.TITLE);
 
-		deleteIndices();
+		deleteIndex();
 	}
 
 	@Test
@@ -591,18 +591,18 @@ public class CompanyIndexFactoryTest extends BaseOpenSearchTestCase {
 		OpenSearchIndicesClient openSearchIndicesClient =
 			openSearchClient.indices();
 
-		_companyIndexFactory.createIndices(
+		_companyIndexFactory.initializeIndex(
 			RandomTestUtil.randomLong(), openSearchIndicesClient);
 	}
 
-	protected void deleteIndices() {
+	protected void deleteIndex() {
 		OpenSearchClient openSearchClient =
 			openSearchConnectionManager.getOpenSearchClient();
 
 		OpenSearchIndicesClient openSearchIndicesClient =
 			openSearchClient.indices();
 
-		_companyIndexFactory.deleteIndices(
+		_companyIndexFactory.deleteIndex(
 			RandomTestUtil.randomLong(), openSearchIndicesClient);
 	}
 
@@ -711,7 +711,7 @@ public class CompanyIndexFactoryTest extends BaseOpenSearchTestCase {
 
 		assertAnalyzer("kuromoji_liferay_custom", replacedFieldName);
 
-		deleteIndices();
+		deleteIndex();
 	}
 
 	private void _assertHasIndex(String indexName) {
