@@ -70,7 +70,7 @@ public class CategoryFacetTest extends BaseFacetedSearcherTestCase {
 
 		_group = GroupTestUtil.addGroup();
 
-		_assetVocabulary = assetVocabularyLocalService.addDefaultVocabulary(
+		_assetVocabulary = _assetVocabularyLocalService.addDefaultVocabulary(
 			_group.getGroupId());
 	}
 
@@ -87,7 +87,7 @@ public class CategoryFacetTest extends BaseFacetedSearcherTestCase {
 		SearchContext searchContext = _getSearchContext(
 			_assetCategory, categoryId);
 
-		Facet facet = categoryFacetFactory.newInstance(searchContext);
+		Facet facet = _categoryFacetFactory.newInstance(searchContext);
 
 		searchContext.addFacet(facet);
 
@@ -118,7 +118,7 @@ public class CategoryFacetTest extends BaseFacetedSearcherTestCase {
 		SearchContext searchContext = _getSearchContext(
 			_assetCategory, categoryId);
 
-		Facet facet = categoryFacetFactory.newInstance(searchContext);
+		Facet facet = _categoryFacetFactory.newInstance(searchContext);
 
 		searchContext.addFacet(facet);
 
@@ -141,7 +141,7 @@ public class CategoryFacetTest extends BaseFacetedSearcherTestCase {
 		SearchContext searchContext = _getSearchContext(
 			_assetCategory, categoryId);
 
-		Facet facet = categoryFacetFactory.newInstance(searchContext);
+		Facet facet = _categoryFacetFactory.newInstance(searchContext);
 
 		facet.select(_getAssetVocabularyCategoryId(_assetCategory));
 
@@ -160,7 +160,7 @@ public class CategoryFacetTest extends BaseFacetedSearcherTestCase {
 	}
 
 	protected void addCategory(String title) throws Exception {
-		_assetCategory = assetCategoryLocalService.addCategory(
+		_assetCategory = _assetCategoryLocalService.addCategory(
 			TestPropsValues.getUserId(), _group.getGroupId(), title,
 			_assetVocabulary.getVocabularyId(),
 			ServiceContextTestUtil.getServiceContext(
@@ -215,15 +215,6 @@ public class CategoryFacetTest extends BaseFacetedSearcherTestCase {
 			Field.ENTRY_CLASS_NAME, entryClassNames);
 	}
 
-	@Inject
-	protected AssetCategoryLocalService assetCategoryLocalService;
-
-	@Inject
-	protected AssetVocabularyLocalService assetVocabularyLocalService;
-
-	@Inject
-	protected CategoryFacetFactory categoryFacetFactory;
-
 	private String _getAssetVocabularyCategoryId(AssetCategory assetCategory) {
 		return StringBundler.concat(
 			assetCategory.getVocabularyId(), StringPool.DASH,
@@ -246,8 +237,17 @@ public class CategoryFacetTest extends BaseFacetedSearcherTestCase {
 	@DeleteAfterTestRun
 	private AssetCategory _assetCategory;
 
+	@Inject
+	private AssetCategoryLocalService _assetCategoryLocalService;
+
 	@DeleteAfterTestRun
 	private AssetVocabulary _assetVocabulary;
+
+	@Inject
+	private AssetVocabularyLocalService _assetVocabularyLocalService;
+
+	@Inject
+	private CategoryFacetFactory _categoryFacetFactory;
 
 	@DeleteAfterTestRun
 	private Group _group;
