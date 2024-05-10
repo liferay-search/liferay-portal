@@ -10,6 +10,8 @@ package com.liferay.portal.search.spi.index.configuration.contributor.helper;
  */
 public interface SettingsHelper {
 
+	public void loadFromSource(String source);
+
 	public void put(String setting, String value);
 
 }
