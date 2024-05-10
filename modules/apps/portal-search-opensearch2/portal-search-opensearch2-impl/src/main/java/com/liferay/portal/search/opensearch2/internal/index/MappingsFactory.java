@@ -18,7 +18,7 @@ import com.liferay.portal.search.opensearch2.internal.index.constants.MappingsCo
 import com.liferay.portal.search.opensearch2.internal.util.IndexUtil;
 import com.liferay.portal.search.opensearch2.internal.util.JsonpUtil;
 import com.liferay.portal.search.opensearch2.internal.util.ResourceUtil;
-import com.liferay.portal.search.spi.settings.TypeMappingsHelper;
+import com.liferay.portal.search.spi.index.configuration.contributor.helper.MappingsHelper;
 
 import java.io.IOException;
 
@@ -38,13 +38,14 @@ import org.opensearch.client.opensearch.indices.get_mapping.IndexMappingRecord;
  * @author André de Oliveira
  * @author Petteri Karttunen
  */
-public class MappingsFactory implements TypeMappingsHelper {
+public class MappingsFactory implements MappingsHelper {
 
 	public MappingsFactory(
-		JSONFactory jsonFactory,
+		String indexName, JSONFactory jsonFactory,
 		OpenSearchIndicesClient openSearchIndicesClient,
 		OpenSearchConfigurationWrapper openSearchConfigurationWrapper) {
 
+		_indexName = indexName;
 		_jsonFactory = jsonFactory;
 		_openSearchIndicesClient = openSearchIndicesClient;
 		_openSearchConfigurationWrapper = openSearchConfigurationWrapper;
@@ -55,44 +56,7 @@ public class MappingsFactory implements TypeMappingsHelper {
 			MappingsConstants.LIFERAY_MAPPING_FILE_NAME, ".json",
 			"-optional-defaults.json");
 
-		addTypeMappings(
-			indexName, ResourceUtil.getResourceAsString(getClass(), name));
-	}
-
-	@Override
-	public void addTypeMappings(String indexName, String source) {
-		PutMappingRequest.Builder builder = new PutMappingRequest.Builder();
-
-		builder.index(indexName);
-
-		JSONObject mappingsJSONObject = _removeLegacyDocumentType(
-			_createJSONObject(source));
-
-		_mergeExistingDynamicTemplates(indexName, mappingsJSONObject);
-
-		List<Map<String, DynamicTemplate>> dynamicTemplates =
-			IndexUtil.getDynamicTemplatesMap(mappingsJSONObject);
-
-		if (dynamicTemplates != null) {
-			builder.dynamicTemplates(dynamicTemplates);
-		}
-
-		Map<String, Property> properties = IndexUtil.getPropertiesMap(
-			mappingsJSONObject);
-
-		if (properties != null) {
-			builder.properties(properties);
-		}
-
-		try {
-			PutMappingResponse putMappingResponse =
-				_openSearchIndicesClient.putMapping(builder.build());
-
-			JsonpUtil.logInfoResponse(putMappingResponse, _log);
-		}
-		catch (IOException ioException) {
-			throw new RuntimeException(ioException);
-		}
+		putMappings(ResourceUtil.getResourceAsString(getClass(), name));
 	}
 
 	public String getMappings(String indexName) {
@@ -136,6 +100,42 @@ public class MappingsFactory implements TypeMappingsHelper {
 		}
 
 		return mappingsJSONObject;
+	}
+
+	@Override
+	public void putMappings(String source) {
+		PutMappingRequest.Builder builder = new PutMappingRequest.Builder();
+
+		builder.index(_indexName);
+
+		JSONObject mappingsJSONObject = _removeLegacyDocumentType(
+			_createJSONObject(source));
+
+		_mergeExistingDynamicTemplates(_indexName, mappingsJSONObject);
+
+		List<Map<String, DynamicTemplate>> dynamicTemplates =
+			IndexUtil.getDynamicTemplatesMap(mappingsJSONObject);
+
+		if (dynamicTemplates != null) {
+			builder.dynamicTemplates(dynamicTemplates);
+		}
+
+		Map<String, Property> properties = IndexUtil.getPropertiesMap(
+			mappingsJSONObject);
+
+		if (properties != null) {
+			builder.properties(properties);
+		}
+
+		try {
+			PutMappingResponse putMappingResponse =
+				_openSearchIndicesClient.putMapping(builder.build());
+
+			JsonpUtil.logInfoResponse(putMappingResponse, _log);
+		}
+		catch (IOException ioException) {
+			throw new RuntimeException(ioException);
+		}
 	}
 
 	private JSONObject _createJSONObject(String jsonString) {
@@ -203,6 +203,7 @@ public class MappingsFactory implements TypeMappingsHelper {
 	private static final Log _log = LogFactoryUtil.getLog(
 		MappingsFactory.class);
 
+	private final String _indexName;
 	private final JSONFactory _jsonFactory;
 	private final OpenSearchConfigurationWrapper
 		_openSearchConfigurationWrapper;

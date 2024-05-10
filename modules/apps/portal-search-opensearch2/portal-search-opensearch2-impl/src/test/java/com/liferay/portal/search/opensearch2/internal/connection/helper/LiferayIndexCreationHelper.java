@@ -105,7 +105,7 @@ public class LiferayIndexCreationHelper implements IndexCreationHelper {
 			_openSearchConnectionManager.getOpenSearchClient();
 
 		return new MappingsFactory(
-			new JSONFactoryImpl(), openSearchClient.indices(),
+			null, new JSONFactoryImpl(), openSearchClient.indices(),
 			_openSearchConfigurationWrapper);
 	}
 

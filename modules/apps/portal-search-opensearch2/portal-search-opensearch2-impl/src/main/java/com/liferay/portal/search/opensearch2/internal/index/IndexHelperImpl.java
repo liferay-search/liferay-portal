@@ -74,7 +74,7 @@ public class IndexHelperImpl implements IndexHelper {
 		String indexName, OpenSearchIndicesClient openSearchIndicesClient) {
 
 		MappingsFactory mappingsFactory = new MappingsFactory(
-			_jsonFactory, openSearchIndicesClient,
+			indexName, _jsonFactory, openSearchIndicesClient,
 			_openSearchConfigurationWrapper);
 
 		SettingsFactory settingsFactory = new SettingsFactory(
@@ -87,7 +87,7 @@ public class IndexHelperImpl implements IndexHelper {
 		if (Validator.isNull(
 				_openSearchConfigurationWrapper.overrideTypeMappings())) {
 
-			_executeMappingsContributors(indexName, mappingsFactory);
+			_executeMappingsContributors(mappingsFactory);
 
 			mappingsFactory.addOptionalDefaultMappings(indexName);
 		}
@@ -358,7 +358,8 @@ public class IndexHelperImpl implements IndexHelper {
 		for (IndexConfigurationContributor indexConfigurationContributor :
 				_indexConfigurationContributors) {
 
-			indexConfigurationContributor.populate(contributedSettings::put);
+			indexConfigurationContributor.contributeSettings(
+				contributedSettings::put);
 		}
 
 		if (MapUtil.isEmpty(contributedSettings)) {
@@ -370,14 +371,11 @@ public class IndexHelperImpl implements IndexHelper {
 			_dotNotationSettingsToJSONObject(contributedSettings));
 	}
 
-	private void _executeMappingsContributors(
-		String indexName, MappingsFactory mappingsFactory) {
-
+	private void _executeMappingsContributors(MappingsFactory mappingsFactory) {
 		for (IndexConfigurationContributor indexConfigurationContributor :
 				_indexConfigurationContributors) {
 
-			indexConfigurationContributor.contribute(
-				indexName, mappingsFactory);
+			indexConfigurationContributor.contributeMappings(mappingsFactory);
 		}
 	}
 
@@ -406,13 +404,12 @@ public class IndexHelperImpl implements IndexHelper {
 			OpenSearchClient openSearchClient =
 				_openSearchConnectionManager.getOpenSearchClient();
 
-			MappingsFactory mappingsFactory = new MappingsFactory(
-				_jsonFactory, openSearchClient.indices(),
-				_openSearchConfigurationWrapper);
-
 			_companyLocalService.forEachCompanyId(
-				companyId -> indexConfigurationContributor.contribute(
-					getIndexName(companyId), mappingsFactory),
+				companyId -> indexConfigurationContributor.contributeMappings(
+					new MappingsFactory(
+						getIndexName(companyId), _jsonFactory,
+						openSearchClient.indices(),
+						_openSearchConfigurationWrapper)),
 				IndexFactoryCompanyIdRegistryUtil.getCompanyIds());
 		}
 		catch (OpenSearchConnectionNotInitializedException
