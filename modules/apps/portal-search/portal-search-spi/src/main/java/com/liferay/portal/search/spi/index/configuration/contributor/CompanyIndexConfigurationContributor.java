@@ -11,7 +11,7 @@ import com.liferay.portal.search.spi.index.configuration.contributor.helper.Sett
 /**
  * @author Adam Brandizzi
  */
-public interface IndexConfigurationContributor {
+public interface CompanyIndexConfigurationContributor {
 
 	public void contributeMappings(MappingsHelper mappingsHelper);
 
