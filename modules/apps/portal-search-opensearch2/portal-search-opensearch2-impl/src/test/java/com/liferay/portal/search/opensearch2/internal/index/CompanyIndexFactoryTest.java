@@ -21,7 +21,7 @@ import com.liferay.portal.search.opensearch2.internal.connection.IndexName;
 import com.liferay.portal.search.opensearch2.internal.document.SingleFieldFixture;
 import com.liferay.portal.search.opensearch2.internal.query.QueryFactories;
 import com.liferay.portal.search.opensearch2.internal.util.ResourceUtil;
-import com.liferay.portal.search.spi.index.configuration.contributor.IndexConfigurationContributor;
+import com.liferay.portal.search.spi.index.configuration.contributor.CompanyIndexConfigurationContributor;
 import com.liferay.portal.search.spi.index.configuration.contributor.helper.MappingsHelper;
 import com.liferay.portal.search.spi.index.configuration.contributor.helper.SettingsHelper;
 import com.liferay.portal.search.spi.index.listener.CompanyIndexListener;
@@ -183,18 +183,105 @@ public class CompanyIndexFactoryTest extends BaseOpenSearchTestCase {
 	}
 
 	@Test
-	public void testAddMultipleIndexConfigurationContributors()
+	public void testAddMultipleCompanyIndexConfigurationContributors()
 		throws Exception {
 
 		_serviceRegistrations.add(
 			_bundleContext.registerService(
-				IndexConfigurationContributor.class,
-				new TestIndexConfigurationContributor(), null));
+				CompanyIndexConfigurationContributor.class,
+				new TestCompanyIndexConfigurationContributor(), null));
 
 		_serviceRegistrations.add(
 			_bundleContext.registerService(
-				IndexConfigurationContributor.class,
-				new TestIndexConfigurationContributor(), null));
+				CompanyIndexConfigurationContributor.class,
+				new TestCompanyIndexConfigurationContributor(), null));
+	}
+
+	@Test
+	public void testCompanyIndexConfigurationContributor() throws Exception {
+		_serviceRegistrations.add(
+			_bundleContext.registerService(
+				CompanyIndexConfigurationContributor.class,
+				new CompanyIndexConfigurationContributor() {
+
+					@Override
+					public void contributeMappings(
+						MappingsHelper mappingsHelper) {
+					}
+
+					@Override
+					public void contributeSettings(
+						SettingsHelper settingsHelper) {
+
+						settingsHelper.put("index.number_of_replicas", "2");
+						settingsHelper.put("index.number_of_shards", "3");
+					}
+
+				},
+				null));
+
+		Mockito.when(
+			_openSearchConfigurationWrapper.additionalIndexConfigurations()
+		).thenReturn(
+			JSONUtil.put(
+				"index",
+				JSONUtil.put(
+					"number_of_replicas", 0
+				).put(
+					"number_of_shards", 0
+				)
+			).toString()
+		);
+
+		createIndices();
+
+		_assertIndexSettings(2, 3);
+
+		deleteIndices();
+	}
+
+	@Test
+	public void testCompanyIndexConfigurationContributorTypeMappings()
+		throws Exception {
+
+		String mappings = loadAdditionalTypeMappings();
+
+		_serviceRegistrations.add(
+			_bundleContext.registerService(
+				CompanyIndexConfigurationContributor.class,
+				new CompanyIndexConfigurationContributor() {
+
+					@Override
+					public void contributeMappings(
+						MappingsHelper mappingsHelper) {
+
+						mappingsHelper.putMappings(
+							_replaceAnalyzer("brazilian", mappings));
+					}
+
+					@Override
+					public void contributeSettings(
+						SettingsHelper settingsHelper) {
+					}
+
+				},
+				null));
+
+		Mockito.when(
+			_openSearchConfigurationWrapper.additionalTypeMappings()
+		).thenReturn(
+			_replaceAnalyzer("portuguese", mappings)
+		);
+
+		createIndices();
+
+		String field = RandomTestUtil.randomString() + "_ja";
+
+		_indexOneDocument(field);
+
+		assertAnalyzer("brazilian", field);
+
+		deleteIndices();
 	}
 
 	@Test
@@ -352,93 +439,6 @@ public class CompanyIndexFactoryTest extends BaseOpenSearchTestCase {
 	}
 
 	@Test
-	public void testIndexConfigurationContributor() throws Exception {
-		_serviceRegistrations.add(
-			_bundleContext.registerService(
-				IndexConfigurationContributor.class,
-				new IndexConfigurationContributor() {
-
-					@Override
-					public void contributeMappings(
-						MappingsHelper mappingsHelper) {
-					}
-
-					@Override
-					public void contributeSettings(
-						SettingsHelper settingsHelper) {
-
-						settingsHelper.put("index.number_of_replicas", "2");
-						settingsHelper.put("index.number_of_shards", "3");
-					}
-
-				},
-				null));
-
-		Mockito.when(
-			_openSearchConfigurationWrapper.additionalIndexConfigurations()
-		).thenReturn(
-			JSONUtil.put(
-				"index",
-				JSONUtil.put(
-					"number_of_replicas", 0
-				).put(
-					"number_of_shards", 0
-				)
-			).toString()
-		);
-
-		createIndices();
-
-		_assertIndexSettings(2, 3);
-
-		deleteIndices();
-	}
-
-	@Test
-	public void testIndexConfigurationContributorTypeMappings()
-		throws Exception {
-
-		String mappings = loadAdditionalTypeMappings();
-
-		_serviceRegistrations.add(
-			_bundleContext.registerService(
-				IndexConfigurationContributor.class,
-				new IndexConfigurationContributor() {
-
-					@Override
-					public void contributeMappings(
-						MappingsHelper mappingsHelper) {
-
-						mappingsHelper.putMappings(
-							_replaceAnalyzer("brazilian", mappings));
-					}
-
-					@Override
-					public void contributeSettings(
-						SettingsHelper settingsHelper) {
-					}
-
-				},
-				null));
-
-		Mockito.when(
-			_openSearchConfigurationWrapper.additionalTypeMappings()
-		).thenReturn(
-			_replaceAnalyzer("portuguese", mappings)
-		);
-
-		createIndices();
-
-		String field = RandomTestUtil.randomString() + "_ja";
-
-		_indexOneDocument(field);
-
-		assertAnalyzer("brazilian", field);
-
-		deleteIndices();
-	}
-
-	@Test
 	public void testIndexConfigurations() throws Exception {
 		Mockito.when(
 			_openSearchConfigurationWrapper.indexNumberOfReplicas()
@@ -564,11 +564,11 @@ public class CompanyIndexFactoryTest extends BaseOpenSearchTestCase {
 	}
 
 	@Test
-	public void testRemoveIndexConfigurationContributor() {
-		ServiceRegistration<IndexConfigurationContributor> serviceRegistration =
-			_bundleContext.registerService(
-				IndexConfigurationContributor.class,
-				new TestIndexConfigurationContributor(), null);
+	public void testRemoveCompanyIndexConfigurationContributor() {
+		ServiceRegistration<CompanyIndexConfigurationContributor>
+			serviceRegistration = _bundleContext.registerService(
+				CompanyIndexConfigurationContributor.class,
+				new TestCompanyIndexConfigurationContributor(), null);
 
 		serviceRegistration.unregister();
 	}
@@ -656,8 +656,8 @@ public class CompanyIndexFactoryTest extends BaseOpenSearchTestCase {
 		}
 	}
 
-	protected static class TestIndexConfigurationContributor
-		implements IndexConfigurationContributor {
+	protected static class TestCompanyIndexConfigurationContributor
+		implements CompanyIndexConfigurationContributor {
 
 		@Override
 		public void contributeMappings(MappingsHelper mappingsHelper) {

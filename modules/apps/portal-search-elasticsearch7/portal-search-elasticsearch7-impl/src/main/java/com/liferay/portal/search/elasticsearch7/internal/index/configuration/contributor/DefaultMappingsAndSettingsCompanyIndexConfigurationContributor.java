@@ -7,7 +7,7 @@ package com.liferay.portal.search.elasticsearch7.internal.index.configuration.co
 
 import com.liferay.portal.search.elasticsearch7.internal.index.constants.LiferayTypeMappingsConstants;
 import com.liferay.portal.search.elasticsearch7.internal.util.ResourceUtil;
-import com.liferay.portal.search.spi.index.configuration.contributor.IndexConfigurationContributor;
+import com.liferay.portal.search.spi.index.configuration.contributor.CompanyIndexConfigurationContributor;
 import com.liferay.portal.search.spi.index.configuration.contributor.helper.MappingsHelper;
 import com.liferay.portal.search.spi.index.configuration.contributor.helper.SettingsHelper;
 
@@ -16,9 +16,9 @@ import org.osgi.service.component.annotations.Component;
 /**
  * @author Bryan Engler
  */
-@Component(service = IndexConfigurationContributor.class)
-public class DefaultMappingsAndSettingsIndexConfigurationContributor
-	implements IndexConfigurationContributor {
+@Component(service = CompanyIndexConfigurationContributor.class)
+public class DefaultMappingsAndSettingsCompanyIndexConfigurationContributor
+	implements CompanyIndexConfigurationContributor {
 
 	@Override
 	public void contributeMappings(MappingsHelper mappingsHelper) {

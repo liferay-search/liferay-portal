@@ -3,21 +3,21 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
-package com.liferay.redirect.internal.search.spi.index.configuration.contributor;
+package com.liferay.object.internal.search.spi.index.configuration.contributor;
 
 import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portal.search.spi.index.configuration.contributor.IndexConfigurationContributor;
+import com.liferay.portal.search.spi.index.configuration.contributor.CompanyIndexConfigurationContributor;
 import com.liferay.portal.search.spi.index.configuration.contributor.helper.MappingsHelper;
 import com.liferay.portal.search.spi.index.configuration.contributor.helper.SettingsHelper;
 
 import org.osgi.service.component.annotations.Component;
 
 /**
- * @author Adolfo Pérez
+ * @author Murilo Stodolni
  */
-@Component(service = IndexConfigurationContributor.class)
-public class RedirectIndexConfigurationContributor
-	implements IndexConfigurationContributor {
+@Component(service = CompanyIndexConfigurationContributor.class)
+public class ObjectCompanyIndexConfigurationContributor
+	implements CompanyIndexConfigurationContributor {
 
 	@Override
 	public void contributeMappings(MappingsHelper mappingsHelper) {

@@ -19,7 +19,7 @@ import com.liferay.portal.search.elasticsearch7.internal.connection.IndexName;
 import com.liferay.portal.search.elasticsearch7.internal.document.SingleFieldFixture;
 import com.liferay.portal.search.elasticsearch7.internal.query.QueryBuilderFactories;
 import com.liferay.portal.search.elasticsearch7.internal.util.ResourceUtil;
-import com.liferay.portal.search.spi.index.configuration.contributor.IndexConfigurationContributor;
+import com.liferay.portal.search.spi.index.configuration.contributor.CompanyIndexConfigurationContributor;
 import com.liferay.portal.search.spi.index.configuration.contributor.helper.MappingsHelper;
 import com.liferay.portal.search.spi.index.configuration.contributor.helper.SettingsHelper;
 import com.liferay.portal.search.spi.index.listener.CompanyIndexListener;
@@ -189,13 +189,13 @@ public class CompanyIndexFactoryTest {
 
 		_serviceRegistrations.add(
 			_bundleContext.registerService(
-				IndexConfigurationContributor.class,
-				new TestIndexConfigurationContributor(), null));
+				CompanyIndexConfigurationContributor.class,
+				new TestCompanyIndexConfigurationContributor(), null));
 
 		_serviceRegistrations.add(
 			_bundleContext.registerService(
-				IndexConfigurationContributor.class,
-				new TestIndexConfigurationContributor(), null));
+				CompanyIndexConfigurationContributor.class,
+				new TestCompanyIndexConfigurationContributor(), null));
 	}
 
 	@Test
@@ -352,8 +352,8 @@ public class CompanyIndexFactoryTest {
 	public void testIndexConfigurationContributor() throws Exception {
 		_serviceRegistrations.add(
 			_bundleContext.registerService(
-				IndexConfigurationContributor.class,
-				new IndexConfigurationContributor() {
+				CompanyIndexConfigurationContributor.class,
+				new CompanyIndexConfigurationContributor() {
 
 					@Override
 					public void contributeMappings(
@@ -387,8 +387,8 @@ public class CompanyIndexFactoryTest {
 
 		_serviceRegistrations.add(
 			_bundleContext.registerService(
-				IndexConfigurationContributor.class,
-				new IndexConfigurationContributor() {
+				CompanyIndexConfigurationContributor.class,
+				new CompanyIndexConfigurationContributor() {
 
 					@Override
 					public void contributeMappings(
@@ -541,10 +541,10 @@ public class CompanyIndexFactoryTest {
 
 	@Test
 	public void testRemoveIndexConfigurationContributor() {
-		ServiceRegistration<IndexConfigurationContributor> serviceRegistration =
-			_bundleContext.registerService(
-				IndexConfigurationContributor.class,
-				new TestIndexConfigurationContributor(), null);
+		ServiceRegistration<CompanyIndexConfigurationContributor>
+			serviceRegistration = _bundleContext.registerService(
+				CompanyIndexConfigurationContributor.class,
+				new TestCompanyIndexConfigurationContributor(), null);
 
 		serviceRegistration.unregister();
 	}
@@ -628,8 +628,8 @@ public class CompanyIndexFactoryTest {
 		}
 	}
 
-	protected static class TestIndexConfigurationContributor
-		implements IndexConfigurationContributor {
+	protected static class TestCompanyIndexConfigurationContributor
+		implements CompanyIndexConfigurationContributor {
 
 		@Override
 		public void contributeMappings(MappingsHelper mappingsHelper) {
