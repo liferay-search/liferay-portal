@@ -69,8 +69,6 @@ public interface MoreLikeThisQuery extends Query {
 
 	public Float getTermBoost();
 
-	public String getType();
-
 	public boolean isDocumentUIDsEmpty();
 
 	public boolean isFieldsEmpty();
@@ -97,15 +95,11 @@ public interface MoreLikeThisQuery extends Query {
 
 	public void setTermBoost(Float termBoost);
 
-	public void setType(String type);
-
 	public interface DocumentIdentifier {
 
 		public String getId();
 
 		public String getIndex();
-
-		public String getType();
 
 	}
 
