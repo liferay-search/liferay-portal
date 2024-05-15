@@ -38,10 +38,6 @@ public class DeleteDocumentRequest
 		return _indexName;
 	}
 
-	public String getType() {
-		return _type;
-	}
-
 	public String getUid() {
 		return _uid;
 	}
@@ -54,13 +50,8 @@ public class DeleteDocumentRequest
 		_refresh = refresh;
 	}
 
-	public void setType(String type) {
-		_type = type;
-	}
-
 	private final String _indexName;
 	private boolean _refresh;
-	private String _type;
 	private final String _uid;
 
 }
