@@ -7,7 +7,6 @@ package com.liferay.portal.search.elasticsearch7.internal.query;
 
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.search.elasticsearch7.internal.util.DocumentTypes;
 import com.liferay.portal.search.query.MoreLikeThisQuery;
 
 import java.util.ArrayList;
@@ -38,19 +37,9 @@ public class MoreLikeThisQueryTranslatorImpl
 
 			documentIdentifiers.forEach(
 				documentIdentifier -> {
-					String type = documentIdentifier.getType();
-
-					if (Validator.isNull(type)) {
-						type = moreLikeThisQuery.getType();
-					}
-
-					if (Validator.isNull(type)) {
-						type = DocumentTypes.LIFERAY;
-					}
-
 					MoreLikeThisQueryBuilder.Item moreLikeThisQueryBuilderItem =
 						new MoreLikeThisQueryBuilder.Item(
-							documentIdentifier.getIndex(), type,
+							documentIdentifier.getIndex(),
 							documentIdentifier.getId());
 
 					likeItems.add(moreLikeThisQueryBuilderItem);
