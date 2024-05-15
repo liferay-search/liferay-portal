@@ -171,11 +171,6 @@ public class MoreLikeThisQueryImpl
 	}
 
 	@Override
-	public String getType() {
-		return _type;
-	}
-
-	@Override
 	public boolean isDocumentUIDsEmpty() {
 		return _documentIdentifiers.isEmpty();
 	}
@@ -241,13 +236,8 @@ public class MoreLikeThisQueryImpl
 	}
 
 	@Override
-	public void setType(String type) {
-		_type = type;
-	}
-
-	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(33);
+		StringBundler sb = new StringBundler(31);
 
 		sb.append("{analyzer=");
 		sb.append(_analyzer);
@@ -283,8 +273,6 @@ public class MoreLikeThisQueryImpl
 		sb.append(_stopWords);
 		sb.append(", termBoost=");
 		sb.append(_termBoost);
-		sb.append(", type=");
-		sb.append(_type);
 		sb.append("}");
 
 		return sb.toString();
@@ -318,7 +306,6 @@ public class MoreLikeThisQueryImpl
 			DocumentIdentifier documentIdentifier = (DocumentIdentifier)object;
 
 			if (Objects.equals(_index, documentIdentifier.getIndex()) &&
-				Objects.equals(_type, documentIdentifier.getType()) &&
 				Objects.equals(_id, documentIdentifier.getId())) {
 
 				return true;
@@ -388,6 +375,5 @@ public class MoreLikeThisQueryImpl
 	private Integer _minWordLength;
 	private final Set<String> _stopWords = new HashSet<>();
 	private Float _termBoost;
-	private String _type;
 
 }
