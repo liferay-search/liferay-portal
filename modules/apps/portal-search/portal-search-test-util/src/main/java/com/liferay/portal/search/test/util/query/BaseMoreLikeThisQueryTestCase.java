@@ -272,8 +272,6 @@ public abstract class BaseMoreLikeThisQueryTestCase
 		DeleteDocumentRequest deleteDocumentRequest = new DeleteDocumentRequest(
 			String.valueOf(getCompanyId()), id);
 
-		deleteDocumentRequest.setType("_doc");
-
 		searchEngineAdapter.execute(deleteDocumentRequest);
 	}
 
@@ -286,8 +284,6 @@ public abstract class BaseMoreLikeThisQueryTestCase
 
 		IndexDocumentRequest indexDocumentRequest = new IndexDocumentRequest(
 			String.valueOf(getCompanyId()), documentBuilder.build());
-
-		indexDocumentRequest.setType("_doc");
 
 		IndexDocumentResponse indexDocumentResponse =
 			searchEngineAdapter.execute(indexDocumentRequest);

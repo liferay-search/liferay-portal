@@ -22,7 +22,6 @@ import com.liferay.portal.kernel.search.suggest.SpellCheckIndexWriter;
 import com.liferay.portal.kernel.search.suggest.SuggestionConstants;
 import com.liferay.portal.kernel.util.Localization;
 import com.liferay.portal.kernel.util.PortalRunMode;
-import com.liferay.portal.search.elasticsearch7.internal.util.DocumentTypes;
 import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
 import com.liferay.portal.search.engine.adapter.document.BulkDocumentRequest;
 import com.liferay.portal.search.engine.adapter.document.DeleteByQueryDocumentRequest;
@@ -84,8 +83,6 @@ public class ElasticsearchSpellCheckIndexWriter
 		IndexDocumentRequest indexDocumentRequest = new IndexDocumentRequest(
 			indexName, document);
 
-		indexDocumentRequest.setType(DocumentTypes.LIFERAY);
-
 		_searchEngineAdapter.execute(indexDocumentRequest);
 	}
 
@@ -103,8 +100,6 @@ public class ElasticsearchSpellCheckIndexWriter
 			document -> {
 				IndexDocumentRequest indexDocumentRequest =
 					new IndexDocumentRequest(indexName, document);
-
-				indexDocumentRequest.setType(DocumentTypes.LIFERAY);
 
 				bulkDocumentRequest.addBulkableDocumentRequest(
 					indexDocumentRequest);
