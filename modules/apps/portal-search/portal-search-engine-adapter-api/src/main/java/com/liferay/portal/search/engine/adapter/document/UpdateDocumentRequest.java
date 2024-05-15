@@ -87,10 +87,6 @@ public class UpdateDocumentRequest
 		return _script;
 	}
 
-	public String getType() {
-		return _type;
-	}
-
 	public String getUid() {
 		return _uid;
 	}
@@ -119,10 +115,6 @@ public class UpdateDocumentRequest
 		_scriptedUpsert = scriptedUpsert;
 	}
 
-	public void setType(String type) {
-		_type = type;
-	}
-
 	public void setUpsert(boolean upsert) {
 		_upsert = upsert;
 	}
@@ -133,7 +125,6 @@ public class UpdateDocumentRequest
 	private boolean _refresh;
 	private Script _script;
 	private boolean _scriptedUpsert;
-	private String _type;
 	private final String _uid;
 	private boolean _upsert;
 
