@@ -122,10 +122,6 @@ public class MoreLikeThisQuery extends BaseQueryImpl {
 		return _termBoost;
 	}
 
-	public String getType() {
-		return _type;
-	}
-
 	public boolean isDocumentUIDsEmpty() {
 		return _documentUIDs.isEmpty();
 	}
@@ -182,13 +178,9 @@ public class MoreLikeThisQuery extends BaseQueryImpl {
 		_termBoost = termBoost;
 	}
 
-	public void setType(String type) {
-		_type = type;
-	}
-
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(35);
+		StringBundler sb = new StringBundler(33);
 
 		sb.append("{analyzer=");
 		sb.append(_analyzer);
@@ -226,8 +218,6 @@ public class MoreLikeThisQuery extends BaseQueryImpl {
 		sb.append(_stopWords);
 		sb.append(", termBoost=");
 		sb.append(_termBoost);
-		sb.append(", type=");
-		sb.append(_type);
 		sb.append("}");
 
 		return sb.toString();
@@ -248,6 +238,5 @@ public class MoreLikeThisQuery extends BaseQueryImpl {
 	private Integer _minWordLength;
 	private final Set<String> _stopWords = new HashSet<>();
 	private Float _termBoost;
-	private String _type;
 
 }
