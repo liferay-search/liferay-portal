@@ -250,6 +250,23 @@ public class CompanyIndexFactoryTest {
 	}
 
 	@Test
+	public void testExecuteIndexContributorOnBeforeRemove() throws Exception {
+		IndexContributor indexContributor = Mockito.mock(
+			IndexContributor.class);
+
+		addIndexContributor(indexContributor);
+
+		createIndices();
+		deleteIndices();
+
+		Mockito.verify(
+			indexContributor, Mockito.times(1)
+		).onBeforeRemove(
+			Mockito.anyString()
+		);
+	}
+
+	@Test
 	public void testIndexConfigurations() throws Exception {
 		Mockito.when(
 			_elasticsearchConfigurationWrapper.indexNumberOfReplicas()
