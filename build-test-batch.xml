@@ -964,6 +964,8 @@ mariadb.executable=${mariadb.executable}]]></echo>
 				<then>
 					<ant antfile="build-test-opensearch2.xml" target="start-opensearch" />
 
+					<property name="test.batch.name" unless:set="test.batch.name" value="${env.TEST_BATCH_NAME}" />
+
 					<if>
 						<contains string="${test.batch.name}" substring="unit" />
 						<then>
