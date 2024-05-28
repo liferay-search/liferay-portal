@@ -23,13 +23,17 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.util.Http;
 import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.search.experiences.ingest.web.internal.importer.JournalArticleImporter;
 import com.liferay.search.experiences.ingest.web.internal.iterator.LoopingIterator;
 import com.liferay.search.experiences.ingest.web.internal.stats.IngestionStats;
 import com.liferay.search.experiences.ingest.web.internal.util.IngesterUtil;
 import com.liferay.search.experiences.ingest.web.internal.util.TagUtil;
 
+import java.time.Instant;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.portlet.ActionRequest;
@@ -86,6 +90,11 @@ public class LiferayHelpCenterIngester implements Ingester {
 					serviceContext.setAssetTagNames(
 						_getAssetTagNames(resultJSONObject));
 
+					serviceContext.setCreateDate(
+						_getDate(resultJSONObject, "created_at"));
+					serviceContext.setModifiedDate(
+						_getDate(resultJSONObject, "updated_at"));
+
 					_journalArticleImporter.importBasicWebContentJournalArticle(
 						_getContent(resultJSONObject), serviceContext, title);
 
@@ -129,6 +138,18 @@ public class LiferayHelpCenterIngester implements Ingester {
 
 	private String _getContent(JSONObject jsonObject) {
 		return jsonObject.getString("body");
+	}
+
+	private Date _getDate(JSONObject resultJSONObject, String key) {
+		Date date = new Date();
+
+		String dateValue = resultJSONObject.getString(key);
+
+		if (Validator.isNotNull(dateValue)) {
+			date = Date.from(Instant.parse(dateValue));
+		}
+
+		return date;
 	}
 
 	private static final String _API_URL =
