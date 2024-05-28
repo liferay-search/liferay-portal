@@ -141,15 +141,18 @@ public class LiferayHelpCenterIngester implements Ingester {
 	}
 
 	private Date _getDate(JSONObject resultJSONObject, String key) {
-		Date date = new Date();
-
 		String dateValue = resultJSONObject.getString(key);
 
 		if (Validator.isNotNull(dateValue)) {
-			date = Date.from(Instant.parse(dateValue));
+			try {
+				return Date.from(Instant.parse(dateValue));
+			}
+			catch (Exception exception) {
+				_log.error(exception);
+			}
 		}
 
-		return date;
+		return new Date();
 	}
 
 	private static final String _API_URL =
