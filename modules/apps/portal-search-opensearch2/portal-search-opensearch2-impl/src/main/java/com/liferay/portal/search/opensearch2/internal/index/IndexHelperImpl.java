@@ -617,7 +617,8 @@ public class IndexHelperImpl implements IndexHelper {
 		SettingsFactory settingsFactory = new SettingsFactory(
 			_jsonFactory, _openSearchConfigurationWrapper);
 
-		JSONObject settingsJSONObject = settingsFactory.getSettingsJSONObject();
+		JSONObject settingsJSONObject = _createSettingsJSONObject(
+			settingsFactory);
 
 		try {
 			openSearchIndicesClient.putSettings(

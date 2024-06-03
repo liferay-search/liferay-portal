@@ -88,8 +88,6 @@ public class CompanyIndexFactory
 	@Override
 	public void onOpenSearchConfigurationUpdate() {
 		_createCompanyIndexes();
-
-		_indexHelper.updateMaxResultWindow();
 	}
 
 	@Override
