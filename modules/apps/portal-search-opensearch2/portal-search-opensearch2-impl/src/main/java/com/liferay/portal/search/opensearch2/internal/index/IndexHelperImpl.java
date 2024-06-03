@@ -16,7 +16,6 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.CompanyConstants;
 import com.liferay.portal.kernel.service.CompanyLocalService;
-import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.PortalRunMode;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.engine.adapter.index.UpdateIndexSettingsIndexRequest;
@@ -329,9 +328,16 @@ public class IndexHelperImpl implements IndexHelper {
 	private JSONObject _createSettingsJSONObject(
 		SettingsFactory settingsFactory) {
 
+		Map<String, String> contributedSettings =
+			_executeIndexConfigurationContributors();
+
 		JSONObject settingsJSONObject = settingsFactory.getSettingsJSONObject();
 
-		_executeIndexConfigurationContributors(settingsJSONObject);
+		if (!contributedSettings.isEmpty()) {
+			IndexUtil.mergeToJsonObject(
+				settingsJSONObject,
+				_dotNotationSettingsToJSONObject(contributedSettings));
+		}
 
 		JSONObject indexJSONObject = settingsJSONObject.getJSONObject("index");
 
@@ -418,9 +424,7 @@ public class IndexHelperImpl implements IndexHelper {
 		}
 	}
 
-	private void _executeIndexConfigurationContributors(
-		JSONObject indexSettingsJSONObject) {
-
+	private Map<String, String> _executeIndexConfigurationContributors() {
 		Map<String, String> contributedSettings = new HashMap<>();
 
 		for (IndexConfigurationContributor indexConfigurationContributor :
@@ -430,13 +434,7 @@ public class IndexHelperImpl implements IndexHelper {
 				contributedSettings::put);
 		}
 
-		if (MapUtil.isEmpty(contributedSettings)) {
-			return;
-		}
-
-		IndexUtil.mergeToJsonObject(
-			indexSettingsJSONObject,
-			_dotNotationSettingsToJSONObject(contributedSettings));
+		return contributedSettings;
 	}
 
 	private void _executeMappingsContributors(MappingsFactory mappingsFactory) {
