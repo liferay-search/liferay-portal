@@ -626,9 +626,7 @@ public class IndexHelperImpl implements IndexHelper {
 		}
 		catch (IOException ioException) {
 			_log.error(
-				StringBundler.concat(
-					"Failed to update settings for index: ", indexName,
-					". Settings: ", settingsJSONObject, ioException));
+				"Unable to put mappings for index " + indexName, ioException);
 		}
 	}
 
