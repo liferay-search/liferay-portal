@@ -40,21 +40,6 @@ public class CompanyIndexFactory
 	}
 
 	@Override
-	public boolean createIndices(
-		long companyId, OpenSearchIndicesClient openSearchIndicesClient) {
-
-		String indexName = _indexHelper.getIndexName(companyId);
-
-		if (_indexHelper.hasIndex(indexName, openSearchIndicesClient)) {
-			return false;
-		}
-
-		_indexHelper.initializeIndex(indexName, openSearchIndicesClient);
-
-		return true;
-	}
-
-	@Override
 	public boolean deleteIndices(
 		long companyId, OpenSearchIndicesClient openSearchIndicesClient) {
 
@@ -81,6 +66,21 @@ public class CompanyIndexFactory
 	@Override
 	public int getPriority() {
 		return 3;
+	}
+
+	@Override
+	public boolean initializeIndices(
+		long companyId, OpenSearchIndicesClient openSearchIndicesClient) {
+
+		String indexName = _indexHelper.getIndexName(companyId);
+
+		if (_indexHelper.hasIndex(indexName, openSearchIndicesClient)) {
+			return false;
+		}
+
+		_indexHelper.initializeIndex(indexName, openSearchIndicesClient);
+
+		return true;
 	}
 
 	@Override
@@ -117,7 +117,7 @@ public class CompanyIndexFactory
 			OpenSearchClient openSearchClient =
 				_openSearchConnectionManager.getOpenSearchClient();
 
-			createIndices(companyId, openSearchClient.indices());
+			initializeIndices(companyId, openSearchClient.indices());
 		}
 		catch (Exception exception) {
 			if (_log.isWarnEnabled()) {

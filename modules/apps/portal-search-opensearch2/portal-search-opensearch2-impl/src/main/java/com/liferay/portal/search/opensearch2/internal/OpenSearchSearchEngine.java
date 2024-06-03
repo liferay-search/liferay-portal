@@ -166,7 +166,7 @@ public class OpenSearchSearchEngine
 		OpenSearchClient openSearchClient =
 			_openSearchConnectionManager.getOpenSearchClient();
 
-		boolean created = _indexFactory.createIndices(
+		boolean created = _indexFactory.initializeIndices(
 			companyId, openSearchClient.indices());
 
 		_indexFactory.registerCompanyId(companyId);

@@ -48,7 +48,7 @@ public class CompanyIndexFactoryFixture {
 		OpenSearchClient openSearchClient =
 			_openSearchConnectionManager.getOpenSearchClient();
 
-		companyIndexFactory.createIndices(
+		companyIndexFactory.initializeIndices(
 			RandomTestUtil.randomLong(), openSearchClient.indices());
 	}
 

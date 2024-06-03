@@ -151,7 +151,7 @@ public class CompanyIndexFactoryTest extends BaseOpenSearchTestCase {
 				)
 			).toString()
 		);
-		createIndices();
+		initializeIndices();
 
 		_assertIndexSettings(1, 2);
 
@@ -247,7 +247,7 @@ public class CompanyIndexFactoryTest extends BaseOpenSearchTestCase {
 
 			});
 
-		createIndices();
+		initializeIndices();
 
 		_assertHasIndex(_companyIndexFactoryFixture.getIndexName());
 
@@ -273,49 +273,13 @@ public class CompanyIndexFactoryTest extends BaseOpenSearchTestCase {
 
 			});
 
-		createIndices();
-		deleteIndices();
-	}
-
-	@Test
-	public void testCreateIndicesWithBlankStrings() throws Exception {
-		Mockito.when(
-			_openSearchConfigurationWrapper.additionalIndexConfigurations()
-		).thenReturn(
-			StringPool.BLANK
-		);
-
-		Mockito.when(
-			_openSearchConfigurationWrapper.additionalTypeMappings()
-		).thenReturn(
-			StringPool.SPACE
-		);
-
-		Mockito.when(
-			_openSearchConfigurationWrapper.indexNumberOfReplicas()
-		).thenReturn(
-			StringPool.BLANK
-		);
-
-		Mockito.when(
-			_openSearchConfigurationWrapper.indexNumberOfShards()
-		).thenReturn(
-			StringPool.SPACE
-		);
-
-		createIndices();
-		deleteIndices();
-	}
-
-	@Test
-	public void testCreateIndicesWithEmptyConfiguration() throws Exception {
-		createIndices();
+		initializeIndices();
 		deleteIndices();
 	}
 
 	@Test
 	public void testDefaultIndexSettings() throws Exception {
-		createIndices();
+		initializeIndices();
 
 		_assertIndexSettings(0, 1);
 
@@ -324,7 +288,7 @@ public class CompanyIndexFactoryTest extends BaseOpenSearchTestCase {
 
 	@Test
 	public void testDefaultIndices() throws Exception {
-		createIndices();
+		initializeIndices();
 
 		_assertMappings(Field.COMPANY_ID, Field.ENTRY_CLASS_NAME);
 
@@ -340,7 +304,7 @@ public class CompanyIndexFactoryTest extends BaseOpenSearchTestCase {
 
 		addCompanyIndexListener(companyIndexListener);
 
-		createIndices();
+		initializeIndices();
 
 		deleteIndices();
 
@@ -388,7 +352,7 @@ public class CompanyIndexFactoryTest extends BaseOpenSearchTestCase {
 			).toString()
 		);
 
-		createIndices();
+		initializeIndices();
 
 		_assertIndexSettings(2, 3);
 
@@ -428,7 +392,7 @@ public class CompanyIndexFactoryTest extends BaseOpenSearchTestCase {
 			_replaceAnalyzer("portuguese", mappings)
 		);
 
-		createIndices();
+		initializeIndices();
 
 		String field = RandomTestUtil.randomString() + "_ja";
 
@@ -453,10 +417,46 @@ public class CompanyIndexFactoryTest extends BaseOpenSearchTestCase {
 			"3"
 		);
 
-		createIndices();
+		initializeIndices();
 
 		_assertIndexSettings(0, 3);
 
+		deleteIndices();
+	}
+
+	@Test
+	public void testInitializeIndicesWithBlankStrings() throws Exception {
+		Mockito.when(
+			_openSearchConfigurationWrapper.additionalIndexConfigurations()
+		).thenReturn(
+			StringPool.BLANK
+		);
+
+		Mockito.when(
+			_openSearchConfigurationWrapper.additionalTypeMappings()
+		).thenReturn(
+			StringPool.SPACE
+		);
+
+		Mockito.when(
+			_openSearchConfigurationWrapper.indexNumberOfReplicas()
+		).thenReturn(
+			StringPool.BLANK
+		);
+
+		Mockito.when(
+			_openSearchConfigurationWrapper.indexNumberOfShards()
+		).thenReturn(
+			StringPool.SPACE
+		);
+
+		initializeIndices();
+		deleteIndices();
+	}
+
+	@Test
+	public void testInitializeIndicesWithEmptyConfiguration() throws Exception {
+		initializeIndices();
 		deleteIndices();
 	}
 
@@ -470,7 +470,7 @@ public class CompanyIndexFactoryTest extends BaseOpenSearchTestCase {
 			loadAdditionalTypeMappings()
 		);
 
-		createIndices();
+		initializeIndices();
 
 		_indexOneDocument("match_additional_mapping");
 		_indexOneDocument("match_catch_all");
@@ -495,7 +495,7 @@ public class CompanyIndexFactoryTest extends BaseOpenSearchTestCase {
 			_loadOverrideLegacyTypeMappings()
 		);
 
-		createIndices();
+		initializeIndices();
 
 		String field1 = "title";
 
@@ -526,7 +526,7 @@ public class CompanyIndexFactoryTest extends BaseOpenSearchTestCase {
 			_loadOverrideTypeMappings()
 		);
 
-		createIndices();
+		initializeIndices();
 
 		String field1 = "title";
 
@@ -557,7 +557,7 @@ public class CompanyIndexFactoryTest extends BaseOpenSearchTestCase {
 			_loadOverrideTypeMappings()
 		);
 
-		createIndices();
+		initializeIndices();
 
 		_assertMappings(Field.TITLE);
 
@@ -605,17 +605,6 @@ public class CompanyIndexFactoryTest extends BaseOpenSearchTestCase {
 			openSearchClient.indices());
 	}
 
-	protected void createIndices() throws Exception {
-		OpenSearchClient openSearchClient =
-			openSearchConnectionManager.getOpenSearchClient();
-
-		OpenSearchIndicesClient openSearchIndicesClient =
-			openSearchClient.indices();
-
-		_companyIndexFactory.createIndices(
-			RandomTestUtil.randomLong(), openSearchIndicesClient);
-	}
-
 	protected void deleteIndices() {
 		OpenSearchClient openSearchClient =
 			openSearchConnectionManager.getOpenSearchClient();
@@ -644,6 +633,17 @@ public class CompanyIndexFactoryTest extends BaseOpenSearchTestCase {
 		catch (IOException ioException) {
 			throw new RuntimeException(ioException);
 		}
+	}
+
+	protected void initializeIndices() throws Exception {
+		OpenSearchClient openSearchClient =
+			openSearchConnectionManager.getOpenSearchClient();
+
+		OpenSearchIndicesClient openSearchIndicesClient =
+			openSearchClient.indices();
+
+		_companyIndexFactory.initializeIndices(
+			RandomTestUtil.randomLong(), openSearchIndicesClient);
 	}
 
 	protected String loadAdditionalTypeMappings() {
@@ -703,7 +703,7 @@ public class CompanyIndexFactoryTest extends BaseOpenSearchTestCase {
 			_loadAdditionalAnalyzers()
 		);
 
-		createIndices();
+		initializeIndices();
 
 		String contributedKeywordFieldName = "orderStatus";
 
