@@ -190,10 +190,10 @@ public class MappingsFactory implements TypeMappingsHelper {
 
 	private JSONObject _removeLegacyDocumentType(JSONObject sourceJSONObject) {
 		if (sourceJSONObject.has(
-				MappingsConstants.LIFERAY_LEGACY_DOCUMENT_TYPE)) {
+				MappingsConstants.LEGACY_LIFERAY_DOCUMENT_TYPE)) {
 
 			return sourceJSONObject.getJSONObject(
-				MappingsConstants.LIFERAY_LEGACY_DOCUMENT_TYPE);
+				MappingsConstants.LEGACY_LIFERAY_DOCUMENT_TYPE);
 		}
 
 		return sourceJSONObject;
