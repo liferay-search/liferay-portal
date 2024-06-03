@@ -126,13 +126,11 @@ public class CompanyIndexFactoryHelper {
 	}
 
 	public void updateIndex(String indexName, IndicesClient indicesClient) {
-		LiferayDocumentTypeFactory liferayDocumentTypeFactory =
-			new LiferayDocumentTypeFactory(
-				indexName, indicesClient, _jsonFactory);
-
 		_updateSettings(indexName, indicesClient);
 
-		_updateMappings(liferayDocumentTypeFactory);
+		_updateMappings(
+			new LiferayDocumentTypeFactory(
+				indexName, indicesClient, _jsonFactory));
 	}
 
 	@Activate
