@@ -75,6 +75,8 @@ public class CompanyIndexFactory
 		String indexName = _indexHelper.getIndexName(companyId);
 
 		if (_indexHelper.hasIndex(indexName, openSearchIndicesClient)) {
+			_indexHelper.updateIndex(indexName, openSearchIndicesClient);
+
 			return false;
 		}
 

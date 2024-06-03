@@ -158,6 +158,18 @@ public class IndexHelperImpl implements IndexHelper {
 	}
 
 	@Override
+	public void updateIndex(
+		String indexName, OpenSearchIndicesClient openSearchIndicesClient) {
+
+		_updateSettings(indexName, openSearchIndicesClient);
+
+		_updateMappings(
+			new MappingsFactory(
+				indexName, _jsonFactory, openSearchIndicesClient,
+				_openSearchConfigurationWrapper));
+	}
+
+	@Override
 	public void updateMaxResultWindow() {
 		int maxResultWindow =
 			_openSearchConfigurationWrapper.indexMaxResultWindow();
@@ -519,6 +531,25 @@ public class IndexHelperImpl implements IndexHelper {
 			IndexFactoryCompanyIdRegistryUtil.getCompanyIds());
 	}
 
+	private void _putAdditionalTypeMappings(MappingsFactory mappingsFactory) {
+		if (Validator.isNull(
+				_openSearchConfigurationWrapper.additionalTypeMappings())) {
+
+			return;
+		}
+
+		mappingsFactory.putTypeMappings(
+			_openSearchConfigurationWrapper.additionalTypeMappings());
+	}
+
+	private void _putContributedTypeMappings(MappingsFactory mappingsFactory) {
+		for (IndexConfigurationContributor indexConfigurationContributor :
+				_indexConfigurationContributorServiceTrackerList) {
+
+			indexConfigurationContributor.contributeMappings(mappingsFactory);
+		}
+	}
+
 	private void _setTestModeIndexSettings(
 		IndexSettings indexSettings,
 		OpenSearchIndicesClient openSearchIndicesClient) {
@@ -532,6 +563,18 @@ public class IndexHelperImpl implements IndexHelper {
 		catch (IOException ioException) {
 			throw new RuntimeException(ioException);
 		}
+	}
+
+	private void _updateMappings(MappingsFactory mappingsFactory) {
+		if (Validator.isNotNull(
+				_openSearchConfigurationWrapper.overrideTypeMappings())) {
+
+			return;
+		}
+
+		_putAdditionalTypeMappings(mappingsFactory);
+
+		_putContributedTypeMappings(mappingsFactory);
 	}
 
 	private void _updateMaxResultWindow(long companyId, int maxResultWindow) {
@@ -565,6 +608,27 @@ public class IndexHelperImpl implements IndexHelper {
 				StringBundler.concat(
 					"Updated index.max_result_window to ", maxResultWindow,
 					" for index ", indexName));
+		}
+	}
+
+	private void _updateSettings(
+		String indexName, OpenSearchIndicesClient openSearchIndicesClient) {
+
+		SettingsFactory settingsFactory = new SettingsFactory(
+			_jsonFactory, _openSearchConfigurationWrapper);
+
+		JSONObject settingsJSONObject = settingsFactory.getSettingsJSONObject();
+
+		try {
+			openSearchIndicesClient.putSettings(
+				_buildPutIndicesSettingsRequest(
+					indexName, settingsJSONObject.toString()));
+		}
+		catch (IOException ioException) {
+			_log.error(
+				StringBundler.concat(
+					"Failed to update settings for index: ", indexName,
+					". Settings: ", settingsJSONObject, ioException));
 		}
 	}
 

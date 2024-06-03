@@ -31,6 +31,9 @@ public interface IndexHelper {
 	public void initializeIndex(
 		String indexName, OpenSearchIndicesClient openSearchIndicesClient);
 
+	public void updateIndex(
+		String indexName, OpenSearchIndicesClient openSearchIndicesClient);
+
 	public void updateMaxResultWindow();
 
 }
