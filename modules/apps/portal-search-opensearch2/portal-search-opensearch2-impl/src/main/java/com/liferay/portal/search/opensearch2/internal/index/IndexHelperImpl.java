@@ -201,7 +201,8 @@ public class IndexHelperImpl implements IndexHelper {
 							indexConfigurationContributor =
 								bundleContext.getService(serviceReference);
 
-						_processContributions(indexConfigurationContributor);
+						_processIndexConfigurationContributor(
+							indexConfigurationContributor);
 
 						return indexConfigurationContributor;
 					}
@@ -458,7 +459,7 @@ public class IndexHelperImpl implements IndexHelper {
 		}
 	}
 
-	private void _processContributions(
+	private void _processIndexConfigurationContributor(
 		IndexConfigurationContributor indexConfigurationContributor) {
 
 		JSONObject settingsJSONObject = _jsonFactory.createJSONObject();
