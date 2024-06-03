@@ -252,15 +252,15 @@ public class CompanyIndexFactoryHelper {
 		SettingsBuilder settingsBuilder) {
 
 		settingsBuilder.put(
+			"index.max_result_window",
+			String.valueOf(
+				_elasticsearchConfigurationWrapper.indexMaxResultWindow()));
+		settingsBuilder.put(
 			"index.number_of_replicas",
 			_elasticsearchConfigurationWrapper.indexNumberOfReplicas());
 		settingsBuilder.put(
 			"index.number_of_shards",
 			_elasticsearchConfigurationWrapper.indexNumberOfShards());
-		settingsBuilder.put(
-			"index.max_result_window",
-			String.valueOf(
-				_elasticsearchConfigurationWrapper.indexMaxResultWindow()));
 	}
 
 	private void _loadDefaultIndexSettings(
