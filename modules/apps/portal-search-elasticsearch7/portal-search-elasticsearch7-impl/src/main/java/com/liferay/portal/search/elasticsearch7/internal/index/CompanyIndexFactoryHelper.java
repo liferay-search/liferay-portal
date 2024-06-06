@@ -442,7 +442,7 @@ public class CompanyIndexFactoryHelper {
 				_elasticsearchConfigurationWrapper.overrideTypeMappings()));
 
 		if (Validator.isNotNull(
-				_elasticsearchConfigurationWrapper.overrideTypeMappings())) {
+			_elasticsearchConfigurationWrapper.overrideTypeMappings())) {
 
 			return;
 		}

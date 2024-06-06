@@ -380,7 +380,7 @@ public class CompanyIndexFactoryTest {
 	}
 
 	@Test
-	public void testIndexConfigurationContributorTypeMappings()
+	public void testIndexConfigurationContributorTypeMappingsCanNotOverrideMappings()
 		throws Exception {
 
 		String mappings = loadAdditionalTypeMappings();
@@ -395,7 +395,8 @@ public class CompanyIndexFactoryTest {
 						MappingsHelper mappingsHelper) {
 
 						mappingsHelper.putMappings(
-							_replaceAnalyzer(mappings, "brazilian"));
+							StringUtil.replace(
+								mappings, "kuromoji", "brazilian"));
 					}
 
 					@Override
@@ -406,19 +407,13 @@ public class CompanyIndexFactoryTest {
 				},
 				null));
 
-		Mockito.when(
-			_elasticsearchConfigurationWrapper.additionalTypeMappings()
-		).thenReturn(
-			_replaceAnalyzer(mappings, "portuguese")
-		);
-
 		createIndices();
 
 		String field = RandomTestUtil.randomString() + "_ja";
 
 		_indexOneDocument(field);
 
-		assertAnalyzer(field, "brazilian");
+		assertAnalyzer(field, "kuromoji");
 	}
 
 	@Test
@@ -699,12 +694,6 @@ public class CompanyIndexFactoryTest {
 		_indexOneDocument(intactFieldName);
 
 		assertAnalyzer(intactFieldName, "english");
-
-		String replacedFieldName = RandomTestUtil.randomString() + "_ja";
-
-		_indexOneDocument(replacedFieldName);
-
-		assertAnalyzer(replacedFieldName, "kuromoji_liferay_custom");
 	}
 
 	private void _assertHasIndex(String indexName) {
@@ -793,11 +782,6 @@ public class CompanyIndexFactoryTest {
 	private String _loadOverrideTypeMappings() throws Exception {
 		return ResourceUtil.getResourceAsString(
 			getClass(), "CompanyIndexFactoryTest-overrideTypeMappings.json");
-	}
-
-	private String _replaceAnalyzer(String mappings, String analyzer) {
-		return StringUtil.replace(
-			mappings, "kuromoji_liferay_custom", analyzer);
 	}
 
 	private static final BundleContext _bundleContext =
