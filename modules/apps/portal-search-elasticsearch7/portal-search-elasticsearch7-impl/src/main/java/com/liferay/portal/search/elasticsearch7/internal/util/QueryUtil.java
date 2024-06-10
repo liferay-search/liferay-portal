@@ -15,7 +15,7 @@ import org.elasticsearch.index.query.QueryBuilders;
 /**
  * @author Gustavo Lima
  */
-public abstract class TermsUtil {
+public abstract class QueryUtil {
 
 	public static AbstractQueryBuilder<? extends AbstractQueryBuilder<?>>
 		translateTerms(String field, String[] terms) {
