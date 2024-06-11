@@ -16,7 +16,6 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.CompanyConstants;
 import com.liferay.portal.kernel.service.CompanyLocalService;
-import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.PortalRunMode;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.engine.adapter.index.UpdateIndexSettingsIndexRequest;
@@ -25,6 +24,7 @@ import com.liferay.portal.search.opensearch2.internal.configuration.OpenSearchCo
 import com.liferay.portal.search.opensearch2.internal.connection.OpenSearchConnectionManager;
 import com.liferay.portal.search.opensearch2.internal.connection.OpenSearchConnectionNotInitializedException;
 import com.liferay.portal.search.opensearch2.internal.index.util.IndexFactoryCompanyIdRegistryUtil;
+import com.liferay.portal.search.opensearch2.internal.settings.SettingsHelperImpl;
 import com.liferay.portal.search.opensearch2.internal.util.IndexUtil;
 import com.liferay.portal.search.opensearch2.internal.util.JsonpUtil;
 import com.liferay.portal.search.spi.index.configuration.contributor.CompanyIndexConfigurationContributor;
@@ -38,7 +38,6 @@ import java.io.InputStream;
 
 import java.nio.charset.StandardCharsets;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -361,23 +360,25 @@ public class IndexHelperImpl implements IndexHelper {
 	private void _executeCompanyIndexConfigurationContributors(
 		JSONObject indexSettingsJSONObject) {
 
-		Map<String, String> contributedSettings = new HashMap<>();
+		SettingsHelperImpl settingsHelperImpl = new SettingsHelperImpl();
 
 		for (CompanyIndexConfigurationContributor
 				companyIndexConfigurationContributor :
 					_companyIndexConfigurationContributorServiceTrackerList) {
 
 			companyIndexConfigurationContributor.contributeSettings(
-				contributedSettings::put);
+				settingsHelperImpl);
 		}
 
-		if (MapUtil.isEmpty(contributedSettings)) {
+		Map<String, String> settings = settingsHelperImpl.getSettings();
+
+		if (settings.isEmpty()) {
 			return;
 		}
 
 		IndexUtil.mergeToJsonObject(
 			indexSettingsJSONObject,
-			_dotNotationSettingsToJSONObject(contributedSettings));
+			_dotNotationSettingsToJSONObject(settings));
 	}
 
 	private void _executeCompanyIndexListenerAfterCreate(
@@ -456,8 +457,12 @@ public class IndexHelperImpl implements IndexHelper {
 
 		JSONObject settingsJSONObject = _jsonFactory.createJSONObject();
 
+		SettingsHelperImpl settingsHelperImpl = new SettingsHelperImpl();
+
+		settingsHelperImpl.putAll(settingsJSONObject);
+
 		companyIndexConfigurationContributor.contributeSettings(
-			settingsJSONObject::put);
+			settingsHelperImpl);
 
 		boolean contributeMappings = Validator.isNull(
 			_openSearchConfigurationWrapper.overrideTypeMappings());
