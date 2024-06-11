@@ -447,9 +447,9 @@ public class CompanyIndexFactoryHelper {
 			return;
 		}
 
-		_putAdditionalMappings(mappingsHelperImpl);
-
 		_putContributedMappings(mappingsHelperImpl);
+
+		_putAdditionalMappings(mappingsHelperImpl);
 	}
 
 	private void _updateSettings(
