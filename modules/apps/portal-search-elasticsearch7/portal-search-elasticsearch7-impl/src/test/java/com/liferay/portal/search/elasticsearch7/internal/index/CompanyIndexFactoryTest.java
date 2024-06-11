@@ -380,6 +380,40 @@ public class CompanyIndexFactoryTest {
 	}
 
 	@Test
+	public void testIndexConfigurationContributorTypeMappingsCanAddMappings()
+		throws Exception {
+
+		_serviceRegistrations.add(
+			_bundleContext.registerService(
+				CompanyIndexConfigurationContributor.class,
+				new CompanyIndexConfigurationContributor() {
+
+					@Override
+					public void contributeMappings(
+						MappingsHelper mappingsHelper) {
+
+						mappingsHelper.putMappings(
+							loadAdditionalTypeMappings());
+					}
+
+					@Override
+					public void contributeSettings(
+						SettingsHelper settingsHelper) {
+					}
+
+				},
+				null));
+
+		createIndices();
+
+		String field = RandomTestUtil.randomString() + "_ja";
+
+		_indexOneDocument(field);
+
+		_assertAdditionalTypeMappings();
+	}
+
+	@Test
 	public void testIndexConfigurationContributorTypeMappingsCanNotOverrideMappings()
 		throws Exception {
 
