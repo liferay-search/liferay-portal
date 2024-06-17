@@ -458,8 +458,6 @@ public class CompanyIndexFactoryHelper {
 		SettingsHelperImpl settingsHelperImpl = new SettingsHelperImpl(
 			Settings.builder());
 
-		_loadDefaultSettings(settingsHelperImpl);
-
 		_loadAdditionalSettings(settingsHelperImpl, false);
 
 		UpdateSettingsRequest updateSettingsRequest = new UpdateSettingsRequest(
