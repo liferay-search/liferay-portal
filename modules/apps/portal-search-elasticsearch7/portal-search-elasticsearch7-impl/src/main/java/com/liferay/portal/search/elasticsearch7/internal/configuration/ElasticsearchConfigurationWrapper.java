@@ -280,10 +280,6 @@ public class ElasticsearchConfigurationWrapper
 	@Activate
 	@Modified
 	protected void activate(Map<String, Object> map) {
-		if (_updateOperationModeConfiguration()) {
-			return;
-		}
-
 		Map<String, Object> propsMap = _getPropsMap(
 			_PROPS_KEYS, ElasticsearchConfiguration.class, _props);
 
@@ -296,6 +292,8 @@ public class ElasticsearchConfigurationWrapper
 		_elasticsearchConfigurationObservers.forEach(
 			ElasticsearchConfigurationObserver::
 				onElasticsearchConfigurationUpdate);
+
+		_updateOperationModeConfiguration();
 	}
 
 	protected void setElasticsearchConfiguration(
@@ -332,7 +330,7 @@ public class ElasticsearchConfigurationWrapper
 		return propsMap;
 	}
 
-	private boolean _updateOperationModeConfiguration() {
+	private void _updateOperationModeConfiguration() {
 		try {
 			Configuration configuration = _configurationAdmin.getConfiguration(
 				ElasticsearchConfiguration.class.getName(),
@@ -342,14 +340,14 @@ public class ElasticsearchConfigurationWrapper
 				configuration.getProperties();
 
 			if (properties == null) {
-				return false;
+				return;
 			}
 
 			String operationMode = GetterUtil.getString(
 				properties.get("operationMode"));
 
 			if (Validator.isBlank(operationMode)) {
-				return false;
+				return;
 			}
 
 			if (StringUtil.equals(operationMode, "REMOTE")) {
@@ -363,8 +361,6 @@ public class ElasticsearchConfigurationWrapper
 		catch (Exception exception) {
 			_log.error(exception);
 		}
-
-		return true;
 	}
 
 	private static final String[] _PROPS_KEYS = {"sidecarJVMOptions"};
