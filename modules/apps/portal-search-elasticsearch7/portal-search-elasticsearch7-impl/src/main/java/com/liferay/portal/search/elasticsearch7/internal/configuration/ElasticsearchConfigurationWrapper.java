@@ -6,22 +6,28 @@
 package com.liferay.portal.search.elasticsearch7.internal.configuration;
 
 import com.liferay.petra.string.CharPool;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Props;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.elasticsearch7.configuration.ElasticsearchConfiguration;
-import com.liferay.portal.search.elasticsearch7.configuration.OperationMode;
 import com.liferay.portal.search.elasticsearch7.configuration.RESTClientLoggerLevel;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 
+import org.osgi.service.cm.Configuration;
+import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
@@ -126,17 +132,7 @@ public class ElasticsearchConfigurationWrapper
 	}
 
 	public boolean isProductionModeEnabled() {
-		if (productionModeEnabled()) {
-			return true;
-		}
-
-		OperationMode operationMode = operationMode();
-
-		if (operationMode == OperationMode.REMOTE) {
-			return true;
-		}
-
-		return false;
+		return productionModeEnabled();
 	}
 
 	public boolean logExceptionsOnly() {
@@ -173,14 +169,6 @@ public class ElasticsearchConfigurationWrapper
 
 	public String nodeName() {
 		return _elasticsearchConfiguration.nodeName();
-	}
-
-	/**
-	 * @deprecated As of Athanasius (7.3.x)
-	 */
-	@Deprecated
-	public OperationMode operationMode() {
-		return _elasticsearchConfiguration.operationMode();
 	}
 
 	public String overrideTypeMappings() {
@@ -292,6 +280,10 @@ public class ElasticsearchConfigurationWrapper
 	@Activate
 	@Modified
 	protected void activate(Map<String, Object> map) {
+		if (_updateOperationModeConfiguration()) {
+			return;
+		}
+
 		Map<String, Object> propsMap = _getPropsMap(
 			_PROPS_KEYS, ElasticsearchConfiguration.class, _props);
 
@@ -340,7 +332,48 @@ public class ElasticsearchConfigurationWrapper
 		return propsMap;
 	}
 
+	private boolean _updateOperationModeConfiguration() {
+		try {
+			Configuration configuration = _configurationAdmin.getConfiguration(
+				ElasticsearchConfiguration.class.getName(),
+				StringPool.QUESTION);
+
+			Dictionary<String, Object> properties =
+				configuration.getProperties();
+
+			if (properties == null) {
+				return false;
+			}
+
+			String operationMode = GetterUtil.getString(
+				properties.get("operationMode"));
+
+			if (Validator.isBlank(operationMode)) {
+				return false;
+			}
+
+			if (StringUtil.equals(operationMode, "REMOTE")) {
+				properties.put("productionModeEnabled", Boolean.TRUE);
+			}
+
+			properties.remove("operationMode");
+
+			configuration.update(properties);
+		}
+		catch (Exception exception) {
+			_log.error(exception);
+		}
+
+		return true;
+	}
+
 	private static final String[] _PROPS_KEYS = {"sidecarJVMOptions"};
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		ElasticsearchConfigurationWrapper.class);
+
+	@Reference
+	private ConfigurationAdmin _configurationAdmin;
 
 	private volatile ElasticsearchConfiguration _elasticsearchConfiguration;
 	private final Set<ElasticsearchConfigurationObserver>
