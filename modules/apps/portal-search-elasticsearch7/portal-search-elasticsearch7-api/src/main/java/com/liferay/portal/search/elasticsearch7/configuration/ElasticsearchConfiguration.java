@@ -23,17 +23,6 @@ import org.osgi.annotation.versioning.ProviderType;
 @ProviderType
 public interface ElasticsearchConfiguration {
 
-	/**
-	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
-	 *             #productionModeEnabled()}
-	 */
-	@Deprecated
-	@Meta.AD(
-		deflt = "EMBEDDED", description = "operation-mode-help",
-		name = "operation-mode", required = false
-	)
-	public OperationMode operationMode();
-
 	@Meta.AD(
 		deflt = "false", description = "production-mode-enabled-help",
 		name = "production-mode-enabled", required = false
