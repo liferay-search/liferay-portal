@@ -29,6 +29,7 @@ import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.Localization;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.portal.search.ml.embedding.text.TextEmbeddingDocumentContributor;
 import com.liferay.portal.search.spi.model.index.contributor.ModelDocumentContributor;
 import com.liferay.ratings.kernel.model.RatingsStats;
 import com.liferay.ratings.kernel.service.RatingsStatsLocalService;
@@ -53,6 +54,8 @@ public class MBMessageModelDocumentContributor
 	public void contribute(Document document, MBMessage mbMessage) {
 		document.addKeyword(Field.CATEGORY_ID, mbMessage.getCategoryId());
 
+		String content = _processContent(mbMessage);
+
 		for (Locale locale :
 				_language.getAvailableLocales(mbMessage.getGroupId())) {
 
@@ -60,7 +63,7 @@ public class MBMessageModelDocumentContributor
 
 			document.addText(
 				_localization.getLocalizedName(Field.CONTENT, languageId),
-				_processContent(mbMessage));
+				content);
 			document.addText(
 				_localization.getLocalizedName(Field.TITLE, languageId),
 				mbMessage.getSubject());
@@ -131,6 +134,9 @@ public class MBMessageModelDocumentContributor
 
 			document.addNumber("viewCount", mbThread.getViewCount());
 		}
+
+		_textEmbeddingDocumentContributor.contribute(
+			document, mbMessage, content, mbMessage.getSubject());
 
 		if (!mbMessage.isDiscussion()) {
 			return;
@@ -207,5 +213,8 @@ public class MBMessageModelDocumentContributor
 
 	@Reference
 	private RatingsStatsLocalService _ratingsStatsLocalService;
+
+	@Reference
+	private TextEmbeddingDocumentContributor _textEmbeddingDocumentContributor;
 
 }
