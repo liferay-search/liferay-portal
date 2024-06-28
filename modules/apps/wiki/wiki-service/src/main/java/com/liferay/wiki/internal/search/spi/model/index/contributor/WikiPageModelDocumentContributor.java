@@ -14,6 +14,7 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HtmlParser;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.Localization;
+import com.liferay.portal.search.ml.embedding.text.TextEmbeddingDocumentContributor;
 import com.liferay.portal.search.model.uid.UIDFactory;
 import com.liferay.portal.search.spi.model.index.contributor.ModelDocumentContributor;
 import com.liferay.trash.TrashHelper;
@@ -81,6 +82,9 @@ public class WikiPageModelDocumentContributor
 
 		document.addNumber(
 			"versionCount", GetterUtil.getDouble(wikiPage.getVersion()));
+
+		_textEmbeddingDocumentContributor.contribute(
+			document, wikiPage, content, wikiPage.getTitle());
 	}
 
 	@Reference
@@ -97,6 +101,9 @@ public class WikiPageModelDocumentContributor
 
 	@Reference
 	private Localization _localization;
+
+	@Reference
+	private TextEmbeddingDocumentContributor _textEmbeddingDocumentContributor;
 
 	@Reference
 	private TrashHelper _trashHelper;
