@@ -1,6 +1,6 @@
 Bundle-Name: Liferay Portal Search API
 Bundle-SymbolicName: com.liferay.portal.search.api
-Bundle-Version: 16.1.2
+Bundle-Version: 16.2.0
 Export-Package:\
 	com.liferay.portal.search.aggregation,\
 	com.liferay.portal.search.aggregation.bucket,\
@@ -48,6 +48,7 @@ Export-Package:\
 	com.liferay.portal.search.legacy.stats,\
 	com.liferay.portal.search.localization,\
 	com.liferay.portal.search.ml.embedding,\
+	com.liferay.portal.search.ml.embedding.text,\
 	com.liferay.portal.search.model.uid,\
 	com.liferay.portal.search.permission,\
 	com.liferay.portal.search.pit,\
