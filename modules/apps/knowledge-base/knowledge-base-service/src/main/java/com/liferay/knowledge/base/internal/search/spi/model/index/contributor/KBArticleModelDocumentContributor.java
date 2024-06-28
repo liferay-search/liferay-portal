@@ -17,6 +17,7 @@ import com.liferay.portal.kernel.search.Document;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.util.HtmlParser;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.search.ml.embedding.text.TextEmbeddingDocumentContributor;
 import com.liferay.portal.search.spi.model.index.contributor.ModelDocumentContributor;
 
 import java.util.ArrayList;
@@ -59,6 +60,9 @@ public class KBArticleModelDocumentContributor
 			"parentMessageId", kbArticle.getParentResourcePrimKey());
 		document.addKeyword("titleKeyword", kbArticle.getTitle(), true);
 		document.addKeywordSortable("urlTitle", kbArticle.getUrlTitle());
+
+		_textEmbeddingDocumentContributor.contribute(
+			document, kbArticle, kbArticle.getContent(), kbArticle.getTitle());
 	}
 
 	@Reference
@@ -87,5 +91,8 @@ public class KBArticleModelDocumentContributor
 
 	@Reference
 	private HtmlParser _htmlParser;
+
+	@Reference
+	private TextEmbeddingDocumentContributor _textEmbeddingDocumentContributor;
 
 }
