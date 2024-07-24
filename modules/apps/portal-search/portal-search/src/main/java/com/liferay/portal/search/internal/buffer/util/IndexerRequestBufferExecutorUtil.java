@@ -6,10 +6,8 @@
 package com.liferay.portal.search.internal.buffer.util;
 
 import com.liferay.petra.string.StringBundler;
-import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.model.BaseModel;
 import com.liferay.portal.kernel.model.ClassedModel;
 import com.liferay.portal.kernel.module.service.Snapshot;
 import com.liferay.portal.kernel.search.IndexWriterHelper;
@@ -149,24 +147,15 @@ public class IndexerRequestBufferExecutorUtil {
 				continue;
 			}
 
-			ClassedModel classedModel = null;
+			ClassedModel classedModel = baseModelRetriever.fetchBaseModel(
+				indexerRequest.getModelClassName(),
+				indexerRequest.getModelPrimaryKey());
 
-			try {
-				BaseModel<?> baseModel = baseModelRetriever.fetchBaseModel(
-					indexerRequest.getModelClassName(),
-					indexerRequest.getModelPrimaryKey());
-
-				if (!(baseModel instanceof ClassedModel)) {
-					mergedIndexerRequests.add(indexerRequest);
-
-					continue;
-				}
-
-				classedModel = (ClassedModel)baseModel;
-			}
-			catch (SystemException systemException) {
-				if (_log.isDebugEnabled()) {
-					_log.debug("Unable to fetch base model", systemException);
+			if (classedModel == null) {
+				if (_log.isWarnEnabled()) {
+					_log.warn(
+						"Unable to get classed model for " +
+							indexerRequest.getModelClassName());
 				}
 
 				mergedIndexerRequests.add(indexerRequest);
