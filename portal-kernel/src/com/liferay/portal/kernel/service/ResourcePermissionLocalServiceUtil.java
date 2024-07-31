@@ -554,6 +554,13 @@ public class ResourcePermissionLocalServiceUtil {
 		return getService().getResourcePermissions(start, end);
 	}
 
+	public static List<ResourcePermission> getResourcePermissions(
+		long companyId, String name, int scope, long roleId) {
+
+		return getService().getResourcePermissions(
+			companyId, name, scope, roleId);
+	}
+
 	/**
 	 * Returns all the resource permissions at the scope of the type.
 	 *

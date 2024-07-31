@@ -609,6 +609,14 @@ public class ResourcePermissionLocalServiceWrapper
 			start, end);
 	}
 
+	@Override
+	public java.util.List<ResourcePermission> getResourcePermissions(
+		long companyId, String name, int scope, long roleId) {
+
+		return _resourcePermissionLocalService.getResourcePermissions(
+			companyId, name, scope, roleId);
+	}
+
 	/**
 	 * Returns all the resource permissions at the scope of the type.
 	 *
