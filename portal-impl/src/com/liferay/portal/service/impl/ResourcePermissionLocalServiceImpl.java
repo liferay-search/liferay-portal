@@ -772,6 +772,14 @@ public class ResourcePermissionLocalServiceImpl
 			companyId, name, scope, primKey, roleId);
 	}
 
+	@Override
+	public List<ResourcePermission> getResourcePermissions(
+		long companyId, String name, int scope, long roleId) {
+
+		return resourcePermissionPersistence.findByC_N_S_R(
+			companyId, name, scope, roleId);
+	}
+
 	/**
 	 * Returns all the resource permissions at the scope of the type.
 	 *
