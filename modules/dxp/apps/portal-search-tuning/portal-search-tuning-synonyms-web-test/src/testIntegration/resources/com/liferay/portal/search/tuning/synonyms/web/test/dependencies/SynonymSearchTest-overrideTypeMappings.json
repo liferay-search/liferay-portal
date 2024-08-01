@@ -231,7 +231,7 @@
 		{
 			"template_fr": {
 				"mapping": {
-					"analyzer": "custom_liferay_analyzer_fr",
+					"analyzer": "liferay_analyzer_fr",
 					"store": true,
 					"term_vector": "with_positions_offsets",
 					"type": "text"
