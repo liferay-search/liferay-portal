@@ -4,8 +4,4 @@
 	<checkstyle>
 		<suppress checks="CamelCaseNameCheck" files=".*" />
 	</checkstyle>
-	<source-check>
-		<suppress checks="JSONStylingCheck" files="search-experiences-test/src/testIntegration/resources/com/liferay/search/experiences/internal/upgrade/test/dependencies/SXPBlueprintUpgradeProcessTest\.updatedElementDefinitionJSON\.json" />
-		<suppress checks="JSONStylingCheck" files="search-experiences-test/src/testIntegration/resources/com/liferay/search/experiences/internal/upgrade/test/dependencies/SXPBlueprintUpgradeProcessTest\.updatedElementInstancesJSON\.json" />
-	</source-check>
 </suppressions>
