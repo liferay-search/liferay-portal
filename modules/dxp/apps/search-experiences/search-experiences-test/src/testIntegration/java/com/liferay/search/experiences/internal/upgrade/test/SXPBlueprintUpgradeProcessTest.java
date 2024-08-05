@@ -328,8 +328,12 @@ public class SXPBlueprintUpgradeProcessTest {
 		Configuration configuration = ConfigurationUtil.toConfiguration(
 			sxpBlueprint.getConfigurationJSON());
 
+		Assert.assertNotNull(configuration);
+
 		GeneralConfiguration generalConfiguration =
 			configuration.getGeneralConfiguration();
+
+		Assert.assertNotNull(generalConfiguration);
 
 		Assert.assertArrayEquals(
 			expectedExcludes,
