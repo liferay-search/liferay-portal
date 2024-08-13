@@ -17,7 +17,6 @@ import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.GroupConstants;
 import com.liferay.portal.kernel.model.ResourceConstants;
 import com.liferay.portal.kernel.model.ResourcePermission;
-import com.liferay.portal.kernel.model.ResourcePermissionModel;
 import com.liferay.portal.kernel.model.Role;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.model.role.RoleConstants;
@@ -537,10 +536,7 @@ public class SearchPermissionCheckerImpl implements SearchPermissionChecker {
 					ActionKeys.VIEW));
 
 			groupsTermsFilter.addValues(
-				ArrayUtil.toStringArray(
-					ListUtil.toLongArray(
-						resourcePermissions,
-						ResourcePermissionModel::getPrimKeyId)));
+				_getPrimKeyStringArray(resourcePermissions));
 		}
 		else {
 			for (long searchGroupId : groupIds) {
@@ -579,6 +575,20 @@ public class SearchPermissionCheckerImpl implements SearchPermissionChecker {
 
 		return GetterUtil.getString(
 			searchContext.getAttribute("resourcePermissionName"), defaultValue);
+	}
+
+	private String[] _getPrimKeyStringArray(
+		List<ResourcePermission> resourcePermissions) {
+
+		String[] primKeys = new String[resourcePermissions.size()];
+
+		for (int i = 0; i < resourcePermissions.size(); i++) {
+			primKeys[i] = resourcePermissions.get(
+				i
+			).getPrimKey();
+		}
+
+		return primKeys;
 	}
 
 	private static final String _NULL_SEARCH_PERMISSION_CONTEXT =
