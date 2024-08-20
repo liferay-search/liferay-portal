@@ -10,14 +10,12 @@
 <%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet" %>
 
 <%@ taglib uri="http://liferay.com/tld/aui" prefix="aui" %><%@
-taglib uri="http://liferay.com/tld/clay" prefix="clay" %><%@
 taglib uri="http://liferay.com/tld/ddm" prefix="liferay-ddm" %><%@
 taglib uri="http://liferay.com/tld/frontend" prefix="liferay-frontend" %><%@
 taglib uri="http://liferay.com/tld/theme" prefix="liferay-theme" %><%@
 taglib uri="http://liferay.com/tld/ui" prefix="liferay-ui" %>
 
-<%@ page import="com.liferay.portal.kernel.language.LanguageUtil" %><%@
-page import="com.liferay.portal.kernel.util.HashMapBuilder" %><%@
+<%@ page import="com.liferay.portal.kernel.util.HashMapBuilder" %><%@
 page import="com.liferay.portal.kernel.util.HtmlUtil" %><%@
 page import="com.liferay.portal.kernel.util.WebKeys" %><%@
 page import="com.liferay.portal.search.web.internal.sort.configuration.SortPortletInstanceConfiguration" %><%@
@@ -31,23 +29,15 @@ page import="com.liferay.portal.search.web.internal.sort.display.context.SortTer
 <%
 SortDisplayContext sortDisplayContext = (SortDisplayContext)java.util.Objects.requireNonNull(request.getAttribute(WebKeys.PORTLET_DISPLAY_CONTEXT));
 
-if (sortDisplayContext.isRenderNothing()) {
-	return;
-}
-
 SortPortletInstanceConfiguration sortPortletInstanceConfiguration = sortDisplayContext.getSortPortletInstanceConfiguration();
 %>
 
 <c:choose>
 	<c:when test="<%= sortDisplayContext.isRenderNothing() %>">
-		<div class="alert alert-info text-center">
-			<liferay-ui:message key="this-widget-is-not-visible-to-users-yet" />
+		<div class="alert alert-info">
+			<strong><liferay-ui:message key="sort-portlet-instance-configuration-name" />:</strong>
 
-			<clay:link
-				href="javascript:void(0);"
-				label='<%= LanguageUtil.get(request, "complete-its-configuration-to-make-it-visible") %>'
-				onClick="<%= portletDisplay.getURLConfigurationJS() %>"
-			/>
+			<liferay-ui:message key="this-widget-is-not-visible-to-users-yet" />
 		</div>
 	</c:when>
 	<c:otherwise>

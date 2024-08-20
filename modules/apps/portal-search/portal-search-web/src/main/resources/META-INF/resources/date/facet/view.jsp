@@ -11,7 +11,8 @@
 
 <%@ taglib uri="http://liferay.com/tld/aui" prefix="aui" %><%@
 taglib uri="http://liferay.com/tld/ddm" prefix="liferay-ddm" %><%@
-taglib uri="http://liferay.com/tld/frontend" prefix="liferay-frontend" %>
+taglib uri="http://liferay.com/tld/frontend" prefix="liferay-frontend" %><%@
+taglib uri="http://liferay.com/tld/ui" prefix="liferay-ui" %>
 
 <%@ page import="com.liferay.portal.kernel.util.HashMapBuilder" %><%@
 page import="com.liferay.portal.kernel.util.HtmlUtil" %><%@
@@ -27,63 +28,68 @@ page import="com.liferay.portal.search.web.internal.facet.display.context.Bucket
 <%
 DateFacetDisplayContext dateFacetDisplayContext = (DateFacetDisplayContext)java.util.Objects.requireNonNull(request.getAttribute(WebKeys.PORTLET_DISPLAY_CONTEXT));
 
-if (dateFacetDisplayContext.isRenderNothing()) {
-	return;
-}
-
 BucketDisplayContext customRangeBucketDisplayContext = dateFacetDisplayContext.getCustomRangeBucketDisplayContext();
 DateFacetCalendarDisplayContext dateFacetCalendarDisplayContext = dateFacetDisplayContext.getDateFacetCalendarDisplayContext();
 DateFacetPortletInstanceConfiguration dateFacetPortletInstanceConfiguration = dateFacetDisplayContext.getDateFacetPortletInstanceConfiguration();
 %>
 
-<c:if test="<%= !dateFacetDisplayContext.isRenderNothing() %>">
-	<aui:form action="#" autocomplete="off" method="get" name="fm">
-		<aui:input cssClass="facet-parameter-name" name="facet-parameter-name" type="hidden" value="<%= HtmlUtil.escapeAttribute(dateFacetDisplayContext.getParameterName()) %>" />
-		<aui:input name="start-parameter-name" type="hidden" value="<%= dateFacetDisplayContext.getPaginationStartParameterName() %>" />
+<c:choose>
+	<c:when test="<%= dateFacetDisplayContext.isRenderNothing() %>">
+		<div class="alert alert-info">
+			<strong><liferay-ui:message key="date-facet-portlet-instance-configuration-name" />:</strong>
 
-		<liferay-ddm:template-renderer
-			className="<%= DateFacetPortlet.class.getName() %>"
-			contextObjects='<%=
+			<liferay-ui:message key="there-are-no-results-in-this-facet" />
+		</div>
+	</c:when>
+	<c:otherwise>
+		<aui:form action="#" autocomplete="off" method="get" name="fm">
+			<aui:input cssClass="facet-parameter-name" name="facet-parameter-name" type="hidden" value="<%= HtmlUtil.escapeAttribute(dateFacetDisplayContext.getParameterName()) %>" />
+			<aui:input name="start-parameter-name" type="hidden" value="<%= dateFacetDisplayContext.getPaginationStartParameterName() %>" />
+
+			<liferay-ddm:template-renderer
+				className="<%= DateFacetPortlet.class.getName() %>"
+				contextObjects='<%=
+					HashMapBuilder.<String, Object>put(
+						"customRangeBucketDisplayContext", customRangeBucketDisplayContext
+					).put(
+						"customRangeDateFacetTermDisplayContext", customRangeBucketDisplayContext
+					).put(
+						"dateFacetCalendarDisplayContext", dateFacetCalendarDisplayContext
+					).put(
+						"dateFacetDisplayContext", dateFacetDisplayContext
+					).put(
+						"namespace", liferayPortletResponse.getNamespace()
+					).build()
+				%>'
+				displayStyle="<%= dateFacetPortletInstanceConfiguration.displayStyle() %>"
+				displayStyleGroupId="<%= dateFacetDisplayContext.getDisplayStyleGroupId() %>"
+				entries="<%= dateFacetDisplayContext.getBucketDisplayContexts() %>"
+			/>
+		</aui:form>
+
+		<liferay-frontend:component
+			context='<%=
 				HashMapBuilder.<String, Object>put(
-					"customRangeBucketDisplayContext", customRangeBucketDisplayContext
-				).put(
-					"customRangeDateFacetTermDisplayContext", customRangeBucketDisplayContext
-				).put(
-					"dateFacetCalendarDisplayContext", dateFacetCalendarDisplayContext
-				).put(
-					"dateFacetDisplayContext", dateFacetDisplayContext
-				).put(
 					"namespace", liferayPortletResponse.getNamespace()
 				).build()
 			%>'
-			displayStyle="<%= dateFacetPortletInstanceConfiguration.displayStyle() %>"
-			displayStyleGroupId="<%= dateFacetDisplayContext.getDisplayStyleGroupId() %>"
-			entries="<%= dateFacetDisplayContext.getBucketDisplayContexts() %>"
+			module="{FacetUtil} from portal-search-web"
 		/>
-	</aui:form>
 
-	<liferay-frontend:component
-		context='<%=
-			HashMapBuilder.<String, Object>put(
-				"namespace", liferayPortletResponse.getNamespace()
-			).build()
-		%>'
-		module="{FacetUtil} from portal-search-web"
-	/>
-
-	<aui:script use="liferay-search-date-facet">
-		new Liferay.Search.DateFacetFilter({
-			form: A.one('#<portlet:namespace />fm'),
-			fromInputName: '<portlet:namespace />fromInput',
-			namespace: '<portlet:namespace />',
-			parameterName:
-				'<%= HtmlUtil.escapeAttribute(dateFacetDisplayContext.getParameterName()) %>',
-			searchCustomRangeButton: A.one(
-				'#<portlet:namespace />searchCustomRangeButton'
-			),
-			searchCustomRangeToggleName:
-				'<portlet:namespace /><%= customRangeBucketDisplayContext.getBucketText() %>',
-			toInputName: '<portlet:namespace />toInput',
-		});
-	</aui:script>
-</c:if>
+		<aui:script use="liferay-search-date-facet">
+			new Liferay.Search.DateFacetFilter({
+				form: A.one('#<portlet:namespace />fm'),
+				fromInputName: '<portlet:namespace />fromInput',
+				namespace: '<portlet:namespace />',
+				parameterName:
+					'<%= HtmlUtil.escapeAttribute(dateFacetDisplayContext.getParameterName()) %>',
+				searchCustomRangeButton: A.one(
+					'#<portlet:namespace />searchCustomRangeButton'
+				),
+				searchCustomRangeToggleName:
+					'<portlet:namespace /><%= customRangeBucketDisplayContext.getBucketText() %>',
+				toInputName: '<portlet:namespace />toInput',
+			});
+		</aui:script>
+	</c:otherwise>
+</c:choose>

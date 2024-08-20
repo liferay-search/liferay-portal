@@ -29,16 +29,18 @@ page import="com.liferay.portal.search.web.internal.type.facet.portlet.TypeFacet
 <%
 AssetEntriesSearchFacetDisplayContext assetEntriesSearchFacetDisplayContext = (AssetEntriesSearchFacetDisplayContext)java.util.Objects.requireNonNull(request.getAttribute(WebKeys.PORTLET_DISPLAY_CONTEXT));
 
-if (assetEntriesSearchFacetDisplayContext.isRenderNothing()) {
-	return;
-}
-
 TypeFacetPortletInstanceConfiguration typeFacetPortletInstanceConfiguration = assetEntriesSearchFacetDisplayContext.getTypeFacetPortletInstanceConfiguration();
 %>
 
 <c:choose>
 	<c:when test="<%= assetEntriesSearchFacetDisplayContext.isRenderNothing() %>">
 		<aui:input name="<%= HtmlUtil.escapeAttribute(assetEntriesSearchFacetDisplayContext.getParameterName()) %>" type="hidden" value="<%= assetEntriesSearchFacetDisplayContext.getParameterValue() %>" />
+
+		<div class="alert alert-info">
+			<strong><liferay-ui:message key="type-facet-portlet-instance-configuration-name" />:</strong>
+
+			<liferay-ui:message key="there-are-no-results-in-this-facet" />
+		</div>
 	</c:when>
 	<c:otherwise>
 		<aui:form action="#" autocomplete="off" method="post" name="fm">
