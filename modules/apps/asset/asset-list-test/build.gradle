@@ -1,4 +1,11 @@
 dependencies {
+	compileOnly group: "com.liferay.portal", name: "com.liferay.portal.kernel", version: "default"
+
+	testImplementation project(":apps:asset:asset-api")
+	testImplementation project(":apps:asset:asset-list-service")
+	testImplementation project(":apps:dynamic-data-mapping:dynamic-data-mapping-api")
+	testImplementation project(":apps:export-import:export-import-api")
+
 	testIntegrationImplementation project(":apps:asset:asset-entry-rel-api")
 	testIntegrationImplementation project(":apps:asset:asset-list-api")
 	testIntegrationImplementation project(":apps:asset:asset-list-service")
