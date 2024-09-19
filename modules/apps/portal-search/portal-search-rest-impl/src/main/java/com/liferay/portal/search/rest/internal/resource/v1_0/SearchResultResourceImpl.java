@@ -42,6 +42,7 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.odata.entity.EntityModel;
 import com.liferay.portal.search.aggregation.AggregationResult;
+import com.liferay.portal.search.constants.SearchContextAttributes;
 import com.liferay.portal.search.document.Document;
 import com.liferay.portal.search.document.Field;
 import com.liferay.portal.search.hits.SearchHit;
@@ -339,6 +340,11 @@ public class SearchResultResourceImpl extends BaseSearchResultResourceImpl {
 	private void _populateSearchContext(
 		Map<String, Object> attributes, Filter filter, String scope,
 		String search, SearchContext searchContext, Sort[] sorts) {
+
+		searchContext.setAttribute(
+			SearchContextAttributes.
+				ATTRIBUTE_KEY_INCLUDE_ASSET_LIBRARY_CONTENTS,
+			Boolean.TRUE);
 
 		MapUtil.isNotEmptyForEach(
 			attributes,
