@@ -19,6 +19,9 @@ public class SearchContextAttributes {
 	public static final String ATTRIBUTE_KEY_EMPTY_SEARCH =
 		"search.empty.search";
 
+	public static final String ATTRIBUTE_KEY_INCLUDE_ASSET_LIBRARY_CONTENTS =
+		"search.include.asset.library.contents";
+
 	public static final String ATTRIBUTE_KEY_LUCENE_SYNTAX =
 		"search.lucene.syntax";
 
