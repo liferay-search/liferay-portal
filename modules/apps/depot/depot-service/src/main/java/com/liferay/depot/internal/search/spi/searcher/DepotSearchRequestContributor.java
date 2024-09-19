@@ -11,6 +11,8 @@ import com.liferay.depot.service.DepotEntryLocalService;
 import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.search.constants.SearchContextAttributes;
 import com.liferay.portal.search.searcher.SearchRequest;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.searcher.SearchRequestBuilderFactory;
@@ -37,6 +39,14 @@ public class DepotSearchRequestContributor implements SearchRequestContributor {
 
 		SearchContext searchContext = searchRequestBuilder.withSearchContextGet(
 			Function.identity());
+
+		if (!GetterUtil.getBoolean(
+				searchContext.getAttribute(
+					SearchContextAttributes.
+						ATTRIBUTE_KEY_INCLUDE_ASSET_LIBRARY_CONTENTS))) {
+
+			return searchRequest;
+		}
 
 		long[] groupIds = searchContext.getGroupIds();
 
