@@ -136,6 +136,10 @@ public class BasicSuggestionsContributor implements SuggestionsContributor {
 					SearchContextAttributes.
 						ATTRIBUTE_KEY_CONTRIBUTE_TUNING_RANKINGS,
 					Boolean.TRUE);
+				searchContext2.setAttribute(
+					SearchContextAttributes.
+						ATTRIBUTE_KEY_INCLUDE_ASSET_LIBRARY_CONTENTS,
+					Boolean.TRUE);
 				searchContext2.setCompanyId(searchContext1.getCompanyId());
 				searchContext2.setGroupIds(searchContext1.getGroupIds());
 				searchContext2.setKeywords(searchContext1.getKeywords());
