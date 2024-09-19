@@ -19,6 +19,7 @@ import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.search.constants.SearchContextAttributes;
 import com.liferay.portal.search.document.Document;
 import com.liferay.portal.search.document.Field;
 import com.liferay.portal.search.hits.SearchHit;
@@ -99,6 +100,10 @@ public class SearchResponseResourceImpl extends BaseSearchResponseResourceImpl {
 				pagination.getPageSize()
 			).withSearchContext(
 				searchContext -> {
+					searchContext.setAttribute(
+						SearchContextAttributes.
+							ATTRIBUTE_KEY_INCLUDE_ASSET_LIBRARY_CONTENTS,
+						Boolean.TRUE);
 					searchContext.setAttribute(
 						"search.experiences.ip.address",
 						contextHttpServletRequest.getRemoteAddr());
