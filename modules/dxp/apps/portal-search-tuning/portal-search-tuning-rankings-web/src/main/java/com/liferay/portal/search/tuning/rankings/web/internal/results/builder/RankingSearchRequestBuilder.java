@@ -67,6 +67,11 @@ public class RankingSearchRequestBuilder {
 						Boolean.TRUE);
 				}
 
+				searchContext.setAttribute(
+					SearchContextAttributes.
+						ATTRIBUTE_KEY_INCLUDE_ASSET_LIBRARY_CONTENTS,
+					Boolean.TRUE);
+
 				searchContext.setCompanyId(_companyId);
 
 				if (!Validator.isBlank(_sxpBlueprintExternalReferenceCode)) {
