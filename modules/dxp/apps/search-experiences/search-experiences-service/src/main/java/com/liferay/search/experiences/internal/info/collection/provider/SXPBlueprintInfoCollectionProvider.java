@@ -142,6 +142,11 @@ public abstract class SXPBlueprintInfoCollectionProvider<T>
 								ATTRIBUTE_KEY_CONTRIBUTE_TUNING_RANKINGS,
 							Boolean.TRUE);
 					}
+
+					searchContext.setAttribute(
+						SearchContextAttributes.
+							ATTRIBUTE_KEY_INCLUDE_ASSET_LIBRARY_CONTENTS,
+						Boolean.TRUE);
 				}
 
 				searchContext.setLocale(serviceContext.getLocale());
