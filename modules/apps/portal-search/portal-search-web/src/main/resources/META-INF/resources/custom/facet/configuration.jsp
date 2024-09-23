@@ -15,7 +15,11 @@ taglib uri="http://liferay.com/tld/template" prefix="liferay-template" %><%@
 taglib uri="http://liferay.com/tld/theme" prefix="liferay-theme" %><%@
 taglib uri="http://liferay.com/tld/ui" prefix="liferay-ui" %>
 
-<%@ page import="com.liferay.portal.kernel.util.Constants" %><%@
+<%@ page import="com.liferay.portal.kernel.json.JSONArray" %><%@
+page import="com.liferay.portal.kernel.json.JSONObject" %><%@
+page import="com.liferay.portal.kernel.util.Constants" %><%@
+page import="com.liferay.portal.kernel.util.StringUtil" %><%@
+page import="com.liferay.portal.kernel.util.WebKeys" %><%@
 page import="com.liferay.portal.search.web.internal.custom.facet.configuration.CustomFacetPortletInstanceConfiguration" %><%@
 page import="com.liferay.portal.search.web.internal.custom.facet.display.context.CustomFacetDisplayContext" %><%@
 page import="com.liferay.portal.search.web.internal.custom.facet.portlet.CustomFacetPortlet" %><%@
@@ -30,11 +34,13 @@ page import="com.liferay.portal.search.web.internal.util.PortletPreferencesJspUt
 <portlet:defineObjects />
 
 <%
-CustomFacetDisplayContext customFacetDisplayContext = new CustomFacetDisplayContext(request);
+CustomFacetDisplayContext customFacetDisplayContext = (CustomFacetDisplayContext)java.util.Objects.requireNonNull(request.getAttribute(WebKeys.PORTLET_DISPLAY_CONTEXT));
 
 CustomFacetPortletInstanceConfiguration customFacetPortletInstanceConfiguration = customFacetDisplayContext.getCustomFacetPortletInstanceConfiguration();
 
 CustomFacetPortletPreferences customFacetPortletPreferences = new CustomFacetPortletPreferencesImpl(portletPreferences);
+
+JSONArray rangesJSONArray = customFacetPortletPreferences.getRangesJSONArray();
 %>
 
 <liferay-portlet:actionURL portletConfiguration="<%= true %>" var="configurationActionURL" />
@@ -69,6 +75,12 @@ CustomFacetPortletPreferences customFacetPortletPreferences = new CustomFacetPor
 			collapsible="<%= true %>"
 			label="advanced-configuration"
 		>
+			<aui:select helpMessage="aggregation-type-help" label="aggregation-type" name="<%= PortletPreferencesJspUtil.getInputName(CustomFacetPortletPreferences.PREFERENCE_KEY_AGGREGATION_TYPE) %>" value="<%= customFacetPortletPreferences.getAggregationType() %>">
+				<aui:option label="terms" value="terms" />
+				<aui:option label="date-range" value="dateRange" />
+				<aui:option label="range" value="range" />
+			</aui:select>
+
 			<div class="form-group">
 				<aui:input helpMessage="aggregation-field-help" label="aggregation-field" name="<%= PortletPreferencesJspUtil.getInputName(CustomFacetPortletPreferences.PREFERENCE_KEY_AGGREGATION_FIELD) %>" value="<%= customFacetPortletPreferences.getAggregationField() %>" wrapperCssClass="c-mb-0" />
 
@@ -83,6 +95,39 @@ CustomFacetPortletPreferences customFacetPortletPreferences = new CustomFacetPor
 					</div>
 				</div>
 			</div>
+
+			<liferay-frontend:fieldset
+				collapsible="<%= true %>"
+				label="ranges-configuration"
+			>
+				<aui:fieldset id='<%= liferayPortletResponse.getNamespace() + "rangesId" %>'>
+
+					<%
+					int[] rangesIndexes = new int[rangesJSONArray.length()];
+
+					for (int i = 0; i < rangesJSONArray.length(); i++) {
+						rangesIndexes[i] = i;
+
+						JSONObject jsonObject = rangesJSONArray.getJSONObject(i);
+					%>
+
+						<div class="lfr-form-row lfr-form-row-inline range-form-row">
+							<div class="row-fields">
+								<aui:input cssClass="label-input" label="label" name='<%= "label_" + i %>' required="<%= true %>" value='<%= jsonObject.getString("label") %>' wrapperCssClass="c-mb-2" />
+
+								<aui:input cssClass="range-input" label="range" name='<%= "range_" + i %>' required="<%= true %>" value='<%= jsonObject.getString("range") %>' wrapperCssClass="c-mb-3" />
+							</div>
+						</div>
+
+					<%
+					}
+					%>
+
+					<aui:input cssClass="ranges-input" name="<%= PortletPreferencesJspUtil.getInputName(CustomFacetPortletPreferences.PREFERENCE_KEY_RANGES) %>" type="hidden" value="<%= customFacetPortletPreferences.getRangesString() %>" />
+
+					<aui:input name="rangesIndexes" type="hidden" value="<%= StringUtil.merge(rangesIndexes) %>" />
+				</aui:fieldset>
+			</liferay-frontend:fieldset>
 
 			<aui:input helpMessage="custom-heading-help" label="custom-heading" name="<%= PortletPreferencesJspUtil.getInputName(CustomFacetPortletPreferences.PREFERENCE_KEY_CUSTOM_HEADING) %>" value="<%= customFacetPortletPreferences.getCustomHeading() %>" />
 
@@ -109,3 +154,11 @@ CustomFacetPortletPreferences customFacetPortletPreferences = new CustomFacetPor
 		<liferay-frontend:edit-form-buttons />
 	</liferay-frontend:edit-form-footer>
 </liferay-frontend:edit-form>
+
+<aui:script use="liferay-auto-fields">
+	new Liferay.AutoFields({
+		contentBox: 'fieldset#<portlet:namespace />rangesId',
+		fieldIndexes: '<portlet:namespace />rangesIndexes',
+		namespace: '<portlet:namespace />',
+	}).render();
+</aui:script>
