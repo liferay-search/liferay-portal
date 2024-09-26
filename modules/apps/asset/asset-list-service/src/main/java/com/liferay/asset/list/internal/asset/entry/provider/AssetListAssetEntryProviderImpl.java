@@ -28,6 +28,9 @@ import com.liferay.asset.list.service.AssetListEntrySegmentsEntryRelLocalService
 import com.liferay.asset.list.util.comparator.AssetListEntrySegmentsEntryRelPriorityComparator;
 import com.liferay.asset.util.AssetHelper;
 import com.liferay.asset.util.AssetRendererFactoryClassProvider;
+import com.liferay.depot.model.DepotEntry;
+import com.liferay.depot.service.DepotEntryGroupRelLocalService;
+import com.liferay.depot.service.DepotEntryLocalService;
 import com.liferay.document.library.kernel.model.DLFileEntryType;
 import com.liferay.document.library.kernel.service.DLFileEntryTypeLocalService;
 import com.liferay.document.library.util.DLFileEntryTypeUtil;
@@ -768,6 +771,26 @@ public class AssetListAssetEntryProviderImpl
 		return assetListEntrySegmentsEntryRel.getSegmentsEntryId();
 	}
 
+	private long[] _getGroupIds(AssetListEntry assetListEntry) {
+		long groupId = assetListEntry.getGroupId();
+
+		return ArrayUtil.append(
+			TransformUtil.transformToLongArray(
+				_depotEntryGroupRelLocalService.
+					getSearchableDepotEntryGroupRels(
+						groupId, 0,
+						_depotEntryGroupRelLocalService.
+							getSearchableDepotEntryGroupRelsCount(groupId)),
+				depotEntryGroupRel -> {
+					DepotEntry depotEntry =
+						_depotEntryLocalService.fetchDepotEntry(
+							depotEntryGroupRel.getDepotEntryId());
+
+					return depotEntry.getGroupId();
+				}),
+			groupId);
+	}
+
 	private String[] _getKeywords(UnicodeProperties unicodeProperties) {
 		String[] allKeywords = new String[0];
 
@@ -865,6 +888,8 @@ public class AssetListAssetEntryProviderImpl
 				AssetRendererFactoryRegistryUtil.getClassNameIds(
 					assetListEntry.getCompanyId(), true));
 		}
+
+		assetEntryQuery.setGroupIds(_getGroupIds(assetListEntry));
 
 		return assetEntryQuery;
 	}
@@ -1079,6 +1104,12 @@ public class AssetListAssetEntryProviderImpl
 
 	@Reference
 	private DDMStructureLocalService _ddmStructureLocalService;
+
+	@Reference
+	private DepotEntryGroupRelLocalService _depotEntryGroupRelLocalService;
+
+	@Reference
+	private DepotEntryLocalService _depotEntryLocalService;
 
 	@Reference
 	private DLFileEntryTypeLocalService _dlFileEntryTypeLocalService;
