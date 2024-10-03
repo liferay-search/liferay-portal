@@ -401,7 +401,7 @@ public class CustomFacetDisplayContextBuilder {
 		String term = GetterUtil.getString(termCollector.getTerm());
 
 		bucketDisplayContext.setBucketText(term);
-		bucketDisplayContext.setFilterValue(term);
+		bucketDisplayContext.setFilterValue(_getTermsURL(term));
 
 		bucketDisplayContext.setFrequency(termCollector.getFrequency());
 		bucketDisplayContext.setFrequencyVisible(_frequenciesVisible);
@@ -469,7 +469,16 @@ public class CustomFacetDisplayContextBuilder {
 
 	private String _getCustomRangeURL() {
 		if (_aggregationType.equals("range")) {
-			return StringPool.BLANK;
+			String rangeURL = HttpComponentsUtil.removeParameter(
+				_currentURL, _paginationStartParameterName);
+
+			rangeURL = HttpComponentsUtil.removeParameter(
+				rangeURL, _parameterName);
+			rangeURL = HttpComponentsUtil.setParameter(
+				rangeURL, _parameterName + "From", 0);
+
+			return HttpComponentsUtil.setParameter(
+				rangeURL, _parameterName + "To", 0);
 		}
 
 		DateFormat format = DateFormatFactoryUtil.getSimpleDateFormat(
@@ -555,6 +564,17 @@ public class CustomFacetDisplayContextBuilder {
 		JSONObject dataJSONObject = facetConfiguration.getData();
 
 		return dataJSONObject.getJSONArray("ranges");
+	}
+
+	private String _getTermsURL(String term) {
+		String termsURL = HttpComponentsUtil.removeParameter(
+			_currentURL, _paginationStartParameterName);
+
+		termsURL = HttpComponentsUtil.removeParameter(termsURL, _parameterName);
+		termsURL = HttpComponentsUtil.setParameter(
+			termsURL, _parameterName, term);
+
+		return termsURL;
 	}
 
 	private boolean _isCustomRangeSelected() {
