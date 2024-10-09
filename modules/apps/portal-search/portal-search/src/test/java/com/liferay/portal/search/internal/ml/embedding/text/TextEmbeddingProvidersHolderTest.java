@@ -24,7 +24,7 @@ import org.mockito.Mockito;
  * @author Petteri Karttunen
  */
 @FeatureFlags("LPS-122920")
-public class TextEmbeddingProvidersHolderImplTest {
+public class TextEmbeddingProvidersHolderTest {
 
 	@ClassRule
 	public static final LiferayUnitTestRule liferayUnitTestRule =
@@ -32,72 +32,84 @@ public class TextEmbeddingProvidersHolderImplTest {
 
 	@Before
 	public void setUp() {
+		_setUpTextEmbeddingProvidersHolderImpl();
+	}
+
+	@Test
+	public void testAddProvider() {
+		String name = RandomTestUtil.randomString();
+
+		_textEmbeddingProvidersHolderImpl.addTextEmbeddingProvider(
+			name, Mockito.mock(TextEmbeddingProvider.class));
+
+		List<String> availableProviderNames =
+			_textEmbeddingProvidersHolderImpl.getTextEmbeddingProviderNames();
+
+		Assert.assertTrue(availableProviderNames.contains(name));
+	}
+
+	@Test
+	public void testDisabledProvider() {
+		String name = RandomTestUtil.randomString();
+
+		_textEmbeddingProvidersHolderImpl.addTextEmbeddingProvider(
+			new String[] {name}, name,
+			Mockito.mock(TextEmbeddingProvider.class));
+
+		List<String> availableProviderNames =
+			_textEmbeddingProvidersHolderImpl.getTextEmbeddingProviderNames();
+
+		Assert.assertFalse(availableProviderNames.contains(name));
+	}
+
+	@Test
+	public void testGetAvailableProviderNames() {
+		List<String> availableProviderNames =
+			_textEmbeddingProvidersHolderImpl.getTextEmbeddingProviderNames();
+
+		Assert.assertEquals(
+			availableProviderNames.toString(), 1,
+			availableProviderNames.size());
+		Assert.assertTrue(availableProviderNames.contains(_TEST_PROVIDER_NAME));
+	}
+
+	@Test
+	public void testRemoveProvider() {
+		String name = RandomTestUtil.randomString();
+
+		_textEmbeddingProvidersHolderImpl.addTextEmbeddingProvider(
+			name, Mockito.mock(TextEmbeddingProvider.class));
+
+		List<String> availableProviderNames =
+			_textEmbeddingProvidersHolderImpl.getTextEmbeddingProviderNames();
+
+		Assert.assertTrue(availableProviderNames.contains(name));
+
+		_textEmbeddingProvidersHolderImpl.removeTextEmbeddingProvider(
+			name);
+
+		availableProviderNames =
+			_textEmbeddingProvidersHolderImpl.getTextEmbeddingProviderNames();
+
+		Assert.assertFalse(availableProviderNames.contains(name));
+	}
+
+	private void _setUpTextEmbeddingProvidersHolderImpl() {
 		_textEmbeddingProvidersHolderImpl =
 			new TextEmbeddingProvidersHolderImpl();
 
 		ReflectionTestUtil.setFieldValue(
 			_textEmbeddingProvidersHolderImpl, "_textEmbeddingProviders",
 			HashMapBuilder.put(
-				_TEST_PROVIDER_NAME, Mockito.mock(TextEmbeddingProvider.class)
+				_TEST_PROVIDER_NAME, _textEmbeddingProvider
 			).build());
-	}
-
-	@Test
-	public void testAddTextEmbeddingProvider() {
-		String name = RandomTestUtil.randomString();
-
-		_textEmbeddingProvidersHolderImpl.addTextEmbeddingProvider(
-			name, Mockito.mock(TextEmbeddingProvider.class));
-
-		List<String> names =
-			_textEmbeddingProvidersHolderImpl.getTextEmbeddingProviderNames();
-
-		Assert.assertTrue(names.contains(name));
-
-		name = RandomTestUtil.randomString();
-
-		_textEmbeddingProvidersHolderImpl.addTextEmbeddingProvider(
-			new String[] {name}, name,
-			Mockito.mock(TextEmbeddingProvider.class));
-
-		names =
-			_textEmbeddingProvidersHolderImpl.getTextEmbeddingProviderNames();
-
-		Assert.assertFalse(names.contains(name));
-	}
-
-	@Test
-	public void testGetTextEmbeddingProviderNames() {
-		List<String> names =
-			_textEmbeddingProvidersHolderImpl.getTextEmbeddingProviderNames();
-
-		Assert.assertEquals(names.toString(), 1, names.size());
-		Assert.assertTrue(names.contains(_TEST_PROVIDER_NAME));
-	}
-
-	@Test
-	public void testRemoveTextEmbeddingProvider() {
-		String name = RandomTestUtil.randomString();
-
-		_textEmbeddingProvidersHolderImpl.addTextEmbeddingProvider(
-			name, Mockito.mock(TextEmbeddingProvider.class));
-
-		List<String> names =
-			_textEmbeddingProvidersHolderImpl.getTextEmbeddingProviderNames();
-
-		Assert.assertTrue(names.contains(name));
-
-		_textEmbeddingProvidersHolderImpl.removeTextEmbeddingProvider(name);
-
-		names =
-			_textEmbeddingProvidersHolderImpl.getTextEmbeddingProviderNames();
-
-		Assert.assertFalse(names.contains(name));
 	}
 
 	private static final String _TEST_PROVIDER_NAME =
 		RandomTestUtil.randomString();
 
+	private final TextEmbeddingProvider _textEmbeddingProvider = Mockito.mock(
+		TextEmbeddingProvider.class);
 	private TextEmbeddingProvidersHolderImpl _textEmbeddingProvidersHolderImpl;
 
 }
