@@ -176,11 +176,7 @@ public class TextEmbeddingRetrieverImpl implements TextEmbeddingRetriever {
 			disabledProviders, "huggingFaceInferenceEndpoint",
 			new HuggingFaceInferenceEndpointTextEmbeddingProvider());
 		addProvider(
-			disabledProviders, "openai", new OpenAITextEmbeddingProvider());
-		addProvider(
 			disabledProviders, "txtai", new TXTAITextEmbeddingProvider());
-		addProvider(
-			disabledProviders, "vertexAI", new VertexAITextEmbeddingProvider());
 	}
 
 	protected void addProvider(
