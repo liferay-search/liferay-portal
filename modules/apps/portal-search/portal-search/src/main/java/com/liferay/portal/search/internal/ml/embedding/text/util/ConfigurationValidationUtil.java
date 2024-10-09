@@ -23,8 +23,8 @@ public class ConfigurationValidationUtil {
 
 		if (MapUtil.isEmpty(attributes)) {
 			_log.error(
-				"Unable to create embedding because there are no " +
-					"configuration attributes ");
+				"Unable to create embedding because configuration attributes " +
+					"is empty");
 
 			return false;
 		}
