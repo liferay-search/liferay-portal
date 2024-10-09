@@ -9,6 +9,8 @@ import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
+import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
@@ -21,9 +23,12 @@ import com.liferay.portal.search.ml.embedding.text.TextEmbeddingRetriever;
 import com.liferay.portal.search.rest.dto.v1_0.EmbeddingProviderConfiguration;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -35,7 +40,7 @@ public class TextEmbeddingRetrieverImpl implements TextEmbeddingRetriever {
 
 	@Override
 	public List<String> getAvailableProviderNames() {
-		return _textEmbeddingProvidersHolder.getTextEmbeddingProviderNames();
+		return ListUtil.fromCollection(_textEmbeddingProviders.keySet());
 	}
 
 	@Override
@@ -64,8 +69,7 @@ public class TextEmbeddingRetrieverImpl implements TextEmbeddingRetriever {
 
 		try {
 			TextEmbeddingProvider textEmbeddingProvider =
-				_textEmbeddingProvidersHolder.getTextEmbeddingProvider(
-					providerName);
+				_textEmbeddingProviders.get(providerName);
 
 			if (textEmbeddingProvider == null) {
 				return new EmbeddingProviderStatus.
@@ -125,8 +129,7 @@ public class TextEmbeddingRetrieverImpl implements TextEmbeddingRetriever {
 		}
 
 		TextEmbeddingProvider textEmbeddingProvider =
-			_textEmbeddingProvidersHolder.getTextEmbeddingProvider(
-				providerName);
+			_textEmbeddingProviders.get(providerName);
 
 		if (textEmbeddingProvider == null) {
 			return new Double[0];
@@ -157,6 +160,46 @@ public class TextEmbeddingRetrieverImpl implements TextEmbeddingRetriever {
 			_semanticSearchConfigurationProvider.getCompanyConfiguration(
 				CompanyThreadLocal.getCompanyId()),
 			textExcerpt, textEmbeddingProvider);
+	}
+
+	@Activate
+	protected void activate(
+		Map<String, Object> properties, BundleContext bundleContext) {
+
+		String[] disabledProviders = (String[])properties.get(
+			"disabledProviders");
+
+		addProvider(
+			disabledProviders, "huggingFaceInferenceAPI",
+			new HuggingFaceInferenceAPITextEmbeddingProvider());
+		addProvider(
+			disabledProviders, "huggingFaceInferenceEndpoint",
+			new HuggingFaceInferenceEndpointTextEmbeddingProvider());
+		addProvider(
+			disabledProviders, "openai", new OpenAITextEmbeddingProvider());
+		addProvider(
+			disabledProviders, "txtai", new TXTAITextEmbeddingProvider());
+		addProvider(
+			disabledProviders, "vertexAI", new VertexAITextEmbeddingProvider());
+	}
+
+	protected void addProvider(
+		String[] disabledProviders, String name,
+		TextEmbeddingProvider textEmbeddingProvider) {
+
+		if (ArrayUtil.contains(disabledProviders, name)) {
+			if (_log.isDebugEnabled()) {
+				_log.debug("Disabling " + name);
+			}
+
+			return;
+		}
+
+		if (_log.isDebugEnabled()) {
+			_log.debug("Enabling " + name);
+		}
+
+		_textEmbeddingProviders.put(name, textEmbeddingProvider);
 	}
 
 	protected EmbeddingProviderConfiguration getEmbeddingProviderConfiguration(
@@ -219,7 +262,7 @@ public class TextEmbeddingRetrieverImpl implements TextEmbeddingRetriever {
 	private SemanticSearchConfigurationProvider
 		_semanticSearchConfigurationProvider;
 
-	@Reference
-	private TextEmbeddingProvidersHolder _textEmbeddingProvidersHolder;
+	private final Map<String, TextEmbeddingProvider> _textEmbeddingProviders =
+		new HashMap<>();
 
 }
