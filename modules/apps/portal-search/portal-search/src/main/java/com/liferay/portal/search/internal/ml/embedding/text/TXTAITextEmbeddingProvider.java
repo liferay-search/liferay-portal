@@ -10,13 +10,14 @@ import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONUtil;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.Http;
 import com.liferay.portal.kernel.util.HttpComponentsUtil;
 import com.liferay.portal.kernel.util.HttpUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.URLCodec;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.search.internal.ml.embedding.text.util.ConfigurationValidationUtil;
 import com.liferay.portal.search.rest.dto.v1_0.EmbeddingProviderConfiguration;
 
 import java.util.List;
@@ -35,8 +36,10 @@ public class TXTAITextEmbeddingProvider implements TextEmbeddingProvider {
 		Map<String, Object> attributes =
 			(Map<String, Object>)embeddingProviderConfiguration.getAttributes();
 
-		if (!ConfigurationValidationUtil.validateAttributes(
-				attributes, new String[] {"hostAddress"})) {
+		if ((attributes == null) || !attributes.containsKey("hostAddress")) {
+			if (_log.isDebugEnabled()) {
+				_log.debug("Attributes do not contain host address");
+			}
 
 			return new Double[0];
 		}
@@ -48,8 +51,24 @@ public class TXTAITextEmbeddingProvider implements TextEmbeddingProvider {
 		Map<String, Object> attributes, String text) {
 
 		try {
-			String responseJSON = HttpUtil.URLtoString(
-				_getOptions(attributes, text));
+			Http.Options options = new Http.Options();
+
+			String hostAddress = MapUtil.getString(attributes, "hostAddress");
+
+			String basicAuthUsername = MapUtil.getString(
+				attributes, "basicAuthUsername");
+
+			if (!Validator.isBlank(basicAuthUsername)) {
+				options.setAuth(
+					HttpComponentsUtil.getDomain(hostAddress), -1, null,
+					basicAuthUsername,
+					MapUtil.getString(
+						attributes, "basicAuthPassword", StringPool.BLANK));
+			}
+
+			options.setLocation(_getLocation(hostAddress, text));
+
+			String responseJSON = HttpUtil.URLtoString(options);
 
 			if (!JSONUtil.isJSONArray(responseJSON)) {
 				throw new IllegalArgumentException(responseJSON);
@@ -74,27 +93,7 @@ public class TXTAITextEmbeddingProvider implements TextEmbeddingProvider {
 			hostAddress, "transform?text=", URLCodec.encodeURL(text, false));
 	}
 
-	private Http.Options _getOptions(
-		Map<String, Object> attributes, String text) {
-
-		Http.Options options = new Http.Options();
-
-		String hostAddress = MapUtil.getString(attributes, "hostAddress");
-
-		String basicAuthUsername = MapUtil.getString(
-			attributes, "basicAuthUsername");
-
-		if (!Validator.isBlank(basicAuthUsername)) {
-			options.setAuth(
-				HttpComponentsUtil.getDomain(hostAddress), -1, null,
-				basicAuthUsername,
-				MapUtil.getString(
-					attributes, "basicAuthPassword", StringPool.BLANK));
-		}
-
-		options.setLocation(_getLocation(hostAddress, text));
-
-		return options;
-	}
+	private static final Log _log = LogFactoryUtil.getLog(
+		TXTAITextEmbeddingProvider.class);
 
 }
