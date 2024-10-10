@@ -186,6 +186,7 @@ import com.liferay.portal.security.pwd.PwdToolkitUtil;
 import com.liferay.portal.security.pwd.RegExpToolkit;
 import com.liferay.portal.service.base.UserLocalServiceBaseImpl;
 import com.liferay.portal.util.PropsValues;
+import com.liferay.portal.util.UnindexedUserQueue;
 import com.liferay.portlet.usersadmin.util.UsersAdminUtil;
 import com.liferay.ratings.kernel.service.RatingsStatsLocalService;
 import com.liferay.social.kernel.model.SocialRelation;
@@ -6567,10 +6568,14 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 	}
 
 	protected void reindex(User user) throws SearchException {
-		Indexer<User> indexer = IndexerRegistryUtil.nullSafeGetIndexer(
-			User.class);
+		Indexer<User> indexer = IndexerRegistryUtil.getIndexer(User.class);
 
-		indexer.reindex(user);
+		if (indexer == null) {
+			_unindexedUserQueue.add(user);
+		}
+		else {
+			indexer.reindex(user);
+		}
 	}
 
 	protected User resetFailedLoginAttempts(User user) {
@@ -7620,6 +7625,9 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 
 	@BeanReference(type = TicketLocalService.class)
 	private TicketLocalService _ticketLocalService;
+
+	private final UnindexedUserQueue _unindexedUserQueue =
+		UnindexedUserQueue.getInstance();
 
 	@BeanReference(type = UserGroupPersistence.class)
 	private UserGroupPersistence _userGroupPersistence;
