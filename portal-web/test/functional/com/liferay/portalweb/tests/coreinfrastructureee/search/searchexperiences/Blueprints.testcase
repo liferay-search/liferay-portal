@@ -4755,6 +4755,69 @@ definition {
 
 	@description = "This is a use case for LPS-147066."
 	@priority = 3
+	test ViewLinksToLiferayDocumentation1 {
+		Blueprints.openBlueprintsAdmin();
+
+		Blueprints.gotoBlueprint(title = "Test Blueprint");
+
+		Click(
+			key_linkContext = "element-sidebar",
+			key_linkText = "Learn more",
+			locator1 = "Blueprints#DOC_LINK_GENERIC");
+
+		if (SelectWindow(value1 = "403")) {
+			Close.closeAndSelectWindow(value1 = "Edit Blueprint - Liferay DXP");
+		}
+
+		Click(
+			key_linkContext = "element-sidebar",
+			key_linkText = "Learn more",
+			locator1 = "Blueprints#DOC_LINK_GENERIC");
+
+		SelectWindow(value1 = "Search Blueprints Elements Reference - Liferay Learn");
+	}
+
+	@priority = 3
+	test ViewLinksToLiferayDocumentation2 {
+		Blueprints.openBlueprintsAdmin();
+
+		Blueprints.gotoBlueprint(title = "Test Blueprint");
+
+		Navigator.gotoNavNested(navNested = "Query Settings");
+
+		Click(locator1 = "Blueprints#BLUEPRINTS_SEARCH_FRAMEWORK_INDEXER_CLAUSES_INFO_BUTTON");
+
+		Click(
+			key_linkContext = "The search framework indexer clauses",
+			key_linkText = "Learn more",
+			locator1 = "Blueprints#DOC_LINK_GENERIC");
+
+		Click(
+			key_linkContext = "The search framework indexer clauses",
+			key_linkText = "Learn more",
+			locator1 = "Blueprints#DOC_LINK_GENERIC");
+
+		SelectWindow(value1 = "Creating and Managing Search Blueprints - Liferay Learn");
+
+		var siteName = TestCase.getSiteName(siteName = "Liferay DXP");
+
+		Close.closeAndSelectWindow(value1 = "Edit Blueprint - ${siteName}");
+
+		Blueprints.openBlueprintsAdmin();
+
+		Blueprints.gotoBlueprint(title = "Test Blueprint");
+
+		Click(
+			key_linkContext = "element-sidebar",
+			key_linkText = "Learn more",
+			locator1 = "Blueprints#DOC_LINK_GENERIC");
+
+		SelectWindow(value1 = "Search Blueprints Elements Reference - Liferay Learn");
+
+	}
+
+
+	@priority = 3
 	test ViewLinksToLiferayDocumentation {
 		Blueprints.openBlueprintsAdmin();
 
@@ -4772,7 +4835,7 @@ definition {
 
 		SelectWindow(value1 = "Search Blueprints Elements Reference - Liferay Learn");
 
-		var siteName = TestCase.getSiteName(siteName = ${siteName});
+		var siteName = TestCase.getSiteName(siteName = "Liferay DXP");
 
 		Close.closeAndSelectWindow(value1 = "Edit Blueprint - ${siteName}");
 
