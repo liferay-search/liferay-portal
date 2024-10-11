@@ -119,6 +119,17 @@ public class ElasticsearchSearchEngineInformation
 	}
 
 	@Override
+	public int[] getEmbeddingVectorDimensions() {
+		if ((Version.CURRENT.major < 8) ||
+			((Version.CURRENT.major == 8) && (Version.CURRENT.minor < 11))) {
+
+			return new int[] {256, 384, 512, 768, 1024, 1536, 2048};
+		}
+
+		return new int[] {256, 384, 512, 768, 1024, 1536, 2048, 3072, 4096};
+	}
+
+	@Override
 	public String getNodesString() {
 		try {
 			String clusterNodesString = _getClusterNodesString(
