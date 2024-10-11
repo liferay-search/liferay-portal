@@ -11,9 +11,11 @@ import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.search.engine.SearchEngineInformation;
 import com.liferay.portal.search.opensearch2.internal.index.constants.IndexMappingsConstants;
 import com.liferay.portal.search.opensearch2.internal.util.IndexUtil;
 import com.liferay.portal.search.opensearch2.internal.util.JsonpUtil;
@@ -53,12 +55,14 @@ public class MappingsHelperImpl implements MappingsHelper {
 	public MappingsHelperImpl(
 		String indexName, JSONFactory jsonFactory,
 		OpenSearchIndicesClient openSearchIndicesClient,
-		String overrideMappings) {
+		String overrideMappings,
+		SearchEngineInformation searchEngineInformation) {
 
 		_indexName = indexName;
 		_jsonFactory = jsonFactory;
 		_openSearchIndicesClient = openSearchIndicesClient;
 		_overrideMappings = overrideMappings;
+		_searchEngineInformation = searchEngineInformation;
 	}
 
 	public void putDefaultOrOverrideMappings() {
@@ -72,7 +76,7 @@ public class MappingsHelperImpl implements MappingsHelper {
 		}
 
 		_putMappings(
-			_getMergedDynamicTemplatesMappingsJSONObject(
+			_getMappingsJSONObjectWithMergedDynamicTemplates(
 				_getCurrentMappings(_indexName), source));
 	}
 
@@ -94,6 +98,34 @@ public class MappingsHelperImpl implements MappingsHelper {
 		catch (IOException ioException) {
 			throw new RuntimeException(ioException);
 		}
+	}
+
+	private String _addTextEmbeddingDynamicTemplates(String mappings) {
+		JSONObject jsonObject = _createJSONObject(mappings);
+
+		JSONArray jsonArray = jsonObject.getJSONArray("dynamic_templates");
+
+		for (int dimension :
+				_searchEngineInformation.getEmbeddingVectorDimensions()) {
+
+			jsonArray.put(
+				JSONUtil.put(
+					"template_text_embedding_" + dimension,
+					JSONUtil.put(
+						"mapping",
+						JSONUtil.put(
+							"dimension", dimension
+						).put(
+							"type", "knn_vector"
+						)
+					).put(
+						"path_match",
+						StringBundler.concat(
+							"text_embedding_", dimension, StringPool.STAR)
+					)));
+		}
+
+		return jsonObject.toString();
 	}
 
 	private JSONObject _createJSONObject(String mappings) {
@@ -135,14 +167,15 @@ public class MappingsHelperImpl implements MappingsHelper {
 			return _removeLegacyDocumentType(_overrideMappings);
 		}
 
-		String defaultMappings = ResourceUtil.getResourceAsString(
-			getClass(), IndexMappingsConstants.INDEX_MAPPINGS_FILE_NAME);
+		String defaultMappings = _addTextEmbeddingDynamicTemplates(
+			ResourceUtil.getResourceAsString(
+				getClass(), IndexMappingsConstants.INDEX_MAPPINGS_FILE_NAME));
 
-		return _getMergedDynamicTemplatesMappingsJSONObject(
+		return _getMappingsJSONObjectWithMergedDynamicTemplates(
 			StringPool.BLANK, defaultMappings);
 	}
 
-	private JSONObject _getMergedDynamicTemplatesMappingsJSONObject(
+	private JSONObject _getMappingsJSONObjectWithMergedDynamicTemplates(
 		String currentMappings, String putMappings) {
 
 		JSONObject currentMappingsJSONObject = _removeLegacyDocumentType(
@@ -271,5 +304,6 @@ public class MappingsHelperImpl implements MappingsHelper {
 	private final JSONFactory _jsonFactory;
 	private final OpenSearchIndicesClient _openSearchIndicesClient;
 	private final String _overrideMappings;
+	private final SearchEngineInformation _searchEngineInformation;
 
 }
