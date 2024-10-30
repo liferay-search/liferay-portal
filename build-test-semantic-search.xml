@@ -25,6 +25,9 @@ ENTRYPOINT ["uvicorn", "--host", "0.0.0.0", "txtai.api:app"]
 RUN python -c "from txtai.api import API; API('config.yml', False)"</echo>
 
 			<execute dir="${project.dir}/txtai">
+				export DOCKER_BUILDKIT=0
+				export COMPOSE_DOCKER_CLI_BUILD=0
+
 				<![CDATA[
 					docker build -t txtai-api .
 				]]>
