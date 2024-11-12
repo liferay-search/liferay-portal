@@ -8,7 +8,6 @@ package com.liferay.portal.search.web.internal.type.facet.portlet.shared.search;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
-import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.search.asset.SearchableAssetClassNamesProvider;
 import com.liferay.portal.search.facet.type.TypeFacetSearchContributor;
@@ -51,10 +50,8 @@ public class TypeFacetPortletSharedSearchContributorTest {
 
 		_testContribute(Collections.emptyList(), Collections.emptyList());
 
-		List<String> entryClassNames1 = Collections.singletonList(
-			RandomTestUtil.randomString());
-		List<String> entryClassNames2 = Collections.singletonList(
-			RandomTestUtil.randomString());
+		List<String> entryClassNames1 = Collections.singletonList("alpha");
+		List<String> entryClassNames2 = Collections.singletonList("zeta");
 
 		_testContribute(entryClassNames1, entryClassNames1);
 		_testContribute(
