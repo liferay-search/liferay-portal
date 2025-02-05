@@ -48,6 +48,7 @@ export class ApplicationsMenuPage {
 	private readonly processBuilderItem: Locator;
 	private readonly productsMenuItem: Locator;
 	private readonly queueMenuItem: Locator;
+	private readonly resultRankingsItem: Locator;
 	private readonly rolesItem: Locator;
 	private readonly samlAdminItem: Locator;
 	private readonly searchItem: Locator;
@@ -213,6 +214,10 @@ export class ApplicationsMenuPage {
 		this.queueMenuItem = page.getByRole('menuitem', {
 			exact: true,
 			name: 'Queue',
+		});
+		this.resultRankingsItem = page.getByRole('menuitem', {
+			exact: true,
+			name: 'Result Rankings',
 		});
 		this.rolesItem = page.getByRole('menuitem', {
 			exact: true,
@@ -516,6 +521,11 @@ export class ApplicationsMenuPage {
 	async goToProcessBuilder() {
 		await this.goToApplicationsMenu();
 		await this.processBuilderItem.click();
+	}
+
+	async goToResultRankings() {
+		await this.goToApplicationsMenu();
+		await this.resultRankingsItem.click();
 	}
 
 	async goToRoles() {
