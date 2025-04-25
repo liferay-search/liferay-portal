@@ -1898,8 +1898,6 @@ definition {
 
 	@priority = 4
 	test SearchByClickingMagnifyingGlassIcon {
-		property test.assert.warning.exceptions = "true";
-
 		SearchPage.searchEmbedded(
 			clickMagnifyingGlassIcon = "true",
 			searchTerm = "test");

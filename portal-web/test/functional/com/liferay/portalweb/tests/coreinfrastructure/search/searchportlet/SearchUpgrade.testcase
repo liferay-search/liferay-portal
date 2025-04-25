@@ -158,7 +158,7 @@ definition {
 		property portal.release = "quarantine";
 		property portal.version = "7.2.1";
 		property skip.upgrade-legacy-database = "true";
-		property test.assert.warning.exceptions = "true";
+		property test.assert.warning.exceptions = "false";
 
 		ValidateSearchUpgrade.viewClassicSearchPortletConfiguration();
 	}
@@ -183,7 +183,7 @@ definition {
 		property portal.release = "quarantine";
 		property portal.version = "7.1.10";
 		property skip.upgrade-legacy-database = "true";
-		property test.assert.warning.exceptions = "true";
+		property test.assert.warning.exceptions = "false";
 
 		ValidateSearchUpgrade.viewClassicSearchPortletConfiguration();
 	}
@@ -195,7 +195,7 @@ definition {
 		property portal.release = "quarantine";
 		property portal.version = "7.2.10";
 		property skip.upgrade-legacy-database = "true";
-		property test.assert.warning.exceptions = "true";
+		property test.assert.warning.exceptions = "false";
 		property test.run.environment = "EE";
 
 		ValidateSearchUpgrade.viewClassicSearchPortletConfiguration();
@@ -208,7 +208,7 @@ definition {
 		property portal.release = "quarantine";
 		property portal.version = "7.0.10.6";
 		property skip.upgrade-legacy-database = "true";
-		property test.assert.warning.exceptions = "true";
+		property test.assert.warning.exceptions = "false";
 
 		ApplicationsMenu.gotoPortlet(
 			category = "Configuration",
@@ -234,7 +234,7 @@ definition {
 		property portal.release = "quarantine";
 		property portal.version = "7.2.10.1";
 		property skip.upgrade-legacy-database = "true";
-		property test.assert.warning.exceptions = "true";
+		property test.assert.warning.exceptions = "false";
 		property test.run.environment = "EE";
 
 		ValidateSearchUpgrade.viewClassicSearchPortletConfiguration();
@@ -272,7 +272,7 @@ definition {
 		property data.archive.type = "data-archive-search-portlets";
 		property database.types = "mariadb,mysql,postgresql";
 		property portal.version = "7.1.3";
-		property test.assert.warning.exceptions = "true";
+		property test.assert.warning.exceptions = "false";
 
 		ValidateSearchUpgrade.viewSearchPortletsConfiguration();
 	}
@@ -326,7 +326,7 @@ definition {
 	test ViewSearchPortletsConfigurationArchive7210 {
 		property data.archive.type = "data-archive-search-portlets";
 		property portal.version = "7.2.10";
-		property test.assert.warning.exceptions = "true";
+		property test.assert.warning.exceptions = "false";
 		property test.run.environment = "EE";
 
 		ValidateSearchUpgrade.viewSearchPortletsConfiguration();
@@ -336,7 +336,7 @@ definition {
 	test ViewSearchPortletsConfigurationArchive7310 {
 		property data.archive.type = "data-archive-search-portlets";
 		property portal.version = "7.3.10";
-		property test.assert.warning.exceptions = "true";
+		property test.assert.warning.exceptions = "false";
 		property test.run.environment = "EE";
 
 		ValidateSearchUpgrade.viewSearchPortletsConfiguration();
@@ -346,7 +346,7 @@ definition {
 	test ViewSearchPortletsConfigurationArchive7413 {
 		property data.archive.type = "data-archive-search-portlets";
 		property portal.version = "7.4.13";
-		property test.assert.warning.exceptions = "true";
+		property test.assert.warning.exceptions = "false";
 		property test.run.environment = "EE";
 
 		ValidateSearchUpgrade.viewSearchPortletsConfiguration();
@@ -356,7 +356,7 @@ definition {
 	test ViewSearchPortletsConfigurationArchive72101 {
 		property data.archive.type = "data-archive-search-portlets";
 		property portal.version = "7.2.10.1";
-		property test.assert.warning.exceptions = "true";
+		property test.assert.warning.exceptions = "false";
 		property test.run.environment = "EE";
 
 		ValidateSearchUpgrade.viewSearchPortletsConfiguration();
@@ -370,7 +370,7 @@ definition {
 		property portal.release = "quarantine";
 		property portal.version = "7.2.1";
 		property skip.upgrade-legacy-database = "true";
-		property test.assert.warning.exceptions = "true";
+		property test.assert.warning.exceptions = "false";
 
 		ValidateSearchUpgrade.viewSearchPortletsConfiguration();
 	}
@@ -395,7 +395,7 @@ definition {
 		property portal.release = "quarantine";
 		property portal.version = "7.1.10";
 		property skip.upgrade-legacy-database = "true";
-		property test.assert.warning.exceptions = "true";
+		property test.assert.warning.exceptions = "false";
 
 		ValidateSearchUpgrade.viewSearchPortletsConfiguration();
 	}
@@ -407,7 +407,7 @@ definition {
 		property portal.release = "quarantine";
 		property portal.version = "7.2.10";
 		property skip.upgrade-legacy-database = "true";
-		property test.assert.warning.exceptions = "true";
+		property test.assert.warning.exceptions = "false";
 		property test.run.environment = "EE";
 
 		ValidateSearchUpgrade.viewSearchPortletsConfiguration();
@@ -420,7 +420,7 @@ definition {
 		property portal.release = "quarantine";
 		property portal.version = "7.2.10.1";
 		property skip.upgrade-legacy-database = "true";
-		property test.assert.warning.exceptions = "true";
+		property test.assert.warning.exceptions = "false";
 		property test.run.environment = "EE";
 
 		ValidateSearchUpgrade.viewSearchPortletsConfiguration();
@@ -430,7 +430,7 @@ definition {
 	test ViewSearchWidgetTemplatesArchive7413U43 {
 		property data.archive.type = "data-archive-search-widget-templates";
 		property portal.version = "7.4.13.u43";
-		property test.assert.warning.exceptions = "true";
+		property test.assert.warning.exceptions = "false";
 
 		WidgetTemplates.openWidgetTemplatesAdmin(siteURLKey = "guest");
 
@@ -504,7 +504,7 @@ definition {
 	test ViewSXPBlueprintsAndElementsArchive7310U6 {
 		property data.archive.type = "data-archive-sxp";
 		property portal.version = "7.3.10.u6";
-		property test.assert.warning.exceptions = "true";
+		property test.assert.warning.exceptions = "false";
 		property test.run.environment = "EE";
 
 		ValidateSearchExperiencesUpgrade.viewSXPBlueprintAndElements();
@@ -514,7 +514,7 @@ definition {
 	test ViewSXPBlueprintsAndElementsArchive7413U33 {
 		property data.archive.type = "data-archive-sxp";
 		property portal.version = "7.4.13.u33";
-		property test.assert.warning.exceptions = "true";
+		property test.assert.warning.exceptions = "false";
 		property test.run.environment = "EE";
 
 		Blueprints.openBlueprintsAdmin();
@@ -531,7 +531,7 @@ definition {
 	test ViewSXPLocalizedElementsArchive7413U63 {
 		property data.archive.type = "data-archive-sxp-localized";
 		property portal.version = "7.4.13.u63";
-		property test.assert.warning.exceptions = "true";
+		property test.assert.warning.exceptions = "false";
 		property test.run.environment = "EE";
 
 		task ("Assert elements within existing blueprint query builder add element sidebar are using English translations and not language keys") {

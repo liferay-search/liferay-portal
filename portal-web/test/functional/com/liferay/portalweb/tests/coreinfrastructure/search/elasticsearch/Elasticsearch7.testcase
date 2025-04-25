@@ -23,7 +23,6 @@ definition {
 	@priority = 4
 	test AssertIndexOnStartup {
 		property search.environment.suite.exclude = "true";
-		property test.assert.warning.exceptions = "true";
 		property test.liferay.virtual.instance = "false";
 		property test.run.type = "single";
 		property timeout.explicit.wait = "120";
@@ -245,7 +244,6 @@ definition {
 		property operating.system.types = "alpine,amazonlinux,centos,debian,fedora,orcllinux,osx,redhat,rockylinux,solaris,suse,ubuntu,windows";
 		property portal.acceptance = "true";
 		property search.environment.suite.exclude = "true";
-		property test.assert.warning.exceptions = "true";
 		property test.liferay.virtual.instance = "false";
 		property test.run.type = "single";
 
@@ -794,7 +792,6 @@ definition {
 	test SearchAfterRedeployingElasticsearchConnector {
 		property operating.system.types = "centos";
 		property remote.elasticsearch.enabled = "true";
-		property test.assert.warning.exceptions = "true";
 		property test.liferay.virtual.instance = "false";
 		property test.run.type = "single";
 
