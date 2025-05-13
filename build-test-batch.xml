@@ -7842,6 +7842,8 @@ information. Make sure to commit in all format-javadoc results.
 					</then>
 				</if>
 
+				<property name="test.batch.name" unless:set="test.batch.name" value="${env.TEST_BATCH_NAME}" />
+
 				<condition else="" property="test.arg.opensearch2.unit.tests" value="-Dcom.liferay.portal.search.opensearch2.test.unit.enabled=true">
 					<istrue value="${run.opensearch2.unit.tests}" />
 				</condition>
