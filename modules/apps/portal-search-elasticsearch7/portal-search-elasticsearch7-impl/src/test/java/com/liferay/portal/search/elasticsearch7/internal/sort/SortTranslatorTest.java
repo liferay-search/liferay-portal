@@ -23,7 +23,7 @@ import org.junit.Test;
 /**
  * @author Rodrigo Guedes de Souza
  */
-public class DefaultSortTranslatorTest {
+public class SortTranslatorTest {
 
 	@ClassRule
 	@Rule
@@ -39,10 +39,9 @@ public class DefaultSortTranslatorTest {
 
 		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
-		DefaultSortTranslator defaultSortTranslator =
-			new DefaultSortTranslator();
+		SortTranslator sortTranslator = new SortTranslator();
 
-		defaultSortTranslator.translate(
+		sortTranslator.translate(
 			searchSourceBuilder, sortList.toArray(Sort[]::new));
 
 		_assertFirstFieldSort(
@@ -58,10 +57,9 @@ public class DefaultSortTranslatorTest {
 
 		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
-		DefaultSortTranslator defaultSortTranslator =
-			new DefaultSortTranslator();
+		SortTranslator sortTranslator = new SortTranslator();
 
-		defaultSortTranslator.translate(
+		sortTranslator.translate(
 			searchSourceBuilder, sortList.toArray(Sort[]::new));
 
 		_assertFirstFieldSort(
@@ -77,10 +75,9 @@ public class DefaultSortTranslatorTest {
 
 		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
-		DefaultSortTranslator defaultSortTranslator =
-			new DefaultSortTranslator();
+		SortTranslator sortTranslator = new SortTranslator();
 
-		defaultSortTranslator.translate(
+		sortTranslator.translate(
 			searchSourceBuilder, sortList.toArray(Sort[]::new));
 
 		_assertFirstFieldSort(
@@ -91,10 +88,9 @@ public class DefaultSortTranslatorTest {
 	public void testDefaultSortWithoutSorts() {
 		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
-		DefaultSortTranslator defaultSortTranslator =
-			new DefaultSortTranslator();
+		SortTranslator sortTranslator = new SortTranslator();
 
-		defaultSortTranslator.translate(searchSourceBuilder, new Sort[0]);
+		sortTranslator.translate(searchSourceBuilder, new Sort[0]);
 
 		Assert.assertNull(searchSourceBuilder.sorts());
 	}
@@ -105,10 +101,9 @@ public class DefaultSortTranslatorTest {
 
 		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
-		DefaultSortTranslator defaultSortTranslator =
-			new DefaultSortTranslator();
+		SortTranslator sortTranslator = new SortTranslator();
 
-		defaultSortTranslator.translate(
+		sortTranslator.translate(
 			searchSourceBuilder, sortList.toArray(Sort[]::new));
 
 		_assertFirstFieldSort(
