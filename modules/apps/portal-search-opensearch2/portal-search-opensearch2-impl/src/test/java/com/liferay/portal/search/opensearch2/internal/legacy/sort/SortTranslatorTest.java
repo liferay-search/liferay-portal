@@ -23,7 +23,7 @@ import org.opensearch.client.opensearch._types.SortOrder;
 /**
  * @author Rodrigo Guedes de Souza
  */
-public class SortTranslatorImplTest {
+public class SortTranslatorTest {
 
 	@ClassRule
 	@Rule
@@ -37,9 +37,9 @@ public class SortTranslatorImplTest {
 				Field.ENTRY_CLASS_PK, Field.ENTRY_CLASS_PK, Sort.LONG_TYPE,
 				false));
 
-		SortTranslatorImpl sortTranslatorImpl = new SortTranslatorImpl();
+		SortTranslator sortTranslator = new SortTranslator();
 
-		List<SortOptions> sortOptionsList = sortTranslatorImpl.translateSorts(
+		List<SortOptions> sortOptionsList = sortTranslator.translateSorts(
 			sortList.toArray(Sort[]::new));
 
 		_assetFirstFieldSort(
@@ -53,9 +53,9 @@ public class SortTranslatorImplTest {
 				Field.ENTRY_CLASS_PK, Field.ENTRY_CLASS_PK, Sort.LONG_TYPE,
 				true));
 
-		SortTranslatorImpl sortTranslatorImpl = new SortTranslatorImpl();
+		SortTranslator sortTranslator = new SortTranslator();
 
-		List<SortOptions> sortOptionsList = sortTranslatorImpl.translateSorts(
+		List<SortOptions> sortOptionsList = sortTranslator.translateSorts(
 			sortList.toArray(Sort[]::new));
 
 		_assetFirstFieldSort(
@@ -69,9 +69,9 @@ public class SortTranslatorImplTest {
 				Field.ENTRY_CLASS_NAME, Field.ENTRY_CLASS_NAME,
 				Sort.STRING_TYPE, true));
 
-		SortTranslatorImpl sortTranslatorImpl = new SortTranslatorImpl();
+		SortTranslator sortTranslator = new SortTranslator();
 
-		List<SortOptions> sortOptionsList = sortTranslatorImpl.translateSorts(
+		List<SortOptions> sortOptionsList = sortTranslator.translateSorts(
 			sortList.toArray(Sort[]::new));
 
 		_assetFirstFieldSort(
@@ -80,9 +80,9 @@ public class SortTranslatorImplTest {
 
 	@Test
 	public void testSortTranslatorWithoutSorts() {
-		SortTranslatorImpl sortTranslatorImpl = new SortTranslatorImpl();
+		SortTranslator sortTranslator = new SortTranslator();
 
-		List<SortOptions> sortOptionsList = sortTranslatorImpl.translateSorts(
+		List<SortOptions> sortOptionsList = sortTranslator.translateSorts(
 			new Sort[0]);
 
 		Assert.assertNotNull(sortOptionsList);
@@ -93,9 +93,9 @@ public class SortTranslatorImplTest {
 	public void testSortTranslatorWithPriorityField() {
 		List<Sort> sortList = List.of(new Sort(Field.PRIORITY, true));
 
-		SortTranslatorImpl sortTranslatorImpl = new SortTranslatorImpl();
+		SortTranslator sortTranslator = new SortTranslator();
 
-		List<SortOptions> sortOptionsList = sortTranslatorImpl.translateSorts(
+		List<SortOptions> sortOptionsList = sortTranslator.translateSorts(
 			sortList.toArray(Sort[]::new));
 
 		_assetFirstFieldSort(sortOptionsList, Field.PRIORITY, SortOrder.Desc);
