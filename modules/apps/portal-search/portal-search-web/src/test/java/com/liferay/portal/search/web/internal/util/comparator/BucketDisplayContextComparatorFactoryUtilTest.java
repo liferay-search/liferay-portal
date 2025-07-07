@@ -43,8 +43,9 @@ public class BucketDisplayContextComparatorFactoryUtilTest {
 		_assertOrder(
 			bucketDisplayContexts,
 			List.of(
-				"1:1", "01:1", "2:3", "11:1", "albert:2", "Allen:1", "tom:2",
-				"tom:1"));
+				"01:1", "1:1", "2:3", "11:1", "Abeja:1", "albert:2", "Allen:1",
+				"Árbol:2", "Árbol:1", "Burro:1", "Caballo:1", "joão:1",
+				"josé:1", "tom:2", "tom:1"));
 	}
 
 	@Test
@@ -60,8 +61,9 @@ public class BucketDisplayContextComparatorFactoryUtilTest {
 		_assertOrder(
 			bucketDisplayContexts,
 			List.of(
-				"tom:2", "tom:1", "Allen:1", "albert:2", "11:1", "2:3", "01:1",
-				"1:1"));
+				"tom:2", "tom:1", "josé:1", "joão:1", "Caballo:1", "Burro:1",
+				"Árbol:2", "Árbol:1", "Allen:1", "albert:2", "Abeja:1", "11:1",
+				"2:3", "1:1", "01:1"));
 	}
 
 	@Test
@@ -77,8 +79,9 @@ public class BucketDisplayContextComparatorFactoryUtilTest {
 		_assertOrder(
 			bucketDisplayContexts,
 			List.of(
-				"1:1", "01:1", "11:1", "Allen:1", "tom:1", "albert:2", "tom:2",
-				"2:3"));
+				"01:1", "1:1", "11:1", "Abeja:1", "Allen:1", "Árbol:1",
+				"Burro:1", "Caballo:1", "joão:1", "josé:1", "tom:1", "albert:2",
+				"Árbol:2", "tom:2", "2:3"));
 	}
 
 	@Test
@@ -94,8 +97,9 @@ public class BucketDisplayContextComparatorFactoryUtilTest {
 		_assertOrder(
 			bucketDisplayContexts,
 			List.of(
-				"2:3", "albert:2", "tom:2", "1:1", "01:1", "11:1", "Allen:1",
-				"tom:1"));
+				"2:3", "albert:2", "Árbol:2", "tom:2", "01:1", "1:1", "11:1",
+				"Abeja:1", "Allen:1", "Árbol:1", "Burro:1", "Caballo:1",
+				"joão:1", "josé:1", "tom:1"));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -136,10 +140,17 @@ public class BucketDisplayContextComparatorFactoryUtilTest {
 		return Arrays.asList(
 			_createBucketDisplayContext("2", 3),
 			_createBucketDisplayContext("tom", 1),
+			_createBucketDisplayContext("Caballo", 1),
 			_createBucketDisplayContext("01", 1),
+			_createBucketDisplayContext("Burro", 1),
+			_createBucketDisplayContext("Árbol", 1),
+			_createBucketDisplayContext("joão", 1),
 			_createBucketDisplayContext("tom", 2),
+			_createBucketDisplayContext("josé", 1),
+			_createBucketDisplayContext("Árbol", 2),
 			_createBucketDisplayContext("albert", 2),
 			_createBucketDisplayContext("11", 1),
+			_createBucketDisplayContext("Abeja", 1),
 			_createBucketDisplayContext("1", 1),
 			_createBucketDisplayContext("Allen", 1));
 	}
