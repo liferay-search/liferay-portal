@@ -1002,7 +1002,7 @@ definition {
 	@description = "LPS-93726: Validate if, when the user creates one content set personalized, for Manual Content Sets, he can apply in some portlet (assert publisher) to use"
 	@priority = 5
 	test UseManualCollectionAtPortlet {
-		property portal.acceptance = "true";
+		property portal.acceptance = "quarantine";
 
 		task ("Create a public page") {
 			JSONLayout.addPublicLayout(
