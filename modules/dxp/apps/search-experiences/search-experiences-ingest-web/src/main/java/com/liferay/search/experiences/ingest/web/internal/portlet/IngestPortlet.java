@@ -38,7 +38,7 @@ import jakarta.portlet.Portlet;
 		"jakarta.portlet.name=" + IngestPortletKeys.INGEST,
 		"jakarta.portlet.resource-bundle=content.Language",
 		"jakarta.portlet.security-role-ref=power-user,user",
-		"jakarta.portlet.version=3.0"
+		"jakarta.portlet.version=4.0"
 	},
 	service = Portlet.class
 )
