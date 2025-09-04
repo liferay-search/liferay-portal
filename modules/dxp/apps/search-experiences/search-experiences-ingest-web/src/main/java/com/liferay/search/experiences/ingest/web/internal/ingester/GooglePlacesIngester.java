@@ -16,7 +16,6 @@ package com.liferay.search.experiences.ingest.web.internal.ingester;
 
 import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.journal.model.JournalArticle;
-import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactory;
@@ -28,6 +27,7 @@ import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Http;
 import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.search.experiences.ingest.web.internal.importer.JournalArticleImporter;
 import com.liferay.search.experiences.ingest.web.internal.iterator.LoopingIterator;
@@ -39,10 +39,10 @@ import com.liferay.search.experiences.ingest.web.internal.util.TagUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.portlet.ActionRequest;
-
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+
+import jakarta.portlet.ActionRequest;
 
 /**
  * @author Petteri Karttunen

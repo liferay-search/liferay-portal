@@ -16,7 +16,7 @@ package com.liferay.search.experiences.ingest.web.internal.ingester;
 
 import com.liferay.search.experiences.ingest.web.internal.stats.IngestionStats;
 
-import javax.portlet.ActionRequest;
+import jakarta.portlet.ActionRequest;
 
 /**
  * @author Petteri Karttunen

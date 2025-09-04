@@ -17,9 +17,9 @@ package com.liferay.search.experiences.ingest.web.internal.portlet;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 import com.liferay.search.experiences.ingest.web.internal.constants.IngestPortletKeys;
 
-import javax.portlet.Portlet;
-
 import org.osgi.service.component.annotations.Component;
+
+import jakarta.portlet.Portlet;
 
 /**
  * @author Petteri Karttunen
@@ -31,14 +31,14 @@ import org.osgi.service.component.annotations.Component;
 		"com.liferay.portlet.display-category=category.search",
 		"com.liferay.portlet.header-portlet-css=/css/main.css",
 		"com.liferay.portlet.instanceable=false",
-		"javax.portlet.display-name=ingest-portlet",
-		"javax.portlet.init-param.copy-request-parameter=true",
-		"javax.portlet.init-param.template-path=/META-INF/resources/",
-		"javax.portlet.init-param.view-template=/view.jsp",
-		"javax.portlet.name=" + IngestPortletKeys.INGEST,
-		"javax.portlet.resource-bundle=content.Language",
-		"javax.portlet.security-role-ref=power-user,user",
-		"javax.portlet.version=3.0"
+		"jakarta.portlet.display-name=ingest-portlet",
+		"jakarta.portlet.init-param.copy-request-parameter=true",
+		"jakarta.portlet.init-param.template-path=/META-INF/resources/",
+		"jakarta.portlet.init-param.view-template=/view.jsp",
+		"jakarta.portlet.name=" + IngestPortletKeys.INGEST,
+		"jakarta.portlet.resource-bundle=content.Language",
+		"jakarta.portlet.security-role-ref=power-user,user",
+		"jakarta.portlet.version=3.0"
 	},
 	service = Portlet.class
 )

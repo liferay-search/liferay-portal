@@ -31,15 +31,14 @@ import com.liferay.search.experiences.ingest.web.internal.util.IngesterUtil;
 import com.liferay.search.experiences.ingest.web.internal.util.TagUtil;
 
 import java.time.Instant;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.portlet.ActionRequest;
-
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+
+import jakarta.portlet.ActionRequest;
 
 /**
  * @author André de Oliveira

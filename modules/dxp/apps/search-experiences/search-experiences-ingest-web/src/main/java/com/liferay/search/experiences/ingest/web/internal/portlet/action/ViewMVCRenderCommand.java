@@ -22,11 +22,11 @@ import com.liferay.portal.kernel.portlet.bridges.mvc.MVCRenderCommand;
 import com.liferay.portal.kernel.util.Http;
 import com.liferay.search.experiences.ingest.web.internal.constants.IngestPortletKeys;
 
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
-
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+
+import jakarta.portlet.RenderRequest;
+import jakarta.portlet.RenderResponse;
 
 /**
  * @author Petteri Karttunen
@@ -34,7 +34,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(
 	enabled = false,
 	property = {
-		"javax.portlet.name=" + IngestPortletKeys.INGEST, "mvc.command.name=/"
+		"jakarta.portlet.name=" + IngestPortletKeys.INGEST, "mvc.command.name=/"
 	},
 	service = MVCRenderCommand.class
 )
