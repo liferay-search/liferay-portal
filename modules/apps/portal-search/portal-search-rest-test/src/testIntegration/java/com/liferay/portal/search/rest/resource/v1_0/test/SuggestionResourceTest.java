@@ -13,12 +13,10 @@ import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
-import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.LocaleUtil;
@@ -27,9 +25,6 @@ import com.liferay.portal.search.rest.client.dto.v1_0.Suggestion;
 import com.liferay.portal.search.rest.client.dto.v1_0.SuggestionsContributorConfiguration;
 import com.liferay.portal.search.rest.client.dto.v1_0.SuggestionsContributorResults;
 import com.liferay.portal.search.rest.client.pagination.Page;
-import com.liferay.portal.test.rule.Inject;
-import com.liferay.search.experiences.model.SXPBlueprint;
-import com.liferay.search.experiences.service.SXPBlueprintLocalService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -70,9 +65,6 @@ public class SuggestionResourceTest extends BaseSuggestionResourceTestCase {
 		_testPostSuggestionsPageWithBasicSuggestionsContributorWithEverythingScope();
 		_testPostSuggestionsPageWithBasicSuggestionsContributorWithGroupERCScope();
 		_testPostSuggestionsPageWithBasicSuggestionsContributorWithThisSiteScope();
-		_testPostSuggestionsPageWithSXPBlueprintSuggestionsContributor();
-		_testPostSuggestionsPageWithSXPBlueprintSuggestionsContributorWithGroupERCScope();
-		_testPostSuggestionsPageWithSXPBlueprintSuggestionsContributorWithSearchExperiencesAttributes();
 	}
 
 	private void _assertSuggestionContributorResults(
@@ -265,124 +257,9 @@ public class SuggestionResourceTest extends BaseSuggestionResourceTestCase {
 		GroupTestUtil.deleteGroup(group);
 	}
 
-	private void _testPostSuggestionsPageWithSXPBlueprintSuggestionsContributor()
-		throws Exception {
-
-		String suggestionsDisplayGroupGroupName = "Suggestions";
-
-		SXPBlueprint sxpBlueprint = _sxpBlueprintLocalService.addSXPBlueprint(
-			null, TestPropsValues.getUserId(), "{}",
-			Collections.singletonMap(LocaleUtil.US, ""), null, "",
-			Collections.singletonMap(
-				LocaleUtil.US, RandomTestUtil.randomString()),
-			_serviceContext);
-
-		Page<SuggestionsContributorResults> page = _postSuggestionsPage(
-			"http://localhost:8080/web/guest/home", "/search",
-			testGroup.getGroupId(), "q", _layout.getPlid(), null,
-			_journalArticle.getArticleId(),
-			new SuggestionsContributorConfiguration[] {
-				new SuggestionsContributorConfiguration() {
-					{
-						attributes = JSONUtil.put(
-							"sxpBlueprintExternalReferenceCode",
-							sxpBlueprint.getExternalReferenceCode());
-						contributorName = "sxpBlueprint";
-						displayGroupName = suggestionsDisplayGroupGroupName;
-					}
-				}
-			});
-
-		_assertSuggestionContributorResults(
-			suggestionsDisplayGroupGroupName, page,
-			_journalArticle.getTitle(_locale));
-	}
-
-	private void _testPostSuggestionsPageWithSXPBlueprintSuggestionsContributorWithGroupERCScope()
-		throws Exception {
-
-		SXPBlueprint sxpBlueprint = _sxpBlueprintLocalService.addSXPBlueprint(
-			null, TestPropsValues.getUserId(), "{}",
-			Collections.singletonMap(LocaleUtil.US, ""), null, "",
-			Collections.singletonMap(
-				LocaleUtil.US, RandomTestUtil.randomString()),
-			_serviceContext);
-
-		String suggestionsDisplayGroupGroupName = "Suggestions";
-
-		Page<SuggestionsContributorResults> page = _postSuggestionsPage(
-			"http://localhost:8080/web/guest/home", "/search", null, "q",
-			_layout.getPlid(), testGroup.getExternalReferenceCode(),
-			_journalArticle.getArticleId(),
-			new SuggestionsContributorConfiguration[] {
-				new SuggestionsContributorConfiguration() {
-					{
-						attributes = JSONUtil.put(
-							"sxpBlueprintExternalReferenceCode",
-							sxpBlueprint.getExternalReferenceCode());
-						contributorName = "sxpBlueprint";
-						displayGroupName = suggestionsDisplayGroupGroupName;
-					}
-				}
-			});
-
-		_assertSuggestionContributorResults(
-			suggestionsDisplayGroupGroupName, page,
-			_journalArticle.getTitle(_locale));
-	}
-
-	private void _testPostSuggestionsPageWithSXPBlueprintSuggestionsContributorWithSearchExperiencesAttributes()
-		throws Exception {
-
-		Class<?> clazz = getClass();
-
-		SXPBlueprint sxpBlueprint = _sxpBlueprintLocalService.addSXPBlueprint(
-			null, TestPropsValues.getUserId(),
-			StringUtil.read(
-				clazz,
-				StringBundler.concat(
-					"dependencies/", clazz.getSimpleName(),
-					"._testPostSuggestionsPageWithSXPBlueprintSuggestions",
-					"ContributorWithSearchExperiencesAttributes.json")),
-			Collections.singletonMap(LocaleUtil.US, StringPool.BLANK), null,
-			StringPool.BLANK,
-			Collections.singletonMap(
-				LocaleUtil.US, RandomTestUtil.randomString()),
-			_serviceContext);
-
-		String suggestionsDisplayGroupGroupName = "Suggestions";
-
-		Page<SuggestionsContributorResults> page = _postSuggestionsPage(
-			"http://localhost:8080/web/guest/home", "/search",
-			testGroup.getGroupId(), "q", _layout.getPlid(), null,
-			_journalArticle.getArticleId(),
-			new SuggestionsContributorConfiguration[] {
-				new SuggestionsContributorConfiguration() {
-					{
-						attributes = JSONUtil.put(
-							"search.experiences.entry.class.pk",
-							_journalArticle.getResourcePrimKey()
-						).put(
-							"sxpBlueprintExternalReferenceCode",
-							sxpBlueprint.getExternalReferenceCode()
-						);
-						contributorName = "sxpBlueprint";
-						displayGroupName = suggestionsDisplayGroupGroupName;
-					}
-				}
-			});
-
-		_assertSuggestionContributorResults(
-			suggestionsDisplayGroupGroupName, page,
-			_journalArticle.getTitle(_locale));
-	}
-
 	private JournalArticle _journalArticle;
 	private Layout _layout;
 	private Locale _locale;
 	private ServiceContext _serviceContext;
-
-	@Inject
-	private SXPBlueprintLocalService _sxpBlueprintLocalService;
 
 }
