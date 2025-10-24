@@ -1,15 +1,23 @@
-package com.liferay.portal.search.rest.resource.v1_0.test;
+/**
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
+ */
+
+package com.liferay.search.experiences.rest.resource.v1_0.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.journal.model.JournalArticle;
+import com.liferay.journal.test.util.JournalTestUtil;
+import com.liferay.layout.test.util.LayoutTestUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.service.ServiceContext;
-import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
+import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
+import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.LocaleUtil;
-import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.rest.client.dto.v1_0.Suggestion;
 import com.liferay.portal.search.rest.client.dto.v1_0.SuggestionsContributorConfiguration;
@@ -26,6 +34,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -33,24 +42,91 @@ import org.junit.runner.RunWith;
  * @author Rodrigo Guedes de Souza
  */
 @RunWith(Arquillian.class)
-public class SXPBluePrintSuggestionResourceTest extends BaseSuggestionResourceTestCase {
+public class SXPBluePrintSuggestionResourceTest
+	extends BaseSuggestionResourceTestCase {
+
+	@Before
+	@Override
+	public void setUp() throws Exception {
+		super.setUp();
+
+		_journalArticle = JournalTestUtil.addArticle(
+			testGroup.getGroupId(), StringUtil.randomString(),
+			StringUtil.randomString());
+		_layout = LayoutTestUtil.addTypePortletLayout(testGroup);
+		_locale = LocaleUtil.getSiteDefault();
+		_serviceContext = ServiceContextTestUtil.getServiceContext(
+			testGroup, TestPropsValues.getUserId());
+	}
 
 	@Override
 	@Test
 	public void testPostSuggestionsPage() throws Exception {
-		super.testPostSuggestionsPage();
-
 		_testPostSuggestionsPageWithSXPBlueprintSuggestionsContributor();
 		_testPostSuggestionsPageWithSXPBlueprintSuggestionsContributorWithGroupERCScope();
 		_testPostSuggestionsPageWithSXPBlueprintSuggestionsContributorWithSearchExperiencesAttributes();
 	}
 
-	protected Page<SuggestionsContributorResults> _postSuggestionsPage(
-		String currentURL, String destinationFriendlyURL, Long groupId,
-		String keywordsParameterName, Long plid, String scope,
-		String search,
-		SuggestionsContributorConfiguration[]
-			suggestionsContributorConfigurations)
+	private void _assertSuggestionContributorResults(
+			String displayGroupName, Page<SuggestionsContributorResults> page,
+			String... expectedTexts)
+		throws Exception {
+
+		SuggestionsContributorResults suggestionsContributorResults1 = null;
+
+		for (SuggestionsContributorResults suggestionsContributorResults2 :
+				page.getItems()) {
+
+			if (!StringUtil.equals(
+					suggestionsContributorResults2.getDisplayGroupName(),
+					displayGroupName)) {
+
+				continue;
+			}
+
+			suggestionsContributorResults1 = suggestionsContributorResults2;
+		}
+
+		Assert.assertTrue(suggestionsContributorResults1 != null);
+
+		Suggestion[] suggestions =
+			suggestionsContributorResults1.getSuggestions();
+
+		Assert.assertEquals(
+			Arrays.toString(suggestions), expectedTexts.length,
+			suggestions.length);
+
+		_assertSuggestionTexts(suggestionsContributorResults1, expectedTexts);
+	}
+
+	private void _assertSuggestionTexts(
+			SuggestionsContributorResults suggestionsContributorResults,
+			String... expectedTexts)
+		throws Exception {
+
+		Suggestion[] suggestions =
+			suggestionsContributorResults.getSuggestions();
+
+		List<String> texts = new ArrayList<>();
+
+		for (Suggestion suggestion : suggestions) {
+			texts.add(suggestion.getText());
+		}
+
+		Arrays.sort(expectedTexts);
+
+		Collections.sort(texts);
+
+		Assert.assertEquals(
+			Arrays.toString(expectedTexts), String.valueOf(texts));
+	}
+
+	private Page<SuggestionsContributorResults> _postSuggestionsPage(
+			String currentURL, String destinationFriendlyURL, Long groupId,
+			String keywordsParameterName, Long plid, String scope,
+			String search,
+			SuggestionsContributorConfiguration[]
+				suggestionsContributorConfigurations)
 		throws Exception {
 
 		return suggestionResource.postSuggestionsPage(
@@ -168,60 +244,6 @@ public class SXPBluePrintSuggestionResourceTest extends BaseSuggestionResourceTe
 		_assertSuggestionContributorResults(
 			suggestionsDisplayGroupGroupName, page,
 			_journalArticle.getTitle(_locale));
-	}
-
-	protected void _assertSuggestionContributorResults(
-		String displayGroupName, Page<SuggestionsContributorResults> page,
-		String... expectedTexts)
-		throws Exception {
-
-		SuggestionsContributorResults suggestionsContributorResults1 = null;
-
-		for (SuggestionsContributorResults suggestionsContributorResults2 :
-			page.getItems()) {
-
-			if (!StringUtil.equals(
-				suggestionsContributorResults2.getDisplayGroupName(),
-				displayGroupName)) {
-
-				continue;
-			}
-
-			suggestionsContributorResults1 = suggestionsContributorResults2;
-		}
-
-		Assert.assertTrue(suggestionsContributorResults1 != null);
-
-		Suggestion[] suggestions =
-			suggestionsContributorResults1.getSuggestions();
-
-		Assert.assertEquals(
-			Arrays.toString(suggestions), expectedTexts.length,
-			suggestions.length);
-
-		_assertSuggestionTexts(suggestionsContributorResults1, expectedTexts);
-	}
-
-	private void _assertSuggestionTexts(
-		SuggestionsContributorResults suggestionsContributorResults,
-		String... expectedTexts)
-		throws Exception {
-
-		Suggestion[] suggestions =
-			suggestionsContributorResults.getSuggestions();
-
-		List<String> texts = new ArrayList<>();
-
-		for (Suggestion suggestion : suggestions) {
-			texts.add(suggestion.getText());
-		}
-
-		Arrays.sort(expectedTexts);
-
-		Collections.sort(texts);
-
-		Assert.assertEquals(
-			Arrays.toString(expectedTexts), String.valueOf(texts));
 	}
 
 	private JournalArticle _journalArticle;
