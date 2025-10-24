@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
-package com.liferay.portal.search.rest.resource.v1_0.test;
+package com.liferay.search.experiences.rest.resource.v1_0.test;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -19,7 +19,11 @@ import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
+import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Company;
+import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.CompanyLocalServiceUtil;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
@@ -44,12 +48,14 @@ import jakarta.annotation.Generated;
 
 import jakarta.ws.rs.core.MultivaluedHashMap;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import java.text.Format;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -87,6 +93,7 @@ public abstract class BaseSuggestionResourceTestCase {
 	@Before
 	public void setUp() throws Exception {
 		irrelevantGroup = GroupTestUtil.addGroup();
+
 		testGroup = GroupTestUtil.addGroup();
 
 		testCompany = CompanyLocalServiceUtil.getCompany(
@@ -140,24 +147,6 @@ public abstract class BaseSuggestionResourceTestCase {
 			objectMapper.readTree(json1), objectMapper.readTree(json2));
 	}
 
-	protected ObjectMapper getClientSerDesObjectMapper() {
-		return new ObjectMapper() {
-			{
-				configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true);
-				configure(
-					SerializationFeature.WRITE_ENUMS_USING_TO_STRING, true);
-				enable(SerializationFeature.INDENT_OUTPUT);
-				setDateFormat(new ISO8601DateFormat());
-				setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
-				setSerializationInclusion(JsonInclude.Include.NON_NULL);
-				setVisibility(
-					PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
-				setVisibility(
-					PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE);
-			}
-		};
-	}
-
 	@Test
 	public void testEscapeRegexInStringFields() throws Exception {
 		String regex = "^[0-9]+(\\.[0-9]{1,2})\"?";
@@ -197,12 +186,17 @@ public abstract class BaseSuggestionResourceTestCase {
 			suggestions + " does not contain " + suggestion, contains);
 	}
 
-	protected void assertHttpResponseStatusCode(
-		int expectedHttpResponseStatusCode,
-		HttpInvoker.HttpResponse actualHttpResponse) {
+	protected void assertEquals(
+		List<Suggestion> suggestions1, List<Suggestion> suggestions2) {
 
-		Assert.assertEquals(
-			expectedHttpResponseStatusCode, actualHttpResponse.getStatusCode());
+		Assert.assertTrue(suggestions1.size() == suggestions2.size());
+
+		for (int i = 0; i < suggestions1.size(); i++) {
+			Suggestion suggestion1 = suggestions1.get(i);
+			Suggestion suggestion2 = suggestions2.get(i);
+
+			assertEquals(suggestion1, suggestion2);
+		}
 	}
 
 	protected void assertEquals(
@@ -213,23 +207,10 @@ public abstract class BaseSuggestionResourceTestCase {
 			equals(suggestion1, suggestion2));
 	}
 
-	protected void assertEquals(
-		List<Suggestion> suggestions1, List<Suggestion> suggestions2) {
-
-		Assert.assertEquals(suggestions1.size(), suggestions2.size());
-
-		for (int i = 0; i < suggestions1.size(); i++) {
-			Suggestion suggestion1 = suggestions1.get(i);
-			Suggestion suggestion2 = suggestions2.get(i);
-
-			assertEquals(suggestion1, suggestion2);
-		}
-	}
-
 	protected void assertEqualsIgnoringOrder(
 		List<Suggestion> suggestions1, List<Suggestion> suggestions2) {
 
-		Assert.assertEquals(suggestions1.size(), suggestions2.size());
+		Assert.assertTrue(suggestions1.size() == suggestions2.size());
 
 		for (Suggestion suggestion1 : suggestions1) {
 			boolean contains = false;
@@ -247,42 +228,33 @@ public abstract class BaseSuggestionResourceTestCase {
 		}
 	}
 
-	protected void assertValid(Suggestion suggestion) throws Exception {
-		boolean valid = true;
+	protected void assertHttpResponseStatusCode(
+		int expectedHttpResponseStatusCode,
+		HttpInvoker.HttpResponse actualHttpResponse) {
 
-		for (String additionalAssertFieldName :
-			getAdditionalAssertFieldNames()) {
+		Assert.assertEquals(
+			expectedHttpResponseStatusCode, actualHttpResponse.getStatusCode());
+	}
 
-			if (Objects.equals("attributes", additionalAssertFieldName)) {
-				if (suggestion.getAttributes() == null) {
-					valid = false;
-				}
+	protected void assertValid(
+		Map<String, Map<String, String>> actions1,
+		Map<String, Map<String, String>> actions2) {
 
-				continue;
-			}
+		for (Map.Entry<String, Map<String, String>> entry :
+				actions2.entrySet()) {
 
-			if (Objects.equals("score", additionalAssertFieldName)) {
-				if (suggestion.getScore() == null) {
-					valid = false;
-				}
+			String key = entry.getKey();
 
-				continue;
-			}
+			Map<String, String> action = actions1.get(key);
 
-			if (Objects.equals("text", additionalAssertFieldName)) {
-				if (suggestion.getText() == null) {
-					valid = false;
-				}
+			Assert.assertNotNull(key + " does not contain an action", action);
 
-				continue;
-			}
+			Map<String, String> expectedAction = entry.getValue();
 
-			throw new IllegalArgumentException(
-				"Invalid additional assert field name " +
-				additionalAssertFieldName);
+			Assert.assertEquals(
+				expectedAction.get("method"), action.get("method"));
+			Assert.assertEquals(expectedAction.get("href"), action.get("href"));
 		}
-
-		Assert.assertTrue(valid);
 	}
 
 	protected void assertValid(Page<Suggestion> page) {
@@ -295,7 +267,7 @@ public abstract class BaseSuggestionResourceTestCase {
 
 		boolean valid = false;
 
-		java.util.Collection<Suggestion> suggestions = page.getItems();
+		Collection<Suggestion> suggestions = page.getItems();
 
 		int size = suggestions.size();
 
@@ -311,114 +283,31 @@ public abstract class BaseSuggestionResourceTestCase {
 		assertValid(page.getActions(), expectedActions);
 	}
 
-	protected void assertValid(
-		Map<String, Map<String, String>> actions1,
-		Map<String, Map<String, String>> actions2) {
-
-		for (String key : actions2.keySet()) {
-			Map action = actions1.get(key);
-
-			Assert.assertNotNull(key + " does not contain an action", action);
-
-			Map<String, String> expectedAction = actions2.get(key);
-
-			Assert.assertEquals(
-				expectedAction.get("method"), action.get("method"));
-			Assert.assertEquals(expectedAction.get("href"), action.get("href"));
-		}
-	}
-
-	protected String[] getAdditionalAssertFieldNames() {
-		return new String[0];
-	}
-
-	protected List<GraphQLField> getGraphQLFields() throws Exception {
-		List<GraphQLField> graphQLFields = new ArrayList<>();
-
-		for (java.lang.reflect.Field field :
-			getDeclaredFields(
-				com.liferay.portal.search.rest.dto.v1_0.Suggestion.class)) {
-
-			if (!ArrayUtil.contains(
-				getAdditionalAssertFieldNames(), field.getName())) {
-
-				continue;
-			}
-
-			graphQLFields.addAll(getGraphQLFields(field));
-		}
-
-		return graphQLFields;
-	}
-
-	protected List<GraphQLField> getGraphQLFields(
-		java.lang.reflect.Field... fields)
-		throws Exception {
-
-		List<GraphQLField> graphQLFields = new ArrayList<>();
-
-		for (java.lang.reflect.Field field : fields) {
-			com.liferay.portal.vulcan.graphql.annotation.GraphQLField
-				vulcanGraphQLField = field.getAnnotation(
-				com.liferay.portal.vulcan.graphql.annotation.GraphQLField.
-					class);
-
-			if (vulcanGraphQLField != null) {
-				Class<?> clazz = field.getType();
-
-				if (clazz.isArray()) {
-					clazz = clazz.getComponentType();
-				}
-
-				List<GraphQLField> childrenGraphQLFields = getGraphQLFields(
-					getDeclaredFields(clazz));
-
-				graphQLFields.add(
-					new GraphQLField(field.getName(), childrenGraphQLFields));
-			}
-		}
-
-		return graphQLFields;
-	}
-
-	protected String[] getIgnoredEntityFieldNames() {
-		return new String[0];
-	}
-
-	protected boolean equals(Suggestion suggestion1, Suggestion suggestion2) {
-		if (suggestion1 == suggestion2) {
-			return true;
-		}
+	protected void assertValid(Suggestion suggestion) throws Exception {
+		boolean valid = true;
 
 		for (String additionalAssertFieldName :
-			getAdditionalAssertFieldNames()) {
+				getAdditionalAssertFieldNames()) {
 
-			if (Objects.equals("attributes", additionalAssertFieldName)) {
-				if (!Objects.deepEquals(
-					suggestion1.getAttributes(),
-					suggestion2.getAttributes())) {
-
-					return false;
+			if (Objects.equals(additionalAssertFieldName, "attributes")) {
+				if (suggestion.getAttributes() == null) {
+					valid = false;
 				}
 
 				continue;
 			}
 
-			if (Objects.equals("score", additionalAssertFieldName)) {
-				if (!Objects.deepEquals(
-					suggestion1.getScore(), suggestion2.getScore())) {
-
-					return false;
+			if (Objects.equals(additionalAssertFieldName, "score")) {
+				if (suggestion.getScore() == null) {
+					valid = false;
 				}
 
 				continue;
 			}
 
-			if (Objects.equals("text", additionalAssertFieldName)) {
-				if (!Objects.deepEquals(
-					suggestion1.getText(), suggestion2.getText())) {
-
-					return false;
+			if (Objects.equals(additionalAssertFieldName, "text")) {
+				if (suggestion.getText() == null) {
+					valid = false;
 				}
 
 				continue;
@@ -426,10 +315,10 @@ public abstract class BaseSuggestionResourceTestCase {
 
 			throw new IllegalArgumentException(
 				"Invalid additional assert field name " +
-				additionalAssertFieldName);
+					additionalAssertFieldName);
 		}
 
-		return true;
+		Assert.assertTrue(valid);
 	}
 
 	protected boolean equals(
@@ -439,14 +328,14 @@ public abstract class BaseSuggestionResourceTestCase {
 			for (Map.Entry<String, Object> entry : map1.entrySet()) {
 				if (entry.getValue() instanceof Map) {
 					if (!equals(
-						(Map)entry.getValue(),
-						(Map)map2.get(entry.getKey()))) {
+							(Map)entry.getValue(),
+							(Map)map2.get(entry.getKey()))) {
 
 						return false;
 					}
 				}
 				else if (!Objects.deepEquals(
-					entry.getValue(), map2.get(entry.getKey()))) {
+							entry.getValue(), map2.get(entry.getKey()))) {
 
 					return false;
 				}
@@ -458,11 +347,78 @@ public abstract class BaseSuggestionResourceTestCase {
 		return false;
 	}
 
-	protected java.lang.reflect.Field[] getDeclaredFields(Class clazz)
-		throws Exception {
+	protected boolean equals(Suggestion suggestion1, Suggestion suggestion2) {
+		if (suggestion1 == suggestion2) {
+			return true;
+		}
 
+		for (String additionalAssertFieldName :
+				getAdditionalAssertFieldNames()) {
+
+			if (Objects.equals(additionalAssertFieldName, "attributes")) {
+				if (!Objects.deepEquals(
+						suggestion1.getAttributes(),
+						suggestion2.getAttributes())) {
+
+					return false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals(additionalAssertFieldName, "score")) {
+				if (!Objects.deepEquals(
+						suggestion1.getScore(), suggestion2.getScore())) {
+
+					return false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals(additionalAssertFieldName, "text")) {
+				if (!Objects.deepEquals(
+						suggestion1.getText(), suggestion2.getText())) {
+
+					return false;
+				}
+
+				continue;
+			}
+
+			throw new IllegalArgumentException(
+				"Invalid additional assert field name " +
+					additionalAssertFieldName);
+		}
+
+		return true;
+	}
+
+	protected String[] getAdditionalAssertFieldNames() {
+		return new String[0];
+	}
+
+	protected ObjectMapper getClientSerDesObjectMapper() {
+		return new ObjectMapper() {
+			{
+				configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true);
+				configure(
+					SerializationFeature.WRITE_ENUMS_USING_TO_STRING, true);
+				enable(SerializationFeature.INDENT_OUTPUT);
+				setDateFormat(new ISO8601DateFormat());
+				setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+				setSerializationInclusion(JsonInclude.Include.NON_NULL);
+				setVisibility(
+					PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+				setVisibility(
+					PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE);
+			}
+		};
+	}
+
+	protected Field[] getDeclaredFields(Class<?> clazz) throws Exception {
 		if (clazz.getClassLoader() == null) {
-			return new java.lang.reflect.Field[0];
+			return new Field[0];
 		}
 
 		return TransformUtil.transform(
@@ -474,12 +430,10 @@ public abstract class BaseSuggestionResourceTestCase {
 
 				return field;
 			},
-			java.lang.reflect.Field.class);
+			Field.class);
 	}
 
-	protected java.util.Collection<EntityField> getEntityFields()
-		throws Exception {
-
+	protected Collection<EntityField> getEntityFields() throws Exception {
 		if (!(_suggestionResource instanceof EntityModelResource)) {
 			throw new UnsupportedOperationException(
 				"Resource is not an instance of EntityModelResource");
@@ -521,7 +475,7 @@ public abstract class BaseSuggestionResourceTestCase {
 	protected String getFilterString(
 		EntityField entityField, String operator, Suggestion suggestion) {
 
-		StringBundler sb = new StringBundler();
+		StringBundler sb = new StringBundler(4);
 
 		String entityFieldName = entityField.getName();
 
@@ -531,12 +485,9 @@ public abstract class BaseSuggestionResourceTestCase {
 		sb.append(operator);
 		sb.append(" ");
 
-		if (entityFieldName.equals("attributes")) {
-			throw new IllegalArgumentException(
-				"Invalid entity field " + entityFieldName);
-		}
+		if (entityFieldName.equals("attributes") ||
+			entityFieldName.equals("score")) {
 
-		if (entityFieldName.equals("score")) {
 			throw new IllegalArgumentException(
 				"Invalid entity field " + entityFieldName);
 		}
@@ -591,6 +542,58 @@ public abstract class BaseSuggestionResourceTestCase {
 			"Invalid entity field " + entityFieldName);
 	}
 
+	protected List<GraphQLField> getGraphQLFields() throws Exception {
+		List<GraphQLField> graphQLFields = new ArrayList<>();
+
+		for (Field field :
+				getDeclaredFields(
+					com.liferay.portal.search.rest.dto.v1_0.Suggestion.class)) {
+
+			if (!ArrayUtil.contains(
+					getAdditionalAssertFieldNames(), field.getName())) {
+
+				continue;
+			}
+
+			graphQLFields.addAll(getGraphQLFields(field));
+		}
+
+		return graphQLFields;
+	}
+
+	protected List<GraphQLField> getGraphQLFields(Field... fields)
+		throws Exception {
+
+		List<GraphQLField> graphQLFields = new ArrayList<>();
+
+		for (Field field : fields) {
+			com.liferay.portal.vulcan.graphql.annotation.GraphQLField
+				vulcanGraphQLField = field.getAnnotation(
+					com.liferay.portal.vulcan.graphql.annotation.GraphQLField.
+						class);
+
+			if (vulcanGraphQLField != null) {
+				Class<?> clazz = field.getType();
+
+				if (clazz.isArray()) {
+					clazz = clazz.getComponentType();
+				}
+
+				List<GraphQLField> childrenGraphQLFields = getGraphQLFields(
+					getDeclaredFields(clazz));
+
+				graphQLFields.add(
+					new GraphQLField(field.getName(), childrenGraphQLFields));
+			}
+		}
+
+		return graphQLFields;
+	}
+
+	protected String[] getIgnoredEntityFieldNames() {
+		return new String[0];
+	}
+
 	protected String invoke(String query) throws Exception {
 		HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
 
@@ -629,6 +632,14 @@ public abstract class BaseSuggestionResourceTestCase {
 			invoke(queryGraphQLField.toString()));
 	}
 
+	protected Suggestion randomIrrelevantSuggestion() throws Exception {
+		return randomSuggestion();
+	}
+
+	protected Suggestion randomPatchSuggestion() throws Exception {
+		return randomSuggestion();
+	}
+
 	protected Suggestion randomSuggestion() throws Exception {
 		return new Suggestion() {
 			{
@@ -637,20 +648,10 @@ public abstract class BaseSuggestionResourceTestCase {
 		};
 	}
 
-	protected Suggestion randomIrrelevantSuggestion() throws Exception {
-		Suggestion randomIrrelevantSuggestion = randomSuggestion();
-
-		return randomIrrelevantSuggestion;
-	}
-
-	protected Suggestion randomPatchSuggestion() throws Exception {
-		return randomSuggestion();
-	}
-
+	protected Group irrelevantGroup;
 	protected SuggestionResource suggestionResource;
-	protected com.liferay.portal.kernel.model.Group irrelevantGroup;
-	protected com.liferay.portal.kernel.model.Company testCompany;
-	protected com.liferay.portal.kernel.model.Group testGroup;
+	protected Company testCompany;
+	protected Group testGroup;
 
 	protected static class BeanTestUtil {
 
@@ -661,9 +662,7 @@ public abstract class BaseSuggestionResourceTestCase {
 
 			Class<?> targetClass = target.getClass();
 
-			for (java.lang.reflect.Field field :
-				_getAllDeclaredFields(sourceClass)) {
-
+			for (Field field : _getAllDeclaredFields(sourceClass)) {
 				if (field.isSynthetic()) {
 					continue;
 				}
@@ -678,8 +677,10 @@ public abstract class BaseSuggestionResourceTestCase {
 
 					setMethod.invoke(target, getMethod.invoke(source));
 				}
-				catch (Exception e) {
-					continue;
+				catch (Exception exception) {
+					if (_log.isDebugEnabled()) {
+						_log.debug(exception);
+					}
 				}
 			}
 		}
@@ -712,15 +713,11 @@ public abstract class BaseSuggestionResourceTestCase {
 			setMethod.invoke(bean, _translateValue(parameterTypes[0], value));
 		}
 
-		private static List<java.lang.reflect.Field> _getAllDeclaredFields(
-			Class<?> clazz) {
-
-			List<java.lang.reflect.Field> fields = new ArrayList<>();
+		private static List<Field> _getAllDeclaredFields(Class<?> clazz) {
+			List<Field> fields = new ArrayList<>();
 
 			while ((clazz != null) && (clazz != Object.class)) {
-				for (java.lang.reflect.Field field :
-					clazz.getDeclaredFields()) {
-
+				for (Field field : clazz.getDeclaredFields()) {
 					fields.add(field);
 				}
 
@@ -744,8 +741,8 @@ public abstract class BaseSuggestionResourceTestCase {
 		}
 
 		private static Method _getMethod(
-			Class<?> clazz, String fieldName, String prefix,
-			Class<?>... parameterTypes)
+				Class<?> clazz, String fieldName, String prefix,
+				Class<?>... parameterTypes)
 			throws Exception {
 
 			return clazz.getMethod(
@@ -810,7 +807,7 @@ public abstract class BaseSuggestionResourceTestCase {
 				sb.append("(");
 
 				for (Map.Entry<String, Object> entry :
-					_parameterMap.entrySet()) {
+						_parameterMap.entrySet()) {
 
 					sb.append(entry.getKey());
 					sb.append(": ");
@@ -845,15 +842,15 @@ public abstract class BaseSuggestionResourceTestCase {
 
 	}
 
-	private static final com.liferay.portal.kernel.log.Log _log =
-		LogFactoryUtil.getLog(BaseSuggestionResourceTestCase.class);
+	private static final Log _log = LogFactoryUtil.getLog(
+		BaseSuggestionResourceTestCase.class);
 
 	private static Format _format;
-
-	private com.liferay.portal.kernel.model.User _testCompanyAdminUser;
 
 	@Inject
 	private com.liferay.portal.search.rest.resource.v1_0.SuggestionResource
 		_suggestionResource;
+
+	private User _testCompanyAdminUser;
 
 }
