@@ -1,3 +1,9 @@
 Bundle-Name: Liferay Portal Search REST Client
 Bundle-SymbolicName: com.liferay.portal.search.rest.client
 Bundle-Version: 1.0.26
+Export-Package:\
+	com.liferay.portal.search.rest.client.dto.v1_0,\
+	com.liferay.portal.search.rest.client.pagination,\
+	com.liferay.portal.search.rest.client.resource.v1_0,\
+	com.liferay.portal.search.rest.client.serdes.v1_0,\
+	com.liferay.portal.search.rest.client.http
