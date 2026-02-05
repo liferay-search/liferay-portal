@@ -6,10 +6,19 @@
 package com.liferay.portal.search.tuning.rankings.web.internal.results.builder;
 
 import com.liferay.asset.kernel.AssetRendererFactoryRegistryUtil;
+import com.liferay.asset.kernel.model.AssetRenderer;
 import com.liferay.asset.kernel.model.AssetRendererFactory;
 import com.liferay.document.library.configuration.DLConfiguration;
+import com.liferay.document.library.kernel.model.DLFileEntry;
 import com.liferay.document.library.kernel.model.DLFileEntryConstants;
 import com.liferay.document.library.kernel.service.DLAppLocalService;
+import com.liferay.document.library.kernel.service.DLFileEntryLocalServiceUtil;
+import com.liferay.object.constants.ObjectFieldConstants;
+import com.liferay.object.model.ObjectDefinition;
+import com.liferay.object.model.ObjectEntry;
+import com.liferay.object.model.ObjectField;
+import com.liferay.object.service.ObjectDefinitionLocalServiceUtil;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -24,6 +33,7 @@ import com.liferay.portal.kernel.security.permission.ResourceActions;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.FastDateFormatConstants;
 import com.liferay.portal.kernel.util.FastDateFormatFactory;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -31,13 +41,18 @@ import com.liferay.portal.search.document.Document;
 
 import jakarta.portlet.ResourceRequest;
 
+import java.io.Serializable;
+
 import java.text.DateFormat;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author André de Oliveira
@@ -152,12 +167,123 @@ public class RankingJSONBuilder {
 		return format.format(date);
 	}
 
+	private AssetRenderer<?> _getAssetRenderer() {
+		AssetRendererFactory<?> assetRendererFactory =
+			AssetRendererFactoryRegistryUtil.getAssetRendererFactoryByClassName(
+				_document.getString(Field.ENTRY_CLASS_NAME));
+
+		if (assetRendererFactory == null) {
+			return null;
+		}
+
+		try {
+			return assetRendererFactory.getAssetRenderer(
+				_document.getLong(Field.ENTRY_CLASS_PK));
+		}
+		catch (PortalException portalException) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(
+					"Error getting AssetRenderer for " +
+						_document.getLong(Field.ENTRY_CLASS_PK),
+					portalException);
+			}
+		}
+
+		return null;
+	}
+
 	private String _getAuthor() {
 		if (_isUser()) {
 			return _document.getString("screenName");
 		}
 
 		return _document.getString(Field.USER_NAME);
+	}
+
+	private String _getCMSObjectEntryIcon(ObjectDefinition objectDefinition) {
+		String externalReferenceCode =
+			objectDefinition.getExternalReferenceCode();
+
+		if (Objects.equals(externalReferenceCode, "L_CMS_BASIC_DOCUMENT")) {
+			String mimeType = _getCMSObjectEntryMimeType(objectDefinition);
+
+			return _getIconFileMimeType(mimeType);
+		}
+		else if (Objects.equals(
+					externalReferenceCode, "L_CMS_BASIC_WEB_CONTENT")) {
+
+			return "forms";
+		}
+		else if (Objects.equals(externalReferenceCode, "L_CMS_BLOG")) {
+			return "blogs";
+		}
+		else if (Objects.equals(
+					externalReferenceCode, "L_CMS_EXTERNAL_VIDEO")) {
+
+			return "document-multimedia";
+		}
+
+		return "web-content";
+	}
+
+	private String _getCMSObjectEntryMimeType(
+		ObjectDefinition objectDefinition) {
+
+		List<ObjectField> objectFields = objectDefinition.getObjectFieldBag(
+		).getIndexedObjectFields();
+
+		if (objectFields == null) {
+			return null;
+		}
+
+		AssetRenderer<?> assetRenderer = _getAssetRenderer();
+
+		if (assetRenderer == null) {
+			return null;
+		}
+
+		ObjectEntry objectEntry = (ObjectEntry)assetRenderer.getAssetObject();
+
+		for (ObjectField objectField : objectFields) {
+			if (Objects.equals(
+					objectField.getBusinessType(),
+					ObjectFieldConstants.BUSINESS_TYPE_ATTACHMENT)) {
+
+				Map<String, Serializable> values = objectEntry.getValues();
+
+				Serializable fileEntryIdSerializable = values.get(
+					objectField.getName());
+
+				if (fileEntryIdSerializable == null) {
+					continue;
+				}
+
+				long fileEntryId = GetterUtil.getLong(fileEntryIdSerializable);
+
+				if (fileEntryId <= 0) {
+					continue;
+				}
+
+				try {
+					DLFileEntry dlFileEntry =
+						DLFileEntryLocalServiceUtil.getDLFileEntry(fileEntryId);
+
+					if (dlFileEntry != null) {
+						return dlFileEntry.getMimeType();
+					}
+				}
+				catch (PortalException portalException) {
+					if (_log.isWarnEnabled()) {
+						_log.warn(
+							"Error getting MIME type for attachment " +
+								fileEntryId,
+							portalException);
+					}
+				}
+			}
+		}
+
+		return null;
 	}
 
 	private Date _getCreateDate() {
@@ -200,6 +326,12 @@ public class RankingJSONBuilder {
 			description = _document.getString(Field.DESCRIPTION);
 		}
 
+		ObjectDefinition objectDefinition = _getObjectDefinition();
+
+		if (objectDefinition != null) {
+			description = _getObjectEntryContent();
+		}
+
 		return StringUtil.shorten(description, 200);
 	}
 
@@ -229,7 +361,15 @@ public class RankingJSONBuilder {
 				_document.getString(Field.ENTRY_CLASS_NAME));
 
 		if (assetRendererFactory != null) {
-			return assetRendererFactory.getIconCssClass();
+			String iconCSSClass = assetRendererFactory.getIconCssClass();
+
+			ObjectDefinition objectDefinition = _getObjectDefinition();
+
+			if (Validator.isBlank(iconCSSClass) && objectDefinition.isCMS()) {
+				return _getCMSObjectEntryIcon(objectDefinition);
+			}
+
+			return iconCSSClass;
 		}
 
 		return null;
@@ -277,6 +417,49 @@ public class RankingJSONBuilder {
 		return "document-default";
 	}
 
+	private ObjectDefinition _getObjectDefinition() {
+		String entryClassName = _document.getString(Field.ENTRY_CLASS_NAME);
+
+		return ObjectDefinitionLocalServiceUtil.
+			fetchObjectDefinitionByClassName(
+				_themeDisplay.getCompanyId(), entryClassName);
+	}
+
+	private String _getObjectEntryContent() {
+		StringBundler sb = new StringBundler();
+
+		Map<String, com.liferay.portal.search.document.Field> fields =
+			_document.getFields();
+
+		for (Map.Entry<String, com.liferay.portal.search.document.Field> entry :
+				fields.entrySet()) {
+
+			String fieldName = entry.getKey();
+
+			if (fieldName.startsWith("snippet_nestedFieldArray.value")) {
+				Field field = (Field)entry.getValue();
+
+				sb.append(
+					StringUtil.merge(
+						field.getValues(), StringPool.TRIPLE_PERIOD));
+
+				sb.append(StringPool.TRIPLE_PERIOD);
+			}
+		}
+
+		if (sb.index() > 0) {
+			sb.setIndex(sb.index() - 1);
+		}
+
+		String content = sb.toString();
+
+		if (Validator.isBlank(content)) {
+			content = _document.getString("objectEntryContent");
+		}
+
+		return content;
+	}
+
 	private String _getTitle() {
 		if (_isUser()) {
 			return _document.getString("fullName");
@@ -296,6 +479,14 @@ public class RankingJSONBuilder {
 
 		if (Validator.isBlank(title)) {
 			title = _document.getString(Field.NAME);
+		}
+
+		if (Validator.isBlank(title)) {
+			AssetRenderer<?> assetRenderer = _getAssetRenderer();
+
+			if (assetRenderer != null) {
+				title = assetRenderer.getTitle(_locale);
+			}
 		}
 
 		return title;
