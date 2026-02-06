@@ -30,10 +30,10 @@ const DOCUMENT_CSS_CLASS_COLOR_MAP = {
 	'document-default': 'file-icon-color-0',
 	'document-image': 'file-icon-color-5',
 	'document-multimedia': 'file-icon-color-5',
-	'document-pdf': 'file-icon-color-3',
 	'document-presentation': 'file-icon-color-4',
 	'document-table': 'file-icon-color-2',
 	'document-text': 'file-icon-color-6',
+	'document-vector': 'file-icon-color-3',
 };
 
 const HOVER_TYPES = {

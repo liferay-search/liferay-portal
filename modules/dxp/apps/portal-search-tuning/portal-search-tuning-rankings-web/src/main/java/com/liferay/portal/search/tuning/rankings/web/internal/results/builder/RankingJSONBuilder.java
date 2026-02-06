@@ -411,7 +411,7 @@ public class RankingJSONBuilder {
 		else if (_containsMimeType(
 					_dlConfiguration.vectorialFileMimeTypes(), mimeType)) {
 
-			return "document-pdf";
+			return "document-vector";
 		}
 
 		return "document-default";
