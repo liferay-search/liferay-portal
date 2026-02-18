@@ -1,3 +1,4 @@
+
 # How to Contribute
 
 Liferay Portal is developed by its community consisting of users, enthusiasts,
