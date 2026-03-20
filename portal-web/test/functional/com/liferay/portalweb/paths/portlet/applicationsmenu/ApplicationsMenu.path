@@ -41,6 +41,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>SIDE_NAVIGATION_TOGGLE</td>
+	<td>//button[@data-qa-id='sideNavigationToggler']</td>
+	<td></td>
+</tr>
+<tr>
 	<td>SITE_LINK</td>
 	<td>//ul[@role='menu' and contains(@class, 'sites-list')]//a[normalize-space(text())='${key_site}']</td>
 	<td></td>

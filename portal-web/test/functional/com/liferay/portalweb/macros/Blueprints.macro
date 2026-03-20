@@ -228,6 +228,12 @@ definition {
 		else {
 			Navigator.openWithAppendToBaseURL(urlAppend = "group/${siteURLKey}/~/control_panel/manage?p_p_id=com_liferay_search_experiences_web_internal_blueprint_admin_portlet_SXPBlueprintAdminPortlet");
 		}
+		
+		if (IsElementPresent(locator1 = "ApplicationsMenu#SIDE_NAVIGATION")) {
+			Click(locator1 = "ApplicationsMenu#SIDE_NAVIGATION_TOGGLE");
+		}
+
+		WaitForElementNotPresent(locator1 = "ApplicationsMenu#SIDE_NAVIGATION");
 	}
 
 	@summary = "Default summary"
