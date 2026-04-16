@@ -856,16 +856,16 @@ public class EditAssetListDisplayContext {
 			return _referencedModelsGroupIds;
 		}
 
+		Set<Long> referenceModelsGroupIdsSet = new LinkedHashSet<>();
+
 		long[] currentAndAncestorSiteGroupIds =
 			PortalUtil.getCurrentAndAncestorSiteGroupIds(
 				getSelectedGroupIds(), true);
 
-		Set<Long> referenceModelsGroupIdSet = new LinkedHashSet<>();
-
 		for (long currentAndAncestorSiteGroupId :
 				currentAndAncestorSiteGroupIds) {
 
-			referenceModelsGroupIdSet.add(currentAndAncestorSiteGroupId);
+			referenceModelsGroupIdsSet.add(currentAndAncestorSiteGroupId);
 
 			List<DepotEntry> currentAndGroupConnectedDepotEntries =
 				_depotEntryService.getCurrentAndGroupConnectedDepotEntries(
@@ -875,13 +875,13 @@ public class EditAssetListDisplayContext {
 			for (DepotEntry currentAndGroupConnectedDepotEntry :
 					currentAndGroupConnectedDepotEntries) {
 
-				referenceModelsGroupIdSet.add(
+				referenceModelsGroupIdsSet.add(
 					currentAndGroupConnectedDepotEntry.getGroupId());
 			}
 		}
 
 		_referencedModelsGroupIds = ArrayUtil.toLongArray(
-			referenceModelsGroupIdSet);
+			referenceModelsGroupIdsSet);
 
 		return _referencedModelsGroupIds;
 	}
@@ -889,7 +889,7 @@ public class EditAssetListDisplayContext {
 	public List<Long> getResolvedReferencedModelsGroupIds()
 		throws PortalException {
 
-		List<Long> groupIdList = TransformUtil.transformToList(
+		List<Long> groupIds = TransformUtil.transformToList(
 			getReferencedModelsGroupIds(),
 			groupId -> _isSpaceDepotEntryGroup(groupId) ? null : groupId);
 
@@ -897,10 +897,10 @@ public class EditAssetListDisplayContext {
 			_themeDisplay.getCompanyId(), GroupConstants.CMS);
 
 		if (cmsGroup != null) {
-			groupIdList.add(cmsGroup.getGroupId());
+			groupIds.add(cmsGroup.getGroupId());
 		}
 
-		return groupIdList;
+		return groupIds;
 	}
 
 	public SearchContainer<AssetListEntryAssetEntryRel> getSearchContainer() {
@@ -1069,27 +1069,25 @@ public class EditAssetListDisplayContext {
 	}
 
 	public List<Long> getVocabularyIds() throws PortalException {
-		long[] currentAndAncestorSiteGroupIds = getReferencedModelsGroupIds();
+		long[] referencedModelsGroupIds = getReferencedModelsGroupIds();
 
-		Set<AssetVocabulary> groupsVocabularies = new LinkedHashSet<>(
+		Set<AssetVocabulary> assetVocabulariesSet = new LinkedHashSet<>(
 			_assetVocabularyService.getGroupsVocabularies(
-				currentAndAncestorSiteGroupIds));
+				referencedModelsGroupIds));
 
-		if (_containsSpaceDepotEntryGroups(currentAndAncestorSiteGroupIds) &&
+		if (_containsSpaceDepotEntryGroups(referencedModelsGroupIds) &&
 			!ArrayUtil.contains(
-				currentAndAncestorSiteGroupIds, GroupConstants.GROUP_ID_ALL)) {
+				referencedModelsGroupIds, GroupConstants.GROUP_ID_ALL)) {
 
-			currentAndAncestorSiteGroupIds = ArrayUtil.append(
-				currentAndAncestorSiteGroupIds, GroupConstants.GROUP_ID_ALL);
+			referencedModelsGroupIds = ArrayUtil.append(
+				referencedModelsGroupIds, GroupConstants.GROUP_ID_ALL);
 		}
 
-		for (long currentAndAncestorSiteGroupId :
-				currentAndAncestorSiteGroupIds) {
-
+		for (long referencedModelsGroupId : referencedModelsGroupIds) {
 			List<AssetVocabularyGroupRel> assetVocabularyGroupRels =
 				_assetVocabularyGroupRelLocalService.
 					getAssetVocabularyGroupRelsByGroupId(
-						currentAndAncestorSiteGroupId);
+						referencedModelsGroupId);
 
 			for (AssetVocabularyGroupRel assetVocabularyGroupRel :
 					assetVocabularyGroupRels) {
@@ -1099,19 +1097,19 @@ public class EditAssetListDisplayContext {
 						assetVocabularyGroupRel.getVocabularyId());
 
 				if (assetVocabulary != null) {
-					groupsVocabularies.add(assetVocabulary);
+					assetVocabulariesSet.add(assetVocabulary);
 				}
 			}
 		}
 
 		List<AssetVocabulary> assetVocabularies = ListUtil.filter(
-			new ArrayList<>(groupsVocabularies),
-			vocabulary -> {
-				if (vocabulary == null) {
+			new ArrayList<>(assetVocabulariesSet),
+			assetVocabulary -> {
+				if (assetVocabulary == null) {
 					return false;
 				}
 
-				long[] classNameIds = vocabulary.getSelectedClassNameIds();
+				long[] classNameIds = assetVocabulary.getSelectedClassNameIds();
 
 				for (long classNameId : classNameIds) {
 					if (classNameId == 0) {
