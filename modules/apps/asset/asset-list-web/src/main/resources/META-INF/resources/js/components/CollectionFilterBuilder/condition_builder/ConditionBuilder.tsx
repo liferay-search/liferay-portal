@@ -5,7 +5,8 @@
 
 import ClayButton, {ClayButtonWithIcon} from '@clayui/button';
 import {Option, Picker} from '@clayui/core';
-import React, {useCallback} from 'react';
+import DropDown from '@clayui/drop-down';
+import React, {useCallback, useMemo} from 'react';
 
 import './ConditionBuilder.scss';
 
@@ -15,6 +16,7 @@ import type {
 	FilterCondition,
 	GenericOperator,
 	GenericProperty,
+	PropertyGroup,
 	ValueInputRenderer,
 } from './types';
 
@@ -44,10 +46,16 @@ type ConditionRowProps = {
 	getOperators: (property: GenericProperty) => GenericOperator[];
 	onChange: (condition: FilterCondition) => void;
 	onDelete: () => void;
-	properties: GenericProperty[];
+	properties: Array<GenericProperty | PropertyGroup>;
 	renderValueInput: ValueInputRenderer;
 	showDeleteButton: boolean;
 };
+
+function isPropertyGroup(
+	input: GenericProperty | PropertyGroup
+): input is PropertyGroup {
+	return 'items' in input;
+}
 
 function ConditionRow({
 	condition,
@@ -58,14 +66,22 @@ function ConditionRow({
 	renderValueInput,
 	showDeleteButton,
 }: ConditionRowProps) {
-	const selectedProperty = properties.find(
+	const flatProperties = useMemo(
+		() =>
+			properties.flatMap((item) =>
+				isPropertyGroup(item) ? item.items : [item]
+			),
+		[properties]
+	);
+
+	const selectedProperty = flatProperties.find(
 		(p) => p.name === condition.propertyName
 	);
 
 	const operators = selectedProperty ? getOperators(selectedProperty) : [];
 
 	const handleValueChange = useCallback(
-		(value: string) => {
+		(value: string | Array<string | object>) => {
 			onChange({...condition, value});
 		},
 		[condition, onChange]
@@ -81,17 +97,14 @@ function ConditionRow({
 					<Picker
 						aria-label={Liferay.Language.get('field')}
 						as={TriggerLabel}
-						items={properties.map((p) => ({
-							label: p.label,
-							value: p.name,
-						}))}
+						items={properties}
 						onSelectionChange={(key) => {
-							const newProperty = properties.find(
+							const newProperty = flatProperties.find(
 								(p) => p.name === key
 							);
 
-							const operators = key
-								? getOperators(newProperty as GenericProperty)
+							const operators = newProperty
+								? getOperators(newProperty)
 								: null;
 
 							onChange({
@@ -105,9 +118,22 @@ function ConditionRow({
 						placeholder={Liferay.Language.get('select')}
 						selectedKey={condition.propertyName ?? ''}
 					>
-						{(item) => (
-							<Option key={item.value}>{item.label}</Option>
-						)}
+						{(item) =>
+							isPropertyGroup(item) ? (
+								<DropDown.Group
+									header={item.label}
+									items={item.items}
+								>
+									{(prop) => (
+										<Option key={prop.name}>
+											{prop.label}
+										</Option>
+									)}
+								</DropDown.Group>
+							) : (
+								<Option key={item.name}>{item.label}</Option>
+							)
+						}
 					</Picker>
 				</div>
 
