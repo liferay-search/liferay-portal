@@ -13,17 +13,15 @@ import './ConditionBuilder.scss';
 import type {
 	ConditionBuilderProps,
 	ConditionType,
-	FilterCondition,
+	GenericCondition,
 	GenericOperator,
 	GenericProperty,
 	PropertyGroup,
 	ValueInputRenderer,
 } from './types';
 
-let condCounter = 0;
-
-export function generateConditionId() {
-	return `condition_${++condCounter}`;
+export function getRandomID() {
+	return crypto.randomUUID();
 }
 
 export const TriggerLabel = React.forwardRef<HTMLButtonElement, any>(
@@ -42,9 +40,9 @@ export const TriggerLabel = React.forwardRef<HTMLButtonElement, any>(
 );
 
 type ConditionRowProps = {
-	condition: FilterCondition;
+	condition: GenericCondition;
 	getOperators: (property: GenericProperty) => GenericOperator[];
-	onChange: (condition: FilterCondition) => void;
+	onChange: (condition: GenericCondition) => void;
 	onDelete: () => void;
 	properties: Array<GenericProperty | PropertyGroup>;
 	renderValueInput: ValueInputRenderer;
@@ -201,12 +199,12 @@ export function ConditionBuilder({
 	showConjunctionPicker = true,
 }: ConditionBuilderProps) {
 	const handleAddCondition = () => {
-		onChange([...conditions, {id: generateConditionId()}], conditionType);
+		onChange([...conditions, {id: getRandomID()}], conditionType);
 	};
 
 	const handleDeleteCondition = (index: number) => {
 		if (conditions.length === 1) {
-			onChange([{id: generateConditionId()}], conditionType);
+			onChange([{id: getRandomID()}], conditionType);
 		}
 		else {
 			onChange(
@@ -216,7 +214,10 @@ export function ConditionBuilder({
 		}
 	};
 
-	const handleUpdateCondition = (index: number, updated: FilterCondition) => {
+	const handleUpdateCondition = (
+		index: number,
+		updated: GenericCondition
+	) => {
 		const next = [...conditions];
 
 		next[index] = updated;

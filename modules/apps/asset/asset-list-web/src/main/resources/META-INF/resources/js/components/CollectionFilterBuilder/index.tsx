@@ -9,13 +9,13 @@ import React, {useEffect, useMemo, useState} from 'react';
 import renderValueInput from './ValueInput';
 import {
 	ConditionBuilder,
-	generateConditionId,
+	getRandomID,
 } from './condition_builder/ConditionBuilder';
 import {getCollectionOperators} from './operators';
 
 import type {
 	ConditionType,
-	FilterCondition,
+	GenericCondition,
 	GenericProperty,
 	PropertyGroup,
 } from './condition_builder/types';
@@ -24,11 +24,11 @@ interface CollectionFilterBuilderProps {
 	categorySelectorURL?: string;
 	groupIds?: string[];
 	initialConditionType?: ConditionType;
-	initialConditions?: Array<Omit<FilterCondition, 'id'>>;
+	initialConditions?: Array<Omit<GenericCondition, 'id'>>;
 	namespace: string;
 	onChange?: (state: {
 		conditionType: ConditionType;
-		conditions: FilterCondition[];
+		conditions: GenericCondition[];
 	}) => void;
 	properties: GenericProperty[];
 	propertiesURL?: string;
@@ -54,13 +54,13 @@ export default function CollectionFilterBuilder({
 	tagSelectorURL,
 	vocabularyIds,
 }: CollectionFilterBuilderProps) {
-	const [conditions, setConditions] = useState<FilterCondition[]>(
+	const [conditions, setConditions] = useState<GenericCondition[]>(
 		initialConditions?.length
 			? initialConditions.map((condition) => ({
 					...condition,
-					id: generateConditionId(),
+					id: getRandomID(),
 				}))
-			: [{id: generateConditionId()}]
+			: [{id: getRandomID()}]
 	);
 
 	const [conditionType, setConditionType] =
@@ -118,7 +118,7 @@ export default function CollectionFilterBuilder({
 		]
 	);
 
-	const filterValuesAndOmitID = (conditions: FilterCondition[]) =>
+	const filterValuesAndOmitID = (conditions: GenericCondition[]) =>
 		conditions
 			.filter(
 				({operatorName, propertyName, value}) =>
@@ -164,10 +164,8 @@ export default function CollectionFilterBuilder({
 				const subtypeValue = subtypeSelector?.value;
 
 				if (subtypeValue === 'false' && subtypeContainer) {
-					const className = subtypeContainer.id.slice(
-						namespace.length,
-						-'Options'.length
-					);
+					const className =
+						subtypeContainer.getAttribute('data-class-name');
 					const multiSubtypeSelect = document.getElementById(
 						`${namespace}${className}currentClassTypeIds`
 					) as HTMLSelectElement | null;
@@ -192,7 +190,9 @@ export default function CollectionFilterBuilder({
 			)
 				.then((response) => response.json())
 				.then((data) => setProperties(data || []))
-				.catch(() => {});
+				.catch((error) =>
+					console.error('Failed to fetch type properties: ', error)
+				);
 		};
 
 		const eventName = `${namespace}sourceChange`;
@@ -205,7 +205,7 @@ export default function CollectionFilterBuilder({
 	}, [namespace, propertiesURL]);
 
 	const handleChange = (
-		newConditions: FilterCondition[],
+		newConditions: GenericCondition[],
 		newType: ConditionType
 	) => {
 		setConditions(newConditions);
@@ -232,24 +232,31 @@ export default function CollectionFilterBuilder({
 				value={JSON.stringify(filterValuesAndOmitID(conditions))}
 			/>
 
-			{/* Use for Developer Viewing. TO-DO: Remove */}
-			<div className="mt-4">
-				<div className="text-secondary">
-					<code>{namespace}TypeSettingsProperties--conditions</code>
-				</div>
+			{process.env.NODE_ENV === 'development' && (
+				<div className="mt-4">
+					<div className="text-secondary">
+						<code>
+							{namespace}TypeSettingsProperties--conditions
+						</code>
+					</div>
 
-				<pre
-					style={{
-						background: '#f5f5f5',
-						borderRadius: 4,
-						fontSize: 11,
-						marginTop: 8,
-						padding: 12,
-					}}
-				>
-					{JSON.stringify(filterValuesAndOmitID(conditions), null, 2)}
-				</pre>
-			</div>
+					<pre
+						style={{
+							background: '#f5f5f5',
+							borderRadius: 4,
+							fontSize: 11,
+							marginTop: 8,
+							padding: 12,
+						}}
+					>
+						{JSON.stringify(
+							filterValuesAndOmitID(conditions),
+							null,
+							2
+						)}
+					</pre>
+				</div>
+			)}
 		</>
 	);
 }
