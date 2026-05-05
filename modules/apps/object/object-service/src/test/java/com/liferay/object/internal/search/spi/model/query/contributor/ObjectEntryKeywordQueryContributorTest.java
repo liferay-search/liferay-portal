@@ -5,16 +5,19 @@
 
 package com.liferay.object.internal.search.spi.model.query.contributor;
 
+import com.liferay.object.constants.ObjectEntrySearchConstants;
 import com.liferay.object.constants.ObjectFieldConstants;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectField;
 import com.liferay.object.model.bag.ObjectFieldBag;
 import com.liferay.object.service.ObjectFieldLocalService;
 import com.liferay.object.service.ObjectViewLocalService;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.search.BooleanClause;
 import com.liferay.portal.kernel.search.BooleanClauseOccur;
 import com.liferay.portal.kernel.search.BooleanQuery;
+import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.MatchQuery;
 import com.liferay.portal.kernel.search.NestedQuery;
 import com.liferay.portal.kernel.search.Query;
@@ -161,14 +164,21 @@ public class ObjectEntryKeywordQueryContributorTest {
 			}
 		}
 
+		String localizedNestedFieldArrayValue = Field.getLocalizedName(
+			LocaleUtil.US, ObjectEntrySearchConstants.NESTED_FIELD_ARRAY_VALUE);
+
 		Assert.assertTrue(
-			"Expected " + matchQueryFields +
-				" to contain nestedFieldArray.value_en_US",
-			matchQueryFields.contains("nestedFieldArray.value_en_US"));
+			StringBundler.concat(
+				"Expected ", matchQueryFields, " to contain ",
+				localizedNestedFieldArrayValue),
+			matchQueryFields.contains(localizedNestedFieldArrayValue));
+
 		Assert.assertFalse(
-			"Expected " + matchQueryFields +
-				" not to contain nestedFieldArray.value_text",
-			matchQueryFields.contains("nestedFieldArray.value_text"));
+			StringBundler.concat(
+				"Expected ", matchQueryFields, " not to contain ",
+				ObjectEntrySearchConstants.NESTED_FIELD_ARRAY_VALUE_TEXT),
+			matchQueryFields.contains(
+				ObjectEntrySearchConstants.NESTED_FIELD_ARRAY_VALUE_TEXT));
 	}
 
 	private SearchContext _buildSearchContext(Locale locale) {

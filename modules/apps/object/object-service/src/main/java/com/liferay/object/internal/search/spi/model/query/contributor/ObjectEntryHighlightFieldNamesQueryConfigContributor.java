@@ -6,6 +6,7 @@
 package com.liferay.object.internal.search.spi.model.query.contributor;
 
 import com.liferay.object.constants.ObjectEntrySearchConstants;
+import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.search.localization.SearchLocalizationHelper;
@@ -27,7 +28,7 @@ public class ObjectEntryHighlightFieldNamesQueryConfigContributor
 	@Override
 	public String[] getHighlightFieldNames(SearchContext searchContext) {
 		String[] fieldNames = {
-			"entryClassPK",
+			Field.ENTRY_CLASS_PK,
 			ObjectEntrySearchConstants.NESTED_FIELD_ARRAY_VALUE_BOOLEAN,
 			ObjectEntrySearchConstants.NESTED_FIELD_ARRAY_VALUE_KEYWORD,
 			ObjectEntrySearchConstants.NESTED_FIELD_ARRAY_VALUE_TEXT,
