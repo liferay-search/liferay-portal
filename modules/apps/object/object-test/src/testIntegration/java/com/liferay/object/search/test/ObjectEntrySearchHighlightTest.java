@@ -7,6 +7,7 @@ package com.liferay.object.search.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.object.constants.ObjectEntryFolderConstants;
+import com.liferay.object.constants.ObjectEntrySearchConstants;
 import com.liferay.object.field.builder.TextObjectFieldBuilder;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectEntry;
@@ -16,7 +17,6 @@ import com.liferay.object.service.ObjectEntryLocalService;
 import com.liferay.object.service.ObjectFieldLocalService;
 import com.liferay.object.test.util.ObjectDefinitionTestUtil;
 import com.liferay.petra.string.StringBundler;
-import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.highlight.HighlightUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
@@ -152,15 +152,19 @@ public class ObjectEntrySearchHighlightTest {
 			LocaleUtil.US, _nonlocalizedObjectDefinition,
 			_nonlocalizedObjectEntry);
 
-		_assertHighlight("objectEntryTitle", searchHit);
-		_assertNoLocalizedHighlight("objectEntryTitle", searchHit);
+		_assertHighlight(
+			ObjectEntrySearchConstants.OBJECT_ENTRY_TITLE, searchHit);
+		_assertNoLocalizedHighlight(
+			ObjectEntrySearchConstants.OBJECT_ENTRY_TITLE, searchHit);
 
 		searchHit = _search(
 			LocaleUtil.SPAIN, _nonlocalizedObjectDefinition,
 			_nonlocalizedObjectEntry);
 
-		_assertHighlight("objectEntryTitle", searchHit);
-		_assertNoLocalizedHighlight("objectEntryTitle", searchHit);
+		_assertHighlight(
+			ObjectEntrySearchConstants.OBJECT_ENTRY_TITLE, searchHit);
+		_assertNoLocalizedHighlight(
+			ObjectEntrySearchConstants.OBJECT_ENTRY_TITLE, searchHit);
 	}
 
 	@Rule
@@ -314,13 +318,13 @@ public class ObjectEntrySearchHighlightTest {
 	}
 
 	private String _getContentFieldName(Locale locale) {
-		return StringBundler.concat(
-			_NESTED_FIELD_ARRAY_VALUE, StringPool.UNDERLINE,
-			LocaleUtil.toLanguageId(locale));
+		return Field.getLocalizedName(
+			locale, ObjectEntrySearchConstants.NESTED_FIELD_ARRAY_VALUE);
 	}
 
 	private String _getTitleFieldName(Locale locale) {
-		return "objectEntryTitle_" + LocaleUtil.toLanguageId(locale);
+		return Field.getLocalizedName(
+			locale, ObjectEntrySearchConstants.OBJECT_ENTRY_TITLE);
 	}
 
 	private SearchHit _search(
@@ -371,9 +375,6 @@ public class ObjectEntrySearchHighlightTest {
 	private static final String _LOCALIZED_CONTENT_FIELD_NAME = "localizedText";
 
 	private static final String _LOCALIZED_TITLE_FIELD_NAME = "localizedTitle";
-
-	private static final String _NESTED_FIELD_ARRAY_VALUE =
-		"nestedFieldArray.value";
 
 	private static final String _NONLOCALIZED_CONTENT_FIELD_NAME =
 		"nonlocalizedText";
