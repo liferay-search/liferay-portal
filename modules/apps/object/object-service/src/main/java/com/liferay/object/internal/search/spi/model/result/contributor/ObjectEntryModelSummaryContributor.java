@@ -137,7 +137,9 @@ public class ObjectEntryModelSummaryContributor
 		}
 
 		if (Validator.isBlank(title)) {
-			title = document.get(Field.SNIPPET + Field.ENTRY_CLASS_PK);
+			title = document.get(
+				StringBundler.concat(
+					Field.SNIPPET, StringPool.UNDERLINE, Field.ENTRY_CLASS_PK));
 		}
 
 		if (Validator.isBlank(title)) {
