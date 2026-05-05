@@ -1073,29 +1073,9 @@ public class EditAssetListDisplayContext {
 	}
 
 	public JSONArray getTypePropertiesJSONArray() {
-		long[] classNameIds = GetterUtil.getLongValues(
-			StringUtil.split(
-				_unicodeProperties.getProperty("classNameIds", null)));
-
-		List<Long> classTypeIdsList = new ArrayList<>();
-
-		for (Map.Entry<String, String> entry : _unicodeProperties.entrySet()) {
-			if (!entry.getKey(
-				).startsWith(
-					"classTypeIds"
-				)) {
-
-				continue;
-			}
-
-			for (String classTypeId : StringUtil.split(entry.getValue())) {
-				classTypeIdsList.add(GetterUtil.getLong(classTypeId));
-			}
-		}
-
 		return AssetListTypePropertiesUtil.getTypePropertiesJSONArray(
-			classNameIds, ArrayUtil.toLongArray(classTypeIdsList),
-			_themeDisplay.getCompanyId(), _themeDisplay.getLocale());
+			getClassNameIds(), getClassTypeIds(), _themeDisplay.getCompanyId(),
+			_themeDisplay.getLocale());
 	}
 
 	public String getTypePropertiesURL() {
