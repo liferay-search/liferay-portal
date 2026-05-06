@@ -20,6 +20,9 @@ public class ObjectEntrySearchConstants {
 	public static final String NESTED_FIELD_ARRAY_VALUE =
 		"nestedFieldArray.value";
 
+	public static final String NESTED_FIELD_ARRAY_VALUE_BINARY =
+		"nestedFieldArray.value_binary";
+
 	public static final String NESTED_FIELD_ARRAY_VALUE_BOOLEAN =
 		"nestedFieldArray.value_boolean";
 
@@ -34,6 +37,9 @@ public class ObjectEntrySearchConstants {
 
 	public static final String NESTED_FIELD_ARRAY_VALUE_KEYWORD =
 		"nestedFieldArray.value_keyword";
+
+	public static final String NESTED_FIELD_ARRAY_VALUE_KEYWORD_LOWERCASE =
+		"nestedFieldArray.value_keyword_lowercase";
 
 	public static final String NESTED_FIELD_ARRAY_VALUE_LONG =
 		"nestedFieldArray.value_long";
