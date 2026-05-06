@@ -531,7 +531,8 @@ public class ObjectEntrySingleFormVariationInfoCollectionProvider
 					objectField.getDBType(),
 					ObjectFieldConstants.DB_TYPE_STRING)) {
 
-			return "nestedFieldArray.value_keyword_lowercase";
+			return ObjectEntrySearchConstants.
+				NESTED_FIELD_ARRAY_VALUE_KEYWORD_LOWERCASE;
 		}
 
 		return "";
