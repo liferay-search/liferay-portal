@@ -44,7 +44,7 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.json.JSONArray;
-import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.module.configuration.ConfigurationException;
@@ -244,8 +244,7 @@ public class AssetListAssetEntryProviderImpl
 			if (Validator.isNotNull(filters)) {
 				try {
 					assetEntryQuery.setAttribute(
-						"filters",
-						JSONFactoryUtil.createJSONArray(filters));
+						"filters", _jsonFactory.createJSONArray(filters));
 				}
 				catch (Exception exception) {
 					if (_log.isDebugEnabled()) {
@@ -694,8 +693,8 @@ public class AssetListAssetEntryProviderImpl
 	private BooleanClause[] _getFiltersBooleanClauses(
 		AssetEntryQuery assetEntryQuery, long companyId) {
 
-		JSONArray filtersJSONArray =
-			(JSONArray)assetEntryQuery.getAttribute("filters");
+		JSONArray filtersJSONArray = (JSONArray)assetEntryQuery.getAttribute(
+			"filters");
 
 		return AssetListFiltersUtil.getFiltersBooleanClauses(
 			filtersJSONArray, companyId, LocaleUtil.getMostRelevantLocale());
@@ -1116,6 +1115,9 @@ public class AssetListAssetEntryProviderImpl
 
 	@Reference
 	private DLFileEntryTypeLocalService _dlFileEntryTypeLocalService;
+
+	@Reference
+	private JSONFactory _jsonFactory;
 
 	@Reference
 	private Portal _portal;
