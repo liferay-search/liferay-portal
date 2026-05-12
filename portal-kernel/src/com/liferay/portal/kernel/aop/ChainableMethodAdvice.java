@@ -54,7 +54,8 @@ public abstract class ChainableMethodAdvice {
 		try {
 			returnValue = aopMethodInvocation.proceed(arguments);
 
-			afterReturning(aopMethodInvocation, arguments, returnValue);
+			returnValue = afterReturning(
+				aopMethodInvocation, arguments, returnValue);
 		}
 		catch (Throwable throwable) {
 			afterThrowing(aopMethodInvocation, arguments, throwable);
@@ -68,10 +69,12 @@ public abstract class ChainableMethodAdvice {
 		return returnValue;
 	}
 
-	protected void afterReturning(
+	protected Object afterReturning(
 			AopMethodInvocation aopMethodInvocation, Object[] arguments,
 			Object result)
 		throws Throwable {
+
+		return result;
 	}
 
 	protected void afterThrowing(
