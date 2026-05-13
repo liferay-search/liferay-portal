@@ -69,6 +69,7 @@ public class AssetListAssetEntryProviderFiltersTest {
 					"priority")));
 	}
 
+	@FeatureFlag(enable = false, value = "LPD-74731")
 	@Test
 	public void testFiltersAreIgnoredWhenFeatureFlagDisabled()
 		throws Exception {
