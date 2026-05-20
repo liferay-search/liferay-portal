@@ -12,6 +12,7 @@ import com.liferay.headless.delivery.internal.resource.v1_0.BlogPostingResourceI
 import com.liferay.headless.delivery.internal.resource.v1_0.CommentResourceImpl;
 import com.liferay.headless.delivery.internal.resource.v1_0.ContentElementResourceImpl;
 import com.liferay.headless.delivery.internal.resource.v1_0.ContentSetElementResourceImpl;
+import com.liferay.headless.delivery.internal.resource.v1_0.ContentSetProviderResourceImpl;
 import com.liferay.headless.delivery.internal.resource.v1_0.ContentStructureResourceImpl;
 import com.liferay.headless.delivery.internal.resource.v1_0.ContentTemplateResourceImpl;
 import com.liferay.headless.delivery.internal.resource.v1_0.DocumentDataDefinitionTypeResourceImpl;
@@ -39,6 +40,7 @@ import com.liferay.headless.delivery.resource.v1_0.BlogPostingResource;
 import com.liferay.headless.delivery.resource.v1_0.CommentResource;
 import com.liferay.headless.delivery.resource.v1_0.ContentElementResource;
 import com.liferay.headless.delivery.resource.v1_0.ContentSetElementResource;
+import com.liferay.headless.delivery.resource.v1_0.ContentSetProviderResource;
 import com.liferay.headless.delivery.resource.v1_0.ContentStructureResource;
 import com.liferay.headless.delivery.resource.v1_0.ContentTemplateResource;
 import com.liferay.headless.delivery.resource.v1_0.DocumentDataDefinitionTypeResource;
@@ -94,6 +96,8 @@ public class ServletDataImpl implements ServletData {
 			_commentResourceComponentServiceObjects);
 		Mutation.setContentElementResourceComponentServiceObjects(
 			_contentElementResourceComponentServiceObjects);
+		Mutation.setContentSetProviderResourceComponentServiceObjects(
+			_contentSetProviderResourceComponentServiceObjects);
 		Mutation.setContentStructureResourceComponentServiceObjects(
 			_contentStructureResourceComponentServiceObjects);
 		Mutation.setContentTemplateResourceComponentServiceObjects(
@@ -149,6 +153,8 @@ public class ServletDataImpl implements ServletData {
 			_contentElementResourceComponentServiceObjects);
 		Query.setContentSetElementResourceComponentServiceObjects(
 			_contentSetElementResourceComponentServiceObjects);
+		Query.setContentSetProviderResourceComponentServiceObjects(
+			_contentSetProviderResourceComponentServiceObjects);
 		Query.setContentStructureResourceComponentServiceObjects(
 			_contentStructureResourceComponentServiceObjects);
 		Query.setContentTemplateResourceComponentServiceObjects(
@@ -456,6 +462,16 @@ public class ServletDataImpl implements ServletData {
 						new ObjectValuePair<>(
 							ContentElementResourceImpl.class,
 							"postSiteContentElementsPageExportBatch"));
+					put(
+						"mutation#createAssetLibraryContentSetProvidersPageExportBatch",
+						new ObjectValuePair<>(
+							ContentSetProviderResourceImpl.class,
+							"postAssetLibraryContentSetProvidersPageExportBatch"));
+					put(
+						"mutation#createSiteContentSetProvidersPageExportBatch",
+						new ObjectValuePair<>(
+							ContentSetProviderResourceImpl.class,
+							"postSiteContentSetProvidersPageExportBatch"));
 					put(
 						"mutation#createAssetLibraryContentStructuresPageExportBatch",
 						new ObjectValuePair<>(
@@ -2004,6 +2020,16 @@ public class ServletDataImpl implements ServletData {
 							ContentSetElementResourceImpl.class,
 							"getSiteContentSetProviderByKeyContentSetElementsPage"));
 					put(
+						"query#assetLibraryContentSetProviders",
+						new ObjectValuePair<>(
+							ContentSetProviderResourceImpl.class,
+							"getAssetLibraryContentSetProvidersPage"));
+					put(
+						"query#contentSetProviders",
+						new ObjectValuePair<>(
+							ContentSetProviderResourceImpl.class,
+							"getSiteContentSetProvidersPage"));
+					put(
 						"query#assetLibraryContentStructurePermissions",
 						new ObjectValuePair<>(
 							ContentStructureResourceImpl.class,
@@ -3001,6 +3027,10 @@ public class ServletDataImpl implements ServletData {
 		_contentElementResourceComponentServiceObjects;
 
 	@Reference(scope = ReferenceScope.PROTOTYPE_REQUIRED)
+	private ComponentServiceObjects<ContentSetProviderResource>
+		_contentSetProviderResourceComponentServiceObjects;
+
+	@Reference(scope = ReferenceScope.PROTOTYPE_REQUIRED)
 	private ComponentServiceObjects<ContentStructureResource>
 		_contentStructureResourceComponentServiceObjects;
 
@@ -3093,4 +3123,4 @@ public class ServletDataImpl implements ServletData {
 		_contentSetElementResourceComponentServiceObjects;
 
 }
-// LIFERAY-REST-BUILDER-HASH:-1122700236
+// LIFERAY-REST-BUILDER-HASH:206603766

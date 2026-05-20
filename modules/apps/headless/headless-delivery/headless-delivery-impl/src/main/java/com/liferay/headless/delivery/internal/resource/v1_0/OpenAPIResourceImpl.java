@@ -95,6 +95,8 @@ public class OpenAPIResourceImpl {
 
 			add(ContentSetElementResourceImpl.class);
 
+			add(ContentSetProviderResourceImpl.class);
+
 			add(ContentStructureResourceImpl.class);
 
 			add(ContentTemplateResourceImpl.class);
@@ -144,4 +146,4 @@ public class OpenAPIResourceImpl {
 	};
 
 }
-// LIFERAY-REST-BUILDER-HASH:783422324
+// LIFERAY-REST-BUILDER-HASH:1361191756
