@@ -722,6 +722,35 @@ components:
                         The localized content's titles.
                     readOnly: true
                     type: object
+        ContentSetProvider:
+            description:
+                Represents a registered InfoCollectionProvider exposed for discovery by the Item Selector. The key
+                round-trips back to /sites/{siteId}/content-set-providers/by-key/{key}/content-set-elements to fetch the
+                provider's contents.
+            properties:
+                itemSubtype:
+                    description:
+                        When the provider is a SingleFormVariationInfoCollectionProvider, its formVariationKey. Null
+                        otherwise.
+                    readOnly: true
+                    type: string
+                itemType:
+                    description:
+                        The fully qualified class name of the items the provider returns (typically
+                        com.liferay.asset.kernel.model.AssetEntry).
+                    readOnly: true
+                    type: string
+                key:
+                    description:
+                        The provider's registry key.
+                    readOnly: true
+                    type: string
+                title:
+                    description:
+                        The provider's localized label.
+                    readOnly: true
+                    type: string
+            type: object
         ContentStructure:
             description:
                 Represents the content structure that backs structured content. This defines which form fields are
@@ -6321,6 +6350,53 @@ paths:
                                     $ref: "#/components/schemas/ContentElement"
                                 type: array
             tags: ["ContentElement"]
+    "/asset-libraries/{assetLibraryId}/content-set-providers":
+        get:
+            description:
+                Lists registered InfoCollectionProvider services available in the asset library context. Providers whose
+                isAvailable() returns false are excluded. Results are sorted by localized label.
+            operationId: getAssetLibraryContentSetProvidersPage
+            parameters:
+                -   in: path
+                    name: assetLibraryId
+                    required: true
+                    schema:
+                        format: int64
+                        type: integer
+                -   in: query
+                    name: itemType
+                    schema:
+                        type: string
+                -   in: query
+                    name: keywords
+                    schema:
+                        type: string
+                -   in: query
+                    name: page
+                    schema:
+                        type: integer
+                -   in: query
+                    name: pageSize
+                    schema:
+                        type: integer
+                -   in: header
+                    name: Accept-Language
+                    schema:
+                        type: string
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                items:
+                                    $ref: "#/components/schemas/ContentSetProvider"
+                                type: array
+                        application/xml:
+                            schema:
+                                items:
+                                    $ref: "#/components/schemas/ContentSetProvider"
+                                type: array
+            tags: ["ContentSetProvider"]
     "/asset-libraries/{assetLibraryId}/content-sets/by-key/{key}/content-set-elements":
         get:
             operationId: getAssetLibraryContentSetByKeyContentSetElementsPage
@@ -13031,6 +13107,53 @@ paths:
                                     $ref: "#/components/schemas/ContentElement"
                                 type: array
             tags: ["ContentElement"]
+    "/sites/{siteId}/content-set-providers":
+        get:
+            description:
+                Lists registered InfoCollectionProvider services available in the site context. Providers whose
+                isAvailable() returns false are excluded. Results are sorted by localized label.
+            operationId: getSiteContentSetProvidersPage
+            parameters:
+                -   in: path
+                    name: siteId
+                    required: true
+                    schema:
+                        format: int64
+                        type: integer
+                -   in: query
+                    name: itemType
+                    schema:
+                        type: string
+                -   in: query
+                    name: keywords
+                    schema:
+                        type: string
+                -   in: query
+                    name: page
+                    schema:
+                        type: integer
+                -   in: query
+                    name: pageSize
+                    schema:
+                        type: integer
+                -   in: header
+                    name: Accept-Language
+                    schema:
+                        type: string
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                items:
+                                    $ref: "#/components/schemas/ContentSetProvider"
+                                type: array
+                        application/xml:
+                            schema:
+                                items:
+                                    $ref: "#/components/schemas/ContentSetProvider"
+                                type: array
+            tags: ["ContentSetProvider"]
     "/sites/{siteId}/content-set-providers/by-key/{key}/content-set-elements":
         get:
             operationId: getSiteContentSetProviderByKeyContentSetElementsPage
