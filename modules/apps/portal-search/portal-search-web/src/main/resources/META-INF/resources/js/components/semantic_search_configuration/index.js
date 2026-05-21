@@ -193,6 +193,8 @@ export default function ({
 	availableTextEmbeddingProviders,
 	availableTextTruncationStrategies,
 	formName,
+	inferenceEndpointCapabilityAvailable = true,
+	inferenceEndpointCapabilityReason = '',
 	initialTextEmbeddingCacheTimeout,
 	initialTextEmbeddingProviderConfigurationJSONs,
 	initialTextEmbeddingsEnabled,
@@ -200,6 +202,7 @@ export default function ({
 	namespace = '',
 	redirectURL,
 }) {
+	const _capabilityDisabled = !inferenceEndpointCapabilityAvailable;
 	const resolvedInitialTextEmbeddingProviderConfigurationJSONs = useMemo(
 		() =>
 			resolveInitialTextEmbeddingProviderConfigurationJSONs(
@@ -1708,56 +1711,74 @@ export default function ({
 
 	return (
 		<div className="semantic-search-settings-root">
-			{_renderEmbeddingProviderConfigurationInputs(0)}
-
-			<SubmitWarningModal
-				message={Liferay.Language.get(
-					'unsuccessful-connection-warning'
-				)}
-				onClose={_handleSubmitWarningModalClose}
-				onSubmit={_handleSubmitWarningModalSave}
-				visible={showSubmitWarningModal}
-			/>
-
-			<input
-				name={`${namespace}textEmbeddingProviderConfigurationJSONs`}
-				type="hidden"
-				value={formik.values.textEmbeddingProviderConfigurationJSONs
-					.map((configurationObject) =>
-						JSON.stringify(configurationObject)
-					)
-					.join('|')}
-			/>
-
-			{formik.values.textEmbeddingsEnabled &&
-				(_isTextEmbeddingsEnabledDirty() ||
-					_isProviderConfigurationDirty()) && (
-					<ClayAlert displayType="info">
-						{Liferay.Language.get('reindex-required-alert')}
-					</ClayAlert>
-				)}
-
-			<ClayButton.Group spaced>
-				<ClayButton
-					disabled={formik.isSubmitting}
-					onClick={_handleSubmit}
+			<ClayTooltipProvider>
+				<fieldset
+					className="border-0 m-0 p-0"
+					data-qa-id="semanticSearchCapability"
+					disabled={_capabilityDisabled}
+					title={
+						_capabilityDisabled
+							? inferenceEndpointCapabilityReason
+							: undefined
+					}
 				>
-					{formik.isSubmitting && (
-						<span className="inline-item inline-item-before">
-							<span
-								aria-hidden="true"
-								className="loading-animation"
-							></span>
-						</span>
-					)}
+					{_renderEmbeddingProviderConfigurationInputs(0)}
 
-					{Liferay.Language.get('save')}
-				</ClayButton>
+					<SubmitWarningModal
+						message={Liferay.Language.get(
+							'unsuccessful-connection-warning'
+						)}
+						onClose={_handleSubmitWarningModalClose}
+						onSubmit={_handleSubmitWarningModalSave}
+						visible={showSubmitWarningModal}
+					/>
 
-				<a className="btn btn-cancel btn-secondary" href={redirectURL}>
-					{Liferay.Language.get('cancel')}
-				</a>
-			</ClayButton.Group>
+					<input
+						name={`${namespace}textEmbeddingProviderConfigurationJSONs`}
+						type="hidden"
+						value={formik.values.textEmbeddingProviderConfigurationJSONs
+							.map((configurationObject) =>
+								JSON.stringify(configurationObject)
+							)
+							.join('|')}
+					/>
+
+					{formik.values.textEmbeddingsEnabled &&
+						(_isTextEmbeddingsEnabledDirty() ||
+							_isProviderConfigurationDirty()) && (
+							<ClayAlert displayType="info">
+								{Liferay.Language.get('reindex-required-alert')}
+							</ClayAlert>
+						)}
+
+					<ClayButton.Group spaced>
+						<ClayButton
+							disabled={
+								_capabilityDisabled || formik.isSubmitting
+							}
+							onClick={_handleSubmit}
+						>
+							{formik.isSubmitting && (
+								<span className="inline-item inline-item-before">
+									<span
+										aria-hidden="true"
+										className="loading-animation"
+									></span>
+								</span>
+							)}
+
+							{Liferay.Language.get('save')}
+						</ClayButton>
+
+						<a
+							className="btn btn-cancel btn-secondary"
+							href={redirectURL}
+						>
+							{Liferay.Language.get('cancel')}
+						</a>
+					</ClayButton.Group>
+				</fieldset>
+			</ClayTooltipProvider>
 		</div>
 	);
 }
