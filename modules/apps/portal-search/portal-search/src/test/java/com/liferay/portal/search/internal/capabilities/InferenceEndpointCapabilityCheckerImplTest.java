@@ -11,6 +11,7 @@ import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.search.capabilities.ElasticsearchLicenseInformation;
 import com.liferay.portal.search.capabilities.InferenceEndpointCapabilityStatus;
 import com.liferay.portal.search.engine.SearchEngineInformation;
+import com.liferay.portal.search.rest.semantic.constants.SemanticSearchConstants;
 import com.liferay.portal.test.rule.FeatureFlag;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
 
@@ -69,7 +70,7 @@ public class InferenceEndpointCapabilityCheckerImplTest {
 		Mockito.when(
 			_searchEngineInformation.getClientVersionString()
 		).thenReturn(
-			"8.18.0"
+			SemanticSearchConstants.MINIMUM_ELASTICSEARCH_VERSION
 		);
 
 		Mockito.when(

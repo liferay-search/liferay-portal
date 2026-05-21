@@ -14,6 +14,7 @@ import com.liferay.portal.search.capabilities.ElasticsearchLicenseInformation;
 import com.liferay.portal.search.capabilities.InferenceEndpointCapabilityChecker;
 import com.liferay.portal.search.capabilities.InferenceEndpointCapabilityStatus;
 import com.liferay.portal.search.engine.SearchEngineInformation;
+import com.liferay.portal.search.rest.semantic.constants.SemanticSearchConstants;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -74,7 +75,7 @@ public class InferenceEndpointCapabilityCheckerImpl
 	private static final String _FEATURE_FLAG_KEY = "LPD-11319";
 
 	private static final Version _MINIMUM_VERSION = Version.parseVersion(
-		"8.18.0");
+		SemanticSearchConstants.MINIMUM_ELASTICSEARCH_VERSION);
 
 	private static final String _REASON_ELASTICSEARCH_VERSION_BELOW_MINIMUM =
 		"semantic-search.capability.elasticsearch-version-below-minimum";
