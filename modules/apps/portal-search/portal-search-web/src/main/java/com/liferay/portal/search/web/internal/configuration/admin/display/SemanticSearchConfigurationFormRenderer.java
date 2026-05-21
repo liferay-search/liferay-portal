@@ -25,6 +25,8 @@ import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.portal.search.capabilities.InferenceEndpointCapabilityChecker;
+import com.liferay.portal.search.capabilities.InferenceEndpointCapabilityStatus;
 import com.liferay.portal.search.configuration.SemanticSearchConfiguration;
 import com.liferay.portal.search.configuration.SemanticSearchConfigurationProvider;
 import com.liferay.portal.search.engine.SearchEngineInformation;
@@ -108,6 +110,21 @@ public class SemanticSearchConfigurationFormRenderer
 		semanticSearchCompanyConfigurationDisplayContext.
 			setAvailableTextTruncationStrategies(
 				_getAvailableTextTruncationStrategies(httpServletRequest));
+
+		InferenceEndpointCapabilityStatus inferenceEndpointCapabilityStatus =
+			_inferenceEndpointCapabilityChecker.check();
+
+		semanticSearchCompanyConfigurationDisplayContext.
+			setInferenceEndpointCapabilityAvailable(
+				inferenceEndpointCapabilityStatus.isAvailable());
+
+		if (!inferenceEndpointCapabilityStatus.isAvailable()) {
+			semanticSearchCompanyConfigurationDisplayContext.
+				setInferenceEndpointCapabilityReason(
+					_language.get(
+						httpServletRequest,
+						inferenceEndpointCapabilityStatus.getReason()));
+		}
 
 		SemanticSearchConfiguration semanticSearchConfiguration =
 			_getSemanticSearchConfiguration(httpServletRequest);
@@ -272,6 +289,10 @@ public class SemanticSearchConfigurationFormRenderer
 
 		return sortedValues;
 	}
+
+	@Reference
+	private InferenceEndpointCapabilityChecker
+		_inferenceEndpointCapabilityChecker;
 
 	@Reference
 	private JSPRenderer _jspRenderer;

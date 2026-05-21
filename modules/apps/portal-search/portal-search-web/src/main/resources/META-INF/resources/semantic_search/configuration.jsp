@@ -39,6 +39,10 @@ SemanticSearchCompanyConfigurationDisplayContext semanticSearchCompanyConfigurat
 			).put(
 				"formName", liferayPortletResponse.getNamespace() + "fm"
 			).put(
+				"inferenceEndpointCapabilityAvailable", semanticSearchCompanyConfigurationDisplayContext.isInferenceEndpointCapabilityAvailable()
+			).put(
+				"inferenceEndpointCapabilityReason", semanticSearchCompanyConfigurationDisplayContext.getInferenceEndpointCapabilityReason()
+			).put(
 				"initialTextEmbeddingCacheTimeout", semanticSearchCompanyConfigurationDisplayContext.getTextEmbeddingCacheTimeout()
 			).put(
 				"initialTextEmbeddingProviderConfigurationJSONs", semanticSearchCompanyConfigurationDisplayContext.getTextEmbeddingProviderConfigurationJSONs()

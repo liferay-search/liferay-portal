@@ -33,12 +33,20 @@ public class SemanticSearchCompanyConfigurationDisplayContext {
 		return _availableTextTruncationStrategies;
 	}
 
+	public String getInferenceEndpointCapabilityReason() {
+		return _inferenceEndpointCapabilityReason;
+	}
+
 	public int getTextEmbeddingCacheTimeout() {
 		return _textEmbeddingCacheTimeout;
 	}
 
 	public String[] getTextEmbeddingProviderConfigurationJSONs() {
 		return _textEmbeddingProviderConfigurationJSONs;
+	}
+
+	public boolean isInferenceEndpointCapabilityAvailable() {
+		return _inferenceEndpointCapabilityAvailable;
 	}
 
 	public boolean isTextEmbeddingsEnabled() {
@@ -76,6 +84,19 @@ public class SemanticSearchCompanyConfigurationDisplayContext {
 		_availableTextTruncationStrategies = availableTextTruncationStrategies;
 	}
 
+	public void setInferenceEndpointCapabilityAvailable(
+		boolean inferenceEndpointCapabilityAvailable) {
+
+		_inferenceEndpointCapabilityAvailable =
+			inferenceEndpointCapabilityAvailable;
+	}
+
+	public void setInferenceEndpointCapabilityReason(
+		String inferenceEndpointCapabilityReason) {
+
+		_inferenceEndpointCapabilityReason = inferenceEndpointCapabilityReason;
+	}
+
 	public void setTextEmbeddingCacheTimeout(int textEmbeddingCacheTimeout) {
 		_textEmbeddingCacheTimeout = textEmbeddingCacheTimeout;
 	}
@@ -96,6 +117,8 @@ public class SemanticSearchCompanyConfigurationDisplayContext {
 	private Map<String, String> _availableModelClassNames;
 	private Map<String, String> _availableTextEmbeddingProviders;
 	private Map<String, String> _availableTextTruncationStrategies;
+	private boolean _inferenceEndpointCapabilityAvailable;
+	private String _inferenceEndpointCapabilityReason = "";
 	private int _textEmbeddingCacheTimeout;
 	private String[] _textEmbeddingProviderConfigurationJSONs;
 	private boolean _textEmbeddingsEnabled;
