@@ -58,6 +58,9 @@ public class BulkDocumentRequestExecutor {
 		BulkDocumentResponse bulkDocumentResponse = new BulkDocumentResponse(
 			bulkResponse.took());
 
+		int rejectedItemsCount = 0;
+		String rejectionReason = null;
+
 		for (BulkResponseItem bulkResponseItem : bulkResponse.items()) {
 			BulkDocumentItemResponse bulkDocumentItemResponse =
 				new BulkDocumentItemResponse();
@@ -91,10 +94,30 @@ public class BulkDocumentRequestExecutor {
 				}
 
 				bulkDocumentResponse.setErrors(true);
+
+				if (bulkResponseItem.status() ==
+						_HTTP_STATUS_TOO_MANY_REQUESTS) {
+
+					rejectedItemsCount++;
+
+					if (rejectionReason == null) {
+						rejectionReason = errorCause.reason();
+					}
+				}
 			}
 
 			bulkDocumentResponse.addBulkDocumentItemResponse(
 				bulkDocumentItemResponse);
+		}
+
+		if (rejectedItemsCount > 0) {
+			throw new RuntimeException(
+				StringBundler.concat(
+					"Unable to index ", rejectedItemsCount, " of ",
+					bulkResponse.items(
+					).size(),
+					" bulk operations rejected by the search engine: ",
+					rejectionReason));
 		}
 
 		return bulkDocumentResponse;
@@ -193,6 +216,8 @@ public class BulkDocumentRequestExecutor {
 	private String _getType(OperationType operationType) {
 		return operationType.jsonValue();
 	}
+
+	private static final int _HTTP_STATUS_TOO_MANY_REQUESTS = 429;
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		BulkDocumentRequestExecutor.class);
