@@ -20,6 +20,11 @@ import com.liferay.portal.search.opensearch2.internal.connection.OpenSearchConne
 import com.liferay.portal.search.opensearch2.internal.util.JsonpUtil;
 import com.liferay.portal.search.opensearch2.internal.util.SetterUtil;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.List;
+
 import org.opensearch.client.json.JsonData;
 import org.opensearch.client.opensearch.OpenSearchClient;
 import org.opensearch.client.opensearch._types.ErrorCause;
@@ -50,72 +55,117 @@ public class BulkDocumentRequestExecutor {
 	public BulkDocumentResponse execute(
 		BulkDocumentRequest bulkDocumentRequest) {
 
-		BulkResponse bulkResponse = _getBulkResponse(
-			bulkDocumentRequest, createBulkRequest(bulkDocumentRequest));
+		List<BulkDocumentItemResponse> bulkDocumentItemResponses =
+			new ArrayList<>();
+		boolean errors = false;
+		long took = 0;
 
-		JsonpUtil.logBulkResponse(bulkResponse, _log);
+		Deque<List<BulkableDocumentRequest<?>>>
+			pendingBulkableDocumentRequestsBatches = new ArrayDeque<>();
 
-		BulkDocumentResponse bulkDocumentResponse = new BulkDocumentResponse(
-			bulkResponse.took());
+		pendingBulkableDocumentRequestsBatches.addFirst(
+			new ArrayList<>(bulkDocumentRequest.getBulkableDocumentRequests()));
 
-		int rejectedItemsCount = 0;
-		String rejectionReason = null;
+		while (!pendingBulkableDocumentRequestsBatches.isEmpty()) {
+			List<BulkableDocumentRequest<?>> currentBulkableDocumentRequests =
+				pendingBulkableDocumentRequestsBatches.pollFirst();
 
-		for (BulkResponseItem bulkResponseItem : bulkResponse.items()) {
-			BulkDocumentItemResponse bulkDocumentItemResponse =
-				new BulkDocumentItemResponse();
+			BulkDocumentRequest partialBulkDocumentRequest =
+				_createPartialBulkDocumentRequest(
+					bulkDocumentRequest, currentBulkableDocumentRequests);
 
-			bulkDocumentItemResponse.setId(bulkResponseItem.id());
-			bulkDocumentItemResponse.setIndex(bulkResponseItem.index());
-			bulkDocumentItemResponse.setStatus(bulkResponseItem.status());
+			BulkResponse bulkResponse = _getBulkResponse(
+				partialBulkDocumentRequest,
+				createBulkRequest(partialBulkDocumentRequest));
 
-			SetterUtil.setNotNullLong(
-				bulkDocumentItemResponse::setVersion,
-				bulkResponseItem.version());
+			JsonpUtil.logBulkResponse(bulkResponse, _log);
 
-			ErrorCause errorCause = bulkResponseItem.error();
+			took += bulkResponse.took();
 
-			if (errorCause != null) {
-				if (errorCause.causedBy() != null) {
-					ErrorCause causedByErrorCause = errorCause.causedBy();
+			List<BulkResponseItem> bulkResponseItems = bulkResponse.items();
 
-					bulkDocumentItemResponse.setFailureMessage(
-						causedByErrorCause.reason());
-					bulkDocumentItemResponse.setCause(
-						new Exception(JsonpUtil.toString(causedByErrorCause)));
-				}
-				else {
-					bulkDocumentItemResponse.setFailureMessage(
-						errorCause.reason());
-					bulkDocumentItemResponse.setCause(
-						new Exception(JsonpUtil.toString(errorCause)));
-				}
+			List<BulkableDocumentRequest<?>> rejectedBulkableDocumentRequests =
+				new ArrayList<>();
+			String rejectionReason = null;
 
-				bulkDocumentResponse.setErrors(true);
+			for (int i = 0; i < bulkResponseItems.size(); i++) {
+				BulkResponseItem bulkResponseItem = bulkResponseItems.get(i);
 
-				if (bulkResponseItem.status() ==
-						_HTTP_STATUS_TOO_MANY_REQUESTS) {
+				ErrorCause errorCause = bulkResponseItem.error();
 
-					rejectedItemsCount++;
+				if ((errorCause != null) &&
+					(bulkResponseItem.status() ==
+						_HTTP_STATUS_TOO_MANY_REQUESTS)) {
+
+					rejectedBulkableDocumentRequests.add(
+						currentBulkableDocumentRequests.get(i));
 
 					if (rejectionReason == null) {
 						rejectionReason = errorCause.reason();
 					}
 				}
+				else {
+					bulkDocumentItemResponses.add(
+						_buildBulkDocumentItemResponse(bulkResponseItem));
+
+					if (errorCause != null) {
+						errors = true;
+					}
+				}
 			}
+
+			if (rejectedBulkableDocumentRequests.isEmpty()) {
+				continue;
+			}
+
+			if (currentBulkableDocumentRequests.size() == 1) {
+				throw new RuntimeException(
+					"Unable to index bulk operation rejected by the search " +
+						"engine: " + rejectionReason);
+			}
+
+			if (_log.isWarnEnabled()) {
+				_log.warn(
+					StringBundler.concat(
+						"Retrying ", rejectedBulkableDocumentRequests.size(),
+						" of ", currentBulkableDocumentRequests.size(),
+						" bulk operations rejected by the search engine: ",
+						rejectionReason));
+			}
+
+			try {
+				Thread.sleep(_waitInSeconds * Time.SECOND);
+			}
+			catch (InterruptedException interruptedException) {
+				Thread.currentThread(
+				).interrupt();
+
+				throw new RuntimeException(interruptedException);
+			}
+
+			int splitIndex = rejectedBulkableDocumentRequests.size() / 2;
+
+			pendingBulkableDocumentRequestsBatches.addFirst(
+				new ArrayList<>(
+					rejectedBulkableDocumentRequests.subList(
+						splitIndex, rejectedBulkableDocumentRequests.size())));
+			pendingBulkableDocumentRequestsBatches.addFirst(
+				new ArrayList<>(
+					rejectedBulkableDocumentRequests.subList(0, splitIndex)));
+		}
+
+		BulkDocumentResponse bulkDocumentResponse = new BulkDocumentResponse(
+			took);
+
+		if (errors) {
+			bulkDocumentResponse.setErrors(true);
+		}
+
+		for (BulkDocumentItemResponse bulkDocumentItemResponse :
+				bulkDocumentItemResponses) {
 
 			bulkDocumentResponse.addBulkDocumentItemResponse(
 				bulkDocumentItemResponse);
-		}
-
-		if (rejectedItemsCount > 0) {
-			throw new RuntimeException(
-				StringBundler.concat(
-					"Unable to index ", rejectedItemsCount, " of ",
-					bulkResponse.items(
-					).size(),
-					" bulk operations rejected by the search engine: ",
-					rejectionReason));
 		}
 
 		return bulkDocumentResponse;
@@ -157,6 +207,63 @@ public class BulkDocumentRequestExecutor {
 		}
 
 		return builder.build();
+	}
+
+	private BulkDocumentItemResponse _buildBulkDocumentItemResponse(
+		BulkResponseItem bulkResponseItem) {
+
+		BulkDocumentItemResponse bulkDocumentItemResponse =
+			new BulkDocumentItemResponse();
+
+		bulkDocumentItemResponse.setId(bulkResponseItem.id());
+		bulkDocumentItemResponse.setIndex(bulkResponseItem.index());
+		bulkDocumentItemResponse.setStatus(bulkResponseItem.status());
+
+		SetterUtil.setNotNullLong(
+			bulkDocumentItemResponse::setVersion, bulkResponseItem.version());
+
+		ErrorCause errorCause = bulkResponseItem.error();
+
+		if (errorCause != null) {
+			if (errorCause.causedBy() != null) {
+				ErrorCause causedByErrorCause = errorCause.causedBy();
+
+				bulkDocumentItemResponse.setFailureMessage(
+					causedByErrorCause.reason());
+				bulkDocumentItemResponse.setCause(
+					new Exception(JsonpUtil.toString(causedByErrorCause)));
+			}
+			else {
+				bulkDocumentItemResponse.setFailureMessage(errorCause.reason());
+				bulkDocumentItemResponse.setCause(
+					new Exception(JsonpUtil.toString(errorCause)));
+			}
+		}
+
+		return bulkDocumentItemResponse;
+	}
+
+	private BulkDocumentRequest _createPartialBulkDocumentRequest(
+		BulkDocumentRequest bulkDocumentRequest,
+		List<BulkableDocumentRequest<?>> bulkableDocumentRequests) {
+
+		BulkDocumentRequest partialBulkDocumentRequest =
+			new BulkDocumentRequest();
+
+		partialBulkDocumentRequest.setConnectionId(
+			bulkDocumentRequest.getConnectionId());
+		partialBulkDocumentRequest.setPreferLocalCluster(
+			bulkDocumentRequest.isPreferLocalCluster());
+		partialBulkDocumentRequest.setRefresh(bulkDocumentRequest.isRefresh());
+
+		for (BulkableDocumentRequest<?> bulkableDocumentRequest :
+				bulkableDocumentRequests) {
+
+			partialBulkDocumentRequest.addBulkableDocumentRequest(
+				bulkableDocumentRequest);
+		}
+
+		return partialBulkDocumentRequest;
 	}
 
 	private BulkResponse _getBulkResponse(
