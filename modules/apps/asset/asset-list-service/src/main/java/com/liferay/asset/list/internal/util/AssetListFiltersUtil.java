@@ -20,6 +20,7 @@ import com.liferay.portal.kernel.search.MatchQuery;
 import com.liferay.portal.kernel.search.NestedQuery;
 import com.liferay.portal.kernel.search.Query;
 import com.liferay.portal.kernel.search.TermQuery;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.Validator;
 
@@ -57,6 +58,16 @@ public class AssetListFiltersUtil {
 		return new BooleanClause[] {
 			new BooleanClause<>(booleanQuery, BooleanClauseOccur.MUST)
 		};
+	}
+
+	private static boolean _isNegatedOperator(String operatorName) {
+		if (operatorName.equals("not-contains") ||
+			operatorName.equals("not-eq")) {
+
+			return true;
+		}
+
+		return false;
 	}
 
 	private static ObjectDefinition _resolveObjectDefinition(
@@ -152,7 +163,16 @@ public class AssetListFiltersUtil {
 			return null;
 		}
 
+		String operatorName = GetterUtil.getString(
+			filterJSONObject.getString("operatorName"), "contains");
+
 		String subfield = _resolveSubfield(objectField, locale);
+
+		Query valueQuery = _toValueQuery(subfield, operatorName, value);
+
+		if (valueQuery == null) {
+			return null;
+		}
 
 		BooleanQuery nestedBooleanQuery = new BooleanQuery();
 
@@ -160,18 +180,23 @@ public class AssetListFiltersUtil {
 			new TermQuery("nestedFieldArray.fieldName", propertyName),
 			BooleanClauseOccur.MUST);
 		nestedBooleanQuery.add(
-			_toValueQuery(subfield, value), BooleanClauseOccur.MUST);
+			valueQuery,
+			_isNegatedOperator(operatorName) ? BooleanClauseOccur.MUST_NOT :
+				BooleanClauseOccur.MUST);
 
 		return new NestedQuery("nestedFieldArray", nestedBooleanQuery);
 	}
 
-	private static Query _toValueQuery(String subfield, String value) {
+	private static Query _toValueQuery(
+		String subfield, String operatorName, String value) {
+
 		if (subfield.endsWith(".value_keyword") ||
 			subfield.endsWith(".value_boolean") ||
 			subfield.endsWith(".value_date") ||
 			subfield.endsWith(".value_double") ||
 			subfield.endsWith(".value_integer") ||
-			subfield.endsWith(".value_long")) {
+			subfield.endsWith(".value_long") || operatorName.equals("eq") ||
+			operatorName.equals("not-eq")) {
 
 			return new TermQuery(subfield, value);
 		}

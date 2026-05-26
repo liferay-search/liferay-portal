@@ -22,6 +22,8 @@ import com.liferay.portal.kernel.search.NestedQuery;
 import com.liferay.portal.kernel.search.Query;
 import com.liferay.portal.kernel.search.TermQuery;
 import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.Localization;
+import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
 
@@ -60,6 +62,8 @@ public class AssetListFiltersUtilTest {
 		_objectDefinitionLocalServiceUtilMockedStatic.reset();
 		_objectFieldLocalServiceUtilMockedStatic.reset();
 		_portalUtilMockedStatic.reset();
+
+		_setUpLocalizationUtil();
 	}
 
 	@Test
@@ -324,6 +328,22 @@ public class AssetListFiltersUtilTest {
 
 		return _assertNestedRow(
 			booleanClauses, 0, propertyName, expectedValueOccur);
+	}
+
+	private void _setUpLocalizationUtil() {
+		LocalizationUtil localizationUtil = new LocalizationUtil();
+
+		Localization localization = Mockito.mock(Localization.class);
+
+		Mockito.when(
+			localization.getLocalizedName(
+				Mockito.anyString(), Mockito.anyString())
+		).thenAnswer(
+			invocation ->
+				invocation.getArgument(0) + "_" + invocation.getArgument(1)
+		);
+
+		localizationUtil.setLocalization(localization);
 	}
 
 	private ObjectField _stubObjectField(
