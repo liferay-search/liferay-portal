@@ -365,7 +365,7 @@ public class AssetListTypePropertiesUtilTest {
 			itemsJSONArray.toString(), 13, itemsJSONArray.length());
 
 		String[] expectedNames = {
-			"title", "description", "userName", "createDate", "modified",
+			"title", "description", "userName", "createDate", "modifiedDate",
 			"displayDate", "publishDate", "expirationDate", "priority",
 			"viewCount", "externalReferenceCode", "reviewDate", "status"
 		};
