@@ -9,6 +9,7 @@ import com.liferay.headless.delivery.internal.graphql.mutation.v1_0.Mutation;
 import com.liferay.headless.delivery.internal.graphql.query.v1_0.Query;
 import com.liferay.headless.delivery.internal.resource.v1_0.BlogPostingImageResourceImpl;
 import com.liferay.headless.delivery.internal.resource.v1_0.BlogPostingResourceImpl;
+import com.liferay.headless.delivery.internal.resource.v1_0.CollectionEntryResourceImpl;
 import com.liferay.headless.delivery.internal.resource.v1_0.CommentResourceImpl;
 import com.liferay.headless.delivery.internal.resource.v1_0.ContentElementResourceImpl;
 import com.liferay.headless.delivery.internal.resource.v1_0.ContentSetElementResourceImpl;
@@ -36,6 +37,7 @@ import com.liferay.headless.delivery.internal.resource.v1_0.WikiPageAttachmentRe
 import com.liferay.headless.delivery.internal.resource.v1_0.WikiPageResourceImpl;
 import com.liferay.headless.delivery.resource.v1_0.BlogPostingImageResource;
 import com.liferay.headless.delivery.resource.v1_0.BlogPostingResource;
+import com.liferay.headless.delivery.resource.v1_0.CollectionEntryResource;
 import com.liferay.headless.delivery.resource.v1_0.CommentResource;
 import com.liferay.headless.delivery.resource.v1_0.ContentElementResource;
 import com.liferay.headless.delivery.resource.v1_0.ContentSetElementResource;
@@ -90,6 +92,8 @@ public class ServletDataImpl implements ServletData {
 			_blogPostingResourceComponentServiceObjects);
 		Mutation.setBlogPostingImageResourceComponentServiceObjects(
 			_blogPostingImageResourceComponentServiceObjects);
+		Mutation.setCollectionEntryResourceComponentServiceObjects(
+			_collectionEntryResourceComponentServiceObjects);
 		Mutation.setCommentResourceComponentServiceObjects(
 			_commentResourceComponentServiceObjects);
 		Mutation.setContentElementResourceComponentServiceObjects(
@@ -143,6 +147,8 @@ public class ServletDataImpl implements ServletData {
 			_blogPostingResourceComponentServiceObjects);
 		Query.setBlogPostingImageResourceComponentServiceObjects(
 			_blogPostingImageResourceComponentServiceObjects);
+		Query.setCollectionEntryResourceComponentServiceObjects(
+			_collectionEntryResourceComponentServiceObjects);
 		Query.setCommentResourceComponentServiceObjects(
 			_commentResourceComponentServiceObjects);
 		Query.setContentElementResourceComponentServiceObjects(
@@ -342,6 +348,16 @@ public class ServletDataImpl implements ServletData {
 						new ObjectValuePair<>(
 							BlogPostingImageResourceImpl.class,
 							"postSiteBlogPostingImagesPageExportBatch"));
+					put(
+						"mutation#createAssetLibraryCollectionEntriesPageExportBatch",
+						new ObjectValuePair<>(
+							CollectionEntryResourceImpl.class,
+							"postAssetLibraryCollectionEntriesPageExportBatch"));
+					put(
+						"mutation#createSiteCollectionEntriesPageExportBatch",
+						new ObjectValuePair<>(
+							CollectionEntryResourceImpl.class,
+							"postSiteCollectionEntriesPageExportBatch"));
 					put(
 						"mutation#deleteComment",
 						new ObjectValuePair<>(
@@ -1920,6 +1936,16 @@ public class ServletDataImpl implements ServletData {
 							BlogPostingImageResourceImpl.class,
 							"getSiteBlogPostingImagesPage"));
 					put(
+						"query#assetLibraryCollectionEntries",
+						new ObjectValuePair<>(
+							CollectionEntryResourceImpl.class,
+							"getAssetLibraryCollectionEntriesPage"));
+					put(
+						"query#collectionEntries",
+						new ObjectValuePair<>(
+							CollectionEntryResourceImpl.class,
+							"getSiteCollectionEntriesPage"));
+					put(
 						"query#blogPostingComments",
 						new ObjectValuePair<>(
 							CommentResourceImpl.class,
@@ -2993,6 +3019,10 @@ public class ServletDataImpl implements ServletData {
 		_blogPostingImageResourceComponentServiceObjects;
 
 	@Reference(scope = ReferenceScope.PROTOTYPE_REQUIRED)
+	private ComponentServiceObjects<CollectionEntryResource>
+		_collectionEntryResourceComponentServiceObjects;
+
+	@Reference(scope = ReferenceScope.PROTOTYPE_REQUIRED)
 	private ComponentServiceObjects<CommentResource>
 		_commentResourceComponentServiceObjects;
 
@@ -3093,4 +3123,4 @@ public class ServletDataImpl implements ServletData {
 		_contentSetElementResourceComponentServiceObjects;
 
 }
-// LIFERAY-REST-BUILDER-HASH:-1122700236
+// LIFERAY-REST-BUILDER-HASH:-1272674700

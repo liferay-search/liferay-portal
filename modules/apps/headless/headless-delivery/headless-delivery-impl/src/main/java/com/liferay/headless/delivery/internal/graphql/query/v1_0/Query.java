@@ -7,6 +7,7 @@ package com.liferay.headless.delivery.internal.graphql.query.v1_0;
 
 import com.liferay.headless.delivery.dto.v1_0.BlogPosting;
 import com.liferay.headless.delivery.dto.v1_0.BlogPostingImage;
+import com.liferay.headless.delivery.dto.v1_0.CollectionEntry;
 import com.liferay.headless.delivery.dto.v1_0.Comment;
 import com.liferay.headless.delivery.dto.v1_0.ContentElement;
 import com.liferay.headless.delivery.dto.v1_0.ContentSetElement;
@@ -36,6 +37,7 @@ import com.liferay.headless.delivery.dto.v1_0.WikiPage;
 import com.liferay.headless.delivery.dto.v1_0.WikiPageAttachment;
 import com.liferay.headless.delivery.resource.v1_0.BlogPostingImageResource;
 import com.liferay.headless.delivery.resource.v1_0.BlogPostingResource;
+import com.liferay.headless.delivery.resource.v1_0.CollectionEntryResource;
 import com.liferay.headless.delivery.resource.v1_0.CommentResource;
 import com.liferay.headless.delivery.resource.v1_0.ContentElementResource;
 import com.liferay.headless.delivery.resource.v1_0.ContentSetElementResource;
@@ -113,6 +115,14 @@ public class Query {
 
 		_blogPostingImageResourceComponentServiceObjects =
 			blogPostingImageResourceComponentServiceObjects;
+	}
+
+	public static void setCollectionEntryResourceComponentServiceObjects(
+		ComponentServiceObjects<CollectionEntryResource>
+			collectionEntryResourceComponentServiceObjects) {
+
+		_collectionEntryResourceComponentServiceObjects =
+			collectionEntryResourceComponentServiceObjects;
 	}
 
 	public static void setCommentResourceComponentServiceObjects(
@@ -558,6 +568,66 @@ public class Query {
 					Pagination.of(page, pageSize),
 					_sortsBiFunction.apply(
 						blogPostingImageResource, sortsString))));
+	}
+
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {assetLibraryCollectionEntries(assetLibraryId: ___, filter: ___, page: ___, pageSize: ___, search: ___, sorts: ___){items {__}, page, pageSize, totalCount}}"}' -u 'test@liferay.com:test'
+	 */
+	@GraphQLField(
+		description = "Lists the asset library's persisted Collection Entries. Results can be paginated, filtered, searched, and sorted."
+	)
+	public CollectionEntryPage assetLibraryCollectionEntries(
+			@GraphQLName("assetLibraryId") @NotEmpty String assetLibraryId,
+			@GraphQLName("search") String search,
+			@GraphQLName("filter") String filterString,
+			@GraphQLName("pageSize") int pageSize,
+			@GraphQLName("page") int page,
+			@GraphQLName("sort") String sortsString)
+		throws Exception {
+
+		return _applyComponentServiceObjects(
+			_collectionEntryResourceComponentServiceObjects,
+			this::_populateResourceContext,
+			collectionEntryResource -> new CollectionEntryPage(
+				collectionEntryResource.getAssetLibraryCollectionEntriesPage(
+					Long.valueOf(assetLibraryId), search,
+					_filterBiFunction.apply(
+						collectionEntryResource, filterString),
+					Pagination.of(page, pageSize),
+					_sortsBiFunction.apply(
+						collectionEntryResource, sortsString))));
+	}
+
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {collectionEntries(filter: ___, page: ___, pageSize: ___, search: ___, siteKey: ___, sorts: ___){items {__}, page, pageSize, totalCount}}"}' -u 'test@liferay.com:test'
+	 */
+	@GraphQLField(
+		description = "Lists the site's persisted Collection Entries. Results can be paginated, filtered, searched, and sorted."
+	)
+	public CollectionEntryPage collectionEntries(
+			@GraphQLName("siteKey") @NotEmpty String siteKey,
+			@GraphQLName("search") String search,
+			@GraphQLName("filter") String filterString,
+			@GraphQLName("pageSize") int pageSize,
+			@GraphQLName("page") int page,
+			@GraphQLName("sort") String sortsString)
+		throws Exception {
+
+		return _applyComponentServiceObjects(
+			_collectionEntryResourceComponentServiceObjects,
+			this::_populateResourceContext,
+			collectionEntryResource -> new CollectionEntryPage(
+				collectionEntryResource.getSiteCollectionEntriesPage(
+					Long.valueOf(siteKey), search,
+					_filterBiFunction.apply(
+						collectionEntryResource, filterString),
+					Pagination.of(page, pageSize),
+					_sortsBiFunction.apply(
+						collectionEntryResource, sortsString))));
 	}
 
 	/**
@@ -5834,6 +5904,44 @@ public class Query {
 
 	}
 
+	@GraphQLName("CollectionEntryPage")
+	public class CollectionEntryPage {
+
+		public CollectionEntryPage(Page collectionEntryPage) {
+			actions = collectionEntryPage.getActions();
+
+			facets = collectionEntryPage.getFacets();
+
+			items = collectionEntryPage.getItems();
+			lastPage = collectionEntryPage.getLastPage();
+			page = collectionEntryPage.getPage();
+			pageSize = collectionEntryPage.getPageSize();
+			totalCount = collectionEntryPage.getTotalCount();
+		}
+
+		@GraphQLField
+		protected Map<String, Map<String, String>> actions;
+
+		@GraphQLField
+		protected List<Facet> facets;
+
+		@GraphQLField
+		protected java.util.Collection<CollectionEntry> items;
+
+		@GraphQLField
+		protected long lastPage;
+
+		@GraphQLField
+		protected long page;
+
+		@GraphQLField
+		protected long pageSize;
+
+		@GraphQLField
+		protected long totalCount;
+
+	}
+
 	@GraphQLName("CommentPage")
 	public class CommentPage {
 
@@ -7068,6 +7176,26 @@ public class Query {
 		blogPostingImageResource.setRoleLocalService(_roleLocalService);
 	}
 
+	private void _populateResourceContext(
+			CollectionEntryResource collectionEntryResource)
+		throws Exception {
+
+		collectionEntryResource.setContextAcceptLanguage(_acceptLanguage);
+		collectionEntryResource.setContextCompany(_company);
+		collectionEntryResource.setContextHttpServletRequest(
+			_httpServletRequest);
+		collectionEntryResource.setContextHttpServletResponse(
+			_httpServletResponse);
+		collectionEntryResource.setContextUriInfo(_uriInfo);
+		collectionEntryResource.setContextUser(_user);
+		collectionEntryResource.setGroupLocalService(_groupLocalService);
+		collectionEntryResource.setResourceActionLocalService(
+			_resourceActionLocalService);
+		collectionEntryResource.setResourcePermissionLocalService(
+			_resourcePermissionLocalService);
+		collectionEntryResource.setRoleLocalService(_roleLocalService);
+	}
+
 	private void _populateResourceContext(CommentResource commentResource)
 		throws Exception {
 
@@ -7563,6 +7691,8 @@ public class Query {
 		_blogPostingResourceComponentServiceObjects;
 	private static ComponentServiceObjects<BlogPostingImageResource>
 		_blogPostingImageResourceComponentServiceObjects;
+	private static ComponentServiceObjects<CollectionEntryResource>
+		_collectionEntryResourceComponentServiceObjects;
 	private static ComponentServiceObjects<CommentResource>
 		_commentResourceComponentServiceObjects;
 	private static ComponentServiceObjects<ContentElementResource>
@@ -7633,4 +7763,4 @@ public class Query {
 	private com.liferay.portal.kernel.model.User _user;
 
 }
-// LIFERAY-REST-BUILDER-HASH:1704935486
+// LIFERAY-REST-BUILDER-HASH:-179285308

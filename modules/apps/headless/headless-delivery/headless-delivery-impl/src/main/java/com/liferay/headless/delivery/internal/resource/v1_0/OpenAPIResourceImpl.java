@@ -89,6 +89,8 @@ public class OpenAPIResourceImpl {
 
 			add(BlogPostingImageResourceImpl.class);
 
+			add(CollectionEntryResourceImpl.class);
+
 			add(CommentResourceImpl.class);
 
 			add(ContentElementResourceImpl.class);
@@ -144,4 +146,4 @@ public class OpenAPIResourceImpl {
 	};
 
 }
-// LIFERAY-REST-BUILDER-HASH:783422324
+// LIFERAY-REST-BUILDER-HASH:1614466434

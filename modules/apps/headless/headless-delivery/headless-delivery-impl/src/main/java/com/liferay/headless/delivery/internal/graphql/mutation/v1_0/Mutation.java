@@ -30,6 +30,7 @@ import com.liferay.headless.delivery.dto.v1_0.WikiPage;
 import com.liferay.headless.delivery.dto.v1_0.WikiPageAttachment;
 import com.liferay.headless.delivery.resource.v1_0.BlogPostingImageResource;
 import com.liferay.headless.delivery.resource.v1_0.BlogPostingResource;
+import com.liferay.headless.delivery.resource.v1_0.CollectionEntryResource;
 import com.liferay.headless.delivery.resource.v1_0.CommentResource;
 import com.liferay.headless.delivery.resource.v1_0.ContentElementResource;
 import com.liferay.headless.delivery.resource.v1_0.ContentStructureResource;
@@ -101,6 +102,14 @@ public class Mutation {
 
 		_blogPostingImageResourceComponentServiceObjects =
 			blogPostingImageResourceComponentServiceObjects;
+	}
+
+	public static void setCollectionEntryResourceComponentServiceObjects(
+		ComponentServiceObjects<CollectionEntryResource>
+			collectionEntryResourceComponentServiceObjects) {
+
+		_collectionEntryResourceComponentServiceObjects =
+			collectionEntryResourceComponentServiceObjects;
 	}
 
 	public static void setCommentResourceComponentServiceObjects(
@@ -679,6 +688,56 @@ public class Mutation {
 							blogPostingImageResource, filterString),
 						_sortsBiFunction.apply(
 							blogPostingImageResource, sortsString),
+						callbackURL, contentType, fieldNames));
+	}
+
+	@GraphQLField
+	public Response createAssetLibraryCollectionEntriesPageExportBatch(
+			@GraphQLName("assetLibraryId") @NotEmpty String assetLibraryId,
+			@GraphQLName("search") String search,
+			@GraphQLName("filter") String filterString,
+			@GraphQLName("sort") String sortsString,
+			@GraphQLName("callbackURL") String callbackURL,
+			@GraphQLName("contentType") String contentType,
+			@GraphQLName("fieldNames") String fieldNames)
+		throws Exception {
+
+		return _applyComponentServiceObjects(
+			_collectionEntryResourceComponentServiceObjects,
+			this::_populateResourceContext,
+			collectionEntryResource ->
+				collectionEntryResource.
+					postAssetLibraryCollectionEntriesPageExportBatch(
+						Long.valueOf(assetLibraryId), search,
+						_filterBiFunction.apply(
+							collectionEntryResource, filterString),
+						_sortsBiFunction.apply(
+							collectionEntryResource, sortsString),
+						callbackURL, contentType, fieldNames));
+	}
+
+	@GraphQLField
+	public Response createSiteCollectionEntriesPageExportBatch(
+			@GraphQLName("siteKey") @NotEmpty String siteKey,
+			@GraphQLName("search") String search,
+			@GraphQLName("filter") String filterString,
+			@GraphQLName("sort") String sortsString,
+			@GraphQLName("callbackURL") String callbackURL,
+			@GraphQLName("contentType") String contentType,
+			@GraphQLName("fieldNames") String fieldNames)
+		throws Exception {
+
+		return _applyComponentServiceObjects(
+			_collectionEntryResourceComponentServiceObjects,
+			this::_populateResourceContext,
+			collectionEntryResource ->
+				collectionEntryResource.
+					postSiteCollectionEntriesPageExportBatch(
+						Long.valueOf(siteKey), search,
+						_filterBiFunction.apply(
+							collectionEntryResource, filterString),
+						_sortsBiFunction.apply(
+							collectionEntryResource, sortsString),
 						callbackURL, contentType, fieldNames));
 	}
 
@@ -6315,6 +6374,28 @@ public class Mutation {
 			_vulcanBatchEngineImportTaskResource);
 	}
 
+	private void _populateResourceContext(
+			CollectionEntryResource collectionEntryResource)
+		throws Exception {
+
+		collectionEntryResource.setContextAcceptLanguage(_acceptLanguage);
+		collectionEntryResource.setContextCompany(_company);
+		collectionEntryResource.setContextHttpServletRequest(
+			_httpServletRequest);
+		collectionEntryResource.setContextHttpServletResponse(
+			_httpServletResponse);
+		collectionEntryResource.setContextUriInfo(_uriInfo);
+		collectionEntryResource.setContextUser(_user);
+		collectionEntryResource.setGroupLocalService(_groupLocalService);
+		collectionEntryResource.setRoleLocalService(_roleLocalService);
+
+		collectionEntryResource.setVulcanBatchEngineExportTaskResource(
+			_vulcanBatchEngineExportTaskResource);
+
+		collectionEntryResource.setVulcanBatchEngineImportTaskResource(
+			_vulcanBatchEngineImportTaskResource);
+	}
+
 	private void _populateResourceContext(CommentResource commentResource)
 		throws Exception {
 
@@ -6840,6 +6921,8 @@ public class Mutation {
 		_blogPostingResourceComponentServiceObjects;
 	private static ComponentServiceObjects<BlogPostingImageResource>
 		_blogPostingImageResourceComponentServiceObjects;
+	private static ComponentServiceObjects<CollectionEntryResource>
+		_collectionEntryResourceComponentServiceObjects;
 	private static ComponentServiceObjects<CommentResource>
 		_commentResourceComponentServiceObjects;
 	private static ComponentServiceObjects<ContentElementResource>
@@ -6908,4 +6991,4 @@ public class Mutation {
 		_vulcanBatchEngineImportTaskResource;
 
 }
-// LIFERAY-REST-BUILDER-HASH:505624026
+// LIFERAY-REST-BUILDER-HASH:-36866693
