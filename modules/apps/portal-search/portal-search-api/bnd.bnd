@@ -64,6 +64,7 @@ Export-Package:\
 	com.liferay.portal.search.rescore,\
 	com.liferay.portal.search.script,\
 	com.liferay.portal.search.searcher,\
+	com.liferay.portal.search.semantic,\
 	com.liferay.portal.search.significance,\
 	com.liferay.portal.search.sort,\
 	com.liferay.portal.search.stats,\
