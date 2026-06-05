@@ -31,7 +31,7 @@ import com.liferay.portal.search.elasticsearch8.internal.index.util.SemanticText
 import com.liferay.portal.search.elasticsearch8.internal.util.JsonpUtil;
 import com.liferay.portal.search.elasticsearch8.internal.util.ResourceUtil;
 import com.liferay.portal.search.engine.SearchEngineInformation;
-import com.liferay.portal.search.semantic.SemanticFieldNames;
+import com.liferay.portal.search.semantic.SemanticFieldNameResolver;
 import com.liferay.portal.search.spi.index.configuration.contributor.helper.MappingsHelper;
 
 import jakarta.json.spi.JsonProvider;
@@ -61,7 +61,7 @@ public class MappingsHelperImpl implements MappingsHelper {
 
 		this(
 			Collections.emptySet(), elasticsearchIndicesClient, null, indexName,
-			null, jsonFactory, jsonpMapper, Collections.emptySet(),
+			null, null, jsonFactory, jsonpMapper, Collections.emptySet(),
 			overrideMappings, searchEngineInformation, null);
 	}
 
@@ -69,22 +69,24 @@ public class MappingsHelperImpl implements MappingsHelper {
 		Set<String> assetTypes,
 		ElasticsearchIndicesClient elasticsearchIndicesClient,
 		ExternalEmbeddingCapabilityGate externalEmbeddingCapabilityGate,
-		String indexName, String inferenceId, JSONFactory jsonFactory,
-		JsonpMapper jsonpMapper, Set<Locale> locales, String overrideMappings,
+		String indexName, InferenceEndpointValidator inferenceEndpointValidator,
+		String inferenceId, JSONFactory jsonFactory, JsonpMapper jsonpMapper,
+		Set<Locale> locales, String overrideMappings,
 		SearchEngineInformation searchEngineInformation,
-		SemanticFieldNames semanticFieldNames) {
+		SemanticFieldNameResolver semanticFieldNameResolver) {
 
 		_assetTypes = assetTypes;
 		_elasticsearchIndicesClient = elasticsearchIndicesClient;
 		_externalEmbeddingCapabilityGate = externalEmbeddingCapabilityGate;
 		_indexName = indexName;
+		_inferenceEndpointValidator = inferenceEndpointValidator;
 		_inferenceId = inferenceId;
 		_jsonFactory = jsonFactory;
 		_jsonpMapper = jsonpMapper;
 		_locales = locales;
 		_overrideMappings = overrideMappings;
 		_searchEngineInformation = searchEngineInformation;
-		_semanticFieldNames = semanticFieldNames;
+		_semanticFieldNameResolver = semanticFieldNameResolver;
 	}
 
 	public void putDefaultOrOverrideMappings() {
@@ -135,7 +137,7 @@ public class MappingsHelperImpl implements MappingsHelper {
 		}
 
 		SemanticTextMappingsUtil.putSemanticTextProperties(
-			_assetTypes, _inferenceId, _locales, _semanticFieldNames,
+			_assetTypes, _inferenceId, _locales, _semanticFieldNameResolver,
 			propertiesJSONObject);
 
 		return jsonObject.toString();
@@ -212,6 +214,15 @@ public class MappingsHelperImpl implements MappingsHelper {
 			getClass(), IndexMappingsConstants.INDEX_MAPPINGS_FILE_NAME);
 
 		if (_isElasticsearchProvidedCapabilityAvailable()) {
+			if (_inferenceEndpointValidator != null) {
+				_inferenceEndpointValidator.validate(_inferenceId);
+			}
+			else if (_log.isDebugEnabled()) {
+				_log.debug(
+					"Skipping the inference endpoint validation for index " +
+						_indexName + " because no validator was given");
+			}
+
 			defaultMappings = _addSemanticTextMappings(defaultMappings);
 		}
 		else {
@@ -242,8 +253,8 @@ public class MappingsHelperImpl implements MappingsHelper {
 
 	private boolean _isElasticsearchProvidedCapabilityAvailable() {
 		if ((_externalEmbeddingCapabilityGate == null) ||
-			(_semanticFieldNames == null) || _assetTypes.isEmpty() ||
-			_locales.isEmpty() || Validator.isNull(_inferenceId)) {
+			(_semanticFieldNameResolver == null) || _assetTypes.isEmpty() ||
+			_locales.isEmpty() || Validator.isBlank(_inferenceId)) {
 
 			return false;
 		}
@@ -358,12 +369,13 @@ public class MappingsHelperImpl implements MappingsHelper {
 	private final ExternalEmbeddingCapabilityGate
 		_externalEmbeddingCapabilityGate;
 	private final String _indexName;
+	private final InferenceEndpointValidator _inferenceEndpointValidator;
 	private final String _inferenceId;
 	private final JSONFactory _jsonFactory;
 	private final JsonpMapper _jsonpMapper;
 	private final Set<Locale> _locales;
 	private final String _overrideMappings;
 	private final SearchEngineInformation _searchEngineInformation;
-	private final SemanticFieldNames _semanticFieldNames;
+	private final SemanticFieldNameResolver _semanticFieldNameResolver;
 
 }

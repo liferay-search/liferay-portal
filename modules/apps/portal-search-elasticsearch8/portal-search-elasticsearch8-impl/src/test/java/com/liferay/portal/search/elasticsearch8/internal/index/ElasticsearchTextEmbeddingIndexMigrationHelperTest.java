@@ -26,8 +26,7 @@ import com.liferay.portal.search.capabilities.ExternalEmbeddingEligibility;
 import com.liferay.portal.search.elasticsearch8.internal.connection.ElasticsearchConnectionManager;
 import com.liferay.portal.search.index.IndexNameBuilder;
 import com.liferay.portal.search.semantic.InferenceIdResolver;
-import com.liferay.portal.search.semantic.SemanticFieldNames;
-import com.liferay.portal.search.semantic.SemanticTextEmbeddingProviderType;
+import com.liferay.portal.search.semantic.SemanticFieldNameResolver;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
 
 import java.util.Collections;
@@ -70,13 +69,16 @@ public class ElasticsearchTextEmbeddingIndexMigrationHelperTest {
 			"_indexNameBuilder", _indexNameBuilder);
 		ReflectionTestUtil.setFieldValue(
 			_elasticsearchTextEmbeddingIndexMigrationHelper,
+			"_inferenceEndpointValidator", _inferenceEndpointValidator);
+		ReflectionTestUtil.setFieldValue(
+			_elasticsearchTextEmbeddingIndexMigrationHelper,
 			"_inferenceIdResolver", _inferenceIdResolver);
 		ReflectionTestUtil.setFieldValue(
 			_elasticsearchTextEmbeddingIndexMigrationHelper, "_jsonFactory",
 			_jsonFactory);
 		ReflectionTestUtil.setFieldValue(
 			_elasticsearchTextEmbeddingIndexMigrationHelper,
-			"_semanticFieldNames", _semanticFieldNames());
+			"_semanticFieldNameResolver", _semanticFieldNameResolver());
 	}
 
 	@Test
@@ -104,6 +106,12 @@ public class ElasticsearchTextEmbeddingIndexMigrationHelperTest {
 		SemanticTextProperty semanticTextProperty = property.semanticText();
 
 		Assert.assertEquals(_INFERENCE_ID, semanticTextProperty.inferenceId());
+
+		Mockito.verify(
+			_inferenceEndpointValidator
+		).validate(
+			_INFERENCE_ID
+		);
 	}
 
 	@Test
@@ -136,6 +144,34 @@ public class ElasticsearchTextEmbeddingIndexMigrationHelperTest {
 
 		Mockito.verifyNoInteractions(
 			_elasticsearchIndicesClient, _inferenceIdResolver);
+	}
+
+	@Test
+	public void testEnableSemanticTextOnExistingIndexInvalidInferenceEndpoint() {
+		_setUpExternalEmbeddingCapabilityGate(true);
+		_setUpInferenceIdResolver(_INFERENCE_ID);
+
+		RuntimeException runtimeException1 = new RuntimeException(
+			"invalid inference endpoint");
+
+		Mockito.doThrow(
+			runtimeException1
+		).when(
+			_inferenceEndpointValidator
+		).validate(
+			_INFERENCE_ID
+		);
+
+		try {
+			_enableSemanticTextOnExistingIndex();
+
+			Assert.fail();
+		}
+		catch (RuntimeException runtimeException2) {
+			Assert.assertSame(runtimeException1, runtimeException2);
+		}
+
+		Mockito.verifyNoInteractions(_elasticsearchIndicesClient);
 	}
 
 	@Test
@@ -240,26 +276,23 @@ public class ElasticsearchTextEmbeddingIndexMigrationHelperTest {
 				SetUtil.fromArray(LocaleUtil.US));
 	}
 
-	private SemanticFieldNames _semanticFieldNames() {
-		SemanticFieldNames semanticFieldNames = Mockito.mock(
-			SemanticFieldNames.class);
+	private SemanticFieldNameResolver _semanticFieldNameResolver() {
+		SemanticFieldNameResolver semanticFieldNameResolver = Mockito.mock(
+			SemanticFieldNameResolver.class);
 
 		Mockito.when(
-			semanticFieldNames.fieldName(
-				Mockito.any(Locale.class),
-				Mockito.eq(
-					SemanticTextEmbeddingProviderType.ELASTICSEARCH_PROVIDED),
-				Mockito.anyString(), Mockito.anyInt())
+			semanticFieldNameResolver.resolveElasticsearchProvidedFieldName(
+				Mockito.any(Locale.class), Mockito.anyString())
 		).thenAnswer(
 			invocationOnMock -> StringBundler.concat(
-				invocationOnMock.getArgument(2, String.class),
+				invocationOnMock.getArgument(1, String.class),
 				StringPool.UNDERLINE,
 				LocaleUtil.toLanguageId(
 					invocationOnMock.getArgument(0, Locale.class)),
 				"_semantic")
 		);
 
-		return semanticFieldNames;
+		return semanticFieldNameResolver;
 	}
 
 	private void _setUpElasticsearch() {
@@ -352,6 +385,8 @@ public class ElasticsearchTextEmbeddingIndexMigrationHelperTest {
 			ExternalEmbeddingCapabilityGate.class);
 	private final IndexNameBuilder _indexNameBuilder = Mockito.mock(
 		IndexNameBuilder.class);
+	private final InferenceEndpointValidator _inferenceEndpointValidator =
+		Mockito.mock(InferenceEndpointValidator.class);
 	private final InferenceIdResolver _inferenceIdResolver = Mockito.mock(
 		InferenceIdResolver.class);
 	private final JSONFactory _jsonFactory = new JSONFactoryImpl();
