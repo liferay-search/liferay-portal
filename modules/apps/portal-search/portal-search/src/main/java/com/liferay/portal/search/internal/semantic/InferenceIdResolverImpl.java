@@ -13,6 +13,7 @@ import com.liferay.portal.search.configuration.SemanticSearchConfiguration;
 import com.liferay.portal.search.configuration.SemanticSearchConfigurationProvider;
 import com.liferay.portal.search.rest.dto.v1_0.EmbeddingProviderConfiguration;
 import com.liferay.portal.search.semantic.InferenceIdResolver;
+import com.liferay.portal.search.semantic.TextEmbeddingProviderNames;
 
 import java.util.Map;
 import java.util.Objects;
@@ -65,7 +66,8 @@ public class InferenceIdResolverImpl implements InferenceIdResolver {
 			if ((embeddingProviderConfiguration == null) ||
 				!Objects.equals(
 					embeddingProviderConfiguration.getProviderName(),
-					_ELASTICSEARCH_PROVIDER_NAME)) {
+					TextEmbeddingProviderNames.
+						ELASTICSEARCH_INFERENCE_ENDPOINT)) {
 
 				continue;
 			}
@@ -107,9 +109,6 @@ public class InferenceIdResolverImpl implements InferenceIdResolver {
 
 		return null;
 	}
-
-	private static final String _ELASTICSEARCH_PROVIDER_NAME =
-		"Elasticsearch Inference Endpoint";
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		InferenceIdResolverImpl.class);
