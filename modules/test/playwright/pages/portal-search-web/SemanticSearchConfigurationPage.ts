@@ -11,6 +11,8 @@ export class SemanticSearchConfigurationPage {
 	readonly bringYourOwnLLMCapabilityAlert: Locator;
 	readonly bringYourOwnLLMEnabledCheckbox: Locator;
 	readonly page: Page;
+	readonly testConfigurationButton: Locator;
+	readonly testConfigurationResultAlert: Locator;
 	readonly textEmbeddingProviderSelect: Locator;
 
 	constructor(page: Page) {
@@ -21,6 +23,12 @@ export class SemanticSearchConfigurationPage {
 		);
 		this.bringYourOwnLLMEnabledCheckbox = page.getByTestId(
 			'bringYourOwnLLMEnabledCheckbox'
+		);
+		this.testConfigurationButton = page.getByRole('button', {
+			name: 'Test Configuration',
+		});
+		this.testConfigurationResultAlert = page.locator(
+			'.test-configuration-button-root .alert'
 		);
 		this.textEmbeddingProviderSelect = page.getByLabel(
 			'Text Embedding Provider'

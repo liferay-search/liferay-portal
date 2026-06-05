@@ -8,6 +8,7 @@ import {expect, mergeTests} from '@playwright/test';
 import {featureFlagsTest} from '../../../fixtures/featureFlagsTest';
 import {loginTest} from '../../../fixtures/loginTest';
 import {semanticSearchConfigurationPageTest} from '../../../fixtures/semanticSearchConfigurationPageTest';
+import {clickAndExpectToBeVisible} from '../../../utils/clickAndExpectToBeVisible';
 
 const testWithBYOLLMDisabled = mergeTests(
 	loginTest(),
@@ -18,6 +19,15 @@ const testWithBYOLLMDisabled = mergeTests(
 const testWithBYOLLMEnabled = mergeTests(
 	loginTest(),
 	featureFlagsTest({'LPD-11319': {enabled: true}}),
+	semanticSearchConfigurationPageTest
+);
+
+const testWithBYOLLMProviderSelectable = mergeTests(
+	loginTest(),
+	featureFlagsTest({
+		'LPD-11319': {enabled: true},
+		'LPS-122920': {enabled: true},
+	}),
 	semanticSearchConfigurationPageTest
 );
 
@@ -52,5 +62,32 @@ testWithBYOLLMEnabled(
 		await expect(
 			semanticSearchConfigurationPage.bringYourOwnLLMEnabledCheckbox
 		).toHaveCount(0);
+	}
+);
+
+testWithBYOLLMProviderSelectable(
+	'Shows an actionable error when testing the BYO-LLM provider without an active inference endpoint',
+	{tag: '@LPD-92306'},
+	async ({semanticSearchConfigurationPage}) => {
+		await semanticSearchConfigurationPage.goto();
+
+		// Select the BYO-LLM provider
+
+		await semanticSearchConfigurationPage.textEmbeddingProviderSelect.selectOption(
+			'Elasticsearch Inference Endpoint'
+		);
+
+		// Test the configuration without an active inference endpoint
+
+		await clickAndExpectToBeVisible({
+			target: semanticSearchConfigurationPage.testConfigurationResultAlert,
+			trigger: semanticSearchConfigurationPage.testConfigurationButton,
+		});
+
+		await expect(
+			semanticSearchConfigurationPage.testConfigurationResultAlert
+		).toContainText(
+			'There is no active Elasticsearch inference endpoint configured'
+		);
 	}
 );
