@@ -24,7 +24,7 @@ import com.liferay.portal.search.elasticsearch8.internal.index.util.SemanticText
 import com.liferay.portal.search.elasticsearch8.internal.util.JsonpUtil;
 import com.liferay.portal.search.index.IndexNameBuilder;
 import com.liferay.portal.search.semantic.InferenceIdResolver;
-import com.liferay.portal.search.semantic.SemanticFieldNames;
+import com.liferay.portal.search.semantic.SemanticFieldNameResolver;
 import com.liferay.portal.search.semantic.SemanticTextEmbeddingIndexMigrationHelper;
 
 import jakarta.json.spi.JsonProvider;
@@ -94,6 +94,8 @@ public class ElasticsearchTextEmbeddingIndexMigrationHelper
 			return;
 		}
 
+		_inferenceEndpointValidator.validate(inferenceId);
+
 		_putMapping(
 			_indexNameBuilder.getIndexName(companyId),
 			_buildSemanticTextMappings(assetTypes, inferenceId, locales));
@@ -105,7 +107,7 @@ public class ElasticsearchTextEmbeddingIndexMigrationHelper
 		JSONObject propertiesJSONObject = _jsonFactory.createJSONObject();
 
 		SemanticTextMappingsUtil.putSemanticTextProperties(
-			assetTypes, inferenceId, locales, _semanticFieldNames,
+			assetTypes, inferenceId, locales, _semanticFieldNameResolver,
 			propertiesJSONObject);
 
 		return _jsonFactory.createJSONObject(
@@ -175,12 +177,15 @@ public class ElasticsearchTextEmbeddingIndexMigrationHelper
 	private IndexNameBuilder _indexNameBuilder;
 
 	@Reference
+	private InferenceEndpointValidator _inferenceEndpointValidator;
+
+	@Reference
 	private InferenceIdResolver _inferenceIdResolver;
 
 	@Reference
 	private JSONFactory _jsonFactory;
 
 	@Reference
-	private SemanticFieldNames _semanticFieldNames;
+	private SemanticFieldNameResolver _semanticFieldNameResolver;
 
 }

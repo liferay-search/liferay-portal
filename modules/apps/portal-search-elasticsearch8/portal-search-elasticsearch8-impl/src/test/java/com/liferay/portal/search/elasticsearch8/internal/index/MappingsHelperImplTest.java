@@ -16,8 +16,7 @@ import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.search.capabilities.ExternalEmbeddingCapabilityGate;
 import com.liferay.portal.search.capabilities.ExternalEmbeddingEligibility;
 import com.liferay.portal.search.engine.SearchEngineInformation;
-import com.liferay.portal.search.semantic.SemanticFieldNames;
-import com.liferay.portal.search.semantic.SemanticTextEmbeddingProviderType;
+import com.liferay.portal.search.semantic.SemanticFieldNameResolver;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
 
 import java.util.Collections;
@@ -149,6 +148,56 @@ public class MappingsHelperImplTest {
 			).contains(
 				"template_text_embedding_"
 			));
+
+		Mockito.verify(
+			_inferenceEndpointValidator
+		).validate(
+			_INFERENCE_ID
+		);
+	}
+
+	@Test
+	public void testGetDefaultOrOverrideMappingsJSONObjectInvalidInferenceEndpoint() {
+		MappingsHelperImpl mappingsHelperImpl = _newMappingsHelperImpl(
+			_availableChecker());
+
+		RuntimeException runtimeException1 = new RuntimeException(
+			"invalid inference endpoint");
+
+		Mockito.doThrow(
+			runtimeException1
+		).when(
+			_inferenceEndpointValidator
+		).validate(
+			_INFERENCE_ID
+		);
+
+		try {
+			_invokeGetDefaultOrOverrideMappingsJSONObject(mappingsHelperImpl);
+
+			Assert.fail();
+		}
+		catch (RuntimeException runtimeException2) {
+			Assert.assertSame(runtimeException1, runtimeException2);
+		}
+	}
+
+	@Test
+	public void testGetDefaultOrOverrideMappingsJSONObjectNullValidator() {
+		MappingsHelperImpl mappingsHelperImpl = new MappingsHelperImpl(
+			SetUtil.fromArray("journal_article"), null, _availableChecker(),
+			null, null, _INFERENCE_ID, _jsonFactory, null,
+			SetUtil.fromArray(LocaleUtil.US), null, _searchEngineInformation(),
+			_semanticFieldNameResolver());
+
+		JSONObject jsonObject = _invokeGetDefaultOrOverrideMappingsJSONObject(
+			mappingsHelperImpl);
+
+		JSONObject propertiesJSONObject = jsonObject.getJSONObject(
+			"properties");
+
+		Assert.assertTrue(
+			propertiesJSONObject.has("journal_article_en_US_semantic"));
 	}
 
 	@Test
@@ -288,8 +337,9 @@ public class MappingsHelperImplTest {
 
 		return new MappingsHelperImpl(
 			assetTypes, null, externalEmbeddingCapabilityGate, null,
-			_INFERENCE_ID, _jsonFactory, null, locales, null,
-			_searchEngineInformation(), _semanticFieldNames());
+			_inferenceEndpointValidator, _INFERENCE_ID, _jsonFactory, null,
+			locales, null, _searchEngineInformation(),
+			_semanticFieldNameResolver());
 	}
 
 	private SearchEngineInformation _searchEngineInformation() {
@@ -305,26 +355,23 @@ public class MappingsHelperImplTest {
 		return searchEngineInformation;
 	}
 
-	private SemanticFieldNames _semanticFieldNames() {
-		SemanticFieldNames semanticFieldNames = Mockito.mock(
-			SemanticFieldNames.class);
+	private SemanticFieldNameResolver _semanticFieldNameResolver() {
+		SemanticFieldNameResolver semanticFieldNameResolver = Mockito.mock(
+			SemanticFieldNameResolver.class);
 
 		Mockito.when(
-			semanticFieldNames.fieldName(
-				Mockito.any(Locale.class),
-				Mockito.eq(
-					SemanticTextEmbeddingProviderType.ELASTICSEARCH_PROVIDED),
-				Mockito.anyString(), Mockito.anyInt())
+			semanticFieldNameResolver.resolveElasticsearchProvidedFieldName(
+				Mockito.any(Locale.class), Mockito.anyString())
 		).thenAnswer(
 			invocationOnMock -> StringBundler.concat(
-				invocationOnMock.getArgument(2, String.class),
+				invocationOnMock.getArgument(1, String.class),
 				StringPool.UNDERLINE,
 				LocaleUtil.toLanguageId(
 					invocationOnMock.getArgument(0, Locale.class)),
 				"_semantic")
 		);
 
-		return semanticFieldNames;
+		return semanticFieldNameResolver;
 	}
 
 	private ExternalEmbeddingCapabilityGate _unavailableChecker(String reason) {
@@ -346,6 +393,8 @@ public class MappingsHelperImplTest {
 		"semantic-search.external-embedding-capability." +
 			"unsupported-search-engine";
 
+	private final InferenceEndpointValidator _inferenceEndpointValidator =
+		Mockito.mock(InferenceEndpointValidator.class);
 	private final JSONFactory _jsonFactory = new JSONFactoryImpl();
 
 }
