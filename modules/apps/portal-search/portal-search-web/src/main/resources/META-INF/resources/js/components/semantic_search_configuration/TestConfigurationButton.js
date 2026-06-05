@@ -122,8 +122,98 @@ function TestConfigurationButton({
 		return {};
 	};
 
+	/**
+	 * Tests the active Elasticsearch inference endpoint (BYO-LLM). Unlike the
+	 * Liferay-integrated providers, the test does not send the form values:
+	 * the backend resolves the active `inference_id` and asks Elasticsearch
+	 * for an embedding of a deterministic sample text.
+	 */
+	const _testInferenceEndpoint = () => {
+		fetch('/o/search/v1.0/inference-endpoint/test', {
+			headers: new Headers({
+				'Accept': 'application/json',
+				'Accept-Language': Liferay.ThemeDisplay.getBCP47LanguageId(),
+				'Content-Type': 'application/json',
+			}),
+			method: 'POST',
+		})
+			.then((response) => response.json())
+			.then((responseData) => {
+				if (responseData.errorMessage) {
+					return setTestResultsMessage({
+						message: sub(
+							Liferay.Language.get(
+								'unable-to-connect-to-x.-connection-failed-with-x'
+							),
+							[
+								availableTextEmbeddingProviders[
+									textEmbeddingProvider
+								],
+								responseData.errorMessage,
+							]
+						),
+						type: 'warning',
+					});
+				}
+
+				// If the user has no permissions for the REST endpoint.
+
+				if (responseData.message) {
+					throw new Error(responseData.message);
+				}
+
+				setTestResultsMessage({
+					message: responseData.modelId
+						? sub(
+								Liferay.Language.get(
+									'the-test-was-successful.-model-x.-dimensions-x.-response-time-x-ms'
+								),
+								[
+									responseData.modelId,
+									responseData.dimensions,
+									responseData.responseTime,
+								]
+							)
+						: sub(
+								Liferay.Language.get(
+									'the-test-was-successful.-dimensions-x.-response-time-x-ms'
+								),
+								[
+									responseData.dimensions,
+									responseData.responseTime,
+								]
+							),
+					type: 'success',
+				});
+			})
+			.catch((error) => {
+				setTestResultsMessage({
+					message: Liferay.Language.get(
+						'unable-to-test-configuration-due-to-an-unexpected-error'
+					),
+					type: 'danger',
+				});
+
+				if (process.env.NODE_ENV === 'development') {
+					console.error(error);
+				}
+			})
+			.finally(() => {
+				setLoading(false);
+			});
+	};
+
 	const _handleTestConfigurationButtonClick = () => {
 		setLoading(true);
+
+		if (
+			textEmbeddingProvider ===
+			TEXT_EMBEDDING_PROVIDER_TYPES.ELASTICSEARCH_INFERENCE_ENDPOINT
+		) {
+			_testInferenceEndpoint();
+
+			return;
+		}
 
 		fetch('/o/search/v1.0/embeddings/validate-provider-configuration', {
 			body: JSON.stringify({

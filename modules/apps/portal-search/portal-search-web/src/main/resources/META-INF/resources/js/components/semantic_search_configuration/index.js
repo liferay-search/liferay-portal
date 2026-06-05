@@ -225,6 +225,22 @@ export default function ({
 			embeddingVectorDimensions,
 		} = values.textEmbeddingProviderConfigurationJSONs[0];
 
+		// The Elasticsearch Inference Endpoint provider (BYO-LLM) has no
+		// form attributes to validate: embeddings are computed server-side
+		// by Elasticsearch, so the legacy provider validation does not
+		// apply. The "Test Configuration" button covers the endpoint test.
+
+		if (
+			providerName ===
+			TEXT_EMBEDDING_PROVIDER_TYPES.ELASTICSEARCH_INFERENCE_ENDPOINT
+		) {
+			actions.setSubmitting(false);
+
+			submitForm(document[formName]);
+
+			return;
+		}
+
 		const {
 			accessToken,
 			apiKey,
