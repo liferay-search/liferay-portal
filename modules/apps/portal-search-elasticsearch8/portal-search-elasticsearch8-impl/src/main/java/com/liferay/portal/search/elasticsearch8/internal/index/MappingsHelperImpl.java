@@ -27,11 +27,11 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.capabilities.ExternalEmbeddingCapabilityGate;
 import com.liferay.portal.search.elasticsearch8.internal.index.constants.IndexMappingsConstants;
+import com.liferay.portal.search.elasticsearch8.internal.index.util.SemanticTextMappingsUtil;
 import com.liferay.portal.search.elasticsearch8.internal.util.JsonpUtil;
 import com.liferay.portal.search.elasticsearch8.internal.util.ResourceUtil;
 import com.liferay.portal.search.engine.SearchEngineInformation;
 import com.liferay.portal.search.semantic.SemanticFieldNames;
-import com.liferay.portal.search.semantic.SemanticTextEmbeddingProviderType;
 import com.liferay.portal.search.spi.index.configuration.contributor.helper.MappingsHelper;
 
 import jakarta.json.spi.JsonProvider;
@@ -134,22 +134,9 @@ public class MappingsHelperImpl implements MappingsHelper {
 			jsonObject.put("properties", propertiesJSONObject);
 		}
 
-		for (String assetType : _assetTypes) {
-			for (Locale locale : _locales) {
-				String fieldName = _semanticFieldNames.fieldName(
-					locale,
-					SemanticTextEmbeddingProviderType.ELASTICSEARCH_PROVIDED,
-					assetType, 0);
-
-				propertiesJSONObject.put(
-					fieldName,
-					JSONUtil.put(
-						"inference_id", _inferenceId
-					).put(
-						"type", "semantic_text"
-					));
-			}
-		}
+		SemanticTextMappingsUtil.putSemanticTextProperties(
+			_assetTypes, _inferenceId, _locales, _semanticFieldNames,
+			propertiesJSONObject);
 
 		return jsonObject.toString();
 	}
