@@ -5,19 +5,11 @@
 
 package com.liferay.portal.search.elasticsearch8.internal.index;
 
-import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch._types.ElasticsearchException;
-import co.elastic.clients.elasticsearch.inference.ElasticsearchInferenceClient;
-import co.elastic.clients.elasticsearch.inference.GetInferenceRequest;
-import co.elastic.clients.elasticsearch.inference.GetInferenceResponse;
 import co.elastic.clients.elasticsearch.inference.InferenceEndpointInfo;
 import co.elastic.clients.elasticsearch.inference.TaskType;
 
 import com.liferay.petra.string.StringBundler;
-import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.search.elasticsearch8.internal.connection.ElasticsearchConnectionManager;
-
-import java.io.IOException;
+import com.liferay.portal.search.elasticsearch8.internal.semantic.InferenceEndpointInfoFetcher;
 
 import java.util.List;
 
@@ -41,46 +33,9 @@ import org.osgi.service.component.annotations.Reference;
 public class InferenceEndpointValidator {
 
 	public void validate(String inferenceId) {
-		if (Validator.isBlank(inferenceId)) {
-			throw new IllegalArgumentException("Inference ID is null or empty");
-		}
-
-		GetInferenceResponse getInferenceResponse = null;
-
-		try {
-			ElasticsearchClient elasticsearchClient =
-				_elasticsearchConnectionManager.getElasticsearchClient();
-
-			ElasticsearchInferenceClient elasticsearchInferenceClient =
-				elasticsearchClient.inference();
-
-			getInferenceResponse = elasticsearchInferenceClient.get(
-				GetInferenceRequest.of(
-					getInferenceRequest -> getInferenceRequest.inferenceId(
-						inferenceId)));
-		}
-		catch (ElasticsearchException elasticsearchException) {
-			if (elasticsearchException.status() == 404) {
-				throw new RuntimeException(
-					_getNotFoundMessage(inferenceId), elasticsearchException);
-			}
-
-			throw new RuntimeException(
-				"Unable to validate inference endpoint \"" + inferenceId + "\"",
-				elasticsearchException);
-		}
-		catch (IOException ioException) {
-			throw new RuntimeException(
-				"Unable to validate inference endpoint \"" + inferenceId + "\"",
-				ioException);
-		}
-
 		List<InferenceEndpointInfo> inferenceEndpointInfos =
-			getInferenceResponse.endpoints();
-
-		if (inferenceEndpointInfos.isEmpty()) {
-			throw new RuntimeException(_getNotFoundMessage(inferenceId));
-		}
+			_inferenceEndpointInfoFetcher.fetchInferenceEndpointInfos(
+				inferenceId);
 
 		for (InferenceEndpointInfo inferenceEndpointInfo :
 				inferenceEndpointInfos) {
@@ -98,14 +53,7 @@ public class InferenceEndpointValidator {
 		}
 	}
 
-	private String _getNotFoundMessage(String inferenceId) {
-		return StringBundler.concat(
-			"Inference endpoint \"", inferenceId, "\" was not found in ",
-			"Elasticsearch. Configure it in the Semantic Search admin UI ",
-			"first.");
-	}
-
 	@Reference
-	private ElasticsearchConnectionManager _elasticsearchConnectionManager;
+	private InferenceEndpointInfoFetcher _inferenceEndpointInfoFetcher;
 
 }

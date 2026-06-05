@@ -5,20 +5,12 @@
 
 package com.liferay.portal.search.elasticsearch8.internal.index;
 
-import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch._types.ElasticsearchException;
-import co.elastic.clients.elasticsearch.inference.ElasticsearchInferenceClient;
-import co.elastic.clients.elasticsearch.inference.GetInferenceRequest;
-import co.elastic.clients.elasticsearch.inference.GetInferenceResponse;
 import co.elastic.clients.elasticsearch.inference.InferenceEndpointInfo;
 import co.elastic.clients.elasticsearch.inference.TaskType;
 
-import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
-import com.liferay.portal.search.elasticsearch8.internal.connection.ElasticsearchConnectionManager;
+import com.liferay.portal.search.elasticsearch8.internal.semantic.InferenceEndpointInfoFetcher;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
-
-import java.io.IOException;
 
 import java.util.Collections;
 
@@ -28,7 +20,6 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 /**
@@ -46,101 +37,32 @@ public class InferenceEndpointValidatorTest {
 		_inferenceEndpointValidator = new InferenceEndpointValidator();
 
 		ReflectionTestUtil.setFieldValue(
-			_inferenceEndpointValidator, "_elasticsearchConnectionManager",
-			_elasticsearchConnectionManager);
-
-		Mockito.when(
-			_elasticsearchClient.inference()
-		).thenReturn(
-			_elasticsearchInferenceClient
-		);
-
-		Mockito.when(
-			_elasticsearchConnectionManager.getElasticsearchClient()
-		).thenReturn(
-			_elasticsearchClient
-		);
+			_inferenceEndpointValidator, "_inferenceEndpointInfoFetcher",
+			_inferenceEndpointInfoFetcher);
 	}
 
 	@Test
-	public void testValidate() throws Exception {
-		_setUpGetInferenceResponse(TaskType.TextEmbedding);
+	public void testValidate() {
+		_setUpInferenceEndpointInfoFetcher(TaskType.TextEmbedding);
 
 		_inferenceEndpointValidator.validate(_INFERENCE_ID);
 
-		ArgumentCaptor<GetInferenceRequest> argumentCaptor =
-			ArgumentCaptor.forClass(GetInferenceRequest.class);
-
 		Mockito.verify(
-			_elasticsearchInferenceClient
-		).get(
-			argumentCaptor.capture()
+			_inferenceEndpointInfoFetcher
+		).fetchInferenceEndpointInfos(
+			_INFERENCE_ID
 		);
-
-		GetInferenceRequest getInferenceRequest = argumentCaptor.getValue();
-
-		Assert.assertEquals(_INFERENCE_ID, getInferenceRequest.inferenceId());
 	}
 
 	@Test
-	public void testValidateBlankInferenceId() {
-		try {
-			_inferenceEndpointValidator.validate(StringPool.BLANK);
-
-			Assert.fail();
-		}
-		catch (IllegalArgumentException illegalArgumentException) {
-			Assert.assertEquals(
-				"Inference ID is null or empty",
-				illegalArgumentException.getMessage());
-		}
-	}
-
-	@Test
-	public void testValidateNoEndpoints() throws Exception {
-		GetInferenceResponse getInferenceResponse = Mockito.mock(
-			GetInferenceResponse.class);
+	public void testValidatePropagatesFetchException() {
+		RuntimeException runtimeException1 = new RuntimeException();
 
 		Mockito.when(
-			getInferenceResponse.endpoints()
-		).thenReturn(
-			Collections.emptyList()
-		);
-
-		Mockito.when(
-			_elasticsearchInferenceClient.get(
-				Mockito.any(GetInferenceRequest.class))
-		).thenReturn(
-			getInferenceResponse
-		);
-
-		try {
-			_inferenceEndpointValidator.validate(_INFERENCE_ID);
-
-			Assert.fail();
-		}
-		catch (RuntimeException runtimeException) {
-			Assert.assertEquals(
-				_NOT_FOUND_MESSAGE, runtimeException.getMessage());
-		}
-	}
-
-	@Test
-	public void testValidateNotFound() throws Exception {
-		ElasticsearchException elasticsearchException = Mockito.mock(
-			ElasticsearchException.class);
-
-		Mockito.when(
-			elasticsearchException.status()
-		).thenReturn(
-			404
-		);
-
-		Mockito.when(
-			_elasticsearchInferenceClient.get(
-				Mockito.any(GetInferenceRequest.class))
+			_inferenceEndpointInfoFetcher.fetchInferenceEndpointInfos(
+				_INFERENCE_ID)
 		).thenThrow(
-			elasticsearchException
+			runtimeException1
 		);
 
 		try {
@@ -148,75 +70,14 @@ public class InferenceEndpointValidatorTest {
 
 			Assert.fail();
 		}
-		catch (RuntimeException runtimeException) {
-			Assert.assertEquals(
-				_NOT_FOUND_MESSAGE, runtimeException.getMessage());
-			Assert.assertSame(
-				elasticsearchException, runtimeException.getCause());
+		catch (RuntimeException runtimeException2) {
+			Assert.assertSame(runtimeException1, runtimeException2);
 		}
 	}
 
 	@Test
-	public void testValidateWrapsElasticsearchException() throws Exception {
-		ElasticsearchException elasticsearchException = Mockito.mock(
-			ElasticsearchException.class);
-
-		Mockito.when(
-			elasticsearchException.status()
-		).thenReturn(
-			500
-		);
-
-		Mockito.when(
-			_elasticsearchInferenceClient.get(
-				Mockito.any(GetInferenceRequest.class))
-		).thenThrow(
-			elasticsearchException
-		);
-
-		try {
-			_inferenceEndpointValidator.validate(_INFERENCE_ID);
-
-			Assert.fail();
-		}
-		catch (RuntimeException runtimeException) {
-			Assert.assertEquals(
-				"Unable to validate inference endpoint " +
-					"\"liferay-active-provider\"",
-				runtimeException.getMessage());
-			Assert.assertSame(
-				elasticsearchException, runtimeException.getCause());
-		}
-	}
-
-	@Test
-	public void testValidateWrapsIOException() throws Exception {
-		IOException ioException = new IOException();
-
-		Mockito.when(
-			_elasticsearchInferenceClient.get(
-				Mockito.any(GetInferenceRequest.class))
-		).thenThrow(
-			ioException
-		);
-
-		try {
-			_inferenceEndpointValidator.validate(_INFERENCE_ID);
-
-			Assert.fail();
-		}
-		catch (RuntimeException runtimeException) {
-			Assert.assertEquals(
-				"Unable to validate inference endpoint " +
-					"\"liferay-active-provider\"",
-				runtimeException.getMessage());
-			Assert.assertSame(ioException, runtimeException.getCause());
-		}
-	}
-
-	@Test
-	public void testValidateWrongTaskType() throws Exception {
-		_setUpGetInferenceResponse(TaskType.Completion);
+	public void testValidateWrongTaskType() {
+		_setUpInferenceEndpointInfoFetcher(TaskType.Completion);
 
 		try {
 			_inferenceEndpointValidator.validate(_INFERENCE_ID);
@@ -232,9 +93,7 @@ public class InferenceEndpointValidatorTest {
 		}
 	}
 
-	private void _setUpGetInferenceResponse(TaskType taskType)
-		throws Exception {
-
+	private void _setUpInferenceEndpointInfoFetcher(TaskType taskType) {
 		InferenceEndpointInfo inferenceEndpointInfo = Mockito.mock(
 			InferenceEndpointInfo.class);
 
@@ -244,37 +103,18 @@ public class InferenceEndpointValidatorTest {
 			taskType
 		);
 
-		GetInferenceResponse getInferenceResponse = Mockito.mock(
-			GetInferenceResponse.class);
-
 		Mockito.when(
-			getInferenceResponse.endpoints()
+			_inferenceEndpointInfoFetcher.fetchInferenceEndpointInfos(
+				_INFERENCE_ID)
 		).thenReturn(
 			Collections.singletonList(inferenceEndpointInfo)
-		);
-
-		Mockito.when(
-			_elasticsearchInferenceClient.get(
-				Mockito.any(GetInferenceRequest.class))
-		).thenReturn(
-			getInferenceResponse
 		);
 	}
 
 	private static final String _INFERENCE_ID = "liferay-active-provider";
 
-	private static final String _NOT_FOUND_MESSAGE =
-		"Inference endpoint \"liferay-active-provider\" was not found in " +
-			"Elasticsearch. Configure it in the Semantic Search admin UI " +
-				"first.";
-
-	private final ElasticsearchClient _elasticsearchClient = Mockito.mock(
-		ElasticsearchClient.class);
-	private final ElasticsearchConnectionManager
-		_elasticsearchConnectionManager = Mockito.mock(
-			ElasticsearchConnectionManager.class);
-	private final ElasticsearchInferenceClient _elasticsearchInferenceClient =
-		Mockito.mock(ElasticsearchInferenceClient.class);
+	private final InferenceEndpointInfoFetcher _inferenceEndpointInfoFetcher =
+		Mockito.mock(InferenceEndpointInfoFetcher.class);
 	private InferenceEndpointValidator _inferenceEndpointValidator;
 
 }
