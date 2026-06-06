@@ -10,9 +10,11 @@ import {PORTLET_URLS} from '../../utils/portletUrls';
 export class SemanticSearchConfigurationPage {
 	readonly bringYourOwnLLMCapabilityAlert: Locator;
 	readonly bringYourOwnLLMEnabledCheckbox: Locator;
+	readonly maxCharacterCountInput: Locator;
 	readonly page: Page;
 	readonly textEmbeddingProviderArchitectureHelp: Locator;
 	readonly textEmbeddingProviderSelect: Locator;
+	readonly textTruncationStrategySelect: Locator;
 
 	constructor(page: Page) {
 		this.page = page;
@@ -23,6 +25,7 @@ export class SemanticSearchConfigurationPage {
 		this.bringYourOwnLLMEnabledCheckbox = page.getByTestId(
 			'bringYourOwnLLMEnabledCheckbox'
 		);
+		this.maxCharacterCountInput = page.getByLabel('Max Character Count');
 		this.textEmbeddingProviderArchitectureHelp = page.getByText(
 			'Choose where the embedding model runs'
 		);
@@ -35,6 +38,9 @@ export class SemanticSearchConfigurationPage {
 		return this.textEmbeddingProviderSelect
 			.locator('option')
 			.allTextContents();
+		this.textTruncationStrategySelect = page.getByLabel(
+			'Text Truncation Strategy'
+		);
 	}
 
 	async goto() {

@@ -104,3 +104,77 @@ testWithBYOLLMEnabled(
 		).toBeVisible();
 	}
 );
+
+testWithBYOLLMProviderSelectable(
+	'Hides the non-applicable settings when the BYO-LLM provider is selected',
+	{tag: '@LPD-92317'},
+	async ({semanticSearchConfigurationPage}) => {
+		await semanticSearchConfigurationPage.goto();
+
+		// Show the settings for a Liferay-integrated provider
+
+		await semanticSearchConfigurationPage.textEmbeddingProviderSelect.selectOption(
+			'openai'
+		);
+
+		await expect(
+			semanticSearchConfigurationPage.maxCharacterCountInput
+		).toBeVisible();
+		await expect(
+			semanticSearchConfigurationPage.textTruncationStrategySelect
+		).toBeVisible();
+
+		// Hide the settings for the BYO-LLM provider
+
+		await semanticSearchConfigurationPage.textEmbeddingProviderSelect.selectOption(
+			'Elasticsearch Inference Endpoint'
+		);
+
+		await expect(
+			semanticSearchConfigurationPage.maxCharacterCountInput
+		).toHaveCount(0);
+		await expect(
+			semanticSearchConfigurationPage.textTruncationStrategySelect
+		).toHaveCount(0);
+
+		// Show the settings again when switching back
+
+		await semanticSearchConfigurationPage.textEmbeddingProviderSelect.selectOption(
+			'openai'
+		);
+
+		await expect(
+			semanticSearchConfigurationPage.maxCharacterCountInput
+		).toBeVisible();
+		await expect(
+			semanticSearchConfigurationPage.textTruncationStrategySelect
+		).toBeVisible();
+	}
+);
+
+testWithBYOLLMProviderSelectable(
+	'Shows an actionable error when testing the BYO-LLM provider without an active inference endpoint',
+	{tag: '@LPD-92306'},
+	async ({semanticSearchConfigurationPage}) => {
+		await semanticSearchConfigurationPage.goto();
+
+		// Select the BYO-LLM provider
+
+		await semanticSearchConfigurationPage.textEmbeddingProviderSelect.selectOption(
+			'Elasticsearch Inference Endpoint'
+		);
+
+		// Test the configuration without an active inference endpoint
+
+		await clickAndExpectToBeVisible({
+			target: semanticSearchConfigurationPage.testConfigurationResultAlert,
+			trigger: semanticSearchConfigurationPage.testConfigurationButton,
+		});
+
+		await expect(
+			semanticSearchConfigurationPage.testConfigurationResultAlert
+		).toContainText(
+			'There is no active Elasticsearch inference endpoint configured'
+		);
+	}
+);
