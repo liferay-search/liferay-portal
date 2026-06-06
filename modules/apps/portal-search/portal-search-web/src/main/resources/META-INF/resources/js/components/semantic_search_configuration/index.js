@@ -13,6 +13,7 @@ import {fetch, sub} from 'frontend-js-web';
 import React, {useMemo, useState} from 'react';
 
 import {LearnMessageWithoutContext} from '../../shared/LearnMessage';
+import BYOLLMConfigurationForm from './BYOLLMConfigurationForm';
 import Input from './Input';
 import SubmitWarningModal from './SubmitWarningModal';
 import TestConfigurationButton from './TestConfigurationButton';
@@ -286,7 +287,44 @@ export default function ({
 		]
 	);
 
+	const [inferenceEndpointConfiguration, setInferenceEndpointConfiguration] =
+		useState(null);
+	const [inferenceEndpointErrorMessage, setInferenceEndpointErrorMessage] =
+		useState('');
+
 	const [showSubmitWarningModal, setShowSubmitWarningModal] = useState(false);
+
+	/**
+	 * Creates the Liferay-managed inference endpoint in Elasticsearch from
+	 * the dynamic form values. Returns the error message, or an empty string
+	 * when the creation succeeds.
+	 */
+	const _createInferenceEndpoint = async () => {
+		try {
+			const responseData = await fetch(
+				'/o/search/v1.0/inference-endpoint',
+				{
+					body: JSON.stringify(inferenceEndpointConfiguration),
+					headers: new Headers({
+						'Accept': 'application/json',
+						'Accept-Language':
+							Liferay.ThemeDisplay.getBCP47LanguageId(),
+						'Content-Type': 'application/json',
+					}),
+					method: 'POST',
+				}
+			).then((response) => response.json());
+
+			return responseData.errorMessage || responseData.message || '';
+		}
+		catch (error) {
+			if (process.env.NODE_ENV === 'development') {
+				console.error(error);
+			}
+
+			return Liferay.Language.get('an-unexpected-error-occurred');
+		}
+	};
 
 	const _handleFormikSubmit = async (values, actions) => {
 		const {
@@ -296,6 +334,37 @@ export default function ({
 			providerName,
 			embeddingVectorDimensions,
 		} = values.textEmbeddingProviderConfigurationJSONs[0];
+
+		// The Elasticsearch Inference Endpoint provider (BYO-LLM) does not go
+		// through the legacy provider validation: embeddings are computed
+		// server-side by Elasticsearch. The save creates the Liferay-managed
+		// inference endpoint from the dynamic form values first and aborts
+		// with an inline error when Elasticsearch rejects the configuration.
+
+		if (
+			providerName ===
+			TEXT_EMBEDDING_PROVIDER_TYPES.ELASTICSEARCH_INFERENCE_ENDPOINT
+		) {
+			if (inferenceEndpointConfiguration?.service) {
+				const createErrorMessage = await _createInferenceEndpoint();
+
+				if (createErrorMessage) {
+					setInferenceEndpointErrorMessage(createErrorMessage);
+
+					actions.setSubmitting(false);
+
+					return;
+				}
+			}
+
+			setInferenceEndpointErrorMessage('');
+
+			actions.setSubmitting(false);
+
+			submitForm(document[formName]);
+
+			return;
+		}
 
 		const {
 			accessToken,
@@ -810,9 +879,21 @@ export default function ({
 						onBlur={_handleInputBlur(
 							`textEmbeddingProviderConfigurationJSONs[${index}].providerName`
 						)}
-						onChange={_handleInputChange(
-							`textEmbeddingProviderConfigurationJSONs[${index}].providerName`
-						)}
+						onChange={(event) => {
+
+							// The BYO-LLM endpoint configuration belongs to
+							// the previously selected provider and must not
+							// survive a provider switch, or a later save
+							// would silently create the endpoint from the
+							// stale values
+
+							setInferenceEndpointConfiguration(null);
+							setInferenceEndpointErrorMessage('');
+
+							_handleInputChange(
+								`textEmbeddingProviderConfigurationJSONs[${index}].providerName`
+							)(event);
+						}}
 						type="select"
 						value={
 							formik.values
@@ -986,6 +1067,40 @@ export default function ({
 								}
 							/>
 						</>
+					)}
+
+					{formik.values.textEmbeddingProviderConfigurationJSONs?.[
+						index
+					]?.providerName ===
+						TEXT_EMBEDDING_PROVIDER_TYPES.ELASTICSEARCH_INFERENCE_ENDPOINT && (
+						<BYOLLMConfigurationForm
+							disabled={formik.isSubmitting}
+							errorMessage={inferenceEndpointErrorMessage}
+							onInferenceEndpointConfigurationChange={(
+								newInferenceEndpointConfiguration
+							) => {
+								setInferenceEndpointConfiguration(
+									newInferenceEndpointConfiguration
+								);
+								setInferenceEndpointErrorMessage('');
+
+								const service =
+									newInferenceEndpointConfiguration?.service ||
+									'';
+
+								if (
+									formik.values
+										.textEmbeddingProviderConfigurationJSONs?.[
+										index
+									]?.attributes?.service !== service
+								) {
+									formik.setFieldValue(
+										`textEmbeddingProviderConfigurationJSONs[${index}].attributes.service`,
+										service
+									);
+								}
+							}}
+						/>
 					)}
 
 					{formik.values.textEmbeddingProviderConfigurationJSONs?.[
