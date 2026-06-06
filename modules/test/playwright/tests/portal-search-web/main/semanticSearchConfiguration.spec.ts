@@ -170,6 +170,52 @@ testWithBYOLLMProviderSelectable(
 );
 
 testWithBYOLLMProviderSelectable(
+	'Renders the dynamic BYO-LLM provider creation form from the Elasticsearch services catalog',
+	{tag: '@LPD-92319'},
+	async ({semanticSearchConfigurationPage}) => {
+		await semanticSearchConfigurationPage.goto();
+
+		// Select the BYO-LLM provider
+
+		await semanticSearchConfigurationPage.textEmbeddingProviderSelect.selectOption(
+			'Elasticsearch Inference Endpoint'
+		);
+
+		// The service dropdown is populated from the Elasticsearch services
+		// catalog
+
+		await expect(
+			semanticSearchConfigurationPage.inferenceServiceSelect
+		).toBeVisible();
+
+		await expect(async () => {
+			const optionsCount =
+				await semanticSearchConfigurationPage.inferenceServiceSelect
+					.locator('option')
+					.count();
+
+			expect(optionsCount).toBeGreaterThan(1);
+		}).toPass({timeout: 10000});
+
+		// Selecting a service renders its fields dynamically, with the
+		// sensitive fields as password inputs
+
+		await semanticSearchConfigurationPage.inferenceServiceSelect.selectOption(
+			'openai'
+		);
+
+		await expect(async () => {
+			const passwordInputsCount =
+				await semanticSearchConfigurationPage.page
+					.locator('input[type="password"]')
+					.count();
+
+			expect(passwordInputsCount).toBeGreaterThan(0);
+		}).toPass({timeout: 10000});
+	}
+);
+
+testWithBYOLLMProviderSelectable(
 	'Shows an actionable error when testing the BYO-LLM provider without an active inference endpoint',
 	{tag: '@LPD-92306'},
 	async ({semanticSearchConfigurationPage}) => {
