@@ -22,6 +22,15 @@ const testWithBYOLLMEnabled = mergeTests(
 	semanticSearchConfigurationPageTest
 );
 
+const testWithBYOLLMDisabledAndBetaProvidersEnabled = mergeTests(
+	loginTest(),
+	featureFlagsTest({
+		'LPD-11319': {enabled: false},
+		'LPS-122920': {enabled: true},
+	}),
+	semanticSearchConfigurationPageTest
+);
+
 const testWithBYOLLMProviderSelectable = mergeTests(
 	loginTest(),
 	featureFlagsTest({
@@ -62,6 +71,54 @@ testWithBYOLLMEnabled(
 		await expect(
 			semanticSearchConfigurationPage.bringYourOwnLLMEnabledCheckbox
 		).toHaveCount(0);
+	}
+);
+
+testWithBYOLLMDisabledAndBetaProvidersEnabled(
+	'Hides the BYO-LLM provider and the architectural suffix when the LPD-11319 feature flag is off',
+	{tag: '@LPD-92310'},
+	async ({semanticSearchConfigurationPage}) => {
+		await semanticSearchConfigurationPage.goto();
+
+		const optionTexts =
+			await semanticSearchConfigurationPage.textEmbeddingProviderOptions.allTextContents();
+
+		expect(optionTexts).toContain('OpenAI');
+		expect(optionTexts).not.toContain('Elasticsearch Inference Endpoint');
+
+		for (const optionText of optionTexts) {
+			expect(optionText).not.toContain('(through Liferay Integration)');
+		}
+
+		await expect(
+			semanticSearchConfigurationPage.providerArchitectureHelpText
+		).toHaveCount(0);
+	}
+);
+
+testWithBYOLLMProviderSelectable(
+	'Labels the Liferay-integrated providers with the architectural suffix when the BYO-LLM provider is visible',
+	{tag: '@LPD-92310'},
+	async ({semanticSearchConfigurationPage}) => {
+		await semanticSearchConfigurationPage.goto();
+
+		// Check the dropdown labels
+
+		const optionTexts =
+			await semanticSearchConfigurationPage.textEmbeddingProviderOptions.allTextContents();
+
+		expect(optionTexts).toContain('Elasticsearch Inference Endpoint');
+		expect(optionTexts).toContain('OpenAI (through Liferay Integration)');
+
+		for (const optionText of optionTexts) {
+			expect(optionText).not.toContain('(Legacy)');
+		}
+
+		// Check the architectural help text below the dropdown
+
+		await expect(
+			semanticSearchConfigurationPage.providerArchitectureHelpText
+		).toBeVisible();
 	}
 );
 
