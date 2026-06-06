@@ -182,6 +182,60 @@ const transformToLabelValueArray = (items = {}) => {
 };
 
 /**
+ * Builds the text embedding provider dropdown options from the visible
+ * providers. The Liferay-integrated providers carry the architectural
+ * `(through Liferay Integration)` suffix only while the BYO-LLM provider
+ * (Elasticsearch Inference Endpoint) is also visible. The label describes
+ * where the LLM call originates, not lifecycle status; no provider is
+ * deprecated.
+ *
+ * @param {object} visibleTextEmbeddingProviders
+ * @param {boolean} elasticsearchInferenceEndpointVisible
+ * @return {Array}
+ */
+const getTextEmbeddingProviderOptions = (
+	visibleTextEmbeddingProviders,
+	elasticsearchInferenceEndpointVisible
+) =>
+	Object.entries(visibleTextEmbeddingProviders).map(([value, label]) => ({
+		label:
+			elasticsearchInferenceEndpointVisible &&
+			value !==
+				TEXT_EMBEDDING_PROVIDER_TYPES.ELASTICSEARCH_INFERENCE_ENDPOINT
+				? sub(Liferay.Language.get('x-through-liferay-integration'), [
+						label,
+					])
+				: label,
+		value,
+	}));
+
+/**
+ * Filters the available text embedding providers down to the ones the
+ * dropdown lists. The BYO-LLM provider (Elasticsearch Inference Endpoint) is
+ * visible only when the `LPD-11319` feature flag is on.
+ *
+ * @param {object} availableTextEmbeddingProviders
+ * @param {boolean} elasticsearchInferenceEndpointVisible
+ * @return {object}
+ */
+const getVisibleTextEmbeddingProviders = (
+	availableTextEmbeddingProviders,
+	elasticsearchInferenceEndpointVisible
+) => {
+	if (elasticsearchInferenceEndpointVisible) {
+		return availableTextEmbeddingProviders;
+	}
+
+	return Object.fromEntries(
+		Object.entries(availableTextEmbeddingProviders).filter(
+			([providerName]) =>
+				providerName !==
+				TEXT_EMBEDDING_PROVIDER_TYPES.ELASTICSEARCH_INFERENCE_ENDPOINT
+		)
+	);
+};
+
+/**
  * Form within semantic search settings page, configures text embedding provider and
  * indexing settings.
  * This can be found on: System Settings > Search Experiences > Semantic Search
@@ -202,15 +256,33 @@ export default function ({
 	namespace = '',
 	redirectURL,
 }) {
+	const isElasticsearchInferenceEndpointVisible =
+		!!Liferay.FeatureFlags?.['LPD-11319'] &&
+		Object.keys(availableTextEmbeddingProviders).includes(
+			TEXT_EMBEDDING_PROVIDER_TYPES.ELASTICSEARCH_INFERENCE_ENDPOINT
+		);
+
+	const visibleTextEmbeddingProviders = useMemo(
+		() =>
+			getVisibleTextEmbeddingProviders(
+				availableTextEmbeddingProviders,
+				isElasticsearchInferenceEndpointVisible
+			),
+		[
+			availableTextEmbeddingProviders,
+			isElasticsearchInferenceEndpointVisible,
+		]
+	);
+
 	const resolvedInitialTextEmbeddingProviderConfigurationJSONs = useMemo(
 		() =>
 			resolveInitialTextEmbeddingProviderConfigurationJSONs(
 				initialTextEmbeddingProviderConfigurationJSONs,
-				availableTextEmbeddingProviders
+				visibleTextEmbeddingProviders
 			),
 		[
 			initialTextEmbeddingProviderConfigurationJSONs,
-			availableTextEmbeddingProviders,
+			visibleTextEmbeddingProviders,
 		]
 	);
 
@@ -718,8 +790,9 @@ export default function ({
 								index
 							]?.providerName
 						}
-						items={transformToLabelValueArray(
-							availableTextEmbeddingProviders
+						items={getTextEmbeddingProviderOptions(
+							visibleTextEmbeddingProviders,
+							isElasticsearchInferenceEndpointVisible
 						)}
 						label={Liferay.Language.get('text-embedding-provider')}
 						name={`textEmbeddingProviderConfigurationJSONs[${index}].providerName`}
@@ -737,6 +810,16 @@ export default function ({
 							]?.providerName
 						}
 					>
+						{isElasticsearchInferenceEndpointVisible && (
+							<ClayForm.FeedbackGroup>
+								<ClayForm.Text>
+									{Liferay.Language.get(
+										'text-embedding-provider-architecture-help'
+									)}
+								</ClayForm.Text>
+							</ClayForm.FeedbackGroup>
+						)}
+
 						{formik.values
 							.textEmbeddingProviderConfigurationJSONs?.[index]
 							?.providerName ===
@@ -1428,7 +1511,7 @@ export default function ({
 								?.attributes?.autoTruncate
 						}
 						availableTextEmbeddingProviders={
-							availableTextEmbeddingProviders
+							visibleTextEmbeddingProviders
 						}
 						basicAuthPassword={
 							formik.values

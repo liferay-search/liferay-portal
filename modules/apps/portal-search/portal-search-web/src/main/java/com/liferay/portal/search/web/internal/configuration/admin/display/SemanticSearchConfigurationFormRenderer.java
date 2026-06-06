@@ -16,7 +16,6 @@ import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ArrayUtil;
-import com.liferay.portal.kernel.util.CamelCaseUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.LinkedHashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
@@ -250,7 +249,10 @@ public class SemanticSearchConfigurationFormRenderer
 			name -> availableTextEmbeddingProviders.put(
 				name,
 				_language.get(
-					httpServletRequest, CamelCaseUtil.fromCamelCase(name))));
+					httpServletRequest,
+					StringUtil.toLowerCase(
+						StringUtil.replace(
+							name, CharPool.SPACE, CharPool.DASH)))));
 
 		return availableTextEmbeddingProviders;
 	}
