@@ -66,6 +66,32 @@ components:
                         type: object
                     type: array
             type: object
+        InferenceEndpoint:
+            description:
+                Elasticsearch inference endpoint creation request and result. Carries the service and its settings on
+                input; the response echoes the Liferay-managed inference endpoint name and the service on success or an
+                error message on failure, and never echoes the settings, which may contain secrets.
+            properties:
+                errorMessage:
+                    type: string
+                inferenceId:
+                    type: string
+                service:
+                    type: string
+                serviceSettings:
+                    type: object
+            type: object
+        InferenceService:
+            description:
+                Inference service that Elasticsearch supports for the text_embedding task type, with the raw field
+                schema that drives the dynamic provider creation form. The configuration is absent when Elasticsearch
+                does not expose a schema for the service.
+            properties:
+                configuration:
+                    type: object
+                service:
+                    type: string
+            type: object
         SearchRequestBody:
             description:
                 Request body for POST /search. Carries search context attributes (including blueprint selection and empty-search behavior) and any facet aggregations to be returned alongside the results.
@@ -493,6 +519,48 @@ paths:
                             schema:
                                 $ref: "#/components/schemas/EmbeddingProviderValidationResult"
             tags: ["EmbeddingProviderValidationResult"]
+    /inference-endpoint:
+        post:
+            description:
+                Creates the Liferay-managed Elasticsearch inference endpoint for the text_embedding task type.
+            operationId: postInferenceEndpoint
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/InferenceEndpoint"
+                    application/xml:
+                        schema:
+                            $ref: "#/components/schemas/InferenceEndpoint"
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/InferenceEndpoint"
+                        application/xml:
+                            schema:
+                                $ref: "#/components/schemas/InferenceEndpoint"
+            tags: ["InferenceEndpoint"]
+    /inference-services:
+        get:
+            description:
+                Retrieves the inference services that Elasticsearch supports for the text_embedding task type.
+            operationId: getInferenceServicesPage
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                items:
+                                    $ref: "#/components/schemas/InferenceService"
+                                type: array
+                        application/xml:
+                            schema:
+                                items:
+                                    $ref: "#/components/schemas/InferenceService"
+                                type: array
+            tags: ["InferenceService"]
     /suggestions:
         post:
             operationId: postSuggestionsPage
