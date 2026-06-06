@@ -474,27 +474,38 @@ export default function ({
 							);
 					}
 
-					// Validate "Max Character Count" field.
+					// Validate "Max Character Count" field. The field is not
+					// rendered for the Elasticsearch Inference Endpoint
+					// provider, so it must not be validated there either, or
+					// an invalid value inherited from another provider would
+					// silently block the submission.
 
 					if (
-						!textEmbeddingProviderConfigurationJSON.attributes
-							?.maxCharacterCount === ''
+						textEmbeddingProviderConfigurationJSON.providerName !==
+						TEXT_EMBEDDING_PROVIDER_TYPES.ELASTICSEARCH_INFERENCE_ENDPOINT
 					) {
-						textEmbeddingProviderConfigurationJSONError.attributes.maxCharacterCount =
-							Liferay.Language.get('this-field-is-required');
-					}
-					else {
 						if (
+							!textEmbeddingProviderConfigurationJSON.attributes
+								?.maxCharacterCount ||
 							textEmbeddingProviderConfigurationJSON.attributes
-								?.maxCharacterCount < 50
+								?.maxCharacterCount === ''
 						) {
 							textEmbeddingProviderConfigurationJSONError.attributes.maxCharacterCount =
-								sub(
-									Liferay.Language.get(
-										'please-enter-a-value-greater-than-or-equal-to-x'
-									),
-									['50']
-								);
+								Liferay.Language.get('this-field-is-required');
+						}
+						else {
+							if (
+								textEmbeddingProviderConfigurationJSON
+									.attributes?.maxCharacterCount < 50
+							) {
+								textEmbeddingProviderConfigurationJSONError.attributes.maxCharacterCount =
+									sub(
+										Liferay.Language.get(
+											'please-enter-a-value-greater-than-or-equal-to-x'
+										),
+										['50']
+									);
+							}
 						}
 					}
 
@@ -1625,80 +1636,91 @@ export default function ({
 						{Liferay.Language.get('index-settings')}
 					</h3>
 
-					<Input
-						disabled={formik.isSubmitting}
-						error={
-							formik.errors
-								.textEmbeddingProviderConfigurationJSONs?.[
-								index
-							]?.attributes?.maxCharacterCount
-						}
-						helpText={Liferay.Language.get(
-							'text-embedding-provider-max-character-count-help'
-						)}
-						label={Liferay.Language.get('max-character-count')}
-						name={`textEmbeddingProviderConfigurationJSONs[${index}].attributes.maxCharacterCount`}
-						onBlur={_handleInputBlur(
-							`textEmbeddingProviderConfigurationJSONs[${index}].attributes.maxCharacterCount`
-						)}
-						onChange={_handleInputChange(
-							`textEmbeddingProviderConfigurationJSONs[${index}].attributes.maxCharacterCount`
-						)}
-						options={{min: 50}}
-						required
-						touched={
-							formik.touched
-								.textEmbeddingProviderConfigurationJSONs?.[
-								index
-							]?.attributes?.maxCharacterCount
-						}
-						type="number"
-						value={
-							formik.values
-								.textEmbeddingProviderConfigurationJSONs?.[
-								index
-							]?.attributes?.maxCharacterCount
-						}
-					>
-						<ClayForm.FeedbackGroup>
-							<ClayForm.Text>
-								{Liferay.Language.get(
-									'text-embedding-provider-max-character-count-refer-to-doc-help'
+					{formik.values.textEmbeddingProviderConfigurationJSONs?.[
+						index
+					]?.providerName !==
+						TEXT_EMBEDDING_PROVIDER_TYPES.ELASTICSEARCH_INFERENCE_ENDPOINT && (
+						<>
+							<Input
+								disabled={formik.isSubmitting}
+								error={
+									formik.errors
+										.textEmbeddingProviderConfigurationJSONs?.[
+										index
+									]?.attributes?.maxCharacterCount
+								}
+								helpText={Liferay.Language.get(
+									'text-embedding-provider-max-character-count-help'
 								)}
-							</ClayForm.Text>
-						</ClayForm.FeedbackGroup>
-					</Input>
+								label={Liferay.Language.get(
+									'max-character-count'
+								)}
+								name={`textEmbeddingProviderConfigurationJSONs[${index}].attributes.maxCharacterCount`}
+								onBlur={_handleInputBlur(
+									`textEmbeddingProviderConfigurationJSONs[${index}].attributes.maxCharacterCount`
+								)}
+								onChange={_handleInputChange(
+									`textEmbeddingProviderConfigurationJSONs[${index}].attributes.maxCharacterCount`
+								)}
+								options={{min: 50}}
+								required
+								touched={
+									formik.touched
+										.textEmbeddingProviderConfigurationJSONs?.[
+										index
+									]?.attributes?.maxCharacterCount
+								}
+								type="number"
+								value={
+									formik.values
+										.textEmbeddingProviderConfigurationJSONs?.[
+										index
+									]?.attributes?.maxCharacterCount
+								}
+							>
+								<ClayForm.FeedbackGroup>
+									<ClayForm.Text>
+										{Liferay.Language.get(
+											'text-embedding-provider-max-character-count-refer-to-doc-help'
+										)}
+									</ClayForm.Text>
+								</ClayForm.FeedbackGroup>
+							</Input>
 
-					<Input
-						disabled={formik.isSubmitting}
-						error={
-							formik.errors
-								.textEmbeddingProviderConfigurationJSONs?.[
-								index
-							]?.attributes?.textTruncationStrategy
-						}
-						helpText={Liferay.Language.get(
-							'text-embedding-provider-text-truncation-strategy-help'
-						)}
-						items={transformToLabelValueArray(
-							availableTextTruncationStrategies
-						)}
-						label={Liferay.Language.get('text-truncation-strategy')}
-						name={`textEmbeddingProviderConfigurationJSONs[${index}].attributes.textTruncationStrategy`}
-						onBlur={_handleInputBlur(
-							`textEmbeddingProviderConfigurationJSONs[${index}].attributes.textTruncationStrategy`
-						)}
-						onChange={_handleInputChange(
-							`textEmbeddingProviderConfigurationJSONs[${index}].attributes.textTruncationStrategy`
-						)}
-						type="select"
-						value={
-							formik.values
-								.textEmbeddingProviderConfigurationJSONs?.[
-								index
-							]?.attributes?.textTruncationStrategy
-						}
-					/>
+							<Input
+								disabled={formik.isSubmitting}
+								error={
+									formik.errors
+										.textEmbeddingProviderConfigurationJSONs?.[
+										index
+									]?.attributes?.textTruncationStrategy
+								}
+								helpText={Liferay.Language.get(
+									'text-embedding-provider-text-truncation-strategy-help'
+								)}
+								items={transformToLabelValueArray(
+									availableTextTruncationStrategies
+								)}
+								label={Liferay.Language.get(
+									'text-truncation-strategy'
+								)}
+								name={`textEmbeddingProviderConfigurationJSONs[${index}].attributes.textTruncationStrategy`}
+								onBlur={_handleInputBlur(
+									`textEmbeddingProviderConfigurationJSONs[${index}].attributes.textTruncationStrategy`
+								)}
+								onChange={_handleInputChange(
+									`textEmbeddingProviderConfigurationJSONs[${index}].attributes.textTruncationStrategy`
+								)}
+								type="select"
+								value={
+									formik.values
+										.textEmbeddingProviderConfigurationJSONs?.[
+										index
+									]?.attributes?.textTruncationStrategy
+								}
+							/>
+						</>
+					)}
 
 					<Input
 						disabled={formik.isSubmitting}
