@@ -48,6 +48,13 @@ public class InferenceIdResolverImplTest {
 	}
 
 	@Test
+	public void testComposeInferenceId() {
+		Assert.assertEquals(
+			"liferay-42-inference-openai",
+			_inferenceIdResolverImpl.composeInferenceId(_COMPANY_ID, "openai"));
+	}
+
+	@Test
 	public void testResolveInferenceIdReturnsComposedNameForElasticsearchProvider() {
 		_setProviderConfigurationJSONs(
 			_elasticsearchProviderJSON("hugging_face"));

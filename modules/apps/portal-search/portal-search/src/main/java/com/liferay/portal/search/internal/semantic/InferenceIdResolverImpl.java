@@ -28,6 +28,12 @@ import org.osgi.service.component.annotations.Reference;
 public class InferenceIdResolverImpl implements InferenceIdResolver {
 
 	@Override
+	public String composeInferenceId(long companyId, String service) {
+		return StringBundler.concat(
+			"liferay-", companyId, "-inference-", service);
+	}
+
+	@Override
 	public String resolveInferenceId(long companyId) {
 		SemanticSearchConfiguration semanticSearchConfiguration =
 			_semanticSearchConfigurationProvider.getCompanyConfiguration(
@@ -87,8 +93,7 @@ public class InferenceIdResolverImpl implements InferenceIdResolver {
 				continue;
 			}
 
-			return StringBundler.concat(
-				"liferay-", companyId, "-inference-", service);
+			return composeInferenceId(companyId, service);
 		}
 
 		return null;
