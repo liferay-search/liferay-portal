@@ -41,6 +41,7 @@ const getInputType = (fieldConfiguration) => {
 function BYOLLMConfigurationForm({
 	disabled,
 	errorMessage,
+	fieldErrors = {},
 	onInferenceEndpointConfigurationChange,
 }) {
 	const [fetchErrorMessage, setFetchErrorMessage] = useState('');
@@ -239,6 +240,7 @@ function BYOLLMConfigurationForm({
 				) : (
 					<Input
 						disabled={disabled}
+						error={fieldErrors[fieldName]}
 						helpText={fieldConfiguration?.description}
 						key={fieldName}
 						label={fieldConfiguration?.label || fieldName}
@@ -250,6 +252,7 @@ function BYOLLMConfigurationForm({
 							)
 						}
 						required={!!fieldConfiguration?.required}
+						touched={!!fieldErrors[fieldName]}
 						type={getInputType(fieldConfiguration)}
 						value={fieldValues[fieldName] ?? ''}
 					/>

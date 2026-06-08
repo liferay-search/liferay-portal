@@ -291,8 +291,44 @@ export default function ({
 		useState(null);
 	const [inferenceEndpointErrorMessage, setInferenceEndpointErrorMessage] =
 		useState('');
+	const [inferenceEndpointFieldErrors, setInferenceEndpointFieldErrors] =
+		useState({});
 
 	const [showSubmitWarningModal, setShowSubmitWarningModal] = useState(false);
+
+	/**
+	 * Validates the BYO-LLM service settings server-side before the endpoint
+	 * is created, so an invalid model or an out-of-range value is caught with
+	 * a per-field message instead of an unrecoverable Elasticsearch error.
+	 * Returns the field errors, or an empty object when the settings are
+	 * valid.
+	 */
+	const _validateInferenceEndpoint = async () => {
+		try {
+			const responseData = await fetch(
+				'/o/search/v1.0/inference-endpoint/validate',
+				{
+					body: JSON.stringify(inferenceEndpointConfiguration),
+					headers: new Headers({
+						'Accept': 'application/json',
+						'Accept-Language':
+							Liferay.ThemeDisplay.getBCP47LanguageId(),
+						'Content-Type': 'application/json',
+					}),
+					method: 'POST',
+				}
+			).then((response) => response.json());
+
+			return responseData.fieldErrors || {};
+		}
+		catch (error) {
+			if (process.env.NODE_ENV === 'development') {
+				console.error(error);
+			}
+
+			return {};
+		}
+	};
 
 	/**
 	 * Creates the Liferay-managed inference endpoint in Elasticsearch from
@@ -346,6 +382,18 @@ export default function ({
 			TEXT_EMBEDDING_PROVIDER_TYPES.ELASTICSEARCH_INFERENCE_ENDPOINT
 		) {
 			if (inferenceEndpointConfiguration?.service) {
+				const fieldErrors = await _validateInferenceEndpoint();
+
+				if (Object.keys(fieldErrors).length) {
+					setInferenceEndpointFieldErrors(fieldErrors);
+
+					actions.setSubmitting(false);
+
+					return;
+				}
+
+				setInferenceEndpointFieldErrors({});
+
 				const createErrorMessage = await _createInferenceEndpoint();
 
 				if (createErrorMessage) {
@@ -889,6 +937,7 @@ export default function ({
 
 							setInferenceEndpointConfiguration(null);
 							setInferenceEndpointErrorMessage('');
+							setInferenceEndpointFieldErrors({});
 
 							_handleInputChange(
 								`textEmbeddingProviderConfigurationJSONs[${index}].providerName`
@@ -1076,6 +1125,7 @@ export default function ({
 						<BYOLLMConfigurationForm
 							disabled={formik.isSubmitting}
 							errorMessage={inferenceEndpointErrorMessage}
+							fieldErrors={inferenceEndpointFieldErrors}
 							onInferenceEndpointConfigurationChange={(
 								newInferenceEndpointConfiguration
 							) => {
@@ -1083,6 +1133,7 @@ export default function ({
 									newInferenceEndpointConfiguration
 								);
 								setInferenceEndpointErrorMessage('');
+								setInferenceEndpointFieldErrors({});
 
 								const service =
 									newInferenceEndpointConfiguration?.service ||
