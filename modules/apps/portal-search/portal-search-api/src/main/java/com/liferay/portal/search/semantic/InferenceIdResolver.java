@@ -26,6 +26,8 @@ public interface InferenceIdResolver {
 
 	public String composeInferenceId(long companyId, String service);
 
+	public String composeInferenceIdPrefix(long companyId);
+
 	public String resolveInferenceId(long companyId);
 
 }
