@@ -81,6 +81,17 @@ components:
                 serviceSettings:
                     type: object
             type: object
+        InferenceEndpointValidation:
+            description:
+                Result of validating the service settings an admin entered for a BYO-LLM inference service before the
+                endpoint is created. Carries one message per invalid field; an empty fieldErrors map means the settings
+                are valid.
+            properties:
+                fieldErrors:
+                    type: object
+                valid:
+                    type: boolean
+            type: object
         InferenceService:
             description:
                 Inference service that Elasticsearch supports for the text_embedding task type, with the raw field
@@ -542,6 +553,29 @@ paths:
                             schema:
                                 $ref: "#/components/schemas/InferenceEndpoint"
             tags: ["InferenceEndpoint"]
+    /inference-endpoint/validate:
+        post:
+            description:
+                Validates the service settings for a BYO-LLM inference service before the endpoint is created.
+            operationId: postInferenceEndpointValidation
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/InferenceEndpoint"
+                    application/xml:
+                        schema:
+                            $ref: "#/components/schemas/InferenceEndpoint"
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/InferenceEndpointValidation"
+                        application/xml:
+                            schema:
+                                $ref: "#/components/schemas/InferenceEndpointValidation"
+            tags: ["InferenceEndpointValidation"]
     /inference-services:
         get:
             description:
