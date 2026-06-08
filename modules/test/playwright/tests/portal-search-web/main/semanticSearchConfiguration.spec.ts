@@ -199,6 +199,50 @@ testWithBYOLLMProviderSelectable(
 );
 
 testWithBYOLLMProviderSelectable(
+	'Rejects an unsupported model with a per-field error and does not submit',
+	{tag: '@LPD-92327'},
+	async ({page, semanticSearchConfigurationPage}) => {
+		await semanticSearchConfigurationPage.goto();
+
+		// Select the BYO-LLM provider and the OpenAI service
+
+		await semanticSearchConfigurationPage.textEmbeddingProviderSelect.selectOption(
+			'Elasticsearch Inference Endpoint'
+		);
+
+		await expect(async () => {
+			const optionsCount =
+				await semanticSearchConfigurationPage.inferenceServiceSelect
+					.locator('option')
+					.count();
+
+			expect(optionsCount).toBeGreaterThan(1);
+		}).toPass({timeout: 10000});
+
+		await semanticSearchConfigurationPage.inferenceServiceSelect.selectOption(
+			'openai'
+		);
+
+		// Enter an unsupported model and an API key, then save. The fields
+		// are targeted by their id (the ES field name), not by their label,
+		// which Elasticsearch may localize.
+
+		await page.locator('#byollm_api_key').fill('test-api-key');
+		await page.locator('#byollm_model_id').fill('not-a-model');
+
+		await semanticSearchConfigurationPage.saveButton.click();
+
+		// The per-field error appears and the model is not accepted
+
+		await expect(
+			page.getByText('The model "not-a-model" is not supported.', {
+				exact: false,
+			})
+		).toBeVisible();
+	}
+);
+
+testWithBYOLLMProviderSelectable(
 	'Shows an actionable error when testing the BYO-LLM provider without an active inference endpoint',
 	{tag: '@LPD-92306'},
 	async ({semanticSearchConfigurationPage}) => {

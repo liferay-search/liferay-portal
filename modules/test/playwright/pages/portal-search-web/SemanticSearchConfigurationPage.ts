@@ -14,6 +14,7 @@ export class SemanticSearchConfigurationPage {
 	readonly maxCharacterCountInput: Locator;
 	readonly page: Page;
 	readonly textEmbeddingProviderArchitectureHelp: Locator;
+	readonly saveButton: Locator;
 	readonly textEmbeddingProviderSelect: Locator;
 	readonly textTruncationStrategySelect: Locator;
 
@@ -32,6 +33,7 @@ export class SemanticSearchConfigurationPage {
 		this.maxCharacterCountInput = page.getByLabel('Max Character Count');
 		this.textEmbeddingProviderArchitectureHelp = page.getByText(
 			'Choose where the embedding model runs'
+		this.saveButton = page.getByRole('button', {exact: true, name: 'Save'});
 		);
 		this.textEmbeddingProviderSelect = page.getByLabel(
 			'Text Embedding Provider'
