@@ -25,6 +25,7 @@ dependencies {
 	compileOnly project(":apps:portal-vulcan:portal-vulcan-api")
 	compileOnly project(":apps:portal:portal-instance-lifecycle-api")
 	compileOnly project(":apps:static:portal-configuration:portal-configuration-metatype-api")
+	compileOnly project(":core:osgi-service-tracker-collections")
 	compileOnly project(":core:petra:petra-function")
 	compileOnly project(":core:petra:petra-string")
 	testImplementation group: "com.liferay", name: "org.apache.cxf.core", version: "3.6.11.JAKARTA-LIFERAY-PATCHED-1"

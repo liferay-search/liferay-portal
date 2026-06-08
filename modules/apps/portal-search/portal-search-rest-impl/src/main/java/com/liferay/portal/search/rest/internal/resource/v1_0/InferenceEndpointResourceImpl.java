@@ -5,13 +5,16 @@
 
 package com.liferay.portal.search.rest.internal.resource.v1_0;
 
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.module.service.Snapshot;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.rest.dto.v1_0.InferenceEndpoint;
+import com.liferay.portal.search.rest.internal.text.embeddings.configuration.ProviderInputValidatorRegistry;
 import com.liferay.portal.search.rest.resource.v1_0.InferenceEndpointResource;
 import com.liferay.portal.search.semantic.InferenceEndpointCreator;
 import com.liferay.portal.search.semantic.InferenceIdResolver;
@@ -20,6 +23,8 @@ import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotAuthorizedException;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Response;
+
+import java.util.Map;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -52,6 +57,18 @@ public class InferenceEndpointResourceImpl
 
 		if (Validator.isBlank(service)) {
 			throw new BadRequestException("Service is null or empty");
+		}
+
+		// Validate server-side too: the client validates for UX, but the
+		// endpoint must not create an invalid configuration if called
+		// directly
+
+		Map<String, String> fieldErrors =
+			_providerInputValidatorRegistry.validate(
+				service, inferenceEndpoint.getServiceSettings());
+
+		if (!fieldErrors.isEmpty()) {
+			return _toInferenceEndpoint(_merge(fieldErrors), null, service);
 		}
 
 		InferenceEndpointCreator inferenceEndpointCreator =
@@ -98,6 +115,10 @@ public class InferenceEndpointResourceImpl
 		}
 	}
 
+	private String _merge(Map<String, String> fieldErrors) {
+		return StringUtil.merge(fieldErrors.values(), StringPool.SPACE);
+	}
+
 	private InferenceEndpoint _toInferenceEndpoint(
 		String createErrorMessage, String createInferenceId,
 		String createService) {
@@ -124,5 +145,8 @@ public class InferenceEndpointResourceImpl
 
 	@Reference
 	private JSONFactory _jsonFactory;
+
+	@Reference
+	private ProviderInputValidatorRegistry _providerInputValidatorRegistry;
 
 }

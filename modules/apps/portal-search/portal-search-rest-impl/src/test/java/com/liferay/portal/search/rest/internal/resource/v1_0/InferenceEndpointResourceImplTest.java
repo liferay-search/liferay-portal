@@ -14,6 +14,7 @@ import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.search.rest.dto.v1_0.InferenceEndpoint;
+import com.liferay.portal.search.rest.internal.text.embeddings.configuration.ProviderInputValidatorRegistry;
 import com.liferay.portal.search.semantic.InferenceEndpointCreator;
 import com.liferay.portal.search.semantic.InferenceIdResolver;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
@@ -21,6 +22,8 @@ import com.liferay.portal.test.rule.LiferayUnitTestRule;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotAuthorizedException;
 import jakarta.ws.rs.NotFoundException;
+
+import java.util.Collections;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -57,11 +60,21 @@ public class InferenceEndpointResourceImplTest {
 		ReflectionTestUtil.setFieldValue(
 			_inferenceEndpointResourceImpl, "_jsonFactory",
 			new JSONFactoryImpl());
+		ReflectionTestUtil.setFieldValue(
+			_inferenceEndpointResourceImpl, "_providerInputValidatorRegistry",
+			_providerInputValidatorRegistry);
 
 		Mockito.when(
 			_inferenceEndpointCreatorSnapshot.get()
 		).thenReturn(
 			_inferenceEndpointCreator
+		);
+
+		Mockito.when(
+			_providerInputValidatorRegistry.validate(
+				Mockito.anyString(), Mockito.anyMap())
+		).thenReturn(
+			Collections.emptyMap()
 		);
 
 		Mockito.when(
@@ -258,5 +271,8 @@ public class InferenceEndpointResourceImplTest {
 		InferenceIdResolver.class);
 	private final PermissionChecker _permissionChecker = Mockito.mock(
 		PermissionChecker.class);
+	private final ProviderInputValidatorRegistry
+		_providerInputValidatorRegistry = Mockito.mock(
+			ProviderInputValidatorRegistry.class);
 
 }
