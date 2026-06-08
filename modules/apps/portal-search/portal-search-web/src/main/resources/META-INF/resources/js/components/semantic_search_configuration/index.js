@@ -18,6 +18,7 @@ import Input from './Input';
 import SubmitWarningModal from './SubmitWarningModal';
 import TestConfigurationButton from './TestConfigurationButton';
 import {TEXT_EMBEDDING_PROVIDER_TYPES} from './constants';
+import {getProviderFields, pickProviderAttributes} from './providerSchema';
 
 const DEFAULT_TEXT_EMBEDDING_PROVIDER_CONFIGURATIONS = {
 	attributes: {
@@ -435,59 +436,12 @@ export default function ({
 			return;
 		}
 
-		const {
-			accessToken,
-			apiKey,
-			autoTruncate,
-			basicAuthPassword,
-			basicAuthUsername,
-			dimensions,
-			hostAddress,
-			location,
-			maxCharacterCount,
-			model,
-			modelTimeout,
-			projectId,
-			textTruncationStrategy,
-			user,
-		} = attributes;
+		const {maxCharacterCount, textTruncationStrategy} = attributes;
 
-		const textEmbeddingProviderSettings =
-			providerName ===
-			TEXT_EMBEDDING_PROVIDER_TYPES.HUGGING_FACE_INFERENCE_API
-				? {
-						accessToken,
-						model,
-						modelTimeout,
-					}
-				: providerName ===
-					  TEXT_EMBEDDING_PROVIDER_TYPES.HUGGING_FACE_INFERENCE_ENDPOINT
-					? {
-							accessToken,
-							hostAddress,
-						}
-					: providerName === TEXT_EMBEDDING_PROVIDER_TYPES.OPENAI
-						? {
-								apiKey,
-								dimensions,
-								model,
-								user,
-							}
-						: providerName === TEXT_EMBEDDING_PROVIDER_TYPES.TXTAI
-							? {
-									basicAuthPassword,
-									basicAuthUsername,
-									hostAddress,
-								}
-							: providerName ===
-								  TEXT_EMBEDDING_PROVIDER_TYPES.VERTEX_AI
-								? {
-										autoTruncate,
-										location,
-										model,
-										projectId,
-									}
-								: {};
+		const textEmbeddingProviderSettings = pickProviderAttributes(
+			providerName,
+			attributes
+		);
 
 		const responseData = await fetch(
 			'/o/search/v1.0/embeddings/validate-provider-configuration',
@@ -564,25 +518,6 @@ export default function ({
 							);
 					}
 
-					// Validate "Hugging Face Access Token" field.
-
-					if (
-						textEmbeddingProviderConfigurationJSON.providerName ===
-							TEXT_EMBEDDING_PROVIDER_TYPES.HUGGING_FACE_INFERENCE_API ||
-						textEmbeddingProviderConfigurationJSON.providerName ===
-							TEXT_EMBEDDING_PROVIDER_TYPES.HUGGING_FACE_INFERENCE_ENDPOINT
-					) {
-						if (
-							!textEmbeddingProviderConfigurationJSON.attributes
-								?.accessToken ||
-							textEmbeddingProviderConfigurationJSON.attributes
-								?.accessToken === ''
-						) {
-							textEmbeddingProviderConfigurationJSONError.attributes.accessToken =
-								Liferay.Language.get('this-field-is-required');
-						}
-					}
-
 					// Validate "Languages" field.
 
 					if (
@@ -631,153 +566,42 @@ export default function ({
 						}
 					}
 
-					if (
-						textEmbeddingProviderConfigurationJSON.providerName ===
-						TEXT_EMBEDDING_PROVIDER_TYPES.HUGGING_FACE_INFERENCE_API
-					) {
+					// Validate the provider-specific fields.
 
-						// Validate "Model" field.
+					getProviderFields(
+						textEmbeddingProviderConfigurationJSON.providerName
+					).forEach(({max, min, name, required}) => {
+						const value =
+							textEmbeddingProviderConfigurationJSON.attributes?.[
+								name
+							];
 
-						if (
-							!textEmbeddingProviderConfigurationJSON.attributes
-								?.model ||
-							textEmbeddingProviderConfigurationJSON.attributes
-								?.model === ''
-						) {
-							textEmbeddingProviderConfigurationJSONError.attributes.model =
-								Liferay.Language.get('this-field-is-required');
+						if (required && !value) {
+							textEmbeddingProviderConfigurationJSONError.attributes[
+								name
+							] = Liferay.Language.get('this-field-is-required');
 						}
-
-						// Validate "Model Timeout" field.
-
-						if (
-							!textEmbeddingProviderConfigurationJSON.attributes
-								?.modelTimeout ||
-							textEmbeddingProviderConfigurationJSON.attributes
-								?.modelTimeout === ''
-						) {
-							textEmbeddingProviderConfigurationJSONError.attributes.modelTimeout =
-								Liferay.Language.get('this-field-is-required');
+						else if (min !== undefined && value < min) {
+							textEmbeddingProviderConfigurationJSONError.attributes[
+								name
+							] = sub(
+								Liferay.Language.get(
+									'please-enter-a-value-greater-than-or-equal-to-x'
+								),
+								[String(min)]
+							);
 						}
-						else {
-							if (
-								textEmbeddingProviderConfigurationJSON
-									.attributes?.modelTimeout < 0
-							) {
-								textEmbeddingProviderConfigurationJSONError.attributes.modelTimeout =
-									sub(
-										Liferay.Language.get(
-											'please-enter-a-value-greater-than-or-equal-to-x'
-										),
-										['0']
-									);
-							}
-
-							if (
-								textEmbeddingProviderConfigurationJSON
-									.attributes?.modelTimeout > 60
-							) {
-								textEmbeddingProviderConfigurationJSONError.attributes.modelTimeout =
-									sub(
-										Liferay.Language.get(
-											'please-enter-a-value-less-than-or-equal-to-x'
-										),
-										['60']
-									);
-							}
+						else if (max !== undefined && value > max) {
+							textEmbeddingProviderConfigurationJSONError.attributes[
+								name
+							] = sub(
+								Liferay.Language.get(
+									'please-enter-a-value-less-than-or-equal-to-x'
+								),
+								[String(max)]
+							);
 						}
-					}
-
-					// Validate "Host Address" field.
-
-					if (
-						textEmbeddingProviderConfigurationJSON.providerName ===
-							TEXT_EMBEDDING_PROVIDER_TYPES.HUGGING_FACE_INFERENCE_ENDPOINT ||
-						textEmbeddingProviderConfigurationJSON.providerName ===
-							TEXT_EMBEDDING_PROVIDER_TYPES.TXTAI
-					) {
-						if (
-							!textEmbeddingProviderConfigurationJSON.attributes
-								?.hostAddress ||
-							textEmbeddingProviderConfigurationJSON.attributes
-								?.hostAddress === ''
-						) {
-							textEmbeddingProviderConfigurationJSONError.attributes.hostAddress =
-								Liferay.Language.get('this-field-is-required');
-						}
-					}
-
-					if (
-						textEmbeddingProviderConfigurationJSON.providerName ===
-						TEXT_EMBEDDING_PROVIDER_TYPES.OPENAI
-					) {
-
-						// Validate "apiKey" field.
-
-						if (
-							!textEmbeddingProviderConfigurationJSON.attributes
-								?.apiKey ||
-							textEmbeddingProviderConfigurationJSON.attributes
-								?.apiKey === ''
-						) {
-							textEmbeddingProviderConfigurationJSONError.attributes.apiKey =
-								Liferay.Language.get('this-field-is-required');
-						}
-
-						// Validate "Model" field.
-
-						if (
-							!textEmbeddingProviderConfigurationJSON.attributes
-								?.model ||
-							textEmbeddingProviderConfigurationJSON.attributes
-								?.model === ''
-						) {
-							textEmbeddingProviderConfigurationJSONError.attributes.model =
-								Liferay.Language.get('this-field-is-required');
-						}
-					}
-
-					if (
-						textEmbeddingProviderConfigurationJSON.providerName ===
-						TEXT_EMBEDDING_PROVIDER_TYPES.VERTEX_AI
-					) {
-
-						// Validate "Location" field.
-
-						if (
-							!textEmbeddingProviderConfigurationJSON.attributes
-								?.location ||
-							textEmbeddingProviderConfigurationJSON.attributes
-								?.location === ''
-						) {
-							textEmbeddingProviderConfigurationJSONError.attributes.location =
-								Liferay.Language.get('this-field-is-required');
-						}
-
-						// Validate "Model" field.
-
-						if (
-							!textEmbeddingProviderConfigurationJSON.attributes
-								?.model ||
-							textEmbeddingProviderConfigurationJSON.attributes
-								?.model === ''
-						) {
-							textEmbeddingProviderConfigurationJSONError.attributes.model =
-								Liferay.Language.get('this-field-is-required');
-						}
-
-						// Validate "Project ID" field.
-
-						if (
-							!textEmbeddingProviderConfigurationJSON.attributes
-								?.projectId ||
-							textEmbeddingProviderConfigurationJSON.attributes
-								?.projectId === ''
-						) {
-							textEmbeddingProviderConfigurationJSONError.attributes.projectId =
-								Liferay.Language.get('this-field-is-required');
-						}
-					}
+					});
 
 					return textEmbeddingProviderConfigurationJSONError;
 				}
