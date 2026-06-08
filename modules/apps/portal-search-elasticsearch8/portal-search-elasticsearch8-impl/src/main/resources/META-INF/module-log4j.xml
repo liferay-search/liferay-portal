@@ -8,5 +8,19 @@
 		<Logger level="WARN" name="com.liferay.portal.search.elasticsearch8.internal.index.MappingsHelperImpl" />
 		<Logger level="INFO" name="com.liferay.portal.search.elasticsearch8.internal.sidecar" />
 		<Logger level="WARN" name="com.liferay.portal.search.elasticsearch8.internal.upgrade.v1_0_0.ElasticsearchConfigurationUpgradeProcess" />
+
+		<!--
+			Pin the Elasticsearch client request and response body loggers to
+			INFO. At DEBUG or TRACE these loggers emit the full HTTP body,
+			which for the BYO-LLM "PUT _inference/text_embedding/<id>" call
+			includes the provider API key in cleartext. Keeping them at INFO
+			prevents the key from reaching the logs even if the root logger
+			is lowered. Do not raise these to DEBUG or TRACE in production.
+		-->
+
+		<Logger level="INFO" name="org.apache.http.headers" />
+		<Logger level="INFO" name="org.apache.http.wire" />
+		<Logger level="INFO" name="org.elasticsearch.client.RestClient" />
+		<Logger level="INFO" name="tracer" />
 	</Loggers>
 </Configuration>
