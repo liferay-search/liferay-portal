@@ -14,6 +14,7 @@ export class SemanticSearchConfigurationPage {
 	readonly maxCharacterCountInput: Locator;
 	readonly page: Page;
 	readonly providerArchitectureHelpText: Locator;
+	readonly saveButton: Locator;
 	readonly testConfigurationButton: Locator;
 	readonly testConfigurationResultAlert: Locator;
 	readonly textEmbeddingProviderOptions: Locator;
@@ -36,6 +37,7 @@ export class SemanticSearchConfigurationPage {
 		this.providerArchitectureHelpText = page.getByText(
 			'Choose where the embedding model runs.'
 		);
+		this.saveButton = page.getByRole('button', {exact: true, name: 'Save'});
 		this.testConfigurationButton = page.getByRole('button', {
 			name: 'Test Configuration',
 		});
