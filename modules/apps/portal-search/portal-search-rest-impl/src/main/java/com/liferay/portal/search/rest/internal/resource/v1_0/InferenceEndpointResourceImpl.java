@@ -17,9 +17,11 @@ import com.liferay.portal.search.rest.dto.v1_0.InferenceEndpoint;
 import com.liferay.portal.search.rest.internal.text.embeddings.configuration.ProviderInputValidatorRegistry;
 import com.liferay.portal.search.rest.resource.v1_0.InferenceEndpointResource;
 import com.liferay.portal.search.semantic.InferenceEndpointCreator;
+import com.liferay.portal.search.semantic.InferenceEndpointLocator;
 import com.liferay.portal.search.semantic.InferenceIdResolver;
 
 import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.ClientErrorException;
 import jakarta.ws.rs.NotAuthorizedException;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Response;
@@ -81,6 +83,14 @@ public class InferenceEndpointResourceImpl
 				null, service);
 		}
 
+		// Enforce a single Liferay-managed endpoint per company: if any
+		// endpoint matching the company prefix already exists, block the
+		// creation with a 409 so the admin deletes the current configuration
+		// first (switching providers goes through the save flow in subtask
+		// 3.9)
+
+		_checkSingleEndpointConstraint();
+
 		String inferenceId = _inferenceIdResolver.composeInferenceId(
 			contextCompany.getCompanyId(), service);
 
@@ -115,6 +125,27 @@ public class InferenceEndpointResourceImpl
 		}
 	}
 
+	private void _checkSingleEndpointConstraint() {
+		InferenceEndpointLocator inferenceEndpointLocator =
+			_inferenceEndpointLocatorSnapshot.get();
+
+		if (inferenceEndpointLocator == null) {
+			return;
+		}
+
+		String existingInferenceId = inferenceEndpointLocator.findInferenceId(
+			_inferenceIdResolver.composeInferenceIdPrefix(
+				contextCompany.getCompanyId()));
+
+		if (existingInferenceId != null) {
+			throw new ClientErrorException(
+				"An Elasticsearch inference endpoint already exists for this " +
+					"company. Delete the current configuration before " +
+						"creating a new one.",
+				Response.Status.CONFLICT);
+		}
+	}
+
 	private String _merge(Map<String, String> fieldErrors) {
 		return StringUtil.merge(fieldErrors.values(), StringPool.SPACE);
 	}
@@ -138,6 +169,10 @@ public class InferenceEndpointResourceImpl
 	private static final Snapshot<InferenceEndpointCreator>
 		_inferenceEndpointCreatorSnapshot = new Snapshot<>(
 			InferenceEndpointResourceImpl.class, InferenceEndpointCreator.class,
+			null, true);
+	private static final Snapshot<InferenceEndpointLocator>
+		_inferenceEndpointLocatorSnapshot = new Snapshot<>(
+			InferenceEndpointResourceImpl.class, InferenceEndpointLocator.class,
 			null, true);
 
 	@Reference

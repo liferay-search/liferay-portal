@@ -16,12 +16,15 @@ import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.search.rest.dto.v1_0.InferenceEndpoint;
 import com.liferay.portal.search.rest.internal.text.embeddings.configuration.ProviderInputValidatorRegistry;
 import com.liferay.portal.search.semantic.InferenceEndpointCreator;
+import com.liferay.portal.search.semantic.InferenceEndpointLocator;
 import com.liferay.portal.search.semantic.InferenceIdResolver;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
 
 import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.ClientErrorException;
 import jakarta.ws.rs.NotAuthorizedException;
 import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.core.Response;
 
 import java.util.Collections;
 
@@ -55,6 +58,10 @@ public class InferenceEndpointResourceImplTest {
 			"_inferenceEndpointCreatorSnapshot",
 			_inferenceEndpointCreatorSnapshot);
 		ReflectionTestUtil.setFieldValue(
+			InferenceEndpointResourceImpl.class,
+			"_inferenceEndpointLocatorSnapshot",
+			_inferenceEndpointLocatorSnapshot);
+		ReflectionTestUtil.setFieldValue(
 			_inferenceEndpointResourceImpl, "_inferenceIdResolver",
 			_inferenceIdResolver);
 		ReflectionTestUtil.setFieldValue(
@@ -68,6 +75,12 @@ public class InferenceEndpointResourceImplTest {
 			_inferenceEndpointCreatorSnapshot.get()
 		).thenReturn(
 			_inferenceEndpointCreator
+		);
+
+		Mockito.when(
+			_inferenceEndpointLocatorSnapshot.get()
+		).thenReturn(
+			_inferenceEndpointLocator
 		);
 
 		Mockito.when(
@@ -162,6 +175,39 @@ public class InferenceEndpointResourceImplTest {
 		catch (Exception exception) {
 			Assert.assertTrue(exception instanceof NotFoundException);
 		}
+	}
+
+	@Test
+	public void testPostInferenceEndpointWhenEndpointAlreadyExists()
+		throws Exception {
+
+		Mockito.when(
+			_inferenceIdResolver.composeInferenceIdPrefix(_COMPANY_ID)
+		).thenReturn(
+			"liferay-12345-inference-"
+		);
+
+		Mockito.when(
+			_inferenceEndpointLocator.findInferenceId(
+				"liferay-12345-inference-")
+		).thenReturn(
+			"liferay-12345-inference-hugging_face"
+		);
+
+		try {
+			_inferenceEndpointResourceImpl.postInferenceEndpoint(
+				_toInferenceEndpoint("openai"));
+
+			Assert.fail();
+		}
+		catch (ClientErrorException clientErrorException) {
+			Response response = clientErrorException.getResponse();
+
+			Assert.assertEquals(
+				Response.Status.CONFLICT.getStatusCode(), response.getStatus());
+		}
+
+		Mockito.verifyNoInteractions(_inferenceEndpointCreator);
 	}
 
 	@Test
@@ -266,6 +312,10 @@ public class InferenceEndpointResourceImplTest {
 		Mockito.mock(InferenceEndpointCreator.class);
 	private final Snapshot<InferenceEndpointCreator>
 		_inferenceEndpointCreatorSnapshot = Mockito.mock(Snapshot.class);
+	private final InferenceEndpointLocator _inferenceEndpointLocator =
+		Mockito.mock(InferenceEndpointLocator.class);
+	private final Snapshot<InferenceEndpointLocator>
+		_inferenceEndpointLocatorSnapshot = Mockito.mock(Snapshot.class);
 	private InferenceEndpointResourceImpl _inferenceEndpointResourceImpl;
 	private final InferenceIdResolver _inferenceIdResolver = Mockito.mock(
 		InferenceIdResolver.class);
