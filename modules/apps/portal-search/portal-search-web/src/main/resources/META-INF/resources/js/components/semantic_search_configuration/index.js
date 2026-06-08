@@ -305,7 +305,7 @@ export default function ({
 	 */
 	const _validateInferenceEndpoint = async () => {
 		try {
-			const responseData = await fetch(
+			const response = await fetch(
 				'/o/search/v1.0/inference-endpoint/validate',
 				{
 					body: JSON.stringify(inferenceEndpointConfiguration),
@@ -317,7 +317,16 @@ export default function ({
 					}),
 					method: 'POST',
 				}
-			).then((response) => response.json());
+			);
+
+			// On a non-OK status there are no per-field errors to show; let
+			// the subsequent create call surface the error inline.
+
+			if (!response.ok) {
+				return {};
+			}
+
+			const responseData = await response.json();
 
 			return responseData.fieldErrors || {};
 		}
@@ -337,21 +346,33 @@ export default function ({
 	 */
 	const _createInferenceEndpoint = async () => {
 		try {
-			const responseData = await fetch(
-				'/o/search/v1.0/inference-endpoint',
-				{
-					body: JSON.stringify(inferenceEndpointConfiguration),
-					headers: new Headers({
-						'Accept': 'application/json',
-						'Accept-Language':
-							Liferay.ThemeDisplay.getBCP47LanguageId(),
-						'Content-Type': 'application/json',
-					}),
-					method: 'POST',
-				}
-			).then((response) => response.json());
+			const response = await fetch('/o/search/v1.0/inference-endpoint', {
+				body: JSON.stringify(inferenceEndpointConfiguration),
+				headers: new Headers({
+					'Accept': 'application/json',
+					'Accept-Language':
+						Liferay.ThemeDisplay.getBCP47LanguageId(),
+					'Content-Type': 'application/json',
+				}),
+				method: 'POST',
+			});
 
-			return responseData.errorMessage || responseData.message || '';
+			const responseData = await response.json();
+
+			// A 409 Conflict (single-endpoint constraint) and other error
+			// statuses carry the message in "title"; the success body carries
+			// any provider error in "errorMessage".
+
+			if (!response.ok) {
+				return (
+					responseData.title ||
+					responseData.errorMessage ||
+					responseData.message ||
+					Liferay.Language.get('an-unexpected-error-occurred')
+				);
+			}
+
+			return responseData.errorMessage || '';
 		}
 		catch (error) {
 			if (process.env.NODE_ENV === 'development') {
