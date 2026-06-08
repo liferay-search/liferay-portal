@@ -55,6 +55,13 @@ public class InferenceIdResolverImplTest {
 	}
 
 	@Test
+	public void testComposeInferenceIdPrefix() {
+		Assert.assertEquals(
+			"liferay-42-inference-",
+			_inferenceIdResolverImpl.composeInferenceIdPrefix(_COMPANY_ID));
+	}
+
+	@Test
 	public void testResolveInferenceIdReturnsComposedNameForElasticsearchProvider() {
 		_setProviderConfigurationJSONs(
 			_elasticsearchProviderJSON("hugging_face"));

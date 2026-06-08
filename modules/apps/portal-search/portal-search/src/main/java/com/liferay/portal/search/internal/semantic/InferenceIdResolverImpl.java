@@ -29,8 +29,12 @@ public class InferenceIdResolverImpl implements InferenceIdResolver {
 
 	@Override
 	public String composeInferenceId(long companyId, String service) {
-		return StringBundler.concat(
-			"liferay-", companyId, "-inference-", service);
+		return composeInferenceIdPrefix(companyId) + service;
+	}
+
+	@Override
+	public String composeInferenceIdPrefix(long companyId) {
+		return StringBundler.concat("liferay-", companyId, "-inference-");
 	}
 
 	@Override
