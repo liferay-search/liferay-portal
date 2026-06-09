@@ -6,8 +6,6 @@
 import ClayAlert from '@clayui/alert';
 import ClayButton from '@clayui/button';
 import ClayForm, {ClayCheckbox} from '@clayui/form';
-import ClayIcon from '@clayui/icon';
-import {ClayTooltipProvider} from '@clayui/tooltip';
 import {useFormik} from 'formik';
 import {fetch, sub} from 'frontend-js-web';
 import React, {useMemo, useState} from 'react';
@@ -736,33 +734,6 @@ export default function ({
 
 		const config =
 			formik.values.textEmbeddingProviderConfigurationJSONs?.[index];
-
-		if (field.type === 'checkbox') {
-			return (
-				<ClayCheckbox
-					aria-label={field.label}
-					checked={!!config?.attributes?.[field.name]}
-					disabled={formik.isSubmitting}
-					key={field.name}
-					label={
-						<>
-							{field.label}
-							<ClayTooltipProvider>
-								<span
-									className="ml-2"
-									title={field.tooltipText}
-								>
-									<ClayIcon symbol="question-circle-full" />
-								</span>
-							</ClayTooltipProvider>
-						</>
-					}
-					name={name}
-					onChange={_handleCheckboxChange(name)}
-					value={config?.attributes?.[field.name]}
-				/>
-			);
-		}
 
 		return (
 			<Input
