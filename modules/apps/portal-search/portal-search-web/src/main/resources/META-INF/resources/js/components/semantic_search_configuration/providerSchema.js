@@ -17,11 +17,11 @@ import {TEXT_EMBEDDING_PROVIDER_TYPES} from './constants';
  *   min          - numeric lower bound (inclusive)
  *   max          - numeric upper bound (inclusive)
  *   label        - field label
- *   helpText     - help tooltip text
+ *   helpText     - help tooltip text (next to the label, or the
+ *                  checkbox for a 'checkbox' field)
  *   type         - Input type: 'password' | 'number' | 'model' |
  *                  'checkbox' (omitted renders a text input)
  *   feedbackText - feedback text rendered below the input
- *   tooltipText  - checkbox tooltip text
  *
  * Language keys are resolved here so the build can statically extract the
  * literal Liferay.Language.get arguments.
@@ -155,11 +155,11 @@ const PROVIDERS = {
 	[TEXT_EMBEDDING_PROVIDER_TYPES.VERTEX_AI]: {
 		fields: [
 			{
-				label: Liferay.Language.get('auto-truncate'),
-				name: 'autoTruncate',
-				tooltipText: Liferay.Language.get(
+				helpText: Liferay.Language.get(
 					'text-embedding-provider-vertex-ai-auto-truncate-help'
 				),
+				label: Liferay.Language.get('auto-truncate'),
+				name: 'autoTruncate',
 				type: 'checkbox',
 			},
 			{

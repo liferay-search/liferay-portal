@@ -4,7 +4,12 @@
  */
 
 import {ClayButtonWithIcon} from '@clayui/button';
-import ClayForm, {ClayInput, ClaySelect, ClaySelectBox} from '@clayui/form';
+import ClayForm, {
+	ClayCheckbox,
+	ClayInput,
+	ClaySelect,
+	ClaySelectBox,
+} from '@clayui/form';
 import ClayIcon from '@clayui/icon';
 import {ClayTooltipProvider} from '@clayui/tooltip';
 import getCN from 'classnames';
@@ -64,6 +69,34 @@ function Input({
 	const _handleEventChange = (event) => {
 		onChange(event.target.value);
 	};
+
+	if (type === 'checkbox') {
+		return (
+			<ClayCheckbox
+				aria-label={label}
+				checked={!!value}
+				disabled={disabled}
+				label={
+					helpText ? (
+						<>
+							{label}
+
+							<ClayTooltipProvider>
+								<span className="ml-2" title={helpText}>
+									<ClayIcon symbol="question-circle-full" />
+								</span>
+							</ClayTooltipProvider>
+						</>
+					) : (
+						label
+					)
+				}
+				name={name}
+				onChange={(event) => onChange(event.target.checked)}
+				value={value}
+			/>
+		);
+	}
 
 	const _renderInput = () => {
 		switch (type) {
