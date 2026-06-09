@@ -8,46 +8,189 @@ import {TEXT_EMBEDDING_PROVIDER_TYPES} from './constants';
 /**
  * Single source of truth for the provider-specific `attributes` fields.
  *
- * Each provider maps to an ordered list of field descriptors. A
- * descriptor's `name` is the attribute key; the remaining keys drive
- * validation:
+ * Each provider maps to a descriptor with an ordered `fields` list and an
+ * optional `helpText` (shown in the provider <select> dropdown). A
+ * field's `name` is the attribute key; the remaining keys drive
+ * validation and rendering:
  *
- *   required - the field must have a non-empty value
- *   min      - numeric lower bound (inclusive)
- *   max      - numeric upper bound (inclusive)
+ *   required     - the field must have a non-empty value
+ *   min          - numeric lower bound (inclusive)
+ *   max          - numeric upper bound (inclusive)
+ *   label        - field label
+ *   helpText     - help tooltip text
+ *   type         - Input type: 'password' | 'number' | 'model' |
+ *                  'checkbox' (omitted renders a text input)
+ *   feedbackText - feedback text rendered below the input
+ *   tooltipText  - checkbox tooltip text
  *
- * The list also defines which attributes are sent to the validate and
- * save endpoints (see `pickProviderAttributes`). Common fields shared by
- * every provider (maxCharacterCount, textTruncationStrategy, languageIds,
- * modelClassNames) are handled by the caller, not here.
+ * Language keys are resolved here so the build can statically extract the
+ * literal Liferay.Language.get arguments.
+ *
+ * The `fields` list also defines which attributes are sent to the
+ * validate and save endpoints (see `pickProviderAttributes`). Common
+ * fields shared by every provider (maxCharacterCount,
+ * textTruncationStrategy, languageIds, modelClassNames) are handled by
+ * the caller, not here.
  */
-const PROVIDER_FIELDS = {
-	[TEXT_EMBEDDING_PROVIDER_TYPES.HUGGING_FACE_INFERENCE_API]: [
-		{name: 'accessToken', required: true},
-		{name: 'model', required: true},
-		{max: 60, min: 0, name: 'modelTimeout', required: true},
-	],
-	[TEXT_EMBEDDING_PROVIDER_TYPES.HUGGING_FACE_INFERENCE_ENDPOINT]: [
-		{name: 'accessToken', required: true},
-		{name: 'hostAddress', required: true},
-	],
-	[TEXT_EMBEDDING_PROVIDER_TYPES.OPENAI]: [
-		{name: 'apiKey', required: true},
-		{name: 'dimensions'},
-		{name: 'model', required: true},
-		{name: 'user'},
-	],
-	[TEXT_EMBEDDING_PROVIDER_TYPES.TXTAI]: [
-		{name: 'hostAddress', required: true},
-		{name: 'basicAuthUsername'},
-		{name: 'basicAuthPassword'},
-	],
-	[TEXT_EMBEDDING_PROVIDER_TYPES.VERTEX_AI]: [
-		{name: 'autoTruncate'},
-		{name: 'location', required: true},
-		{name: 'model', required: true},
-		{name: 'projectId', required: true},
-	],
+const PROVIDERS = {
+	[TEXT_EMBEDDING_PROVIDER_TYPES.HUGGING_FACE_INFERENCE_API]: {
+		fields: [
+			{
+				label: Liferay.Language.get('access-token'),
+				name: 'accessToken',
+				required: true,
+				type: 'password',
+			},
+			{
+				feedbackText: Liferay.Language.get(
+					'begin-typing-and-select-a-model'
+				),
+				helpText: Liferay.Language.get(
+					'text-embedding-provider-model-help'
+				),
+				label: Liferay.Language.get('model'),
+				name: 'model',
+				required: true,
+				type: 'model',
+			},
+			{
+				helpText: Liferay.Language.get(
+					'text-embedding-provider-hugging-face-inference-api-model-timeout-help'
+				),
+				label: Liferay.Language.get('model-timeout'),
+				max: 60,
+				min: 0,
+				name: 'modelTimeout',
+				required: true,
+				type: 'number',
+			},
+		],
+		helpText: Liferay.Language.get(
+			'text-embedding-provider-hugging-face-inference-api-help'
+		),
+	},
+	[TEXT_EMBEDDING_PROVIDER_TYPES.HUGGING_FACE_INFERENCE_ENDPOINT]: {
+		fields: [
+			{
+				label: Liferay.Language.get('access-token'),
+				name: 'accessToken',
+				required: true,
+				type: 'password',
+			},
+			{
+				helpText: Liferay.Language.get(
+					'text-embedding-provider-host-address-help'
+				),
+				label: Liferay.Language.get('host-address'),
+				name: 'hostAddress',
+				required: true,
+			},
+		],
+		helpText: Liferay.Language.get(
+			'text-embedding-provider-hugging-face-inference-endpoint-help'
+		),
+	},
+	[TEXT_EMBEDDING_PROVIDER_TYPES.OPENAI]: {
+		fields: [
+			{
+				helpText: Liferay.Language.get(
+					'text-embedding-provider-api-key-help'
+				),
+				label: Liferay.Language.get('api-key'),
+				name: 'apiKey',
+				required: true,
+				type: 'password',
+			},
+			{
+				helpText: Liferay.Language.get(
+					'text-embedding-provider-openai-dimensions-help'
+				),
+				label: Liferay.Language.get('dimensions'),
+				name: 'dimensions',
+			},
+			{
+				helpText: Liferay.Language.get(
+					'text-embedding-provider-model-help'
+				),
+				label: Liferay.Language.get('model'),
+				name: 'model',
+				required: true,
+			},
+			{
+				helpText: Liferay.Language.get(
+					'text-embedding-provider-openai-user-help'
+				),
+				label: Liferay.Language.get('user'),
+				name: 'user',
+			},
+		],
+	},
+	[TEXT_EMBEDDING_PROVIDER_TYPES.TXTAI]: {
+		fields: [
+			{
+				helpText: Liferay.Language.get(
+					'text-embedding-provider-host-address-help'
+				),
+				label: Liferay.Language.get('host-address'),
+				name: 'hostAddress',
+				required: true,
+			},
+			{
+				helpText: Liferay.Language.get(
+					'text-embedding-provider-basic-auth-username-help'
+				),
+				label: Liferay.Language.get('basic-auth-username'),
+				name: 'basicAuthUsername',
+			},
+			{
+				helpText: Liferay.Language.get(
+					'text-embedding-provider-basic-auth-password-help'
+				),
+				label: Liferay.Language.get('basic-auth-password'),
+				name: 'basicAuthPassword',
+				type: 'password',
+			},
+		],
+	},
+	[TEXT_EMBEDDING_PROVIDER_TYPES.VERTEX_AI]: {
+		fields: [
+			{
+				label: Liferay.Language.get('auto-truncate'),
+				name: 'autoTruncate',
+				tooltipText: Liferay.Language.get(
+					'text-embedding-provider-vertex-ai-auto-truncate-help'
+				),
+				type: 'checkbox',
+			},
+			{
+				helpText: Liferay.Language.get(
+					'text-embedding-provider-vertex-ai-location-help'
+				),
+				label: Liferay.Language.get('location'),
+				name: 'location',
+				required: true,
+			},
+			{
+				helpText: Liferay.Language.get(
+					'text-embedding-provider-model-help'
+				),
+				label: Liferay.Language.get('model'),
+				name: 'model',
+				required: true,
+			},
+			{
+				helpText: Liferay.Language.get(
+					'text-embedding-provider-vertex-ai-project-id-help'
+				),
+				label: Liferay.Language.get('project-id'),
+				name: 'projectId',
+				required: true,
+			},
+		],
+		helpText: Liferay.Language.get(
+			'text-embedding-provider-vertex-ai-authentication-help'
+		),
+	},
 };
 
 /**
@@ -57,7 +200,17 @@ const PROVIDER_FIELDS = {
  * @returns {Array}
  */
 export function getProviderFields(providerName) {
-	return PROVIDER_FIELDS[providerName] || [];
+	return PROVIDERS[providerName]?.fields || [];
+}
+
+/**
+ * Returns the help text shown in the provider <select> dropdown, or
+ * undefined when the provider declares none.
+ * @param {string} providerName
+ * @returns {string|undefined}
+ */
+export function getProviderHelpText(providerName) {
+	return PROVIDERS[providerName]?.helpText;
 }
 
 /**
