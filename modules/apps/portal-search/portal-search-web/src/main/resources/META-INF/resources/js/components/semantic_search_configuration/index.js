@@ -772,9 +772,17 @@ export default function ({
 	};
 
 	const _renderEmbeddingProviderConfigurationInputs = (index) => {
-		const providerName =
-			formik.values.textEmbeddingProviderConfigurationJSONs?.[index]
-				?.providerName;
+		const config =
+			formik.values.textEmbeddingProviderConfigurationJSONs?.[index];
+		const errors =
+			formik.errors.textEmbeddingProviderConfigurationJSONs?.[index];
+		const touched =
+			formik.touched.textEmbeddingProviderConfigurationJSONs?.[index];
+
+		const prefix = `textEmbeddingProviderConfigurationJSONs[${index}]`;
+
+		const attributes = config?.attributes;
+		const providerName = config?.providerName;
 
 		return (
 			<>
@@ -805,21 +813,14 @@ export default function ({
 
 					<Input
 						disabled={formik.isSubmitting}
-						error={
-							formik.errors
-								?.textEmbeddingProviderConfigurationJSONs?.[
-								index
-							]?.providerName
-						}
+						error={errors?.providerName}
 						items={getTextEmbeddingProviderOptions(
 							visibleTextEmbeddingProviders,
 							isElasticsearchInferenceEndpointVisible
 						)}
 						label={Liferay.Language.get('text-embedding-provider')}
-						name={`textEmbeddingProviderConfigurationJSONs[${index}].providerName`}
-						onBlur={_handleInputBlur(
-							`textEmbeddingProviderConfigurationJSONs[${index}].providerName`
-						)}
+						name={`${prefix}.providerName`}
+						onBlur={_handleInputBlur(`${prefix}.providerName`)}
 						onChange={(event) => {
 
 							// The BYO-LLM endpoint configuration belongs to
@@ -832,17 +833,10 @@ export default function ({
 							setInferenceEndpointErrorMessage('');
 							setInferenceEndpointFieldErrors({});
 
-							_handleInputChange(
-								`textEmbeddingProviderConfigurationJSONs[${index}].providerName`
-							)(event);
+							_handleInputChange(`${prefix}.providerName`)(event);
 						}}
 						type="select"
-						value={
-							formik.values
-								?.textEmbeddingProviderConfigurationJSONs?.[
-								index
-							]?.providerName
-						}
+						value={providerName}
 					>
 						{isElasticsearchInferenceEndpointVisible && (
 							<ClayForm.FeedbackGroup>
@@ -911,12 +905,7 @@ export default function ({
 
 					<Input
 						disabled={formik.isSubmitting}
-						error={
-							formik.errors
-								.textEmbeddingProviderConfigurationJSONs?.[
-								index
-							]?.embeddingVectorDimensions
-						}
+						error={errors?.embeddingVectorDimensions}
 						helpText={Liferay.Language.get(
 							'text-embedding-provider-embedding-vector-dimensions-help'
 						)}
@@ -926,129 +915,51 @@ export default function ({
 						label={Liferay.Language.get(
 							'embedding-vector-dimensions'
 						)}
-						name={`textEmbeddingProviderConfigurationJSONs[${index}].embeddingVectorDimensions`}
+						name={`${prefix}.embeddingVectorDimensions`}
 						onBlur={_handleInputBlur(
-							`textEmbeddingProviderConfigurationJSONs[${index}].embeddingVectorDimensions`
+							`${prefix}.embeddingVectorDimensions`
 						)}
 						onChange={_handleInputChange(
-							`textEmbeddingProviderConfigurationJSONs[${index}].embeddingVectorDimensions`
+							`${prefix}.embeddingVectorDimensions`
 						)}
 						type="select"
-						value={
-							formik.values
-								.textEmbeddingProviderConfigurationJSONs?.[
-								index
-							]?.embeddingVectorDimensions
-						}
+						value={config?.embeddingVectorDimensions}
 					/>
 
 					<TestConfigurationButton
-						accessToken={
-							formik.values
-								.textEmbeddingProviderConfigurationJSONs[index]
-								?.attributes?.accessToken
-						}
-						apiKey={
-							formik.values
-								.textEmbeddingProviderConfigurationJSONs[index]
-								?.attributes?.apiKey
-						}
-						autoTruncate={
-							formik.values
-								.textEmbeddingProviderConfigurationJSONs[index]
-								?.attributes?.autoTruncate
-						}
+						accessToken={attributes?.accessToken}
+						apiKey={attributes?.apiKey}
+						autoTruncate={attributes?.autoTruncate}
 						availableTextEmbeddingProviders={
 							visibleTextEmbeddingProviders
 						}
-						basicAuthPassword={
-							formik.values
-								.textEmbeddingProviderConfigurationJSONs[index]
-								?.attributes.basicAuthPassword
-						}
-						basicAuthUsername={
-							formik.values
-								.textEmbeddingProviderConfigurationJSONs[index]
-								?.attributes.basicAuthUsername
-						}
-						dimensions={
-							formik.values
-								.textEmbeddingProviderConfigurationJSONs[index]
-								?.attributes?.dimensions
-						}
+						basicAuthPassword={attributes?.basicAuthPassword}
+						basicAuthUsername={attributes?.basicAuthUsername}
+						dimensions={attributes?.dimensions}
 						disabled={formik.isSubmitting}
 						embeddingVectorDimensions={
-							formik.values
-								.textEmbeddingProviderConfigurationJSONs[index]
-								?.embeddingVectorDimensions
+							config?.embeddingVectorDimensions
 						}
-						errors={
-							formik.errors
-								.textEmbeddingProviderConfigurationJSONs?.[
-								index
-							]
-						}
-						hostAddress={
-							formik.values
-								.textEmbeddingProviderConfigurationJSONs[index]
-								?.attributes.hostAddress
-						}
-						languageIds={
-							formik.values
-								.textEmbeddingProviderConfigurationJSONs[index]
-								?.languageIds
-						}
-						location={
-							formik.values
-								.textEmbeddingProviderConfigurationJSONs[index]
-								?.attributes?.location
-						}
-						maxCharacterCount={
-							formik.values
-								.textEmbeddingProviderConfigurationJSONs[index]
-								?.attributes?.maxCharacterCount
-						}
-						model={
-							formik.values
-								.textEmbeddingProviderConfigurationJSONs[index]
-								?.attributes?.model
-						}
-						modelClassNames={
-							formik.values
-								.textEmbeddingProviderConfigurationJSONs[index]
-								?.modelClassNames
-						}
-						modelTimeout={
-							formik.values
-								.textEmbeddingProviderConfigurationJSONs[index]
-								?.attributes?.modelTimeout
-						}
-						projectId={
-							formik.values
-								.textEmbeddingProviderConfigurationJSONs[index]
-								?.attributes?.projectId
-						}
+						errors={errors}
+						hostAddress={attributes?.hostAddress}
+						languageIds={config?.languageIds}
+						location={attributes?.location}
+						maxCharacterCount={attributes?.maxCharacterCount}
+						model={attributes?.model}
+						modelClassNames={config?.modelClassNames}
+						modelTimeout={attributes?.modelTimeout}
+						projectId={attributes?.projectId}
 						textEmbeddingCacheTimeout={
 							formik.values.textEmbeddingCacheTimeout
 						}
-						textEmbeddingProvider={
-							formik.values
-								.textEmbeddingProviderConfigurationJSONs[index]
-								?.providerName
-						}
+						textEmbeddingProvider={providerName}
 						textEmbeddingsEnabled={
 							formik.values.textEmbeddingsEnabled
 						}
 						textTruncationStrategy={
-							formik.values
-								.textEmbeddingProviderConfigurationJSONs[index]
-								?.attributes.textTruncationStrategy
+							attributes?.textTruncationStrategy
 						}
-						user={
-							formik.values
-								.textEmbeddingProviderConfigurationJSONs[index]
-								?.attributes?.user
-						}
+						user={attributes?.user}
 					/>
 				</div>
 
@@ -1057,47 +968,30 @@ export default function ({
 						{Liferay.Language.get('index-settings')}
 					</h3>
 
-					{formik.values.textEmbeddingProviderConfigurationJSONs?.[
-						index
-					]?.providerName !==
+					{providerName !==
 						TEXT_EMBEDDING_PROVIDER_TYPES.ELASTICSEARCH_INFERENCE_ENDPOINT && (
 						<>
 							<Input
 								disabled={formik.isSubmitting}
-								error={
-									formik.errors
-										.textEmbeddingProviderConfigurationJSONs?.[
-										index
-									]?.attributes?.maxCharacterCount
-								}
+								error={errors?.attributes?.maxCharacterCount}
 								helpText={Liferay.Language.get(
 									'text-embedding-provider-max-character-count-help'
 								)}
 								label={Liferay.Language.get(
 									'max-character-count'
 								)}
-								name={`textEmbeddingProviderConfigurationJSONs[${index}].attributes.maxCharacterCount`}
+								name={`${prefix}.attributes.maxCharacterCount`}
 								onBlur={_handleInputBlur(
-									`textEmbeddingProviderConfigurationJSONs[${index}].attributes.maxCharacterCount`
+									`${prefix}.attributes.maxCharacterCount`
 								)}
 								onChange={_handleInputChange(
-									`textEmbeddingProviderConfigurationJSONs[${index}].attributes.maxCharacterCount`
+									`${prefix}.attributes.maxCharacterCount`
 								)}
 								options={{min: 50}}
 								required
-								touched={
-									formik.touched
-										.textEmbeddingProviderConfigurationJSONs?.[
-										index
-									]?.attributes?.maxCharacterCount
-								}
+								touched={touched?.attributes?.maxCharacterCount}
 								type="number"
-								value={
-									formik.values
-										.textEmbeddingProviderConfigurationJSONs?.[
-										index
-									]?.attributes?.maxCharacterCount
-								}
+								value={attributes?.maxCharacterCount}
 							>
 								<ClayForm.FeedbackGroup>
 									<ClayForm.Text>
@@ -1111,10 +1005,7 @@ export default function ({
 							<Input
 								disabled={formik.isSubmitting}
 								error={
-									formik.errors
-										.textEmbeddingProviderConfigurationJSONs?.[
-										index
-									]?.attributes?.textTruncationStrategy
+									errors?.attributes?.textTruncationStrategy
 								}
 								helpText={Liferay.Language.get(
 									'text-embedding-provider-text-truncation-strategy-help'
@@ -1125,32 +1016,22 @@ export default function ({
 								label={Liferay.Language.get(
 									'text-truncation-strategy'
 								)}
-								name={`textEmbeddingProviderConfigurationJSONs[${index}].attributes.textTruncationStrategy`}
+								name={`${prefix}.attributes.textTruncationStrategy`}
 								onBlur={_handleInputBlur(
-									`textEmbeddingProviderConfigurationJSONs[${index}].attributes.textTruncationStrategy`
+									`${prefix}.attributes.textTruncationStrategy`
 								)}
 								onChange={_handleInputChange(
-									`textEmbeddingProviderConfigurationJSONs[${index}].attributes.textTruncationStrategy`
+									`${prefix}.attributes.textTruncationStrategy`
 								)}
 								type="select"
-								value={
-									formik.values
-										.textEmbeddingProviderConfigurationJSONs?.[
-										index
-									]?.attributes?.textTruncationStrategy
-								}
+								value={attributes?.textTruncationStrategy}
 							/>
 						</>
 					)}
 
 					<Input
 						disabled={formik.isSubmitting}
-						error={
-							formik.errors
-								.textEmbeddingProviderConfigurationJSONs?.[
-								index
-							]?.modelClassNames
-						}
+						error={errors?.modelClassNames}
 						helpText={Liferay.Language.get(
 							'text-embedding-provider-types-help'
 						)}
@@ -1158,37 +1039,20 @@ export default function ({
 							availableModelClassNames
 						)}
 						label={Liferay.Language.get('types')}
-						name={`textEmbeddingProviderConfigurationJSONs[${index}].modelClassNames`}
-						onBlur={_handleInputBlur(
-							`textEmbeddingProviderConfigurationJSONs[${index}].modelClassNames`
-						)}
+						name={`${prefix}.modelClassNames`}
+						onBlur={_handleInputBlur(`${prefix}.modelClassNames`)}
 						onChange={_handleInputChange(
-							`textEmbeddingProviderConfigurationJSONs[${index}].modelClassNames`
+							`${prefix}.modelClassNames`
 						)}
 						required
-						touched={
-							formik.touched
-								.textEmbeddingProviderConfigurationJSONs?.[
-								index
-							]?.modelClassNames
-						}
+						touched={touched?.modelClassNames}
 						type="multiple"
-						value={
-							formik.values
-								.textEmbeddingProviderConfigurationJSONs?.[
-								index
-							]?.modelClassNames
-						}
+						value={config?.modelClassNames}
 					/>
 
 					<Input
 						disabled={formik.isSubmitting}
-						error={
-							formik.errors
-								.textEmbeddingProviderConfigurationJSONs?.[
-								index
-							]?.languageIds
-						}
+						error={errors?.languageIds}
 						helpText={Liferay.Language.get(
 							'text-embedding-provider-languages-help'
 						)}
@@ -1196,27 +1060,13 @@ export default function ({
 							availableLanguageDisplayNames
 						)}
 						label={Liferay.Language.get('languages')}
-						name={`textEmbeddingProviderConfigurationJSONs[${index}].languageIds`}
-						onBlur={_handleInputBlur(
-							`textEmbeddingProviderConfigurationJSONs[${index}].languageIds`
-						)}
-						onChange={_handleInputChange(
-							`textEmbeddingProviderConfigurationJSONs[${index}].languageIds`
-						)}
+						name={`${prefix}.languageIds`}
+						onBlur={_handleInputBlur(`${prefix}.languageIds`)}
+						onChange={_handleInputChange(`${prefix}.languageIds`)}
 						required
-						touched={
-							formik.touched
-								.textEmbeddingProviderConfigurationJSONs?.[
-								index
-							]?.languageIds
-						}
+						touched={touched?.languageIds}
 						type="multiple"
-						value={
-							formik.values
-								.textEmbeddingProviderConfigurationJSONs?.[
-								index
-							]?.languageIds
-						}
+						value={config?.languageIds}
 					/>
 				</div>
 
