@@ -4,6 +4,8 @@
  */
 
 import {ClayButtonWithIcon} from '@clayui/button';
+import {Option, Picker} from '@clayui/core';
+import ClayDropDown from '@clayui/drop-down';
 import ClayForm, {
 	ClayCheckbox,
 	ClayInput,
@@ -11,6 +13,7 @@ import ClayForm, {
 	ClaySelectBox,
 } from '@clayui/form';
 import ClayIcon from '@clayui/icon';
+import ClayLabel from '@clayui/label';
 import {ClayTooltipProvider} from '@clayui/tooltip';
 import getCN from 'classnames';
 import {sub} from 'frontend-js-web';
@@ -157,6 +160,41 @@ function Input({
 						required={required}
 						value={value || ''}
 					/>
+				);
+			case 'picker':
+				return (
+					<Picker
+						aria-label={label}
+						className={getCN({
+							'has-error': error && touched,
+						})}
+						disabled={disabled}
+						id={name}
+						items={items}
+						onBlur={onBlur}
+						onSelectionChange={(key) => onChange(String(key))}
+						placeholder={options.placeholder}
+						selectedKey={value || null}
+					>
+						{(item) =>
+							item.divider ? (
+								<ClayDropDown.Divider key={item.value} />
+							) : (
+								<Option key={item.value} textValue={item.label}>
+									{item.label}
+
+									{item.beta && (
+										<ClayLabel
+											className="ml-2"
+											displayType="info"
+										>
+											{Liferay.Language.get('beta')}
+										</ClayLabel>
+									)}
+								</Option>
+							)
+						}
+					</Picker>
 				);
 			case 'select':
 				return (
