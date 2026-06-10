@@ -186,34 +186,6 @@ const transformToLabelValueArray = (items = {}) => {
 };
 
 /**
- * Builds the text embedding provider dropdown options from the visible
- * providers. The Liferay-integrated providers carry the architectural
- * `(through Liferay Integration)` suffix only while the BYO-LLM provider
- * (Elasticsearch Inference Endpoint) is also visible. The label describes
- * where the LLM call originates, not lifecycle status; no provider is
- * deprecated.
- *
- * @param {object} visibleTextEmbeddingProviders
- * @param {boolean} elasticsearchInferenceEndpointVisible
- * @return {Array}
- */
-const getTextEmbeddingProviderOptions = (
-	visibleTextEmbeddingProviders,
-	elasticsearchInferenceEndpointVisible
-) =>
-	Object.entries(visibleTextEmbeddingProviders).map(([value, label]) => ({
-		label:
-			elasticsearchInferenceEndpointVisible &&
-			value !==
-				TEXT_EMBEDDING_PROVIDER_TYPES.ELASTICSEARCH_INFERENCE_ENDPOINT
-				? sub(Liferay.Language.get('x-through-liferay-integration'), [
-						label,
-					])
-				: label,
-		value,
-	}));
-
-/**
  * Builds the provider Picker items (behind LPD-11319). A trailing "(Beta)" in
  * a provider's display name is surfaced as a separate badge instead of inline
  * text.
@@ -875,6 +847,12 @@ export default function ({
 							name={`${prefix}.providerName`}
 							onBlur={_handleInputBlur(`${prefix}.providerName`)}
 							onChange={_handleProviderNameChange}
+							options={{
+								placeholder: sub(
+									Liferay.Language.get('select-x'),
+									[Liferay.Language.get('provider')]
+								),
+							}}
 							type="picker"
 							value={providerName}
 						>
@@ -896,9 +874,8 @@ export default function ({
 						<Input
 							disabled={formik.isSubmitting}
 							error={errors?.providerName}
-							items={getTextEmbeddingProviderOptions(
-								visibleTextEmbeddingProviders,
-								isElasticsearchInferenceEndpointVisible
+							items={transformToLabelValueArray(
+								visibleTextEmbeddingProviders
 							)}
 							label={Liferay.Language.get(
 								'text-embedding-provider'
@@ -909,16 +886,6 @@ export default function ({
 							type="select"
 							value={providerName}
 						>
-							{isElasticsearchInferenceEndpointVisible && (
-								<ClayForm.FeedbackGroup>
-									<ClayForm.Text>
-										{Liferay.Language.get(
-											'text-embedding-provider-architecture-help'
-										)}
-									</ClayForm.Text>
-								</ClayForm.FeedbackGroup>
-							)}
-
 							{getProviderHelpText(providerName) && (
 								<ClayForm.FeedbackGroup>
 									<ClayForm.Text>
