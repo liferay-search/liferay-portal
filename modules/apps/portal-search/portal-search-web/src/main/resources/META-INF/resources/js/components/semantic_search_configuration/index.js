@@ -214,6 +214,45 @@ const getTextEmbeddingProviderOptions = (
 	}));
 
 /**
+ * Builds the provider Picker items (behind LPD-11319). A trailing "(Beta)" in
+ * a provider's display name is surfaced as a separate badge instead of inline
+ * text.
+ *
+ * @param {object} visibleTextEmbeddingProviders
+ * @return {Array}
+ */
+const getTextEmbeddingProviderPickerItems = (visibleTextEmbeddingProviders) => {
+	const betaSuffix = ` (${Liferay.Language.get('beta')})`;
+
+	return Object.entries(visibleTextEmbeddingProviders).map(
+		([value, label]) => {
+			if (
+				value ===
+				TEXT_EMBEDDING_PROVIDER_TYPES.ELASTICSEARCH_INFERENCE_ENDPOINT
+			) {
+				return {
+					beta: false,
+					label: Liferay.Language.get(
+						'bring-your-own-llm-via-elasticsearch'
+					),
+					value,
+				};
+			}
+
+			const beta = label.endsWith(betaSuffix);
+
+			return {
+				beta,
+				label: beta
+					? label.slice(0, label.length - betaSuffix.length)
+					: label,
+				value,
+			};
+		}
+	);
+};
+
+/**
  * Filters the available text embedding providers down to the ones the
  * dropdown lists. The BYO-LLM provider (Elasticsearch Inference Endpoint) is
  * visible only when the `LPD-11319` feature flag is on.
@@ -784,6 +823,20 @@ export default function ({
 		const attributes = config?.attributes;
 		const providerName = config?.providerName;
 
+		const _handleProviderNameChange = (value) => {
+
+			// The BYO-LLM endpoint configuration belongs to the previously
+			// selected provider and must not survive a provider switch, or a
+			// later save would silently create the endpoint from the stale
+			// values
+
+			setInferenceEndpointConfiguration(null);
+			setInferenceEndpointErrorMessage('');
+			setInferenceEndpointFieldErrors({});
+
+			_handleInputChange(`${prefix}.providerName`)(value);
+		};
+
 		return (
 			<>
 				<div className="sheet-section">
@@ -811,57 +864,76 @@ export default function ({
 						/>
 					</ClayForm.Group>
 
-					<Input
-						disabled={formik.isSubmitting}
-						error={errors?.providerName}
-						items={getTextEmbeddingProviderOptions(
-							visibleTextEmbeddingProviders,
-							isElasticsearchInferenceEndpointVisible
-						)}
-						label={Liferay.Language.get('text-embedding-provider')}
-						name={`${prefix}.providerName`}
-						onBlur={_handleInputBlur(`${prefix}.providerName`)}
-						onChange={(value) => {
+					{Liferay.FeatureFlags?.['LPD-11319'] ? (
+						<Input
+							disabled={formik.isSubmitting}
+							error={errors?.providerName}
+							items={getTextEmbeddingProviderPickerItems(
+								visibleTextEmbeddingProviders
+							)}
+							label={Liferay.Language.get('provider')}
+							name={`${prefix}.providerName`}
+							onBlur={_handleInputBlur(`${prefix}.providerName`)}
+							onChange={_handleProviderNameChange}
+							type="picker"
+							value={providerName}
+						>
+							{getProviderHelpText(providerName) && (
+								<ClayForm.FeedbackGroup>
+									<ClayForm.Text>
+										{getProviderHelpText(providerName)}
 
-							// The BYO-LLM endpoint configuration belongs to
-							// the previously selected provider and must not
-							// survive a provider switch, or a later save
-							// would silently create the endpoint from the
-							// stale values
+										<LearnMessageWithoutContext
+											className="ml-1"
+											learnMessages={learnMessages}
+											resourceKey="semantic-search"
+										/>
+									</ClayForm.Text>
+								</ClayForm.FeedbackGroup>
+							)}
+						</Input>
+					) : (
+						<Input
+							disabled={formik.isSubmitting}
+							error={errors?.providerName}
+							items={getTextEmbeddingProviderOptions(
+								visibleTextEmbeddingProviders,
+								isElasticsearchInferenceEndpointVisible
+							)}
+							label={Liferay.Language.get(
+								'text-embedding-provider'
+							)}
+							name={`${prefix}.providerName`}
+							onBlur={_handleInputBlur(`${prefix}.providerName`)}
+							onChange={_handleProviderNameChange}
+							type="select"
+							value={providerName}
+						>
+							{isElasticsearchInferenceEndpointVisible && (
+								<ClayForm.FeedbackGroup>
+									<ClayForm.Text>
+										{Liferay.Language.get(
+											'text-embedding-provider-architecture-help'
+										)}
+									</ClayForm.Text>
+								</ClayForm.FeedbackGroup>
+							)}
 
-							setInferenceEndpointConfiguration(null);
-							setInferenceEndpointErrorMessage('');
-							setInferenceEndpointFieldErrors({});
+							{getProviderHelpText(providerName) && (
+								<ClayForm.FeedbackGroup>
+									<ClayForm.Text>
+										{getProviderHelpText(providerName)}
 
-							_handleInputChange(`${prefix}.providerName`)(value);
-						}}
-						type="select"
-						value={providerName}
-					>
-						{isElasticsearchInferenceEndpointVisible && (
-							<ClayForm.FeedbackGroup>
-								<ClayForm.Text>
-									{Liferay.Language.get(
-										'text-embedding-provider-architecture-help'
-									)}
-								</ClayForm.Text>
-							</ClayForm.FeedbackGroup>
-						)}
-
-						{getProviderHelpText(providerName) && (
-							<ClayForm.FeedbackGroup>
-								<ClayForm.Text>
-									{getProviderHelpText(providerName)}
-
-									<LearnMessageWithoutContext
-										className="ml-1"
-										learnMessages={learnMessages}
-										resourceKey="semantic-search"
-									/>
-								</ClayForm.Text>
-							</ClayForm.FeedbackGroup>
-						)}
-					</Input>
+										<LearnMessageWithoutContext
+											className="ml-1"
+											learnMessages={learnMessages}
+											resourceKey="semantic-search"
+										/>
+									</ClayForm.Text>
+								</ClayForm.FeedbackGroup>
+							)}
+						</Input>
+					)}
 
 					{getProviderFields(providerName).map((field) =>
 						_renderProviderField(index, field)
