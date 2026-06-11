@@ -4,30 +4,39 @@
  */
 
 import ClayAlert from '@clayui/alert';
-import ClayForm, {ClayCheckbox, ClayInput} from '@clayui/form';
+import ClayForm, {ClayInput} from '@clayui/form';
 import {fetch} from 'frontend-js-web';
 import React, {useEffect, useState} from 'react';
 
 import Input from './Input';
 
 /**
- * Builds the input type for a field of the inference service schema. The
- * schema comes from the Elasticsearch `GET _inference/_services` API: a
- * sensitive field (e.g., the provider API key) renders as a password input
- * and an integer field renders as a number input.
+ * Maps a field's schema `type` to the input type rendered for it. The schema
+ * comes from the Elasticsearch `GET _inference/_services` API, which exposes
+ * these field types:
+ *
+ * - `secret`  -> password input (e.g., the provider API key)
+ * - `integer` -> number input
+ * - `bool`    -> checkbox
+ * - `enum`    -> select populated from the field's `options`
+ *
+ * Anything else (including `string`) falls back to a text input.
  * @param {object} fieldConfiguration
  * @returns {string}
  */
 const getInputType = (fieldConfiguration) => {
-	if (fieldConfiguration?.sensitive) {
-		return 'password';
+	switch (fieldConfiguration?.type) {
+		case 'bool':
+			return 'checkbox';
+		case 'enum':
+			return 'select';
+		case 'integer':
+			return 'number';
+		case 'secret':
+			return 'password';
+		default:
+			return 'text';
 	}
-
-	if (fieldConfiguration?.type === 'int') {
-		return 'number';
-	}
-
-	return 'text';
 };
 
 /**
@@ -62,14 +71,21 @@ function BYOLLMConfigurationForm({
 		})
 			.then((response) => response.json())
 			.then((responseData) => {
-				if (responseData.items) {
-					setInferenceServices(responseData.items);
+				if (!responseData.ok) {
+					throw new Error();
 				}
 				else {
-					setFetchErrorMessage(
-						responseData.message ||
-							Liferay.Language.get('an-unexpected-error-occurred')
-					);
+					if (responseData.items) {
+						setInferenceServices(responseData.items);
+					}
+					else {
+						setFetchErrorMessage(
+							responseData.message ||
+								Liferay.Language.get(
+									'an-unexpected-error-occurred'
+								)
+						);
+					}
 				}
 			})
 			.catch((error) => {
@@ -141,7 +157,9 @@ function BYOLLMConfigurationForm({
 				}
 
 				serviceSettings[fieldName] =
-					fieldConfiguration?.type === 'int' ? Number(value) : value;
+					fieldConfiguration?.type === 'integer'
+						? Number(value)
+						: value;
 			});
 
 			setServiceSettingsJSONError('');
@@ -172,9 +190,7 @@ function BYOLLMConfigurationForm({
 		_notifyChange(selectedService, nextFieldValues, serviceSettingsJSON);
 	};
 
-	const _handleServiceChange = (event) => {
-		const service = event.target.value;
-
+	const _handleServiceChange = (service) => {
 		setFieldValues({});
 		setSelectedService(service);
 		setServiceSettingsJSON('');
@@ -205,59 +221,47 @@ function BYOLLMConfigurationForm({
 
 			<Input
 				disabled={disabled}
-				items={[
-					{
-						label: Liferay.Language.get('select-an-option'),
-						value: '',
-					},
-					...inferenceServices.map((inferenceService) => ({
-						label: inferenceService.service,
-						value: inferenceService.service,
-					})),
-				]}
+				items={inferenceServices.map(({name, service}) => ({
+					label: name,
+					value: service,
+				}))}
+
+				// Remount the Picker when the loaded service list changes so it
+				// rebuilds its collection. @clayui/core's Picker builds the
+				// collection at mount, so items fetched afterward stay stale.
+
+				key={inferenceServices.map(({service}) => service).join(',')}
 				label={Liferay.Language.get('service')}
 				name="byollmInferenceService"
 				onChange={_handleServiceChange}
-				type="select"
+				options={{
+					placeholder: Liferay.Language.get('select-an-option'),
+				}}
+				type="picker"
 				value={selectedService}
 			/>
 
-			{fieldEntries.map(([fieldName, fieldConfiguration]) =>
-				fieldConfiguration?.type === 'bool' ? (
-					<ClayForm.Group key={fieldName}>
-						<ClayCheckbox
-							checked={!!fieldValues[fieldName]}
-							disabled={disabled}
-							label={fieldConfiguration?.label || fieldName}
-							onChange={(event) =>
-								_handleFieldValueChange(
-									fieldName,
-									event.target.checked
-								)
-							}
-						/>
-					</ClayForm.Group>
-				) : (
-					<Input
-						disabled={disabled}
-						error={fieldErrors[fieldName]}
-						helpText={fieldConfiguration?.description}
-						key={fieldName}
-						label={fieldConfiguration?.label || fieldName}
-						name={`byollm_${fieldName}`}
-						onChange={(event) =>
-							_handleFieldValueChange(
-								fieldName,
-								event.target.value
-							)
-						}
-						required={!!fieldConfiguration?.required}
-						touched={!!fieldErrors[fieldName]}
-						type={getInputType(fieldConfiguration)}
-						value={fieldValues[fieldName] ?? ''}
-					/>
-				)
-			)}
+			{fieldEntries.map(([fieldName, fieldConfiguration]) => (
+				<Input
+					disabled={disabled}
+					error={fieldErrors[fieldName]}
+					helpText={fieldConfiguration?.description}
+					items={fieldConfiguration?.options?.map((option) => ({
+						label: option,
+						value: option,
+					}))}
+					key={fieldName}
+					label={fieldConfiguration?.label || fieldName}
+					name={`byollm_${fieldName}`}
+					onChange={(value) =>
+						_handleFieldValueChange(fieldName, value)
+					}
+					required={!!fieldConfiguration?.required}
+					touched={!!fieldErrors[fieldName]}
+					type={getInputType(fieldConfiguration)}
+					value={fieldValues[fieldName] ?? ''}
+				/>
+			))}
 
 			{!!selectedService && !fieldEntries.length && (
 				<ClayForm.Group
