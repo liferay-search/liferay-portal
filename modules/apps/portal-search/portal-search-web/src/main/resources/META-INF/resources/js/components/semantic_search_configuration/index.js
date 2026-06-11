@@ -5,7 +5,7 @@
 
 import ClayAlert from '@clayui/alert';
 import ClayButton from '@clayui/button';
-import ClayForm, {ClayCheckbox} from '@clayui/form';
+import ClayForm, {ClayCheckbox, ClayToggle} from '@clayui/form';
 import {useFormik} from 'formik';
 import {fetch, sub} from 'frontend-js-web';
 import React, {useMemo, useState} from 'react';
@@ -818,88 +818,122 @@ export default function ({
 						)}
 					</h3>
 
-					<ClayForm.Group>
-						<ClayCheckbox
-							aria-label={Liferay.Language.get(
-								'text-embeddings-enabled'
-							)}
-							checked={!!formik.values.textEmbeddingsEnabled}
-							disabled={formik.isSubmitting}
-							label={Liferay.Language.get(
-								'text-embeddings-enabled'
-							)}
-							name={`${namespace}textEmbeddingsEnabled`}
-							onChange={_handleCheckboxChange(
-								'textEmbeddingsEnabled'
-							)}
-							value={!!formik.values.textEmbeddingsEnabled}
-						/>
-					</ClayForm.Group>
-
 					{Liferay.FeatureFlags?.['LPD-11319'] ? (
-						<Input
-							disabled={formik.isSubmitting}
-							error={errors?.providerName}
-							items={getTextEmbeddingProviderPickerItems(
-								visibleTextEmbeddingProviders
-							)}
-							label={Liferay.Language.get('provider')}
-							name={`${prefix}.providerName`}
-							onBlur={_handleInputBlur(`${prefix}.providerName`)}
-							onChange={_handleProviderNameChange}
-							options={{
-								placeholder: sub(
-									Liferay.Language.get('select-x'),
-									[Liferay.Language.get('provider')]
-								),
-							}}
-							type="picker"
-							value={providerName}
-						>
-							{getProviderHelpText(providerName) && (
-								<ClayForm.FeedbackGroup>
-									<ClayForm.Text>
-										{getProviderHelpText(providerName)}
+						<>
+							<ClayForm.Group>
+								<ClayToggle
+									disabled={formik.isSubmitting}
+									label={Liferay.Language.get(
+										'text-embeddings-enabled'
+									)}
+									name={`${namespace}textEmbeddingsEnabled`}
+									onToggle={_handleInputChange(
+										'textEmbeddingsEnabled'
+									)}
+									toggled={
+										!!formik.values.textEmbeddingsEnabled
+									}
+								/>
+							</ClayForm.Group>
 
-										<LearnMessageWithoutContext
-											className="ml-1"
-											learnMessages={learnMessages}
-											resourceKey="semantic-search"
-										/>
-									</ClayForm.Text>
-								</ClayForm.FeedbackGroup>
-							)}
-						</Input>
+							<p className="text-secondary">
+								{Liferay.Language.get(
+									'text-embedding-provider-settings-description'
+								)}
+							</p>
+
+							<Input
+								disabled={formik.isSubmitting}
+								error={errors?.providerName}
+								items={getTextEmbeddingProviderPickerItems(
+									visibleTextEmbeddingProviders
+								)}
+								label={Liferay.Language.get('provider')}
+								name={`${prefix}.providerName`}
+								onBlur={_handleInputBlur(
+									`${prefix}.providerName`
+								)}
+								onChange={_handleProviderNameChange}
+								options={{
+									placeholder: sub(
+										Liferay.Language.get('select-x'),
+										[Liferay.Language.get('provider')]
+									),
+								}}
+								type="picker"
+								value={providerName}
+							>
+								{getProviderHelpText(providerName) && (
+									<ClayForm.FeedbackGroup>
+										<ClayForm.Text>
+											{getProviderHelpText(providerName)}
+
+											<LearnMessageWithoutContext
+												className="ml-1"
+												learnMessages={learnMessages}
+												resourceKey="semantic-search"
+											/>
+										</ClayForm.Text>
+									</ClayForm.FeedbackGroup>
+								)}
+							</Input>
+						</>
 					) : (
-						<Input
-							disabled={formik.isSubmitting}
-							error={errors?.providerName}
-							items={transformToLabelValueArray(
-								visibleTextEmbeddingProviders
-							)}
-							label={Liferay.Language.get(
-								'text-embedding-provider'
-							)}
-							name={`${prefix}.providerName`}
-							onBlur={_handleInputBlur(`${prefix}.providerName`)}
-							onChange={_handleProviderNameChange}
-							type="select"
-							value={providerName}
-						>
-							{getProviderHelpText(providerName) && (
-								<ClayForm.FeedbackGroup>
-									<ClayForm.Text>
-										{getProviderHelpText(providerName)}
+						<>
+							<ClayForm.Group>
+								<ClayCheckbox
+									aria-label={Liferay.Language.get(
+										'text-embeddings-enabled'
+									)}
+									checked={
+										!!formik.values.textEmbeddingsEnabled
+									}
+									disabled={formik.isSubmitting}
+									label={Liferay.Language.get(
+										'text-embeddings-enabled'
+									)}
+									name={`${namespace}textEmbeddingsEnabled`}
+									onChange={_handleCheckboxChange(
+										'textEmbeddingsEnabled'
+									)}
+									value={
+										!!formik.values.textEmbeddingsEnabled
+									}
+								/>
+							</ClayForm.Group>
 
-										<LearnMessageWithoutContext
-											className="ml-1"
-											learnMessages={learnMessages}
-											resourceKey="semantic-search"
-										/>
-									</ClayForm.Text>
-								</ClayForm.FeedbackGroup>
-							)}
-						</Input>
+							<Input
+								disabled={formik.isSubmitting}
+								error={errors?.providerName}
+								items={transformToLabelValueArray(
+									visibleTextEmbeddingProviders
+								)}
+								label={Liferay.Language.get(
+									'text-embedding-provider'
+								)}
+								name={`${prefix}.providerName`}
+								onBlur={_handleInputBlur(
+									`${prefix}.providerName`
+								)}
+								onChange={_handleProviderNameChange}
+								type="select"
+								value={providerName}
+							>
+								{getProviderHelpText(providerName) && (
+									<ClayForm.FeedbackGroup>
+										<ClayForm.Text>
+											{getProviderHelpText(providerName)}
+
+											<LearnMessageWithoutContext
+												className="ml-1"
+												learnMessages={learnMessages}
+												resourceKey="semantic-search"
+											/>
+										</ClayForm.Text>
+									</ClayForm.FeedbackGroup>
+								)}
+							</Input>
+						</>
 					)}
 
 					{getProviderFields(providerName).map((field) =>
