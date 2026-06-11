@@ -13,11 +13,12 @@ import org.osgi.annotation.versioning.ProviderType;
  * @author Rodrigo Guedes
  */
 @ProviderType
-public interface SemanticFieldNames {
+public interface SemanticFieldNameResolver {
 
-	public String fieldName(
-		Locale locale,
-		SemanticTextEmbeddingProviderType semanticTextEmbeddingProviderType,
-		String assetType, int dimensions);
+	public String resolveElasticsearchProvidedFieldName(
+		Locale locale, String assetType);
+
+	public String resolveLiferayProvidedFieldName(
+		Locale locale, int dimensions);
 
 }
