@@ -18,6 +18,7 @@ import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.search.configuration.SemanticSearchConfiguration;
 import com.liferay.portal.search.configuration.SemanticSearchConfigurationProvider;
 import com.liferay.portal.search.engine.SearchEngineInformation;
+import com.liferay.portal.search.internal.semantic.SemanticFieldNameResolverImpl;
 import com.liferay.portal.search.ml.embedding.text.TextEmbeddingRetriever;
 import com.liferay.portal.search.rest.dto.v1_0.EmbeddingProviderConfiguration;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
@@ -285,6 +286,10 @@ public class TextEmbeddingDocumentContributorTest {
 	private void _setUpTextEmbeddingDocumentContributorImpl() {
 		_textEmbeddingDocumentContributorImpl =
 			new TextEmbeddingDocumentContributorImpl();
+
+		ReflectionTestUtil.setFieldValue(
+			_textEmbeddingDocumentContributorImpl, "_semanticFieldNameResolver",
+			new SemanticFieldNameResolverImpl());
 
 		ReflectionTestUtil.setFieldValue(
 			_textEmbeddingDocumentContributorImpl,
