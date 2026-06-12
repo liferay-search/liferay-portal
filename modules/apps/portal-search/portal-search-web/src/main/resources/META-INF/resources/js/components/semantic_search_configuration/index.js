@@ -301,13 +301,6 @@ export default function ({
 		]
 	);
 
-	const [inferenceEndpointConfiguration, setInferenceEndpointConfiguration] =
-		useState(null);
-	const [inferenceEndpointErrorMessage, setInferenceEndpointErrorMessage] =
-		useState('');
-	const [inferenceEndpointFieldErrors, setInferenceEndpointFieldErrors] =
-		useState({});
-
 	const [showSubmitWarningModal, setShowSubmitWarningModal] = useState(false);
 
 	/**
@@ -317,7 +310,9 @@ export default function ({
 	 * Returns the field errors, or an empty object when the settings are
 	 * valid.
 	 */
-	const _validateInferenceEndpoint = async () => {
+	const _validateInferenceEndpoint = async (
+		inferenceEndpointConfiguration
+	) => {
 		try {
 			const response = await fetch(
 				'/o/search/v1.0/inference-endpoint/validate',
@@ -358,7 +353,7 @@ export default function ({
 	 * the dynamic form values. Returns the error message, or an empty string
 	 * when the creation succeeds.
 	 */
-	const _createInferenceEndpoint = async () => {
+	const _createInferenceEndpoint = async (inferenceEndpointConfiguration) => {
 		try {
 			const response = await fetch('/o/search/v1.0/inference-endpoint', {
 				body: JSON.stringify(inferenceEndpointConfiguration),
@@ -400,39 +395,54 @@ export default function ({
 	const _handleFormikSubmit = async (values, actions) => {
 		const {
 			attributes = {},
+			embeddingVectorDimensions,
 			languageIds,
 			modelClassNames,
 			providerName,
-			embeddingVectorDimensions,
+			serviceSettings = {},
 		} = values.textEmbeddingProviderConfigurationJSONs[0];
 
 		// The Elasticsearch Inference Endpoint provider (BYO-LLM) does not go
 		// through the legacy provider validation: embeddings are computed
-		// server-side by Elasticsearch. The save creates the Liferay-managed
-		// inference endpoint from the dynamic form values first and aborts
-		// with an inline error when Elasticsearch rejects the configuration.
+		// server-side by Elasticsearch. When the endpoint configuration has
+		// changed, the save creates the Liferay-managed inference endpoint from
+		// the form values first and aborts with an inline error when
+		// Elasticsearch rejects the configuration. An unchanged configuration
+		// is skipped so an unrelated save does not recreate an existing
+		// endpoint.
 
 		if (
 			providerName ===
 			TEXT_EMBEDDING_PROVIDER_TYPES.ELASTICSEARCH_INFERENCE_ENDPOINT
 		) {
-			if (inferenceEndpointConfiguration?.service) {
-				const fieldErrors = await _validateInferenceEndpoint();
+			if (attributes.service && _isInferenceEndpointDirty()) {
+				const inferenceEndpointConfiguration = {
+					service: attributes.service,
+					serviceSettings,
+				};
+
+				const fieldErrors = await _validateInferenceEndpoint(
+					inferenceEndpointConfiguration
+				);
 
 				if (Object.keys(fieldErrors).length) {
-					setInferenceEndpointFieldErrors(fieldErrors);
+					formik.setStatus({
+						inferenceEndpointFieldErrors: fieldErrors,
+					});
 
 					actions.setSubmitting(false);
 
 					return;
 				}
 
-				setInferenceEndpointFieldErrors({});
-
-				const createErrorMessage = await _createInferenceEndpoint();
+				const createErrorMessage = await _createInferenceEndpoint(
+					inferenceEndpointConfiguration
+				);
 
 				if (createErrorMessage) {
-					setInferenceEndpointErrorMessage(createErrorMessage);
+					formik.setStatus({
+						inferenceEndpointErrorMessage: createErrorMessage,
+					});
 
 					actions.setSubmitting(false);
 
@@ -440,7 +450,7 @@ export default function ({
 				}
 			}
 
-			setInferenceEndpointErrorMessage('');
+			formik.setStatus(undefined);
 
 			actions.setSubmitting(false);
 
@@ -677,6 +687,21 @@ export default function ({
 		formik.setFieldValue(name, val);
 	};
 
+	const _handleProviderNameChange = (index) => (value) => {
+		const prefix = `textEmbeddingProviderConfigurationJSONs[${index}]`;
+
+		// The BYO-LLM endpoint configuration belongs to the previously
+		// selected provider and must not survive a provider switch, or a later
+		// save would silently create the endpoint from the stale values.
+
+		formik.setStatus(undefined);
+
+		formik.setFieldValue(`${prefix}.attributes.service`, undefined);
+		formik.setFieldValue(`${prefix}.serviceSettings`, undefined);
+
+		_handleInputChange(`${prefix}.providerName`)(value);
+	};
+
 	const _handleSubmit = () => {
 		if (document[formName].checkValidity()) {
 			formik.handleSubmit();
@@ -734,6 +759,43 @@ export default function ({
 					})
 				);
 			}
+		);
+	};
+
+	/**
+	 * Determines if the BYO-LLM inference endpoint configuration (the selected
+	 * service or any of its service settings) differs from the initially loaded
+	 * values. This gates endpoint creation on save so an unrelated change does
+	 * not recreate an endpoint that already exists.
+	 */
+	const _isInferenceEndpointDirty = () => {
+		const config =
+			formik.values.textEmbeddingProviderConfigurationJSONs?.[0];
+		const initialConfig =
+			resolvedInitialTextEmbeddingProviderConfigurationJSONs[0];
+
+		if (
+			isNotEqual(
+				config?.attributes?.service || '',
+				initialConfig?.attributes?.service || ''
+			)
+		) {
+			return true;
+		}
+
+		const serviceSettings = config?.serviceSettings || {};
+		const initialServiceSettings = initialConfig?.serviceSettings || {};
+
+		const fieldNames = new Set([
+			...Object.keys(serviceSettings),
+			...Object.keys(initialServiceSettings),
+		]);
+
+		return [...fieldNames].some((fieldName) =>
+			isNotEqual(
+				serviceSettings[fieldName],
+				initialServiceSettings[fieldName]
+			)
 		);
 	};
 
@@ -795,20 +857,6 @@ export default function ({
 		const attributes = config?.attributes;
 		const providerName = config?.providerName;
 
-		const _handleProviderNameChange = (value) => {
-
-			// The BYO-LLM endpoint configuration belongs to the previously
-			// selected provider and must not survive a provider switch, or a
-			// later save would silently create the endpoint from the stale
-			// values
-
-			setInferenceEndpointConfiguration(null);
-			setInferenceEndpointErrorMessage('');
-			setInferenceEndpointFieldErrors({});
-
-			_handleInputChange(`${prefix}.providerName`)(value);
-		};
-
 		return (
 			<>
 				<div className="sheet-section">
@@ -853,7 +901,7 @@ export default function ({
 								onBlur={_handleInputBlur(
 									`${prefix}.providerName`
 								)}
-								onChange={_handleProviderNameChange}
+								onChange={_handleProviderNameChange(index)}
 								options={{
 									placeholder: sub(
 										Liferay.Language.get('select-x'),
@@ -915,7 +963,7 @@ export default function ({
 								onBlur={_handleInputBlur(
 									`${prefix}.providerName`
 								)}
-								onChange={_handleProviderNameChange}
+								onChange={_handleProviderNameChange(index)}
 								type="select"
 								value={providerName}
 							>
@@ -946,33 +994,34 @@ export default function ({
 						TEXT_EMBEDDING_PROVIDER_TYPES.ELASTICSEARCH_INFERENCE_ENDPOINT && (
 						<BYOLLMConfigurationForm
 							disabled={formik.isSubmitting}
-							errorMessage={inferenceEndpointErrorMessage}
-							fieldErrors={inferenceEndpointFieldErrors}
-							onInferenceEndpointConfigurationChange={(
-								newInferenceEndpointConfiguration
-							) => {
-								setInferenceEndpointConfiguration(
-									newInferenceEndpointConfiguration
+							errorMessage={
+								formik.status?.inferenceEndpointErrorMessage
+							}
+							fieldErrors={
+								formik.status?.inferenceEndpointFieldErrors
+							}
+							onServiceChange={(service) => {
+								formik.setStatus(undefined);
+
+								formik.setFieldValue(
+									`${prefix}.attributes.service`,
+									service
 								);
-								setInferenceEndpointErrorMessage('');
-								setInferenceEndpointFieldErrors({});
-
-								const service =
-									newInferenceEndpointConfiguration?.service ||
-									'';
-
-								if (
-									formik.values
-										.textEmbeddingProviderConfigurationJSONs?.[
-										index
-									]?.attributes?.service !== service
-								) {
-									formik.setFieldValue(
-										`textEmbeddingProviderConfigurationJSONs[${index}].attributes.service`,
-										service
-									);
-								}
+								formik.setFieldValue(
+									`${prefix}.serviceSettings`,
+									undefined
+								);
 							}}
+							onServiceSettingsChange={(serviceSettings) => {
+								formik.setStatus(undefined);
+
+								formik.setFieldValue(
+									`${prefix}.serviceSettings`,
+									serviceSettings
+								);
+							}}
+							service={attributes?.service || ''}
+							serviceSettings={config?.serviceSettings || {}}
 						/>
 					)}
 
@@ -1210,8 +1259,9 @@ export default function ({
 			/>
 
 			{formik.values.textEmbeddingsEnabled &&
-				(_isTextEmbeddingsEnabledDirty() ||
-					_isProviderConfigurationDirty()) && (
+				(_isInferenceEndpointDirty() ||
+					_isProviderConfigurationDirty() ||
+					_isTextEmbeddingsEnabledDirty()) && (
 					<ClayAlert displayType="info">
 						{Liferay.Language.get('reindex-required-alert')}
 					</ClayAlert>

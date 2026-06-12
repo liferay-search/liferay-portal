@@ -43,17 +43,24 @@ const getInputType = (fieldConfiguration) => {
  * service dropdown and the provider-specific fields are rendered dynamically
  * from the schemas that Elasticsearch exposes — nothing is hardcoded per
  * provider, so the form works with any provider Elasticsearch supports.
+ *
+ * The component is controlled: the selected `service` and the `serviceSettings`
+ * the user enters live in the parent's formik state, the same place every other
+ * provider keeps its values. The component only fetches the field schemas and
+ * renders the inputs, writing changes back through `onServiceChange` and
+ * `onServiceSettingsChange`.
  */
 function BYOLLMConfigurationForm({
 	disabled,
 	errorMessage,
 	fieldErrors = {},
-	onInferenceEndpointConfigurationChange,
+	onServiceChange,
+	onServiceSettingsChange,
+	service,
+	serviceSettings = {},
 }) {
 	const [fetchErrorMessage, setFetchErrorMessage] = useState('');
-	const [fieldValues, setFieldValues] = useState({});
 	const [inferenceServices, setInferenceServices] = useState([]);
-	const [selectedService, setSelectedService] = useState('');
 
 	useEffect(() => {
 		fetch('/o/search/v1.0/inference-services', {
@@ -96,12 +103,12 @@ function BYOLLMConfigurationForm({
 	/**
 	 * Gets the field entries of the given service, filtered down to the ones
 	 * that apply to the text_embedding task type.
-	 * @param {string} service
+	 * @param {string} serviceName
 	 * @returns {Array}
 	 */
-	const _getFieldEntries = (service) => {
+	const _getFieldEntries = (serviceName) => {
 		const inferenceService = inferenceServices.find(
-			(item) => item.service === service
+			(item) => item.service === serviceName
 		);
 
 		const configuration = inferenceService?.configuration;
@@ -120,50 +127,25 @@ function BYOLLMConfigurationForm({
 	};
 
 	/**
-	 * Notifies the parent with the inference endpoint configuration built
-	 * from the dynamic fields Elasticsearch exposes for the service.
+	 * Writes a single field change back to the parent, coercing integer fields
+	 * to numbers and dropping the field when it is cleared so the persisted
+	 * settings carry only the values the user actually set.
 	 */
-	const _notifyChange = (service, nextFieldValues) => {
-		if (!service) {
-			onInferenceEndpointConfigurationChange(null);
+	const _handleFieldValueChange = (fieldName, fieldConfiguration, value) => {
+		const nextServiceSettings = {...serviceSettings};
 
-			return;
+		if (value === '' || value === null || value === undefined) {
+			delete nextServiceSettings[fieldName];
+		}
+		else {
+			nextServiceSettings[fieldName] =
+				fieldConfiguration?.type === 'integer' ? Number(value) : value;
 		}
 
-		const fieldEntries = _getFieldEntries(service);
-
-		const serviceSettings = {};
-
-		fieldEntries.forEach(([fieldName, fieldConfiguration]) => {
-			const value = nextFieldValues[fieldName];
-
-			if (value === '' || value === null || value === undefined) {
-				return;
-			}
-
-			serviceSettings[fieldName] =
-				fieldConfiguration?.type === 'integer' ? Number(value) : value;
-		});
-
-		onInferenceEndpointConfigurationChange({service, serviceSettings});
+		onServiceSettingsChange(nextServiceSettings);
 	};
 
-	const _handleFieldValueChange = (fieldName, value) => {
-		const nextFieldValues = {...fieldValues, [fieldName]: value};
-
-		setFieldValues(nextFieldValues);
-
-		_notifyChange(selectedService, nextFieldValues);
-	};
-
-	const _handleServiceChange = (service) => {
-		setFieldValues({});
-		setSelectedService(service);
-
-		_notifyChange(service, {});
-	};
-
-	const fieldEntries = _getFieldEntries(selectedService);
+	const fieldEntries = _getFieldEntries(service);
 
 	return (
 		<>
@@ -190,12 +172,12 @@ function BYOLLMConfigurationForm({
 				key={inferenceServices.map(({service}) => service).join(',')}
 				label={Liferay.Language.get('service')}
 				name="byollmInferenceService"
-				onChange={_handleServiceChange}
+				onChange={onServiceChange}
 				options={{
 					placeholder: Liferay.Language.get('select-an-option'),
 				}}
 				type="picker"
-				value={selectedService}
+				value={service}
 			/>
 
 			{fieldEntries.map(([fieldName, fieldConfiguration]) => (
@@ -211,12 +193,16 @@ function BYOLLMConfigurationForm({
 					label={fieldConfiguration?.label || fieldName}
 					name={`byollm_${fieldName}`}
 					onChange={(value) =>
-						_handleFieldValueChange(fieldName, value)
+						_handleFieldValueChange(
+							fieldName,
+							fieldConfiguration,
+							value
+						)
 					}
 					required={!!fieldConfiguration?.required}
 					touched={!!fieldErrors[fieldName]}
 					type={getInputType(fieldConfiguration)}
-					value={fieldValues[fieldName] ?? ''}
+					value={serviceSettings[fieldName] ?? ''}
 				/>
 			))}
 		</>
