@@ -4,7 +4,6 @@
  */
 
 import ClayAlert from '@clayui/alert';
-import ClayForm, {ClayInput} from '@clayui/form';
 import {fetch} from 'frontend-js-web';
 import React, {useEffect, useState} from 'react';
 
@@ -43,9 +42,7 @@ const getInputType = (fieldConfiguration) => {
  * Form for the BYO-LLM (Elasticsearch Inference Endpoint) provider. The
  * service dropdown and the provider-specific fields are rendered dynamically
  * from the schemas that Elasticsearch exposes — nothing is hardcoded per
- * provider, so the form works with any provider Elasticsearch supports. When
- * Elasticsearch does not expose a schema for the selected service, the form
- * degrades to a JSON passthrough.
+ * provider, so the form works with any provider Elasticsearch supports.
  */
 function BYOLLMConfigurationForm({
 	disabled,
@@ -57,9 +54,6 @@ function BYOLLMConfigurationForm({
 	const [fieldValues, setFieldValues] = useState({});
 	const [inferenceServices, setInferenceServices] = useState([]);
 	const [selectedService, setSelectedService] = useState('');
-	const [serviceSettingsJSON, setServiceSettingsJSON] = useState('');
-	const [serviceSettingsJSONError, setServiceSettingsJSONError] =
-		useState('');
 
 	useEffect(() => {
 		fetch('/o/search/v1.0/inference-services', {
@@ -127,15 +121,9 @@ function BYOLLMConfigurationForm({
 
 	/**
 	 * Notifies the parent with the inference endpoint configuration built
-	 * from the given state. The service settings come from the dynamic
-	 * fields when Elasticsearch exposes a schema for the service, or from
-	 * the JSON passthrough otherwise.
+	 * from the dynamic fields Elasticsearch exposes for the service.
 	 */
-	const _notifyChange = (
-		service,
-		nextFieldValues,
-		nextServiceSettingsJSON
-	) => {
+	const _notifyChange = (service, nextFieldValues) => {
 		if (!service) {
 			onInferenceEndpointConfigurationChange(null);
 
@@ -144,40 +132,18 @@ function BYOLLMConfigurationForm({
 
 		const fieldEntries = _getFieldEntries(service);
 
-		let serviceSettings = null;
+		const serviceSettings = {};
 
-		if (fieldEntries.length) {
-			serviceSettings = {};
+		fieldEntries.forEach(([fieldName, fieldConfiguration]) => {
+			const value = nextFieldValues[fieldName];
 
-			fieldEntries.forEach(([fieldName, fieldConfiguration]) => {
-				const value = nextFieldValues[fieldName];
-
-				if (value === '' || value === null || value === undefined) {
-					return;
-				}
-
-				serviceSettings[fieldName] =
-					fieldConfiguration?.type === 'integer'
-						? Number(value)
-						: value;
-			});
-
-			setServiceSettingsJSONError('');
-		}
-		else {
-			try {
-				serviceSettings = nextServiceSettingsJSON
-					? JSON.parse(nextServiceSettingsJSON)
-					: {};
-
-				setServiceSettingsJSONError('');
+			if (value === '' || value === null || value === undefined) {
+				return;
 			}
-			catch {
-				setServiceSettingsJSONError(
-					Liferay.Language.get('please-enter-a-valid-json')
-				);
-			}
-		}
+
+			serviceSettings[fieldName] =
+				fieldConfiguration?.type === 'integer' ? Number(value) : value;
+		});
 
 		onInferenceEndpointConfigurationChange({service, serviceSettings});
 	};
@@ -187,23 +153,14 @@ function BYOLLMConfigurationForm({
 
 		setFieldValues(nextFieldValues);
 
-		_notifyChange(selectedService, nextFieldValues, serviceSettingsJSON);
+		_notifyChange(selectedService, nextFieldValues);
 	};
 
 	const _handleServiceChange = (service) => {
 		setFieldValues({});
 		setSelectedService(service);
-		setServiceSettingsJSON('');
 
-		_notifyChange(service, {}, '');
-	};
-
-	const _handleServiceSettingsJSONChange = (event) => {
-		const nextServiceSettingsJSON = event.target.value;
-
-		setServiceSettingsJSON(nextServiceSettingsJSON);
-
-		_notifyChange(selectedService, fieldValues, nextServiceSettingsJSON);
+		_notifyChange(service, {});
 	};
 
 	const fieldEntries = _getFieldEntries(selectedService);
@@ -262,32 +219,6 @@ function BYOLLMConfigurationForm({
 					value={fieldValues[fieldName] ?? ''}
 				/>
 			))}
-
-			{!!selectedService && !fieldEntries.length && (
-				<ClayForm.Group
-					className={serviceSettingsJSONError ? 'has-error' : ''}
-				>
-					<label htmlFor="byollmServiceSettingsJSON">
-						{Liferay.Language.get('service-settings-json')}
-					</label>
-
-					<ClayInput
-						component="textarea"
-						disabled={disabled}
-						id="byollmServiceSettingsJSON"
-						onChange={_handleServiceSettingsJSONChange}
-						value={serviceSettingsJSON}
-					/>
-
-					{!!serviceSettingsJSONError && (
-						<ClayForm.FeedbackGroup>
-							<ClayForm.FeedbackItem>
-								{serviceSettingsJSONError}
-							</ClayForm.FeedbackItem>
-						</ClayForm.FeedbackGroup>
-					)}
-				</ClayForm.Group>
-			)}
 		</>
 	);
 }
