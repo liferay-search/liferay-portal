@@ -208,6 +208,13 @@ function Input({
 						required={required}
 						value={value}
 					>
+						{options.placeholder !== undefined && (
+							<ClaySelect.Option
+								label={options.placeholder}
+								value=""
+							/>
+						)}
+
 						{items.map((item) => (
 							<ClaySelect.Option
 								key={item.value}
