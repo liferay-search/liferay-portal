@@ -199,6 +199,7 @@ function BYOLLMConfigurationForm({
 							value
 						)
 					}
+					options={{placeholder: ''}}
 					required={!!fieldConfiguration?.required}
 					touched={!!fieldErrors[fieldName]}
 					type={getInputType(fieldConfiguration)}
