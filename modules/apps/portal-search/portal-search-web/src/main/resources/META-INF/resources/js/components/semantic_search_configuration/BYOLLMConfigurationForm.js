@@ -10,29 +10,31 @@ import React, {useEffect, useState} from 'react';
 import Input from './Input';
 
 /**
- * Maps a field's schema `type` to the input type rendered for it. The schema
- * comes from the Elasticsearch `GET _inference/_services` API, which exposes
- * these field types:
+ * Maps a field's schema to the input type rendered for it. The schema comes
+ * from the Elasticsearch `GET _inference/_services` API, where each field
+ * carries a `sensitive` flag and a `type`:
  *
- * - `secret`  -> password input (e.g., the provider API key)
- * - `integer` -> number input
- * - `bool`    -> checkbox
- * - `enum`    -> select populated from the field's `options`
+ * - `sensitive: true` -> password input (e.g., the provider API key)
+ * - `type: "int"`     -> number input
+ * - `type: "bool"`    -> checkbox
+ * - `type: "enum"`    -> select populated from the field's `options`
  *
- * Anything else (including `string`) falls back to a text input.
+ * Anything else (including `type: "str"`) falls back to a text input.
  * @param {object} fieldConfiguration
  * @returns {string}
  */
 const getInputType = (fieldConfiguration) => {
+	if (fieldConfiguration?.sensitive) {
+		return 'password';
+	}
+
 	switch (fieldConfiguration?.type) {
 		case 'bool':
 			return 'checkbox';
 		case 'enum':
 			return 'select';
-		case 'integer':
+		case 'int':
 			return 'number';
-		case 'secret':
-			return 'password';
 		default:
 			return 'text';
 	}
@@ -138,7 +140,7 @@ function BYOLLMConfigurationForm({
 		}
 		else {
 			nextServiceSettings[fieldName] =
-				fieldConfiguration?.type === 'integer' ? Number(value) : value;
+				fieldConfiguration?.type === 'int' ? Number(value) : value;
 		}
 
 		onServiceSettingsChange(nextServiceSettings);
@@ -159,8 +161,8 @@ function BYOLLMConfigurationForm({
 
 			<Input
 				disabled={disabled}
-				items={inferenceServices.map(({name, service}) => ({
-					label: name,
+				items={inferenceServices.map(({service}) => ({
+					label: service,
 					value: service,
 				}))}
 
