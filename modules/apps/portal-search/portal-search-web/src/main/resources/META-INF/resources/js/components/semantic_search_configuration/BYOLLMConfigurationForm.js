@@ -70,23 +70,22 @@ function BYOLLMConfigurationForm({
 			}),
 			method: 'GET',
 		})
-			.then((response) => response.json())
-			.then((responseData) => {
-				if (!responseData.ok) {
+			.then((response) => {
+				if (!response.ok) {
 					throw new Error();
 				}
+
+				return response.json();
+			})
+			.then((responseData) => {
+				if (responseData.items) {
+					setInferenceServices(responseData.items);
+				}
 				else {
-					if (responseData.items) {
-						setInferenceServices(responseData.items);
-					}
-					else {
-						setFetchErrorMessage(
-							responseData.message ||
-								Liferay.Language.get(
-									'an-unexpected-error-occurred'
-								)
-						);
-					}
+					setFetchErrorMessage(
+						responseData.message ||
+							Liferay.Language.get('an-unexpected-error-occurred')
+					);
 				}
 			})
 			.catch((error) => {
