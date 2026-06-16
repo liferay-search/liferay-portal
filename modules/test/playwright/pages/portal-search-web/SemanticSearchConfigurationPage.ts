@@ -5,15 +5,13 @@
 
 import {Locator, Page, expect} from '@playwright/test';
 
+import {clickAndExpectToBeVisible} from '../../utils/clickAndExpectToBeVisible';
 import {PORTLET_URLS} from '../../utils/portletUrls';
 
 export class SemanticSearchConfigurationPage {
-	readonly bringYourOwnLLMCapabilityAlert: Locator;
-	readonly bringYourOwnLLMEnabledCheckbox: Locator;
 	readonly inferenceServiceSelect: Locator;
 	readonly maxCharacterCountInput: Locator;
 	readonly page: Page;
-	readonly textEmbeddingProviderArchitectureHelp: Locator;
 	readonly saveButton: Locator;
 	readonly textEmbeddingProviderSelect: Locator;
 	readonly textTruncationStrategySelect: Locator;
@@ -21,29 +19,15 @@ export class SemanticSearchConfigurationPage {
 	constructor(page: Page) {
 		this.page = page;
 
-		this.bringYourOwnLLMCapabilityAlert = page.getByTestId(
-			'bringYourOwnLLMCapabilityAlert'
-		);
-		this.bringYourOwnLLMEnabledCheckbox = page.getByTestId(
-			'bringYourOwnLLMEnabledCheckbox'
-		);
 		this.inferenceServiceSelect = page.getByLabel('Service', {
 			exact: true,
 		});
 		this.maxCharacterCountInput = page.getByLabel('Max Character Count');
-		this.textEmbeddingProviderArchitectureHelp = page.getByText(
-			'Choose where the embedding model runs'
 		this.saveButton = page.getByRole('button', {exact: true, name: 'Save'});
 		);
-		this.textEmbeddingProviderSelect = page.getByLabel(
-			'Text Embedding Provider'
-		);
-	}
-
-	async getTextEmbeddingProviderOptionLabels(): Promise<string[]> {
-		return this.textEmbeddingProviderSelect
-			.locator('option')
-			.allTextContents();
+		this.textEmbeddingProviderSelect = page.getByLabel('Provider');
+		this.textEmbeddingProviderOptions =
+			this.textEmbeddingProviderSelect.locator('option');
 		this.textTruncationStrategySelect = page.getByLabel(
 			'Text Truncation Strategy'
 		);
@@ -53,5 +37,58 @@ export class SemanticSearchConfigurationPage {
 		await this.page.goto(PORTLET_URLS.semanticSearchConfiguration);
 
 		await expect(this.textEmbeddingProviderSelect).toBeVisible();
+	}
+
+	async getInferenceServiceOptionLabels(): Promise<string[]> {
+		return this._getPickerOptionLabels(this.inferenceServiceSelect);
+	}
+
+	async getTextEmbeddingProviderOptionLabels(): Promise<string[]> {
+		return this._getPickerOptionLabels(this.textEmbeddingProviderSelect);
+	}
+
+	async selectInferenceService(optionLabel: string) {
+		await this._selectPickerOption(
+			this.inferenceServiceSelect,
+			optionLabel
+		);
+	}
+
+	async selectTextEmbeddingProvider(optionLabel: string) {
+		await this._selectPickerOption(
+			this.textEmbeddingProviderSelect,
+			optionLabel
+		);
+	}
+
+	private async _getPickerOptionLabels(picker: Locator): Promise<string[]> {
+		await picker.click();
+
+		await expect(picker).toHaveAttribute('aria-expanded', 'true');
+
+		const listboxId = await picker.getAttribute('aria-controls');
+
+		const labels = await this.page
+			.locator(`#${listboxId} [role="option"]`)
+			.allTextContents();
+
+		await this.page.keyboard.press('Escape');
+
+		return labels;
+	}
+
+	private async _selectPickerOption(picker: Locator, optionLabel: string) {
+		if (((await picker.textContent()) ?? '').includes(optionLabel)) {
+			return;
+		}
+
+		await clickAndExpectToBeVisible({
+			autoClick: true,
+			target: this.page.getByRole('option', {
+				exact: true,
+				name: optionLabel,
+			}),
+			trigger: picker,
+		});
 	}
 }
