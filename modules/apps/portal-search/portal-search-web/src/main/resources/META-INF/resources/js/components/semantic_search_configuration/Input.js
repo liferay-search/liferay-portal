@@ -5,7 +5,6 @@
 
 import {ClayButtonWithIcon} from '@clayui/button';
 import {Option, Picker} from '@clayui/core';
-import ClayDropDown from '@clayui/drop-down';
 import ClayForm, {
 	ClayCheckbox,
 	ClayInput,
@@ -176,24 +175,20 @@ function Input({
 						placeholder={options.placeholder}
 						selectedKey={value || null}
 					>
-						{(item) =>
-							item.divider ? (
-								<ClayDropDown.Divider key={item.value} />
-							) : (
-								<Option key={item.value} textValue={item.label}>
-									{item.label}
+						{(item) => (
+							<Option key={item.value} textValue={item.label}>
+								{item.label}
 
-									{item.beta && (
-										<ClayLabel
-											className="ml-2"
-											displayType="info"
-										>
-											{Liferay.Language.get('beta')}
-										</ClayLabel>
-									)}
-								</Option>
-							)
-						}
+								{item.beta && (
+									<ClayLabel
+										className="ml-2"
+										displayType="info"
+									>
+										{Liferay.Language.get('beta')}
+									</ClayLabel>
+								)}
+							</Option>
+						)}
 					</Picker>
 				);
 			case 'select':
