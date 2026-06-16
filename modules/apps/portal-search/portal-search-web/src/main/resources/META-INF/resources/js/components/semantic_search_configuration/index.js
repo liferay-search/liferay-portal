@@ -1227,7 +1227,6 @@ export default function ({
 			{Liferay.FeatureFlags?.['LPD-11319'] &&
 				!externalEmbeddingCapabilityAvailable && (
 					<ClayAlert
-						data-qa-id="bringYourOwnLLMCapabilityAlert"
 						displayType="warning"
 						title={Liferay.Language.get(
 							'bring-your-own-llm-via-elasticsearch-inference-endpoints-is-unavailable'
