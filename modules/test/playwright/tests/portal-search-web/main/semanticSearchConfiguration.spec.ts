@@ -43,39 +43,35 @@ const testWithBYOLLMProviderSelectable = mergeTests(
 testWithBYOLLMDisabled(
 	'Hides the BYO-LLM capability alert when the LPD-11319 feature flag is off',
 	{tag: '@LPD-90488'},
-	async ({semanticSearchConfigurationPage}) => {
+	async ({page, semanticSearchConfigurationPage}) => {
 		await semanticSearchConfigurationPage.goto();
 
 		await expect(
-			semanticSearchConfigurationPage.bringYourOwnLLMCapabilityAlert
-		).toHaveCount(0);
-
-		await expect(
-			semanticSearchConfigurationPage.bringYourOwnLLMEnabledCheckbox
-		).toHaveCount(0);
+			page.getByRole('alert').filter({
+				hasText:
+					'Bring your own LLM via Elasticsearch Inference Endpoints is unavailable.',
+			})
+		).not.toBeVisible();
 	}
 );
 
 testWithBYOLLMEnabled(
 	'Shows the BYO-LLM capability alert when the LPD-11319 feature flag is on and the capability is unavailable',
 	{tag: '@LPD-90488'},
-	async ({semanticSearchConfigurationPage}) => {
+	async ({page, semanticSearchConfigurationPage}) => {
 		await semanticSearchConfigurationPage.goto();
 
 		await expect(
-			semanticSearchConfigurationPage.bringYourOwnLLMCapabilityAlert
-		).toContainText(
-			'Bring your own LLM via Elasticsearch Inference Endpoints is unavailable.'
-		);
-
-		await expect(
-			semanticSearchConfigurationPage.bringYourOwnLLMEnabledCheckbox
-		).toHaveCount(0);
+			page.getByRole('alert').filter({
+				hasText:
+					'Bring your own LLM via Elasticsearch Inference Endpoints is unavailable.',
+			})
+		).toBeVisible();
 	}
 );
 
 testWithBYOLLMDisabledAndBetaProvidersEnabled(
-	'Hides the BYO-LLM provider and the architectural suffix when the LPD-11319 feature flag is off',
+	'Hides the BYO-LLM provider when the LPD-11319 feature flag is off',
 	{tag: '@LPD-92310'},
 	async ({semanticSearchConfigurationPage}) => {
 		await semanticSearchConfigurationPage.goto();
@@ -83,42 +79,30 @@ testWithBYOLLMDisabledAndBetaProvidersEnabled(
 		const optionTexts =
 			await semanticSearchConfigurationPage.textEmbeddingProviderOptions.allTextContents();
 
+		expect(optionTexts).not.toContain(
+			'Bring Your Own LLM via Elasticsearch'
+		);
 		expect(optionTexts).toContain('OpenAI');
-		expect(optionTexts).not.toContain('Elasticsearch Inference Endpoint');
-
-		for (const optionText of optionTexts) {
-			expect(optionText).not.toContain('(through Liferay Integration)');
-		}
-
-		await expect(
-			semanticSearchConfigurationPage.providerArchitectureHelpText
-		).toHaveCount(0);
 	}
 );
 
 testWithBYOLLMProviderSelectable(
-	'Labels the Liferay-integrated providers with the architectural suffix when the BYO-LLM provider is visible',
+	'Lists the BYO-LLM provider without an architectural suffix when it is visible',
 	{tag: '@LPD-92310'},
 	async ({semanticSearchConfigurationPage}) => {
 		await semanticSearchConfigurationPage.goto();
 
-		// Check the dropdown labels
+		// Check the Picker labels
 
 		const optionTexts =
-			await semanticSearchConfigurationPage.textEmbeddingProviderOptions.allTextContents();
+			await semanticSearchConfigurationPage.getTextEmbeddingProviderOptionLabels();
 
-		expect(optionTexts).toContain('Elasticsearch Inference Endpoint');
-		expect(optionTexts).toContain('OpenAI (through Liferay Integration)');
+		expect(optionTexts).toContain('Bring Your Own LLM via Elasticsearch');
+		expect(optionTexts).toContain('OpenAI');
 
 		for (const optionText of optionTexts) {
 			expect(optionText).not.toContain('(Legacy)');
 		}
-
-		// Check the architectural help text below the dropdown
-
-		await expect(
-			semanticSearchConfigurationPage.providerArchitectureHelpText
-		).toBeVisible();
 	}
 );
 
@@ -130,8 +114,8 @@ testWithBYOLLMProviderSelectable(
 
 		// Show the settings for a Liferay-integrated provider
 
-		await semanticSearchConfigurationPage.textEmbeddingProviderSelect.selectOption(
-			'openai'
+		await semanticSearchConfigurationPage.selectTextEmbeddingProvider(
+			'OpenAI'
 		);
 
 		await expect(
@@ -143,8 +127,8 @@ testWithBYOLLMProviderSelectable(
 
 		// Hide the settings for the BYO-LLM provider
 
-		await semanticSearchConfigurationPage.textEmbeddingProviderSelect.selectOption(
-			'Elasticsearch Inference Endpoint'
+		await semanticSearchConfigurationPage.selectTextEmbeddingProvider(
+			'Bring Your Own LLM via Elasticsearch'
 		);
 
 		await expect(
@@ -156,8 +140,8 @@ testWithBYOLLMProviderSelectable(
 
 		// Show the settings again when switching back
 
-		await semanticSearchConfigurationPage.textEmbeddingProviderSelect.selectOption(
-			'openai'
+		await semanticSearchConfigurationPage.selectTextEmbeddingProvider(
+			'OpenAI'
 		);
 
 		await expect(
@@ -177,8 +161,8 @@ testWithBYOLLMProviderSelectable(
 
 		// Select the BYO-LLM provider
 
-		await semanticSearchConfigurationPage.textEmbeddingProviderSelect.selectOption(
-			'Elasticsearch Inference Endpoint'
+		await semanticSearchConfigurationPage.selectTextEmbeddingProvider(
+			'Bring Your Own LLM via Elasticsearch'
 		);
 
 		// The service dropdown is populated from the Elasticsearch services
@@ -189,20 +173,16 @@ testWithBYOLLMProviderSelectable(
 		).toBeVisible();
 
 		await expect(async () => {
-			const optionsCount =
-				await semanticSearchConfigurationPage.inferenceServiceSelect
-					.locator('option')
-					.count();
+			const optionLabels =
+				await semanticSearchConfigurationPage.getInferenceServiceOptionLabels();
 
-			expect(optionsCount).toBeGreaterThan(1);
+			expect(optionLabels.length).toBeGreaterThan(1);
 		}).toPass({timeout: 10000});
 
 		// Selecting a service renders its fields dynamically, with the
 		// sensitive fields as password inputs
 
-		await semanticSearchConfigurationPage.inferenceServiceSelect.selectOption(
-			'openai'
-		);
+		await semanticSearchConfigurationPage.selectInferenceService('openai');
 
 		await expect(async () => {
 			const passwordInputsCount =
@@ -223,22 +203,18 @@ testWithBYOLLMProviderSelectable(
 
 		// Select the BYO-LLM provider and the OpenAI service
 
-		await semanticSearchConfigurationPage.textEmbeddingProviderSelect.selectOption(
-			'Elasticsearch Inference Endpoint'
+		await semanticSearchConfigurationPage.selectTextEmbeddingProvider(
+			'Bring Your Own LLM via Elasticsearch'
 		);
 
 		await expect(async () => {
-			const optionsCount =
-				await semanticSearchConfigurationPage.inferenceServiceSelect
-					.locator('option')
-					.count();
+			const optionLabels =
+				await semanticSearchConfigurationPage.getInferenceServiceOptionLabels();
 
-			expect(optionsCount).toBeGreaterThan(1);
+			expect(optionLabels.length).toBeGreaterThan(1);
 		}).toPass({timeout: 10000});
 
-		await semanticSearchConfigurationPage.inferenceServiceSelect.selectOption(
-			'openai'
-		);
+		await semanticSearchConfigurationPage.selectInferenceService('openai');
 
 		// Enter an unsupported model and an API key, then save. The fields
 		// are targeted by their id (the ES field name), not by their label,
@@ -267,8 +243,8 @@ testWithBYOLLMProviderSelectable(
 
 		// Select the BYO-LLM provider
 
-		await semanticSearchConfigurationPage.textEmbeddingProviderSelect.selectOption(
-			'Elasticsearch Inference Endpoint'
+		await semanticSearchConfigurationPage.selectTextEmbeddingProvider(
+			'Bring Your Own LLM via Elasticsearch'
 		);
 
 		// Test the configuration without an active inference endpoint
