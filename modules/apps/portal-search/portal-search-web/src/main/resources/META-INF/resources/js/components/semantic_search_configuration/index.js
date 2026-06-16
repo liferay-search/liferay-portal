@@ -821,7 +821,7 @@ export default function ({
 						label={Liferay.Language.get('text-embedding-provider')}
 						name={`${prefix}.providerName`}
 						onBlur={_handleInputBlur(`${prefix}.providerName`)}
-						onChange={(event) => {
+						onChange={(value) => {
 
 							// The BYO-LLM endpoint configuration belongs to
 							// the previously selected provider and must not
@@ -833,7 +833,7 @@ export default function ({
 							setInferenceEndpointErrorMessage('');
 							setInferenceEndpointFieldErrors({});
 
-							_handleInputChange(`${prefix}.providerName`)(event);
+							_handleInputChange(`${prefix}.providerName`)(value);
 						}}
 						type="select"
 						value={providerName}
