@@ -56,9 +56,12 @@ function BYOLLMConfigurationForm({
 	disabled,
 	errorMessage,
 	fieldErrors = {},
+	onServiceBlur,
 	onServiceChange,
 	onServiceSettingsChange,
 	service,
+	serviceError,
+	serviceTouched,
 	serviceSettings = {},
 }) {
 	const [fetchErrorMessage, setFetchErrorMessage] = useState('');
@@ -161,6 +164,7 @@ function BYOLLMConfigurationForm({
 
 			<Input
 				disabled={disabled}
+				error={serviceError}
 				items={inferenceServices.map(({service}) => ({
 					label: service,
 					value: service,
@@ -173,10 +177,13 @@ function BYOLLMConfigurationForm({
 				key={inferenceServices.map(({service}) => service).join(',')}
 				label={Liferay.Language.get('service')}
 				name="byollmInferenceService"
+				onBlur={onServiceBlur}
 				onChange={onServiceChange}
 				options={{
 					placeholder: Liferay.Language.get('select-an-option'),
 				}}
+				required={true}
+				touched={serviceTouched}
 				type="picker"
 				value={service}
 			/>

@@ -588,6 +588,15 @@ export default function ({
 							}
 						}
 					}
+					else {
+						if (
+							!textEmbeddingProviderConfigurationJSON.attributes
+								?.service
+						) {
+							textEmbeddingProviderConfigurationJSONError.attributes.service =
+								Liferay.Language.get('this-field-is-required');
+						}
+					}
 
 					// Validate the provider-specific fields.
 
@@ -1000,6 +1009,9 @@ export default function ({
 							fieldErrors={
 								formik.status?.inferenceEndpointFieldErrors
 							}
+							onServiceBlur={_handleInputBlur(
+								`${prefix}.attributes.service`
+							)}
 							onServiceChange={(service) => {
 								formik.setStatus(undefined);
 
@@ -1021,7 +1033,9 @@ export default function ({
 								);
 							}}
 							service={attributes?.service || ''}
+							serviceError={errors?.attributes?.service}
 							serviceSettings={config?.serviceSettings || {}}
+							serviceTouched={touched?.attributes?.service}
 						/>
 					)}
 
