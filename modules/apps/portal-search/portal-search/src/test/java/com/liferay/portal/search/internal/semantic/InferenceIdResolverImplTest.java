@@ -10,6 +10,7 @@ import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.search.configuration.SemanticSearchConfiguration;
 import com.liferay.portal.search.configuration.SemanticSearchConfigurationProvider;
 import com.liferay.portal.search.rest.dto.v1_0.EmbeddingProviderConfiguration;
+import com.liferay.portal.search.semantic.TextEmbeddingProviderNames;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
 
 import org.junit.Assert;
@@ -84,7 +85,9 @@ public class InferenceIdResolverImplTest {
 	@Test
 	public void testResolveInferenceIdReturnsNullWhenAttributesAreNotAMap() {
 		_setProviderConfigurationJSONs(
-			_toJSON("not-a-map", _ELASTICSEARCH_PROVIDER_NAME));
+			_toJSON(
+				"not-a-map",
+				TextEmbeddingProviderNames.ELASTICSEARCH_INFERENCE_ENDPOINT));
 
 		Assert.assertNull(
 			_inferenceIdResolverImpl.resolveInferenceId(_COMPANY_ID));
@@ -93,7 +96,9 @@ public class InferenceIdResolverImplTest {
 	@Test
 	public void testResolveInferenceIdReturnsNullWhenElasticsearchProviderHasNoAttributes() {
 		_setProviderConfigurationJSONs(
-			_toJSON(null, _ELASTICSEARCH_PROVIDER_NAME));
+			_toJSON(
+				null,
+				TextEmbeddingProviderNames.ELASTICSEARCH_INFERENCE_ENDPOINT));
 
 		Assert.assertNull(
 			_inferenceIdResolverImpl.resolveInferenceId(_COMPANY_ID));
@@ -106,7 +111,7 @@ public class InferenceIdResolverImplTest {
 				HashMapBuilder.<String, Object>put(
 					"model_id", "text-embedding-3-large"
 				).build(),
-				_ELASTICSEARCH_PROVIDER_NAME));
+				TextEmbeddingProviderNames.ELASTICSEARCH_INFERENCE_ENDPOINT));
 
 		Assert.assertNull(
 			_inferenceIdResolverImpl.resolveInferenceId(_COMPANY_ID));
@@ -161,7 +166,7 @@ public class InferenceIdResolverImplTest {
 				HashMapBuilder.<String, Object>put(
 					"service", 123
 				).build(),
-				_ELASTICSEARCH_PROVIDER_NAME));
+				TextEmbeddingProviderNames.ELASTICSEARCH_INFERENCE_ENDPOINT));
 
 		Assert.assertNull(
 			_inferenceIdResolverImpl.resolveInferenceId(_COMPANY_ID));
@@ -198,7 +203,7 @@ public class InferenceIdResolverImplTest {
 			HashMapBuilder.<String, Object>put(
 				"service", service
 			).build(),
-			_ELASTICSEARCH_PROVIDER_NAME);
+			TextEmbeddingProviderNames.ELASTICSEARCH_INFERENCE_ENDPOINT);
 	}
 
 	private void _setProviderConfigurationJSONs(String... jsons) {
@@ -221,9 +226,6 @@ public class InferenceIdResolverImplTest {
 	}
 
 	private static final long _COMPANY_ID = 42;
-
-	private static final String _ELASTICSEARCH_PROVIDER_NAME =
-		"Elasticsearch Inference Endpoint";
 
 	private InferenceIdResolverImpl _inferenceIdResolverImpl;
 	private final SemanticSearchConfiguration _semanticSearchConfiguration =
