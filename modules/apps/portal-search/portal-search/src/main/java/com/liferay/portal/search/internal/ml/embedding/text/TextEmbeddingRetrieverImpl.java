@@ -180,21 +180,24 @@ public class TextEmbeddingRetrieverImpl implements TextEmbeddingRetriever {
 				_disabledProviderNames, (String[])disabledProviders);
 		}
 
-		_serviceRegistration = bundleContext.registerService(
-			FeatureFlagListener.class,
-			(companyId, featureFlagKey, enabled) ->
-				_betaTextEmbeddingsEnabled = enabled,
-			MapUtil.singletonDictionary("feature.flag.key", "LPS-122920"));
-		_serviceRegistration = bundleContext.registerService(
-			FeatureFlagListener.class,
-			(companyId, featureFlagKey, enabled) ->
-				_devTextEmbeddingsEnabled = enabled,
-			MapUtil.singletonDictionary("feature.flag.key", "LPD-31789"));
-		_serviceRegistration = bundleContext.registerService(
-			FeatureFlagListener.class,
-			(companyId, featureFlagKey, enabled) ->
-				_externalTextEmbeddingsEnabled = enabled,
-			MapUtil.singletonDictionary("feature.flag.key", "LPD-11319"));
+		_serviceRegistrations.add(
+			bundleContext.registerService(
+				FeatureFlagListener.class,
+				(companyId, featureFlagKey, enabled) ->
+					_betaTextEmbeddingsEnabled = enabled,
+				MapUtil.singletonDictionary("feature.flag.key", "LPS-122920")));
+		_serviceRegistrations.add(
+			bundleContext.registerService(
+				FeatureFlagListener.class,
+				(companyId, featureFlagKey, enabled) ->
+					_devTextEmbeddingsEnabled = enabled,
+				MapUtil.singletonDictionary("feature.flag.key", "LPD-31789")));
+		_serviceRegistrations.add(
+			bundleContext.registerService(
+				FeatureFlagListener.class,
+				(companyId, featureFlagKey, enabled) ->
+					_externalTextEmbeddingsEnabled = enabled,
+				MapUtil.singletonDictionary("feature.flag.key", "LPD-11319")));
 
 		_textEmbeddingProviderServiceTrackerList =
 			ServiceTrackerListFactory.open(
@@ -203,7 +206,11 @@ public class TextEmbeddingRetrieverImpl implements TextEmbeddingRetriever {
 
 	@Deactivate
 	protected void deactivate() {
-		_serviceRegistration.unregister();
+		for (ServiceRegistration<?> serviceRegistration :
+				_serviceRegistrations) {
+
+			serviceRegistration.unregister();
+		}
 	}
 
 	protected EmbeddingProviderConfiguration getEmbeddingProviderConfiguration(
@@ -323,7 +330,8 @@ public class TextEmbeddingRetrieverImpl implements TextEmbeddingRetriever {
 	private SemanticSearchConfigurationProvider
 		_semanticSearchConfigurationProvider;
 
-	private ServiceRegistration<?> _serviceRegistration;
+	private final List<ServiceRegistration<?>> _serviceRegistrations =
+		new ArrayList<>();
 	private ServiceTrackerList<TextEmbeddingProvider>
 		_textEmbeddingProviderServiceTrackerList;
 
