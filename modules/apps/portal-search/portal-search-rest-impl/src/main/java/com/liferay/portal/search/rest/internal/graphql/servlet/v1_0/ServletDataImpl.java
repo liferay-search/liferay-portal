@@ -11,12 +11,14 @@ import com.liferay.portal.search.rest.internal.graphql.query.v1_0.Query;
 import com.liferay.portal.search.rest.internal.resource.v1_0.EmbeddingModelResourceImpl;
 import com.liferay.portal.search.rest.internal.resource.v1_0.EmbeddingProviderValidationResultResourceImpl;
 import com.liferay.portal.search.rest.internal.resource.v1_0.InferenceEndpointResourceImpl;
+import com.liferay.portal.search.rest.internal.resource.v1_0.InferenceEndpointValidationResourceImpl;
 import com.liferay.portal.search.rest.internal.resource.v1_0.InferenceServiceResourceImpl;
 import com.liferay.portal.search.rest.internal.resource.v1_0.SearchResultResourceImpl;
 import com.liferay.portal.search.rest.internal.resource.v1_0.SuggestionResourceImpl;
 import com.liferay.portal.search.rest.resource.v1_0.EmbeddingModelResource;
 import com.liferay.portal.search.rest.resource.v1_0.EmbeddingProviderValidationResultResource;
 import com.liferay.portal.search.rest.resource.v1_0.InferenceEndpointResource;
+import com.liferay.portal.search.rest.resource.v1_0.InferenceEndpointValidationResource;
 import com.liferay.portal.search.rest.resource.v1_0.InferenceServiceResource;
 import com.liferay.portal.search.rest.resource.v1_0.SearchResultResource;
 import com.liferay.portal.search.rest.resource.v1_0.SuggestionResource;
@@ -49,6 +51,8 @@ public class ServletDataImpl implements ServletData {
 				_embeddingProviderValidationResultResourceComponentServiceObjects);
 		Mutation.setInferenceEndpointResourceComponentServiceObjects(
 			_inferenceEndpointResourceComponentServiceObjects);
+		Mutation.setInferenceEndpointValidationResourceComponentServiceObjects(
+			_inferenceEndpointValidationResourceComponentServiceObjects);
 		Mutation.setInferenceServiceResourceComponentServiceObjects(
 			_inferenceServiceResourceComponentServiceObjects);
 		Mutation.setSearchResultResourceComponentServiceObjects(
@@ -114,6 +118,11 @@ public class ServletDataImpl implements ServletData {
 							InferenceEndpointResourceImpl.class,
 							"postInferenceEndpointBatch"));
 					put(
+						"mutation#createInferenceEndpointValidate",
+						new ObjectValuePair<>(
+							InferenceEndpointValidationResourceImpl.class,
+							"postInferenceEndpointValidate"));
+					put(
 						"mutation#createInferenceServicesPageExportBatch",
 						new ObjectValuePair<>(
 							InferenceServiceResourceImpl.class,
@@ -154,6 +163,10 @@ public class ServletDataImpl implements ServletData {
 		_inferenceEndpointResourceComponentServiceObjects;
 
 	@Reference(scope = ReferenceScope.PROTOTYPE_REQUIRED)
+	private ComponentServiceObjects<InferenceEndpointValidationResource>
+		_inferenceEndpointValidationResourceComponentServiceObjects;
+
+	@Reference(scope = ReferenceScope.PROTOTYPE_REQUIRED)
 	private ComponentServiceObjects<InferenceServiceResource>
 		_inferenceServiceResourceComponentServiceObjects;
 
@@ -170,4 +183,4 @@ public class ServletDataImpl implements ServletData {
 		_embeddingModelResourceComponentServiceObjects;
 
 }
-// LIFERAY-REST-BUILDER-HASH:703909083
+// LIFERAY-REST-BUILDER-HASH:-1765788749

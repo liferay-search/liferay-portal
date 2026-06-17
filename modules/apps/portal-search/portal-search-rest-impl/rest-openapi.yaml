@@ -557,7 +557,7 @@ paths:
         post:
             description:
                 Validates the service settings for a BYO-LLM inference service before the endpoint is created.
-            operationId: postInferenceEndpointValidation
+            operationId: postInferenceEndpointValidate
             requestBody:
                 content:
                     application/json:
