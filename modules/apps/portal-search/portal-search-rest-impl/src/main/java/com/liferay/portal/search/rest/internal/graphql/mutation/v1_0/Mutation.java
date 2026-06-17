@@ -11,11 +11,14 @@ import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.RoleLocalService;
 import com.liferay.portal.search.rest.dto.v1_0.EmbeddingProviderConfiguration;
 import com.liferay.portal.search.rest.dto.v1_0.EmbeddingProviderValidationResult;
+import com.liferay.portal.search.rest.dto.v1_0.InferenceEndpoint;
 import com.liferay.portal.search.rest.dto.v1_0.SearchRequestBody;
 import com.liferay.portal.search.rest.dto.v1_0.SearchResult;
 import com.liferay.portal.search.rest.dto.v1_0.SuggestionsContributorConfiguration;
 import com.liferay.portal.search.rest.dto.v1_0.SuggestionsContributorResults;
 import com.liferay.portal.search.rest.resource.v1_0.EmbeddingProviderValidationResultResource;
+import com.liferay.portal.search.rest.resource.v1_0.InferenceEndpointResource;
+import com.liferay.portal.search.rest.resource.v1_0.InferenceServiceResource;
 import com.liferay.portal.search.rest.resource.v1_0.SearchResultResource;
 import com.liferay.portal.search.rest.resource.v1_0.SuggestionResource;
 import com.liferay.portal.vulcan.accept.language.AcceptLanguage;
@@ -31,6 +34,7 @@ import jakarta.annotation.Generated;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 
 import java.util.function.BiFunction;
@@ -51,6 +55,22 @@ public class Mutation {
 
 		_embeddingProviderValidationResultResourceComponentServiceObjects =
 			embeddingProviderValidationResultResourceComponentServiceObjects;
+	}
+
+	public static void setInferenceEndpointResourceComponentServiceObjects(
+		ComponentServiceObjects<InferenceEndpointResource>
+			inferenceEndpointResourceComponentServiceObjects) {
+
+		_inferenceEndpointResourceComponentServiceObjects =
+			inferenceEndpointResourceComponentServiceObjects;
+	}
+
+	public static void setInferenceServiceResourceComponentServiceObjects(
+		ComponentServiceObjects<InferenceServiceResource>
+			inferenceServiceResourceComponentServiceObjects) {
+
+		_inferenceServiceResourceComponentServiceObjects =
+			inferenceServiceResourceComponentServiceObjects;
 	}
 
 	public static void setSearchResultResourceComponentServiceObjects(
@@ -84,6 +104,51 @@ public class Mutation {
 				embeddingProviderValidationResultResource.
 					postEmbeddingValidateProviderConfiguration(
 						embeddingProviderConfiguration));
+	}
+
+	@GraphQLField(
+		description = "Creates the Liferay-managed Elasticsearch inference endpoint for the text_embedding task type."
+	)
+	public InferenceEndpoint createInferenceEndpoint(
+			@GraphQLName("inferenceEndpoint") InferenceEndpoint
+				inferenceEndpoint)
+		throws Exception {
+
+		return _applyComponentServiceObjects(
+			_inferenceEndpointResourceComponentServiceObjects,
+			this::_populateResourceContext,
+			inferenceEndpointResource ->
+				inferenceEndpointResource.postInferenceEndpoint(
+					inferenceEndpoint));
+	}
+
+	@GraphQLField
+	public Response createInferenceEndpointBatch(
+			@GraphQLName("callbackURL") String callbackURL,
+			@GraphQLName("object") Object object)
+		throws Exception {
+
+		return _applyComponentServiceObjects(
+			_inferenceEndpointResourceComponentServiceObjects,
+			this::_populateResourceContext,
+			inferenceEndpointResource ->
+				inferenceEndpointResource.postInferenceEndpointBatch(
+					callbackURL, object));
+	}
+
+	@GraphQLField
+	public Response createInferenceServicesPageExportBatch(
+			@GraphQLName("callbackURL") String callbackURL,
+			@GraphQLName("contentType") String contentType,
+			@GraphQLName("fieldNames") String fieldNames)
+		throws Exception {
+
+		return _applyComponentServiceObjects(
+			_inferenceServiceResourceComponentServiceObjects,
+			this::_populateResourceContext,
+			inferenceServiceResource ->
+				inferenceServiceResource.postInferenceServicesPageExportBatch(
+					callbackURL, contentType, fieldNames));
 	}
 
 	@GraphQLField(
@@ -205,6 +270,50 @@ public class Mutation {
 	}
 
 	private void _populateResourceContext(
+			InferenceEndpointResource inferenceEndpointResource)
+		throws Exception {
+
+		inferenceEndpointResource.setContextAcceptLanguage(_acceptLanguage);
+		inferenceEndpointResource.setContextCompany(_company);
+		inferenceEndpointResource.setContextHttpServletRequest(
+			_httpServletRequest);
+		inferenceEndpointResource.setContextHttpServletResponse(
+			_httpServletResponse);
+		inferenceEndpointResource.setContextUriInfo(_uriInfo);
+		inferenceEndpointResource.setContextUser(_user);
+		inferenceEndpointResource.setGroupLocalService(_groupLocalService);
+		inferenceEndpointResource.setRoleLocalService(_roleLocalService);
+
+		inferenceEndpointResource.setVulcanBatchEngineExportTaskResource(
+			_vulcanBatchEngineExportTaskResource);
+
+		inferenceEndpointResource.setVulcanBatchEngineImportTaskResource(
+			_vulcanBatchEngineImportTaskResource);
+	}
+
+	private void _populateResourceContext(
+			InferenceServiceResource inferenceServiceResource)
+		throws Exception {
+
+		inferenceServiceResource.setContextAcceptLanguage(_acceptLanguage);
+		inferenceServiceResource.setContextCompany(_company);
+		inferenceServiceResource.setContextHttpServletRequest(
+			_httpServletRequest);
+		inferenceServiceResource.setContextHttpServletResponse(
+			_httpServletResponse);
+		inferenceServiceResource.setContextUriInfo(_uriInfo);
+		inferenceServiceResource.setContextUser(_user);
+		inferenceServiceResource.setGroupLocalService(_groupLocalService);
+		inferenceServiceResource.setRoleLocalService(_roleLocalService);
+
+		inferenceServiceResource.setVulcanBatchEngineExportTaskResource(
+			_vulcanBatchEngineExportTaskResource);
+
+		inferenceServiceResource.setVulcanBatchEngineImportTaskResource(
+			_vulcanBatchEngineImportTaskResource);
+	}
+
+	private void _populateResourceContext(
 			SearchResultResource searchResultResource)
 		throws Exception {
 
@@ -241,6 +350,10 @@ public class Mutation {
 	private static ComponentServiceObjects
 		<EmbeddingProviderValidationResultResource>
 			_embeddingProviderValidationResultResourceComponentServiceObjects;
+	private static ComponentServiceObjects<InferenceEndpointResource>
+		_inferenceEndpointResourceComponentServiceObjects;
+	private static ComponentServiceObjects<InferenceServiceResource>
+		_inferenceServiceResourceComponentServiceObjects;
 	private static ComponentServiceObjects<SearchResultResource>
 		_searchResultResourceComponentServiceObjects;
 	private static ComponentServiceObjects<SuggestionResource>
@@ -265,4 +378,4 @@ public class Mutation {
 		_vulcanBatchEngineImportTaskResource;
 
 }
-// LIFERAY-REST-BUILDER-HASH:1564786562
+// LIFERAY-REST-BUILDER-HASH:-1801277931
