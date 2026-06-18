@@ -5,6 +5,7 @@
 
 package com.liferay.portal.search.internal.semantic;
 
+import com.liferay.portal.json.JSONFactoryImpl;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.search.configuration.SemanticSearchConfiguration;
@@ -34,6 +35,9 @@ public class InferenceIdResolverImplTest {
 	@Before
 	public void setUp() {
 		_inferenceIdResolverImpl = new InferenceIdResolverImpl();
+
+		ReflectionTestUtil.setFieldValue(
+			_inferenceIdResolverImpl, "_jsonFactory", new JSONFactoryImpl());
 
 		ReflectionTestUtil.setFieldValue(
 			_inferenceIdResolverImpl, "_semanticSearchConfigurationProvider",

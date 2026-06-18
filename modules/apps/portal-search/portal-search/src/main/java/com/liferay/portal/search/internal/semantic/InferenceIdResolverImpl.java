@@ -6,16 +6,16 @@
 package com.liferay.portal.search.internal.semantic;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.json.JSONFactory;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.configuration.SemanticSearchConfiguration;
 import com.liferay.portal.search.configuration.SemanticSearchConfigurationProvider;
-import com.liferay.portal.search.rest.dto.v1_0.EmbeddingProviderConfiguration;
 import com.liferay.portal.search.semantic.InferenceIdResolver;
 import com.liferay.portal.search.semantic.TextEmbeddingProviderNames;
 
-import java.util.Map;
 import java.util.Objects;
 
 import org.osgi.service.component.annotations.Component;
@@ -58,12 +58,11 @@ public class InferenceIdResolverImpl implements InferenceIdResolver {
 				continue;
 			}
 
-			EmbeddingProviderConfiguration embeddingProviderConfiguration;
+			JSONObject jsonObject;
 
 			try {
-				embeddingProviderConfiguration =
-					EmbeddingProviderConfiguration.unsafeToDTO(
-						textEmbeddingProviderConfigurationJSON);
+				jsonObject = _jsonFactory.createJSONObject(
+					textEmbeddingProviderConfigurationJSON);
 			}
 			catch (Exception exception) {
 				if (_log.isDebugEnabled()) {
@@ -73,17 +72,26 @@ public class InferenceIdResolverImpl implements InferenceIdResolver {
 				continue;
 			}
 
-			if ((embeddingProviderConfiguration == null) ||
-				!Objects.equals(
-					embeddingProviderConfiguration.getProviderName(),
+			if (!Objects.equals(
+					jsonObject.getString("providerName"),
 					TextEmbeddingProviderNames.
 						ELASTICSEARCH_INFERENCE_ENDPOINT)) {
 
 				continue;
 			}
 
-			String service = _getService(
-				embeddingProviderConfiguration.getAttributes());
+			JSONObject attributesJSONObject = jsonObject.getJSONObject(
+				"attributes");
+
+			String service = null;
+
+			if (attributesJSONObject != null) {
+				Object serviceObject = attributesJSONObject.get("service");
+
+				if (serviceObject instanceof String) {
+					service = (String)serviceObject;
+				}
+			}
 
 			if (Validator.isBlank(service)) {
 				if (_log.isWarnEnabled()) {
@@ -103,24 +111,11 @@ public class InferenceIdResolverImpl implements InferenceIdResolver {
 		return null;
 	}
 
-	private String _getService(Object attributes) {
-		if (!(attributes instanceof Map)) {
-			return null;
-		}
-
-		Map<?, ?> attributesMap = (Map<?, ?>)attributes;
-
-		Object service = attributesMap.get("service");
-
-		if (service instanceof String) {
-			return (String)service;
-		}
-
-		return null;
-	}
-
 	private static final Log _log = LogFactoryUtil.getLog(
 		InferenceIdResolverImpl.class);
+
+	@Reference
+	private JSONFactory _jsonFactory;
 
 	@Reference
 	private SemanticSearchConfigurationProvider
