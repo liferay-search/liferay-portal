@@ -68,9 +68,7 @@ components:
             type: object
         InferenceEndpoint:
             description:
-                Elasticsearch inference endpoint creation request and result. Carries the service and its settings on
-                input; the response echoes the Liferay-managed inference endpoint name and the service on success or an
-                error message on failure, and never echoes the settings, which may contain secrets.
+                Elasticsearch inference endpoint creation request and result. Carries the service and its settings on input; the response echoes the Liferay-managed inference endpoint name and the service on success or an error message on failure, and never echoes the settings, which may contain secrets.
             properties:
                 errorMessage:
                     type: string
@@ -83,9 +81,7 @@ components:
             type: object
         InferenceEndpointValidation:
             description:
-                Result of validating the service settings an admin entered for a BYO-LLM inference service before the
-                endpoint is created. Carries one message per invalid field; an empty fieldErrors map means the settings
-                are valid.
+                Result of validating the service settings an admin entered for a BYO-LLM inference service before the endpoint is created. Carries one message per invalid field; an empty fieldErrors map means the settings are valid.
             properties:
                 fieldErrors:
                     type: object
@@ -94,9 +90,7 @@ components:
             type: object
         InferenceService:
             description:
-                Inference service that Elasticsearch supports for the text_embedding task type, with the raw field
-                schema that drives the dynamic provider creation form. The configuration is absent when Elasticsearch
-                does not expose a schema for the service.
+                Inference service that Elasticsearch supports for the text_embedding task type, with the raw field schema that drives the dynamic provider creation form. The configuration is absent when Elasticsearch does not expose a schema for the service.
             properties:
                 configuration:
                     type: object
