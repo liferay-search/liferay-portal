@@ -218,6 +218,27 @@ function TestConfigurationButton({
 					throw new Error(responseData.message);
 				}
 
+				if (
+					textEmbeddingProvider ===
+					TEXT_EMBEDDING_PROVIDER_TYPES.ELASTICSEARCH_INFERENCE_ENDPOINT
+				) {
+					if (Number(responseData.expectedDimensions) > 0) {
+						return setTestResultsMessage({
+							message: Liferay.Language.get(
+								'connection-is-successful'
+							),
+							type: 'success',
+						});
+					}
+
+					return setTestResultsMessage({
+						message: Liferay.Language.get(
+							'the-text-embedding-provider-returned-no-results'
+						),
+						type: 'danger',
+					});
+				}
+
 				// If the response expected dimensions is 0. This means no
 				// results were returned from the text embedding provider.
 
