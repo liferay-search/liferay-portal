@@ -13,6 +13,8 @@ export class SemanticSearchConfigurationPage {
 	readonly maxCharacterCountInput: Locator;
 	readonly page: Page;
 	readonly saveButton: Locator;
+	readonly testConfigurationButton: Locator;
+	readonly testConfigurationResultAlert: Locator;
 	readonly textEmbeddingProviderSelect: Locator;
 	readonly textTruncationStrategySelect: Locator;
 
@@ -24,10 +26,13 @@ export class SemanticSearchConfigurationPage {
 		});
 		this.maxCharacterCountInput = page.getByLabel('Max Character Count');
 		this.saveButton = page.getByRole('button', {exact: true, name: 'Save'});
+		this.testConfigurationButton = page.getByRole('button', {
+			name: 'Test Configuration',
+		});
+		this.testConfigurationResultAlert = page.locator(
+			'.test-configuration-button-root .alert'
 		);
 		this.textEmbeddingProviderSelect = page.getByLabel('Provider');
-		this.textEmbeddingProviderOptions =
-			this.textEmbeddingProviderSelect.locator('option');
 		this.textTruncationStrategySelect = page.getByLabel(
 			'Text Truncation Strategy'
 		);
@@ -62,6 +67,14 @@ export class SemanticSearchConfigurationPage {
 	}
 
 	private async _getPickerOptionLabels(picker: Locator): Promise<string[]> {
+		const tagName = await picker.evaluate((element) =>
+			element.tagName.toLowerCase()
+		);
+
+		if (tagName === 'select') {
+			return picker.locator('option').allTextContents();
+		}
+
 		await picker.click();
 
 		await expect(picker).toHaveAttribute('aria-expanded', 'true');

@@ -8,6 +8,7 @@ import {expect, mergeTests} from '@playwright/test';
 import {featureFlagsTest} from '../../../fixtures/featureFlagsTest';
 import {loginTest} from '../../../fixtures/loginTest';
 import {semanticSearchConfigurationPageTest} from '../../../fixtures/semanticSearchConfigurationPageTest';
+import {clickAndExpectToBeVisible} from '../../../utils/clickAndExpectToBeVisible';
 
 const testWithBYOLLMDisabled = mergeTests(
 	loginTest(),
@@ -18,6 +19,24 @@ const testWithBYOLLMDisabled = mergeTests(
 const testWithBYOLLMEnabled = mergeTests(
 	loginTest(),
 	featureFlagsTest({'LPD-11319': {enabled: true}}),
+	semanticSearchConfigurationPageTest
+);
+
+const testWithBYOLLMDisabledAndBetaProvidersEnabled = mergeTests(
+	loginTest(),
+	featureFlagsTest({
+		'LPD-11319': {enabled: false},
+		'LPS-122920': {enabled: true},
+	}),
+	semanticSearchConfigurationPageTest
+);
+
+const testWithBYOLLMProviderSelectable = mergeTests(
+	loginTest(),
+	featureFlagsTest({
+		'LPD-11319': {enabled: true},
+		'LPS-122920': {enabled: true},
+	}),
 	semanticSearchConfigurationPageTest
 );
 
@@ -60,10 +79,10 @@ testWithBYOLLMDisabledAndBetaProvidersEnabled(
 		const optionLabels =
 			await semanticSearchConfigurationPage.getTextEmbeddingProviderOptionLabels();
 
-		expect(optionTexts).not.toContain(
+		expect(optionLabels).not.toContain(
 			'Bring Your Own LLM via Elasticsearch'
 		);
-		expect(optionTexts).toContain('OpenAI');
+		expect(optionLabels).toContain('OpenAI');
 	}
 );
 
