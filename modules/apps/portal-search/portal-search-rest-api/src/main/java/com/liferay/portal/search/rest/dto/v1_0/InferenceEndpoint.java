@@ -40,6 +40,9 @@ import java.util.function.Supplier;
 	description = "Elasticsearch inference endpoint creation request and result. Carries the service and its settings on input; the response echoes the Liferay-managed inference endpoint name and the service on success or an error message on failure, and never echoes the settings, which may contain secrets.",
 	value = "InferenceEndpoint"
 )
+@io.swagger.v3.oas.annotations.media.Schema(
+	description = "Elasticsearch inference endpoint creation request and result. Carries the service and its settings on input; the response echoes the Liferay-managed inference endpoint name and the service on success or an error message on failure, and never echoes the settings, which may contain secrets."
+)
 @JsonFilter("Liferay.Vulcan")
 @XmlRootElement(name = "InferenceEndpoint")
 public class InferenceEndpoint implements Serializable {
@@ -417,4 +420,4 @@ public class InferenceEndpoint implements Serializable {
 	private Map<String, Serializable> _extendedProperties;
 
 }
-// LIFERAY-REST-BUILDER-HASH:-1087064435
+// LIFERAY-REST-BUILDER-HASH:-1987742622

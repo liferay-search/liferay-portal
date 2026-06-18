@@ -40,6 +40,9 @@ import java.util.function.Supplier;
 	description = "Result of validating the service settings an admin entered for a BYO-LLM inference service before the endpoint is created. Carries one message per invalid field; an empty fieldErrors map means the settings are valid.",
 	value = "InferenceEndpointValidation"
 )
+@io.swagger.v3.oas.annotations.media.Schema(
+	description = "Result of validating the service settings an admin entered for a BYO-LLM inference service before the endpoint is created. Carries one message per invalid field; an empty fieldErrors map means the settings are valid."
+)
 @JsonFilter("Liferay.Vulcan")
 @XmlRootElement(name = "InferenceEndpointValidation")
 public class InferenceEndpointValidation implements Serializable {
@@ -302,4 +305,4 @@ public class InferenceEndpointValidation implements Serializable {
 	private Map<String, Serializable> _extendedProperties;
 
 }
-// LIFERAY-REST-BUILDER-HASH:-1145099627
+// LIFERAY-REST-BUILDER-HASH:2131647847

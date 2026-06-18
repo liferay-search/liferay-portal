@@ -40,6 +40,9 @@ import java.util.function.Supplier;
 	description = "Inference service that Elasticsearch supports for the text_embedding task type, with the raw field schema that drives the dynamic provider creation form. The configuration is absent when Elasticsearch does not expose a schema for the service.",
 	value = "InferenceService"
 )
+@io.swagger.v3.oas.annotations.media.Schema(
+	description = "Inference service that Elasticsearch supports for the text_embedding task type, with the raw field schema that drives the dynamic provider creation form. The configuration is absent when Elasticsearch does not expose a schema for the service."
+)
 @JsonFilter("Liferay.Vulcan")
 @XmlRootElement(name = "InferenceService")
 public class InferenceService implements Serializable {
@@ -302,4 +305,4 @@ public class InferenceService implements Serializable {
 	private Map<String, Serializable> _extendedProperties;
 
 }
-// LIFERAY-REST-BUILDER-HASH:12152256
+// LIFERAY-REST-BUILDER-HASH:-1719744414
