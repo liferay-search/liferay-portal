@@ -35,7 +35,8 @@ public class ProviderInputValidatorRegistryTest {
 
 	@Before
 	public void setUp() {
-		_providerInputValidatorRegistry = new ProviderInputValidatorRegistry();
+		_providerInputValidatorRegistry =
+			new ProviderInputValidatorRegistryImpl();
 
 		ReflectionTestUtil.setFieldValue(
 			_providerInputValidatorRegistry, "_serviceTrackerList",
