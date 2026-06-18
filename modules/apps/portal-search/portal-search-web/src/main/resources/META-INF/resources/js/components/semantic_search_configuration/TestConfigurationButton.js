@@ -12,10 +12,6 @@ import React, {useEffect, useState} from 'react';
 
 import {TEXT_EMBEDDING_PROVIDER_TYPES} from './constants';
 
-/**
- * A button to test the connection for the semantic search settings page.
- * This can be found on: System Settings > Search Experiences > Semantic Search
- */
 function TestConfigurationButton({
 	accessToken,
 	apiKey,
@@ -40,11 +36,8 @@ function TestConfigurationButton({
 	user,
 }) {
 	const [loading, setLoading] = useState(false);
-	const [testResultsMessage, setTestResultsMessage] = useState({}); // {message, type}
+	const [testResultsMessage, setTestResultsMessage] = useState({});
 
-	/**
-	 * Clear the message if any input values change.
-	 */
 	useEffect(() => {
 		setTestResultsMessage({});
 	}, [
@@ -65,12 +58,6 @@ function TestConfigurationButton({
 		user,
 	]);
 
-	/**
-	 * Used for the `/text-embeddings/validate-provider-configuration` endpoint
-	 * to conditionally send the appropriate data according to the user-selected
-	 * text embedding provider type.
-	 * @returns {object}
-	 */
 	const _getTextEmbeddingProviderSettings = () => {
 		if (
 			textEmbeddingProvider ===
@@ -146,22 +133,12 @@ function TestConfigurationButton({
 		})
 			.then((response) => response.json())
 			.then((responseData) => {
-
-				// If there is an error with the connection.
-				//
-				// Example `errorMessage` string (Can vary based on text
-				//  embedding provider):
-				// '{"error": "Authorization header is correct, but the token seems invalid"}'
-				// '[{\"generated_text":\"com.liferay.portal.kernel.util.Http$Body@7e13...\"}]'
-
 				if (responseData.errorMessage) {
 					try {
 						const errorMessage =
 							typeof responseData.errorMessage === 'string'
 								? JSON.parse(responseData.errorMessage)
 								: responseData.errorMessage;
-
-						// If `errorMessage` has `error` property that is a string.
 
 						if (
 							errorMessage?.error &&
@@ -172,8 +149,6 @@ function TestConfigurationButton({
 								type: 'warning',
 							});
 						}
-
-						// If `errorMessage` value is an object or array.
 
 						return setTestResultsMessage({
 							message: sub(
@@ -191,9 +166,6 @@ function TestConfigurationButton({
 						});
 					}
 					catch {
-
-						// If `errorMessage` is a string.
-
 						return setTestResultsMessage({
 							message: sub(
 								Liferay.Language.get(
@@ -210,9 +182,6 @@ function TestConfigurationButton({
 						});
 					}
 				}
-
-				// If the user has no permissions for the REST endpoint.
-				// Example: {"message": "Access denied to com.liferay.search.experiences.rest.internal.resource.v1_0.TextEmbeddingProviderValidationResultResourceImpl#postTextEmbeddingValidateConfiguration"}
 
 				if (responseData.message) {
 					throw new Error(responseData.message);
@@ -239,9 +208,6 @@ function TestConfigurationButton({
 					});
 				}
 
-				// If the response expected dimensions is 0. This means no
-				// results were returned from the text embedding provider.
-
 				if (Number(responseData.expectedDimensions === 0)) {
 					return setTestResultsMessage({
 						message: Liferay.Language.get(
@@ -250,9 +216,6 @@ function TestConfigurationButton({
 						type: 'danger',
 					});
 				}
-
-				// If the expected dimensions don't match the configure
-				// dimensions.
 
 				if (
 					Number(responseData.expectedDimensions) !==
@@ -271,9 +234,6 @@ function TestConfigurationButton({
 						type: 'warning',
 					});
 				}
-
-				// If the none of the previous checks are caught, assume a
-				// successful connection.
 
 				setTestResultsMessage({
 					message: Liferay.Language.get('connection-is-successful'),

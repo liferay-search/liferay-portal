@@ -10,9 +10,6 @@ import java.util.List;
 import org.osgi.annotation.versioning.ProviderType;
 
 /**
- * Resolves the inference services that Elasticsearch supports for the {@code
- * text_embedding} task type via the {@code GET _inference/_services} API.
- *
  * @author Rodrigo Guedes de Souza
  */
 @ProviderType

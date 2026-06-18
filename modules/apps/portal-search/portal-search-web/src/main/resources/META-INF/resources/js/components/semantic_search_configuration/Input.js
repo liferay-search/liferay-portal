@@ -119,7 +119,7 @@ function Input({
 				return (
 					<ClaySelectBox
 						aria-label={label}
-						className="mb-0" // Suppress extra margin from ClaySelectBox
+						className="mb-0"
 						disabled={disabled}
 						items={items}
 						multiple

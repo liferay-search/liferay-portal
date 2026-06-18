@@ -8,9 +8,6 @@ package com.liferay.portal.search.semantic;
 import org.osgi.annotation.versioning.ProviderType;
 
 /**
- * Resolves the metadata of an Elasticsearch inference endpoint via the {@code
- * GET _inference/<id>} API.
- *
  * @author Rodrigo Guedes de Souza
  */
 @ProviderType

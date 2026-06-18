@@ -24,10 +24,6 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * Fetches inference endpoint information via the {@code GET _inference/<id>}
- * API with fail-fast semantics: a missing endpoint, an Elasticsearch error,
- * or an I/O failure aborts with an actionable {@code RuntimeException}.
- *
  * @author Rodrigo Guedes de Souza
  */
 @Component(service = InferenceEndpointInfoFetcher.class)

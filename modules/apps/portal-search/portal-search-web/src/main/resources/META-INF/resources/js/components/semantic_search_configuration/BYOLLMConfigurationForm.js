@@ -9,20 +9,6 @@ import React, {useEffect, useState} from 'react';
 
 import Input from './Input';
 
-/**
- * Maps a field's schema to the input type rendered for it. The schema comes
- * from the Elasticsearch `GET _inference/_services` API, where each field
- * carries a `sensitive` flag and a `type`:
- *
- * - `sensitive: true` -> password input (e.g., the provider API key)
- * - `type: "int"`     -> number input
- * - `type: "bool"`    -> checkbox
- * - `type: "enum"`    -> select populated from the field's `options`
- *
- * Anything else (including `type: "str"`) falls back to a text input.
- * @param {object} fieldConfiguration
- * @returns {string}
- */
 const getInputType = (fieldConfiguration) => {
 	if (fieldConfiguration?.sensitive) {
 		return 'password';
@@ -40,18 +26,6 @@ const getInputType = (fieldConfiguration) => {
 	}
 };
 
-/**
- * Form for the BYO-LLM (Elasticsearch Inference Endpoint) provider. The
- * service dropdown and the provider-specific fields are rendered dynamically
- * from the schemas that Elasticsearch exposes — nothing is hardcoded per
- * provider, so the form works with any provider Elasticsearch supports.
- *
- * The component is controlled: the selected `service` and the `serviceSettings`
- * the user enters live in the parent's formik state, the same place every other
- * provider keeps its values. The component only fetches the field schemas and
- * renders the inputs, writing changes back through `onServiceChange` and
- * `onServiceSettingsChange`.
- */
 function BYOLLMConfigurationForm({
 	disabled,
 	errorMessage,
@@ -104,12 +78,6 @@ function BYOLLMConfigurationForm({
 			});
 	}, []);
 
-	/**
-	 * Gets the field entries of the given service, filtered down to the ones
-	 * that apply to the text_embedding task type.
-	 * @param {string} serviceName
-	 * @returns {Array}
-	 */
 	const _getFieldEntries = (serviceName) => {
 		const inferenceService = inferenceServices.find(
 			(item) => item.service === serviceName
@@ -130,11 +98,6 @@ function BYOLLMConfigurationForm({
 		);
 	};
 
-	/**
-	 * Writes a single field change back to the parent, coercing integer fields
-	 * to numbers and dropping the field when it is cleared so the persisted
-	 * settings carry only the values the user actually set.
-	 */
 	const _handleFieldValueChange = (fieldName, fieldConfiguration, value) => {
 		const nextServiceSettings = {...serviceSettings};
 
@@ -169,11 +132,6 @@ function BYOLLMConfigurationForm({
 					label: service,
 					value: service,
 				}))}
-
-				// Remount the Picker when the loaded service list changes so it
-				// rebuilds its collection. @clayui/core's Picker builds the
-				// collection at mount, so items fetched afterward stay stale.
-
 				key={inferenceServices.map(({service}) => service).join(',')}
 				label={Liferay.Language.get('service')}
 				name="byollmInferenceService"

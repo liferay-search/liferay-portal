@@ -5,33 +5,6 @@
 
 import {TEXT_EMBEDDING_PROVIDER_TYPES} from './constants';
 
-/**
- * Single source of truth for the provider-specific `attributes` fields.
- *
- * Each provider maps to a descriptor with an ordered `fields` list and an
- * optional `helpText` (shown in the provider <select> dropdown). A
- * field's `name` is the attribute key; the remaining keys drive
- * validation and rendering:
- *
- *   required     - the field must have a non-empty value
- *   min          - numeric lower bound (inclusive)
- *   max          - numeric upper bound (inclusive)
- *   label        - field label
- *   helpText     - help tooltip text (next to the label, or the
- *                  checkbox for a 'checkbox' field)
- *   type         - Input type: 'password' | 'number' | 'model' |
- *                  'checkbox' (omitted renders a text input)
- *   feedbackText - feedback text rendered below the input
- *
- * Language keys are resolved here so the build can statically extract the
- * literal Liferay.Language.get arguments.
- *
- * The `fields` list also defines which attributes are sent to the
- * validate and save endpoints (see `pickProviderAttributes`). Common
- * fields shared by every provider (maxCharacterCount,
- * textTruncationStrategy, languageIds, modelClassNames) are handled by
- * the caller, not here.
- */
 const PROVIDERS = {
 	[TEXT_EMBEDDING_PROVIDER_TYPES.HUGGING_FACE_INFERENCE_API]: {
 		fields: [
@@ -193,33 +166,14 @@ const PROVIDERS = {
 	},
 };
 
-/**
- * Returns the ordered field descriptors for a provider, or an empty
- * array when the provider is unknown.
- * @param {string} providerName
- * @returns {Array}
- */
 export function getProviderFields(providerName) {
 	return PROVIDERS[providerName]?.fields || [];
 }
 
-/**
- * Returns the help text shown in the provider <select> dropdown, or
- * undefined when the provider declares none.
- * @param {string} providerName
- * @returns {string|undefined}
- */
 export function getProviderHelpText(providerName) {
 	return PROVIDERS[providerName]?.helpText;
 }
 
-/**
- * Extracts the provider-specific attributes from a full attributes
- * object, keeping only the keys the given provider declares.
- * @param {string} providerName
- * @param {object} attributes
- * @returns {object}
- */
 export function pickProviderAttributes(providerName, attributes = {}) {
 	return Object.fromEntries(
 		getProviderFields(providerName).map(({name}) => [

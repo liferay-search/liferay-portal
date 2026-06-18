@@ -8,11 +8,6 @@ package com.liferay.portal.search.semantic;
 import org.osgi.annotation.versioning.ProviderType;
 
 /**
- * Creates an Elasticsearch inference endpoint for the {@code text_embedding}
- * task type via the {@code PUT _inference/text_embedding/<id>} API. A
- * provider rejection (e.g., invalid credentials) or an I/O failure aborts
- * with an actionable {@code RuntimeException}.
- *
  * @author Rodrigo Guedes de Souza
  */
 @ProviderType

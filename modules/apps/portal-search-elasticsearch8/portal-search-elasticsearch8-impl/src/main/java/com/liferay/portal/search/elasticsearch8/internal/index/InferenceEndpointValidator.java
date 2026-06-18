@@ -17,16 +17,6 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * Validates that an Elasticsearch inference endpoint exists with {@code
- * task_type=text_embedding} before any {@code semantic_text} mapping
- * operation, aborting with an actionable {@code RuntimeException} otherwise.
- *
- * <p>
- * The validation fails fast at the single mapping operation, where the
- * configuration cause is close by — without it, a missing or mistyped
- * endpoint would only surface later, once per document, at indexing time.
- * </p>
- *
  * @author Rodrigo Guedes de Souza
  */
 @Component(service = InferenceEndpointValidator.class)

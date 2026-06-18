@@ -61,10 +61,6 @@ public class InferenceEndpointResourceImpl
 			throw new BadRequestException("Service is null or empty");
 		}
 
-		// Validate server-side too: the client validates for UX, but the
-		// endpoint must not create an invalid configuration if called
-		// directly
-
 		Map<String, String> fieldErrors =
 			_providerInputValidatorRegistry.validate(
 				service, inferenceEndpoint.getServiceSettings());
@@ -82,12 +78,6 @@ public class InferenceEndpointResourceImpl
 					"engine is Elasticsearch.",
 				null, service);
 		}
-
-		// Enforce a single Liferay-managed endpoint per company: if any
-		// endpoint matching the company prefix already exists, block the
-		// creation with a 409 so the admin deletes the current configuration
-		// first (switching providers goes through the save flow in subtask
-		// 3.9)
 
 		_checkSingleEndpointConstraint();
 
@@ -153,9 +143,6 @@ public class InferenceEndpointResourceImpl
 	private InferenceEndpoint _toInferenceEndpoint(
 		String createErrorMessage, String createInferenceId,
 		String createService) {
-
-		// The response never echoes the service settings: they may carry
-		// secrets (e.g., the provider API key)
 
 		return new InferenceEndpoint() {
 			{

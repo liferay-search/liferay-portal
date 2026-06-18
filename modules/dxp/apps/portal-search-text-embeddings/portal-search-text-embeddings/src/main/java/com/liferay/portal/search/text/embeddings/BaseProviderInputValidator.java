@@ -18,12 +18,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * Shared validation for the BYO-LLM inference services: required fields, the
- * known {@code model_id} catalog, the {@code dimensions} bounds, and the
- * allowed {@code similarity} values. Each provider subclass declares its
- * constraints; the field names follow the Elasticsearch {@code _inference}
- * service settings keys.
- *
  * @author Rodrigo Guedes de Souza
  */
 public abstract class BaseProviderInputValidator
@@ -72,10 +66,6 @@ public abstract class BaseProviderInputValidator
 	}
 
 	private String _merge(Set<String> values) {
-
-		// Sort so the message is deterministic regardless of the set
-		// implementation's iteration order
-
 		return StringUtil.merge(new TreeSet<>(values), ", ");
 	}
 

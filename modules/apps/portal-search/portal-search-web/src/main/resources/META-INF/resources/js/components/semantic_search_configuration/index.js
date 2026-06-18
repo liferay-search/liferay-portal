@@ -44,15 +44,6 @@ const DEFAULT_TEXT_EMBEDDING_PROVIDER_CONFIGURATIONS = {
 	providerName: TEXT_EMBEDDING_PROVIDER_TYPES.HUGGING_FACE_INFERENCE_API,
 };
 
-/**
- * Determines if two values are unequal. If one of the items is
- * an integer, both are parsed to integers before comparison. If the
- * items are arrays, their order is not considered.
- *
- * @param {Array|integer|string} item1
- * @param {Array|integer|string} item2
- * @returns {boolean}
- */
 function isNotEqual(item1, item2) {
 	if (Number.isInteger(item1) || Number.isInteger(item2)) {
 		return parseInt(item1, 10) !== parseInt(item2, 10);
@@ -86,28 +77,10 @@ function parseJSONString(jsonString) {
 	}
 }
 
-/**
- * Converts an array of JSON strings into an array of JSON objects.
- *
- * Example:
- * parseArrayOfJSONStrings(["{}"]);
- * => [{}]
- * @param {Array} array
- * @returns {Array}
- */
 function parseArrayOfJSONStrings(array) {
 	return array.map((string) => parseJSONString(string));
 }
 
-/**
- * Determines the value of textEmbeddingProviderConfigurationJSONs based
- * on the initial prop and set of available providers.
- * @param {Array} initialTextEmbeddingProviderConfigurationJSONs
- * Initial configurations of the text embedding provider, as an
- * array of stringified objects.
- * @param {object} availableProviders
- * @returns {Array} Cleaned up list of provider configurations.
- */
 function resolveInitialTextEmbeddingProviderConfigurationJSONs(
 	initialTextEmbeddingProviderConfigurationJSONs,
 	availableTextEmbeddingProviders
@@ -137,14 +110,6 @@ function resolveInitialTextEmbeddingProviderConfigurationJSONs(
 	);
 }
 
-/**
- * Gets the valid string that should be set for providerName. This covers cases
- * where the providerName should not be set to a provider that's been
- * blacklisted.
- * @param {object} availableProviders
- * @param {string} [providerName]
- * @returns {string}
- */
 function resolveProviderName(availableProviders, providerName) {
 	if (!providerName || !availableProviders[providerName]) {
 		return Object.keys(availableProviders)[0];
@@ -153,20 +118,6 @@ function resolveProviderName(availableProviders, providerName) {
 	return providerName;
 }
 
-/**
- * Formats the object into an array of label and value, important for inputs
- * that offer selection. If object is actually a flat array, this formats
- * the items into label-value pairs.
- *
- * Examples:
- * transformToLabelValueArray({en_US: 'English', es_ES: 'Spanish'})
- * => [{label: 'English', value: 'en_US'}, {label: 'Spanish', value: 'es_ES'}]
- * transformToLabelValueArray(['one', 'two'])
- * => [{label: 'one', value: 'one'}, {label: 'two', value: 'two'}]
- *
- * @param {Array|object} items
- * @return {Array}
- */
 const transformToLabelValueArray = (items = {}) => {
 	if (Array.isArray(items)) {
 		return items.map((item) =>
@@ -185,14 +136,6 @@ const transformToLabelValueArray = (items = {}) => {
 	}));
 };
 
-/**
- * Builds the provider Picker items (behind LPD-11319). A trailing "(Beta)" in
- * a provider's display name is surfaced as a separate badge instead of inline
- * text.
- *
- * @param {object} visibleTextEmbeddingProviders
- * @return {Array}
- */
 const getTextEmbeddingProviderPickerItems = (visibleTextEmbeddingProviders) => {
 	const betaSuffix = ` (${Liferay.Language.get('beta')})`;
 
@@ -224,15 +167,6 @@ const getTextEmbeddingProviderPickerItems = (visibleTextEmbeddingProviders) => {
 	);
 };
 
-/**
- * Filters the available text embedding providers down to the ones the
- * dropdown lists. The BYO-LLM provider (Elasticsearch Inference Endpoint) is
- * visible only when the `LPD-11319` feature flag is on.
- *
- * @param {object} availableTextEmbeddingProviders
- * @param {boolean} elasticsearchInferenceEndpointVisible
- * @return {object}
- */
 const getVisibleTextEmbeddingProviders = (
 	availableTextEmbeddingProviders,
 	elasticsearchInferenceEndpointVisible
@@ -250,11 +184,6 @@ const getVisibleTextEmbeddingProviders = (
 	);
 };
 
-/**
- * Form within semantic search settings page, configures text embedding provider and
- * indexing settings.
- * This can be found on: System Settings > Search Experiences > Semantic Search
- */
 export default function ({
 	availableEmbeddingVectorDimensions,
 	availableLanguageDisplayNames,
@@ -303,13 +232,6 @@ export default function ({
 
 	const [showSubmitWarningModal, setShowSubmitWarningModal] = useState(false);
 
-	/**
-	 * Validates the BYO-LLM service settings server-side before the endpoint
-	 * is created, so an invalid model or an out-of-range value is caught with
-	 * a per-field message instead of an unrecoverable Elasticsearch error.
-	 * Returns the field errors, or an empty object when the settings are
-	 * valid.
-	 */
 	const _validateInferenceEndpoint = async (
 		inferenceEndpointConfiguration
 	) => {
@@ -328,9 +250,6 @@ export default function ({
 				}
 			);
 
-			// On a non-OK status there are no per-field errors to show; let
-			// the subsequent create call surface the error inline.
-
 			if (!response.ok) {
 				return {};
 			}
@@ -348,11 +267,6 @@ export default function ({
 		}
 	};
 
-	/**
-	 * Creates the Liferay-managed inference endpoint in Elasticsearch from
-	 * the dynamic form values. Returns the error message, or an empty string
-	 * when the creation succeeds.
-	 */
 	const _createInferenceEndpoint = async (inferenceEndpointConfiguration) => {
 		try {
 			const response = await fetch('/o/search/v1.0/inference-endpoint', {
@@ -367,10 +281,6 @@ export default function ({
 			});
 
 			const responseData = await response.json();
-
-			// A 409 Conflict (single-endpoint constraint) and other error
-			// statuses carry the message in "title"; the success body carries
-			// any provider error in "errorMessage".
 
 			if (!response.ok) {
 				return (
@@ -401,15 +311,6 @@ export default function ({
 			providerName,
 			serviceSettings = {},
 		} = values.textEmbeddingProviderConfigurationJSONs[0];
-
-		// The Elasticsearch Inference Endpoint provider (BYO-LLM) does not go
-		// through the legacy provider validation: embeddings are computed
-		// server-side by Elasticsearch. When the endpoint configuration has
-		// changed, the save creates the Liferay-managed inference endpoint from
-		// the form values first and aborts with an inline error when
-		// Elasticsearch rejects the configuration. An unchanged configuration
-		// is skipped so an unrelated save does not recreate an existing
-		// endpoint.
 
 		if (
 			providerName ===
@@ -525,10 +426,8 @@ export default function ({
 			values.textEmbeddingProviderConfigurationJSONs?.map(
 				(textEmbeddingProviderConfigurationJSON) => {
 					const textEmbeddingProviderConfigurationJSONError = {
-						attributes: {}, // Sets empty values to avoid undefined errors when setting values.
+						attributes: {},
 					};
-
-					// Validate "Types" field.
 
 					if (
 						!textEmbeddingProviderConfigurationJSON.modelClassNames
@@ -541,8 +440,6 @@ export default function ({
 							);
 					}
 
-					// Validate "Languages" field.
-
 					if (
 						!textEmbeddingProviderConfigurationJSON.languageIds
 							?.length
@@ -553,12 +450,6 @@ export default function ({
 								[Liferay.Language.get('languages')]
 							);
 					}
-
-					// Validate "Max Character Count" field. The field is not
-					// rendered for the Elasticsearch Inference Endpoint
-					// provider, so it must not be validated there either, or
-					// an invalid value inherited from another provider would
-					// silently block the submission.
 
 					if (
 						textEmbeddingProviderConfigurationJSON.providerName !==
@@ -597,8 +488,6 @@ export default function ({
 								Liferay.Language.get('this-field-is-required');
 						}
 					}
-
-					// Validate the provider-specific fields.
 
 					getProviderFields(
 						textEmbeddingProviderConfigurationJSON.providerName
@@ -639,8 +528,6 @@ export default function ({
 				}
 			);
 
-		// Update "errors.textEmbeddingProviderConfigurationJSONs" only if it has errors
-
 		if (
 			textEmbeddingProviderConfigurationJSONsErrors.some(
 				({attributes, languageIds, modelClassNames}) =>
@@ -652,8 +539,6 @@ export default function ({
 			errors.textEmbeddingProviderConfigurationJSONs =
 				textEmbeddingProviderConfigurationJSONsErrors;
 		}
-
-		// Validate "Text Embedding Cache Timeout" field.
 
 		if (values.textEmbeddingCacheTimeout === '') {
 			errors.textEmbeddingCacheTimeout = Liferay.Language.get(
@@ -698,10 +583,6 @@ export default function ({
 
 	const _handleProviderNameChange = (index) => (value) => {
 		const prefix = `textEmbeddingProviderConfigurationJSONs[${index}]`;
-
-		// The BYO-LLM endpoint configuration belongs to the previously
-		// selected provider and must not survive a provider switch, or a later
-		// save would silently create the endpoint from the stale values.
 
 		formik.setStatus(undefined);
 
@@ -771,12 +652,6 @@ export default function ({
 		);
 	};
 
-	/**
-	 * Determines if the BYO-LLM inference endpoint configuration (the selected
-	 * service or any of its service settings) differs from the initially loaded
-	 * values. This gates endpoint creation on save so an unrelated change does
-	 * not recreate an endpoint that already exists.
-	 */
 	const _isInferenceEndpointDirty = () => {
 		const config =
 			formik.values.textEmbeddingProviderConfigurationJSONs?.[0];

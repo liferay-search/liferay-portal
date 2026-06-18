@@ -20,11 +20,6 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * Delegates text embedding to Elasticsearch via the configured inference
- * endpoint. Unlike the Liferay-integrated providers in this module, it never
- * calls an external LLM service from Liferay's side — Elasticsearch computes
- * the embeddings server-side through {@code semantic_text} fields.
- *
  * @author Rodrigo Guedes de Souza
  */
 @Component(enabled = false, service = TextEmbeddingProvider.class)

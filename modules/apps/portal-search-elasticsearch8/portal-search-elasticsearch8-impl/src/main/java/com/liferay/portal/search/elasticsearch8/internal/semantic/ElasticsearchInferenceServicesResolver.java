@@ -30,12 +30,6 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * Resolves the inference services that support the {@code text_embedding}
- * task type via the {@code GET _inference/_services/text_embedding} API. The
- * call goes through the low-level REST client because the bundled
- * Elasticsearch Java API client does not type this endpoint yet, and the raw
- * field schemas are passed through to the consumers anyway.
- *
  * @author Rodrigo Guedes de Souza
  */
 @Component(service = InferenceServicesResolver.class)

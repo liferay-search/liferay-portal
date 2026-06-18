@@ -6,17 +6,6 @@
 package com.liferay.portal.search.semantic;
 
 /**
- * Immutable description of an inference service that Elasticsearch supports,
- * as returned by the {@code GET _inference/_services} API.
- *
- * <p>
- * {@link #getConfigurationJSON()} returns the raw JSON of the service's field
- * schema (one entry per configurable field, with its label, type, and
- * required/sensitive markers), or {@code null} when Elasticsearch does not
- * expose a schema for the service — consumers fall back to a JSON
- * passthrough in that case.
- * </p>
- *
  * @author Rodrigo Guedes de Souza
  */
 public final class InferenceService {

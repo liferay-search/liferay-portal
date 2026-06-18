@@ -61,11 +61,6 @@ public class InferenceEndpointValidationResourceImpl
 
 		return new InferenceEndpointValidation() {
 			{
-
-				// The local variable name must not match the inherited
-				// "fieldErrors" field, or the lazy suppliers would capture
-				// the inherited null field instead of the enclosing local
-
 				setFieldErrors(() -> validationFieldErrors);
 				setValid(validationFieldErrors::isEmpty);
 			}

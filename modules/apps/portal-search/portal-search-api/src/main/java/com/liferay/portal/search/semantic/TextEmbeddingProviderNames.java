@@ -6,11 +6,6 @@
 package com.liferay.portal.search.semantic;
 
 /**
- * Holds the text embedding provider names that are cross-module contracts.
- * The Elasticsearch-provided (BYO-LLM) provider name is matched literally by
- * the inference endpoint name resolution and by the Semantic Search
- * configuration UI, so every consumer must reference the same constant.
- *
  * @author Rodrigo Guedes de Souza
  */
 public class TextEmbeddingProviderNames {

@@ -6,15 +6,6 @@
 package com.liferay.portal.search.semantic;
 
 /**
- * Immutable metadata of an Elasticsearch inference endpoint, as returned by
- * the {@code GET _inference/<id>} API.
- *
- * <p>
- * {@link #getModelId()} returns {@code null} and {@link #getDimensions()}
- * returns {@code 0} when the endpoint's service settings do not declare the
- * corresponding value.
- * </p>
- *
  * @author Rodrigo Guedes de Souza
  */
 public final class InferenceEndpointMetadata {
