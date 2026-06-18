@@ -93,11 +93,11 @@ public class ElasticsearchSearchEngineInformationTest {
 		Assert.assertFalse(
 			_elasticsearchSearchEngineInformation.isInferenceAPISupported());
 
-		Mockito.when(
-			_elasticsearchInferenceClient.get()
-		).thenReturn(
+		Mockito.doReturn(
 			Mockito.mock(GetInferenceResponse.class)
-		);
+		).when(
+			_elasticsearchInferenceClient
+		).get();
 
 		Mockito.when(
 			_elasticsearchLicenseClient.get()
