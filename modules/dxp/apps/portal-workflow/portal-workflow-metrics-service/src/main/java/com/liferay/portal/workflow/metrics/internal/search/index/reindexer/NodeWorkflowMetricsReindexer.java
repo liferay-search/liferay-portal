@@ -12,7 +12,6 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.CompanyConstants;
 import com.liferay.portal.kernel.module.service.Snapshot;
 import com.liferay.portal.search.capabilities.SearchCapabilities;
-import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
 import com.liferay.portal.search.index.IndexNameBuilder;
 import com.liferay.portal.search.index.SyncReindexManager;
 import com.liferay.portal.search.spi.reindexer.IndexReindexer;
@@ -89,18 +88,6 @@ public class NodeWorkflowMetricsReindexer
 			date = new Date();
 
 			Thread.sleep(1000);
-		}
-		else {
-			WorkflowMetricsIndex workflowMetricsIndex =
-				WorkflowMetricsIndex.toWorkflowMetricsIndex(getKey());
-
-			workflowMetricsIndex.removeIndex(
-				_searchCapabilities, _searchEngineAdapter, _indexNameBuilder,
-				companyId);
-
-			workflowMetricsIndex.createIndex(
-				_searchCapabilities, _searchEngineAdapter, _indexNameBuilder,
-				companyId);
 		}
 
 		_reindexIndexWithKaleoNode(companyId);
@@ -227,9 +214,6 @@ public class NodeWorkflowMetricsReindexer
 
 	@Reference
 	private SearchCapabilities _searchCapabilities;
-
-	@Reference
-	private SearchEngineAdapter _searchEngineAdapter;
 
 	@Reference
 	private WorkflowMetricsReindexStatusMessageSender
