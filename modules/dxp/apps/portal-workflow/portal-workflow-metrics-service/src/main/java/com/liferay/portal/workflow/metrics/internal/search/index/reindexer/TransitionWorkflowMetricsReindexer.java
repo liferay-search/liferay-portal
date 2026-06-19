@@ -12,6 +12,7 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.CompanyConstants;
 import com.liferay.portal.kernel.module.service.Snapshot;
 import com.liferay.portal.search.capabilities.SearchCapabilities;
+import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
 import com.liferay.portal.search.index.IndexNameBuilder;
 import com.liferay.portal.search.index.SyncReindexManager;
 import com.liferay.portal.search.spi.reindexer.IndexReindexer;
@@ -84,6 +85,11 @@ public class TransitionWorkflowMetricsReindexer
 			date = new Date();
 
 			Thread.sleep(1000);
+		}
+		else {
+			WorkflowMetricsIndex.createAllIndexes(
+				_searchCapabilities, _searchEngineAdapter, _indexNameBuilder,
+				companyId);
 		}
 
 		ActionableDynamicQuery actionableDynamicQuery =
@@ -166,6 +172,9 @@ public class TransitionWorkflowMetricsReindexer
 
 	@Reference
 	private SearchCapabilities _searchCapabilities;
+
+	@Reference
+	private SearchEngineAdapter _searchEngineAdapter;
 
 	@Reference
 	private TransitionWorkflowMetricsIndexer _transitionWorkflowMetricsIndexer;

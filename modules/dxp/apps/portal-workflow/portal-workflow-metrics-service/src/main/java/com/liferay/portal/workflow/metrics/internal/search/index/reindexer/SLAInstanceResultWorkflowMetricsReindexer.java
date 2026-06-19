@@ -90,6 +90,11 @@ public class SLAInstanceResultWorkflowMetricsReindexer
 
 			Thread.sleep(1000);
 		}
+		else {
+			WorkflowMetricsIndex.createAllIndexes(
+				_searchCapabilities, searchEngineAdapter, _indexNameBuilder,
+				companyId);
+		}
 
 		_creatDefaultDocuments(companyId);
 
