@@ -21,6 +21,7 @@ import com.liferay.asset.kernel.service.persistence.AssetEntryQuery;
 import com.liferay.asset.util.AssetHelper;
 import com.liferay.asset.util.AssetPublisherAddItemHolder;
 import com.liferay.dynamic.data.mapping.util.DDMIndexer;
+import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
@@ -64,9 +65,11 @@ import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.search.hits.SearchHit;
 import com.liferay.portal.search.hits.SearchHits;
 import com.liferay.portal.search.legacy.searcher.SearchRequestBuilderFactory;
+import com.liferay.portal.search.query.QueriesUtil;
 import com.liferay.portal.search.searcher.SearchResponse;
 import com.liferay.portal.search.searcher.Searcher;
 import com.liferay.portal.search.sort.FieldSort;
+import com.liferay.portal.search.sort.NestedSort;
 import com.liferay.portal.search.sort.SortOrder;
 import com.liferay.portal.search.sort.Sorts;
 
@@ -622,6 +625,35 @@ public class AssetHelperImpl implements AssetHelper {
 	private com.liferay.portal.search.sort.Sort _getSearchSort(
 			String orderByType, String sortField, Locale locale)
 		throws Exception {
+
+		if (sortField.startsWith("nestedFieldArray")) {
+			String[] sortFieldParts = StringUtil.split(
+				sortField, CharPool.PERIOD);
+
+			if (sortFieldParts.length == 3) {
+				SortOrder sortOrder = SortOrder.ASC;
+
+				if (Validator.isNotNull(orderByType) &&
+					!StringUtil.equalsIgnoreCase(orderByType, "asc")) {
+
+					sortOrder = SortOrder.DESC;
+				}
+
+				FieldSort fieldSort = _sorts.field(
+					sortFieldParts[0] + StringPool.PERIOD + sortFieldParts[2],
+					sortOrder);
+
+				NestedSort nestedSort = _sorts.nested(sortFieldParts[0]);
+
+				nestedSort.setFilterQuery(
+					QueriesUtil.term(
+						sortFieldParts[0] + ".fieldName", sortFieldParts[1]));
+
+				fieldSort.setNestedSort(nestedSort);
+
+				return fieldSort;
+			}
+		}
 
 		if (sortField.startsWith(DDMIndexer.DDM_FIELD_PREFIX)) {
 			SortOrder sortOrder = SortOrder.ASC;
