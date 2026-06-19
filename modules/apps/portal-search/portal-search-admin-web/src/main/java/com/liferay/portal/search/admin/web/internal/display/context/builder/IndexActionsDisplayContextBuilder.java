@@ -123,6 +123,14 @@ public class IndexActionsDisplayContextBuilder {
 		).build();
 	}
 
+	private String _getCategoryDisplayKey(String className) {
+		if (className.startsWith("com.liferay.portal.workflow.metrics.")) {
+			return "workflow";
+		}
+
+		return "search-tuning";
+	}
+
 	private Map<String, List<Object>> _getIndexersMap() {
 		Set<Indexer<?>> indexersSet = IndexerRegistryUtil.getIndexers();
 
@@ -204,11 +212,19 @@ public class IndexActionsDisplayContextBuilder {
 		return indexersMap;
 	}
 
-	private List<Object> _getIndexReindexerNames() {
-		List<Object> indexReindexerNames = new ArrayList<>();
+	private Map<String, List<Object>> _getIndexReindexerNames() {
+		Map<String, List<Object>> indexReindexerNamesMap = new TreeMap<>();
 
 		if (ListUtil.isNotNull(_indexReindexerClassNames)) {
 			for (String indexReindexerClassName : _indexReindexerClassNames) {
+				String categoryDisplayKey = _language.get(
+					_httpServletRequest,
+					_getCategoryDisplayKey(indexReindexerClassName));
+
+				List<Object> indexReindexerNames =
+					indexReindexerNamesMap.computeIfAbsent(
+						categoryDisplayKey, key -> new ArrayList<>());
+
 				indexReindexerNames.add(
 					HashMapBuilder.put(
 						"className", indexReindexerClassName
@@ -221,7 +237,7 @@ public class IndexActionsDisplayContextBuilder {
 			}
 		}
 
-		return indexReindexerNames;
+		return indexReindexerNamesMap;
 	}
 
 	private long[] _getInitialCompanyIds() {
