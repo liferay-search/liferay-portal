@@ -103,7 +103,7 @@ public class SLATaskResultWorkflowMetricsReindexer
 				companyId);
 		}
 
-		_creatDefaultDocuments(companyId);
+		_createDefaultDocuments(companyId);
 
 		if (_isExecuteSyncReindex(executionMode)) {
 			SyncReindexManager syncReindexManager =
@@ -121,7 +121,7 @@ public class SLATaskResultWorkflowMetricsReindexer
 	@Reference
 	protected SearchEngineAdapter searchEngineAdapter;
 
-	private void _creatDefaultDocuments(long companyId) {
+	private void _createDefaultDocuments(long companyId) {
 		if (!_hasIndex(
 				_indexNameBuilder.getIndexName(companyId) +
 					WorkflowMetricsIndexNameConstants.SUFFIX_NODE)) {
@@ -165,7 +165,7 @@ public class SLATaskResultWorkflowMetricsReindexer
 				new IndexDocumentRequest(
 					_slaTaskResultWorkflowMetricsIndexer.getIndexName(
 						companyId),
-					_slaTaskResultWorkflowMetricsIndexer.creatDefaultDocument(
+					_slaTaskResultWorkflowMetricsIndexer.createDefaultDocument(
 						companyId, document.getLong("nodeId"),
 						document.getLong("processId"),
 						document.getString("name"))));
