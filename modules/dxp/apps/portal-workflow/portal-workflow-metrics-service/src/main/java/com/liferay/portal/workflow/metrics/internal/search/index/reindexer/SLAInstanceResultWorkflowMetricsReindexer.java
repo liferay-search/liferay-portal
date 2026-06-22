@@ -95,7 +95,7 @@ public class SLAInstanceResultWorkflowMetricsReindexer
 			Thread.sleep(1000);
 		}
 
-		_creatDefaultDocuments(companyId);
+		_createDefaultDocuments(companyId);
 
 		WorkflowMetricsSLAProcessBackgroundTaskHelper
 			workflowMetricsSLAProcessBackgroundTaskHelper =
@@ -123,7 +123,7 @@ public class SLAInstanceResultWorkflowMetricsReindexer
 	@Reference
 	protected SearchEngineAdapter searchEngineAdapter;
 
-	private void _creatDefaultDocuments(long companyId) {
+	private void _createDefaultDocuments(long companyId) {
 		if (!_hasIndex(
 				_indexNameBuilder.getIndexName(companyId) +
 					WorkflowMetricsIndexNameConstants.SUFFIX_PROCESS)) {
@@ -166,7 +166,7 @@ public class SLAInstanceResultWorkflowMetricsReindexer
 					_slaInstanceResultWorkflowMetricsIndexer.getIndexName(
 						companyId),
 					_slaInstanceResultWorkflowMetricsIndexer.
-						creatDefaultDocument(
+						createDefaultDocument(
 							companyId, document.getLong("processId"))));
 		}
 

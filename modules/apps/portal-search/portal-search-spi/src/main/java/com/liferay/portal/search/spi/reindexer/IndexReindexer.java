@@ -30,12 +30,6 @@ public interface IndexReindexer {
 		reindex(companyId, ExecutionMode.valueOf(executionMode.toUpperCase()));
 	}
 
-	/*
-	create enum instead of String so that developers know what the
-	different modes are. this could maybe be in portal-search-api instead, and
-	also used for company index reindexing, but thats all internal, so probably
-	not really necessary
-	 */
 	public enum ExecutionMode {
 
 		CONCURRENT, FULL, SYNC
