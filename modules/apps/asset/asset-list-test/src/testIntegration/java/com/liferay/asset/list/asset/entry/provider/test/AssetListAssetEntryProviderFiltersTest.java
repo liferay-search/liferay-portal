@@ -6,12 +6,15 @@
 package com.liferay.asset.list.asset.entry.provider.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.asset.kernel.model.AssetCategory;
 import com.liferay.asset.kernel.model.AssetEntry;
+import com.liferay.asset.kernel.model.AssetVocabulary;
 import com.liferay.asset.kernel.service.persistence.AssetEntryQuery;
 import com.liferay.asset.list.asset.entry.provider.AssetListAssetEntryProvider;
 import com.liferay.asset.list.model.AssetListEntry;
 import com.liferay.asset.list.service.AssetListEntryLocalService;
 import com.liferay.asset.list.test.util.AssetListTestUtil;
+import com.liferay.asset.test.util.AssetTestUtil;
 import com.liferay.info.pagination.InfoPage;
 import com.liferay.journal.constants.JournalFolderConstants;
 import com.liferay.journal.model.JournalArticle;
@@ -143,6 +146,76 @@ public class AssetListAssetEntryProviderFiltersTest {
 			_objectDefinitionLocalService.updateTitleObjectFieldId(
 				_objectDefinition.getObjectDefinitionId(),
 				titleObjectField.getObjectFieldId());
+	}
+
+	@FeatureFlags(featureFlags = @FeatureFlag(value = "LPD-74731"))
+	@Test
+	public void testGetAssetEntriesInfoPageWithAssetCategoryFilters()
+		throws Exception {
+
+		AssetVocabulary assetVocabulary = AssetTestUtil.addVocabulary(
+			_group.getGroupId());
+
+		AssetCategory assetCategory1 = AssetTestUtil.addCategory(
+			_group.getGroupId(), assetVocabulary.getVocabularyId());
+		AssetCategory assetCategory2 = AssetTestUtil.addCategory(
+			_group.getGroupId(), assetVocabulary.getVocabularyId());
+
+		JournalArticle journalArticle1 = _addJournalArticle(
+			new long[] {assetCategory1.getCategoryId()}, null);
+		JournalArticle journalArticle2 = _addJournalArticle(
+			new long[] {assetCategory2.getCategoryId()}, null);
+
+		_assertFilteredJournalArticles(
+			_buildFiltersJSONArray(
+				_assetFilter(
+					"contains", "assetCategories", "any",
+					String.valueOf(assetCategory1.getCategoryId()))),
+			journalArticle1);
+		_assertFilteredJournalArticles(
+			_buildFiltersJSONArray(
+				_assetFilter(
+					"contains", "assetCategories", "any",
+					String.valueOf(assetCategory1.getCategoryId()),
+					String.valueOf(assetCategory2.getCategoryId()))),
+			journalArticle1, journalArticle2);
+		_assertFilteredJournalArticles(
+			_buildFiltersJSONArray(
+				_assetFilter(
+					"not-contains", "assetCategories", "any",
+					String.valueOf(assetCategory1.getCategoryId()))),
+			journalArticle2);
+	}
+
+	@FeatureFlags(featureFlags = @FeatureFlag(value = "LPD-74731"))
+	@Test
+	public void testGetAssetEntriesInfoPageWithAssetTagFilters()
+		throws Exception {
+
+		String tagName1 = StringUtil.toLowerCase(RandomTestUtil.randomString());
+		String tagName2 = StringUtil.toLowerCase(RandomTestUtil.randomString());
+
+		JournalArticle journalArticle1 = _addJournalArticle(
+			null, new String[] {tagName1});
+		JournalArticle journalArticle2 = _addJournalArticle(
+			null, new String[] {tagName2});
+		JournalArticle journalArticle3 = _addJournalArticle(
+			null, new String[] {tagName1, tagName2});
+
+		_assertFilteredJournalArticles(
+			_buildFiltersJSONArray(
+				_assetFilter("contains", "assetTags", "any", tagName1)),
+			journalArticle1, journalArticle3);
+		_assertFilteredJournalArticles(
+			_buildFiltersJSONArray(
+				_assetFilter(
+					"contains", "assetTags", "all", tagName1, tagName2)),
+			journalArticle3);
+
+		_assertFilteredJournalArticles(
+			_buildFiltersJSONArray(
+				_assetFilter("not-contains", "assetTags", "any", tagName1)),
+			journalArticle2);
 	}
 
 	@FeatureFlags(featureFlags = @FeatureFlag(value = "LPD-74731"))
@@ -289,6 +362,31 @@ public class AssetListAssetEntryProviderFiltersTest {
 			_buildFiltersJSONArray(
 				_filter("not-eq", "priority", String.valueOf(priority))),
 			objectEntry1);
+	}
+
+	@FeatureFlags(featureFlags = @FeatureFlag(value = "LPD-74731"))
+	@Test
+	public void testGetAssetEntriesInfoPageWithKeywordsFilter()
+		throws Exception {
+
+		String keyword = StringUtil.toLowerCase(RandomTestUtil.randomString());
+
+		ObjectEntry objectEntry1 = _addObjectEntry(
+			HashMapBuilder.<String, Serializable>put(
+				"title", keyword
+			).build());
+
+		ObjectEntry objectEntry2 = _addObjectEntry(
+			HashMapBuilder.<String, Serializable>put(
+				"title", StringUtil.toLowerCase(RandomTestUtil.randomString())
+			).build());
+
+		_assertFilteredClassPKs(
+			_buildFiltersJSONArray(_keywordsFilter("contains", keyword)),
+			objectEntry1);
+		_assertFilteredClassPKs(
+			_buildFiltersJSONArray(_keywordsFilter("not-contains", keyword)),
+			objectEntry2);
 	}
 
 	@FeatureFlags(featureFlags = @FeatureFlag(value = "LPD-74731"))
@@ -631,6 +729,30 @@ public class AssetListAssetEntryProviderFiltersTest {
 			assetListEntry.getAssetListEntryId());
 	}
 
+	private JournalArticle _addJournalArticle(
+			long[] assetCategoryIds, String[] assetTagNames)
+		throws Exception {
+
+		ServiceContext serviceContext =
+			ServiceContextTestUtil.getServiceContext(
+				_group.getGroupId(), TestPropsValues.getUserId());
+
+		if (assetCategoryIds != null) {
+			serviceContext.setAssetCategoryIds(assetCategoryIds);
+		}
+
+		if (assetTagNames != null) {
+			serviceContext.setAssetTagNames(assetTagNames);
+		}
+
+		return JournalTestUtil.addArticle(
+			_group.getGroupId(),
+			JournalFolderConstants.DEFAULT_PARENT_FOLDER_ID, 0,
+			RandomTestUtil.randomString(), StringPool.BLANK,
+			RandomTestUtil.randomString(), LocaleUtil.US, false, true,
+			serviceContext);
+	}
+
 	private ListTypeDefinition _addListTypeDefinition() throws Exception {
 		return _listTypeDefinitionLocalService.addListTypeDefinition(
 			null, TestPropsValues.getUserId(),
@@ -690,6 +812,45 @@ public class AssetListAssetEntryProviderFiltersTest {
 		Assert.assertTrue(
 			actualClassPKs.toString(),
 			actualClassPKs.containsAll(expectedClassPKs));
+	}
+
+	private void _assertFilteredJournalArticles(
+			JSONArray filtersJSONArray,
+			JournalArticle... expectedJournalArticles)
+		throws Exception {
+
+		List<Long> actualClassPKs = _getFilteredClassPKs(filtersJSONArray);
+
+		List<Long> expectedClassPKs = TransformUtil.transformToList(
+			expectedJournalArticles, JournalArticle::getResourcePrimKey);
+
+		Assert.assertEquals(
+			actualClassPKs.toString(), expectedClassPKs.size(),
+			actualClassPKs.size());
+		Assert.assertTrue(
+			actualClassPKs.toString(),
+			actualClassPKs.containsAll(expectedClassPKs));
+	}
+
+	private JSONObject _assetFilter(
+		String operatorName, String propertyName, String quantifier,
+		String... values) {
+
+		JSONObject[] valueJSONObjects = new JSONObject[values.length];
+
+		for (int i = 0; i < values.length; i++) {
+			valueJSONObjects[i] = JSONUtil.put("value", values[i]);
+		}
+
+		return JSONUtil.put(
+			"operatorName", operatorName
+		).put(
+			"propertyName", propertyName
+		).put(
+			"quantifier", quantifier
+		).put(
+			"value", JSONUtil.putAll((Object[])valueJSONObjects)
+		);
 	}
 
 	private JSONArray _buildFiltersJSONArray(JSONObject... filterJSONObjects) {
@@ -765,6 +926,16 @@ public class AssetListAssetEntryProviderFiltersTest {
 
 		return TransformUtil.transform(
 			infoPage.getPageItems(), AssetEntry::getClassPK);
+	}
+
+	private JSONObject _keywordsFilter(String operatorName, String value) {
+		return JSONUtil.put(
+			"operatorName", operatorName
+		).put(
+			"propertyName", "keywords"
+		).put(
+			"value", value
+		);
 	}
 
 	private JSONObject _picklistFilter(
