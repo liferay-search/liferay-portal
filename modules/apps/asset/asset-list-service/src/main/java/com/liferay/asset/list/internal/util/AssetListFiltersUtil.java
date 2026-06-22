@@ -23,6 +23,7 @@ import com.liferay.portal.kernel.search.MatchAllQuery;
 import com.liferay.portal.kernel.search.MatchQuery;
 import com.liferay.portal.kernel.search.NestedQuery;
 import com.liferay.portal.kernel.search.Query;
+import com.liferay.portal.kernel.search.StringQuery;
 import com.liferay.portal.kernel.search.TermQuery;
 import com.liferay.portal.kernel.search.TermRangeQuery;
 import com.liferay.portal.kernel.search.WildcardQuery;
@@ -261,6 +262,82 @@ public class AssetListFiltersUtil {
 		return format.format(calendar.getTime());
 	}
 
+	private static BooleanClause<Query> _toAssetFilterClause(
+		JSONObject jsonObject, String propertyName) {
+
+		Query valueQuery = _toAssetFilterValueQuery(jsonObject, propertyName);
+
+		if (valueQuery == null) {
+			return null;
+		}
+
+		String operatorName = GetterUtil.getString(
+			jsonObject.getString("operatorName"), "contains");
+
+		if (_isNegatedOperator(operatorName)) {
+			BooleanQuery booleanQuery = new BooleanQuery();
+
+			booleanQuery.add(new MatchAllQuery(), BooleanClauseOccur.MUST);
+			booleanQuery.add(valueQuery, BooleanClauseOccur.MUST_NOT);
+
+			return new BooleanClause<>(booleanQuery, BooleanClauseOccur.MUST);
+		}
+
+		return new BooleanClause<>(valueQuery, BooleanClauseOccur.MUST);
+	}
+
+	private static Query _toAssetFilterValueQuery(
+		JSONObject jsonObject, String propertyName) {
+
+		if (Objects.equals(propertyName, "keywords")) {
+			String value = jsonObject.getString("value");
+
+			if (Validator.isNull(value)) {
+				return null;
+			}
+
+			if (value.contains(StringPool.SPACE)) {
+				value = StringUtil.quote(value, CharPool.QUOTE);
+			}
+
+			return new StringQuery(value);
+		}
+
+		JSONArray valueJSONArray = jsonObject.getJSONArray("value");
+
+		if (JSONUtil.isEmpty(valueJSONArray)) {
+			return null;
+		}
+
+		BooleanQuery booleanQuery = new BooleanQuery();
+
+		BooleanClauseOccur booleanClauseOccur = BooleanClauseOccur.SHOULD;
+
+		if (Objects.equals(jsonObject.getString("quantifier"), "all")) {
+			booleanClauseOccur = BooleanClauseOccur.MUST;
+		}
+
+		String field = _assetFilterFieldNames.get(propertyName);
+
+		for (int i = 0; i < valueJSONArray.length(); i++) {
+			JSONObject itemJSONObject = valueJSONArray.getJSONObject(i);
+
+			String value = itemJSONObject.getString("value");
+
+			if (Validator.isNull(value)) {
+				continue;
+			}
+
+			booleanQuery.add(new TermQuery(field, value), booleanClauseOccur);
+		}
+
+		if (!booleanQuery.hasClauses()) {
+			return null;
+		}
+
+		return booleanQuery;
+	}
+
 	private static BooleanClause<Query> _toClause(
 		long companyId, JSONObject jsonObject, Locale locale) {
 
@@ -269,8 +346,15 @@ public class AssetListFiltersUtil {
 		}
 
 		if (_isCommonFieldRow(jsonObject)) {
-			return _toCommonFieldClause(
-				jsonObject, locale, jsonObject.getString("propertyName"));
+			String propertyName = jsonObject.getString("propertyName");
+
+			if (Objects.equals(propertyName, "keywords") ||
+				_assetFilterFieldNames.containsKey(propertyName)) {
+
+				return _toAssetFilterClause(jsonObject, propertyName);
+			}
+
+			return _toCommonFieldClause(jsonObject, locale, propertyName);
 		}
 
 		ObjectField objectField = _fetchObjectField(
@@ -639,6 +723,12 @@ public class AssetListFiltersUtil {
 		return new MatchQuery(subfield, value);
 	}
 
+	private static final Map<String, String> _assetFilterFieldNames =
+		HashMapBuilder.put(
+			"assetCategories", Field.ASSET_CATEGORY_IDS
+		).put(
+			"assetTags", Field.ASSET_TAG_NAMES + ".raw"
+		).build();
 	private static final Map<String, String> _commonFieldTypes =
 		HashMapBuilder.put(
 			Field.CREATE_DATE, "date"
