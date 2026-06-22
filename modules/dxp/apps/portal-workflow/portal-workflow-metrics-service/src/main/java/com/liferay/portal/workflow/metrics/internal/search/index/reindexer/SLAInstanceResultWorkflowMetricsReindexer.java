@@ -83,17 +83,16 @@ public class SLAInstanceResultWorkflowMetricsReindexer
 			return;
 		}
 
+		WorkflowMetricsIndex.createAllIndexes(
+			_searchCapabilities, searchEngineAdapter, _indexNameBuilder,
+			companyId);
+
 		Date date = null;
 
 		if (_isExecuteSyncReindex(executionMode)) {
 			date = new Date();
 
 			Thread.sleep(1000);
-		}
-		else {
-			WorkflowMetricsIndex.createAllIndexes(
-				_searchCapabilities, searchEngineAdapter, _indexNameBuilder,
-				companyId);
 		}
 
 		_creatDefaultDocuments(companyId);
