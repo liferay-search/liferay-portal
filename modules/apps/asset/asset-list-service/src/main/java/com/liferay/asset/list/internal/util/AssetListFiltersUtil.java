@@ -265,9 +265,9 @@ public class AssetListFiltersUtil {
 	private static BooleanClause<Query> _toAssetFilterClause(
 		JSONObject jsonObject, String propertyName) {
 
-		Query valueQuery = _toAssetFilterValueQuery(jsonObject, propertyName);
+		Query query = _toAssetFilterValueQuery(jsonObject, propertyName);
 
-		if (valueQuery == null) {
+		if (query == null) {
 			return null;
 		}
 
@@ -278,12 +278,12 @@ public class AssetListFiltersUtil {
 			BooleanQuery booleanQuery = new BooleanQuery();
 
 			booleanQuery.add(new MatchAllQuery(), BooleanClauseOccur.MUST);
-			booleanQuery.add(valueQuery, BooleanClauseOccur.MUST_NOT);
+			booleanQuery.add(query, BooleanClauseOccur.MUST_NOT);
 
 			return new BooleanClause<>(booleanQuery, BooleanClauseOccur.MUST);
 		}
 
-		return new BooleanClause<>(valueQuery, BooleanClauseOccur.MUST);
+		return new BooleanClause<>(query, BooleanClauseOccur.MUST);
 	}
 
 	private static Query _toAssetFilterValueQuery(
