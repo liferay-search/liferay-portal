@@ -168,20 +168,20 @@ public class AssetListAssetEntryProviderFiltersTest {
 
 		_assertFilteredJournalArticles(
 			_buildFiltersJSONArray(
-				_assetFilter(
+				_buildAssetFilter(
 					"contains", "assetCategories", "any",
 					String.valueOf(assetCategory1.getCategoryId()))),
 			journalArticle1);
 		_assertFilteredJournalArticles(
 			_buildFiltersJSONArray(
-				_assetFilter(
+				_buildAssetFilter(
 					"contains", "assetCategories", "any",
 					String.valueOf(assetCategory1.getCategoryId()),
 					String.valueOf(assetCategory2.getCategoryId()))),
 			journalArticle1, journalArticle2);
 		_assertFilteredJournalArticles(
 			_buildFiltersJSONArray(
-				_assetFilter(
+				_buildAssetFilter(
 					"not-contains", "assetCategories", "any",
 					String.valueOf(assetCategory1.getCategoryId()))),
 			journalArticle2);
@@ -204,17 +204,18 @@ public class AssetListAssetEntryProviderFiltersTest {
 
 		_assertFilteredJournalArticles(
 			_buildFiltersJSONArray(
-				_assetFilter("contains", "assetTags", "any", tagName1)),
+				_buildAssetFilter("contains", "assetTags", "any", tagName1)),
 			journalArticle1, journalArticle3);
 		_assertFilteredJournalArticles(
 			_buildFiltersJSONArray(
-				_assetFilter(
+				_buildAssetFilter(
 					"contains", "assetTags", "all", tagName1, tagName2)),
 			journalArticle3);
 
 		_assertFilteredJournalArticles(
 			_buildFiltersJSONArray(
-				_assetFilter("not-contains", "assetTags", "any", tagName1)),
+				_buildAssetFilter(
+					"not-contains", "assetTags", "any", tagName1)),
 			journalArticle2);
 	}
 
@@ -383,10 +384,11 @@ public class AssetListAssetEntryProviderFiltersTest {
 			).build());
 
 		_assertFilteredClassPKs(
-			_buildFiltersJSONArray(_keywordsFilter("contains", keyword)),
+			_buildFiltersJSONArray(_buildKeywordsFilter("contains", keyword)),
 			objectEntry1);
 		_assertFilteredClassPKs(
-			_buildFiltersJSONArray(_keywordsFilter("not-contains", keyword)),
+			_buildFiltersJSONArray(
+				_buildKeywordsFilter("not-contains", keyword)),
 			objectEntry2);
 	}
 
@@ -838,7 +840,7 @@ public class AssetListAssetEntryProviderFiltersTest {
 			actualClassPKs.containsAll(expectedClassPKs));
 	}
 
-	private JSONObject _assetFilter(
+	private JSONObject _buildAssetFilter(
 		String operatorName, String propertyName, String quantifier,
 		String... values) {
 
@@ -890,6 +892,16 @@ public class AssetListAssetEntryProviderFiltersTest {
 
 	private JSONArray _buildFiltersJSONArray(JSONObject... filterJSONObjects) {
 		return JSONUtil.putAll((Object[])filterJSONObjects);
+	}
+
+	private JSONObject _buildKeywordsFilter(String operatorName, String value) {
+		return JSONUtil.put(
+			"operatorName", operatorName
+		).put(
+			"propertyName", "keywords"
+		).put(
+			"value", value
+		);
 	}
 
 	private JSONObject _buildPicklistFilter(
@@ -957,16 +969,6 @@ public class AssetListAssetEntryProviderFiltersTest {
 
 		return TransformUtil.transform(
 			infoPage.getPageItems(), AssetEntry::getClassPK);
-	}
-
-	private JSONObject _keywordsFilter(String operatorName, String value) {
-		return JSONUtil.put(
-			"operatorName", operatorName
-		).put(
-			"propertyName", "keywords"
-		).put(
-			"value", value
-		);
 	}
 
 	private static final String _LIST_TYPE_ENTRY_KEY_1 =
