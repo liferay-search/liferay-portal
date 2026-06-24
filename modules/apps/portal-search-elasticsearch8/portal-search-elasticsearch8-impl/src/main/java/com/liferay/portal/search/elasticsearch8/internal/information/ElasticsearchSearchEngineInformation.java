@@ -10,6 +10,12 @@ import co.elastic.clients.elasticsearch._types.ElasticsearchVersionInfo;
 import co.elastic.clients.elasticsearch._types.Time;
 import co.elastic.clients.elasticsearch._types.TimeUnit;
 import co.elastic.clients.elasticsearch.core.InfoResponse;
+import co.elastic.clients.elasticsearch.inference.ElasticsearchInferenceClient;
+import co.elastic.clients.elasticsearch.license.ElasticsearchLicenseClient;
+import co.elastic.clients.elasticsearch.license.GetLicenseResponse;
+import co.elastic.clients.elasticsearch.license.LicenseStatus;
+import co.elastic.clients.elasticsearch.license.LicenseType;
+import co.elastic.clients.elasticsearch.license.get.LicenseInformation;
 import co.elastic.clients.elasticsearch.nodes.ElasticsearchNodesClient;
 import co.elastic.clients.elasticsearch.nodes.NodesInfoRequest;
 import co.elastic.clients.elasticsearch.nodes.NodesInfoResponse;
@@ -181,6 +187,19 @@ public class ElasticsearchSearchEngineInformation
 		return vendor;
 	}
 
+	@Override
+	public boolean isInferenceAPISupported() {
+		LicenseType licenseType = _getActiveLicenseType();
+
+		if ((licenseType != LicenseType.Trial) &&
+			(licenseType != LicenseType.Enterprise)) {
+
+			return false;
+		}
+
+		return _isInferenceAPIAvailable();
+	}
+
 	@Reference
 	protected ConfigurationAdmin configurationAdmin;
 
@@ -309,6 +328,48 @@ public class ElasticsearchSearchEngineInformation
 			elasticsearchConnection, connectionInformationList, labels);
 	}
 
+	private LicenseType _getActiveLicenseType() {
+		try {
+			ElasticsearchClient elasticsearchClient =
+				elasticsearchConnectionManager.getElasticsearchClient();
+
+			ElasticsearchLicenseClient elasticsearchLicenseClient =
+				elasticsearchClient.license();
+
+			GetLicenseResponse getLicenseResponse =
+				elasticsearchLicenseClient.get();
+
+			if (getLicenseResponse == null) {
+				return null;
+			}
+
+			LicenseInformation license = getLicenseResponse.license();
+
+			if ((license == null) ||
+				(license.status() != LicenseStatus.Active)) {
+
+				return null;
+			}
+
+			return license.type();
+		}
+		catch (Exception exception) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(
+					"Unable to query the Elasticsearch \"_license\" API: " +
+						exception.getMessage());
+			}
+
+			if (_log.isDebugEnabled()) {
+				_log.debug(
+					"Unable to query the Elasticsearch \"_license\" API",
+					exception);
+			}
+
+			return null;
+		}
+	}
+
 	private String _getClusterNodesString(
 		ElasticsearchClient elasticsearchClient) {
 
@@ -385,6 +446,39 @@ public class ElasticsearchSearchEngineInformation
 			infoResponse.version();
 
 		return elasticsearchVersionInfo.number();
+	}
+
+	private boolean _isInferenceAPIAvailable() {
+		try {
+			ElasticsearchClient elasticsearchClient =
+				elasticsearchConnectionManager.getElasticsearchClient();
+
+			if (elasticsearchClient == null) {
+				return false;
+			}
+
+			ElasticsearchInferenceClient elasticsearchInferenceClient =
+				elasticsearchClient.inference();
+
+			elasticsearchInferenceClient.get();
+
+			return true;
+		}
+		catch (Exception exception) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(
+					"Unable to query the Elasticsearch \"_inference\" API: " +
+						exception.getMessage());
+			}
+
+			if (_log.isDebugEnabled()) {
+				_log.debug(
+					"Unable to query the Elasticsearch \"_inference\" API",
+					exception);
+			}
+
+			return false;
+		}
 	}
 
 	private void _setClusterAndNodeInformation(

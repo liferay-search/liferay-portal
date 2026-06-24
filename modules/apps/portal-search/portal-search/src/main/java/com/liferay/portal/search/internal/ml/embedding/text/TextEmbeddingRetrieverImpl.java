@@ -22,6 +22,7 @@ import com.liferay.portal.search.ml.embedding.text.TextEmbeddingRetriever;
 import com.liferay.portal.search.ml.embedding.util.TextExtractionUtil;
 import com.liferay.portal.search.rest.dto.v1_0.EmbeddingProviderConfiguration;
 import com.liferay.portal.search.rest.text.embeddings.configuration.TextEmbeddingProvider;
+import com.liferay.portal.search.semantic.TextEmbeddingProviderNames;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -179,16 +180,24 @@ public class TextEmbeddingRetrieverImpl implements TextEmbeddingRetriever {
 				_disabledProviderNames, (String[])disabledProviders);
 		}
 
-		_serviceRegistration = bundleContext.registerService(
-			FeatureFlagListener.class,
-			(companyId, featureFlagKey, enabled) ->
-				_betaTextEmbeddingsEnabled = enabled,
-			MapUtil.singletonDictionary("feature.flag.key", "LPS-122920"));
-		_serviceRegistration = bundleContext.registerService(
-			FeatureFlagListener.class,
-			(companyId, featureFlagKey, enabled) ->
-				_devTextEmbeddingsEnabled = enabled,
-			MapUtil.singletonDictionary("feature.flag.key", "LPD-31789"));
+		_serviceRegistrations.add(
+			bundleContext.registerService(
+				FeatureFlagListener.class,
+				(companyId, featureFlagKey, enabled) ->
+					_betaTextEmbeddingsEnabled = enabled,
+				MapUtil.singletonDictionary("feature.flag.key", "LPS-122920")));
+		_serviceRegistrations.add(
+			bundleContext.registerService(
+				FeatureFlagListener.class,
+				(companyId, featureFlagKey, enabled) ->
+					_devTextEmbeddingsEnabled = enabled,
+				MapUtil.singletonDictionary("feature.flag.key", "LPD-31789")));
+		_serviceRegistrations.add(
+			bundleContext.registerService(
+				FeatureFlagListener.class,
+				(companyId, featureFlagKey, enabled) ->
+					_externalTextEmbeddingsEnabled = enabled,
+				MapUtil.singletonDictionary("feature.flag.key", "LPD-11319")));
 
 		_textEmbeddingProviderServiceTrackerList =
 			ServiceTrackerListFactory.open(
@@ -197,7 +206,11 @@ public class TextEmbeddingRetrieverImpl implements TextEmbeddingRetriever {
 
 	@Deactivate
 	protected void deactivate() {
-		_serviceRegistration.unregister();
+		for (ServiceRegistration<?> serviceRegistration :
+				_serviceRegistrations) {
+
+			serviceRegistration.unregister();
+		}
 	}
 
 	protected EmbeddingProviderConfiguration getEmbeddingProviderConfiguration(
@@ -283,6 +296,10 @@ public class TextEmbeddingRetrieverImpl implements TextEmbeddingRetriever {
 			return false;
 		}
 
+		if (_externalProviders.contains(textEmbeddingProviderName)) {
+			return _externalTextEmbeddingsEnabled;
+		}
+
 		if (_devProviders.contains(textEmbeddingProviderName)) {
 			return _devTextEmbeddingsEnabled;
 		}
@@ -300,17 +317,21 @@ public class TextEmbeddingRetrieverImpl implements TextEmbeddingRetriever {
 		TextEmbeddingRetrieverImpl.class);
 
 	private static final List<String> _devProviders = List.of("vertex-ai");
+	private static final List<String> _externalProviders = List.of(
+		TextEmbeddingProviderNames.ELASTICSEARCH_INFERENCE_ENDPOINT);
 	private static final List<String> _supportedProviders = List.of("openai");
 
 	private volatile boolean _betaTextEmbeddingsEnabled;
 	private boolean _devTextEmbeddingsEnabled;
 	private final List<String> _disabledProviderNames = new ArrayList<>();
+	private volatile boolean _externalTextEmbeddingsEnabled;
 
 	@Reference
 	private SemanticSearchConfigurationProvider
 		_semanticSearchConfigurationProvider;
 
-	private ServiceRegistration<?> _serviceRegistration;
+	private final List<ServiceRegistration<?>> _serviceRegistrations =
+		new ArrayList<>();
 	private ServiceTrackerList<TextEmbeddingProvider>
 		_textEmbeddingProviderServiceTrackerList;
 

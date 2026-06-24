@@ -12,8 +12,10 @@ import com.liferay.portal.kernel.service.ResourceActionLocalService;
 import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
 import com.liferay.portal.kernel.service.RoleLocalService;
 import com.liferay.portal.search.rest.dto.v1_0.EmbeddingModel;
+import com.liferay.portal.search.rest.dto.v1_0.InferenceService;
 import com.liferay.portal.search.rest.dto.v1_0.SearchResult;
 import com.liferay.portal.search.rest.resource.v1_0.EmbeddingModelResource;
+import com.liferay.portal.search.rest.resource.v1_0.InferenceServiceResource;
 import com.liferay.portal.search.rest.resource.v1_0.SearchResultResource;
 import com.liferay.portal.vulcan.accept.language.AcceptLanguage;
 import com.liferay.portal.vulcan.graphql.annotation.GraphQLField;
@@ -48,6 +50,14 @@ public class Query {
 			embeddingModelResourceComponentServiceObjects;
 	}
 
+	public static void setInferenceServiceResourceComponentServiceObjects(
+		ComponentServiceObjects<InferenceServiceResource>
+			inferenceServiceResourceComponentServiceObjects) {
+
+		_inferenceServiceResourceComponentServiceObjects =
+			inferenceServiceResourceComponentServiceObjects;
+	}
+
 	public static void setSearchResultResourceComponentServiceObjects(
 		ComponentServiceObjects<SearchResultResource>
 			searchResultResourceComponentServiceObjects) {
@@ -75,6 +85,22 @@ public class Query {
 			embeddingModelResource -> new EmbeddingModelPage(
 				embeddingModelResource.getEmbeddingEmbeddingModelsPage(
 					provider, search, Pagination.of(page, pageSize))));
+	}
+
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {inferenceServices{items {__}, page, pageSize, totalCount}}"}' -u 'test@liferay.com:test'
+	 */
+	@GraphQLField(
+		description = "Retrieves the inference services that Elasticsearch supports for the text_embedding task type."
+	)
+	public InferenceServicePage inferenceServices() throws Exception {
+		return _applyComponentServiceObjects(
+			_inferenceServiceResourceComponentServiceObjects,
+			this::_populateResourceContext,
+			inferenceServiceResource -> new InferenceServicePage(
+				inferenceServiceResource.getInferenceServicesPage()));
 	}
 
 	/**
@@ -129,6 +155,39 @@ public class Query {
 
 		@GraphQLField
 		protected java.util.Collection<EmbeddingModel> items;
+
+		@GraphQLField
+		protected long lastPage;
+
+		@GraphQLField
+		protected long page;
+
+		@GraphQLField
+		protected long pageSize;
+
+		@GraphQLField
+		protected long totalCount;
+
+	}
+
+	@GraphQLName("InferenceServicePage")
+	public class InferenceServicePage {
+
+		public InferenceServicePage(Page inferenceServicePage) {
+			actions = inferenceServicePage.getActions();
+
+			items = inferenceServicePage.getItems();
+			lastPage = inferenceServicePage.getLastPage();
+			page = inferenceServicePage.getPage();
+			pageSize = inferenceServicePage.getPageSize();
+			totalCount = inferenceServicePage.getTotalCount();
+		}
+
+		@GraphQLField
+		protected Map<String, Map<String, String>> actions;
+
+		@GraphQLField
+		protected java.util.Collection<InferenceService> items;
 
 		@GraphQLField
 		protected long lastPage;
@@ -217,6 +276,26 @@ public class Query {
 	}
 
 	private void _populateResourceContext(
+			InferenceServiceResource inferenceServiceResource)
+		throws Exception {
+
+		inferenceServiceResource.setContextAcceptLanguage(_acceptLanguage);
+		inferenceServiceResource.setContextCompany(_company);
+		inferenceServiceResource.setContextHttpServletRequest(
+			_httpServletRequest);
+		inferenceServiceResource.setContextHttpServletResponse(
+			_httpServletResponse);
+		inferenceServiceResource.setContextUriInfo(_uriInfo);
+		inferenceServiceResource.setContextUser(_user);
+		inferenceServiceResource.setGroupLocalService(_groupLocalService);
+		inferenceServiceResource.setResourceActionLocalService(
+			_resourceActionLocalService);
+		inferenceServiceResource.setResourcePermissionLocalService(
+			_resourcePermissionLocalService);
+		inferenceServiceResource.setRoleLocalService(_roleLocalService);
+	}
+
+	private void _populateResourceContext(
 			SearchResultResource searchResultResource)
 		throws Exception {
 
@@ -237,6 +316,8 @@ public class Query {
 
 	private static ComponentServiceObjects<EmbeddingModelResource>
 		_embeddingModelResourceComponentServiceObjects;
+	private static ComponentServiceObjects<InferenceServiceResource>
+		_inferenceServiceResourceComponentServiceObjects;
 	private static ComponentServiceObjects<SearchResultResource>
 		_searchResultResourceComponentServiceObjects;
 
@@ -257,4 +338,4 @@ public class Query {
 	private com.liferay.portal.kernel.model.User _user;
 
 }
-// LIFERAY-REST-BUILDER-HASH:-1282770054
+// LIFERAY-REST-BUILDER-HASH:1737096535
