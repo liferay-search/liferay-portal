@@ -25,10 +25,13 @@ import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.search.capabilities.ExternalEmbeddingCapabilityGate;
 import com.liferay.portal.search.elasticsearch8.internal.index.constants.IndexMappingsConstants;
+import com.liferay.portal.search.elasticsearch8.internal.index.util.SemanticTextMappingsUtil;
 import com.liferay.portal.search.elasticsearch8.internal.util.JsonpUtil;
 import com.liferay.portal.search.elasticsearch8.internal.util.ResourceUtil;
 import com.liferay.portal.search.engine.SearchEngineInformation;
+import com.liferay.portal.search.semantic.SemanticFieldNameResolver;
 import com.liferay.portal.search.spi.index.configuration.contributor.helper.MappingsHelper;
 
 import jakarta.json.spi.JsonProvider;
@@ -39,8 +42,11 @@ import java.io.InputStream;
 
 import java.nio.charset.StandardCharsets;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author André de Oliveira
@@ -53,12 +59,34 @@ public class MappingsHelperImpl implements MappingsHelper {
 		String overrideMappings,
 		SearchEngineInformation searchEngineInformation) {
 
+		this(
+			Collections.emptySet(), elasticsearchIndicesClient, null, indexName,
+			null, null, jsonFactory, jsonpMapper, Collections.emptySet(),
+			overrideMappings, searchEngineInformation, null);
+	}
+
+	public MappingsHelperImpl(
+		Set<String> assetTypes,
+		ElasticsearchIndicesClient elasticsearchIndicesClient,
+		ExternalEmbeddingCapabilityGate externalEmbeddingCapabilityGate,
+		String indexName, InferenceEndpointValidator inferenceEndpointValidator,
+		String inferenceId, JSONFactory jsonFactory, JsonpMapper jsonpMapper,
+		Set<Locale> locales, String overrideMappings,
+		SearchEngineInformation searchEngineInformation,
+		SemanticFieldNameResolver semanticFieldNameResolver) {
+
+		_assetTypes = assetTypes;
 		_elasticsearchIndicesClient = elasticsearchIndicesClient;
+		_externalEmbeddingCapabilityGate = externalEmbeddingCapabilityGate;
 		_indexName = indexName;
+		_inferenceEndpointValidator = inferenceEndpointValidator;
+		_inferenceId = inferenceId;
 		_jsonFactory = jsonFactory;
 		_jsonpMapper = jsonpMapper;
+		_locales = locales;
 		_overrideMappings = overrideMappings;
 		_searchEngineInformation = searchEngineInformation;
+		_semanticFieldNameResolver = semanticFieldNameResolver;
 	}
 
 	public void putDefaultOrOverrideMappings() {
@@ -94,6 +122,25 @@ public class MappingsHelperImpl implements MappingsHelper {
 		catch (IOException ioException) {
 			throw new RuntimeException(ioException);
 		}
+	}
+
+	private String _addSemanticTextMappings(String mappings) {
+		JSONObject jsonObject = _createJSONObject(mappings);
+
+		JSONObject propertiesJSONObject = jsonObject.getJSONObject(
+			"properties");
+
+		if (propertiesJSONObject == null) {
+			propertiesJSONObject = _jsonFactory.createJSONObject();
+
+			jsonObject.put("properties", propertiesJSONObject);
+		}
+
+		SemanticTextMappingsUtil.putSemanticTextProperties(
+			_assetTypes, _inferenceId, _locales, _semanticFieldNameResolver,
+			propertiesJSONObject);
+
+		return jsonObject.toString();
 	}
 
 	private String _addTextEmbeddingDynamicTemplates(String mappings) {
@@ -163,9 +210,25 @@ public class MappingsHelperImpl implements MappingsHelper {
 			return _removeLegacyDocumentType(_overrideMappings);
 		}
 
-		String defaultMappings = _addTextEmbeddingDynamicTemplates(
-			ResourceUtil.getResourceAsString(
-				getClass(), IndexMappingsConstants.INDEX_MAPPINGS_FILE_NAME));
+		String defaultMappings = ResourceUtil.getResourceAsString(
+			getClass(), IndexMappingsConstants.INDEX_MAPPINGS_FILE_NAME);
+
+		if (_isElasticsearchProvidedCapabilityAvailable()) {
+			if (_inferenceEndpointValidator != null) {
+				_inferenceEndpointValidator.validate(_inferenceId);
+			}
+			else if (_log.isDebugEnabled()) {
+				_log.debug(
+					"Skipping the inference endpoint validation for index " +
+						_indexName + " because no validator was given");
+			}
+
+			defaultMappings = _addSemanticTextMappings(defaultMappings);
+		}
+		else {
+			defaultMappings = _addTextEmbeddingDynamicTemplates(
+				defaultMappings);
+		}
 
 		return _getMappingsJSONObjectWithMergedDynamicTemplates(
 			StringPool.BLANK, defaultMappings);
@@ -186,6 +249,18 @@ public class MappingsHelperImpl implements MappingsHelper {
 				putMappingsJSONObject.getJSONArray("dynamic_templates")));
 
 		return putMappingsJSONObject;
+	}
+
+	private boolean _isElasticsearchProvidedCapabilityAvailable() {
+		if ((_externalEmbeddingCapabilityGate == null) ||
+			(_semanticFieldNameResolver == null) || _assetTypes.isEmpty() ||
+			_locales.isEmpty() || Validator.isBlank(_inferenceId)) {
+
+			return false;
+		}
+
+		return _externalEmbeddingCapabilityGate.check(
+		).isAvailable();
 	}
 
 	private JSONArray _mergeDynamicTemplates(
@@ -289,11 +364,18 @@ public class MappingsHelperImpl implements MappingsHelper {
 	private static final Log _log = LogFactoryUtil.getLog(
 		MappingsHelperImpl.class);
 
+	private final Set<String> _assetTypes;
 	private final ElasticsearchIndicesClient _elasticsearchIndicesClient;
+	private final ExternalEmbeddingCapabilityGate
+		_externalEmbeddingCapabilityGate;
 	private final String _indexName;
+	private final InferenceEndpointValidator _inferenceEndpointValidator;
+	private final String _inferenceId;
 	private final JSONFactory _jsonFactory;
 	private final JsonpMapper _jsonpMapper;
+	private final Set<Locale> _locales;
 	private final String _overrideMappings;
 	private final SearchEngineInformation _searchEngineInformation;
+	private final SemanticFieldNameResolver _semanticFieldNameResolver;
 
 }

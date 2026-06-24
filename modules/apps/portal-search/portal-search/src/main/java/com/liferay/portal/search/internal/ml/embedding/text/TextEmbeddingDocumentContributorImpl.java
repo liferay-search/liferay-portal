@@ -6,8 +6,6 @@
 package com.liferay.portal.search.internal.ml.embedding.text;
 
 import com.liferay.object.model.ObjectEntry;
-import com.liferay.petra.string.StringBundler;
-import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -30,6 +28,7 @@ import com.liferay.portal.search.engine.SearchEngineInformation;
 import com.liferay.portal.search.ml.embedding.text.TextEmbeddingDocumentContributor;
 import com.liferay.portal.search.ml.embedding.text.TextEmbeddingRetriever;
 import com.liferay.portal.search.rest.dto.v1_0.EmbeddingProviderConfiguration;
+import com.liferay.portal.search.semantic.SemanticFieldNameResolver;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -193,8 +192,8 @@ public class TextEmbeddingDocumentContributorImpl
 	protected String getTextEmbeddingFieldName(
 		int dimensions, String languageId) {
 
-		return StringBundler.concat(
-			"text_embedding_", dimensions, StringPool.UNDERLINE, languageId);
+		return _semanticFieldNameResolver.resolveLiferayProvidedFieldName(
+			LocaleUtil.fromLanguageId(languageId, false), dimensions);
 	}
 
 	protected <T extends BaseModel<T>> boolean isIndexableStatus(T model) {
@@ -274,6 +273,9 @@ public class TextEmbeddingDocumentContributorImpl
 
 	@Reference
 	private SearchEngineInformation _searchEngineInformation;
+
+	@Reference
+	private SemanticFieldNameResolver _semanticFieldNameResolver;
 
 	@Reference
 	private TextEmbeddingRetriever _textEmbeddingRetriever;
