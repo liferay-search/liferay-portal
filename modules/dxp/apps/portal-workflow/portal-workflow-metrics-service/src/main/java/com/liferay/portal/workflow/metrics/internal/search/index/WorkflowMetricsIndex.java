@@ -107,7 +107,10 @@ public enum WorkflowMetricsIndex {
 			searchEngineAdapter.execute(createIndexRequest);
 		}
 		catch (Exception exception) {
-			_log.error(exception);
+			throw new PortalException(
+				"Unable to create index " +
+					getIndexName(indexNameBuilder, _indexNameSuffix, companyId),
+				exception);
 		}
 
 		return true;
