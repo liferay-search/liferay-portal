@@ -11,8 +11,11 @@ import com.liferay.fragment.service.FragmentEntryLinkLocalService;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 import com.liferay.petra.function.transform.TransformUtil;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.dao.search.DisplayTerms;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutConstants;
 import com.liferay.portal.kernel.model.LayoutTypePortlet;
@@ -289,13 +292,51 @@ public class PortletSharedSearchRequestImpl
 	private Set<String> _getSegmentExperiencePortletIds(
 		Layout layout, long segmentsExperienceId) {
 
+		Set<String> segmentExperiencePortletIds =
+			_getSegmentExperiencePortletIds(
+				layout.getGroupId(), segmentsExperienceId, layout.getPlid());
+
+		if (!segmentExperiencePortletIds.isEmpty()) {
+			return segmentExperiencePortletIds;
+		}
+
+		long defaultSegmentsExperienceId =
+			_segmentsExperienceLocalService.fetchDefaultSegmentsExperienceId(
+				layout.getPlid());
+
+		if (defaultSegmentsExperienceId == segmentsExperienceId) {
+			return segmentExperiencePortletIds;
+		}
+
+		// A resolved segments experience that contributes no widgets points to
+		// a stale or unresolved experience rather than an intentionally empty
+		// one. Fall back to the page's default segments experience so the
+		// shared search still gathers the page's widgets, such as Search
+		// Options, instead of silently rendering an empty page.
+
+		if (_log.isWarnEnabled()) {
+			_log.warn(
+				StringBundler.concat(
+					"Segments experience ", segmentsExperienceId,
+					" contributed no widgets to the shared search for layout ",
+					layout.getPlid(),
+					", falling back to default segments experience ",
+					defaultSegmentsExperienceId));
+		}
+
+		return _getSegmentExperiencePortletIds(
+			layout.getGroupId(), defaultSegmentsExperienceId, layout.getPlid());
+	}
+
+	private Set<String> _getSegmentExperiencePortletIds(
+		long groupId, long segmentsExperienceId, long plid) {
+
 		Set<String> segmentExperiencePortletIds = new HashSet<>();
 
 		for (FragmentEntryLink fragmentEntryLink :
 				_fragmentEntryLinkLocalService.
 					getFragmentEntryLinksBySegmentsExperienceId(
-						layout.getGroupId(), segmentsExperienceId,
-						layout.getPlid())) {
+						groupId, segmentsExperienceId, plid)) {
 
 			segmentExperiencePortletIds.addAll(
 				_portletRegistry.getFragmentEntryLinkPortletIds(
@@ -326,6 +367,9 @@ public class PortletSharedSearchRequestImpl
 		return new PortletSharedSearchResponseImpl(
 			searchResponseImpl, portletSharedRequestHelper);
 	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		PortletSharedSearchRequestImpl.class);
 
 	@Reference
 	private FragmentEntryLinkLocalService _fragmentEntryLinkLocalService;
