@@ -14,6 +14,7 @@ import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.search.web.portlet.shared.search.PortletSharedSearchRequest;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
+import com.liferay.segments.service.SegmentsExperienceLocalService;
 
 import java.util.List;
 import java.util.Set;
@@ -45,6 +46,77 @@ public class PortletSharedSearchRequestImplTest {
 				"_getSegmentExperiencePortletIds",
 				new Class<?>[] {Layout.class, long.class},
 				Mockito.mock(Layout.class), RandomTestUtil.randomLong()));
+	}
+
+	@Test
+	public void testGetSegmentExperiencePortletIdsWhenResolvedExperienceIsEmpty() {
+		long groupId = RandomTestUtil.randomLong();
+		long plid = RandomTestUtil.randomLong();
+		long defaultSegmentsExperienceId = RandomTestUtil.randomLong();
+		long segmentsExperienceId = RandomTestUtil.randomLong();
+
+		FragmentEntryLinkLocalService fragmentEntryLinkLocalService =
+			Mockito.mock(FragmentEntryLinkLocalService.class);
+
+		Mockito.doReturn(
+			List.of()
+		).when(
+			fragmentEntryLinkLocalService
+		).getFragmentEntryLinksBySegmentsExperienceId(
+			groupId, segmentsExperienceId, plid
+		);
+
+		Mockito.doReturn(
+			List.of(_mockFragmentEntryLink("searchOptions"))
+		).when(
+			fragmentEntryLinkLocalService
+		).getFragmentEntryLinksBySegmentsExperienceId(
+			groupId, defaultSegmentsExperienceId, plid
+		);
+
+		SegmentsExperienceLocalService segmentsExperienceLocalService =
+			Mockito.mock(SegmentsExperienceLocalService.class);
+
+		Mockito.doReturn(
+			defaultSegmentsExperienceId
+		).when(
+			segmentsExperienceLocalService
+		).fetchDefaultSegmentsExperienceId(
+			plid
+		);
+
+		PortletSharedSearchRequest portletSharedSearchRequest =
+			new PortletSharedSearchRequestImpl();
+
+		ReflectionTestUtil.setFieldValue(
+			portletSharedSearchRequest, "_fragmentEntryLinkLocalService",
+			fragmentEntryLinkLocalService);
+		ReflectionTestUtil.setFieldValue(
+			portletSharedSearchRequest, "_portletRegistry", _portletRegistry);
+		ReflectionTestUtil.setFieldValue(
+			portletSharedSearchRequest, "_segmentsExperienceLocalService",
+			segmentsExperienceLocalService);
+
+		Layout layout = Mockito.mock(Layout.class);
+
+		Mockito.doReturn(
+			groupId
+		).when(
+			layout
+		).getGroupId();
+
+		Mockito.doReturn(
+			plid
+		).when(
+			layout
+		).getPlid();
+
+		Assert.assertEquals(
+			Set.of("searchOptions_INSTANCE_rdna"),
+			ReflectionTestUtil.<Set<String>>invoke(
+				portletSharedSearchRequest, "_getSegmentExperiencePortletIds",
+				new Class<?>[] {Layout.class, long.class}, layout,
+				segmentsExperienceId));
 	}
 
 	private FragmentEntryLink _mockFragmentEntryLink(String portletName) {
