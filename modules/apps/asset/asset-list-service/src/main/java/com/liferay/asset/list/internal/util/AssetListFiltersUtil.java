@@ -265,25 +265,10 @@ public class AssetListFiltersUtil {
 	private static BooleanClause<Query> _toAssetFilterClause(
 		JSONObject jsonObject, String propertyName) {
 
-		Query query = _toAssetFilterValueQuery(jsonObject, propertyName);
-
-		if (query == null) {
-			return null;
-		}
-
-		String operatorName = GetterUtil.getString(
-			jsonObject.getString("operatorName"), "contains");
-
-		if (_isNegatedOperator(operatorName)) {
-			BooleanQuery booleanQuery = new BooleanQuery();
-
-			booleanQuery.add(new MatchAllQuery(), BooleanClauseOccur.MUST);
-			booleanQuery.add(query, BooleanClauseOccur.MUST_NOT);
-
-			return new BooleanClause<>(booleanQuery, BooleanClauseOccur.MUST);
-		}
-
-		return new BooleanClause<>(query, BooleanClauseOccur.MUST);
+		return _toBooleanClause(
+			_toAssetFilterValueQuery(jsonObject, propertyName),
+			GetterUtil.getString(
+				jsonObject.getString("operatorName"), "contains"));
 	}
 
 	private static Query _toAssetFilterValueQuery(
@@ -336,6 +321,25 @@ public class AssetListFiltersUtil {
 		}
 
 		return booleanQuery;
+	}
+
+	private static BooleanClause<Query> _toBooleanClause(
+		Query query, String operatorName) {
+
+		if (query == null) {
+			return null;
+		}
+
+		if (_isNegatedOperator(operatorName)) {
+			BooleanQuery booleanQuery = new BooleanQuery();
+
+			booleanQuery.add(new MatchAllQuery(), BooleanClauseOccur.MUST);
+			booleanQuery.add(query, BooleanClauseOccur.MUST_NOT);
+
+			return new BooleanClause<>(booleanQuery, BooleanClauseOccur.MUST);
+		}
+
+		return new BooleanClause<>(query, BooleanClauseOccur.MUST);
 	}
 
 	private static BooleanClause<Query> _toClause(
@@ -397,25 +401,12 @@ public class AssetListFiltersUtil {
 		String operatorName = GetterUtil.getString(
 			jsonObject.getString("operatorName"), "contains");
 
-		Query query = _toCommonFieldValueQuery(
-			field, jsonObject,
-			_localizedCommonFieldNames.contains(propertyName), operatorName,
-			type);
-
-		if (query == null) {
-			return null;
-		}
-
-		if (_isNegatedOperator(operatorName)) {
-			BooleanQuery booleanQuery = new BooleanQuery();
-
-			booleanQuery.add(new MatchAllQuery(), BooleanClauseOccur.MUST);
-			booleanQuery.add(query, BooleanClauseOccur.MUST_NOT);
-
-			return new BooleanClause<>(booleanQuery, BooleanClauseOccur.MUST);
-		}
-
-		return new BooleanClause<>(query, BooleanClauseOccur.MUST);
+		return _toBooleanClause(
+			_toCommonFieldValueQuery(
+				field, jsonObject,
+				_localizedCommonFieldNames.contains(propertyName), operatorName,
+				type),
+			operatorName);
 	}
 
 	private static Query _toCommonFieldRangeQuery(
