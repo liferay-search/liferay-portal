@@ -9,8 +9,8 @@ import com.liferay.list.type.service.ListTypeEntryLocalServiceUtil;
 import com.liferay.object.constants.ObjectFieldConstants;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectField;
+import com.liferay.object.model.bag.ObjectFieldBag;
 import com.liferay.object.service.ObjectDefinitionLocalServiceUtil;
-import com.liferay.object.service.ObjectFieldLocalServiceUtil;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
@@ -20,6 +20,7 @@ import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.search.Field;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 
 import java.util.List;
@@ -66,8 +67,7 @@ public class AssetListTypePropertiesUtil {
 					"items",
 					_getItemsJSONArray(
 						classNameIds[i], classTypeId, locale,
-						ObjectFieldLocalServiceUtil.getObjectFields(
-							objectDefinition.getObjectDefinitionId()))
+						_getIndexedObjectFields(objectDefinition))
 				).put(
 					"label", objectDefinition.getLabel(locale, true)
 				));
@@ -176,6 +176,20 @@ public class AssetListTypePropertiesUtil {
 			));
 	}
 
+	private static List<ObjectField> _getIndexedObjectFields(
+		ObjectDefinition objectDefinition) {
+
+		ObjectFieldBag objectFieldBag = objectDefinition.getObjectFieldBag();
+
+		if (objectDefinition.isModifiableAndSystem()) {
+			return ListUtil.filter(
+				objectFieldBag.getIndexedObjectFields(),
+				objectField -> !objectField.isMetadata());
+		}
+
+		return objectFieldBag.getNonsystemIndexedObjectFields();
+	}
+
 	private static JSONArray _getItemsJSONArray(
 		long classNameId, long classTypeId, Locale locale,
 		List<ObjectField> objectFields) {
@@ -183,10 +197,6 @@ public class AssetListTypePropertiesUtil {
 		return JSONUtil.toJSONArray(
 			objectFields,
 			objectField -> {
-				if (objectField.isMetadata()) {
-					return null;
-				}
-
 				String type = _toType(objectField.getBusinessType());
 
 				if (type == null) {
