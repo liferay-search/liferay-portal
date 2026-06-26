@@ -14,7 +14,6 @@ import com.liferay.portal.json.JSONFactoryImpl;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
-import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
 
@@ -65,7 +64,7 @@ public class AssetListOrderByColumnsUtilTest {
 		Assert.assertEquals(
 			orderByColumn,
 			AssetListOrderByColumnsUtil.toOrderByColumn(
-				_COMPANY_ID, orderByColumn, LocaleUtil.US));
+				_COMPANY_ID, orderByColumn));
 	}
 
 	@Test
@@ -83,7 +82,25 @@ public class AssetListOrderByColumnsUtilTest {
 		Assert.assertEquals(
 			"nestedFieldArray.name.value_keyword",
 			AssetListOrderByColumnsUtil.toOrderByColumn(
-				_COMPANY_ID, _buildOrderByColumn("name"), LocaleUtil.US));
+				_COMPANY_ID, _buildOrderByColumn("name")));
+	}
+
+	@Test
+	public void testToOrderByColumnResolvesLocalizedTextField() {
+		ObjectField objectField = _setUpObjectField(
+			ObjectFieldConstants.BUSINESS_TYPE_TEXT,
+			ObjectFieldConstants.DB_TYPE_STRING, "title");
+
+		Mockito.when(
+			objectField.isLocalized()
+		).thenReturn(
+			true
+		);
+
+		Assert.assertEquals(
+			"nestedFieldArray.title.value_keyword_lowercase",
+			AssetListOrderByColumnsUtil.toOrderByColumn(
+				_COMPANY_ID, _buildOrderByColumn("title")));
 	}
 
 	@Test
@@ -95,7 +112,7 @@ public class AssetListOrderByColumnsUtilTest {
 		Assert.assertEquals(
 			"nestedFieldArray.amount.value_double",
 			AssetListOrderByColumnsUtil.toOrderByColumn(
-				_COMPANY_ID, _buildOrderByColumn("amount"), LocaleUtil.US));
+				_COMPANY_ID, _buildOrderByColumn("amount")));
 	}
 
 	@Test
@@ -103,7 +120,7 @@ public class AssetListOrderByColumnsUtilTest {
 		Assert.assertEquals(
 			"priority",
 			AssetListOrderByColumnsUtil.toOrderByColumn(
-				_COMPANY_ID, "priority", LocaleUtil.US));
+				_COMPANY_ID, "priority"));
 	}
 
 	private static void _setUpJSONFactoryUtil() {

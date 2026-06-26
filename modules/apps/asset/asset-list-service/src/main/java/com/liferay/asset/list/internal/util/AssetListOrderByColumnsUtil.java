@@ -16,16 +16,12 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.Validator;
 
-import java.util.Locale;
-
 /**
  * @author Joshua Cords
  */
 public class AssetListOrderByColumnsUtil {
 
-	public static String toOrderByColumn(
-		long companyId, String orderByColumn, Locale locale) {
-
+	public static String toOrderByColumn(long companyId, String orderByColumn) {
 		if (Validator.isNull(orderByColumn) ||
 			!orderByColumn.startsWith(StringPool.OPEN_CURLY_BRACE)) {
 
@@ -55,8 +51,7 @@ public class AssetListOrderByColumnsUtil {
 			return orderByColumn;
 		}
 
-		String subfield = AssetListObjectFieldUtil.getSubfield(
-			locale, objectField);
+		String subfield = AssetListObjectFieldUtil.getSortSubfield(objectField);
 
 		return StringBundler.concat(
 			"nestedFieldArray.", objectField.getName(), StringPool.PERIOD,
