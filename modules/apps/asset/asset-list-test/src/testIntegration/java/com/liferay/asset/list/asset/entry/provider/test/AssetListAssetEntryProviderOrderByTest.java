@@ -37,6 +37,7 @@ import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.util.UnicodePropertiesBuilder;
 import com.liferay.portal.test.rule.FeatureFlag;
 import com.liferay.portal.test.rule.FeatureFlags;
@@ -48,6 +49,7 @@ import com.liferay.segments.constants.SegmentsEntryConstants;
 import java.io.Serializable;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -134,6 +136,58 @@ public class AssetListAssetEntryProviderOrderByTest {
 
 	@FeatureFlags(featureFlags = @FeatureFlag(value = "LPD-74731"))
 	@Test
+	public void testGetAssetEntriesInfoPageOrderedByDisplayDateCommonField()
+		throws Exception {
+
+		long now = System.currentTimeMillis();
+
+		ObjectEntry objectEntry1 = _addObjectEntry(
+			HashMapBuilder.<String, Serializable>put(
+				"displayDate", new Date(now - Time.DAY)
+			).build());
+		ObjectEntry objectEntry2 = _addObjectEntry(
+			HashMapBuilder.<String, Serializable>put(
+				"displayDate", new Date(now - (3 * Time.DAY))
+			).build());
+		ObjectEntry objectEntry3 = _addObjectEntry(
+			HashMapBuilder.<String, Serializable>put(
+				"displayDate", new Date(now - (2 * Time.DAY))
+			).build());
+
+		_assertOrderedObjectEntries(
+			"displayDate", "ASC", objectEntry2, objectEntry3, objectEntry1);
+		_assertOrderedObjectEntries(
+			"displayDate", "DESC", objectEntry1, objectEntry3, objectEntry2);
+	}
+
+	@FeatureFlags(featureFlags = @FeatureFlag(value = "LPD-74731"))
+	@Test
+	public void testGetAssetEntriesInfoPageOrderedByExpirationDateCommonField()
+		throws Exception {
+
+		long now = System.currentTimeMillis();
+
+		ObjectEntry objectEntry1 = _addObjectEntry(
+			HashMapBuilder.<String, Serializable>put(
+				"expirationDate", new Date(now + (30 * Time.DAY))
+			).build());
+		ObjectEntry objectEntry2 = _addObjectEntry(
+			HashMapBuilder.<String, Serializable>put(
+				"expirationDate", new Date(now + (10 * Time.DAY))
+			).build());
+		ObjectEntry objectEntry3 = _addObjectEntry(
+			HashMapBuilder.<String, Serializable>put(
+				"expirationDate", new Date(now + (20 * Time.DAY))
+			).build());
+
+		_assertOrderedObjectEntries(
+			"expirationDate", "ASC", objectEntry2, objectEntry3, objectEntry1);
+		_assertOrderedObjectEntries(
+			"expirationDate", "DESC", objectEntry1, objectEntry3, objectEntry2);
+	}
+
+	@FeatureFlags(featureFlags = @FeatureFlag(value = "LPD-74731"))
+	@Test
 	public void testGetAssetEntriesInfoPageOrderedByIntegerField()
 		throws Exception {
 
@@ -156,6 +210,32 @@ public class AssetListAssetEntryProviderOrderByTest {
 		_assertOrderedObjectEntries(
 			_buildOrderByColumn("priority"), "DESC", objectEntry1, objectEntry3,
 			objectEntry2);
+	}
+
+	@FeatureFlags(featureFlags = @FeatureFlag(value = "LPD-74731"))
+	@Test
+	public void testGetAssetEntriesInfoPageOrderedByReviewDateCommonField()
+		throws Exception {
+
+		long now = System.currentTimeMillis();
+
+		ObjectEntry objectEntry1 = _addObjectEntry(
+			HashMapBuilder.<String, Serializable>put(
+				"reviewDate", new Date(now + (3 * Time.DAY))
+			).build());
+		ObjectEntry objectEntry2 = _addObjectEntry(
+			HashMapBuilder.<String, Serializable>put(
+				"reviewDate", new Date(now + Time.DAY)
+			).build());
+		ObjectEntry objectEntry3 = _addObjectEntry(
+			HashMapBuilder.<String, Serializable>put(
+				"reviewDate", new Date(now + (2 * Time.DAY))
+			).build());
+
+		_assertOrderedObjectEntries(
+			"reviewDate", "ASC", objectEntry2, objectEntry3, objectEntry1);
+		_assertOrderedObjectEntries(
+			"reviewDate", "DESC", objectEntry1, objectEntry3, objectEntry2);
 	}
 
 	@FeatureFlags(featureFlags = @FeatureFlag(value = "LPD-74731"))
