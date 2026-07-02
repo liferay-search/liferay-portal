@@ -699,8 +699,10 @@ public class AssetHelperImpl implements AssetHelper {
 		int sortType = Sort.STRING_TYPE;
 
 		if (fieldType.equals(Field.CREATE_DATE) ||
+			fieldType.equals(Field.DISPLAY_DATE) ||
 			fieldType.equals(Field.EXPIRATION_DATE) ||
 			fieldType.equals(Field.PUBLISH_DATE) ||
+			fieldType.equals(Field.REVIEW_DATE) ||
 			fieldType.equals("modifiedDate")) {
 
 			sortType = Sort.LONG_TYPE;
