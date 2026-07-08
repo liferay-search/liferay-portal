@@ -631,17 +631,9 @@ public class AssetHelperImpl implements AssetHelper {
 				sortField, CharPool.PERIOD);
 
 			if (sortFieldParts.length == 3) {
-				SortOrder sortOrder = SortOrder.ASC;
-
-				if (Validator.isNotNull(orderByType) &&
-					!StringUtil.equalsIgnoreCase(orderByType, "asc")) {
-
-					sortOrder = SortOrder.DESC;
-				}
-
 				FieldSort fieldSort = _sorts.field(
 					sortFieldParts[0] + StringPool.PERIOD + sortFieldParts[2],
-					sortOrder);
+					_toSortOrder(orderByType));
 
 				NestedSort nestedSort = _sorts.nested(sortFieldParts[0]);
 
@@ -656,16 +648,8 @@ public class AssetHelperImpl implements AssetHelper {
 		}
 
 		if (sortField.startsWith(DDMIndexer.DDM_FIELD_PREFIX)) {
-			SortOrder sortOrder = SortOrder.ASC;
-
-			if (Validator.isNotNull(orderByType) &&
-				!StringUtil.equalsIgnoreCase(orderByType, "asc")) {
-
-				sortOrder = SortOrder.DESC;
-			}
-
 			return _ddmIndexer.createDDMStructureFieldSort(
-				sortField, locale, sortOrder);
+				sortField, locale, _toSortOrder(orderByType));
 		}
 
 		Sort sort = SortFactoryUtil.getSort(
@@ -838,6 +822,16 @@ public class AssetHelperImpl implements AssetHelper {
 		);
 
 		searchContext.setStart(start);
+	}
+
+	private SortOrder _toSortOrder(String orderByType) {
+		if (Validator.isNotNull(orderByType) &&
+			!StringUtil.equalsIgnoreCase(orderByType, "asc")) {
+
+			return SortOrder.DESC;
+		}
+
+		return SortOrder.ASC;
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
