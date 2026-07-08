@@ -36,68 +36,20 @@ public class AssetListObjectFieldUtil {
 	}
 
 	public static String getSortSubfield(ObjectField objectField) {
-		if (objectField.isIndexedAsKeyword()) {
-			return "nestedFieldArray.value_keyword";
-		}
+		String subfield = _getCommonSubfield(objectField);
 
-		String dbType = objectField.getDBType();
-
-		if (ObjectFieldConstants.DB_TYPE_BIG_DECIMAL.equals(dbType) ||
-			ObjectFieldConstants.DB_TYPE_DOUBLE.equals(dbType)) {
-
-			return "nestedFieldArray.value_double";
-		}
-
-		if (ObjectFieldConstants.DB_TYPE_BOOLEAN.equals(dbType)) {
-			return "nestedFieldArray.value_boolean";
-		}
-
-		if (ObjectFieldConstants.DB_TYPE_DATE.equals(dbType) ||
-			ObjectFieldConstants.DB_TYPE_DATE_TIME.equals(dbType)) {
-
-			return "nestedFieldArray.value_date";
-		}
-
-		if (ObjectFieldConstants.DB_TYPE_INTEGER.equals(dbType)) {
-			return "nestedFieldArray.value_integer";
-		}
-
-		if (ObjectFieldConstants.DB_TYPE_LONG.equals(dbType)) {
-			return "nestedFieldArray.value_long";
+		if (subfield != null) {
+			return subfield;
 		}
 
 		return "nestedFieldArray.value_keyword_lowercase";
 	}
 
 	public static String getSubfield(Locale locale, ObjectField objectField) {
-		if (objectField.isIndexedAsKeyword()) {
-			return "nestedFieldArray.value_keyword";
-		}
+		String subfield = _getCommonSubfield(objectField);
 
-		String dbType = objectField.getDBType();
-
-		if (ObjectFieldConstants.DB_TYPE_BIG_DECIMAL.equals(dbType) ||
-			ObjectFieldConstants.DB_TYPE_DOUBLE.equals(dbType)) {
-
-			return "nestedFieldArray.value_double";
-		}
-
-		if (ObjectFieldConstants.DB_TYPE_BOOLEAN.equals(dbType)) {
-			return "nestedFieldArray.value_boolean";
-		}
-
-		if (ObjectFieldConstants.DB_TYPE_DATE.equals(dbType) ||
-			ObjectFieldConstants.DB_TYPE_DATE_TIME.equals(dbType)) {
-
-			return "nestedFieldArray.value_date";
-		}
-
-		if (ObjectFieldConstants.DB_TYPE_INTEGER.equals(dbType)) {
-			return "nestedFieldArray.value_integer";
-		}
-
-		if (ObjectFieldConstants.DB_TYPE_LONG.equals(dbType)) {
-			return "nestedFieldArray.value_long";
+		if (subfield != null) {
+			return subfield;
 		}
 
 		if (objectField.isLocalized()) {
@@ -123,6 +75,40 @@ public class AssetListObjectFieldUtil {
 		return ObjectDefinitionLocalServiceUtil.
 			fetchObjectDefinitionByClassName(
 				companyId, PortalUtil.getClassName(classNameId));
+	}
+
+	private static String _getCommonSubfield(ObjectField objectField) {
+		if (objectField.isIndexedAsKeyword()) {
+			return "nestedFieldArray.value_keyword";
+		}
+
+		String dbType = objectField.getDBType();
+
+		if (ObjectFieldConstants.DB_TYPE_BIG_DECIMAL.equals(dbType) ||
+			ObjectFieldConstants.DB_TYPE_DOUBLE.equals(dbType)) {
+
+			return "nestedFieldArray.value_double";
+		}
+
+		if (ObjectFieldConstants.DB_TYPE_BOOLEAN.equals(dbType)) {
+			return "nestedFieldArray.value_boolean";
+		}
+
+		if (ObjectFieldConstants.DB_TYPE_DATE.equals(dbType) ||
+			ObjectFieldConstants.DB_TYPE_DATE_TIME.equals(dbType)) {
+
+			return "nestedFieldArray.value_date";
+		}
+
+		if (ObjectFieldConstants.DB_TYPE_INTEGER.equals(dbType)) {
+			return "nestedFieldArray.value_integer";
+		}
+
+		if (ObjectFieldConstants.DB_TYPE_LONG.equals(dbType)) {
+			return "nestedFieldArray.value_long";
+		}
+
+		return null;
 	}
 
 }
