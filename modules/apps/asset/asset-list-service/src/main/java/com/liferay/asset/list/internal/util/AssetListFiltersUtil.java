@@ -664,7 +664,6 @@ public class AssetListFiltersUtil {
 		).put(
 			"assetTags", Field.ASSET_TAG_NAMES + ".raw"
 		).build();
-
 	private static final Map<String, String> _commonFieldTypes =
 		HashMapBuilder.put(
 			Field.CREATE_DATE, _TYPE_DATE

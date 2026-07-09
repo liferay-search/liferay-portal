@@ -118,7 +118,8 @@ public class AssetListFiltersUtilTest {
 			_runAndAssertNegatedCommonFieldRow(
 				_buildAssetFilter(
 					"not-contains", "assetCategories", "any",
-					JSONUtil.putAll(_buildPicklistValueJSONObject(categoryId1)))),
+					JSONUtil.putAll(
+						_buildPicklistValueJSONObject(categoryId1)))),
 			categoryId1);
 
 		BooleanClause[] booleanClauses =
