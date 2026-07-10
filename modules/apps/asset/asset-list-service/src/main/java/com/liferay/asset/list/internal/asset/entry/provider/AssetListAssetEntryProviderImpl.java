@@ -18,6 +18,7 @@ import com.liferay.asset.kernel.service.persistence.AssetEntryQuery;
 import com.liferay.asset.list.asset.entry.provider.AssetListAssetEntryProvider;
 import com.liferay.asset.list.constants.AssetListEntryTypeConstants;
 import com.liferay.asset.list.internal.configuration.AssetListConfiguration;
+import com.liferay.asset.list.internal.util.AssetListFiltersMigrationUtil;
 import com.liferay.asset.list.internal.util.AssetListFiltersUtil;
 import com.liferay.asset.list.model.AssetListEntry;
 import com.liferay.asset.list.model.AssetListEntryAssetEntryRel;
@@ -157,11 +158,17 @@ public class AssetListAssetEntryProviderImpl
 
 		AssetEntryQuery assetEntryQuery = new AssetEntryQuery();
 
-		_setCategoriesAndTagsAndKeywords(
-			assetEntryQuery, unicodeProperties,
-			_getAssetCategoryIds(unicodeProperties),
-			_getAssetTagNames(unicodeProperties),
-			_getKeywords(unicodeProperties));
+		if (!FeatureFlagManagerUtil.isEnabled(
+				assetListEntry.getCompanyId(), "LPD-74731") ||
+			!AssetListFiltersMigrationUtil.rendersInNewFilterUI(
+				assetListEntry.getCompanyId(), unicodeProperties)) {
+
+			_setCategoriesAndTagsAndKeywords(
+				assetEntryQuery, unicodeProperties,
+				_getAssetCategoryIds(unicodeProperties),
+				_getAssetTagNames(unicodeProperties),
+				_getKeywords(unicodeProperties));
+		}
 
 		long[] groupIds = GetterUtil.getLongValues(
 			StringUtil.split(
