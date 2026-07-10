@@ -5,12 +5,15 @@
 
 package com.liferay.asset.list.internal.util;
 
+import com.liferay.object.model.ObjectDefinition;
+import com.liferay.object.service.ObjectDefinitionLocalServiceUtil;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.UnicodePropertiesBuilder;
@@ -22,6 +25,34 @@ import java.util.Objects;
  * @author Felipe Lorenz
  */
 public class AssetListFiltersMigrationUtil {
+
+	public static boolean rendersInNewFilterUI(
+		long companyId, UnicodeProperties unicodeProperties) {
+
+		String anyAssetType = unicodeProperties.getProperty("anyAssetType");
+
+		if (Objects.equals(anyAssetType, "false") ||
+			Objects.equals(anyAssetType, "true")) {
+
+			return true;
+		}
+
+		long classNameId = GetterUtil.getLong(anyAssetType);
+
+		if (classNameId <= 0) {
+			return false;
+		}
+
+		ObjectDefinition objectDefinition =
+			ObjectDefinitionLocalServiceUtil.fetchObjectDefinitionByClassName(
+				companyId, PortalUtil.getClassName(classNameId));
+
+		if ((objectDefinition != null) && objectDefinition.isCMS()) {
+			return true;
+		}
+
+		return false;
+	}
 
 	public static String toFiltersTypeSettings(String typeSettings) {
 		if (Validator.isNull(typeSettings)) {
