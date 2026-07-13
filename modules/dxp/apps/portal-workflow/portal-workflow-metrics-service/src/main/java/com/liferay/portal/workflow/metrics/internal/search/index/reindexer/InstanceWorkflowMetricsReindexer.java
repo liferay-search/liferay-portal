@@ -161,6 +161,10 @@ public class InstanceWorkflowMetricsReindexer
 					companyId),
 				date, Collections.emptySet());
 		}
+
+		if (executionMode == ExecutionMode.FULL) {
+			_processWorkflowMetricsReindexer.reindex(companyId, executionMode);
+		}
 	}
 
 	private boolean _isExecuteSyncReindex(ExecutionMode executionMode) {
@@ -194,6 +198,9 @@ public class InstanceWorkflowMetricsReindexer
 
 	@Reference
 	private KaleoInstanceLocalService _kaleoInstanceLocalService;
+
+	@Reference(target = "(workflow.metrics.reindexer.key=process)")
+	private IndexReindexer _processWorkflowMetricsReindexer;
 
 	@Reference
 	private SearchCapabilities _searchCapabilities;

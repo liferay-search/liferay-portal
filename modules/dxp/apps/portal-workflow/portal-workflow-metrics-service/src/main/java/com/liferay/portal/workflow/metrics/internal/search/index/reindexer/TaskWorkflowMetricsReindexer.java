@@ -160,6 +160,10 @@ public class TaskWorkflowMetricsReindexer
 					WorkflowMetricsIndexNameConstants.SUFFIX_TASK, companyId),
 				date, Collections.emptySet());
 		}
+
+		if (executionMode == ExecutionMode.FULL) {
+			_nodeWorkflowMetricsReindexer.reindex(companyId, executionMode);
+		}
 	}
 
 	private boolean _isExecuteSyncReindex(ExecutionMode executionMode) {
@@ -194,6 +198,9 @@ public class TaskWorkflowMetricsReindexer
 	@Reference
 	private KaleoTaskInstanceTokenLocalService
 		_kaleoTaskInstanceTokenLocalService;
+
+	@Reference(target = "(workflow.metrics.reindexer.key=node)")
+	private IndexReindexer _nodeWorkflowMetricsReindexer;
 
 	@Reference
 	private SearchCapabilities _searchCapabilities;
