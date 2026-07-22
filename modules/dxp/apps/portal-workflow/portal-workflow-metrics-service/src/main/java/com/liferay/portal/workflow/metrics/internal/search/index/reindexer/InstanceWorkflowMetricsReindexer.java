@@ -164,6 +164,8 @@ public class InstanceWorkflowMetricsReindexer
 
 		if (executionMode == ExecutionMode.FULL) {
 			_processWorkflowMetricsReindexer.reindex(companyId, executionMode);
+
+			_taskWorkflowMetricsReindexer.reindex(companyId, executionMode);
 		}
 	}
 
@@ -207,6 +209,11 @@ public class InstanceWorkflowMetricsReindexer
 
 	@Reference
 	private SearchEngineAdapter _searchEngineAdapter;
+
+	@Reference(
+		target = "(component.name=com.liferay.portal.workflow.metrics.internal.search.index.reindexer.TaskWorkflowMetricsReindexer)"
+	)
+	private IndexReindexer _taskWorkflowMetricsReindexer;
 
 	@Reference
 	private WorkflowMetricsReindexStatusMessageSender
