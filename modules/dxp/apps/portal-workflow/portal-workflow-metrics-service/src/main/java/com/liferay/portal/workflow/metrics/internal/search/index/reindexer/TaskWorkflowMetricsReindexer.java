@@ -41,7 +41,9 @@ import org.osgi.service.component.annotations.Reference;
  * @author Rafael Praxedes
  */
 @Component(
-	property = "search.index.category=workflow",
+	property = {
+		"search.index.category=workflow", "workflow.metrics.reindexer.key=task"
+	},
 	service = {IndexReindexer.class, WorkflowMetricsReindexer.class}
 )
 public class TaskWorkflowMetricsReindexer
@@ -161,9 +163,7 @@ public class TaskWorkflowMetricsReindexer
 				date, Collections.emptySet());
 		}
 
-		if (executionMode == ExecutionMode.FULL) {
-			_nodeWorkflowMetricsReindexer.reindex(companyId, executionMode);
-		}
+		_nodeWorkflowMetricsReindexer.reindex(companyId, executionMode);
 	}
 
 	private boolean _isExecuteSyncReindex(ExecutionMode executionMode) {

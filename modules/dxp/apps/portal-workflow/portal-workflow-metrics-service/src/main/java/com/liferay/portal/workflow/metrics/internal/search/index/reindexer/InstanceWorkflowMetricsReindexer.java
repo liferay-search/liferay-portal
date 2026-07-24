@@ -1,5 +1,5 @@
 /**
- * SPDX-FileCopyrightText: (c) 2000 Liferay, Inc. https://liferay.com
+ * SPDX-FileCopyrightText: (c) 2026 Liferay, Inc. https://liferay.com
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
@@ -162,11 +162,9 @@ public class InstanceWorkflowMetricsReindexer
 				date, Collections.emptySet());
 		}
 
-		if (executionMode == ExecutionMode.FULL) {
-			_processWorkflowMetricsReindexer.reindex(companyId, executionMode);
+		_processWorkflowMetricsReindexer.reindex(companyId, executionMode);
 
-			_taskWorkflowMetricsReindexer.reindex(companyId, executionMode);
-		}
+		_taskWorkflowMetricsReindexer.reindex(companyId, executionMode);
 	}
 
 	private boolean _isExecuteSyncReindex(ExecutionMode executionMode) {
@@ -210,9 +208,7 @@ public class InstanceWorkflowMetricsReindexer
 	@Reference
 	private SearchEngineAdapter _searchEngineAdapter;
 
-	@Reference(
-		target = "(component.name=com.liferay.portal.workflow.metrics.internal.search.index.reindexer.TaskWorkflowMetricsReindexer)"
-	)
+	@Reference(target = "(workflow.metrics.reindexer.key=task)")
 	private IndexReindexer _taskWorkflowMetricsReindexer;
 
 	@Reference
