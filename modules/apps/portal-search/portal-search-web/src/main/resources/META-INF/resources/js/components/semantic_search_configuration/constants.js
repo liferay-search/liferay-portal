@@ -4,6 +4,7 @@
  */
 
 export const TEXT_EMBEDDING_PROVIDER_TYPES = {
+	ELASTICSEARCH_INFERENCE_ENDPOINT: 'Elasticsearch Inference Endpoint',
 	HUGGING_FACE_INFERENCE_API: 'hugging-face-inference-api',
 	HUGGING_FACE_INFERENCE_ENDPOINT: 'hugging-face-inference-endpoint',
 	OPENAI: 'openai',

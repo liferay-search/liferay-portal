@@ -4,8 +4,15 @@
  */
 
 import {ClayButtonWithIcon} from '@clayui/button';
-import ClayForm, {ClayInput, ClaySelect, ClaySelectBox} from '@clayui/form';
+import {Option, Picker} from '@clayui/core';
+import ClayForm, {
+	ClayCheckbox,
+	ClayInput,
+	ClaySelect,
+	ClaySelectBox,
+} from '@clayui/form';
 import ClayIcon from '@clayui/icon';
+import ClayLabel from '@clayui/label';
 import {ClayTooltipProvider} from '@clayui/tooltip';
 import getCN from 'classnames';
 import {sub} from 'frontend-js-web';
@@ -64,6 +71,34 @@ function Input({
 	const _handleEventChange = (event) => {
 		onChange(event.target.value);
 	};
+
+	if (type === 'checkbox') {
+		return (
+			<ClayCheckbox
+				aria-label={label}
+				checked={!!value}
+				disabled={disabled}
+				label={
+					helpText ? (
+						<>
+							{label}
+
+							<ClayTooltipProvider>
+								<span className="ml-2" title={helpText}>
+									<ClayIcon symbol="question-circle-full" />
+								</span>
+							</ClayTooltipProvider>
+						</>
+					) : (
+						label
+					)
+				}
+				name={name}
+				onChange={(event) => onChange(event.target.checked)}
+				value={value}
+			/>
+		);
+	}
 
 	const _renderInput = () => {
 		switch (type) {
@@ -125,6 +160,37 @@ function Input({
 						value={value || ''}
 					/>
 				);
+			case 'picker':
+				return (
+					<Picker
+						aria-label={label}
+						className={getCN({
+							'has-error': error && touched,
+						})}
+						disabled={disabled}
+						id={name}
+						items={items}
+						onBlur={onBlur}
+						onSelectionChange={(key) => onChange(String(key))}
+						placeholder={options.placeholder}
+						selectedKey={value || null}
+					>
+						{(item) => (
+							<Option key={item.value} textValue={item.label}>
+								{item.label}
+
+								{item.beta && (
+									<ClayLabel
+										className="ml-2"
+										displayType="info"
+									>
+										{Liferay.Language.get('beta')}
+									</ClayLabel>
+								)}
+							</Option>
+						)}
+					</Picker>
+				);
 			case 'select':
 				return (
 					<ClaySelect
@@ -137,6 +203,13 @@ function Input({
 						required={required}
 						value={value}
 					>
+						{options.placeholder !== undefined && (
+							<ClaySelect.Option
+								label={options.placeholder}
+								value=""
+							/>
+						)}
+
 						{items.map((item) => (
 							<ClaySelect.Option
 								key={item.value}
