@@ -21,6 +21,7 @@ import java.io.Serializable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -66,6 +67,15 @@ public class SearchResultsPortletDisplayContext implements Serializable {
 
 	public String getKeywords() {
 		return _keywords;
+	}
+
+	public Map<String, Object> getPaginatorReactData() {
+		SearchResultsPaginatorReactDataBuilder
+			searchResultsPaginatorReactDataBuilder =
+				new SearchResultsPaginatorReactDataBuilder(
+					_httpServletRequest, _searchContainer);
+
+		return searchResultsPaginatorReactDataBuilder.build();
 	}
 
 	public SearchContainer<Document> getSearchContainer() {
