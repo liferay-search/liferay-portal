@@ -6,13 +6,24 @@
 import ClayButton from '@clayui/button';
 import {Option, Picker} from '@clayui/core';
 import ClayIcon from '@clayui/icon';
-import {ClayPaginationWithBasicItems} from '@clayui/pagination';
+import {ClayPaginationWithBasicItems, Pagination} from '@clayui/pagination';
 import {PaginationBar} from '@clayui/pagination-bar';
 import {useId} from '@clayui/shared';
 import {sub} from 'frontend-js-web';
 import React from 'react';
 
 const ELLIPSIS_BUFFER = 2;
+
+interface IAriaLabels {
+
+	/**
+	 * Label for a page link, taking the page number.
+	 */
+	link: string;
+
+	next: string;
+	previous: string;
+}
 
 interface IDelta {
 
@@ -78,6 +89,104 @@ const Trigger = React.forwardRef<HTMLButtonElement>(
 
 Trigger.displayName = 'Trigger';
 
+interface ILimitedPaginationProps {
+	activePage: number;
+	ariaLabels: IAriaLabels;
+	hrefConstructor: (page: number) => string;
+	label: string;
+
+	/**
+	 * The last page the total accounts for. Because the total is a floor, pages
+	 * may exist beyond it, so this only bounds which pages can be linked.
+	 */
+	lastKnownPage: number;
+
+	visiblePageCount: number;
+}
+
+/**
+ * Pagination restricted to a sliding window of pages.
+ *
+ * Used when the total is only known up to the accurate count limit, which
+ * leaves the real last page unknown. Nothing here can link to an end page or
+ * enumerate the pages behind an ellipsis, so it renders a window around the
+ * active page and lets the next arrow be the only sign that there is more to
+ * come. The window slides to keep the active page in the middle and clamps at
+ * the start, so the first pages read `1 2 3 4 5` rather than a stub.
+ */
+const LimitedPagination = ({
+	activePage,
+	ariaLabels,
+	hrefConstructor,
+	label,
+	lastKnownPage,
+	visiblePageCount,
+}: ILimitedPaginationProps) => {
+	const firstVisiblePage = Math.max(
+		1,
+		activePage - Math.floor(visiblePageCount / 2)
+	);
+
+	const lastVisiblePage = Math.min(
+		lastKnownPage,
+		firstVisiblePage + visiblePageCount - 1
+	);
+
+	const visiblePages = [];
+
+	for (let page = firstVisiblePage; page <= lastVisiblePage; page++) {
+		visiblePages.push(page);
+	}
+
+	const hasPreviousPage = activePage > 1;
+
+	return (
+		<Pagination aria-label={label}>
+			<Pagination.Item
+				aria-label={
+					hasPreviousPage
+						? sub(ariaLabels.previous, [activePage - 1])
+						: undefined
+				}
+				as={hasPreviousPage ? undefined : 'div'}
+				disabled={!hasPreviousPage}
+				href={
+					hasPreviousPage
+						? hrefConstructor(activePage - 1)
+						: undefined
+				}
+			>
+				<ClayIcon symbol="angle-left" />
+			</Pagination.Item>
+
+			{visiblePages.map((page) => (
+				<Pagination.Item
+					active={page === activePage}
+					aria-label={sub(ariaLabels.link, [page])}
+					href={hrefConstructor(page)}
+					key={page}
+				>
+					{page}
+				</Pagination.Item>
+			))}
+
+			{/*
+			 * Paging forward is never disabled here. The total this window is
+			 * built from is a floor, so there is no page at which we can say
+			 * nothing follows; reaching the real end is something only the
+			 * next response can reveal.
+			 */}
+
+			<Pagination.Item
+				aria-label={sub(ariaLabels.next, [activePage + 1])}
+				href={hrefConstructor(activePage + 1)}
+			>
+				<ClayIcon symbol="angle-right" />
+			</Pagination.Item>
+		</Pagination>
+	);
+};
+
 interface IProps {
 	activeDelta: number;
 	activePage: number;
@@ -102,11 +211,18 @@ interface IProps {
 	/**
 	 * Whether <code>totalItems</code> is a floor rather than an exact figure,
 	 * which is what the search returns once the results outgrow its accurate
-	 * count limit.
+	 * count limit. An approximate total leaves the real last page unknown, so
+	 * it is also what decides that the pages render as a window.
 	 */
 	totalItemsApproximate?: boolean;
 
 	urlAnchor?: string;
+
+	/**
+	 * How many pages the window holds. Only consulted when the total is
+	 * approximate, since an exact total renders every page it accounts for.
+	 */
+	visiblePageCount?: number;
 }
 
 /**
@@ -136,6 +252,7 @@ const SearchPaginator = ({
 	totalItems,
 	totalItemsApproximate = false,
 	urlAnchor = '',
+	visiblePageCount = 5,
 }: IProps) => {
 
 	// Clay's own `useId` rather than React's, which only exists from React 18.
@@ -163,6 +280,8 @@ const SearchPaginator = ({
 		? sub(labels.approximateTotalItems, [numberFormat.format(totalItems)])
 		: numberFormat.format(totalItems);
 
+	const lastKnownPage = Math.ceil(totalItems / activeDelta);
+
 	// The active page is controlled by the server and never by Clay. Left
 	// uncontrolled, clicking a page marks that item active while the click is
 	// still being handled, and `Pagination.Item` renders no `href` for the
@@ -173,6 +292,12 @@ const SearchPaginator = ({
 	// nothing to handle: the next active page comes back with the next render.
 
 	const ignoreActiveChange = () => {};
+
+	const ariaLabels = {
+		link: labels.page,
+		next: labels.nextPage,
+		previous: labels.previousPage,
+	};
 
 	return (
 		<PaginationBar>
@@ -206,23 +331,30 @@ const SearchPaginator = ({
 				])}
 			</PaginationBar.Results>
 
-			<ClayPaginationWithBasicItems
-				active={activePage}
-				aria-label={labels.pagination}
-				ariaLabels={{
-					link: labels.page,
-					next: labels.nextPage,
-					previous: labels.previousPage,
-				}}
-				ellipsisBuffer={ELLIPSIS_BUFFER}
-				ellipsisProps={{
-					'aria-label': labels.intermediatePages,
-					'title': labels.intermediatePages,
-				}}
-				hrefConstructor={hrefConstructor}
-				onActiveChange={ignoreActiveChange}
-				totalPages={Math.ceil(totalItems / activeDelta)}
-			/>
+			{totalItemsApproximate ? (
+				<LimitedPagination
+					activePage={activePage}
+					ariaLabels={ariaLabels}
+					hrefConstructor={hrefConstructor}
+					label={labels.pagination}
+					lastKnownPage={lastKnownPage}
+					visiblePageCount={visiblePageCount}
+				/>
+			) : (
+				<ClayPaginationWithBasicItems
+					active={activePage}
+					aria-label={labels.pagination}
+					ariaLabels={ariaLabels}
+					ellipsisBuffer={ELLIPSIS_BUFFER}
+					ellipsisProps={{
+						'aria-label': labels.intermediatePages,
+						'title': labels.intermediatePages,
+					}}
+					hrefConstructor={hrefConstructor}
+					onActiveChange={ignoreActiveChange}
+					totalPages={lastKnownPage}
+				/>
+			)}
 		</PaginationBar>
 	);
 };
