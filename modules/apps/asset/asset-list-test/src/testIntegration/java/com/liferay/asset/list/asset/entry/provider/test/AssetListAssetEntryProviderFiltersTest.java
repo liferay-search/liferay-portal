@@ -450,7 +450,7 @@ public class AssetListAssetEntryProviderFiltersTest {
 	public void testGetAssetEntriesInfoPageWithNegationFiltersIncludeFieldAbsentEntries()
 		throws Exception {
 
-		String title = RandomTestUtil.randomString();
+		String title = StringUtil.toLowerCase(RandomTestUtil.randomString());
 
 		ObjectEntry objectEntry1 = _addObjectEntry(
 			HashMapBuilder.<String, Serializable>put(
