@@ -368,7 +368,7 @@ public class AssetListTypePropertiesUtilTest {
 
 		String[] expectedNames = {
 			"userName", "createDate", "displayDate", "expirationDate",
-			"externalReferenceCode", "modifiedDate", "priority", "publishDate",
+			"externalReferenceCode", "modified", "priority", "publishDate",
 			"reviewDate", "status", "title", "viewCount"
 		};
 
