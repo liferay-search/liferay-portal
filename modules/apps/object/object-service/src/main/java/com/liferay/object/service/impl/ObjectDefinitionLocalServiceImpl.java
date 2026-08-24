@@ -1211,6 +1211,8 @@ public class ObjectDefinitionLocalServiceImpl
 			_undeploy(entry.getKey(), entry.getValue(), objectDefinition);
 		}
 
+		_unregister(objectDefinition, _inactiveServiceRegistrationsMap);
+
 		_invalidatePortalCache(objectDefinition);
 	}
 
@@ -2692,17 +2694,26 @@ public class ObjectDefinitionLocalServiceImpl
 
 		objectDefinitionDeployer.undeploy(objectDefinition);
 
+		_unregister(objectDefinition, serviceRegistrationsMap);
+	}
+
+	private void _unregister(
+		ObjectDefinition objectDefinition,
+		Map<String, List<ServiceRegistration<?>>> serviceRegistrationsMap) {
+
 		List<ServiceRegistration<?>> serviceRegistrations =
 			serviceRegistrationsMap.remove(
 				DBPartitionUtil.getPartitionKey(
 					objectDefinition.getObjectDefinitionId()));
 
-		if (serviceRegistrations != null) {
-			for (ServiceRegistration<?> serviceRegistration :
-					serviceRegistrations) {
+		if (serviceRegistrations == null) {
+			return;
+		}
 
-				serviceRegistration.unregister();
-			}
+		for (ServiceRegistration<?> serviceRegistration :
+				serviceRegistrations) {
+
+			serviceRegistration.unregister();
 		}
 	}
 

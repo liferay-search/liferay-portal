@@ -8,6 +8,9 @@ package com.liferay.headless.cms.internal.links;
 import com.liferay.object.model.ObjectEntryTable;
 import com.liferay.object.service.ObjectEntryLocalService;
 import com.liferay.petra.sql.dsl.DSLQueryFactoryUtil;
+import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.util.ArrayUtil;
@@ -54,42 +57,27 @@ public class BrokenLinkAssetSearcher {
 		return searchResponse.getCount();
 	}
 
-	public Map<String, Long> getExpiredAssetObjectEntryIds(
-		long companyId, Long[] objectDefinitionIds) {
+	public Map<String, Long> getExpiredAssetObjectEntryIdsMap(
+		long companyId, Long[] objectDefinitionIds, Long[] spaceGroupIds) {
 
-		Map<String, Long> objectEntryIds = new LinkedHashMap<>();
+		Map<String, Long> objectEntryIdsMap = new LinkedHashMap<>();
 
-		List<Object[]> results = _objectEntryLocalService.dslQuery(
-			DSLQueryFactoryUtil.select(
-				ObjectEntryTable.INSTANCE.externalReferenceCode,
-				ObjectEntryTable.INSTANCE.objectEntryId
-			).from(
-				ObjectEntryTable.INSTANCE
-			).where(
-				ObjectEntryTable.INSTANCE.companyId.eq(
-					companyId
-				).and(
-					ObjectEntryTable.INSTANCE.objectDefinitionId.in(
-						objectDefinitionIds)
-				).and(
-					ObjectEntryTable.INSTANCE.status.eq(
-						WorkflowConstants.STATUS_EXPIRED)
-				)
-			));
+		for (Object[] objects :
+				_getObjectEntryObjectsList(
+					companyId, objectDefinitionIds, spaceGroupIds)) {
 
-		for (Object[] objects : results) {
 			long objectEntryId = GetterUtil.getLong(objects[1]);
 
-			objectEntryIds.put(
+			objectEntryIdsMap.put(
 				CMSOutboundLinksUtil.getObjectEntryExternalReferenceCodeToken(
 					GetterUtil.getString(objects[0])),
 				objectEntryId);
-			objectEntryIds.put(
+			objectEntryIdsMap.put(
 				CMSOutboundLinksUtil.getObjectEntryIdToken(objectEntryId),
 				objectEntryId);
 		}
 
-		return objectEntryIds;
+		return objectEntryIdsMap;
 	}
 
 	public SearchResponse search(
@@ -102,6 +90,16 @@ public class BrokenLinkAssetSearcher {
 
 		int startPosition = Math.min(
 			pagination.getStartPosition(), _MAX_RESULT_WINDOW);
+
+		if ((pagination.getStartPosition() >= _MAX_RESULT_WINDOW) &&
+			_log.isWarnEnabled()) {
+
+			_log.warn(
+				StringBundler.concat(
+					"Requested start position ", pagination.getStartPosition(),
+					" reaches the maximum result window ", _MAX_RESULT_WINDOW,
+					", so the page is empty"));
+		}
 
 		searchRequestBuilder.addSelectedFieldNames(
 			"outboundLinks", Field.ENTRY_CLASS_PK, "objectDefinitionId",
@@ -124,6 +122,30 @@ public class BrokenLinkAssetSearcher {
 		}
 
 		return _searcher.search(searchRequestBuilder.build());
+	}
+
+	private List<Object[]> _getObjectEntryObjectsList(
+		long companyId, Long[] objectDefinitionIds, Long[] spaceGroupIds) {
+
+		return _objectEntryLocalService.dslQuery(
+			DSLQueryFactoryUtil.select(
+				ObjectEntryTable.INSTANCE.externalReferenceCode,
+				ObjectEntryTable.INSTANCE.objectEntryId
+			).from(
+				ObjectEntryTable.INSTANCE
+			).where(
+				ObjectEntryTable.INSTANCE.companyId.eq(
+					companyId
+				).and(
+					ObjectEntryTable.INSTANCE.groupId.in(spaceGroupIds)
+				).and(
+					ObjectEntryTable.INSTANCE.objectDefinitionId.in(
+						objectDefinitionIds)
+				).and(
+					ObjectEntryTable.INSTANCE.status.eq(
+						WorkflowConstants.STATUS_EXPIRED)
+				)
+			));
 	}
 
 	private BooleanQuery _getOutboundLinksBooleanQuery(
@@ -159,6 +181,8 @@ public class BrokenLinkAssetSearcher {
 				Field.STATUS,
 				ArrayUtil.toStringArray(CMSWorkflowConstants.STATUSES)),
 			QueriesUtil.term("rootDescendantNode", false));
+		booleanQuery.addMustNotQueryClauses(
+			QueriesUtil.term(Field.STATUS, WorkflowConstants.STATUS_EXPIRED));
 
 		return _searchRequestBuilderFactory.builder(
 		).companyId(
@@ -186,6 +210,9 @@ public class BrokenLinkAssetSearcher {
 	private static final int _MAX_RESULT_WINDOW = 10000;
 
 	private static final int _TERMS_QUERY_CHUNK_SIZE = 4096;
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		BrokenLinkAssetSearcher.class);
 
 	private final ObjectEntryLocalService _objectEntryLocalService;
 	private final Searcher _searcher;

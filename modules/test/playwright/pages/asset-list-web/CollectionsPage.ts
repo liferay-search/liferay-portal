@@ -35,6 +35,8 @@ export class CollectionsPage {
 			itemType: 'Web Content Article',
 		});
 
+		await this.save();
+
 		return {
 			classPK: await this.getCollectionClassPK(name, siteUrl),
 		};
@@ -58,9 +60,7 @@ export class CollectionsPage {
 
 		await this.page.getByPlaceholder('Title').fill(name);
 
-		await this.page.getByRole('button', {name: 'Save'}).click();
-
-		await waitForAlert(this.page);
+		await this.save();
 	}
 
 	/**
@@ -162,14 +162,13 @@ export class CollectionsPage {
 
 		await this.page.getByPlaceholder('Title').fill(newName);
 
-		await this.page.getByRole('button', {name: 'Save'}).click();
-
-		await waitForAlert(this.page);
+		await this.save();
 	}
 
 	/**
 	 * Restricts the collection to multiple item types by choosing "Select
-	 * Types" and moving the given types out of the "In Use" list, then saves.
+	 * Types" and moving the given types out of the "In Use" list. Call `save`
+	 * to persist it.
 	 */
 	async restrictSourceItemTypes(excludedTypes: string[]) {
 		await this.page
@@ -189,15 +188,11 @@ export class CollectionsPage {
 				})
 				.click();
 		}
-
-		await this.page.getByRole('button', {name: 'Save'}).click();
-
-		await waitForAlert(this.page);
 	}
 
 	/**
-	 * Configures the collection to a single item type (and optional subtype),
-	 * then saves.
+	 * Configures the collection to a single item type (and optional subtype).
+	 * Call `save` to persist it.
 	 */
 	async configureSourceItemType({
 		itemSubtype,
@@ -219,10 +214,174 @@ export class CollectionsPage {
 
 			await subtypeSelect.selectOption({label: itemSubtype});
 		}
+	}
 
+	/**
+	 * Saves the collection, from its edit page or from the dialog that creates
+	 * or renames it, and waits for the confirmation alert.
+	 */
+	async save() {
 		await this.page.getByRole('button', {name: 'Save'}).click();
 
 		await waitForAlert(this.page);
+	}
+
+	/**
+	 * On a collection's edit page, picks one of the two ordering columns. Call
+	 * `save` to persist it. Only available with the LPD-74731 feature flag
+	 * enabled, which replaces the ordering selects with pickers fed by the item
+	 * type's properties.
+	 */
+	async setOrderByColumn({
+		column,
+		field,
+		fieldGroup,
+	}: {
+		column: 'And Then By' | 'Order By';
+		field: string;
+		fieldGroup: string;
+	}) {
+		const picker = this.page.getByLabel(column);
+
+		await clickAndExpectToBeVisible({
+			target: picker,
+			trigger: this.page.getByRole('button', {
+				exact: true,
+				name: 'Ordering',
+			}),
+		});
+
+		await picker.click();
+
+		// As in the filter, a field label only identifies a property within its
+		// group.
+
+		await this.page
+			.getByRole('group', {name: fieldGroup})
+			.getByRole('option', {exact: true, name: field})
+			.click();
+	}
+
+	/**
+	 * On a collection's edit page, adds one condition per entry to the Filter
+	 * section. Call `save` to persist them. Only available with the LPD-74731
+	 * feature flag
+	 * enabled, which replaces the tags and categories rules with the condition
+	 * builder.
+	 */
+	async addFilterConditions(
+		conditions: Array<{
+			field: string;
+			fieldGroup: string;
+			operator: string;
+			quantifier: string;
+			value: string;
+		}>
+	) {
+		const conditionBuilder = this.page.locator('.condition-builder');
+
+		await clickAndExpectToBeVisible({
+			target: conditionBuilder,
+			trigger: this.page.getByRole('button', {
+				exact: true,
+				name: 'Filter',
+			}),
+		});
+
+		for (const [
+			index,
+			{field, fieldGroup, operator, quantifier, value},
+		] of conditions.entries()) {
+			if (index) {
+				await this.page
+					.getByRole('button', {name: 'Add Filter'})
+					.click();
+			}
+
+			// Scope the controls to the row being filled in.
+
+			const row = conditionBuilder
+				.locator('.condition-builder__row')
+				.nth(index);
+
+			// Select Field
+
+			await row.getByLabel('Field').click();
+
+			await this.page
+				.getByRole('group', {name: fieldGroup})
+				.getByRole('option', {exact: true, name: field})
+				.click();
+
+			// Select Operator + Quantifier
+
+			for (const [label, option] of [
+				['Operator', operator],
+				['Quantifier', quantifier],
+			]) {
+				await row.getByLabel(label).click();
+
+				await this.page
+					.getByRole('option', {exact: true, name: option})
+					.click();
+			}
+
+			// Provide Value
+
+			await row.getByLabel('Value').fill(value);
+		}
+	}
+
+	/**
+	 * On a collection's edit page, restricts the collection's scope to a Space
+	 * through the Scope section. Call `save` to persist it.
+	 */
+	async scopeToSpace(spaceName: string) {
+		const selectSiteButton = this.page.getByRole('button', {
+			name: 'Select Site',
+		});
+
+		await clickAndExpectToBeVisible({
+			target: selectSiteButton,
+			trigger: this.page.getByRole('button', {
+				exact: true,
+				name: 'Scope',
+			}),
+		});
+
+		await selectSiteButton.click();
+
+		await this.page
+			.getByRole('menuitem', {name: 'Other Site, Asset Library, or'})
+			.click();
+
+		const scopeFrame = this.page
+			.locator('iframe[title="Scope"]')
+			.contentFrame();
+
+		await scopeFrame.getByRole('link', {name: 'Spaces'}).click();
+
+		await scopeFrame
+			.getByRole('link', {exact: true, name: spaceName})
+			.click();
+	}
+
+	/**
+	 * On a collection's edit page, opens the View Items modal for the default
+	 * variation and returns the frame that lists the resolved items.
+	 */
+	async openViewItems() {
+		await clickAndExpectToBeVisible({
+			autoClick: true,
+			target: this.page.getByRole('menuitem', {name: 'View Items'}),
+			trigger: this.page.getByRole('button', {name: 'Show Actions'}),
+		});
+
+		const viewItemsIframe = this.page.locator('iframe[title="View Items"]');
+
+		await viewItemsIframe.waitFor();
+
+		return viewItemsIframe.contentFrame();
 	}
 
 	/**
