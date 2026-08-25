@@ -86,7 +86,7 @@ SearchContainer<Document> searchContainer = searchResultsPortletDisplayContext.g
 					<c:if test="<%= paginatorReactData != null %>">
 						<div>
 							<react:component
-								module="{SearchPaginator} from portal-search-web"
+								module="{ClassicSearchPaginator} from portal-search-web"
 								props="<%= paginatorReactData %>"
 							/>
 						</div>

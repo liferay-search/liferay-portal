@@ -151,6 +151,13 @@ public class SearchResultsPaginatorReactDataBuilder {
 			"approximateTotalItems",
 			LanguageUtil.get(_httpServletRequest, "x-plus")
 		).put(
+			"changingPageSizeReloads",
+			LanguageUtil.get(
+				_httpServletRequest, "selecting-an-option-will-reload-the-page")
+		).put(
+			"entriesPerPage",
+			LanguageUtil.get(_httpServletRequest, "entries-per-page")
+		).put(
 			"intermediatePages",
 			LanguageUtil.get(_httpServletRequest, "show-intermediate-pages")
 		).put(
@@ -170,9 +177,6 @@ public class SearchResultsPaginatorReactDataBuilder {
 		).put(
 			"previousPage",
 			LanguageUtil.get(_httpServletRequest, "previous-page")
-		).put(
-			"selectPerPageItems",
-			LanguageUtil.get(_httpServletRequest, "x-entries")
 		).build();
 	}
 
