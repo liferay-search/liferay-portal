@@ -12,8 +12,10 @@ import com.liferay.portal.kernel.instance.PortalInstancePool;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
+import com.liferay.portal.kernel.portlet.LiferayWindowState;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.PropsValues;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -64,6 +66,28 @@ public class CompanyActionDropdownItems {
 			dropdownGroupItem -> {
 				dropdownGroupItem.setDropdownItems(
 					DropdownItemListBuilder.add(
+						() -> PropsValues.DATABASE_PARTITION_ENABLED,
+						dropdownItem -> {
+							dropdownItem.putData(
+								"action", "copyDBPartitionCompany");
+							dropdownItem.putData(
+								"copyURL",
+								PortletURLBuilder.createRenderURL(
+									_liferayPortletResponse
+								).setMVCPath(
+									"/copy_db_partition_company.jsp"
+								).setRedirect(
+									PortalUtil.getCurrentURL(
+										_httpServletRequest)
+								).setParameter(
+									"companyId", _company.getCompanyId()
+								).setWindowState(
+									LiferayWindowState.POP_UP
+								).buildString());
+							dropdownItem.setLabel(
+								LanguageUtil.get(_httpServletRequest, "copy"));
+						}
+					).add(
 						dropdownItem -> {
 							dropdownItem.putData("action", "exportInstance");
 							dropdownItem.putData(

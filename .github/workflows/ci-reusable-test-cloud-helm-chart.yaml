@@ -9,6 +9,8 @@ jobs:
                 uses: actions/checkout@v4
             -   name: Install Helm
                 uses: azure/setup-helm@v4
+                with:
+                    version: 4.2.4
             -   name: Install helm-unittest plugin
                 run: helm plugin install --verify=false --version 1.0.3 https://github.com/helm-unittest/helm-unittest
             -   name: Set up Kubeconform
@@ -43,6 +45,7 @@ jobs:
                     -   aws-infrastructure
                     -   aws-infrastructure-provider
                     -   aws-marketplace
+                    -   azure
                     -   azure-infrastructure-provider
                     -   default
                     -   dxp-operator

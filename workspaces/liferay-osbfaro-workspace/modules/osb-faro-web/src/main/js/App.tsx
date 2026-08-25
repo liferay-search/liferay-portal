@@ -8,6 +8,7 @@ import ModalRenderer from 'shared/components/ModalRenderer';
 import React, {lazy, Suspense, useEffect, useState} from 'react';
 import RouteNotFound from 'shared/components/RouteNotFound';
 import store from 'shared/store';
+import TrackingConsentBanner from 'shared/components/TrackingConsentBanner';
 import UnassignedSegmentsProvider from 'shared/context/unassignedSegments';
 import {
 	ApolloProvider,
@@ -18,7 +19,7 @@ import {ClayIconSpriteContext} from '@clayui/icon';
 import {ClayLinkContext} from '@clayui/link';
 import {ClayTooltipProvider} from '@clayui/tooltip';
 import {close, modalTypes, open} from 'shared/actions/modals';
-import {ENABLE_ADD_TRIAL_WORKSPACE} from 'shared/util/constants';
+import {ENABLE_ADD_TRIAL_WORKSPACE, FaroEnv} from 'shared/util/constants';
 import {
 	Link,
 	matchPath,
@@ -28,7 +29,7 @@ import {
 	useLocation,
 } from 'react-router-dom';
 import {OnboardingContext} from 'shared/context/onboarding';
-import {Pendo} from 'shared/util/pendo';
+import {Pendo, TrackingConsentValues} from 'shared/util/pendo';
 import {Project} from 'shared/util/records';
 import {Provider, useSelector} from 'react-redux';
 import {Routes} from 'shared/util/router';
@@ -92,13 +93,24 @@ const RoutesContainer = ({children}: {children: React.ReactNode}) => {
 
 	const {data: currentUser, loading} = useFetchCurrentUser(groupId);
 
-	useEffect(() => {
-		if (currentUser?.id && project?.corpProjectName) {
-			const pendo = new Pendo();
+	const [trackingConsent, setTrackingConsent] =
+		useState<TrackingConsentValues | null>(null);
 
+	// The stored cookie decides whether Pendo may start. `trackingConsent` is
+	// not read here: it only re-runs the effect once the banner stores a
+	// decision, so tracking starts without a reload.
+
+	useEffect(() => {
+		const pendo = new Pendo();
+
+		if (
+			currentUser?.id &&
+			project?.corpProjectName &&
+			pendo.getUserConsent() === TrackingConsentValues.Accepted
+		) {
 			pendo.initialize({currentUser, project});
 		}
-	}, [currentUser?.id, project?.corpProjectName]);
+	}, [currentUser?.id, project?.corpProjectName, trackingConsent]);
 
 	if (loading) {
 		return <Loading />;
@@ -108,7 +120,15 @@ const RoutesContainer = ({children}: {children: React.ReactNode}) => {
 		return <ErrorPage />;
 	}
 
-	return children as React.ReactElement;
+	return (
+		<>
+			{children}
+
+			{!!currentUser?.id && FARO_ENV === FaroEnv.Production && (
+				<TrackingConsentBanner onDecision={setTrackingConsent} />
+			)}
+		</>
+	);
 };
 
 const App = () => {

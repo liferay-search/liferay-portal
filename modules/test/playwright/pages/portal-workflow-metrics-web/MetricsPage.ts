@@ -13,9 +13,10 @@ export class MetricsPage {
 
 	constructor(page: Page) {
 		this.page = page;
+
 		this.totalPendingItems = this.page
 			.getByRole('link', {name: 'Total Pending'})
-			.first();
+			.and(this.page.locator('.process-tabs-summary-card'));
 	}
 
 	async chooseProcess(processName: string) {

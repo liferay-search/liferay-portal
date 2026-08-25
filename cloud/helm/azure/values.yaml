@@ -1,0 +1,8 @@
+liferay-default:
+    autoscaling:
+        keda:
+            triggerAuthentication:
+                spec:
+                    podIdentity:
+                        provider: azure-workload
+        type: keda

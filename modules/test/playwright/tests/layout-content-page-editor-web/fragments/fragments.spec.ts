@@ -1255,6 +1255,16 @@ test.describe('Slider Fragment', () => {
 		await expectSlideIsActive('Slide 1');
 		await expectSlideIsNotActive('Slide 2');
 
+		// Check that every ARIA reference resolves
+
+		for (const element of await page
+			.locator('.component-slider [aria-controls]')
+			.all()) {
+			const id = await element.getAttribute('aria-controls');
+
+			await expect(page.locator(`[id="${id}"]`)).toBeAttached();
+		}
+
 		// Check accessibility
 
 		await checkAccessibility({page, selectors: ['.component-slider']});
@@ -1307,9 +1317,8 @@ test.describe('Tabs Fragment', () => {
 
 		let dropdownButton = page.getByLabel('Current Selection: Tab 1');
 
-		await expect(dropdownButton).toHaveAttribute(
-			'aria-activedescendant',
-			''
+		await expect(dropdownButton).not.toHaveAttribute(
+			'aria-activedescendant'
 		);
 		await expect(dropdownButton).toHaveAttribute('aria-expanded', 'false');
 		await expect(dropdownButton).toHaveAttribute(
@@ -1317,6 +1326,12 @@ test.describe('Tabs Fragment', () => {
 			'listbox'
 		);
 		await expect(dropdownButton).toHaveAttribute('role', 'combobox');
+
+		// Check that the editable titles are not focusable inside the tabs
+
+		await expect(
+			page.locator('.component-tabs [role=tab] [tabindex]')
+		).toHaveCount(0);
 
 		// Open the dropdown and navigate by keyboard to select the Tab 2
 
@@ -2007,6 +2022,10 @@ test.describe('Accordion Fragment', () => {
 		await expect(
 			accordionButton.getByText('Heading Example')
 		).not.toBeVisible();
+
+		// Check accessibility
+
+		await checkAccessibility({page, selectors: ['.component-accordion']});
 	});
 });
 

@@ -1,3 +1,5 @@
+**/*.tgz
+**/Chart.lock
 **/test-results/*
 *.auto.tfvars.json
 *.tfstate
