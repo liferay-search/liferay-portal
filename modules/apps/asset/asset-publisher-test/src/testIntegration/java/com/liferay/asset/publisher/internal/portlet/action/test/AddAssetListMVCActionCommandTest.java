@@ -11,6 +11,7 @@ import com.liferay.asset.list.model.AssetListEntrySegmentsEntryRel;
 import com.liferay.asset.list.service.AssetListEntryLocalService;
 import com.liferay.asset.list.service.AssetListEntrySegmentsEntryRelLocalService;
 import com.liferay.asset.publisher.constants.AssetPublisherPortletKeys;
+import com.liferay.blogs.model.BlogsEntry;
 import com.liferay.layout.page.template.constants.LayoutPageTemplateEntryTypeConstants;
 import com.liferay.layout.page.template.model.LayoutPageTemplateEntry;
 import com.liferay.layout.page.template.test.util.LayoutPageTemplateTestUtil;
@@ -20,6 +21,7 @@ import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.portlet.PortletPreferencesFactoryUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
+import com.liferay.portal.kernel.service.ClassNameLocalServiceUtil;
 import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.test.portlet.MockLiferayPortletActionRequest;
@@ -30,6 +32,9 @@ import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.HashMapBuilder;
+import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.UnicodePropertiesBuilder;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -85,6 +90,73 @@ public class AddAssetListMVCActionCommandTest {
 	public void testAddAssetListFromDynamicCollection() throws Exception {
 		_testAddAssetListFromDynamicCollection(_group1, _group1Layout, _group1);
 		_testAddAssetListFromDynamicCollection(_group2, _group2Layout, _group1);
+	}
+
+	@Test
+	public void testAddAssetListFromDynamicCollectionWithUnresolvableClassNameIds()
+		throws Exception {
+
+		long classNameId = PortalUtil.getClassNameId(BlogsEntry.class);
+
+		long unresolvableClassNameId = RandomTestUtil.nextLong();
+
+		Assert.assertNull(
+			ClassNameLocalServiceUtil.fetchClassName(unresolvableClassNameId));
+
+		String portletId = LayoutTestUtil.addPortletToLayout(
+			_group1Layout, AssetPublisherPortletKeys.ASSET_PUBLISHER,
+			HashMapBuilder.put(
+				"anyAssetType", new String[] {"true"}
+			).put(
+				"classNameIds",
+				new String[] {
+					StringUtil.merge(
+						new long[] {classNameId, unresolvableClassNameId})
+				}
+			).put(
+				"selectionStyle", new String[] {"dynamic"}
+			).build());
+
+		MockLiferayPortletActionRequest mockLiferayPortletActionRequest =
+			new MockLiferayPortletActionRequest();
+
+		mockLiferayPortletActionRequest.addParameter(
+			"title", RandomTestUtil.randomString());
+		mockLiferayPortletActionRequest.addParameter(
+			"portletResource", portletId);
+		mockLiferayPortletActionRequest.setAttribute(
+			WebKeys.THEME_DISPLAY, _getThemeDisplay(_group1, _group1Layout));
+
+		_mvcActionCommand.processAction(
+			mockLiferayPortletActionRequest,
+			new MockLiferayPortletActionResponse());
+
+		PortletPreferences portletPreferences =
+			PortletPreferencesFactoryUtil.getExistingPortletSetup(
+				_group1Layout, portletId);
+
+		AssetListEntry assetListEntry =
+			_assetListEntryLocalService.
+				fetchAssetListEntryByExternalReferenceCode(
+					portletPreferences.getValue(
+						"assetListEntryExternalReferenceCode", null),
+					_group1.getGroupId());
+
+		AssetListEntrySegmentsEntryRel assetListEntrySegmentsEntryRel =
+			_assetListEntrySegmentsEntryRelLocalService.
+				fetchAssetListEntrySegmentsEntryRel(
+					assetListEntry.getAssetListEntryId(),
+					SegmentsEntryConstants.ID_DEFAULT);
+
+		UnicodeProperties unicodeProperties = UnicodePropertiesBuilder.load(
+			assetListEntrySegmentsEntryRel.getTypeSettings()
+		).build();
+
+		Assert.assertEquals(
+			String.valueOf(classNameId),
+			unicodeProperties.getProperty("classNameIds", null));
+		Assert.assertEquals(
+			"true", unicodeProperties.getProperty("anyAssetType", null));
 	}
 
 	@Test
