@@ -50,6 +50,7 @@ import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.util.CalendarFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.GroupThreadLocal;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
@@ -203,12 +204,24 @@ public class CommerceCatalogLocalServiceImpl
 
 		// Group
 
-		_groupLocalService.deleteGroup(groupId);
+		if (!GroupThreadLocal.isDeleteInProcess()) {
+			_groupLocalService.deleteGroup(groupId);
+		}
 
 		// Resources
 
 		_resourceLocalService.deleteResource(
 			commerceCatalog, ResourceConstants.SCOPE_INDIVIDUAL);
+
+		// Commerce product configuration lists
+
+		for (CPConfigurationList cpConfigurationList :
+				_cpConfigurationListLocalService.getCPConfigurationLists(
+					groupId, commerceCatalog.getCompanyId())) {
+
+			_cpConfigurationListLocalService.deleteCPConfigurationList(
+				cpConfigurationList, true);
+		}
 
 		return commerceCatalog;
 	}

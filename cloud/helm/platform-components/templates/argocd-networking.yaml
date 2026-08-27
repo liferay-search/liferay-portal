@@ -1,6 +1,6 @@
 {{- if .Values.argocd.gateway.enabled -}}
 {{- $envoyProxy := .Values.argocd.gateway.envoyProxy }}
-{{- $hostname := required "argocd.gateway.hostname is required" .Values.argocd.gateway.hostname }}
+{{- $hostname := required "The value \"argocd.gateway.hostname\" is required to route traffic to ArgoCD" .Values.argocd.gateway.hostname }}
 {{- $tlsEnabled := ne .Values.argocd.gateway.tls.externalSecretKey "" }}
 {{- if $tlsEnabled }}
 apiVersion: external-secrets.io/v1
@@ -19,12 +19,10 @@ spec:
         -   extract:
                 decodingStrategy: Auto
                 key: {{ .Values.argocd.gateway.tls.externalSecretKey }}
-    refreshInterval: 1h0m0s
     secretStoreRef:
         kind: ClusterSecretStore
-        name: {{ include "liferay-platform.clusterSecretStoreName" . }}
+        name: {{ include "liferay-platform.clusterSecretStoreName" . | quote }}
     target:
-        creationPolicy: Owner
         name: argocd-server-tls
         template:
             metadata:
@@ -93,7 +91,6 @@ spec:
         tls:
             certificateRefs:
                 -   name: argocd-server-tls
-            mode: Terminate
     {{- end }}
 ---
 apiVersion: gateway.networking.k8s.io/v1

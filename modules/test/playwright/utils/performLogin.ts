@@ -73,16 +73,10 @@ async function performLogin(
 
 	await emailAddressInput.fill(`${screenName}${domain}`);
 
+	await expect(emailAddressInput).toHaveValue(`${screenName}${domain}`);
+
 	await page.getByLabel('Password').fill(password);
 	await page.getByLabel('Remember Me').setChecked(rememberMe);
-
-	// Two buttons on the page carry the name Sign In, the personal bar
-	// trigger and the prompt's own submit, and the prompt can re-render under
-	// the click: a pick by ordinal that is re-resolved in that window matches
-	// the only survivor, the trigger, which submits nothing. Scoped to the
-	// sign in form, the pick can only ever resolve to the submit, and the
-	// click's own wait for it to be enabled is the form's readiness signal,
-	// because the script that enables it attaches the submit handler first.
 
 	await page
 		.locator('form.sign-in-form')
@@ -116,9 +110,6 @@ export async function performLoginViaApi({
 	try {
 		await page.goto(loginUrl);
 
-		// Signing in replaces the session, so drop the token held for the one
-		// being left behind before the request that replaces it.
-
 		clearAuthToken(page);
 
 		const url = `${loginUrl}/c/portal/login`;
@@ -138,9 +129,6 @@ export async function performLoginViaApi({
 			.toBe(200);
 
 		await page.goto(loginUrl);
-
-		// The page has settled on the signed in session, so this is the moment
-		// to read the token every later request will carry.
 
 		await readAuthToken(page);
 	}
@@ -167,9 +155,6 @@ export async function performAnalyticsCloudLoginViaApi(
 	try {
 		await page.goto(loginUrl);
 
-		// Signing in replaces the session, so drop the token held for the one
-		// being left behind before the request that replaces it.
-
 		clearAuthToken(page);
 
 		const url = `${loginUrl}/c/portal/login`;
@@ -189,9 +174,6 @@ export async function performAnalyticsCloudLoginViaApi(
 			.toBe(200);
 
 		await page.goto(loginUrl);
-
-		// The page has settled on the signed in session, so this is the moment
-		// to read the token every later request will carry.
 
 		await readAuthToken(page);
 	}

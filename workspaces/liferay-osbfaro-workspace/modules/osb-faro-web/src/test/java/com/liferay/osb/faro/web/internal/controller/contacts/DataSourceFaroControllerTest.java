@@ -34,7 +34,6 @@ import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.util.Base64;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.LocaleUtil;
-import com.liferay.portal.test.rule.LiferayUnitTestRule;
 
 import java.nio.charset.StandardCharsets;
 
@@ -49,8 +48,6 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.Test;
 
 import org.mockito.AdditionalAnswers;
@@ -64,11 +61,6 @@ import org.springframework.test.util.ReflectionTestUtils;
  * @author Inácio Nery
  */
 public class DataSourceFaroControllerTest {
-
-	@ClassRule
-	@Rule
-	public static final LiferayUnitTestRule liferayUnitTestRule =
-		LiferayUnitTestRule.INSTANCE;
 
 	@Before
 	public void setUp() throws Exception {
@@ -199,6 +191,12 @@ public class DataSourceFaroControllerTest {
 
 	@Test
 	public void testCreateTypeSalesforce() throws Exception {
+		Mockito.when(
+			_faroProject.getSubscriptionName()
+		).thenReturn(
+			"Liferay Data Platform"
+		);
+
 		DataSource dataSource = Mockito.mock(DataSource.class);
 
 		Mockito.when(
@@ -427,39 +425,41 @@ public class DataSourceFaroControllerTest {
 		ReflectionTestUtil.setFieldValue(
 			LanguageUtil.class, "_language", language);
 
-		MockedStatic<PermissionThreadLocal> permissionThreadLocalMockedStatic =
-			Mockito.mockStatic(PermissionThreadLocal.class);
+		try (MockedStatic<PermissionThreadLocal>
+				permissionThreadLocalMockedStatic = Mockito.mockStatic(
+					PermissionThreadLocal.class)) {
 
-		PermissionChecker permissionChecker = Mockito.mock(
-			PermissionChecker.class);
+			PermissionChecker permissionChecker = Mockito.mock(
+				PermissionChecker.class);
 
-		User user = Mockito.mock(User.class);
+			User user = Mockito.mock(User.class);
 
-		Mockito.when(
-			user.getLocale()
-		).thenReturn(
-			LocaleUtil.US
-		);
+			Mockito.when(
+				user.getLocale()
+			).thenReturn(
+				LocaleUtil.US
+			);
 
-		Mockito.when(
-			permissionChecker.getUser()
-		).thenReturn(
-			user
-		);
+			Mockito.when(
+				permissionChecker.getUser()
+			).thenReturn(
+				user
+			);
 
-		permissionThreadLocalMockedStatic.when(
-			PermissionThreadLocal::getPermissionChecker
-		).thenReturn(
-			permissionChecker
-		);
+			permissionThreadLocalMockedStatic.when(
+				PermissionThreadLocal::getPermissionChecker
+			).thenReturn(
+				permissionChecker
+			);
 
-		List<DataSourceMappingDisplay> dataSourceMappingDisplays =
-			_dataSourceFaroController.getDataSourceMappingDisplays(
-				32719, 32783, null);
+			List<DataSourceMappingDisplay> dataSourceMappingDisplays =
+				_dataSourceFaroController.getDataSourceMappingDisplays(
+					32719, 32783, null);
 
-		Assert.assertEquals(
-			dataSourceMappingDisplays.toString(), 13,
-			dataSourceMappingDisplays.size());
+			Assert.assertEquals(
+				dataSourceMappingDisplays.toString(), 13,
+				dataSourceMappingDisplays.size());
+		}
 	}
 
 	@Test

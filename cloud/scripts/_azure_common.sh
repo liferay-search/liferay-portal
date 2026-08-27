@@ -11,19 +11,24 @@ function az_login {
 
 	local subscription_id
 
-	subscription_id="$(jq --raw-output '.subscription_id' "${configuration_json_file}")"
+	subscription_id=$(jq --raw-output '.subscription_id' "${configuration_json_file}")
 
 	export ARM_SUBSCRIPTION_ID="${subscription_id}"
 
 	local tenant_id
 
-	tenant_id="$(jq --raw-output '.tenant_id' "${configuration_json_file}")"
+	tenant_id=$(jq --raw-output '.tenant_id' "${configuration_json_file}")
 
 	export ARM_TENANT_ID="${tenant_id}"
 
-	echo "Attempting to login to your Azure account."
+	if az account get-access-token --output none --subscription "${subscription_id}" &> /dev/null
+	then
+		echo "Reusing the active Azure login for the subscription ${subscription_id}."
+	else
+		echo "Attempting to login to your Azure account."
 
-	AZURE_CORE_LOGIN_EXPERIENCE_V2=off az login --output none --tenant "${tenant_id}"
+		AZURE_CORE_LOGIN_EXPERIENCE_V2=off az login --output none --tenant "${tenant_id}"
+	fi
 
 	az account set --subscription "${subscription_id}"
 }
@@ -47,12 +52,36 @@ function connect_to_cluster {
 
 	terraform init
 
+	local cluster_name
+
+	cluster_name=$(terraform output -raw cluster_name)
+
+	local resource_group_name
+
+	resource_group_name=$(terraform output -raw resource_group_name)
+
+	if [[ -z ${cluster_name} ]] || [[ -z ${resource_group_name} ]]
+	then
+		echo "There is no AKS cluster in the Terraform state." >&2
+
+		pop_directory
+
+		return 1
+	fi
+
 	export KUBE_CONFIG_PATH="${HOME}/.kube/config"
 
-	az aks get-credentials \
-		--name "$(terraform output -raw cluster_name)" \
+	if ! az aks get-credentials \
+		--name "${cluster_name}" \
 		--overwrite-existing \
-		--resource-group "$(terraform output -raw resource_group_name)"
+		--resource-group "${resource_group_name}"
+	then
+		echo "The AKS cluster ${cluster_name} could not be reached." >&2
+
+		pop_directory
+
+		return 1
+	fi
 
 	pop_directory
 }
@@ -103,7 +132,7 @@ function generate_tfvars {
 
 	echo "Generating ${tfvars_file} from ${configuration_json_file}."
 
-	jq --arg module "${module}" '(.terraform.common // {}) * (.terraform[$module] // {})' "${configuration_json_file}" > "${tfvars_file}"
+	jq --arg module "${module}" '(.terraform.common // {}) * (.terraform[$module] // {}) * {deployment_name, region}' "${configuration_json_file}" > "${tfvars_file}"
 
 	echo "${tfvars_file} was generated successfully."
 }
@@ -163,6 +192,8 @@ function validate_config_json {
 	fi
 
 	local required_keys=(
+		".deployment_name"
+		".region"
 		".subscription_id"
 		".tenant_id"
 	)
@@ -170,8 +201,6 @@ function validate_config_json {
 	if jq --exit-status '.tfstate | objects' "${configuration_json_file}" &> /dev/null
 	then
 		required_keys+=(
-			".terraform.common.deployment_name"
-			".terraform.common.region"
 			".tfstate.container_name"
 			".tfstate.resource_group_name"
 			".tfstate.storage_account_name"

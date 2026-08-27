@@ -13,11 +13,14 @@ import com.liferay.jenkins.results.parser.PortalGitWorkingDirectory;
 import com.liferay.jenkins.results.parser.PortalTestClassJob;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 
 import org.mockito.Mockito;
 
@@ -27,6 +30,59 @@ import org.mockito.Mockito;
 public class BatchTestClassGroupTestUtil {
 
 	public static PortalTestClassJob getPortalTestClassJob() {
+		return getPortalTestClassJob(null);
+	}
+
+	public static PortalTestClassJob getPortalTestClassJob(
+		Properties jobProperties) {
+
+		PortalTestClassJob portalTestClassJob = _getPortalTestClassJob();
+
+		List<File> jobPropertiesFiles =
+			portalTestClassJob.getJobPropertiesFiles();
+
+		jobPropertiesFiles.clear();
+
+		if (jobProperties != null) {
+			jobPropertiesFiles.add(_writeJobPropertiesFile(jobProperties));
+		}
+
+		jobPropertiesFiles.add(
+			new File(
+				"src/test/resources/dependencies/test/clazz/group" +
+					"/BatchTestClassGroupTestUtil/test.properties"));
+
+		return portalTestClassJob;
+	}
+
+	public static ServiceBuilderModulesBatchTestClassGroup
+		newServiceBuilderModulesBatchTestClassGroup(
+			String... modifiedFilePaths) {
+
+		List<File> modifiedFiles = new ArrayList<>();
+
+		PortalTestClassJob portalTestClassJob = getPortalTestClassJob();
+
+		PortalGitWorkingDirectory portalGitWorkingDirectory =
+			portalTestClassJob.getPortalGitWorkingDirectory();
+
+		File workingDirectory = portalGitWorkingDirectory.getWorkingDirectory();
+
+		for (String modifiedFilePath : modifiedFilePaths) {
+			modifiedFiles.add(new File(workingDirectory, modifiedFilePath));
+		}
+
+		Mockito.doReturn(
+			modifiedFiles
+		).when(
+			portalGitWorkingDirectory
+		).getModifiedFilesList();
+
+		return new ServiceBuilderModulesBatchTestClassGroup(
+			"service-builder-modules", portalTestClassJob);
+	}
+
+	private static PortalTestClassJob _getPortalTestClassJob() {
 		if (_portalTestClassJob != null) {
 			return _portalTestClassJob;
 		}
@@ -71,44 +127,27 @@ public class BatchTestClassGroupTestUtil {
 			null, portalGitWorkingDirectory, upstreamBranchName, null,
 			repositoryName, "relevant", upstreamBranchName);
 
-		List<File> jobPropertiesFiles =
-			_portalTestClassJob.getJobPropertiesFiles();
-
-		jobPropertiesFiles.clear();
-
-		jobPropertiesFiles.add(
-			new File(
-				"src/test/resources/dependencies/test/clazz/group" +
-					"/BatchTestClassGroupTestUtil/test.properties"));
-
 		return _portalTestClassJob;
 	}
 
-	public static ServiceBuilderModulesBatchTestClassGroup
-		newServiceBuilderModulesBatchTestClassGroup(
-			String... modifiedFilePaths) {
+	private static File _writeJobPropertiesFile(Properties jobProperties) {
+		try {
+			File jobPropertiesFile = File.createTempFile(
+				"BatchTestClassGroupTestUtil", ".properties");
 
-		List<File> modifiedFiles = new ArrayList<>();
+			jobPropertiesFile.deleteOnExit();
 
-		PortalTestClassJob portalTestClassJob = getPortalTestClassJob();
+			try (OutputStream outputStream = new FileOutputStream(
+					jobPropertiesFile)) {
 
-		PortalGitWorkingDirectory portalGitWorkingDirectory =
-			portalTestClassJob.getPortalGitWorkingDirectory();
+				jobProperties.store(outputStream, null);
+			}
 
-		File workingDirectory = portalGitWorkingDirectory.getWorkingDirectory();
-
-		for (String modifiedFilePath : modifiedFilePaths) {
-			modifiedFiles.add(new File(workingDirectory, modifiedFilePath));
+			return jobPropertiesFile;
 		}
-
-		Mockito.doReturn(
-			modifiedFiles
-		).when(
-			portalGitWorkingDirectory
-		).getModifiedFilesList();
-
-		return new ServiceBuilderModulesBatchTestClassGroup(
-			"service-builder-modules", portalTestClassJob);
+		catch (IOException ioException) {
+			throw new RuntimeException(ioException);
+		}
 	}
 
 	private static PortalTestClassJob _portalTestClassJob;

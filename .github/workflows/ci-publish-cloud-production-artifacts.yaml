@@ -13,8 +13,10 @@ jobs:
             -   push-rc-aws
             -   push-rc-aws-infrastructure
             -   push-rc-aws-infrastructure-provider
+            -   push-rc-azure
             -   push-rc-azure-infrastructure-provider
             -   push-rc-bootstrap-aws
+            -   push-rc-bootstrap-azure
             -   push-rc-bootstrap-gcp
             -   push-rc-default
             -   push-rc-dxp-operator
@@ -59,6 +61,15 @@ jobs:
         with:
             chart_name: liferay-aws-infrastructure-provider
             working_directory: ./cloud/helm/aws-infrastructure-provider
+    check-azure:
+        needs:
+            -   test-cloud-helm-chart
+            -   test-cloud-helm-chart-smoke
+            -   test-cloud-terraform
+        uses: ./.github/workflows/ci-reusable-check-helm-chart-version.yaml
+        with:
+            chart_name: liferay-azure
+            working_directory: ./cloud/helm/azure
     check-azure-infrastructure-provider:
         needs:
             -   test-cloud-helm-chart
@@ -76,6 +87,14 @@ jobs:
         uses: ./.github/workflows/ci-reusable-check-bootstrap-version.yaml
         with:
             provider: aws
+    check-bootstrap-azure:
+        needs:
+            -   test-cloud-helm-chart
+            -   test-cloud-helm-chart-smoke
+            -   test-cloud-terraform
+        uses: ./.github/workflows/ci-reusable-check-bootstrap-version.yaml
+        with:
+            provider: azure
     check-bootstrap-gcp:
         needs:
             -   test-cloud-helm-chart
@@ -201,6 +220,14 @@ jobs:
         uses: ./.github/workflows/ci-reusable-promote-helm-chart.yaml
         with:
             source_image_ref: ${{needs.push-rc-aws-infrastructure-provider.outputs.image_ref}}
+    promote-rc-azure:
+        if: ${{!cancelled() && needs.approve-release.result == 'success' && needs.push-rc-azure.result == 'success'}}
+        needs:
+            -   approve-release
+            -   push-rc-azure
+        uses: ./.github/workflows/ci-reusable-promote-helm-chart.yaml
+        with:
+            source_image_ref: ${{needs.push-rc-azure.outputs.image_ref}}
     promote-rc-azure-infrastructure-provider:
         if: ${{!cancelled() && needs.approve-release.result == 'success' && needs.push-rc-azure-infrastructure-provider.result == 'success'}}
         needs:
@@ -218,6 +245,15 @@ jobs:
         with:
             provider: aws
             source_object_name: ${{needs.push-rc-bootstrap-aws.outputs.object_name}}
+    promote-rc-bootstrap-azure:
+        if: ${{!cancelled() && needs.approve-release.result == 'success' && needs.push-rc-bootstrap-azure.result == 'success'}}
+        needs:
+            -   approve-release
+            -   push-rc-bootstrap-azure
+        uses: ./.github/workflows/ci-reusable-promote-bootstrap-tarball.yaml
+        with:
+            provider: azure
+            source_object_name: ${{needs.push-rc-bootstrap-azure.outputs.object_name}}
     promote-rc-bootstrap-gcp:
         if: ${{!cancelled() && needs.approve-release.result == 'success' && needs.push-rc-bootstrap-gcp.result == 'success'}}
         needs:
@@ -423,6 +459,13 @@ jobs:
         with:
             chart_name: liferay-aws-infrastructure-provider
             working_directory: ./cloud/helm/aws-infrastructure-provider
+    push-rc-azure:
+        if: ${{needs.check-azure.outputs.should_release == 'true'}}
+        needs: check-azure
+        uses: ./.github/workflows/ci-reusable-push-helm-chart.yaml
+        with:
+            chart_name: liferay-azure
+            working_directory: ./cloud/helm/azure
     push-rc-azure-infrastructure-provider:
         if: ${{needs.check-azure-infrastructure-provider.outputs.should_release == 'true'}}
         needs: check-azure-infrastructure-provider
@@ -436,6 +479,12 @@ jobs:
         uses: ./.github/workflows/ci-reusable-push-bootstrap-tarball.yaml
         with:
             provider: aws
+    push-rc-bootstrap-azure:
+        if: ${{needs.check-bootstrap-azure.outputs.should_release == 'true'}}
+        needs: check-bootstrap-azure
+        uses: ./.github/workflows/ci-reusable-push-bootstrap-tarball.yaml
+        with:
+            provider: azure
     push-rc-bootstrap-gcp:
         if: ${{needs.check-bootstrap-gcp.outputs.should_release == 'true'}}
         needs: check-bootstrap-gcp
@@ -522,8 +571,10 @@ jobs:
             -   promote-rc-aws
             -   promote-rc-aws-infrastructure
             -   promote-rc-aws-infrastructure-provider
+            -   promote-rc-azure
             -   promote-rc-azure-infrastructure-provider
             -   promote-rc-bootstrap-aws
+            -   promote-rc-bootstrap-azure
             -   promote-rc-bootstrap-gcp
             -   promote-rc-default
             -   promote-rc-dxp-operator
@@ -539,8 +590,10 @@ jobs:
             -   push-rc-aws
             -   push-rc-aws-infrastructure
             -   push-rc-aws-infrastructure-provider
+            -   push-rc-azure
             -   push-rc-azure-infrastructure-provider
             -   push-rc-bootstrap-aws
+            -   push-rc-bootstrap-azure
             -   push-rc-bootstrap-gcp
             -   push-rc-default
             -   push-rc-dxp-operator
@@ -565,12 +618,15 @@ jobs:
                     sparse-checkout: .github
             -   env:
                     BOOTSTRAP_SHA256_aws: ${{needs.promote-rc-bootstrap-aws.outputs.sha256}}
+                    BOOTSTRAP_SHA256_azure: ${{needs.promote-rc-bootstrap-azure.outputs.sha256}}
                     BOOTSTRAP_SHA256_gcp: ${{needs.promote-rc-bootstrap-gcp.outputs.sha256}}
                     BOOTSTRAP_VERSION_aws: ${{needs.push-rc-bootstrap-aws.outputs.version}}
+                    BOOTSTRAP_VERSION_azure: ${{needs.push-rc-bootstrap-azure.outputs.version}}
                     BOOTSTRAP_VERSION_gcp: ${{needs.push-rc-bootstrap-gcp.outputs.version}}
                     DIGEST_liferay_aws: ${{needs.promote-rc-aws.outputs.image_digest}}
                     DIGEST_liferay_aws_infrastructure: ${{needs.promote-rc-aws-infrastructure.outputs.image_digest}}
                     DIGEST_liferay_aws_infrastructure_provider: ${{needs.promote-rc-aws-infrastructure-provider.outputs.image_digest}}
+                    DIGEST_liferay_azure: ${{needs.promote-rc-azure.outputs.image_digest}}
                     DIGEST_liferay_azure_infrastructure_provider: ${{needs.promote-rc-azure-infrastructure-provider.outputs.image_digest}}
                     DIGEST_liferay_default: ${{needs.promote-rc-default.outputs.image_digest}}
                     DIGEST_liferay_dxp_operator: ${{needs.promote-rc-dxp-operator.outputs.image_digest}}
@@ -586,6 +642,7 @@ jobs:
                     VERSION_liferay_aws: ${{needs.push-rc-aws.outputs.chart_version}}
                     VERSION_liferay_aws_infrastructure: ${{needs.push-rc-aws-infrastructure.outputs.chart_version}}
                     VERSION_liferay_aws_infrastructure_provider: ${{needs.push-rc-aws-infrastructure-provider.outputs.chart_version}}
+                    VERSION_liferay_azure: ${{needs.push-rc-azure.outputs.chart_version}}
                     VERSION_liferay_azure_infrastructure_provider: ${{needs.push-rc-azure-infrastructure-provider.outputs.chart_version}}
                     VERSION_liferay_default: ${{needs.push-rc-default.outputs.chart_version}}
                     VERSION_liferay_dxp_operator: ${{needs.push-rc-dxp-operator.outputs.chart_version}}
@@ -686,6 +743,8 @@ jobs:
                             liferay-aws \
                             liferay-aws-infrastructure \
                             liferay-aws-infrastructure-provider \
+                            liferay-azure \
+                            liferay-azure-infrastructure-provider \
                             liferay-default \
                             liferay-dxp-operator \
                             liferay-gcp \
@@ -716,7 +775,7 @@ jobs:
                         local bootstraps="{}"
                         local provider
 
-                        for provider in aws gcp
+                        for provider in aws azure gcp
                         do
                             local sha256_key="BOOTSTRAP_SHA256_${provider}"
                             local version_key="BOOTSTRAP_VERSION_${provider}"

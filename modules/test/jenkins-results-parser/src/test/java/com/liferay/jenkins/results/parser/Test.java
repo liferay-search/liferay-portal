@@ -5,6 +5,8 @@
 
 package com.liferay.jenkins.results.parser;
 
+import com.liferay.jenkins.results.parser.job.property.JobPropertyFactory;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -55,6 +57,8 @@ public class Test {
 			JobFactory.class, "_jobs");
 
 		jobs.clear();
+
+		JobPropertyFactory.clear();
 
 		Shell.setInstance(new Shell());
 

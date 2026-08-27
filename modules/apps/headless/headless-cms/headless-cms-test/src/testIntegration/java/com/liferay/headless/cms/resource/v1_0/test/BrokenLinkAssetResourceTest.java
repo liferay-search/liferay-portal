@@ -100,6 +100,7 @@ public class BrokenLinkAssetResourceTest
 		_testGetBrokenLinkAssetsPageWithDuplicateTitles();
 		_testGetBrokenLinkAssetsPageWithExpiredAssetInAnotherSpace();
 		_testGetBrokenLinkAssetsPageWithExpiredAssetInHiddenSpace();
+		_testGetBrokenLinkAssetsPageWithoutUpdatePermission();
 		_testGetBrokenLinkAssetsPageWithRelationshipReference();
 	}
 
@@ -332,20 +333,39 @@ public class BrokenLinkAssetResourceTest
 				"L_CMS_BASIC_WEB_CONTENT", TestPropsValues.getCompanyId());
 	}
 
+	private BrokenLinkAsset _getSingleBrokenLinkAsset(
+			BrokenLinkAssetResource brokenLinkAssetResource,
+			DepotEntry depotEntry)
+		throws Exception {
+
+		Page<BrokenLinkAsset> brokenLinkAssetsPage =
+			brokenLinkAssetResource.getBrokenLinkAssetsPage(
+				depotEntry.getDepotEntryId(), null, null, null);
+
+		Assert.assertEquals(1, brokenLinkAssetsPage.getTotalCount());
+
+		List<BrokenLinkAsset> brokenLinkAssets =
+			(List<BrokenLinkAsset>)brokenLinkAssetsPage.getItems();
+
+		return brokenLinkAssets.get(0);
+	}
+
 	private BrokenLinkAssetResource _getSpaceMemberBrokenLinkAssetResource(
 			DepotEntry depotEntry)
 		throws Exception {
 
 		String password = RandomTestUtil.randomString();
 
-		_spaceMemberUser = UserTestUtil.addUser(testCompany, password);
+		User spaceMemberUser = UserTestUtil.addUser(testCompany, password);
+
+		_users.add(spaceMemberUser);
 
 		_userLocalService.addGroupUsers(
-			depotEntry.getGroupId(), new long[] {_spaceMemberUser.getUserId()});
+			depotEntry.getGroupId(), new long[] {spaceMemberUser.getUserId()});
 
 		return BrokenLinkAssetResource.builder(
 		).authentication(
-			_spaceMemberUser.getEmailAddress(), password
+			spaceMemberUser.getEmailAddress(), password
 		).endpoint(
 			testCompany.getVirtualHostname(),
 			PortalUtil.getPortalServerPort(false), "http"
@@ -386,16 +406,8 @@ public class BrokenLinkAssetResourceTest
 		_addObjectEntry(
 			sb.toString(), depotEntry, objectDefinition, referencingTitle);
 
-		Page<BrokenLinkAsset> brokenLinkAssetsPage =
-			brokenLinkAssetResource.getBrokenLinkAssetsPage(
-				depotEntry.getDepotEntryId(), null, null, null);
-
-		Assert.assertEquals(1, brokenLinkAssetsPage.getTotalCount());
-
-		List<BrokenLinkAsset> brokenLinkAssets =
-			(List<BrokenLinkAsset>)brokenLinkAssetsPage.getItems();
-
-		BrokenLinkAsset brokenLinkAsset = brokenLinkAssets.get(0);
+		BrokenLinkAsset brokenLinkAsset = _getSingleBrokenLinkAsset(
+			brokenLinkAssetResource, depotEntry);
 
 		Assert.assertEquals(
 			targetTitles.length,
@@ -441,16 +453,8 @@ public class BrokenLinkAssetResourceTest
 				expiredObjectEntry.getExternalReferenceCode()),
 			depotEntry, objectDefinition, referencingTitle);
 
-		Page<BrokenLinkAsset> brokenLinkAssetsPage =
-			brokenLinkAssetResource.getBrokenLinkAssetsPage(
-				depotEntry.getDepotEntryId(), null, null, null);
-
-		Assert.assertEquals(1, brokenLinkAssetsPage.getTotalCount());
-
-		List<BrokenLinkAsset> brokenLinkAssets =
-			(List<BrokenLinkAsset>)brokenLinkAssetsPage.getItems();
-
-		BrokenLinkAsset brokenLinkAsset = brokenLinkAssets.get(0);
+		BrokenLinkAsset brokenLinkAsset = _getSingleBrokenLinkAsset(
+			brokenLinkAssetResource, depotEntry);
 
 		Assert.assertEquals(
 			1, GetterUtil.getInteger(brokenLinkAsset.getBrokenLinksCount()));
@@ -485,35 +489,15 @@ public class BrokenLinkAssetResourceTest
 			imageHTML + hiddenImageHTML, depotEntry, objectDefinition,
 			referencingTitle);
 
-		Page<BrokenLinkAsset> brokenLinkAssetsPage =
-			brokenLinkAssetResource.getBrokenLinkAssetsPage(
-				depotEntry.getDepotEntryId(), null, null, null);
-
-		Assert.assertEquals(1, brokenLinkAssetsPage.getTotalCount());
-
-		List<BrokenLinkAsset> brokenLinkAssets =
-			(List<BrokenLinkAsset>)brokenLinkAssetsPage.getItems();
-
-		BrokenLinkAsset brokenLinkAsset = brokenLinkAssets.get(0);
+		BrokenLinkAsset brokenLinkAsset = _getSingleBrokenLinkAsset(
+			brokenLinkAssetResource, depotEntry);
 
 		Assert.assertEquals(
 			2, GetterUtil.getInteger(brokenLinkAsset.getBrokenLinksCount()));
 		Assert.assertEquals(referencingTitle, brokenLinkAsset.getTitle());
 
-		BrokenLinkAssetResource spaceMemberBrokenLinkAssetResource =
-			_getSpaceMemberBrokenLinkAssetResource(depotEntry);
-
-		Page<BrokenLinkAsset> spaceMemberBrokenLinkAssetsPage =
-			spaceMemberBrokenLinkAssetResource.getBrokenLinkAssetsPage(
-				depotEntry.getDepotEntryId(), null, null, null);
-
-		Assert.assertEquals(1, spaceMemberBrokenLinkAssetsPage.getTotalCount());
-
-		List<BrokenLinkAsset> spaceMemberBrokenLinkAssets =
-			(List<BrokenLinkAsset>)spaceMemberBrokenLinkAssetsPage.getItems();
-
-		BrokenLinkAsset spaceMemberBrokenLinkAsset =
-			spaceMemberBrokenLinkAssets.get(0);
+		BrokenLinkAsset spaceMemberBrokenLinkAsset = _getSingleBrokenLinkAsset(
+			_getSpaceMemberBrokenLinkAssetResource(depotEntry), depotEntry);
 
 		Assert.assertEquals(
 			1,
@@ -524,6 +508,41 @@ public class BrokenLinkAssetResourceTest
 			spaceMemberBrokenLinkAsset.getBrokenLinkTitle());
 		Assert.assertEquals(
 			referencingTitle, spaceMemberBrokenLinkAsset.getTitle());
+	}
+
+	private void _testGetBrokenLinkAssetsPageWithoutUpdatePermission()
+		throws Exception {
+
+		ServiceContext serviceContext =
+			ServiceContextTestUtil.getServiceContext();
+
+		DepotEntry depotEntry = _addSpaceDepotEntry(serviceContext);
+
+		ObjectDefinition objectDefinition =
+			_getBasicWebContentObjectDefinition();
+
+		ObjectEntry expiredObjectEntry = _addExpiredObjectEntry(
+			depotEntry, objectDefinition, serviceContext);
+
+		_addObjectEntry(
+			CMSOutboundLinkTestUtil.getImageHTML(
+				expiredObjectEntry.getExternalReferenceCode()),
+			depotEntry, objectDefinition, RandomTestUtil.randomString());
+
+		BrokenLinkAsset brokenLinkAsset = _getSingleBrokenLinkAsset(
+			brokenLinkAssetResource, depotEntry);
+
+		Map<String, Map<String, String>> actions = brokenLinkAsset.getActions();
+
+		Assert.assertNotNull(actions.get("update"));
+
+		BrokenLinkAsset spaceMemberBrokenLinkAsset = _getSingleBrokenLinkAsset(
+			_getSpaceMemberBrokenLinkAssetResource(depotEntry), depotEntry);
+
+		Map<String, Map<String, String>> spaceMemberActions =
+			spaceMemberBrokenLinkAsset.getActions();
+
+		Assert.assertNull(spaceMemberActions.get("update"));
 	}
 
 	private void _testGetBrokenLinkAssetsPageWithRelationshipReference()
@@ -556,16 +575,8 @@ public class BrokenLinkAssetResourceTest
 				expiredObjectEntry.getObjectEntryId()
 			).build());
 
-		Page<BrokenLinkAsset> brokenLinkAssetsPage =
-			brokenLinkAssetResource.getBrokenLinkAssetsPage(
-				depotEntry.getDepotEntryId(), null, null, null);
-
-		Assert.assertEquals(1, brokenLinkAssetsPage.getTotalCount());
-
-		List<BrokenLinkAsset> brokenLinkAssets =
-			(List<BrokenLinkAsset>)brokenLinkAssetsPage.getItems();
-
-		BrokenLinkAsset brokenLinkAsset = brokenLinkAssets.get(0);
+		BrokenLinkAsset brokenLinkAsset = _getSingleBrokenLinkAsset(
+			brokenLinkAssetResource, depotEntry);
 
 		Assert.assertEquals(
 			1, GetterUtil.getInteger(brokenLinkAsset.getBrokenLinksCount()));
@@ -605,10 +616,10 @@ public class BrokenLinkAssetResourceTest
 	@Inject
 	private ObjectRelationshipLocalService _objectRelationshipLocalService;
 
-	@DeleteAfterTestRun
-	private User _spaceMemberUser;
-
 	@Inject
 	private UserLocalService _userLocalService;
+
+	@DeleteAfterTestRun
+	private final List<User> _users = new ArrayList<>();
 
 }

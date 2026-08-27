@@ -129,10 +129,6 @@ test.describe('Manage object fields through Model Builder', () => {
 				)
 		);
 
-		// Only what this test created is registered for deletion. Registering
-		// the definitions it merely found would delete picklists belonging to
-		// whatever else is running or expected to remain.
-
 		createdListTypeDefinitions.forEach(({id}) =>
 			apiHelpers.data.push({
 				id,
@@ -373,6 +369,10 @@ test.describe('Manage object fields through Model Builder', () => {
 			.click();
 
 		const picklistFieldName = 'picklistField' + getRandomInt();
+
+		await expect(page.getByPlaceholder('Text to translate...')).toHaveValue(
+			objectFields[0].label['en_US']
+		);
 
 		await page
 			.getByPlaceholder('Text to translate...')
@@ -709,6 +709,10 @@ test.describe('Manage object fields through Model Builder', () => {
 					.getByText(objectFieldLabel, {exact: true})
 					.click();
 
+				await expect(page.getByText('LabelMandatory')).toHaveValue(
+					objectFieldLabel
+				);
+
 				await page.getByText('LabelMandatory').fill(updatedFieldLabel);
 
 				await modelBuilderLeftSidebarPage.clickSideBarItem(
@@ -909,17 +913,9 @@ test.describe('Manage object fields through Model Builder', () => {
 
 		await page.getByText('Encrypted', {exact: true}).click();
 
-		const pagePromise = page.waitForEvent('popup');
-
-		await page.getByRole('link', {name: 'Learn more.'}).click();
-
-		const newPage = await pagePromise;
-
 		await expect(
-			newPage.getByRole('heading', {
-				name: 'Localizing Object Definitions',
-			})
-		).toBeVisible();
+			page.getByRole('link', {name: 'Learn more.'})
+		).toHaveAttribute('href', /localizing-object-definitions-and-entries/);
 	});
 
 	test('read only configuration is displayed in the fields advanced tab', async ({
@@ -2370,20 +2366,9 @@ test.describe('Manage objectFields through Objects Admin UI', () => {
 
 		await objectFieldsPage.openObjectField(objectFields[0].label['en_US']);
 
-		const pagePromise = page.waitForEvent('popup');
-
-		await page
-			.frameLocator('iframe')
-			.getByRole('link', {name: 'Learn more.'})
-			.click();
-
-		const newPage = await pagePromise;
-
 		await expect(
-			newPage.getByRole('heading', {
-				name: 'Localizing Object Definitions',
-			})
-		).toBeVisible();
+			page.frameLocator('iframe').getByRole('link', {name: 'Learn more.'})
+		).toHaveAttribute('href', /localizing-object-definitions-and-entries/);
 	});
 });
 
@@ -2533,12 +2518,6 @@ test.describe('Create Object Fields', () => {
 		await objectFieldsPage.objectFieldLabelInput.fill('Cancel Field');
 
 		await page.getByRole('button', {name: 'Cancel'}).click();
-
-		// Cancelling the modal only starts its close. The close lands later
-		// and returns focus to the element that opened the modal, so wait for
-		// the modal's own field to be gone before touching the page beneath,
-		// and give the Enter to the search box itself rather than to whatever
-		// holds focus by then.
 
 		await expect(objectFieldsPage.objectFieldLabelInput).toBeHidden();
 
@@ -2845,11 +2824,6 @@ test.describe('Manage object fields default value properties', () => {
 				});
 
 				booleanFieldName = objectFields[0].label['en_US'];
-
-				// An isolated folder keeps the diagram to this one definition, so
-				// the node is fitted into view; the Default folder holds every
-				// system definition and pushes the node's controls under the
-				// right sidebar, which Playwright cannot scroll away.
 
 				const objectFolder =
 					await apiHelpers.objectAdmin.postRandomObjectFolder();
@@ -3496,11 +3470,6 @@ test.describe('Manage object fields default value properties', () => {
 				objectFieldBusinessTypes: ['Text'],
 			});
 
-			// An isolated folder keeps the diagram to this one definition, so
-			// the node is fitted into view; the Default folder holds every
-			// system definition and pushes the node's controls out of the
-			// canvas viewport, which Playwright cannot scroll.
-
 			const objectFolder =
 				await apiHelpers.objectAdmin.postRandomObjectFolder();
 
@@ -3614,11 +3583,6 @@ test.describe('Manage object fields default value properties', () => {
 			const objectFields = generateObjectFields({
 				objectFieldBusinessTypes: ['Text'],
 			});
-
-			// An isolated folder keeps the diagram to this one definition, so
-			// the node is fitted into view; the Default folder holds every
-			// system definition and pushes the node's controls out of the
-			// canvas viewport, which Playwright cannot scroll.
 
 			const objectFolder =
 				await apiHelpers.objectAdmin.postRandomObjectFolder();

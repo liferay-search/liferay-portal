@@ -19,13 +19,15 @@ import {getSafeDecodedURIComponent, getSafeTouchpoint} from 'shared/util/util';
 import {pickBy} from 'lodash';
 import {PropTypes} from 'prop-types';
 import {removeUriQueryParam, setUriQueryValues} from 'shared/util/router';
-import {Switch, useHistory} from 'react-router-dom';
 import {useAccountFilter} from 'shared/hooks/useAccountFilter';
 import {useChannelContext} from 'shared/context/channel';
 import {useDataSources} from 'shared/context/dataSources';
+import {useHistoryAdapter} from 'shared/hooks/useHistoryAdapter';
 import {useLDPEnabled} from 'shared/hooks/useLDPEnabled';
 import {useQueryRangeSelectors} from 'shared/hooks/useQueryRangeSelectors';
 import {useSegmentFilter} from 'shared/hooks/useSegmentFilter';
+
+const TOUCHPOINT_TYPES = ['accounts', 'known-individuals', 'overview', 'path'];
 
 const Accounts = lazy(() =>
 	import(/* webpackChunkName: "TouchpointAccountsPage" */ './Accounts')
@@ -52,7 +54,8 @@ function TouchpointRoutes({className, router}) {
 		experienceId: experienceIdfromURL,
 		groupId,
 		title,
-		touchpoint
+		touchpoint,
+		touchpointType
 	} = router.params;
 	const {accountId, accountName, setAccount} = useAccountFilter();
 	const {segmentId, segmentName, setSegment} = useSegmentFilter();
@@ -86,7 +89,7 @@ function TouchpointRoutes({className, router}) {
 	const decodedTitle = getSafeDecodedURIComponent(title);
 	const decodedTouchpoint = getSafeDecodedURIComponent(touchpoint);
 	const [experienceId, setExperienceId] = useState(experienceIdfromURL);
-	const history = useHistory();
+	const history = useHistoryAdapter();
 
 	const accountDropdown = LDPEnabled && (
 		<AccountDropdown
@@ -110,6 +113,16 @@ function TouchpointRoutes({className, router}) {
 	useEffect(() => {
 		setPathRangeSelectors(rangeSelectors);
 	}, [matchedRoute]);
+
+	// `:touchpointType` is a free parameter, so a value no tab answers to does
+	// reach this component. Under v5 it fell past every `<Switch>` case to
+	// `RouteNotFound`, which had `App` swap the whole page for the 404. The four
+	// checks below have no fallback of their own, so without this the page
+	// renders its header over an empty body -- neither the screen nor an error.
+
+	if (!TOUCHPOINT_TYPES.includes(touchpointType)) {
+		return <RouteNotFound />;
+	}
 
 	return (
 		<BasePage
@@ -260,42 +273,36 @@ function TouchpointRoutes({className, router}) {
 
 				<BasePage.Body>
 					<Suspense fallback={<Loading />}>
-						<Switch>
-							<BundleRouter
-								data={TouchpointOverviewPage}
-								destructured={false}
-								exact
-								path={Routes.SITES_TOUCHPOINTS_OVERVIEW}
-							/>
-
-							<BundleRouter
-								data={KnownIndividuals}
-								destructured={false}
-								exact
-								path={
-									Routes.SITES_TOUCHPOINTS_KNOWN_INDIVIDUALS
-								}
-							/>
-
+						{touchpointType === 'path' && (
 							<BundleRouter
 								componentProps={{
 									rangeSelectors: pathRangeSelectors
 								}}
 								data={TouchpointPathPage}
 								destructured={false}
-								exact
-								path={Routes.SITES_TOUCHPOINTS_PATH}
 							/>
+						)}
 
+						{touchpointType === 'known-individuals' && (
+							<BundleRouter
+								data={KnownIndividuals}
+								destructured={false}
+							/>
+						)}
+
+						{touchpointType === 'accounts' && (
 							<BundleRouter
 								data={Accounts}
 								destructured={false}
-								exact
-								path={Routes.SITES_TOUCHPOINTS_ACCOUNTS}
 							/>
+						)}
 
-							<RouteNotFound />
-						</Switch>
+						{touchpointType === 'overview' && (
+							<BundleRouter
+								data={TouchpointOverviewPage}
+								destructured={false}
+							/>
+						)}
 					</Suspense>
 				</BasePage.Body>
 			</BasePage.Context.Provider>

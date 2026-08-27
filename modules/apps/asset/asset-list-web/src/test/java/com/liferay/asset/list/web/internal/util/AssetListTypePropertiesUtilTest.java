@@ -164,6 +164,63 @@ public class AssetListTypePropertiesUtilTest {
 	}
 
 	@Test
+	public void testGetTypePropertiesJSONArrayEmitsSortableFlag() {
+		_setUpObjectDefinition(
+			_CLASS_NAME_ID_1, _LABEL_1, _CLASS_TYPE_ID_1,
+			Arrays.asList(
+				_mockObjectField(
+					ObjectFieldConstants.BUSINESS_TYPE_BOOLEAN, false,
+					"active"),
+				_mockObjectField(
+					ObjectFieldConstants.BUSINESS_TYPE_DATE, false, "due"),
+				_mockObjectField(
+					ObjectFieldConstants.BUSINESS_TYPE_INTEGER, false, "rank"),
+				_mockObjectField(
+					ObjectFieldConstants.BUSINESS_TYPE_LONG_TEXT, false,
+					"summary"),
+				_mockObjectField(
+					ObjectFieldConstants.BUSINESS_TYPE_MULTISELECT_PICKLIST,
+					false, "labels"),
+				_mockObjectField(
+					ObjectFieldConstants.BUSINESS_TYPE_PICKLIST, false,
+					"category"),
+				_mockObjectField(
+					ObjectFieldConstants.BUSINESS_TYPE_RICH_TEXT, false,
+					"body"),
+				_mockObjectField(
+					ObjectFieldConstants.BUSINESS_TYPE_TEXT, false, "title")));
+
+		JSONArray jsonArray =
+			AssetListTypePropertiesUtil.getTypePropertiesJSONArray(
+				new long[] {_CLASS_NAME_ID_1}, new long[] {_CLASS_TYPE_ID_1},
+				_COMPANY_ID, LocaleUtil.US);
+
+		JSONArray itemsJSONArray = JSONUtil.getValueAsJSONArray(
+			jsonArray, "JSONObject/1", "JSONArray/items");
+
+		Assert.assertEquals(
+			itemsJSONArray.toString(), 8, itemsJSONArray.length());
+
+		for (int i = 0; i < itemsJSONArray.length(); i++) {
+			JSONObject itemJSONObject = itemsJSONArray.getJSONObject(i);
+
+			String name = itemJSONObject.getString("name");
+
+			boolean expectedSortable = true;
+
+			if (name.equals("body") || name.equals("labels") ||
+				name.equals("summary")) {
+
+				expectedSortable = false;
+			}
+
+			Assert.assertEquals(
+				itemJSONObject.toString(), expectedSortable,
+				itemJSONObject.getBoolean("sortable"));
+		}
+	}
+
+	@Test
 	public void testGetTypePropertiesJSONArrayEmitsTypeGroupWithEmptyItemsWhenNoFieldsFilterable() {
 		_setUpObjectDefinition(
 			_CLASS_NAME_ID_1, _LABEL_1, _CLASS_TYPE_ID_1,
@@ -210,11 +267,8 @@ public class AssetListTypePropertiesUtilTest {
 
 		Assert.assertEquals(jsonArray.toString(), 2, jsonArray.length());
 
-		JSONArray itemsJSONArray = jsonArray.getJSONObject(
-			1
-		).getJSONArray(
-			"items"
-		);
+		JSONArray itemsJSONArray = JSONUtil.getValueAsJSONArray(
+			jsonArray, "JSONObject/1", "JSONArray/items");
 
 		Assert.assertEquals(
 			itemsJSONArray.toString(), 1, itemsJSONArray.length());

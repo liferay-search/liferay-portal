@@ -5,6 +5,7 @@
 
 import ClayButton, {ClayButtonWithIcon} from '@clayui/button';
 import ClayIcon from '@clayui/icon';
+import ClayLoadingIndicator from '@clayui/loading-indicator';
 import ClayModal from '@clayui/modal';
 import {openToast} from 'frontend-js-components-web';
 import {sub} from 'frontend-js-web';
@@ -13,13 +14,17 @@ import React, {useRef, useState} from 'react';
 import FieldWrapper from '../../common/components/forms/FieldWrapper';
 import ApiHelper from '../../common/services/ApiHelper';
 import StructureService from '../../common/services/StructureService';
+import {ObjectDefinition} from '../../common/types/ObjectDefinition';
+import getLocalizedValue from '../../common/utils/getLocalizedValue';
 import {openCMSModal} from '../../common/utils/openCMSModal';
 
 const JSON_EXTENSION = '.json';
 
 const REPEATABLE_GROUPS_FOLDER = 'L_CMS_STRUCTURE_REPEATABLE_GROUPS';
 
-function readJSONFile(file: File): Promise<any> {
+function readJSONFile(
+	file: File
+): Promise<ObjectDefinition | ObjectDefinition[]> {
 	return new Promise((resolve, reject) => {
 		const fileReader = new FileReader();
 
@@ -61,8 +66,43 @@ function getImportErrorMessage(error: string): string {
 	return error;
 }
 
+function getMainStructures(
+	objectDefinitions: ObjectDefinition | ObjectDefinition[]
+) {
+	const definitions = Array.isArray(objectDefinitions)
+		? objectDefinitions
+		: [objectDefinitions];
+
+	return definitions.filter(
+		(definition) =>
+			definition?.externalReferenceCode &&
+			definition.objectFolderExternalReferenceCode !==
+				REPEATABLE_GROUPS_FOLDER
+	);
+}
+
+async function getExistingStructureNames(
+	objectDefinitions: ObjectDefinition | ObjectDefinition[]
+) {
+	const existingStructureNames: string[] = [];
+
+	for (const definition of getMainStructures(objectDefinitions)) {
+		const {data, error} = await StructureService.getStructure(
+			definition.externalReferenceCode
+		);
+
+		if (!error && data) {
+			existingStructureNames.push(
+				getLocalizedValue(data.label) || data.name || ''
+			);
+		}
+	}
+
+	return existingStructureNames;
+}
+
 async function importStructures(
-	objectDefinitions: any,
+	objectDefinitions: ObjectDefinition | ObjectDefinition[],
 	importURL: string,
 	successMessage: string,
 	loadData?: () => void
@@ -108,109 +148,69 @@ export default function ImportStructuresModalContent({
 	importURL: string;
 	loadData?: () => void;
 }) {
-	const [jsonFile, setJsonFile] = useState<File | null>(null);
 	const [errorMessage, setErrorMessage] = useState('');
+	const [existingStructureNames, setExistingStructureNames] = useState<
+		string[]
+	>([]);
 	const [loading, setLoading] = useState(false);
+	const [objectDefinitions, setObjectDefinitions] = useState<
+		ObjectDefinition | ObjectDefinition[] | null
+	>(null);
 
-	const onFileChange = (file: File | null) => {
+	const onFileChange = async (file: File | null) => {
+		setErrorMessage('');
+		setExistingStructureNames([]);
+		setObjectDefinitions(null);
+
 		if (!file) {
-			setErrorMessage('');
-		}
-
-		setJsonFile(file);
-	};
-
-	const importStructure = async (
-		objectDefinitions: any,
-		successMessage: string
-	) => {
-		setLoading(true);
-
-		await importStructures(
-			objectDefinitions,
-			importURL,
-			successMessage,
-			loadData
-		);
-
-		setLoading(false);
-
-		closeModal();
-	};
-
-	const onImportButtonClick = async () => {
-		if (!jsonFile) {
-			setErrorMessage(
-				sub(
-					Liferay.Language.get('the-x-field-is-required'),
-					Liferay.Language.get('json-file')
-				)
-			);
-
 			return;
 		}
 
 		setLoading(true);
 
-		let parsedFile: any;
-
 		try {
-			parsedFile = await readJSONFile(jsonFile);
+			const parsedFile = await readJSONFile(file);
+
+			setExistingStructureNames(
+				await getExistingStructureNames(parsedFile)
+			);
+			setObjectDefinitions(parsedFile);
 		}
 		catch (error) {
-			setLoading(false);
 			setErrorMessage(
 				Liferay.Language.get('you-have-entered-invalid-json')
 			);
+		}
+
+		setLoading(false);
+	};
+
+	const onImportButtonClick = async () => {
+		if (!objectDefinitions) {
+			if (!errorMessage) {
+				setErrorMessage(
+					sub(
+						Liferay.Language.get('the-x-field-is-required'),
+						Liferay.Language.get('json-file')
+					)
+				);
+			}
 
 			return;
 		}
 
-		const definitions = Array.isArray(parsedFile)
-			? parsedFile
-			: [parsedFile];
-
-		const mainStructures = definitions.filter(
-			(definition) =>
-				definition?.externalReferenceCode &&
-				definition.objectFolderExternalReferenceCode !==
-					REPEATABLE_GROUPS_FOLDER
-		);
-
-		const existingNames: string[] = [];
-
-		for (const definition of mainStructures) {
-			const {data, error} = await StructureService.getStructure(
-				definition.externalReferenceCode
-			);
-
-			if (!error && data) {
-				const objectDefinition = data as {
-					label: {[key: string]: string};
-					name: string;
-				};
-
-				existingNames.push(
-					objectDefinition.label?.[
-						Liferay.ThemeDisplay.getLanguageId()
-					] || objectDefinition.name
-				);
-			}
-		}
-
-		setLoading(false);
-
-		if (existingNames.length) {
+		if (existingStructureNames.length) {
 			closeModal();
 
 			openCMSModal({
+				center: true,
 				contentComponent: ({closeModal}: {closeModal: () => void}) =>
 					WarningModalContent({
 						closeModal,
-						existingStructureNames: existingNames,
+						existingStructureNames,
 						importStructure: () =>
 							importStructures(
-								parsedFile,
+								objectDefinitions,
 								importURL,
 								Liferay.Language.get(
 									'the-content-structure-was-successfully-imported-and-the-existing-content-structure-was-overwritten'
@@ -218,6 +218,7 @@ export default function ImportStructuresModalContent({
 								loadData
 							),
 					}),
+				disableAutoClose: true,
 				size: 'md',
 				status: 'warning',
 			});
@@ -225,16 +226,24 @@ export default function ImportStructuresModalContent({
 			return;
 		}
 
-		const successMessage =
-			mainStructures.length > 1
+		setLoading(true);
+
+		await importStructures(
+			objectDefinitions,
+			importURL,
+			getMainStructures(objectDefinitions).length > 1
 				? Liferay.Language.get(
 						'the-content-structures-were-successfully-imported'
 					)
 				: Liferay.Language.get(
 						'the-content-structure-was-successfully-imported'
-					);
+					),
+			loadData
+		);
 
-		await importStructure(parsedFile, successMessage);
+		setLoading(false);
+
+		closeModal();
 	};
 
 	return (
@@ -276,6 +285,15 @@ export default function ImportStructuresModalContent({
 							displayType="primary"
 							onClick={onImportButtonClick}
 						>
+							{loading && (
+								<span className="inline-item inline-item-before">
+									<ClayLoadingIndicator
+										displayType="light"
+										size="sm"
+									/>
+								</span>
+							)}
+
 							{Liferay.Language.get('import')}
 						</ClayButton>
 					</ClayButton.Group>
@@ -350,6 +368,15 @@ function WarningModalContent({
 							displayType="warning"
 							onClick={onImportButtonClick}
 						>
+							{loading && (
+								<span className="inline-item inline-item-before">
+									<ClayLoadingIndicator
+										displayType="light"
+										size="sm"
+									/>
+								</span>
+							)}
+
 							{Liferay.Language.get('import')}
 						</ClayButton>
 					</ClayButton.Group>

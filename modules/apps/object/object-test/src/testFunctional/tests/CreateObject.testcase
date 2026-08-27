@@ -178,12 +178,9 @@ definition {
 
 		PortletEntry.publish();
 
-		// The publish answers through the browser, so read the persisted
-		// status back over the API before touching the list: a Draft here
-		// means the publish itself was lost, and an Approved here with a
-		// missing row after points at the list's rendering instead. The raw
-		// answer is echoed before any parsing, so a refused or empty answer
-		// names itself instead of dying inside the path lookup.
+		AssertElementNotPresent(
+			key_text = "Publish",
+			locator1 = "Button#ANY");
 
 		var portalURL = JSONCompany.getPortalURL();
 		var userPassword = PropsUtil.get("default.admin.password");
@@ -207,10 +204,6 @@ definition {
 			expected = "approved");
 
 		ObjectAdmin.openObjectAdmin();
-
-		while ((IsElementNotPresent(key_label = "Custom Object 73", locator1 = "ObjectAdmin#OBJECT_STATUS")) && (maxIterations = "10")) {
-			Refresh();
-		}
 
 		AssertTextEquals(
 			key_label = "Custom Object 73",

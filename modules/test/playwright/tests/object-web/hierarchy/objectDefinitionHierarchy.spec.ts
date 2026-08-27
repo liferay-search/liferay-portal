@@ -16,7 +16,8 @@ import {loginTest} from '../../../fixtures/loginTest';
 import {objectPagesTest} from '../../../fixtures/objectPagesTest';
 import {getRandomInt} from '../../../utils/getRandomInt';
 import getRandomString from '../../../utils/getRandomString';
-import performLogin, {
+import {
+	performLoginViaApi,
 	performLogout,
 	userData,
 } from '../../../utils/performLogin';
@@ -573,7 +574,7 @@ test.describe('Manage root model elements through View Object Entries', () => {
 			};
 
 			await performLogout(page);
-			await performLogin(page, user1.alternateName);
+			await performLoginViaApi({page, screenName: user1.alternateName});
 
 			await viewObjectEntriesPage.goto(objectDefinition1.className);
 
@@ -597,7 +598,7 @@ test.describe('Manage root model elements through View Object Entries', () => {
 			};
 
 			await performLogout(page);
-			await performLogin(page, user2.alternateName);
+			await performLoginViaApi({page, screenName: user2.alternateName});
 
 			await viewObjectEntriesPage.goto(objectDefinition1.className);
 
@@ -614,7 +615,7 @@ test.describe('Manage root model elements through View Object Entries', () => {
 		}
 		finally {
 			await performLogout(page);
-			await performLogin(page, 'test');
+			await performLoginViaApi({page, screenName: 'test'});
 
 			const objectRelationshipAPIClient =
 				await apiHelpers.buildRestClient(ObjectRelationshipAPI);
@@ -1547,13 +1548,6 @@ test.describe('Manage root models elements through Objects Admin', () => {
 });
 
 test.describe('Disable inheritance modal flows', () => {
-
-	// Inheritance edges with linked entries cannot be PUT edge=false until
-	// the entries are gone, and apiHelpers cannot delete an edge=true
-	// relationship. Delete the parent entry here so the cascade clears the
-	// linked child, then PUT edge=false on the relationships so the
-	// automatic apiHelpers cleanup chain stays unblocked.
-
 	let parentApplicationName = '';
 	let parentEntryId: number | undefined;
 	let relationshipsForCleanup: ObjectRelationship[] = [];
@@ -1629,9 +1623,6 @@ test.describe('Disable inheritance modal flows', () => {
 		'shows modal blocking disabling inheritance when entries would be orphaned',
 		{tag: '@LPD-89021'},
 		async ({apiHelpers, objectRelationshipsPage}) => {
-
-			// Build a child with two inheritance parents and standalone=false
-
 			const parent1 =
 				await apiHelpers.objectAdmin.postRandomObjectDefinition({
 					status: {code: 0},
@@ -1678,8 +1669,6 @@ test.describe('Disable inheritance modal flows', () => {
 				'false'
 			);
 
-			// Create a child entry linked under parent1
-
 			parentApplicationName = parent1.restContextPath!.replace(
 				/^\/o\//,
 				''
@@ -1697,8 +1686,6 @@ test.describe('Disable inheritance modal flows', () => {
 				{data: {textField: 'linked-' + getRandomInt()}}
 			);
 
-			// Open Edit relationship and uncheck inheritance
-
 			await objectRelationshipsPage.goto(parent1.label!['en_US']);
 
 			await objectRelationshipsPage.actionsButton.click();
@@ -1706,8 +1693,6 @@ test.describe('Disable inheritance modal flows', () => {
 			await objectRelationshipsPage.editObjectRelationshipOption.click();
 
 			await objectRelationshipsPage.inheritanceCheckbox.click();
-
-			// Block modal fires directly from the pre-check (no warning step)
 
 			await expect(
 				objectRelationshipsPage.disableInheritanceNotAllowedModalHeader

@@ -6,12 +6,15 @@
 package com.liferay.portal.vulcan.internal.template.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.portal.configuration.test.util.CompanyConfigurationTemporarySwapper;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.UserLocalService;
+import com.liferay.portal.kernel.test.TestInfo;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.util.HTTPTestUtil;
+import com.liferay.portal.kernel.test.util.PropsValuesTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.test.util.ZipFileTestUtil;
@@ -48,6 +51,7 @@ public class RESTClientTemplateContextContributorTest {
 		new LiferayIntegrationTestRule();
 
 	@Test
+	@TestInfo("LPD-102690")
 	public void test() throws Exception {
 		Bundle bundle = FrameworkUtil.getBundle(
 			RESTClientTemplateContextContributorTest.class);
@@ -78,7 +82,10 @@ public class RESTClientTemplateContextContributorTest {
 
 			PropsValues.TERMS_OF_USE_REQUIRED = false;
 
-			try {
+			try (SafeCloseable safeCloseable =
+					PropsValuesTestUtil.swapWithSafeCloseable(
+						"USERS_REMINDER_QUERIES_ENABLED", false)) {
+
 				HTTPTestUtil.customize(
 				).withoutModulePath(
 				).apply(
@@ -121,6 +128,16 @@ public class RESTClientTemplateContextContributorTest {
 						HashMapDictionaryBuilder.<String, Object>put(
 							"enabled", true
 						).build())) {
+
+			Assert.assertThat(
+				HTTPTestUtil.invokeToString(
+					null, "de/web" + friendlyUrlPath + "/portal-vulcan-test",
+					Http.Method.GET),
+				CoreMatchers.allOf(
+					CoreMatchers.containsString(
+						"Site Page (1st call): Portal Vulcan Test DE."),
+					CoreMatchers.containsString(
+						"Site Page (2nd call): Portal Vulcan Test DE.")));
 
 			Assert.assertThat(
 				HTTPTestUtil.invokeToString(

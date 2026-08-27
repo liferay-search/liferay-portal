@@ -18,7 +18,7 @@ targetRevision: {{ .targetRevision | quote }}
 {{- end -}}
 
 {{- define "liferay-platform.clusterSecretStoreName" -}}
-{{- printf "%s-secret-store" .Values.deploymentContext.deploymentName -}}
+{{- required "The value \"clusterSecretStore.name\" is required to identify the cluster secret store" .Values.clusterSecretStore.name -}}
 {{- end -}}
 
 {{- define "liferay-platform.crossplaneDeploymentRuntimeConfigAnnotations" -}}

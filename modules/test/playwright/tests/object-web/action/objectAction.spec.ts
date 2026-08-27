@@ -352,11 +352,6 @@ test('can send notification email via download action', async ({
 		.getByRole('button', {name: 'Search'})
 		.waitFor({state: 'visible'});
 
-	// The queue entry is written inside the download request, before its
-	// first response byte, so a finished download means the entry is there.
-	// A bare click resolves on dispatch with the request still in flight, so
-	// own the download to its end before reading the queue.
-
 	const downloadPromise = page.waitForEvent('download');
 
 	await viewObjectEntriesPage.page.getByText('sampleFile.txt').click();
@@ -2218,24 +2213,30 @@ test.describe('Object Action Standalone Permissions', () => {
 
 			await viewObjectEntriesPage.frontendDatasetActions.click();
 
+			const executeResponsePromise = page.waitForResponse(
+				(response) =>
+					response
+						.url()
+						.includes(`/object-actions/${objectAction.name}`) &&
+					response.request().method() === 'PUT' &&
+					response.ok()
+			);
+
 			await page.getByRole('menuitem', {name: actionLabel}).click();
 
-			// The standalone action runs asynchronously, so poll until the
-			// auto-created entry appears.
+			await executeResponsePromise;
 
-			await expect(async () => {
-				const entries =
-					await apiHelpers.objectEntry.getObjectDefinitionObjectEntriesByScope(
-						applicationName,
-						String(site.id)
-					);
-
-				const autoCreatedEntry = entries.items.find(
-					(item: any) => item[fieldName] === predefinedValue
+			const entries =
+				await apiHelpers.objectEntry.getObjectDefinitionObjectEntriesByScope(
+					applicationName,
+					String(site.id)
 				);
 
-				expect(autoCreatedEntry).toBeTruthy();
-			}).toPass();
+			const autoCreatedEntry = entries.items.find(
+				(item: any) => item[fieldName] === predefinedValue
+			);
+
+			expect(autoCreatedEntry).toBeTruthy();
 		}
 	);
 
@@ -2375,27 +2376,31 @@ test.describe('Object Action Standalone Permissions', () => {
 
 			await viewObjectEntriesPage.frontendDatasetActions.click();
 
+			const executeResponsePromise = page.waitForResponse(
+				(response) =>
+					response.url().includes(`/object-actions/${actionName}`) &&
+					response.request().method() === 'PUT' &&
+					response.ok()
+			);
+
 			await page.getByRole('menuitem', {name: actionLabel}).click();
+
+			await executeResponsePromise;
 
 			await performLogout(page);
 
 			await performLoginViaApi({page, screenName: 'test'});
 
-			// The standalone action runs asynchronously, so poll until the
-			// auto-created entry appears.
-
-			await expect(async () => {
-				const entries =
-					await apiHelpers.objectEntry.getObjectDefinitionObjectEntries(
-						applicationName
-					);
-
-				const autoCreatedEntry = entries.items.find(
-					(item: any) => item[fieldName] === predefinedValue
+			const entries =
+				await apiHelpers.objectEntry.getObjectDefinitionObjectEntries(
+					applicationName
 				);
 
-				expect(autoCreatedEntry).toBeTruthy();
-			}).toPass();
+			const autoCreatedEntry = entries.items.find(
+				(item: any) => item[fieldName] === predefinedValue
+			);
+
+			expect(autoCreatedEntry).toBeTruthy();
 		}
 	);
 

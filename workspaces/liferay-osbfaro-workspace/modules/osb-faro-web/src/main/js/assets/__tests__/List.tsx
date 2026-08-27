@@ -3,18 +3,17 @@ import mockStore, {mockStoreDataLDP} from 'test/mock-store';
 import React from 'react';
 import {ChannelContext} from 'shared/context/channel';
 import {cleanup, fireEvent, render, screen} from '@testing-library/react';
-import {createMemoryHistory} from 'history';
 import {mockChannelContext} from 'test/mock-channel-context';
+import {MemoryRouter} from 'react-router-dom';
 import {Provider} from 'react-redux';
 import {RangeKeyTimeRanges} from 'shared/util/constants';
-import {Router} from 'react-router-dom';
 
 jest.unmock('react-dom');
 
 jest.mock('@liferay/frontend-data-set-web', () => ({
 	...jest.requireActual('@liferay/frontend-data-set-web'),
 	FrontendDataSet: ({
-		customDataRenderers,
+		additionalAPIURLParametersTransformer,
 		emptyState,
 		filters,
 		groupedFilters,
@@ -23,7 +22,7 @@ jest.mock('@liferay/frontend-data-set-web', () => ({
 		sorts,
 		views,
 	}: {
-		customDataRenderers?: {[key: string]: React.FC<any>};
+		additionalAPIURLParametersTransformer?: (loadDataArgs: any) => any;
 		emptyState?: {
 			description?: React.ReactNode;
 			image?: string;
@@ -35,160 +34,213 @@ jest.mock('@liferay/frontend-data-set-web', () => ({
 		itemsActions?: Array<{onClick?: (item: any) => void}>;
 		sorts?: any[];
 		views?: Array<{schema: {fields: any[]}}>;
-	}) => (
-		<div data-testid="fds-component" id={id}>
-			<div data-testid="fds-sorts">{JSON.stringify(sorts ?? null)}</div>
+	}) => {
+		const [transformerResult, setTransformerResult] = React.useState('');
 
-			<div data-testid="fds-fields">
-				{JSON.stringify(views?.[0]?.schema?.fields ?? null)}
-			</div>
+		return (
+			<div data-testid="fds-component" id={id}>
+				<button
+					data-testid="fds-run-transformer"
+					onClick={() => {
+						setTransformerResult(
+							String(
+								additionalAPIURLParametersTransformer?.({
+									additionalAPIURLParameters: 'unchanged=1',
+									odataFiltersStrings: [
+										"assetType eq 'blog'",
+										undefined,
+									],
+									searchParam: 'liferay',
+								})
+							)
+						);
+					}}
+				>
+					{'Run Transformer'}
+				</button>
 
-			<div data-testid="fds-object-type-cells">
-				{[undefined, 'content', 'file', 'unknown'].map((value) => {
-					const ObjectTypeCell =
-						customDataRenderers?.assetObjectTypeRenderer;
-
-					return (
-						ObjectTypeCell && (
-							<div
-								data-testid={`fds-object-type-cell-${value}`}
-								key={String(value)}
-							>
-								<ObjectTypeCell value={value} />
-							</div>
-						)
-					);
-				})}
-			</div>
-
-			{emptyState && (
-				<div data-testid="fds-empty-state">
-					<div data-testid="fds-empty-state-title">
-						{emptyState.title}
-					</div>
-
-					<div data-testid="fds-empty-state-description">
-						{emptyState.description}
-					</div>
+				<div data-testid="fds-transformer-result">
+					{transformerResult}
 				</div>
-			)}
-			<div data-testid="fds-filters">{JSON.stringify(filters)}</div>
 
-			<div data-testid="fds-grouped-filters">
-				{JSON.stringify(groupedFilters)}
+				<div data-testid="fds-sorts">
+					{JSON.stringify(sorts ?? null)}
+				</div>
+
+				<div data-testid="fds-fields">
+					{JSON.stringify(views?.[0]?.schema?.fields ?? null)}
+				</div>
+
+				{emptyState && (
+					<div data-testid="fds-empty-state">
+						<div data-testid="fds-empty-state-title">
+							{emptyState.title}
+						</div>
+
+						<div data-testid="fds-empty-state-description">
+							{emptyState.description}
+						</div>
+					</div>
+				)}
+				<div data-testid="fds-filters">{JSON.stringify(filters)}</div>
+
+				<div data-testid="fds-grouped-filters">
+					{JSON.stringify(groupedFilters)}
+				</div>
+
+				<button
+					data-testid="trigger-info-panel"
+					onClick={() =>
+						itemsActions?.[0]?.onClick?.({
+							itemData: {
+								assetCategories: [],
+								assetTags: [],
+								assetTitle: 'Test Asset Title',
+								assetType: 'blog',
+								id: 'asset-id-1',
+								mimeType: 'blog',
+							},
+						})
+					}
+				>
+					{'Open Info Panel'}
+				</button>
+
+				<button
+					data-testid="trigger-info-panel-no-mime"
+					onClick={() =>
+						itemsActions?.[0]?.onClick?.({
+							itemData: {
+								assetCategories: [],
+								assetTags: [],
+								assetTitle: 'Asset Without Mime',
+								assetType: 'document',
+								id: 'asset-id-2',
+							},
+						})
+					}
+				>
+					{'Open Info Panel No Mime'}
+				</button>
+
+				<button
+					data-testid="trigger-info-panel-no-title"
+					onClick={() =>
+						itemsActions?.[0]?.onClick?.({
+							itemData: {
+								assetCategories: [],
+								assetTags: [],
+								assetType: 'folder',
+								id: 'fallback-id-3',
+								mimeType: 'folder',
+							},
+						})
+					}
+				>
+					{'Open Info Panel No Title'}
+				</button>
+
+				<button
+					data-testid="trigger-info-panel-with-items"
+					onClick={() =>
+						itemsActions?.[0]?.onClick?.({
+							itemData: {
+								assetCategories: [
+									{
+										id: 'cat-1',
+										name: 'Category One',
+										vocabularyId: 'vocab-1',
+									},
+									{
+										id: 'cat-2',
+										name: 'Category Two',
+										vocabularyId: 'vocab-1',
+									},
+								],
+								assetTags: [{id: 'tag-1', name: 'Tag One'}],
+								assetTitle: 'Rich Asset',
+								assetType: 'webContent',
+								assetVocabularies: [
+									{id: 'vocab-1', name: 'Topic'},
+								],
+								id: 'asset-id-4',
+								mimeType: 'basic-web-content',
+							},
+						})
+					}
+				>
+					{'Open Info Panel With Items'}
+				</button>
+
+				<button
+					data-testid="trigger-info-panel-empty-vocab"
+					onClick={() =>
+						itemsActions?.[0]?.onClick?.({
+							itemData: {
+								assetCategories: [
+									{
+										id: 'cat-1',
+										name: 'Category One',
+										vocabularyId: 'vocab-1',
+									},
+								],
+								assetTags: [],
+								assetTitle: 'Asset With Empty Vocab',
+								assetType: 'blog',
+								assetVocabularies: [
+									{id: 'vocab-1', name: 'Topics'},
+									{id: 'vocab-2', name: 'Genres'},
+								],
+								id: 'asset-id-5',
+								mimeType: 'blog',
+							},
+						})
+					}
+				>
+					{'Open Info Panel Empty Vocab'}
+				</button>
 			</div>
+		);
+	},
+}));
 
-			<button
-				data-testid="trigger-info-panel"
-				onClick={() =>
-					itemsActions?.[0]?.onClick?.({
-						itemData: {
-							assetCategories: [],
-							assetTags: [],
-							assetTitle: 'Test Asset Title',
-							assetType: 'blog',
-							id: 'asset-id-1',
-							mimeType: 'blog',
-						},
-					})
-				}
-			>
-				{'Open Info Panel'}
-			</button>
+jest.mock('shared/components/download-report/DownloadStaticCSVReport', () => ({
+	DownloadStaticCSVReport: ({
+		getFDSQuery,
+		rangeSelectors,
+		type,
+	}: {
+		getFDSQuery?: () => {filter: string; query: string};
+		rangeSelectors?: any;
+		type?: string;
+	}) => {
+		const [fdsQueryResult, setFDSQueryResult] = React.useState('');
 
-			<button
-				data-testid="trigger-info-panel-no-mime"
-				onClick={() =>
-					itemsActions?.[0]?.onClick?.({
-						itemData: {
-							assetCategories: [],
-							assetTags: [],
-							assetTitle: 'Asset Without Mime',
-							assetType: 'document',
-							id: 'asset-id-2',
-						},
-					})
-				}
-			>
-				{'Open Info Panel No Mime'}
-			</button>
+		return (
+			<div data-testid="download-csv">
+				<div data-testid="download-csv-type">{type}</div>
 
-			<button
-				data-testid="trigger-info-panel-no-title"
-				onClick={() =>
-					itemsActions?.[0]?.onClick?.({
-						itemData: {
-							assetCategories: [],
-							assetTags: [],
-							assetType: 'folder',
-							id: 'fallback-id-3',
-							mimeType: 'folder',
-						},
-					})
-				}
-			>
-				{'Open Info Panel No Title'}
-			</button>
+				<div data-testid="download-csv-range-selectors">
+					{JSON.stringify(rangeSelectors ?? null)}
+				</div>
 
-			<button
-				data-testid="trigger-info-panel-with-items"
-				onClick={() =>
-					itemsActions?.[0]?.onClick?.({
-						itemData: {
-							assetCategories: [
-								{
-									id: 'cat-1',
-									name: 'Category One',
-									vocabularyId: 'vocab-1',
-								},
-								{
-									id: 'cat-2',
-									name: 'Category Two',
-									vocabularyId: 'vocab-1',
-								},
-							],
-							assetTags: [{id: 'tag-1', name: 'Tag One'}],
-							assetTitle: 'Rich Asset',
-							assetType: 'webContent',
-							assetVocabularies: [{id: 'vocab-1', name: 'Topic'}],
-							id: 'asset-id-4',
-							mimeType: 'basic-web-content',
-						},
-					})
-				}
-			>
-				{'Open Info Panel With Items'}
-			</button>
+				<button
+					data-testid="download-csv-call-get-fds-query"
+					onClick={() =>
+						setFDSQueryResult(
+							JSON.stringify(getFDSQuery?.() ?? null)
+						)
+					}
+				>
+					{'Call getFDSQuery'}
+				</button>
 
-			<button
-				data-testid="trigger-info-panel-empty-vocab"
-				onClick={() =>
-					itemsActions?.[0]?.onClick?.({
-						itemData: {
-							assetCategories: [
-								{
-									id: 'cat-1',
-									name: 'Category One',
-									vocabularyId: 'vocab-1',
-								},
-							],
-							assetTags: [],
-							assetTitle: 'Asset With Empty Vocab',
-							assetType: 'blog',
-							assetVocabularies: [
-								{id: 'vocab-1', name: 'Topics'},
-								{id: 'vocab-2', name: 'Genres'},
-							],
-							id: 'asset-id-5',
-							mimeType: 'blog',
-						},
-					})
-				}
-			>
-				{'Open Info Panel Empty Vocab'}
-			</button>
-		</div>
-	),
+				<div data-testid="download-csv-fds-query-result">
+					{fdsQueryResult}
+				</div>
+			</div>
+		);
+	},
 }));
 
 jest.mock('shared/components/dropdown-range-key/DropdownRangeKey', () => ({
@@ -245,7 +297,7 @@ jest.mock('shared/util/breadcrumbs', () => ({
 
 jest.mock('react-router-dom', () => ({
 	...jest.requireActual('react-router-dom'),
-	useHistory: jest.fn(),
+	useNavigate: jest.fn(),
 	useParams: () => ({
 		channelId: '123',
 		groupId: '23',
@@ -256,13 +308,7 @@ jest.mock('react-router-dom', () => ({
 
 const mockHistoryPush = jest.fn();
 
-const buildHistory = (path = '/workspace/23/123/assets') => {
-	const history = createMemoryHistory({initialEntries: [path]});
-
-	history.push = mockHistoryPush;
-
-	return history;
-};
+const buildInitialEntries = (path = '/workspace/23/123/assets') => [path];
 
 // LDP is enabled by default so the account/segment filters, which are LDP-only,
 // stay present for the shared assertions and the snapshot.
@@ -271,33 +317,34 @@ const store = mockStore(mockStoreDataLDP);
 
 // Helper: wrap List in the minimum context providers it needs.
 
-const renderList = (
-	{
-		queryString = '',
-		store: storeOverride = store,
-	}: {queryString?: string; store?: typeof store} = {},
-	history = buildHistory(`/workspace/23/123/assets${queryString}`)
-) =>
+const renderList = ({
+	queryString = '',
+	store: storeOverride = store,
+}: {queryString?: string; store?: typeof store} = {}) =>
 	render(
 		<Provider store={storeOverride}>
 			<ChannelContext.Provider value={mockChannelContext() as any}>
-				<Router history={history}>
+				<MemoryRouter
+					initialEntries={buildInitialEntries(
+						`/workspace/23/123/assets${queryString}`
+					)}
+				>
 					<List />
-				</Router>
+				</MemoryRouter>
 			</ChannelContext.Provider>
 		</Provider>
 	);
 
-// Obtain the mocked useHistory so we can configure it per test.
+// Obtain the mocked useNavigate so we can configure it per test.
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const {useHistory} = require('react-router-dom');
+const {useNavigate} = require('react-router-dom');
 
 describe('List', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 
-		useHistory.mockReturnValue({push: mockHistoryPush});
+		useNavigate.mockReturnValue(mockHistoryPush);
 	});
 
 	afterEach(cleanup);
@@ -496,31 +543,11 @@ describe('List', () => {
 		});
 	});
 
-	describe('object type column', () => {
+	describe('table columns', () => {
 		const getFields = () =>
 			JSON.parse(screen.getByTestId('fds-fields').textContent);
 
-		const getObjectTypeField = () => {
-			renderList();
-
-			return getFields().find(
-				(field: {fieldName: string}) => field.fieldName === 'objectType'
-			);
-		};
-
-		it('should add an object type column to the table', () => {
-			expect(getObjectTypeField()).toBeDefined();
-		});
-
-		it('should label the object type column "Object Type"', () => {
-			expect(getObjectTypeField().label).toBe('Object Type');
-		});
-
-		it('should make the object type column sortable', () => {
-			expect(getObjectTypeField().sortable).toBe(true);
-		});
-
-		it('should place the object type column after the type column', () => {
+		it('should not show an object type column', () => {
 			renderList();
 
 			const fieldNames = getFields().map(
@@ -530,43 +557,10 @@ describe('List', () => {
 			expect(fieldNames).toEqual([
 				'assetTitle',
 				'assetType',
-				'objectType',
 				'viewsMetric',
 				'impressionsMetric',
 				'downloadsMetric',
 			]);
-		});
-
-		it('should render the content object type as "Content"', () => {
-			renderList();
-
-			expect(
-				screen.getByTestId('fds-object-type-cell-content')
-			).toHaveTextContent('Content');
-		});
-
-		it('should render the file object type as "File"', () => {
-			renderList();
-
-			expect(
-				screen.getByTestId('fds-object-type-cell-file')
-			).toHaveTextContent('File');
-		});
-
-		it('should render nothing when the asset carries no object type', () => {
-			renderList();
-
-			expect(
-				screen.getByTestId('fds-object-type-cell-undefined')
-			).toHaveTextContent('');
-		});
-
-		it('should render nothing for an unrecognized object type', () => {
-			renderList();
-
-			expect(
-				screen.getByTestId('fds-object-type-cell-unknown')
-			).toHaveTextContent('');
 		});
 	});
 
@@ -644,11 +638,68 @@ describe('List', () => {
 		});
 	});
 
+	describe('Download CSV', () => {
+		it('should render the Download CSV button for the asset type', () => {
+			renderList();
+
+			expect(screen.getByTestId('download-csv-type')).toHaveTextContent(
+				'asset'
+			);
+		});
+
+		it('should pass the current rangeSelectors to the Download CSV button', () => {
+			renderList();
+
+			expect(
+				screen.getByTestId('download-csv-range-selectors')
+			).toHaveTextContent(RangeKeyTimeRanges.Last30Days);
+		});
+
+		it('should return an empty filter and query before the data set reports any', () => {
+			renderList();
+
+			fireEvent.click(
+				screen.getByTestId('download-csv-call-get-fds-query')
+			);
+
+			expect(
+				screen.getByTestId('download-csv-fds-query-result')
+			).toHaveTextContent(JSON.stringify({filter: '', query: ''}));
+		});
+
+		it('should capture the filter and query the data set reports and expose them via getFDSQuery', () => {
+			renderList();
+
+			fireEvent.click(screen.getByTestId('fds-run-transformer'));
+			fireEvent.click(
+				screen.getByTestId('download-csv-call-get-fds-query')
+			);
+
+			expect(
+				screen.getByTestId('download-csv-fds-query-result')
+			).toHaveTextContent(
+				JSON.stringify({
+					filter: "(assetType eq 'blog')",
+					query: 'liferay',
+				})
+			);
+		});
+
+		it('should pass the additionalAPIURLParameters through unchanged', () => {
+			renderList();
+
+			fireEvent.click(screen.getByTestId('fds-run-transformer'));
+
+			expect(
+				screen.getByTestId('fds-transformer-result')
+			).toHaveTextContent('unchanged=1');
+		});
+	});
+
 	describe('sort by metric (orderBy)', () => {
 		const SORTABLE_KEYS = [
 			'assetTitle',
 			'assetType',
-			'objectType',
 			'viewsMetric',
 			'impressionsMetric',
 			'downloadsMetric',
@@ -928,9 +979,9 @@ describe('List', () => {
 					<ChannelContext.Provider
 						value={contextWithNoChannel as any}
 					>
-						<Router history={buildHistory()}>
+						<MemoryRouter initialEntries={buildInitialEntries()}>
 							<List />
-						</Router>
+						</MemoryRouter>
 					</ChannelContext.Provider>
 				</Provider>
 			);

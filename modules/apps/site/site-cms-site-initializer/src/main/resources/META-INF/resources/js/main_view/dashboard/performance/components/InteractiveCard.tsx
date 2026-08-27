@@ -39,9 +39,9 @@ const STICKER_DISPLAY_TYPES: Record<
 
 type Props = {
 	active?: boolean;
-	color: MetricColor;
+	color?: MetricColor;
 	description?: string;
-	icon: string;
+	icon?: string;
 	loading?: boolean;
 	onClick?: () => void;
 	title: string;
@@ -50,7 +50,7 @@ type Props = {
 		percentage: number;
 	};
 	value?: React.ReactNode;
-};
+} & React.AriaAttributes;
 
 export default function InteractiveCard({
 	active = false,
@@ -62,11 +62,13 @@ export default function InteractiveCard({
 	title,
 	trend,
 	value,
+	...ariaAttributes
 }: Props) {
 	return (
 		<ClayButton
+			{...ariaAttributes}
 			className={classNames(
-				'cms-dashboard__interactive-card h-100 p-3 rounded-lg sheet text-left w-100',
+				'cms-dashboard__interactive-card d-flex flex-column h-100 p-3 rounded-lg sheet text-left w-100',
 				{active}
 			)}
 			displayType="unstyled"
@@ -83,13 +85,15 @@ export default function InteractiveCard({
 					</Text>
 				</div>
 
-				<ClaySticker
-					borderless
-					className="flex-shrink-0"
-					displayType={STICKER_DISPLAY_TYPES[color]}
-				>
-					<ClayIcon symbol={icon} />
-				</ClaySticker>
+				{color && icon ? (
+					<ClaySticker
+						borderless
+						className="flex-shrink-0"
+						displayType={STICKER_DISPLAY_TYPES[color]}
+					>
+						<ClayIcon symbol={icon} />
+					</ClaySticker>
+				) : null}
 			</div>
 
 			{description ? (

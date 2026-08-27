@@ -23,7 +23,9 @@ import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermi
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.MapUtil;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.URLCodec;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.vulcan.pagination.Page;
 import com.liferay.portal.vulcan.pagination.Pagination;
@@ -56,7 +58,7 @@ public class LinkReferenceResourceImpl extends BaseLinkReferenceResourceImpl {
 	@Override
 	public Page<LinkReference> getScopeScopeKeyLinksPage(
 			String scopeKey, String className, String externalReferenceCode,
-			Pagination pagination)
+			String search, Pagination pagination)
 		throws Exception {
 
 		if (!FeatureFlagManagerUtil.isEnabled(
@@ -70,6 +72,29 @@ public class LinkReferenceResourceImpl extends BaseLinkReferenceResourceImpl {
 				_getFilterString(),
 				_getObjectEntry(
 					className, externalReferenceCode, _getGroupId(scopeKey)));
+
+		if (Validator.isNotNull(search)) {
+			pimLinkRelatedEntries = transform(
+				pimLinkRelatedEntries,
+				pimLinkRelatedEntry -> {
+					Map<String, Serializable> values =
+						_objectEntryLocalService.getValues(
+							pimLinkRelatedEntry.getObjectEntry());
+
+					String code = StringUtil.toLowerCase(
+						MapUtil.getString(values, "code"));
+					String name = StringUtil.toLowerCase(
+						MapUtil.getString(values, "name"));
+
+					if (code.contains(StringUtil.toLowerCase(search)) ||
+						name.contains(StringUtil.toLowerCase(search))) {
+
+						return pimLinkRelatedEntry;
+					}
+
+					return null;
+				});
+		}
 
 		return Page.of(
 			transform(
