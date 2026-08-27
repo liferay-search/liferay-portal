@@ -85,19 +85,15 @@ export interface ISearchPaginatorProps {
 	activeDelta: number;
 	activePage: number;
 
-	/**
-	 * Name of the parameter carrying the page number.
-	 */
-	curParam: string;
-
 	deltas: Array<IDelta>;
 	labels: ILabels;
 
 	/**
-	 * URL the page links are built from, already ending in a parameter
-	 * separator and stripped of <code>curParam</code>.
+	 * The page link with `{0}` where the page number goes. The server sorts it
+	 * with the page parameter already in place, so substituting the number
+	 * cannot disturb the parameter order.
 	 */
-	paginationURL: string;
+	paginationURLTemplate: string;
 
 	showDeltasDropDown?: boolean;
 	totalItems: number;
@@ -108,8 +104,6 @@ export interface ISearchPaginatorProps {
 	 * count limit.
 	 */
 	totalItemsApproximate?: boolean;
-
-	urlAnchor?: string;
 }
 
 const Trigger = React.forwardRef<HTMLButtonElement>(
@@ -130,19 +124,14 @@ const Trigger = React.forwardRef<HTMLButtonElement>(
 Trigger.displayName = 'Trigger';
 
 /**
- * Builds the link to a page. The server owns the URL, so this only appends the
- * page to what it already prepared.
+ * Builds the link to a page. The server owns the URL and hands over a finished
+ * one, so nothing here assembles a query string.
  *
  * The page is optional only to match the signature Clay declares for
  * <code>hrefConstructor</code>. Every caller, Clay's included, passes one.
  */
-export function createHrefConstructor({
-	curParam,
-	paginationURL,
-	urlAnchor = '',
-}: Pick<ISearchPaginatorProps, 'curParam' | 'paginationURL' | 'urlAnchor'>) {
-	return (page?: number) =>
-		`${paginationURL}${encodeURIComponent(curParam)}=${page}${urlAnchor}`;
+export function createHrefConstructor(paginationURLTemplate: string) {
+	return (page?: number) => sub(paginationURLTemplate, [page]);
 }
 
 export function toAriaLabels(labels: ILabels): IAriaLabels {

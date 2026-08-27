@@ -30,15 +30,8 @@ const ELLIPSIS_BUFFER = 1;
  * did.
  */
 const ClassicSearchPaginator = (props: ISearchPaginatorProps) => {
-	const {
-		activeDelta,
-		activePage,
-		curParam,
-		labels,
-		paginationURL,
-		totalItems,
-		urlAnchor,
-	} = props;
+	const {activeDelta, activePage, labels, paginationURLTemplate, totalItems} =
+		props;
 
 	// The active page is controlled by the server and never by Clay. Left
 	// uncontrolled, clicking a page marks that item active while the click is
@@ -62,11 +55,7 @@ const ClassicSearchPaginator = (props: ISearchPaginatorProps) => {
 					'aria-label': labels.intermediatePages,
 					'title': labels.intermediatePages,
 				}}
-				hrefConstructor={createHrefConstructor({
-					curParam,
-					paginationURL,
-					urlAnchor,
-				})}
+				hrefConstructor={createHrefConstructor(paginationURLTemplate)}
 				onActiveChange={ignoreActiveChange}
 				totalPages={Math.ceil(totalItems / activeDelta)}
 			/>

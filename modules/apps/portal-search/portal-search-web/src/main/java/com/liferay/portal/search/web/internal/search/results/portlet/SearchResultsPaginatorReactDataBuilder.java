@@ -14,6 +14,7 @@ import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.HttpComponentsUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.PropsValues;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 
 import jakarta.portlet.PortletURL;
@@ -75,22 +76,18 @@ public class SearchResultsPaginatorReactDataBuilder {
 				url, _searchContainer.getDeltaParam(), String.valueOf(delta));
 		}
 
-		String curParam = _searchContainer.getCurParam();
-
 		return HashMapBuilder.<String, Object>put(
 			"activeDelta", delta
 		).put(
 			"activePage", _searchContainer.getCur()
 		).put(
-			"curParam", curParam
-		).put(
 			"deltas", _getDeltas(url, urlAnchor)
 		).put(
 			"labels", _getLabels()
 		).put(
-			"paginationURL",
-			_appendParameterSeparator(
-				HttpComponentsUtil.removeParameter(url, curParam))
+			"paginationURLTemplate",
+			_getPaginationURLTemplate(
+				url, urlAnchor, _searchContainer.getCurParam())
 		).put(
 			"showDeltasDropDown", deltaConfigurable
 		).put(
@@ -99,8 +96,6 @@ public class SearchResultsPaginatorReactDataBuilder {
 			"totalItemsApproximate",
 			FeatureFlagManagerUtil.isEnabled(
 				PortalUtil.getCompanyId(_httpServletRequest), "LPD-98858")
-		).put(
-			"urlAnchor", urlAnchor
 		).build();
 	}
 
@@ -179,6 +174,19 @@ public class SearchResultsPaginatorReactDataBuilder {
 			LanguageUtil.get(_httpServletRequest, "previous-page")
 		).build();
 	}
+
+	private String _getPaginationURLTemplate(
+		String url, String urlAnchor, String curParam) {
+
+		String templateURL = HttpComponentsUtil.sortParameters(
+			HttpComponentsUtil.addParameter(
+				HttpComponentsUtil.removeParameter(url, curParam) + urlAnchor,
+				curParam, _CUR_PLACEHOLDER));
+
+		return StringUtil.replace(templateURL, _CUR_PLACEHOLDER, "{0}");
+	}
+
+	private static final String _CUR_PLACEHOLDER = "__CUR__";
 
 	private final HttpServletRequest _httpServletRequest;
 	private final SearchContainer<?> _searchContainer;

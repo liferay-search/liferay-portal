@@ -147,12 +147,10 @@ const LimitedSearchPaginator = ({
 	const {
 		activeDelta,
 		activePage,
-		curParam,
 		labels,
-		paginationURL,
+		paginationURLTemplate,
 		totalItems,
 		totalItemsApproximate = false,
-		urlAnchor,
 	} = otherProps;
 
 	return (
@@ -160,11 +158,7 @@ const LimitedSearchPaginator = ({
 			<LimitedPagination
 				activePage={activePage}
 				ariaLabels={toAriaLabels(labels)}
-				hrefConstructor={createHrefConstructor({
-					curParam,
-					paginationURL,
-					urlAnchor,
-				})}
+				hrefConstructor={createHrefConstructor(paginationURLTemplate)}
 				label={labels.pagination}
 				lastKnownPage={Math.ceil(totalItems / activeDelta)}
 				moreItemsAvailable={totalItemsApproximate}
