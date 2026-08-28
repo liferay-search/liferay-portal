@@ -325,11 +325,13 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 
 	@Override
 	@Test
+	@TestInfo("LPD-103773")
 	public void testGetSiteSitePagesPage() throws Exception {
 		super.testGetSiteSitePagesPage();
 
 		_testGetSitePageSitePagesPage(false);
 		_testGetSitePageSitePagesPage(true);
+		_testGetSiteSitePagesPageWithPageSpecificationVersionsNestedField();
 	}
 
 	@Override
@@ -1001,10 +1003,8 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 		PageSpecificationsTestUtil.assertPageSpecifications(
 			layout, sitePage.getPageSpecifications());
 
-		if (layout.isTypeContent()) {
-			_assertPageSpecificationVersions(
-				layout, sitePage.getPageSpecificationVersions());
-		}
+		_assertPageSpecificationVersions(
+			layout, sitePage.getPageSpecificationVersions());
 	}
 
 	private void _assertPageElements(
@@ -1056,6 +1056,13 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 			Layout layout, PageSpecificationVersion[] pageSpecificationVersions)
 		throws Exception {
 
+		if (!layout.isTypeContent()) {
+			Assert.assertEquals(
+				0, ArrayUtil.getLength(pageSpecificationVersions));
+
+			return;
+		}
+
 		Layout draftLayout = layout.fetchDraftLayout();
 
 		List<LayoutContentVersion> layoutContentVersions =
@@ -1078,9 +1085,11 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 			PageSpecification pageSpecification =
 				pageSpecificationVersion.getPageSpecification();
 
-			Assert.assertEquals(
-				draftLayout.getExternalReferenceCode(),
-				pageSpecification.getExternalReferenceCode());
+			if (pageSpecification != null) {
+				Assert.assertEquals(
+					draftLayout.getExternalReferenceCode(),
+					pageSpecification.getExternalReferenceCode());
+			}
 		}
 
 		Assert.assertEquals(
@@ -2311,17 +2320,44 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 		_testGetSiteSitePageWithNestedFields(sitePage);
 	}
 
+	private void _testGetSiteSitePagesPageWithPageSpecificationVersionsNestedField()
+		throws Exception {
+
+		Layout layout = LayoutTestUtil.addTypeContentLayout(testGroup);
+
+		Layout draftLayout = layout.fetchDraftLayout();
+
+		ContentLayoutTestUtil.publishLayout(draftLayout, layout);
+
+		Assert.assertTrue(
+			ListUtil.isNotEmpty(
+				_layoutContentVersionLocalService.getLayoutContentVersions(
+					draftLayout.getPlid())));
+
+		LayoutTestUtil.addTypePortletLayout(testGroup);
+
+		SitePageResource sitePageResource = _getSitePageResource(
+			"pageSpecificationVersions");
+
+		Page<SitePage> sitePagesPage = sitePageResource.getSiteSitePagesPage(
+			testGroup.getExternalReferenceCode(), false, null, null, null,
+			Pagination.of(1, -1), null);
+
+		for (SitePage sitePage : sitePagesPage.getItems()) {
+			_assertPageSpecificationVersions(
+				_layoutLocalService.getLayoutByExternalReferenceCode(
+					sitePage.getExternalReferenceCode(),
+					testGroup.getGroupId()),
+				sitePage.getPageSpecificationVersions());
+		}
+	}
+
 	private void _testGetSiteSitePageWithNestedFields(SitePage sitePage)
 		throws Exception {
 
-		String nestedFields = "friendlyUrlHistory,pageSpecifications";
-
-		if (Objects.equals(sitePage.getType(), SitePage.Type.CONTENT_PAGE)) {
-			nestedFields =
-				nestedFields + ",pageSpecificationVersions.pageSpecification";
-		}
-
-		SitePageResource sitePageResource = _getSitePageResource(nestedFields);
+		SitePageResource sitePageResource = _getSitePageResource(
+			"friendlyUrlHistory,pageSpecifications," +
+				"pageSpecificationVersions.pageSpecification");
 
 		_assertNestedFields(
 			sitePageResource.getSiteSitePage(

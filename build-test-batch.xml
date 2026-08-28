@@ -9492,6 +9492,14 @@ ${output.content}</echo>
 		</run-batch-test>
 	</target>
 
+	<target name="playwright-js-db-partition-tomcat101-mysql84">
+		<run-playwright-js-test database.type="mysql" />
+	</target>
+
+	<target name="playwright-js-db-partition-tomcat101-postgresql163">
+		<run-playwright-js-test database.type="postgresql" />
+	</target>
+
 	<target name="playwright-js-smoke-jboss80-postgresql155">
 		<run-playwright-js-test app.server.type="jboss" database.type="postgresql" />
 	</target>
@@ -10632,6 +10640,10 @@ junit.jvm.override.version=21</echo>
 					<sequential>
 						<local name="workspace.dir" />
 
+						<condition else="workspaces/@{workspace.name}" property="workspace.dir" value="${liferay.portal.private.dir}/workspaces/@{workspace.name}">
+							<available file="${liferay.portal.private.dir}/workspaces/@{workspace.name}" />
+						</condition>
+
 						<property name="workspace.dir" value="workspaces/@{workspace.name}" />
 
 						<if>
@@ -10639,7 +10651,7 @@ junit.jvm.override.version=21</echo>
 							<then>
 								<echo></echo>
 								<echo>##</echo>
-								<echo>## @{workspace.name}</echo>
+								<echo>## ${workspace.dir}</echo>
 								<echo>##</echo>
 								<echo></echo>
 

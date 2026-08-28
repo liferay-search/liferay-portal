@@ -57,11 +57,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 import org.junit.After;
@@ -209,9 +207,9 @@ public class SalesforceObjectEntryManagerImplTest
 					).userId(
 						adminUser.getUserId()
 					).labelMap(
-						LocalizedMapUtil.getLocalizedMap("Object Definition ID")
+						LocalizedMapUtil.getLocalizedMap("Run ID")
 					).name(
-						"objectDefinitionId"
+						"runId"
 					).build(),
 					new DateTimeObjectFieldBuilder(
 					).externalReferenceCode(
@@ -275,6 +273,8 @@ public class SalesforceObjectEntryManagerImplTest
 		catch (ObjectEntryManagerHttpException
 					objectEntryManagerHttpException) {
 
+			_uanbleToAuthenticateWithSalesforce = true;
+
 			Assume.assumeNoException(
 				"Unable to authenticate with Salesforce",
 				objectEntryManagerHttpException);
@@ -283,21 +283,19 @@ public class SalesforceObjectEntryManagerImplTest
 
 	@After
 	public void tearDown() throws Exception {
-		for (ObjectEntry objectEntry : _objectEntries) {
-			_objectEntryManager.deleteObjectEntry(
-				companyId, dtoConverterContext,
-				objectEntry.getExternalReferenceCode(), _objectDefinition,
-				ObjectDefinitionConstants.SCOPE_COMPANY);
+		try {
+			_deleteObjectEntries();
 		}
+		finally {
+			if (_objectDefinition != null) {
+				objectDefinitionLocalService.deleteObjectDefinition(
+					_objectDefinition.getObjectDefinitionId());
+			}
 
-		if (_objectDefinition != null) {
-			objectDefinitionLocalService.deleteObjectDefinition(
-				_objectDefinition.getObjectDefinitionId());
-		}
-
-		if (listTypeDefinition != null) {
-			listTypeDefinitionLocalService.deleteListTypeDefinition(
-				listTypeDefinition.getListTypeDefinitionId());
+			if (listTypeDefinition != null) {
+				listTypeDefinitionLocalService.deleteListTypeDefinition(
+					listTypeDefinition.getListTypeDefinitionId());
+			}
 		}
 	}
 
@@ -372,19 +370,13 @@ public class SalesforceObjectEntryManagerImplTest
 			).build(),
 			objectEntry1);
 
-		String filterString = StringBundler.concat(
-			"(objectDefinitionId eq ",
-			_objectDefinition.getObjectDefinitionId(), ") and ");
-
 		testGetObjectEntries(
 			HashMapBuilder.put(
 				"filter",
 				StringBundler.concat(
-					filterString, "(",
 					buildEqualsExpressionFilterString("customStatus", "queued"),
 					" and ", buildEqualsExpressionFilterString("dueDate", date),
-					" and ", buildEqualsExpressionFilterString("title", title1),
-					")")
+					" and ", buildEqualsExpressionFilterString("title", title1))
 			).build(),
 			objectEntry1);
 
@@ -392,13 +384,12 @@ public class SalesforceObjectEntryManagerImplTest
 			HashMapBuilder.put(
 				"filter",
 				StringBundler.concat(
-					filterString, "(",
 					_buildNotEqualsExpressionFilterString(
 						"customStatus", "queued"),
 					" and ",
 					_buildNotEqualsExpressionFilterString("dueDate", date),
 					" and ",
-					_buildNotEqualsExpressionFilterString("title", title1), ")")
+					_buildNotEqualsExpressionFilterString("title", title1))
 			).build(),
 			objectEntry2, objectEntry3);
 
@@ -406,11 +397,9 @@ public class SalesforceObjectEntryManagerImplTest
 			HashMapBuilder.put(
 				"filter",
 				StringBundler.concat(
-					filterString, "(",
 					buildEqualsExpressionFilterString("customStatus", "queued"),
 					" or ", buildEqualsExpressionFilterString("dueDate", date),
-					" or ", buildEqualsExpressionFilterString("title", title1),
-					")")
+					" or ", buildEqualsExpressionFilterString("title", title1))
 			).build(),
 			objectEntry1, objectEntry4, objectEntry5);
 
@@ -418,13 +407,12 @@ public class SalesforceObjectEntryManagerImplTest
 			HashMapBuilder.put(
 				"filter",
 				StringBundler.concat(
-					filterString, "(",
 					_buildNotEqualsExpressionFilterString(
 						"customStatus", "queued"),
 					" or ",
 					_buildNotEqualsExpressionFilterString("dueDate", date),
 					" or ",
-					_buildNotEqualsExpressionFilterString("title", title1), ")")
+					_buildNotEqualsExpressionFilterString("title", title1))
 			).build(),
 			objectEntry2, objectEntry3, objectEntry4, objectEntry5);
 
@@ -439,10 +427,9 @@ public class SalesforceObjectEntryManagerImplTest
 		testGetObjectEntries(
 			HashMapBuilder.put(
 				"filter",
-				filterString.concat(
-					StringBundler.concat(
-						"startDate ne ", dateTimeString1, " or startDate eq ",
-						dateTimeString2))
+				StringBundler.concat(
+					"startDate ne ", dateTimeString1, " or startDate eq ",
+					dateTimeString2)
 			).build(),
 			objectEntry1, objectEntry3, objectEntry4, objectEntry5);
 
@@ -451,41 +438,32 @@ public class SalesforceObjectEntryManagerImplTest
 		testGetObjectEntries(
 			HashMapBuilder.put(
 				"filter",
-				filterString.concat(
-					buildEqualsExpressionFilterString("customStatus", "queued"))
+				buildEqualsExpressionFilterString("customStatus", "queued")
 			).build(),
 			objectEntry1, objectEntry4, objectEntry5);
 
 		testGetObjectEntries(
 			HashMapBuilder.put(
 				"filter",
-				filterString.concat(
-					_buildNotEqualsExpressionFilterString(
-						"customStatus", "queued"))
+				_buildNotEqualsExpressionFilterString("customStatus", "queued")
 			).build(),
 			objectEntry2, objectEntry3);
 
 		testGetObjectEntries(
 			HashMapBuilder.put(
-				"filter",
-				filterString.concat(
-					buildEqualsExpressionFilterString("dueDate", date))
+				"filter", buildEqualsExpressionFilterString("dueDate", date)
 			).build(),
 			objectEntry1, objectEntry4, objectEntry5);
 
 		testGetObjectEntries(
 			HashMapBuilder.put(
-				"filter",
-				filterString.concat(
-					_buildNotEqualsExpressionFilterString("dueDate", date))
+				"filter", _buildNotEqualsExpressionFilterString("dueDate", date)
 			).build(),
 			objectEntry2, objectEntry3);
 
 		testGetObjectEntries(
 			HashMapBuilder.put(
-				"filter",
-				filterString.concat(
-					buildEqualsExpressionFilterString("flagged", true))
+				"filter", buildEqualsExpressionFilterString("flagged", true)
 			).build(),
 			objectEntry2, objectEntry4);
 
@@ -499,25 +477,20 @@ public class SalesforceObjectEntryManagerImplTest
 		testGetObjectEntries(
 			HashMapBuilder.put(
 				"filter",
-				filterString.concat(
-					_buildNotEqualsExpressionFilterString(
-						"startDate", localDateTime2))
+				_buildNotEqualsExpressionFilterString(
+					"startDate", localDateTime2)
 			).build(),
 			objectEntry1, objectEntry2, objectEntry4, objectEntry5);
 
 		testGetObjectEntries(
 			HashMapBuilder.put(
-				"filter",
-				filterString.concat(
-					buildEqualsExpressionFilterString("title", title1))
+				"filter", buildEqualsExpressionFilterString("title", title1)
 			).build(),
 			objectEntry1);
 
 		testGetObjectEntries(
 			HashMapBuilder.put(
-				"filter",
-				filterString.concat(
-					_buildNotEqualsExpressionFilterString("title", title1))
+				"filter", _buildNotEqualsExpressionFilterString("title", title1)
 			).build(),
 			objectEntry2, objectEntry3, objectEntry4, objectEntry5);
 
@@ -536,39 +509,39 @@ public class SalesforceObjectEntryManagerImplTest
 
 		testGetObjectEntries(
 			HashMapBuilder.put(
-				"filter", filterString.concat("startDate ge " + dateTimeString1)
+				"filter", "startDate ge " + dateTimeString1
 			).build(),
 			objectEntry2, objectEntry3);
 
 		testGetObjectEntries(
 			HashMapBuilder.put(
-				"filter", filterString.concat("startDate gt " + dateTimeString1)
+				"filter", "startDate gt " + dateTimeString1
 			).build(),
 			objectEntry3);
 
 		testGetObjectEntries(
 			HashMapBuilder.put(
-				"filter", filterString.concat("startDate le " + dateTimeString2)
+				"filter", "startDate le " + dateTimeString2
 			).build(),
 			objectEntry2, objectEntry3);
 
 		testGetObjectEntries(
 			HashMapBuilder.put(
-				"filter", filterString.concat("startDate lt " + dateTimeString2)
+				"filter", "startDate lt " + dateTimeString2
 			).build(),
 			objectEntry2);
 	}
 
 	@Test
 	public void testGetObjectEntry() throws Exception {
+		String description = "<p>" + RandomTestUtil.randomString() + "</p>";
 		String title = RandomTestUtil.randomString();
 
 		ObjectEntry objectEntry = _addObjectEntry(
-			null, "<p>Description</p>", null, false, null, title);
+			null, description, null, false, null, title);
 
 		_assertObjectEntry(
-			"<p>Description</p>", objectEntry.getExternalReferenceCode(),
-			title);
+			description, objectEntry.getExternalReferenceCode(), title);
 	}
 
 	@Test
@@ -577,23 +550,25 @@ public class SalesforceObjectEntryManagerImplTest
 			null, RandomTestUtil.randomString(), null, false, null,
 			RandomTestUtil.randomString());
 
+		String description = "<p>" + RandomTestUtil.randomString() + "</p>";
+		String title = RandomTestUtil.randomString();
+
 		_objectEntryManager.partialUpdateObjectEntry(
 			TestPropsValues.getCompanyId(), dtoConverterContext,
 			objectEntry.getExternalReferenceCode(), _objectDefinition,
 			new ObjectEntry() {
 				{
 					properties = HashMapBuilder.<String, Object>put(
-						"description", "<p>Description</p>"
+						"description", description
 					).put(
-						"title", "Able"
+						"title", title
 					).build();
 				}
 			},
 			null);
 
 		_assertObjectEntry(
-			"<p>Description</p>", objectEntry.getExternalReferenceCode(),
-			"Able");
+			description, objectEntry.getExternalReferenceCode(), title);
 	}
 
 	@Override
@@ -607,8 +582,8 @@ public class SalesforceObjectEntryManagerImplTest
 
 		return _objectEntryManager.getObjectEntries(
 			companyId, _objectDefinition, null, null, dtoConverterContext,
-			context.get("filter"), Pagination.of(1, 4), context.get("search"),
-			sorts);
+			_buildRunFilterString(context.get("filter")), Pagination.of(1, 4),
+			context.get("search"), sorts);
 	}
 
 	private ObjectEntry _addObjectEntry(
@@ -626,7 +601,7 @@ public class SalesforceObjectEntryManagerImplTest
 			boolean flagged, LocalDateTime startDate, String title)
 		throws Exception {
 
-		ObjectEntry objectEntry = _objectEntryManager.addObjectEntry(
+		return _objectEntryManager.addObjectEntry(
 			dtoConverterContext, _objectDefinition,
 			new ObjectEntry() {
 				{
@@ -641,8 +616,7 @@ public class SalesforceObjectEntryManagerImplTest
 					).put(
 						"flagged", flagged
 					).put(
-						"objectDefinitionId",
-						_objectDefinition.getObjectDefinitionId()
+						"runId", _RUN_ID
 					).put(
 						"startDate", startDate
 					).put(
@@ -651,10 +625,6 @@ public class SalesforceObjectEntryManagerImplTest
 				}
 			},
 			ObjectDefinitionConstants.SCOPE_COMPANY);
-
-		_objectEntries.add(objectEntry);
-
-		return objectEntry;
 	}
 
 	private void _assertObjectEntry(
@@ -682,6 +652,15 @@ public class SalesforceObjectEntryManagerImplTest
 		return StringBundler.concat(fieldName, " ne ", getValue(value));
 	}
 
+	private String _buildRunFilterString(String filterString) {
+		if (filterString == null) {
+			return "runId eq " + _RUN_ID;
+		}
+
+		return StringBundler.concat(
+			"(runId eq ", _RUN_ID, ") and (", filterString, ")");
+	}
+
 	private ObjectFieldSetting _createObjectFieldSetting(
 		String name, String value) {
 
@@ -694,13 +673,31 @@ public class SalesforceObjectEntryManagerImplTest
 		return objectFieldSetting;
 	}
 
+	private void _deleteObjectEntries() throws Exception {
+		if (_uanbleToAuthenticateWithSalesforce) {
+			return;
+		}
+
+		Page<ObjectEntry> page = _objectEntryManager.getObjectEntries(
+			companyId, _objectDefinition, null, null, dtoConverterContext,
+			_buildRunFilterString(null), Pagination.of(1, 200), null, null);
+
+		for (ObjectEntry objectEntry : page.getItems()) {
+			_objectEntryManager.deleteObjectEntry(
+				companyId, dtoConverterContext,
+				objectEntry.getExternalReferenceCode(), _objectDefinition,
+				ObjectDefinitionConstants.SCOPE_COMPANY);
+		}
+	}
+
+	private static final long _RUN_ID = RandomTestUtil.randomInt();
+
 	@Inject
 	private static ConfigurationProvider _configurationProvider;
 
 	private static DateFormat _simpleDateFormat;
 
 	private ObjectDefinition _objectDefinition;
-	private final List<ObjectEntry> _objectEntries = new ArrayList<>();
 
 	@Inject(
 		filter = "object.entry.manager.storage.type=" + ObjectDefinitionConstants.STORAGE_TYPE_SALESFORCE
@@ -709,5 +706,7 @@ public class SalesforceObjectEntryManagerImplTest
 
 	@Inject
 	private ObjectFieldSettingLocalService _objectFieldSettingLocalService;
+
+	private boolean _uanbleToAuthenticateWithSalesforce;
 
 }

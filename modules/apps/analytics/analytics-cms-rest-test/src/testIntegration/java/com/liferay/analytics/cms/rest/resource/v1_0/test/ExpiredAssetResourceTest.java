@@ -8,6 +8,8 @@ package com.liferay.analytics.cms.rest.resource.v1_0.test;
 import com.liferay.analytics.cms.rest.client.dto.v1_0.ExpiredAsset;
 import com.liferay.analytics.cms.rest.client.pagination.Page;
 import com.liferay.analytics.cms.rest.client.pagination.Pagination;
+import com.liferay.analytics.cms.rest.resource.v1_0.ExpiredAssetResource;
+import com.liferay.analytics.cms.rest.resource.v1_0.test.util.DepotEntryTestUtil;
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.depot.constants.DepotConstants;
 import com.liferay.depot.model.DepotEntry;
@@ -22,6 +24,7 @@ import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.model.GroupConstants;
 import com.liferay.portal.kernel.portlet.LiferayWindowState;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
@@ -98,6 +101,9 @@ public class ExpiredAssetResourceTest extends BaseExpiredAssetResourceTestCase {
 		expiredAsset2.setTitle(portugueseTitle);
 
 		assertContains(expiredAsset2, (List<ExpiredAsset>)page.getItems());
+
+		_testGetExpiredAssetsPageWithDepotEntryMemberUser();
+		_testGetExpiredAssetsPageWithDepotEntryNonmemberUser();
 	}
 
 	@Override
@@ -212,6 +218,50 @@ public class ExpiredAssetResourceTest extends BaseExpiredAssetResourceTestCase {
 			null, DepotConstants.TYPE_SPACE, _serviceContext);
 
 		_themeDisplay = _getThemeDisplay();
+	}
+
+	private void _testGetExpiredAssetsPageWithDepotEntryMemberUser()
+		throws Exception {
+
+		ExpiredAssetResource expiredAssetResource =
+			ReflectionTestUtil.getFieldValue(this, "_expiredAssetResource");
+
+		Assert.assertEquals(
+			2L,
+			(long)DepotEntryTestUtil.withDepotEntryMemberUser(
+				_depotEntry,
+				() -> {
+					com.liferay.portal.vulcan.pagination.Page
+						<com.liferay.analytics.cms.rest.dto.v1_0.ExpiredAsset>
+							page = expiredAssetResource.getExpiredAssetsPage(
+								_depotEntry.getDepotEntryId(), "en_US",
+								com.liferay.portal.vulcan.pagination.Pagination.
+									of(1, 10));
+
+					return page.getTotalCount();
+				}));
+	}
+
+	private void _testGetExpiredAssetsPageWithDepotEntryNonmemberUser()
+		throws Exception {
+
+		ExpiredAssetResource expiredAssetResource =
+			ReflectionTestUtil.getFieldValue(this, "_expiredAssetResource");
+
+		Assert.assertEquals(
+			0L,
+			(long)DepotEntryTestUtil.withDepotEntryNonmemberUser(
+				_depotEntry,
+				() -> {
+					com.liferay.portal.vulcan.pagination.Page
+						<com.liferay.analytics.cms.rest.dto.v1_0.ExpiredAsset>
+							page = expiredAssetResource.getExpiredAssetsPage(
+								_depotEntry.getDepotEntryId(), "en_US",
+								com.liferay.portal.vulcan.pagination.Pagination.
+									of(1, 10));
+
+					return page.getTotalCount();
+				}));
 	}
 
 	private DepotEntry _depotEntry;

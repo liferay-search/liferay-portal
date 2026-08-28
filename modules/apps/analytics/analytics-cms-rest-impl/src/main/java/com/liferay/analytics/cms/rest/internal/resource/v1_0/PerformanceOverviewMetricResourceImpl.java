@@ -12,6 +12,8 @@ import com.liferay.analytics.cms.rest.resource.v1_0.PerformanceOverviewMetricRes
 import com.liferay.analytics.settings.rest.manager.AnalyticsSettingsManager;
 import com.liferay.analytics.settings.rest.util.AnalyticsSettingsManagerUtil;
 import com.liferay.portal.kernel.license.util.LicenseManagerUtil;
+import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.Http;
 
 import java.util.Arrays;
@@ -43,7 +45,12 @@ public class PerformanceOverviewMetricResourceImpl
 
 		Long[] groupIds = DepotEntryUtil.getGroupIds(
 			DepotEntryUtil.getDepotEntries(
+				ActionKeys.VIEW_SITE_ADMINISTRATION,
 				contextCompany.getCompanyId(), depotEntryIds));
+
+		if (ArrayUtil.isEmpty(groupIds)) {
+			return new PerformanceOverviewMetric();
+		}
 
 		AnalyticsCloudClient analyticsCloudClient = new AnalyticsCloudClient(
 			_http);

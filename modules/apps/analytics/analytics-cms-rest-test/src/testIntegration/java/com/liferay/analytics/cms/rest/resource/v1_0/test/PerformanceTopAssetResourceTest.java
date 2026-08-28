@@ -10,13 +10,19 @@ import com.liferay.analytics.cms.rest.client.dto.v1_0.Trend;
 import com.liferay.analytics.cms.rest.client.http.HttpInvoker;
 import com.liferay.analytics.cms.rest.client.pagination.Page;
 import com.liferay.analytics.cms.rest.client.pagination.Pagination;
+import com.liferay.analytics.cms.rest.client.resource.v1_0.PerformanceTopAssetResource;
+import com.liferay.analytics.cms.rest.resource.v1_0.test.util.DepotEntryTestUtil;
 import com.liferay.analytics.test.util.AnalyticsCloudHttpServer;
 import com.liferay.analytics.test.util.AnalyticsCompanyConfigurationTemporarySwapper;
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.depot.model.DepotEntry;
+import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.json.JSONUtil;
+import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.HttpComponentsUtil;
 import com.liferay.portal.kernel.util.ListUtil;
@@ -28,9 +34,11 @@ import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
 
 import java.net.HttpURLConnection;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -50,12 +58,22 @@ public class PerformanceTopAssetResourceTest
 			new LiferayIntegrationTestRule(),
 			PermissionCheckerMethodTestRule.INSTANCE);
 
+	@Before
+	@Override
+	public void setUp() throws Exception {
+		super.setUp();
+
+		_addDepotEntry();
+		_addDepotEntry();
+	}
+
 	@Override
 	@Test
 	public void testGetPerformanceTopAssetExport() throws Exception {
 		_testGetPerformanceTopAssetExportWithAnalyticsCloudNotConnected();
 		_testGetPerformanceTopAssetExportResponse();
 		_testGetPerformanceTopAssetExportURL();
+		_testGetPerformanceTopAssetExportWithDepotEntryMemberUser();
 	}
 
 	@Override
@@ -64,6 +82,7 @@ public class PerformanceTopAssetResourceTest
 		_testGetPerformanceTopAssetPageWithAnalyticsCloudNotConnected();
 		_testGetPerformanceTopAssetPageResponse();
 		_testGetPerformanceTopAssetPageURL();
+		_testGetPerformanceTopAssetPageWithDepotEntryMemberUser();
 	}
 
 	@Override
@@ -94,6 +113,11 @@ public class PerformanceTopAssetResourceTest
 			_assertParameter(String.valueOf(page - 1), "page", location);
 			_assertParameter(String.valueOf(pageSize), "size", location);
 		}
+	}
+
+	private void _addDepotEntry() throws Exception {
+		_depotEntries.add(
+			DepotEntryTestUtil.addDepotEntry(testGroup.getGroupId()));
 	}
 
 	private void _assertParameter(
@@ -153,11 +177,15 @@ public class PerformanceTopAssetResourceTest
 			String sortFieldName2 = RandomTestUtil.randomString();
 
 			performanceTopAssetResource.getPerformanceTopAssetExport(
-				null, rangeKey, search, filterString,
+				TransformUtil.transformToArray(
+					_depotEntries, DepotEntry::getDepotEntryId, Long.class),
+				rangeKey, search, filterString,
 				StringBundler.concat(
 					sortFieldName1, ":desc,", sortFieldName2, ":asc"));
 
 			String location = analyticsCloudHttpServer.getLocation();
+
+			DepotEntryTestUtil.assertGroupIds(_depotEntries, location);
 
 			_assertParameter(dataSourceId, "dataSourceId", location);
 			_assertParameter(filterString, "filter", location);
@@ -188,6 +216,57 @@ public class PerformanceTopAssetResourceTest
 					getPerformanceTopAssetExportHttpResponse(
 						null, RandomTestUtil.nextInt(),
 						RandomTestUtil.randomString(), null, null));
+		}
+	}
+
+	private void _testGetPerformanceTopAssetExportWithDepotEntryMemberUser()
+		throws Exception {
+
+		com.liferay.analytics.cms.rest.resource.v1_0.PerformanceTopAssetResource
+			performanceTopAssetResource = ReflectionTestUtil.getFieldValue(
+				this, "_performanceTopAssetResource");
+
+		try (AnalyticsCloudHttpServer analyticsCloudHttpServer =
+				new AnalyticsCloudHttpServer(
+					"/api/1.0/asset-metric/objectEntry/summaries/export",
+					() -> "{}");
+
+			AnalyticsCompanyConfigurationTemporarySwapper
+				analyticsCompanyConfigurationTemporarySwapper =
+					new AnalyticsCompanyConfigurationTemporarySwapper(
+						testCompany.getCompanyId(),
+						RandomTestUtil.randomString(), true,
+						analyticsCloudHttpServer.getURL())) {
+
+			DepotEntryTestUtil.withDepotEntryMemberUser(
+				_depotEntries.get(0),
+				() -> {
+					DepotEntryTestUtil.assertNoRequest(
+						analyticsCloudHttpServer, null,
+						depotEntryIds ->
+							performanceTopAssetResource.
+								getPerformanceTopAssetExport(
+									depotEntryIds, RandomTestUtil.nextInt(),
+									null, null, null));
+					DepotEntryTestUtil.assertNoRequest(
+						analyticsCloudHttpServer,
+						new DepotEntry[] {_depotEntries.get(0)},
+						depotEntryIds ->
+							performanceTopAssetResource.
+								getPerformanceTopAssetExport(
+									depotEntryIds, RandomTestUtil.nextInt(),
+									null, null, null));
+					DepotEntryTestUtil.assertNoRequest(
+						analyticsCloudHttpServer,
+						_depotEntries.toArray(new DepotEntry[0]),
+						depotEntryIds ->
+							performanceTopAssetResource.
+								getPerformanceTopAssetExport(
+									depotEntryIds, RandomTestUtil.nextInt(),
+									null, null, null));
+
+					return null;
+				});
 		}
 	}
 
@@ -311,12 +390,15 @@ public class PerformanceTopAssetResourceTest
 			String sortFieldName2 = RandomTestUtil.randomString();
 
 			performanceTopAssetResource.getPerformanceTopAssetPage(
-				null, rangeKey, search, filterString,
-				Pagination.of(page, pageSize),
+				TransformUtil.transformToArray(
+					_depotEntries, DepotEntry::getDepotEntryId, Long.class),
+				rangeKey, search, filterString, Pagination.of(page, pageSize),
 				StringBundler.concat(
 					sortFieldName1, ":desc,", sortFieldName2, ":asc"));
 
 			String location = analyticsCloudHttpServer.getLocation();
+
+			DepotEntryTestUtil.assertGroupIds(_depotEntries, location);
 
 			_assertParameter(dataSourceId, "dataSourceId", location);
 			_assertParameter(filterString, "filter", location);
@@ -352,5 +434,67 @@ public class PerformanceTopAssetResourceTest
 						Pagination.of(1, 10), null));
 		}
 	}
+
+	private void _testGetPerformanceTopAssetPageWithDepotEntryMemberUser()
+		throws Exception {
+
+		com.liferay.analytics.cms.rest.resource.v1_0.PerformanceTopAssetResource
+			performanceTopAssetResource = ReflectionTestUtil.getFieldValue(
+				this, "_performanceTopAssetResource");
+
+		try (AnalyticsCloudHttpServer analyticsCloudHttpServer =
+				new AnalyticsCloudHttpServer(
+					"/api/1.0/asset-metric/objectEntry/summaries", () -> "{}");
+
+			AnalyticsCompanyConfigurationTemporarySwapper
+				analyticsCompanyConfigurationTemporarySwapper =
+					new AnalyticsCompanyConfigurationTemporarySwapper(
+						testCompany.getCompanyId(),
+						RandomTestUtil.randomString(), true,
+						analyticsCloudHttpServer.getURL())) {
+
+			DepotEntryTestUtil.withDepotEntryMemberUser(
+				_depotEntries.get(0),
+				() -> {
+					DepotEntryTestUtil.assertNoRequest(
+						analyticsCloudHttpServer, null,
+						depotEntryIds ->
+							performanceTopAssetResource.
+								getPerformanceTopAssetPage(
+									depotEntryIds, RandomTestUtil.nextInt(),
+									null, null,
+									com.liferay.portal.vulcan.pagination.
+										Pagination.of(1, 10),
+									null));
+					DepotEntryTestUtil.assertNoRequest(
+						analyticsCloudHttpServer,
+						new DepotEntry[] {_depotEntries.get(0)},
+						depotEntryIds ->
+							performanceTopAssetResource.
+								getPerformanceTopAssetPage(
+									depotEntryIds, RandomTestUtil.nextInt(),
+									null, null,
+									com.liferay.portal.vulcan.pagination.
+										Pagination.of(1, 10),
+									null));
+					DepotEntryTestUtil.assertNoRequest(
+						analyticsCloudHttpServer,
+						_depotEntries.toArray(new DepotEntry[0]),
+						depotEntryIds ->
+							performanceTopAssetResource.
+								getPerformanceTopAssetPage(
+									depotEntryIds, RandomTestUtil.nextInt(),
+									null, null,
+									com.liferay.portal.vulcan.pagination.
+										Pagination.of(1, 10),
+									null));
+
+					return null;
+				});
+		}
+	}
+
+	@DeleteAfterTestRun
+	private final List<DepotEntry> _depotEntries = new ArrayList<>();
 
 }
