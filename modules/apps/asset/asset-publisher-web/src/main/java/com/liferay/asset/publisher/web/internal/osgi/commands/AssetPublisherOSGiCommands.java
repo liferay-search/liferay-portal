@@ -186,19 +186,6 @@ public class AssetPublisherOSGiCommands implements OSGiCommands {
 				continue;
 			}
 
-			if (name.equals("anyAssetType") || name.equals("classNameIds")) {
-				value = AssetListTypeSettingsUtil.sanitizeClassNameIds(
-					name, value);
-
-				if (Validator.isNull(value)) {
-					continue;
-				}
-
-				unicodeProperties.put(name, value);
-
-				continue;
-			}
-
 			if (!name.equals("scopeIds")) {
 				unicodeProperties.put(name, value);
 
@@ -235,6 +222,8 @@ public class AssetPublisherOSGiCommands implements OSGiCommands {
 
 			unicodeProperties.put(name, value);
 		}
+
+		AssetListTypeSettingsUtil.sanitizeClassNameIds(unicodeProperties);
 
 		if (Validator.isNull(unicodeProperties.getProperty("anyAssetType"))) {
 			unicodeProperties.put("anyAssetType", "true");

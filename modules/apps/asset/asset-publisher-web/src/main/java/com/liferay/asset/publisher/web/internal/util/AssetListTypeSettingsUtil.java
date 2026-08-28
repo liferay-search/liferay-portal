@@ -9,45 +9,78 @@ import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.model.ClassName;
 import com.liferay.portal.kernel.service.ClassNameLocalServiceUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.UnicodeProperties;
+import com.liferay.portal.kernel.util.Validator;
 
 /**
  * @author Akhash Ramprakash
  */
 public class AssetListTypeSettingsUtil {
 
-	public static String sanitizeClassNameIds(String name, String value) {
-		return StringUtil.merge(
+	public static void sanitizeClassNameIds(
+		UnicodeProperties unicodeProperties) {
+
+		String anyAssetType = unicodeProperties.getProperty("anyAssetType");
+
+		if (!_isResolvable(GetterUtil.getLong(anyAssetType), "anyAssetType")) {
+			unicodeProperties.remove("anyAssetType");
+
+			anyAssetType = null;
+		}
+
+		String classNameIds = unicodeProperties.getProperty("classNameIds");
+
+		if (Validator.isNull(classNameIds)) {
+			return;
+		}
+
+		classNameIds = StringUtil.merge(
 			TransformUtil.transform(
-				StringUtil.split(value),
-				part -> {
-					long classNameId = GetterUtil.getLong(part);
+				StringUtil.split(classNameIds),
+				classNameId -> {
+					if (_isResolvable(
+							GetterUtil.getLong(classNameId), "classNameIds")) {
 
-					if (classNameId <= 0) {
-						return part;
-					}
-
-					ClassName className =
-						ClassNameLocalServiceUtil.fetchClassName(classNameId);
-
-					if (className != null) {
-						return part;
-					}
-
-					if (_log.isWarnEnabled()) {
-						_log.warn(
-							StringBundler.concat(
-								"Dropping unresolvable class name ID ",
-								classNameId, " from the \"", name,
-								"\" preference"));
+						return classNameId;
 					}
 
 					return null;
 				},
 				String.class));
+
+		if (Validator.isNotNull(classNameIds)) {
+			unicodeProperties.put("classNameIds", classNameIds);
+
+			return;
+		}
+
+		if (!GetterUtil.getBoolean(anyAssetType, true) &&
+			(GetterUtil.getLong(anyAssetType) <= 0)) {
+
+			return;
+		}
+
+		unicodeProperties.remove("classNameIds");
+	}
+
+	private static boolean _isResolvable(long classNameId, String name) {
+		if ((classNameId <= 0) ||
+			(ClassNameLocalServiceUtil.fetchClassName(classNameId) != null)) {
+
+			return true;
+		}
+
+		if (_log.isWarnEnabled()) {
+			_log.warn(
+				StringBundler.concat(
+					"Unable to resolve class name ID ", classNameId,
+					" in the \"", name, "\" preference"));
+		}
+
+		return false;
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

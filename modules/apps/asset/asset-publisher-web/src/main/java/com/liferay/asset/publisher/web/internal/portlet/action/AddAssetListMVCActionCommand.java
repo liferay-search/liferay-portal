@@ -160,21 +160,6 @@ public class AddAssetListMVCActionCommand extends BaseMVCActionCommand {
 					continue;
 				}
 
-				if (name.equals("anyAssetType") ||
-					name.equals("classNameIds")) {
-
-					value = AssetListTypeSettingsUtil.sanitizeClassNameIds(
-						name, value);
-
-					if (Validator.isNull(value)) {
-						continue;
-					}
-
-					unicodeProperties.put(name, value);
-
-					continue;
-				}
-
 				if (!name.equals("scopeIds")) {
 					unicodeProperties.put(name, value);
 
@@ -211,6 +196,8 @@ public class AddAssetListMVCActionCommand extends BaseMVCActionCommand {
 
 				unicodeProperties.put(name, value);
 			}
+
+			AssetListTypeSettingsUtil.sanitizeClassNameIds(unicodeProperties);
 
 			if (Validator.isNull(
 					unicodeProperties.getProperty("anyAssetType"))) {
