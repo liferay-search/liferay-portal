@@ -87,7 +87,7 @@ public class AssetListEntryExportImportContentProcessorTest {
 	}
 
 	@Test
-	public void testReplaceExportContentReferencesWithUnresolvableClassNameIds()
+	public void testReplaceExportContentReferencesWithNonexistentClassNameIds()
 		throws Exception {
 
 		Portal portal = Mockito.mock(Portal.class);
@@ -103,14 +103,14 @@ public class AssetListEntryExportImportContentProcessorTest {
 			classNameId
 		);
 
-		long unresolvableClassNameId = RandomTestUtil.randomLong();
+		long nonexistentClassNameId = RandomTestUtil.randomLong();
 
 		Mockito.doReturn(
 			""
 		).when(
 			portal
 		).fetchClassName(
-			unresolvableClassNameId
+			nonexistentClassNameId
 		);
 
 		ReflectionTestUtil.setFieldValue(
@@ -138,9 +138,9 @@ public class AssetListEntryExportImportContentProcessorTest {
 		UnicodeProperties unicodeProperties = UnicodePropertiesBuilder.create(
 			true
 		).put(
-			"anyAssetType", String.valueOf(unresolvableClassNameId)
+			"anyAssetType", String.valueOf(nonexistentClassNameId)
 		).put(
-			"classNameIds", classNameId + "," + unresolvableClassNameId
+			"classNameIds", classNameId + "," + nonexistentClassNameId
 		).build();
 
 		String content =
