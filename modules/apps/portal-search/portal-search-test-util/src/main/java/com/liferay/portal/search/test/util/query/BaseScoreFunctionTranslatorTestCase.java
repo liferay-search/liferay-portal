@@ -5,8 +5,11 @@
 
 package com.liferay.portal.search.test.util.query;
 
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.search.internal.query.function.score.FieldValueFactorScoreFunctionImpl;
+import com.liferay.portal.search.internal.query.function.score.GaussianDecayScoreFunctionImpl;
 import com.liferay.portal.search.query.function.score.FieldValueFactorScoreFunction;
+import com.liferay.portal.search.query.function.score.GaussianDecayScoreFunction;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -34,12 +37,47 @@ public abstract class BaseScoreFunctionTranslatorTestCase {
 		_assertContains("\"modifier\":\"ln1p\"", string);
 	}
 
+	@Test
+	public void testTranslateGaussianDecayWithoutMultiValueMode() {
+		GaussianDecayScoreFunction gaussianDecayScoreFunction =
+			new GaussianDecayScoreFunctionImpl(
+				"publishDate", "now", "1825d", "180d");
+
+		String string = translate(gaussianDecayScoreFunction);
+
+		_assertContains("\"scale\":\"1825d\"", string);
+		_assertNotContains("multi_value_mode", string);
+	}
+
+	@Test
+	public void testTranslateGaussianDecayWithoutOrigin() {
+		GaussianDecayScoreFunction gaussianDecayScoreFunction =
+			new GaussianDecayScoreFunctionImpl(
+				"publishDate", null, "1825d", "180d");
+
+		String string = translate(gaussianDecayScoreFunction);
+
+		_assertContains("\"scale\":\"1825d\"", string);
+		_assertNotContains("\"origin\"", string);
+	}
+
 	protected abstract String translate(
 		FieldValueFactorScoreFunction fieldValueFactorScoreFunction);
+
+	protected abstract String translate(
+		GaussianDecayScoreFunction gaussianDecayScoreFunction);
 
 	private void _assertContains(String expected, String actual) {
 		if (!actual.contains(expected)) {
 			Assert.assertEquals(expected, actual);
+		}
+	}
+
+	private void _assertNotContains(String unexpected, String actual) {
+		if (actual.contains(unexpected)) {
+			Assert.fail(
+				StringBundler.concat(
+					"Unexpected \"", unexpected, "\" found in ", actual));
 		}
 	}
 
