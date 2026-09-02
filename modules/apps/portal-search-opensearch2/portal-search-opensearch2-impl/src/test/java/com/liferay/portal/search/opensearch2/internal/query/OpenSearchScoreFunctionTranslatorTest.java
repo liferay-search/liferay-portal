@@ -11,6 +11,7 @@ import com.liferay.portal.search.opensearch2.internal.util.JsonpUtil;
 import com.liferay.portal.search.query.FunctionScoreQuery.FilterQueryScoreFunctionHolder;
 import com.liferay.portal.search.query.Query;
 import com.liferay.portal.search.query.function.score.FieldValueFactorScoreFunction;
+import com.liferay.portal.search.query.function.score.GaussianDecayScoreFunction;
 import com.liferay.portal.search.query.function.score.ScoreFunction;
 import com.liferay.portal.search.test.util.query.BaseScoreFunctionTranslatorTestCase;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
@@ -58,6 +59,20 @@ public class OpenSearchScoreFunctionTranslatorTest
 		FunctionScore.Builder.ContainerBuilder containerBuilder =
 			openSearchScoreFunctionTranslator.translate(
 				filterQueryScoreFunctionHolder.getScoreFunction());
+
+		return JsonpUtil.toString(containerBuilder.build());
+	}
+
+	@Override
+	protected String translate(
+		GaussianDecayScoreFunction gaussianDecayScoreFunction) {
+
+		OpenSearchScoreFunctionTranslator openSearchScoreFunctionTranslator =
+			new OpenSearchScoreFunctionTranslator();
+
+		FunctionScore.Builder.ContainerBuilder containerBuilder =
+			openSearchScoreFunctionTranslator.translate(
+				gaussianDecayScoreFunction);
 
 		return JsonpUtil.toString(containerBuilder.build());
 	}
