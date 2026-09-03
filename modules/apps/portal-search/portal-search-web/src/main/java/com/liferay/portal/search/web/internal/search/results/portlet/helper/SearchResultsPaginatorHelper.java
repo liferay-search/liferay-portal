@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
-package com.liferay.portal.search.web.internal.search.results.portlet;
+package com.liferay.portal.search.web.internal.search.results.portlet.helper;
 
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringPool;
@@ -27,9 +27,9 @@ import java.util.Map;
 /**
  * @author Olivia Yu
  */
-public class SearchResultsPaginatorReactDataBuilder {
+public class SearchResultsPaginatorHelper {
 
-	public SearchResultsPaginatorReactDataBuilder(
+	public SearchResultsPaginatorHelper(
 		HttpServletRequest httpServletRequest,
 		SearchContainer<?> searchContainer) {
 
@@ -37,7 +37,7 @@ public class SearchResultsPaginatorReactDataBuilder {
 		_searchContainer = searchContainer;
 	}
 
-	public Map<String, Object> build() {
+	public Map<String, Object> getProps() {
 		int total = _searchContainer.getTotal();
 
 		if (total <= 0) {
@@ -114,7 +114,9 @@ public class SearchResultsPaginatorReactDataBuilder {
 		return url;
 	}
 
-	private List<Map<String, Object>> _getDeltas(String url, String urlAnchor) {
+	private List<Map<String, Object>> _getDeltas(
+		String url, String urlAnchor) {
+
 		List<Map<String, Object>> deltas = new ArrayList<>();
 
 		String deltaParam = _searchContainer.getDeltaParam();

@@ -26,7 +26,8 @@ page import="com.liferay.portal.kernel.util.PortalUtil" %><%@
 page import="com.liferay.portal.kernel.util.WebKeys" %><%@
 page import="com.liferay.portal.search.web.internal.result.display.context.SearchResultSummaryDisplayContext" %><%@
 page import="com.liferay.portal.search.web.internal.search.results.configuration.SearchResultsPortletInstanceConfiguration" %><%@
-page import="com.liferay.portal.search.web.internal.search.results.portlet.SearchResultsPortletDisplayContext" %>
+page import="com.liferay.portal.search.web.internal.search.results.portlet.SearchResultsPortletDisplayContext" %><%@
+page import="com.liferay.portal.search.web.internal.search.results.portlet.helper.SearchResultsPaginatorHelper" %>
 
 <%@ page import="java.util.List" %><%@
 page import="java.util.Map" %>
@@ -80,7 +81,9 @@ SearchContainer<Document> searchContainer = searchResultsPortletDisplayContext.g
 				<c:when test='<%= FeatureFlagManagerUtil.isEnabled(PortalUtil.getCompanyId(request), "LPD-98858") %>'>
 
 					<%
-					Map<String, Object> paginatorReactData = searchResultsPortletDisplayContext.getPaginatorReactData();
+					SearchResultsPaginatorHelper searchResultsPaginatorHelper = new SearchResultsPaginatorHelper(request, searchContainer);
+
+					Map<String, Object> paginatorReactData = searchResultsPaginatorHelper.getProps();
 					%>
 
 					<c:if test="<%= paginatorReactData != null %>">
