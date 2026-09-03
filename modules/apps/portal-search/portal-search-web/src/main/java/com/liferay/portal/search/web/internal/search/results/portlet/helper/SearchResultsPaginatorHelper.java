@@ -38,45 +38,25 @@ public class SearchResultsPaginatorHelper {
 	}
 
 	public Map<String, Object> getProps() {
-		int total = _searchContainer.getTotal();
-
-		if (total <= 0) {
+		if (!_isPaginationNeeded()) {
 			return null;
 		}
 
-		int delta = _searchContainer.getDelta();
-
-		if ((total <= delta) &&
-			(total <= PropsValues.SEARCH_CONTAINER_PAGE_DELTA_VALUES[0])) {
-
-			return null;
-		}
-
-		PortletURL iteratorURL = _searchContainer.getIteratorURL();
+		PortletURL iteratorURL = _getIteratorURL();
 
 		if (iteratorURL == null) {
 			return null;
 		}
-
-		iteratorURL.setParameter("resetCur", Boolean.FALSE.toString());
 
 		String[] urlArray = PortalUtil.stripURLAnchor(
 			iteratorURL.toString(), StringPool.POUND);
 
 		String urlAnchor = urlArray[1];
 
-		String url = _appendParameterSeparator(
-			PortalUtil.escapeRedirect(urlArray[0]));
-
-		boolean deltaConfigurable = _searchContainer.isDeltaConfigurable();
-
-		if (deltaConfigurable) {
-			url = HttpComponentsUtil.setParameter(
-				url, _searchContainer.getDeltaParam(), String.valueOf(delta));
-		}
+		String url = _getURL(urlArray[0]);
 
 		return HashMapBuilder.<String, Object>put(
-			"activeDelta", delta
+			"activeDelta", _searchContainer.getDelta()
 		).put(
 			"activePage", _searchContainer.getCur()
 		).put(
@@ -86,9 +66,9 @@ public class SearchResultsPaginatorHelper {
 			_getPaginationURLTemplate(
 				url, urlAnchor, _searchContainer.getCurParam())
 		).put(
-			"showDeltasDropDown", deltaConfigurable
+			"showDeltasDropDown", _searchContainer.isDeltaConfigurable()
 		).put(
-			"totalItems", total
+			"totalItems", _searchContainer.getTotal()
 		).put(
 			"totalItemsApproximate",
 			FeatureFlagManagerUtil.isEnabled(
@@ -114,9 +94,7 @@ public class SearchResultsPaginatorHelper {
 		return url;
 	}
 
-	private List<Map<String, Object>> _getDeltas(
-		String url, String urlAnchor) {
-
+	private List<Map<String, Object>> _getDeltas(String url, String urlAnchor) {
 		List<Map<String, Object>> deltas = new ArrayList<>();
 
 		String deltaParam = _searchContainer.getDeltaParam();
@@ -140,6 +118,18 @@ public class SearchResultsPaginatorHelper {
 		return deltas;
 	}
 
+	private PortletURL _getIteratorURL() {
+		PortletURL iteratorURL = _searchContainer.getIteratorURL();
+
+		if (iteratorURL == null) {
+			return null;
+		}
+
+		iteratorURL.setParameter("resetCur", Boolean.FALSE.toString());
+
+		return iteratorURL;
+	}
+
 	private String _getPaginationURLTemplate(
 		String url, String urlAnchor, String curParam) {
 
@@ -149,6 +139,31 @@ public class SearchResultsPaginatorHelper {
 				curParam, _CUR_PLACEHOLDER));
 
 		return StringUtil.replace(templateURL, _CUR_PLACEHOLDER, "{0}");
+	}
+
+	private String _getURL(String url) {
+		url = _appendParameterSeparator(PortalUtil.escapeRedirect(url));
+
+		if (_searchContainer.isDeltaConfigurable()) {
+			url = HttpComponentsUtil.setParameter(
+				url, _searchContainer.getDeltaParam(),
+				String.valueOf(_searchContainer.getDelta()));
+		}
+
+		return url;
+	}
+
+	private boolean _isPaginationNeeded() {
+		int total = _searchContainer.getTotal();
+
+		if ((total <= 0) ||
+			((total <= _searchContainer.getDelta()) &&
+			 (total <= PropsValues.SEARCH_CONTAINER_PAGE_DELTA_VALUES[0]))) {
+
+			return false;
+		}
+
+		return true;
 	}
 
 	private static final String _CUR_PLACEHOLDER = "__CUR__";
