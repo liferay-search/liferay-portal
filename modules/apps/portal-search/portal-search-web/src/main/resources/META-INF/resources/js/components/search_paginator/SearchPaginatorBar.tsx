@@ -11,17 +11,6 @@ import {useId} from '@clayui/shared';
 import {sub} from 'frontend-js-web';
 import React from 'react';
 
-export interface IAriaLabels {
-
-	/**
-	 * Label for a page link, taking the page number.
-	 */
-	link: string;
-
-	next: string;
-	previous: string;
-}
-
 export interface IDelta {
 
 	/**
@@ -30,51 +19,6 @@ export interface IDelta {
 	href: string;
 
 	label: number;
-}
-
-export interface ILabels {
-
-	/**
-	 * Wraps a total that is a floor rather than an exact figure, taking the
-	 * formatted total.
-	 */
-	approximateTotalItems: string;
-
-	/**
-	 * Warns that choosing a page size navigates. Every option is a link, so the
-	 * page really does reload, and a reader who cannot see that deserves to be
-	 * told before choosing.
-	 */
-	changingPageSizeReloads: string;
-
-	/**
-	 * Names what a page size option counts, for readers who cannot see that the
-	 * option sits in an items per page picker.
-	 */
-	entriesPerPage: string;
-
-	intermediatePages: string;
-	itemsPerPagePicker: string;
-	nextPage: string;
-
-	/**
-	 * Label for a page link, taking the page number.
-	 */
-	page: string;
-
-	pagination: string;
-
-	/**
-	 * Result summary, taking the first item, the last item and the total.
-	 */
-	paginationResults: string;
-
-	/**
-	 * The active page size, taking the size.
-	 */
-	perPageItems: string;
-
-	previousPage: string;
 }
 
 /**
@@ -86,7 +30,6 @@ export interface ISearchPaginatorProps {
 	activePage: number;
 
 	deltas: Array<IDelta>;
-	labels: ILabels;
 
 	/**
 	 * The page link with `{0}` where the page number goes. The server sorts it
@@ -134,13 +77,11 @@ export function createHrefConstructor(paginationURLTemplate: string) {
 	return (page?: number) => sub(paginationURLTemplate, [page]);
 }
 
-export function toAriaLabels(labels: ILabels): IAriaLabels {
-	return {
-		link: labels.page,
-		next: labels.nextPage,
-		previous: labels.previousPage,
-	};
-}
+export const ARIA_LABELS = {
+	link: Liferay.Language.get('page-x'),
+	next: Liferay.Language.get('next-page'),
+	previous: Liferay.Language.get('previous-page'),
+};
 
 interface IProps extends ISearchPaginatorProps {
 
@@ -163,7 +104,6 @@ const SearchPaginatorBar = ({
 	activePage,
 	children,
 	deltas,
-	labels,
 	showDeltasDropDown = true,
 	totalItems,
 	totalItemsApproximate = false,
@@ -184,7 +124,7 @@ const SearchPaginatorBar = ({
 	// the rendered label that gains the "or more" marker, not the value.
 
 	const totalItemsLabel = totalItemsApproximate
-		? sub(labels.approximateTotalItems, [numberFormat.format(totalItems)])
+		? sub(Liferay.Language.get('x-plus'), [numberFormat.format(totalItems)])
 		: numberFormat.format(totalItems);
 
 	return (
@@ -194,37 +134,39 @@ const SearchPaginatorBar = ({
 					<Picker
 						activeDelta={activeDelta}
 						aria-describedby={`${resultsId} ${reloadsId}`}
-						aria-label={labels.itemsPerPagePicker}
+						aria-label={Liferay.Language.get('items-per-page')}
 						as={Trigger}
 						defaultSelectedKey={String(activeDelta)}
 						items={deltas}
-						label={labels.perPageItems}
+						label={Liferay.Language.get('x-entries')}
 					>
 						{(item: IDelta) => (
 							<Option
 								href={item.href}
 								key={item.label}
-								textValue={`${item.label}\u00a0${labels.entriesPerPage}`}
+								textValue={`${item.label}\u00a0${Liferay.Language.get('entries-per-page')}`}
 							>
 								{item.label}
 
 								<span className="sr-only">
 									{'\u00a0'}
 
-									{labels.entriesPerPage}
+									{Liferay.Language.get('entries-per-page')}
 								</span>
 							</Option>
 						)}
 					</Picker>
 
 					<span className="sr-only" id={reloadsId}>
-						{labels.changingPageSizeReloads}
+						{Liferay.Language.get(
+							'selecting-an-option-will-reload-the-page'
+						)}
 					</span>
 				</div>
 			)}
 
 			<PaginationBar.Results id={resultsId}>
-				{sub(labels.paginationResults, [
+				{sub(Liferay.Language.get('showing-x-to-x-of-x-entries'), [
 					numberFormat.format((activePage - 1) * activeDelta + 1),
 					numberFormat.format(
 						Math.min(activePage * activeDelta, totalItems)

@@ -7,9 +7,9 @@ import {ClayPaginationWithBasicItems} from '@clayui/pagination';
 import React from 'react';
 
 import SearchPaginatorBar, {
+	ARIA_LABELS,
 	ISearchPaginatorProps,
 	createHrefConstructor,
-	toAriaLabels,
 } from './SearchPaginatorBar';
 
 const ELLIPSIS_BUFFER = 1;
@@ -30,8 +30,7 @@ const ELLIPSIS_BUFFER = 1;
  * did.
  */
 const ClassicSearchPaginator = (props: ISearchPaginatorProps) => {
-	const {activeDelta, activePage, labels, paginationURLTemplate, totalItems} =
-		props;
+	const {activeDelta, activePage, paginationURLTemplate, totalItems} = props;
 
 	// The active page is controlled by the server and never by Clay. Left
 	// uncontrolled, clicking a page marks that item active while the click is
@@ -48,12 +47,14 @@ const ClassicSearchPaginator = (props: ISearchPaginatorProps) => {
 		<SearchPaginatorBar {...props}>
 			<ClayPaginationWithBasicItems
 				active={activePage}
-				aria-label={labels.pagination}
-				ariaLabels={toAriaLabels(labels)}
+				aria-label={Liferay.Language.get('pagination')}
+				ariaLabels={ARIA_LABELS}
 				ellipsisBuffer={ELLIPSIS_BUFFER}
 				ellipsisProps={{
-					'aria-label': labels.intermediatePages,
-					'title': labels.intermediatePages,
+					'aria-label': Liferay.Language.get(
+						'show-intermediate-pages'
+					),
+					'title': Liferay.Language.get('show-intermediate-pages'),
 				}}
 				hrefConstructor={createHrefConstructor(paginationURLTemplate)}
 				onActiveChange={ignoreActiveChange}

@@ -9,7 +9,6 @@ import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
-import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.HttpComponentsUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
@@ -83,8 +82,6 @@ public class SearchResultsPaginatorReactDataBuilder {
 		).put(
 			"deltas", _getDeltas(url, urlAnchor)
 		).put(
-			"labels", _getLabels()
-		).put(
 			"paginationURLTemplate",
 			_getPaginationURLTemplate(
 				url, urlAnchor, _searchContainer.getCurParam())
@@ -139,40 +136,6 @@ public class SearchResultsPaginatorReactDataBuilder {
 		}
 
 		return deltas;
-	}
-
-	private Map<String, String> _getLabels() {
-		return HashMapBuilder.put(
-			"approximateTotalItems",
-			LanguageUtil.get(_httpServletRequest, "x-plus")
-		).put(
-			"changingPageSizeReloads",
-			LanguageUtil.get(
-				_httpServletRequest, "selecting-an-option-will-reload-the-page")
-		).put(
-			"entriesPerPage",
-			LanguageUtil.get(_httpServletRequest, "entries-per-page")
-		).put(
-			"intermediatePages",
-			LanguageUtil.get(_httpServletRequest, "show-intermediate-pages")
-		).put(
-			"itemsPerPagePicker",
-			LanguageUtil.get(_httpServletRequest, "items-per-page")
-		).put(
-			"nextPage", LanguageUtil.get(_httpServletRequest, "next-page")
-		).put(
-			"page", LanguageUtil.get(_httpServletRequest, "page-x")
-		).put(
-			"pagination", LanguageUtil.get(_httpServletRequest, "pagination")
-		).put(
-			"paginationResults",
-			LanguageUtil.get(_httpServletRequest, "showing-x-to-x-of-x-entries")
-		).put(
-			"perPageItems", LanguageUtil.get(_httpServletRequest, "x-entries")
-		).put(
-			"previousPage",
-			LanguageUtil.get(_httpServletRequest, "previous-page")
-		).build();
 	}
 
 	private String _getPaginationURLTemplate(

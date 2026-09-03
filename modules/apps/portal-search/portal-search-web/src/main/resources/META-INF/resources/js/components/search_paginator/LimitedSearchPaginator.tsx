@@ -9,17 +9,20 @@ import {sub} from 'frontend-js-web';
 import React from 'react';
 
 import SearchPaginatorBar, {
-	IAriaLabels,
+	ARIA_LABELS,
 	ISearchPaginatorProps,
 	createHrefConstructor,
-	toAriaLabels,
 } from './SearchPaginatorBar';
 
 const DEFAULT_VISIBLE_PAGE_COUNT = 5;
 
 interface ILimitedPaginationProps {
 	activePage: number;
-	ariaLabels: IAriaLabels;
+	ariaLabels: {
+		link: string;
+		next: string;
+		previous: string;
+	};
 	hrefConstructor: (page: number) => string;
 	label: string;
 
@@ -147,7 +150,6 @@ const LimitedSearchPaginator = ({
 	const {
 		activeDelta,
 		activePage,
-		labels,
 		paginationURLTemplate,
 		totalItems,
 		totalItemsApproximate = false,
@@ -157,9 +159,9 @@ const LimitedSearchPaginator = ({
 		<SearchPaginatorBar {...otherProps}>
 			<LimitedPagination
 				activePage={activePage}
-				ariaLabels={toAriaLabels(labels)}
+				ariaLabels={ARIA_LABELS}
 				hrefConstructor={createHrefConstructor(paginationURLTemplate)}
-				label={labels.pagination}
+				label={Liferay.Language.get('pagination')}
 				lastKnownPage={Math.ceil(totalItems / activeDelta)}
 				moreItemsAvailable={totalItemsApproximate}
 				visiblePageCount={visiblePageCount}
