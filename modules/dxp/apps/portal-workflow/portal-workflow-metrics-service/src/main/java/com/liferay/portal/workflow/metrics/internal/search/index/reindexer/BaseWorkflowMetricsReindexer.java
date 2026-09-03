@@ -65,11 +65,11 @@ public abstract class BaseWorkflowMetricsReindexer
 			Thread.sleep(1000);
 		}
 		else {
-			workflowMetricsIndex.removeIndex(
+			workflowMetricsIndex.createIndex(
 				searchCapabilities, searchEngineAdapter, indexNameBuilder,
 				companyId);
 
-			workflowMetricsIndex.createIndex(
+			workflowMetricsIndex.deleteAllDocuments(
 				searchCapabilities, searchEngineAdapter, indexNameBuilder,
 				companyId);
 		}
