@@ -17,29 +17,19 @@ const ELLIPSIS_BUFFER = 1;
 /**
  * A search paginator that shows every page the total accounts for.
  *
- * This is the shape the `liferay-ui:search-paginator` markup had: the first and
+ * Shape resembles that of `liferay-ui:search-paginator` markup: the first and
  * last pages are links, and the pages between them sit behind an ellipsis
- * dropdown. It needs an exact total, since both the last page link and the
- * ellipsis contents are derived from the page count.
- *
- * Clay's pieces are composed by hand rather than taken through
- * `ClayPaginationBarWithBasicItems`, which renders the same markup but forwards
- * neither `aria-label` nor `ariaLabels` to the pagination inside it, and formats
- * the result counts as bare JavaScript numbers. Composing keeps every label
- * translated and every count formatted for the reader's locale, the way the JSP
- * did.
+ * dropdown. It uses an exact total to calculate page count and render the
+ * last page link and the ellipsis contents.
  */
 const ClassicSearchPaginator = (props: ISearchPaginatorProps) => {
 	const {activeDelta, activePage, paginationURLTemplate, totalItems} = props;
 
-	// The active page is controlled by the server and never by Clay. Left
-	// uncontrolled, clicking a page marks that item active while the click is
-	// still being handled, and `Pagination.Item` renders no `href` for the
-	// active item, so the anchor loses its target before the browser follows
-	// it and the click does nothing at all. Holding `active` fixed keeps every
-	// item a real link, which is the whole point of a link based paginator.
-	// Clay warns when `active` arrives without a handler, and there is genuinely
-	// nothing to handle: the next active page comes back with the next render.
+	// The active page is controlled by the server and never by Clay. Since this
+	// is a link based paginator, component needs to hold `active` fixed to
+	// keep every item a real link. There is genuinely nothing to handle
+	// in the `onActiveChange` callback, since the server will re-render the
+	// component with the new active page when the user clicks a link.
 
 	const ignoreActiveChange = () => {};
 
