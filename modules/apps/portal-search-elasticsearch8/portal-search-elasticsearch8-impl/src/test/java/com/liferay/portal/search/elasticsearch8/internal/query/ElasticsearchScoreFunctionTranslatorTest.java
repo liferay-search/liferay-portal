@@ -12,6 +12,7 @@ import com.liferay.portal.search.elasticsearch8.internal.util.JsonpUtil;
 import com.liferay.portal.search.query.FunctionScoreQuery;
 import com.liferay.portal.search.query.Query;
 import com.liferay.portal.search.query.function.score.FieldValueFactorScoreFunction;
+import com.liferay.portal.search.query.function.score.GaussianDecayScoreFunction;
 import com.liferay.portal.search.query.function.score.ScoreFunction;
 import com.liferay.portal.search.test.util.query.BaseScoreFunctionTranslatorTestCase;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
@@ -57,6 +58,21 @@ public class ElasticsearchScoreFunctionTranslatorTest
 		FunctionScore.Builder.ContainerBuilder containerBuilder =
 			elasticsearchScoreFunctionTranslator.translate(
 				filterQueryScoreFunctionHolder.getScoreFunction());
+
+		return JsonpUtil.toString(containerBuilder.build());
+	}
+
+	@Override
+	protected String translate(
+		GaussianDecayScoreFunction gaussianDecayScoreFunction) {
+
+		ElasticsearchScoreFunctionTranslator
+			elasticsearchScoreFunctionTranslator =
+				new ElasticsearchScoreFunctionTranslator();
+
+		FunctionScore.Builder.ContainerBuilder containerBuilder =
+			elasticsearchScoreFunctionTranslator.translate(
+				gaussianDecayScoreFunction);
 
 		return JsonpUtil.toString(containerBuilder.build());
 	}
