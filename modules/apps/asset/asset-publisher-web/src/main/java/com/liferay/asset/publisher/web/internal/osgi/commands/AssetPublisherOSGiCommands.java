@@ -12,6 +12,7 @@ import com.liferay.asset.list.service.AssetListEntryLocalService;
 import com.liferay.asset.publisher.constants.AssetPublisherPortletKeys;
 import com.liferay.asset.publisher.util.AssetPublisherHelper;
 import com.liferay.asset.publisher.web.internal.constants.AssetPublisherSelectionStyleConstants;
+import com.liferay.asset.publisher.web.internal.util.AssetListTypeSettingsUtil;
 import com.liferay.layout.page.template.constants.LayoutPageTemplateEntryTypeConstants;
 import com.liferay.layout.page.template.model.LayoutPageTemplateEntry;
 import com.liferay.layout.page.template.service.LayoutPageTemplateEntryLocalService;
@@ -28,6 +29,7 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
+import com.liferay.portal.kernel.model.ModelHintsUtil;
 import com.liferay.portal.kernel.model.PortletPreferences;
 import com.liferay.portal.kernel.portlet.PortletIdCodec;
 import com.liferay.portal.kernel.service.CompanyLocalService;
@@ -75,13 +77,11 @@ public class AssetPublisherOSGiCommands implements OSGiCommands {
 			long scopeGroupId, ServiceContext serviceContext, long userId)
 		throws Exception {
 
-		String name = layout.getName(LocaleUtil.getDefault());
-
 		return _assetListEntryLocalService.addDynamicAssetListEntry(
 			null, userId, scopeGroupId,
 			_getTitle(
 				layout.isDraftLayout(), instanceId,
-				name.substring(0, Math.min(name.length(), 60))),
+				layout.getName(LocaleUtil.getDefault())),
 			_getTypeSettings(layout, jxPortletPreferences), serviceContext);
 	}
 
@@ -123,13 +123,11 @@ public class AssetPublisherOSGiCommands implements OSGiCommands {
 			return null;
 		}
 
-		String name = layout.getName(LocaleUtil.getDefault());
-
 		return _assetListEntryLocalService.addManualAssetListEntry(
 			null, userId, scopeGroupId,
 			_getTitle(
 				layout.isDraftLayout(), instanceId,
-				name.substring(0, Math.min(name.length(), 60))),
+				layout.getName(LocaleUtil.getDefault())),
 			ListUtil.toLongArray(
 				_assetPublisherHelper.getAssetEntries(
 					null, jxPortletPreferences, null, companyId,
@@ -157,8 +155,17 @@ public class AssetPublisherOSGiCommands implements OSGiCommands {
 	}
 
 	private String _getTitle(boolean draft, String instanceId, String name) {
-		return StringBundler.concat(
+		String title = StringBundler.concat(
 			"AP ", instanceId, draft ? "_0" : "_1", StringPool.SPACE, name);
+
+		int titleMaxLength = ModelHintsUtil.getMaxLength(
+			AssetListEntry.class.getName(), "title");
+
+		if (title.length() > titleMaxLength) {
+			return title.substring(0, titleMaxLength);
+		}
+
+		return title;
 	}
 
 	private String _getTypeSettings(
@@ -215,6 +222,8 @@ public class AssetPublisherOSGiCommands implements OSGiCommands {
 
 			unicodeProperties.put(name, value);
 		}
+
+		AssetListTypeSettingsUtil.sanitizeClassNameIds(unicodeProperties);
 
 		if (Validator.isNull(unicodeProperties.getProperty("anyAssetType"))) {
 			unicodeProperties.put("anyAssetType", "true");

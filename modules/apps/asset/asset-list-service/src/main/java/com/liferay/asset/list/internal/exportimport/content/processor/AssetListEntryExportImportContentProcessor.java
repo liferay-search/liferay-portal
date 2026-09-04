@@ -22,6 +22,8 @@ import com.liferay.exportimport.kernel.lar.StagedModelDataHandlerUtil;
 import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.StagedModel;
 import com.liferay.portal.kernel.service.GroupLocalService;
@@ -73,8 +75,7 @@ public class AssetListEntryExportImportContentProcessor
 		String[] classNames = TransformUtil.transform(
 			StringUtil.split(
 				unicodeProperties.getProperty("classNameIds", null)),
-			classNameId -> _portal.getClassName(
-				GetterUtil.getLong(classNameId)),
+			classNameId -> _fetchClassName(GetterUtil.getLong(classNameId)),
 			String.class);
 
 		unicodeProperties.setProperty(
@@ -84,9 +85,15 @@ public class AssetListEntryExportImportContentProcessor
 			unicodeProperties.getProperty("anyAssetType", null));
 
 		if (defaultClassNameId > 0) {
-			unicodeProperties.setProperty(
-				"anyAssetTypeClassName",
-				_portal.getClassName(defaultClassNameId));
+			String anyAssetTypeClassName = _fetchClassName(defaultClassNameId);
+
+			if (anyAssetTypeClassName != null) {
+				unicodeProperties.setProperty(
+					"anyAssetTypeClassName", anyAssetTypeClassName);
+			}
+			else {
+				unicodeProperties.remove("anyAssetType");
+			}
 		}
 
 		List<AssetRendererFactory<?>> assetRendererFactories =
@@ -388,6 +395,20 @@ public class AssetListEntryExportImportContentProcessor
 		}
 	}
 
+	private String _fetchClassName(long classNameId) {
+		String className = _portal.fetchClassName(classNameId);
+
+		if (Validator.isNotNull(className)) {
+			return className;
+		}
+
+		if (_log.isWarnEnabled()) {
+			_log.warn("Unable to resolve class name ID " + classNameId);
+		}
+
+		return null;
+	}
+
 	private long _getClassTypeId(
 		long classTypeId, Map<Long, Long>... primaryKeysMaps) {
 
@@ -402,6 +423,9 @@ public class AssetListEntryExportImportContentProcessor
 
 		return classTypeId;
 	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		AssetListEntryExportImportContentProcessor.class);
 
 	@Reference
 	private AssetCategoryLocalService _assetCategoryLocalService;

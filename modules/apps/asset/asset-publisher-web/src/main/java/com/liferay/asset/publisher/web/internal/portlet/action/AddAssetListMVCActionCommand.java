@@ -13,6 +13,7 @@ import com.liferay.asset.list.service.AssetListEntryService;
 import com.liferay.asset.publisher.constants.AssetPublisherPortletKeys;
 import com.liferay.asset.publisher.util.AssetPublisherHelper;
 import com.liferay.asset.publisher.web.internal.constants.AssetPublisherSelectionStyleConstants;
+import com.liferay.asset.publisher.web.internal.util.AssetListTypeSettingsUtil;
 import com.liferay.layout.page.template.constants.LayoutPageTemplateEntryTypeConstants;
 import com.liferay.layout.page.template.model.LayoutPageTemplateEntry;
 import com.liferay.layout.page.template.service.LayoutPageTemplateEntryLocalService;
@@ -195,6 +196,8 @@ public class AddAssetListMVCActionCommand extends BaseMVCActionCommand {
 
 				unicodeProperties.put(name, value);
 			}
+
+			AssetListTypeSettingsUtil.sanitizeClassNameIds(unicodeProperties);
 
 			if (Validator.isNull(
 					unicodeProperties.getProperty("anyAssetType"))) {
