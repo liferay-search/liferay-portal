@@ -6,7 +6,12 @@
 package com.liferay.asset.publisher.web.internal.util;
 
 import com.liferay.petra.function.transform.TransformUtil;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.service.ClassNameLocalServiceUtil;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -17,6 +22,7 @@ import jakarta.portlet.PortletPreferences;
 
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Akhash Ramprakash
@@ -75,11 +81,76 @@ public class AssetListTypeSettingsUtil {
 				"groupIds", ListUtil.toString(groupIds, StringPool.BLANK));
 		}
 
+		_sanitizeClassNameIds(unicodeProperties);
+
 		if (Validator.isNull(unicodeProperties.getProperty("anyAssetType"))) {
 			unicodeProperties.put("anyAssetType", Boolean.TRUE.toString());
 		}
 
 		return unicodeProperties.toString();
 	}
+
+	private static boolean _isResolvable(long classNameId, String name) {
+		if ((classNameId <= 0) ||
+			(ClassNameLocalServiceUtil.fetchClassName(classNameId) != null)) {
+
+			return true;
+		}
+
+		if (_log.isWarnEnabled()) {
+			_log.warn(
+				StringBundler.concat(
+					"Unable to resolve class name ID ", classNameId,
+					" in the \"", name, "\" preference"));
+		}
+
+		return false;
+	}
+
+	private static void _sanitizeClassNameIds(
+		UnicodeProperties unicodeProperties) {
+
+		String anyAssetType = unicodeProperties.getProperty("anyAssetType");
+
+		if (!_isResolvable(GetterUtil.getLong(anyAssetType), "anyAssetType")) {
+			unicodeProperties.remove("anyAssetType");
+		}
+
+		String[] classNameIds = StringUtil.split(
+			unicodeProperties.getProperty("classNameIds"));
+
+		if (ArrayUtil.isEmpty(classNameIds)) {
+			return;
+		}
+
+		String[] existingClassNameIds = TransformUtil.transform(
+			classNameIds,
+			classNameId -> {
+				if (_isResolvable(
+						GetterUtil.getLong(classNameId), "classNameIds")) {
+
+					return classNameId;
+				}
+
+				return null;
+			},
+			String.class);
+
+		if (ArrayUtil.isNotEmpty(existingClassNameIds)) {
+			unicodeProperties.put(
+				"classNameIds", StringUtil.merge(existingClassNameIds));
+
+			return;
+		}
+
+		unicodeProperties.remove("classNameIds");
+
+		if (Objects.equals(anyAssetType, Boolean.FALSE.toString())) {
+			unicodeProperties.remove("anyAssetType");
+		}
+	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		AssetListTypeSettingsUtil.class);
 
 }
