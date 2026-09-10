@@ -17,12 +17,19 @@ taglib uri="http://liferay.com/tld/template" prefix="liferay-template" %>
 
 <%@ page import="com.liferay.asset.kernel.service.AssetVocabularyLocalService" %><%@
 page import="com.liferay.learn.LearnMessageUtil" %><%@
+page import="com.liferay.portal.kernel.exception.PortalException" %><%@
 page import="com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil" %><%@
+page import="com.liferay.portal.kernel.json.JSONArray" %><%@
+page import="com.liferay.portal.kernel.json.JSONFactoryUtil" %><%@
+page import="com.liferay.portal.kernel.log.Log" %><%@
+page import="com.liferay.portal.kernel.log.LogFactoryUtil" %><%@
 page import="com.liferay.portal.kernel.service.GroupLocalService" %><%@
 page import="com.liferay.portal.kernel.util.Constants" %><%@
 page import="com.liferay.portal.kernel.util.HashMapBuilder" %><%@
 page import="com.liferay.portal.kernel.util.StringUtil" %><%@
+page import="com.liferay.portal.kernel.util.WebKeys" %><%@
 page import="com.liferay.portal.search.web.internal.category.facet.configuration.CategoryFacetPortletInstanceConfiguration" %><%@
+page import="com.liferay.portal.search.web.internal.category.facet.display.context.CategoryFacetConfigurationDisplayContext" %><%@
 page import="com.liferay.portal.search.web.internal.category.facet.portlet.CategoryFacetPortlet" %><%@
 page import="com.liferay.portal.search.web.internal.category.facet.portlet.CategoryFacetPortletPreferences" %><%@
 page import="com.liferay.portal.search.web.internal.category.facet.portlet.CategoryFacetPortletPreferencesImpl" %><%@
@@ -40,6 +47,19 @@ AssetVocabularyLocalService assetVocabularyLocalService = (AssetVocabularyLocalS
 GroupLocalService groupLocalService = (GroupLocalService)request.getAttribute(GroupLocalService.class.getName());
 
 CategoryFacetPortletPreferences categoryFacetPortletPreferences = new CategoryFacetPortletPreferencesImpl(assetVocabularyLocalService, groupLocalService, portletPreferences);
+
+CategoryFacetConfigurationDisplayContext categoryFacetConfigurationDisplayContext = (CategoryFacetConfigurationDisplayContext)request.getAttribute(WebKeys.PORTLET_DISPLAY_CONTEXT);
+
+JSONArray groupsJSONArray = JSONFactoryUtil.createJSONArray();
+
+try {
+	groupsJSONArray = categoryFacetConfigurationDisplayContext.getGroupsJSONArray();
+}
+catch (PortalException portalException) {
+	if (_log.isWarnEnabled()) {
+		_log.warn(portalException);
+	}
+}
 %>
 
 <liferay-portlet:actionURL portletConfiguration="<%= true %>" var="configurationActionURL" />
@@ -94,6 +114,8 @@ CategoryFacetPortletPreferences categoryFacetPortletPreferences = new CategoryFa
 					module="{SelectVocabularies} from portal-search-web"
 					props='<%=
 						HashMapBuilder.<String, Object>put(
+							"groups", groupsJSONArray
+						).put(
 							"initialSelectedVocabularyExternalReferenceCodes", StringUtil.merge(categoryFacetPortletPreferences.getGroupVocabularyExternalReferenceCodes())
 						).put(
 							"learnResources", LearnMessageUtil.getReactDataJSONObject("portal-search-web")
@@ -121,3 +143,7 @@ CategoryFacetPortletPreferences categoryFacetPortletPreferences = new CategoryFa
 		<liferay-frontend:edit-form-buttons />
 	</liferay-frontend:edit-form-footer>
 </liferay-frontend:edit-form>
+
+<%!
+private static final Log _log = LogFactoryUtil.getLog("com_liferay_portal_search_web.configuration_jsp");
+%>

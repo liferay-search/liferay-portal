@@ -131,11 +131,7 @@ function VocabularyTree({
 					}
 					key={item.externalReferenceCode}
 				>
-					<TreeView.ItemStack>
-						{item.descriptiveName_i18n?.[
-							Liferay.ThemeDisplay.getLanguageId()
-						] || item.descriptiveName}
-					</TreeView.ItemStack>
+					<TreeView.ItemStack>{item.name}</TreeView.ItemStack>
 
 					{item.children?.length ? (
 						<TreeView.Group items={item.children}>
@@ -175,6 +171,7 @@ function VocabularyTree({
 }
 
 function SelectVocabularies({
+	groups = [],
 	initialSelectedVocabularyExternalReferenceCodes = SELECT_OPTIONS.ALL,
 	namespace = '',
 	vocabularyExternalReferenceCodesInputName = '',
@@ -211,93 +208,68 @@ function SelectVocabularies({
 		}
 	}, []); //eslint-disable-line
 
+	const _getVocabulariesURL = ({assetLibraryKey, groupId}) => {
+		const scope = assetLibraryKey ? 'asset-libraries' : 'sites';
+
+		return `/o/headless-admin-taxonomy/v1.0/${scope}/${groupId}/taxonomy-vocabularies?page=0&pageSize=0`;
+	};
+
+	const _isOwnedByGroup = (group, vocabulary) => {
+		if (group.assetLibraryKey) {
+			return vocabulary.assetLibraryKey === group.assetLibraryKey;
+		}
+
+		return vocabulary.siteId?.toString() === group.groupId.toString();
+	};
+
+	const _fetchGroupVocabularies = async (group) => {
+		const response = await fetch(_getVocabulariesURL(group), CONFIGURATION);
+
+		const json = await response.json();
+
+		const vocabularies = (json?.items || []).filter((vocabulary) =>
+			_isOwnedByGroup(group, vocabulary)
+		);
+
+		return {group, vocabularies};
+	};
+
 	const _handleFetchVocabularyTree = () => {
 		setVocabularyTreeLoading(true);
 
-		fetch(`/api/jsonws/invoke`, {
-			body: new URLSearchParams({
-				cmd: JSON.stringify({
-					'/group/get-user-sites-groups': {},
-				}),
-				p_auth: Liferay.authToken,
-			}),
-			headers: new Headers({
-				'Accept-Language': Liferay.ThemeDisplay.getBCP47LanguageId(),
-				'Content-Type':
-					'application/x-www-form-urlencoded;charset=UTF-8',
-			}),
-			method: 'POST',
-		})
-			.then((response) => response.json())
-			.then((items) => {
+		Promise.all(groups.map(_fetchGroupVocabularies))
+			.then((groupVocabularies) => {
+				const fetchedExternalReferenceCodes = [];
 
-				// Filter out results that are not a site.
+				setVocabularyTree(
+					groupVocabularies.map(({group, vocabularies}) => ({
+						...group,
+						children: vocabularies.map((vocabulary) => {
+							const externalReferenceCode = `${group.externalReferenceCode}&&${vocabulary.externalReferenceCode}`;
 
-				const itemsFilteredForSites = items.filter(({site}) => !!site);
+							fetchedExternalReferenceCodes.push(
+								externalReferenceCode
+							);
 
-				Promise.all(
-					itemsFilteredForSites.map((site) =>
-						fetch(
-							`/o/headless-admin-taxonomy/v1.0/sites/${site.groupId}/taxonomy-vocabularies?page=0&pageSize=0`,
-							CONFIGURATION
-						).then((response) => response.json())
-					)
-				)
-					.then((responses) => {
-						const fetchedExternalReferenceCodes = [];
+							return {
+								externalReferenceCode,
+								id: vocabulary.id.toString(),
+								name: vocabulary.name,
+							};
+						}),
+					}))
+				);
 
-						setVocabularyTree(
-							responses.map((response, index) => ({
-								...itemsFilteredForSites[index],
-								children: (response?.items || [])
-									.filter(({siteId}) => {
-
-										// Filter out global vocabularies for
-										// non-global sites.
-
-										const isGlobalSite =
-											itemsFilteredForSites[index]
-												.groupId ===
-											Liferay.ThemeDisplay.getCompanyGroupId();
-
-										if (
-											!isGlobalSite &&
-											siteId?.toString() ===
-												Liferay.ThemeDisplay.getCompanyGroupId()
-										) {
-											return false;
-										}
-
-										return true;
-									})
-									.map((item) => {
-										const externalReferenceCode = `${itemsFilteredForSites[index].externalReferenceCode}&&${item.externalReferenceCode}`;
-
-										fetchedExternalReferenceCodes.push(
-											externalReferenceCode
-										); // Collect ExternalReferenceCodes to allow deselection of unavailable vocabularies
-
-										return {
-											externalReferenceCode,
-											id: item.id.toString(),
-											name: item.name,
-										};
-									}),
-							}))
-						);
-
-						setUnavailableVocabularyExternalReferenceCodes(
-							Array.from(
-								initialSelectedVocabularyExternalReferenceCodesSet
-							).filter(
-								(initialSelectedExternalReferenceCode) =>
-									!fetchedExternalReferenceCodes.includes(
-										initialSelectedExternalReferenceCode
-									)
+				setUnavailableVocabularyExternalReferenceCodes(
+					Array.from(
+						initialSelectedVocabularyExternalReferenceCodesSet
+					).filter(
+						(initialSelectedExternalReferenceCode) =>
+							!fetchedExternalReferenceCodes.includes(
+								initialSelectedExternalReferenceCode
 							)
-						);
-					})
-					.catch(() => setVocabularyTree([]));
+					)
+				);
 			})
 			.catch(() => setVocabularyTree([]))
 			.finally(() => setVocabularyTreeLoading(false));
@@ -431,6 +403,7 @@ function SelectVocabularies({
 }
 
 export default function ({
+	groups,
 	initialSelectedVocabularyExternalReferenceCodes,
 	learnResources,
 	namespace,
@@ -439,6 +412,7 @@ export default function ({
 	return (
 		<LearnResourcesContext.Provider value={learnResources}>
 			<SelectVocabularies
+				groups={groups}
 				initialSelectedVocabularyExternalReferenceCodes={
 					initialSelectedVocabularyExternalReferenceCodes
 				}
