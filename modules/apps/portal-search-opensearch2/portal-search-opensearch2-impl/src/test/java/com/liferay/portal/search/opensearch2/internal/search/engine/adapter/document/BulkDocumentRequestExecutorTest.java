@@ -16,9 +16,15 @@ import com.liferay.portal.search.engine.adapter.document.IndexDocumentRequest;
 import com.liferay.portal.search.engine.adapter.document.UpdateDocumentRequest;
 import com.liferay.portal.search.opensearch2.internal.BaseOpenSearchTestCase;
 import com.liferay.portal.search.opensearch2.internal.OpenSearchTestRule;
+import com.liferay.portal.search.opensearch2.internal.connection.OpenSearchConnectionManager;
 import com.liferay.portal.search.opensearch2.internal.util.JsonpUtil;
 import com.liferay.portal.search.test.util.indexing.DocumentFixture;
+import com.liferay.portal.test.log.LogCapture;
+import com.liferay.portal.test.log.LogEntry;
+import com.liferay.portal.test.log.LoggerTestUtil;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
+
+import java.io.IOException;
 
 import java.util.List;
 
@@ -27,6 +33,9 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 
+import org.mockito.Mockito;
+
+import org.opensearch.client.opensearch.OpenSearchClient;
 import org.opensearch.client.opensearch._types.ErrorCause;
 import org.opensearch.client.opensearch.core.BulkRequest;
 import org.opensearch.client.opensearch.core.BulkResponse;
@@ -100,6 +109,67 @@ public class BulkDocumentRequestExecutorTest extends BaseOpenSearchTestCase {
 		}
 
 		Assert.assertEquals(sb.toString(), 3, bulkOperations.size());
+	}
+
+	@Test
+	public void testBulkDocumentResponseWhenNumberOfTriesIsZero()
+		throws Exception {
+
+		OpenSearchClient openSearchClient = Mockito.mock(
+			OpenSearchClient.class);
+
+		IOException ioException = new IOException(
+			RandomTestUtil.randomString());
+
+		Mockito.doThrow(
+			ioException
+		).when(
+			openSearchClient
+		).bulk(
+			Mockito.any(BulkRequest.class)
+		);
+
+		OpenSearchConnectionManager openSearchConnectionManager = Mockito.mock(
+			OpenSearchConnectionManager.class);
+
+		Mockito.when(
+			openSearchConnectionManager.getOpenSearchClient(
+				Mockito.nullable(String.class), Mockito.anyBoolean())
+		).thenReturn(
+			openSearchClient
+		);
+
+		BulkDocumentRequestExecutor bulkDocumentRequestExecutor =
+			new BulkDocumentRequestExecutor(0, openSearchConnectionManager, 0);
+
+		BulkDocumentRequest bulkDocumentRequest = new BulkDocumentRequest();
+
+		bulkDocumentRequest.addBulkableDocumentRequest(
+			new DeleteDocumentRequest(TEST_INDEX_NAME, "1"));
+
+		try (LogCapture logCapture = LoggerTestUtil.configureLog4JLogger(
+				BulkDocumentRequestExecutor.class.getName(),
+				LoggerTestUtil.ERROR)) {
+
+			try {
+				bulkDocumentRequestExecutor.execute(bulkDocumentRequest);
+
+				Assert.fail();
+			}
+			catch (RuntimeException runtimeException) {
+				Assert.assertSame(ioException, runtimeException.getCause());
+			}
+
+			List<LogEntry> logEntries = logCapture.getLogEntries();
+
+			Assert.assertEquals(logEntries.toString(), 1, logEntries.size());
+
+			LogEntry logEntry = logEntries.get(0);
+
+			Assert.assertEquals(
+				"Unable to get a bulk response", logEntry.getMessage());
+			Assert.assertSame(ioException, logEntry.getThrowable());
+		}
 	}
 
 	@Test
