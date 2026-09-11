@@ -108,6 +108,16 @@ public class HighlightTranslator {
 		String[] highlightFieldNames, int highlightFragmentSize,
 		boolean highlightRequireFieldMatch, int numberOfFragments) {
 
+		return translate(
+			highlightFieldNames, highlightFragmentSize,
+			highlightRequireFieldMatch, numberOfFragments, null);
+	}
+
+	public org.opensearch.client.opensearch.core.search.Highlight translate(
+		String[] highlightFieldNames, int highlightFragmentSize,
+		boolean highlightRequireFieldMatch, int numberOfFragments,
+		Query highlightQuery) {
+
 		if (ArrayUtil.isEmpty(highlightFieldNames)) {
 			return null;
 		}
@@ -125,6 +135,10 @@ public class HighlightTranslator {
 					).numberOfFragments(
 						numberOfFragments
 					)));
+		}
+
+		if (highlightQuery != null) {
+			builder.highlightQuery(highlightQuery);
 		}
 
 		builder.postTags(HighlightUtil.HIGHLIGHT_TAG_CLOSE);
