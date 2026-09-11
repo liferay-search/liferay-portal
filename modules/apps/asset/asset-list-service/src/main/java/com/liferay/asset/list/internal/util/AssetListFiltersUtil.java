@@ -16,18 +16,14 @@ import com.liferay.portal.kernel.search.BooleanClause;
 import com.liferay.portal.kernel.search.BooleanClauseOccur;
 import com.liferay.portal.kernel.search.BooleanQuery;
 import com.liferay.portal.kernel.search.Field;
-import com.liferay.portal.kernel.search.MatchAllQuery;
 import com.liferay.portal.kernel.search.MatchQuery;
 import com.liferay.portal.kernel.search.NestedQuery;
 import com.liferay.portal.kernel.search.Query;
-import com.liferay.portal.kernel.search.StringQuery;
 import com.liferay.portal.kernel.search.TermQuery;
 import com.liferay.portal.kernel.search.TermRangeQuery;
 import com.liferay.portal.kernel.search.WildcardQuery;
 import com.liferay.portal.kernel.search.filter.BooleanFilter;
-import com.liferay.portal.kernel.search.filter.Filter;
-import com.liferay.portal.kernel.search.filter.TermFilter;
-import com.liferay.portal.kernel.search.filter.TermsFilter;
+import com.liferay.portal.kernel.search.filter.QueryFilter;
 import com.liferay.portal.kernel.util.FastDateFormatFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
@@ -50,6 +46,21 @@ import java.util.Set;
  */
 public class AssetListFiltersUtil {
 
+	public static long[] getAssetCategoryIds(
+		JSONArray filtersJSONArray, boolean contains, boolean all) {
+
+		return GetterUtil.getLongValues(
+			_getAssetFilterValues(
+				filtersJSONArray, "assetCategories", contains, all));
+	}
+
+	public static String[] getAssetTagNames(
+		JSONArray filtersJSONArray, boolean contains, boolean all) {
+
+		return _getAssetFilterValues(
+			filtersJSONArray, "assetTags", contains, all);
+	}
+
 	public static BooleanClause[] getFiltersBooleanClauses(
 		long companyId, JSONArray filtersJSONArray, Locale locale) {
 
@@ -58,28 +69,11 @@ public class AssetListFiltersUtil {
 		}
 
 		BooleanFilter booleanFilter = new BooleanFilter();
-		BooleanQuery booleanQuery = new BooleanQuery();
-
-		boolean hasMustClause = false;
 
 		for (int i = 0; i < filtersJSONArray.length(); i++) {
 			JSONObject jsonObject = filtersJSONArray.getJSONObject(i);
 
-			Filter filter = _toFilter(jsonObject);
-
-			boolean negatedOperator = _isNegatedOperator(
-				jsonObject.getString("operatorName", "contains"));
-
-			if (filter != null) {
-				if (negatedOperator) {
-					booleanFilter.add(filter, BooleanClauseOccur.MUST_NOT);
-				}
-				else {
-					booleanFilter.add(filter, BooleanClauseOccur.MUST);
-
-					hasMustClause = true;
-				}
-
+			if (_isAssetEntryQueryRow(jsonObject)) {
 				continue;
 			}
 
@@ -89,31 +83,108 @@ public class AssetListFiltersUtil {
 				continue;
 			}
 
-			if (negatedOperator) {
-				booleanQuery.add(query, BooleanClauseOccur.MUST_NOT);
-			}
-			else {
-				booleanQuery.add(query, BooleanClauseOccur.MUST);
+			BooleanClauseOccur booleanClauseOccur = BooleanClauseOccur.MUST;
 
-				hasMustClause = true;
+			if (_isNegatedOperator(
+					jsonObject.getString("operatorName", "contains"))) {
+
+				booleanClauseOccur = BooleanClauseOccur.MUST_NOT;
 			}
+
+			booleanFilter.add(new QueryFilter(query), booleanClauseOccur);
 		}
 
-		if (!booleanFilter.hasClauses() && !booleanQuery.hasClauses()) {
+		if (!booleanFilter.hasClauses()) {
 			return new BooleanClause[0];
 		}
 
-		if (!hasMustClause) {
-			booleanQuery.add(new MatchAllQuery(), BooleanClauseOccur.MUST);
-		}
+		BooleanQuery booleanQuery = new BooleanQuery();
 
-		if (booleanFilter.hasClauses()) {
-			booleanQuery.setPreBooleanFilter(booleanFilter);
-		}
+		booleanQuery.setPreBooleanFilter(booleanFilter);
 
 		return new BooleanClause[] {
 			new BooleanClause<>(booleanQuery, BooleanClauseOccur.MUST)
 		};
+	}
+
+	public static String[] getKeywords(
+		JSONArray filtersJSONArray, boolean contains) {
+
+		if (JSONUtil.isEmpty(filtersJSONArray)) {
+			return new String[0];
+		}
+
+		List<String> keywords = new ArrayList<>();
+
+		for (int i = 0; i < filtersJSONArray.length(); i++) {
+			JSONObject jsonObject = filtersJSONArray.getJSONObject(i);
+
+			boolean negatedOperator = _isNegatedOperator(
+				jsonObject.getString("operatorName", "contains"));
+
+			if (!_isCommonFieldRow(jsonObject) ||
+				!Objects.equals(
+					jsonObject.getString("propertyName"), "keywords") ||
+				(negatedOperator == contains)) {
+
+				continue;
+			}
+
+			String value = jsonObject.getString("value");
+
+			if (Validator.isNull(value)) {
+				continue;
+			}
+
+			keywords.add(value);
+		}
+
+		return keywords.toArray(new String[0]);
+	}
+
+	private static String[] _getAssetFilterValues(
+		JSONArray filtersJSONArray, String propertyName, boolean contains,
+		boolean all) {
+
+		if (JSONUtil.isEmpty(filtersJSONArray)) {
+			return new String[0];
+		}
+
+		List<String> values = new ArrayList<>();
+
+		for (int i = 0; i < filtersJSONArray.length(); i++) {
+			JSONObject jsonObject = filtersJSONArray.getJSONObject(i);
+
+			boolean negatedOperator = _isNegatedOperator(
+				jsonObject.getString("operatorName", "contains"));
+
+			if (!_isCommonFieldRow(jsonObject) ||
+				!Objects.equals(
+					jsonObject.getString("propertyName"), propertyName) ||
+				(negatedOperator == contains) ||
+				(_isAllQuantifier(jsonObject) != all)) {
+
+				continue;
+			}
+
+			JSONArray valueJSONArray = jsonObject.getJSONArray("value");
+
+			if (JSONUtil.isEmpty(valueJSONArray)) {
+				continue;
+			}
+
+			for (int j = 0; j < valueJSONArray.length(); j++) {
+				JSONObject itemJSONObject = valueJSONArray.getJSONObject(j);
+
+				String value = itemJSONObject.getString("value");
+
+				if (Validator.isNotNull(value)) {
+					values.add(value);
+				}
+			}
+		}
+
+		return values.toArray(new String[0]);
 	}
 
 	private static String _getCommonFieldName(
@@ -132,6 +203,21 @@ public class AssetListFiltersUtil {
 
 	private static String _getCommonFieldType(String propertyName) {
 		return _commonFieldTypesMap.get(propertyName);
+	}
+
+	private static boolean _isAllQuantifier(JSONObject jsonObject) {
+		return Objects.equals(jsonObject.getString("quantifier"), "all");
+	}
+
+	private static boolean _isAssetEntryQueryRow(JSONObject jsonObject) {
+		if (_isCommonFieldRow(jsonObject) &&
+			_assetEntryQueryPropertyNames.contains(
+				jsonObject.getString("propertyName"))) {
+
+			return true;
+		}
+
+		return false;
 	}
 
 	private static boolean _isCommonFieldRow(JSONObject jsonObject) {
@@ -247,7 +333,7 @@ public class AssetListFiltersUtil {
 		}
 
 		if (localized) {
-			return new MatchQuery(field, value);
+			return _toMatchQuery(field, jsonObject, operatorName, value);
 		}
 
 		if (Objects.equals(field, Field.USER_NAME)) {
@@ -290,56 +376,20 @@ public class AssetListFiltersUtil {
 		return padded.substring(0, 8) + (upperBound ? "235959" : "000000");
 	}
 
-	private static Filter _toFilter(JSONObject jsonObject) {
-		if (!_isCommonFieldRow(jsonObject)) {
-			return null;
+	private static MatchQuery _toMatchQuery(
+		String field, JSONObject jsonObject, String operatorName,
+		String value) {
+
+		MatchQuery matchQuery = new MatchQuery(field, value);
+
+		if ((operatorName.equals("contains") ||
+			 operatorName.equals("not-contains")) &&
+			_isAllQuantifier(jsonObject)) {
+
+			matchQuery.setType(MatchQuery.Type.PHRASE);
 		}
 
-		String fieldName = _assetFilterFieldNamesMap.get(
-			jsonObject.getString("propertyName"));
-
-		if (fieldName == null) {
-			return null;
-		}
-
-		JSONArray valueJSONArray = jsonObject.getJSONArray("value");
-
-		if (JSONUtil.isEmpty(valueJSONArray)) {
-			return null;
-		}
-
-		List<String> values = new ArrayList<>();
-
-		for (int i = 0; i < valueJSONArray.length(); i++) {
-			JSONObject itemJSONObject = valueJSONArray.getJSONObject(i);
-
-			String value = itemJSONObject.getString("value");
-
-			if (Validator.isNotNull(value)) {
-				values.add(value);
-			}
-		}
-
-		if (values.isEmpty()) {
-			return null;
-		}
-
-		if (Objects.equals(jsonObject.getString("quantifier"), "all")) {
-			BooleanFilter booleanFilter = new BooleanFilter();
-
-			for (String value : values) {
-				booleanFilter.add(
-					new TermFilter(fieldName, value), BooleanClauseOccur.MUST);
-			}
-
-			return booleanFilter;
-		}
-
-		TermsFilter termsFilter = new TermsFilter(fieldName);
-
-		termsFilter.addValues(values.toArray(new String[0]));
-
-		return termsFilter;
+		return matchQuery;
 	}
 
 	private static NestedQuery _toNestedQuery(
@@ -426,23 +476,8 @@ public class AssetListFiltersUtil {
 		}
 
 		if (_isCommonFieldRow(jsonObject)) {
-			String propertyName = jsonObject.getString("propertyName");
-
-			if (Objects.equals(propertyName, "keywords")) {
-				String value = jsonObject.getString("value");
-
-				if (Validator.isNull(value)) {
-					return null;
-				}
-
-				if (value.contains(StringPool.SPACE)) {
-					value = StringUtil.quote(value, CharPool.QUOTE);
-				}
-
-				return new StringQuery(value);
-			}
-
-			return _toCommonFieldQuery(jsonObject, locale, propertyName);
+			return _toCommonFieldQuery(
+				jsonObject, locale, jsonObject.getString("propertyName"));
 		}
 
 		return _toNestedQuery(companyId, jsonObject, locale);
@@ -570,7 +605,7 @@ public class AssetListFiltersUtil {
 			return new TermQuery(subfield, value);
 		}
 
-		return new MatchQuery(subfield, value);
+		return _toMatchQuery(subfield, filterJSONObject, operatorName, value);
 	}
 
 	private static final String _TYPE_DATE = "date";
@@ -581,12 +616,8 @@ public class AssetListFiltersUtil {
 
 	private static final String _TYPE_TEXT = "text";
 
-	private static final Map<String, String> _assetFilterFieldNamesMap =
-		HashMapBuilder.put(
-			"assetCategories", Field.ASSET_CATEGORY_IDS
-		).put(
-			"assetTags", Field.ASSET_TAG_NAMES + ".raw"
-		).build();
+	private static final Set<String> _assetEntryQueryPropertyNames =
+		SetUtil.fromArray("assetCategories", "assetTags", "keywords");
 	private static final Map<String, String> _commonFieldTypesMap =
 		HashMapBuilder.put(
 			Field.CREATE_DATE, _TYPE_DATE
