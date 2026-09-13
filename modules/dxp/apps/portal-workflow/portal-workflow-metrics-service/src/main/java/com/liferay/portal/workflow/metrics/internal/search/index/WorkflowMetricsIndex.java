@@ -15,11 +15,13 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.capabilities.SearchCapabilities;
 import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
+import com.liferay.portal.search.engine.adapter.document.DeleteByQueryDocumentRequest;
 import com.liferay.portal.search.engine.adapter.index.CreateIndexRequest;
 import com.liferay.portal.search.engine.adapter.index.DeleteIndexRequest;
 import com.liferay.portal.search.engine.adapter.index.IndicesExistsIndexRequest;
 import com.liferay.portal.search.engine.adapter.index.IndicesExistsIndexResponse;
 import com.liferay.portal.search.index.IndexNameBuilder;
+import com.liferay.portal.search.query.QueriesUtil;
 import com.liferay.portal.workflow.metrics.internal.search.constants.WorkflowMetricsIndexTypeConstants;
 import com.liferay.portal.workflow.metrics.search.index.constants.WorkflowMetricsIndexNameConstants;
 
@@ -110,6 +112,28 @@ public enum WorkflowMetricsIndex {
 					getIndexName(indexNameBuilder, _indexNameSuffix, companyId),
 				exception);
 		}
+
+		return true;
+	}
+
+	public boolean deleteAllDocuments(
+			SearchCapabilities searchCapabilities,
+			SearchEngineAdapter searchEngineAdapter,
+			IndexNameBuilder indexNameBuilder, long companyId)
+		throws PortalException {
+
+		if (!searchCapabilities.isWorkflowMetricsSupported() ||
+			!_hasIndex(
+				searchEngineAdapter,
+				getIndexName(indexNameBuilder, _indexNameSuffix, companyId))) {
+
+			return false;
+		}
+
+		searchEngineAdapter.execute(
+			new DeleteByQueryDocumentRequest(
+				QueriesUtil.matchAll(),
+				getIndexName(indexNameBuilder, _indexNameSuffix, companyId)));
 
 		return true;
 	}
