@@ -11,9 +11,11 @@ import com.liferay.portal.kernel.search.DocumentImpl;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.Hits;
 import com.liferay.portal.kernel.search.HitsImpl;
+import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.search.SearchException;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
@@ -25,6 +27,7 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -50,6 +53,32 @@ public class FolderTitleLookupTest {
 		Assert.assertEquals(
 			"My Title",
 			folderTitleLookup.getFolderTitle(RandomTestUtil.randomLong()));
+	}
+
+	@Test
+	public void testGetFolderTitleDoesNotSearchInsideFolder()
+		throws SearchException {
+
+		FolderSearcher folderSearcher = _mockFolderSearcher(
+			_getHitsWithDocument(Field.TITLE, "My Title"));
+
+		FolderTitleLookup folderTitleLookup = new FolderTitleLookupImpl(
+			folderSearcher, _mockHttpServletRequest(LocaleUtil.US));
+
+		folderTitleLookup.getFolderTitle(RandomTestUtil.randomLong());
+
+		ArgumentCaptor<SearchContext> argumentCaptor = ArgumentCaptor.forClass(
+			SearchContext.class);
+
+		Mockito.verify(
+			folderSearcher
+		).search(
+			argumentCaptor.capture()
+		);
+
+		SearchContext searchContext = argumentCaptor.getValue();
+
+		Assert.assertTrue(ArrayUtil.isEmpty(searchContext.getFolderIds()));
 	}
 
 	@Test
