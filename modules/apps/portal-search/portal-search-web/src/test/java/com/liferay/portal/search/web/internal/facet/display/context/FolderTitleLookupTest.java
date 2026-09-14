@@ -21,6 +21,7 @@ import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
 
 import java.util.Locale;
+import java.util.function.LongFunction;
 
 import org.junit.Assert;
 import org.junit.ClassRule;
@@ -48,7 +49,8 @@ public class FolderTitleLookupTest {
 			_getTitleLocalizedFieldName(LocaleUtil.BRAZIL), "My Title");
 
 		FolderTitleLookup folderTitleLookup = new FolderTitleLookupImpl(
-			_mockFolderSearcher(hits), _mockHttpServletRequest(LocaleUtil.US));
+			_mockFolderSearcherFunction(hits),
+			_mockHttpServletRequest(LocaleUtil.US));
 
 		Assert.assertEquals(
 			"My Title",
@@ -63,7 +65,7 @@ public class FolderTitleLookupTest {
 			_getHitsWithDocument(Field.TITLE, "My Title"));
 
 		FolderTitleLookup folderTitleLookup = new FolderTitleLookupImpl(
-			folderSearcher, _mockHttpServletRequest(LocaleUtil.US));
+			folderId -> folderSearcher, _mockHttpServletRequest(LocaleUtil.US));
 
 		folderTitleLookup.getFolderTitle(RandomTestUtil.randomLong());
 
@@ -88,7 +90,7 @@ public class FolderTitleLookupTest {
 		Hits hits = _getHitsWithDocument(Field.TITLE, "My Title");
 
 		FolderTitleLookup folderTitleLookup = new FolderTitleLookupImpl(
-			_mockFolderSearcher(hits),
+			_mockFolderSearcherFunction(hits),
 			_mockHttpServletRequest(LocaleUtil.BRAZIL));
 
 		Assert.assertEquals(
@@ -104,7 +106,7 @@ public class FolderTitleLookupTest {
 			_getTitleLocalizedFieldName(LocaleUtil.BRAZIL), "My Title");
 
 		FolderTitleLookup folderTitleLookup = new FolderTitleLookupImpl(
-			_mockFolderSearcher(hits),
+			_mockFolderSearcherFunction(hits),
 			_mockHttpServletRequest(LocaleUtil.BRAZIL));
 
 		Assert.assertEquals(
@@ -141,6 +143,14 @@ public class FolderTitleLookupTest {
 		);
 
 		return folderSearcher;
+	}
+
+	private LongFunction<FolderSearcher> _mockFolderSearcherFunction(Hits hits)
+		throws SearchException {
+
+		FolderSearcher folderSearcher = _mockFolderSearcher(hits);
+
+		return folderId -> folderSearcher;
 	}
 
 	private MockHttpServletRequest _mockHttpServletRequest(Locale locale) {
