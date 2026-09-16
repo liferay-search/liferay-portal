@@ -35,6 +35,7 @@ import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.UnicodePropertiesBuilder;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -208,6 +209,54 @@ public class EditAssetListDisplayContextTest {
 					RandomTestUtil.randomLong(), RandomTestUtil.randomLong(),
 					RandomTestUtil.randomLong()
 				}));
+	}
+
+	@Test
+	public void testGetMissingClassNameIds() {
+		long classNameId = RandomTestUtil.randomLong();
+		long nonexistentClassNameId = RandomTestUtil.randomLong();
+
+		long[] availableClassNameIds = {classNameId};
+
+		EditAssetListDisplayContext editAssetListDisplayContext =
+			_getEditAssetListDisplayContext(new UnicodeProperties());
+
+		Assert.assertArrayEquals(
+			new long[] {nonexistentClassNameId},
+			editAssetListDisplayContext.getMissingClassNameIds(
+				UnicodePropertiesBuilder.put(
+					"anyAssetType", Boolean.FALSE.toString()
+				).put(
+					"classNameIds",
+					StringUtil.merge(
+						new long[] {classNameId, nonexistentClassNameId})
+				).build(),
+				availableClassNameIds));
+		Assert.assertArrayEquals(
+			new long[] {nonexistentClassNameId},
+			editAssetListDisplayContext.getMissingClassNameIds(
+				UnicodePropertiesBuilder.put(
+					"anyAssetType", nonexistentClassNameId
+				).build(),
+				availableClassNameIds));
+		Assert.assertArrayEquals(
+			new long[0],
+			editAssetListDisplayContext.getMissingClassNameIds(
+				UnicodePropertiesBuilder.put(
+					"anyAssetType", classNameId
+				).put(
+					"classNameIds", String.valueOf(nonexistentClassNameId)
+				).build(),
+				availableClassNameIds));
+		Assert.assertArrayEquals(
+			new long[0],
+			editAssetListDisplayContext.getMissingClassNameIds(
+				UnicodePropertiesBuilder.put(
+					"anyAssetType", Boolean.TRUE.toString()
+				).put(
+					"classNameIds", String.valueOf(nonexistentClassNameId)
+				).build(),
+				availableClassNameIds));
 	}
 
 	@Test
