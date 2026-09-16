@@ -92,11 +92,7 @@ public class AssetListEntryExportImportContentProcessor
 			String defaultClassName = _fetchClassName(
 				defaultClassNameId, stagedModel);
 
-			if (defaultClassName == null) {
-				unicodeProperties.setProperty(
-					"anyAssetType", Boolean.TRUE.toString());
-			}
-			else {
+			if (defaultClassName != null) {
 				unicodeProperties.setProperty(
 					"anyAssetTypeClassName", defaultClassName);
 			}
@@ -235,13 +231,20 @@ public class AssetListEntryExportImportContentProcessor
 						return null;
 					})));
 
-		long[] classNameIds = TransformUtil.transformToLongArray(
-			Arrays.asList(
-				StringUtil.split(unicodeProperties.getProperty("classNames"))),
-			className -> _portal.getClassNameId(className));
+		String classNames = unicodeProperties.getProperty("classNames");
 
-		unicodeProperties.setProperty(
-			"classNameIds", StringUtil.merge(classNameIds));
+		if (Validator.isNotNull(classNames) ||
+			!Objects.equals(
+				unicodeProperties.getProperty("anyAssetType"),
+				Boolean.FALSE.toString())) {
+
+			unicodeProperties.setProperty(
+				"classNameIds",
+				StringUtil.merge(
+					TransformUtil.transformToLongArray(
+						Arrays.asList(StringUtil.split(classNames)),
+						className -> _portal.getClassNameId(className))));
+		}
 
 		String anyAssetTypeClassName = unicodeProperties.getProperty(
 			"anyAssetTypeClassName");
