@@ -788,6 +788,51 @@ public class EditAssetListDisplayContext {
 		).buildString();
 	}
 
+	public long[] getMissingClassNameIds() {
+		if (_missingClassNameIds != null) {
+			return _missingClassNameIds;
+		}
+
+		List<Long> availableClassNameIds = getAvailableClassNameIds();
+
+		_missingClassNameIds = getMissingClassNameIds(
+			_unicodeProperties,
+			ArrayUtil.toArray(availableClassNameIds.toArray(new Long[0])));
+
+		return _missingClassNameIds;
+	}
+
+	public long[] getMissingClassNameIds(
+		UnicodeProperties unicodeProperties, long[] availableClassNameIds) {
+
+		boolean anyAssetType = GetterUtil.getBoolean(
+			unicodeProperties.getProperty(
+				"anyAssetType", Boolean.TRUE.toString()));
+		String selectionStyle = unicodeProperties.getProperty(
+			"selectionStyle", "dynamic");
+
+		if (anyAssetType || selectionStyle.equals("manual")) {
+			return new long[0];
+		}
+
+		long[] classNameIds = GetterUtil.getLongValues(
+			StringUtil.split(
+				unicodeProperties.getProperty(
+					"classNameIds", StringPool.BLANK)));
+
+		long defaultClassNameId = GetterUtil.getLong(
+			unicodeProperties.getProperty("anyAssetType", null));
+
+		if (defaultClassNameId > 0) {
+			classNameIds = new long[] {defaultClassNameId};
+		}
+
+		return ArrayUtil.filter(
+			classNameIds,
+			classNameId -> !ArrayUtil.contains(
+				availableClassNameIds, classNameId));
+	}
+
 	public String getOrderByColumn1() {
 		if (_orderByColumn1 != null) {
 			return _orderByColumn1;
@@ -1481,6 +1526,7 @@ public class EditAssetListDisplayContext {
 	private final InfoSearchClassMapperRegistry _infoSearchClassMapperRegistry;
 	private final ItemSelector _itemSelector;
 	private Boolean _liveGroup;
+	private long[] _missingClassNameIds;
 	private final ObjectDefinitionLocalService _objectDefinitionLocalService;
 	private String _orderByColumn1;
 	private String _orderByColumn2;
