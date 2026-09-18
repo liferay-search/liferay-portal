@@ -72,6 +72,14 @@ public class SearchResultsPortletPreferencesImpl
 	}
 
 	@Override
+	public boolean isAccurateCountLimitEnabled() {
+		return getBoolean(
+			SearchResultsPortletPreferences.
+				PREFERENCE_KEY_ACCURATE_COUNT_LIMIT_ENABLED,
+			false);
+	}
+
+	@Override
 	public boolean isDisplayInDocumentForm() {
 		return getBoolean(
 			SearchResultsPortletPreferences.

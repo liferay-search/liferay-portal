@@ -97,7 +97,8 @@ public class SearchResultsPortletSharedSearchContributor
 			Function.identity());
 
 		if (FeatureFlagManagerUtil.isEnabled(
-				searchContext.getCompanyId(), "LPD-98858")) {
+				searchContext.getCompanyId(), "LPD-98858") &&
+			searchResultsPortletPreferences.isAccurateCountLimitEnabled()) {
 
 			searchRequestBuilder.trackTotalHitsLimit(
 				searchResultsPortletPreferences.getAccurateCountLimit());
