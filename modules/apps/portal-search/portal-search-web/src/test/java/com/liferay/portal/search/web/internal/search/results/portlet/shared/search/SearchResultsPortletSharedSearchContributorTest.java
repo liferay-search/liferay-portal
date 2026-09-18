@@ -5,18 +5,23 @@
 
 package com.liferay.portal.search.web.internal.search.results.portlet.shared.search;
 
+import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.PropsValues;
 import com.liferay.portal.search.internal.legacy.searcher.SearchRequestBuilderImpl;
 import com.liferay.portal.search.internal.searcher.SearchRequestBuilderFactoryImpl;
 import com.liferay.portal.search.searcher.SearchRequest;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
+import com.liferay.portal.search.web.internal.search.results.portlet.SearchResultsPortletPreferences;
 import com.liferay.portal.search.web.portlet.shared.search.PortletSharedSearchSettings;
+import com.liferay.portal.test.rule.FeatureFlag;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
 
 import jakarta.portlet.PortletPreferences;
 
 import org.junit.Assert;
 import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 
 import org.mockito.Mockito;
@@ -27,6 +32,7 @@ import org.mockito.Mockito;
 public class SearchResultsPortletSharedSearchContributorTest {
 
 	@ClassRule
+	@Rule
 	public static final LiferayUnitTestRule liferayUnitTestRule =
 		LiferayUnitTestRule.INSTANCE;
 
@@ -41,7 +47,80 @@ public class SearchResultsPortletSharedSearchContributorTest {
 		_testContribute(paginationDelta, String.valueOf(paginationDelta));
 	}
 
+	@FeatureFlag("LPD-98858")
+	@Test
+	public void testContributeTrackTotalHitsLimit() {
+		_testContributeTrackTotalHitsLimit(null, null, 1000);
+		_testContributeTrackTotalHitsLimit("0", null, 0);
+
+		int accurateCountLimit = RandomTestUtil.randomInt();
+
+		_testContributeTrackTotalHitsLimit(
+			String.valueOf(accurateCountLimit), null, accurateCountLimit);
+		_testContributeTrackTotalHitsLimit(
+			String.valueOf(accurateCountLimit), "true", accurateCountLimit);
+
+		_testContributeTrackTotalHitsLimit(null, "false", null);
+		_testContributeTrackTotalHitsLimit(
+			String.valueOf(accurateCountLimit), "false", null);
+	}
+
+	@FeatureFlag(enable = false, value = "LPD-98858")
+	@Test
+	public void testContributeTrackTotalHitsLimitWhenFeatureFlagIsDisabled() {
+		_testContributeTrackTotalHitsLimit(null, null, null);
+		_testContributeTrackTotalHitsLimit(
+			String.valueOf(RandomTestUtil.randomInt()), "true", null);
+	}
+
+	private SearchRequest _buildSearchRequest(
+		PortletSharedSearchSettings portletSharedSearchSettings) {
+
+		SearchResultsPortletSharedSearchContributor
+			searchResultsPortletSharedSearchContributor =
+				new SearchResultsPortletSharedSearchContributor();
+
+		searchResultsPortletSharedSearchContributor.contribute(
+			portletSharedSearchSettings);
+
+		SearchRequestBuilder searchRequestBuilder =
+			portletSharedSearchSettings.getFederatedSearchRequestBuilder(null);
+
+		return searchRequestBuilder.build();
+	}
+
+	private PortletPreferences _createPortletPreferences(
+		String accurateCountLimitPreferenceValue,
+		String accurateCountLimitEnabledPreferenceValue) {
+
+		PortletPreferences portletPreferences = Mockito.mock(
+			PortletPreferences.class);
+
+		Mockito.doReturn(
+			accurateCountLimitPreferenceValue
+		).when(
+			portletPreferences
+		).getValue(
+			SearchResultsPortletPreferences.PREFERENCE_KEY_ACCURATE_COUNT_LIMIT,
+			StringPool.BLANK
+		);
+
+		Mockito.doReturn(
+			accurateCountLimitEnabledPreferenceValue
+		).when(
+			portletPreferences
+		).getValue(
+			SearchResultsPortletPreferences.
+				PREFERENCE_KEY_ACCURATE_COUNT_LIMIT_ENABLED,
+			StringPool.BLANK
+		);
+
+		return portletPreferences;
+	}
+
 	private PortletSharedSearchSettings _createPortletSharedSearchSettings(
+		String accurateCountLimitPreferenceValue,
+		String accurateCountLimitEnabledPreferenceValue,
 		String paginationDeltaParameterValue) {
 
 		PortletSharedSearchSettings portletSharedSearchSettings = Mockito.mock(
@@ -67,7 +146,9 @@ public class SearchResultsPortletSharedSearchContributorTest {
 		);
 
 		Mockito.doReturn(
-			Mockito.mock(PortletPreferences.class)
+			_createPortletPreferences(
+				accurateCountLimitPreferenceValue,
+				accurateCountLimitEnabledPreferenceValue)
 		).when(
 			portletSharedSearchSettings
 		).getPortletPreferences();
@@ -78,14 +159,11 @@ public class SearchResultsPortletSharedSearchContributorTest {
 	private void _testContribute(
 		int expectedPaginationDelta, String paginationDeltaParameterValue) {
 
-		SearchResultsPortletSharedSearchContributor
-			searchResultsPortletSharedSearchContributor =
-				new SearchResultsPortletSharedSearchContributor();
-
 		PortletSharedSearchSettings portletSharedSearchSettings =
-			_createPortletSharedSearchSettings(paginationDeltaParameterValue);
+			_createPortletSharedSearchSettings(
+				null, null, paginationDeltaParameterValue);
 
-		searchResultsPortletSharedSearchContributor.contribute(
+		SearchRequest searchRequest = _buildSearchRequest(
 			portletSharedSearchSettings);
 
 		Mockito.verify(
@@ -94,13 +172,23 @@ public class SearchResultsPortletSharedSearchContributorTest {
 			expectedPaginationDelta
 		);
 
-		SearchRequestBuilder searchRequestBuilder =
-			portletSharedSearchSettings.getFederatedSearchRequestBuilder(null);
-
-		SearchRequest searchRequest = searchRequestBuilder.build();
-
 		Assert.assertEquals(
 			Integer.valueOf(expectedPaginationDelta), searchRequest.getSize());
+	}
+
+	private void _testContributeTrackTotalHitsLimit(
+		String accurateCountLimitPreferenceValue,
+		String accurateCountLimitEnabledPreferenceValue,
+		Integer expectedTrackTotalHitsLimit) {
+
+		SearchRequest searchRequest = _buildSearchRequest(
+			_createPortletSharedSearchSettings(
+				accurateCountLimitPreferenceValue,
+				accurateCountLimitEnabledPreferenceValue, null));
+
+		Assert.assertEquals(
+			expectedTrackTotalHitsLimit,
+			searchRequest.getTrackTotalHitsLimit());
 	}
 
 }
