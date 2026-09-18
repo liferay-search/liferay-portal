@@ -50,21 +50,27 @@ public class SearchResultsPortletSharedSearchContributorTest {
 	@FeatureFlag("LPD-98858")
 	@Test
 	public void testContributeTrackTotalHitsLimit() {
-		_testContributeTrackTotalHitsLimit(null, 1000);
-		_testContributeTrackTotalHitsLimit("0", 0);
+		_testContributeTrackTotalHitsLimit(null, null, 1000);
+		_testContributeTrackTotalHitsLimit("0", null, 0);
 
 		int accurateCountLimit = RandomTestUtil.randomInt();
 
 		_testContributeTrackTotalHitsLimit(
-			String.valueOf(accurateCountLimit), accurateCountLimit);
+			String.valueOf(accurateCountLimit), null, accurateCountLimit);
+		_testContributeTrackTotalHitsLimit(
+			String.valueOf(accurateCountLimit), "true", accurateCountLimit);
+
+		_testContributeTrackTotalHitsLimit(null, "false", null);
+		_testContributeTrackTotalHitsLimit(
+			String.valueOf(accurateCountLimit), "false", null);
 	}
 
 	@FeatureFlag(enable = false, value = "LPD-98858")
 	@Test
 	public void testContributeTrackTotalHitsLimitWhenFeatureFlagIsDisabled() {
-		_testContributeTrackTotalHitsLimit(null, null);
+		_testContributeTrackTotalHitsLimit(null, null, null);
 		_testContributeTrackTotalHitsLimit(
-			String.valueOf(RandomTestUtil.randomInt()), null);
+			String.valueOf(RandomTestUtil.randomInt()), "true", null);
 	}
 
 	private SearchRequest _buildSearchRequest(
@@ -84,7 +90,8 @@ public class SearchResultsPortletSharedSearchContributorTest {
 	}
 
 	private PortletPreferences _createPortletPreferences(
-		String accurateCountLimitPreferenceValue) {
+		String accurateCountLimitPreferenceValue,
+		String accurateCountLimitEnabledPreferenceValue) {
 
 		PortletPreferences portletPreferences = Mockito.mock(
 			PortletPreferences.class);
@@ -98,11 +105,22 @@ public class SearchResultsPortletSharedSearchContributorTest {
 			StringPool.BLANK
 		);
 
+		Mockito.doReturn(
+			accurateCountLimitEnabledPreferenceValue
+		).when(
+			portletPreferences
+		).getValue(
+			SearchResultsPortletPreferences.
+				PREFERENCE_KEY_ACCURATE_COUNT_LIMIT_ENABLED,
+			StringPool.BLANK
+		);
+
 		return portletPreferences;
 	}
 
 	private PortletSharedSearchSettings _createPortletSharedSearchSettings(
 		String accurateCountLimitPreferenceValue,
+		String accurateCountLimitEnabledPreferenceValue,
 		String paginationDeltaParameterValue) {
 
 		PortletSharedSearchSettings portletSharedSearchSettings = Mockito.mock(
@@ -128,7 +146,9 @@ public class SearchResultsPortletSharedSearchContributorTest {
 		);
 
 		Mockito.doReturn(
-			_createPortletPreferences(accurateCountLimitPreferenceValue)
+			_createPortletPreferences(
+				accurateCountLimitPreferenceValue,
+				accurateCountLimitEnabledPreferenceValue)
 		).when(
 			portletSharedSearchSettings
 		).getPortletPreferences();
@@ -141,7 +161,7 @@ public class SearchResultsPortletSharedSearchContributorTest {
 
 		PortletSharedSearchSettings portletSharedSearchSettings =
 			_createPortletSharedSearchSettings(
-				null, paginationDeltaParameterValue);
+				null, null, paginationDeltaParameterValue);
 
 		SearchRequest searchRequest = _buildSearchRequest(
 			portletSharedSearchSettings);
@@ -158,11 +178,13 @@ public class SearchResultsPortletSharedSearchContributorTest {
 
 	private void _testContributeTrackTotalHitsLimit(
 		String accurateCountLimitPreferenceValue,
+		String accurateCountLimitEnabledPreferenceValue,
 		Integer expectedTrackTotalHitsLimit) {
 
 		SearchRequest searchRequest = _buildSearchRequest(
 			_createPortletSharedSearchSettings(
-				accurateCountLimitPreferenceValue, null));
+				accurateCountLimitPreferenceValue,
+				accurateCountLimitEnabledPreferenceValue, null));
 
 		Assert.assertEquals(
 			expectedTrackTotalHitsLimit,
