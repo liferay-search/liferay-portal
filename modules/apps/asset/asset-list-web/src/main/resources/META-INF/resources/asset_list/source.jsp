@@ -10,6 +10,7 @@
 <%
 List<AssetRendererFactory<?>> classTypesAssetRendererFactories = new ArrayList<>();
 List<Map<String, Object>> classTypesList = new ArrayList<>();
+long[] missingClassNameIds = editAssetListDisplayContext.getMissingClassNameIds();
 %>
 
 <liferay-frontend:fieldset
@@ -52,6 +53,9 @@ List<Map<String, Object>> classTypesList = new ArrayList<>();
 			}
 			%>
 
+			<c:if test="<%= ArrayUtil.isEmpty(classNameIds) && ArrayUtil.isNotEmpty(missingClassNameIds) %>">
+				<aui:option label="<%= missingClassNameIds[0] %>" selected="<%= true %>" value="<%= missingClassNameIds[0] %>" />
+			</c:if>
 		</optgroup>
 
 		<optgroup label="<liferay-ui:message key="multiple-item-types" />">
@@ -70,6 +74,12 @@ List<Map<String, Object>> classTypesList = new ArrayList<>();
 	List<KeyValuePair> typesRightList = new ArrayList<KeyValuePair>();
 
 	for (long classNameId : editAssetListDisplayContext.getClassNameIds()) {
+		if (ArrayUtil.contains(missingClassNameIds, classNameId)) {
+			typesRightList.add(new KeyValuePair(String.valueOf(classNameId), String.valueOf(classNameId)));
+
+			continue;
+		}
+
 		ClassName className = ClassNameLocalServiceUtil.getClassName(classNameId);
 
 		typesRightList.add(new KeyValuePair(String.valueOf(classNameId), _getLabel(className, locale, _fetchObjectDefinition(className, company))));
@@ -87,6 +97,47 @@ List<Map<String, Object>> classTypesList = new ArrayList<>();
 			rightTitle="in-use"
 		/>
 	</div>
+
+	<c:if test="<%= ArrayUtil.isNotEmpty(missingClassNameIds) %>">
+		<div id="<portlet:namespace />missingClassNameIds">
+			<clay:alert
+				displayType="warning"
+				message="missing-type-references-warning"
+			/>
+
+			<ul class="list-group">
+
+				<%
+				for (long missingClassNameId : missingClassNameIds) {
+				%>
+
+					<li class="list-group-item list-group-item-flex" data-class-name-id="<%= missingClassNameId %>">
+						<clay:content-col
+							expand="<%= true %>"
+						>
+							<div>
+								<span class="list-group-title"><%= missingClassNameId %></span>
+
+								<span class="c-ml-1 inline-item">
+									<clay:sticker
+										displayType="warning"
+										icon="warning-full"
+										size="sm"
+									/>
+
+									<strong class="text-2 text-warning"><liferay-ui:message key="missing" /></strong>
+								</span>
+							</div>
+						</clay:content-col>
+					</li>
+
+				<%
+				}
+				%>
+
+			</ul>
+		</div>
+	</c:if>
 
 	<%
 	UnicodeProperties unicodeProperties = editAssetListDisplayContext.getUnicodeProperties();

@@ -37,6 +37,9 @@ export default function ({
 	const ddmStructureFieldValueInput = document.getElementById(
 		`${namespace}ddmStructureFieldValue`
 	);
+	const missingClassNameIdsContainer = document.getElementById(
+		`${namespace}missingClassNameIds`
+	);
 	const orderByColumn1 = document.getElementById(
 		`${namespace}orderByColumn1`
 	);
@@ -180,10 +183,34 @@ export default function ({
 			});
 	};
 
+	const updateMissingClassNameIds = () => {
+		if (!missingClassNameIdsContainer) {
+			return;
+		}
+
+		const {classNameIds} = getSelectedIds();
+
+		let visibleCount = 0;
+
+		missingClassNameIdsContainer
+			.querySelectorAll('[data-class-name-id]')
+			.forEach((item) => {
+				item.hidden = !classNameIds.includes(item.dataset.classNameId);
+
+				if (!item.hidden) {
+					visibleCount++;
+				}
+			});
+
+		missingClassNameIdsContainer.hidden = !visibleCount;
+	};
+
 	const fireSourceChange = () => {
 		Liferay.fire(`${namespace}sourceChange`);
 
 		refreshProperties();
+
+		updateMissingClassNameIds();
 	};
 
 	const createElement = (label, classNames, attributes, content) => {

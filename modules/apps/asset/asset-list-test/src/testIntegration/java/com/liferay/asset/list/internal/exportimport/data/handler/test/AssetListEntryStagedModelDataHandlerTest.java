@@ -27,7 +27,6 @@ import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.UnicodePropertiesBuilder;
@@ -64,10 +63,11 @@ public class AssetListEntryStagedModelDataHandlerTest
 		new LiferayIntegrationTestRule();
 
 	@Test
-	@TestInfo({"LPD-86116", "LPD-86506", "LPD-103053"})
+	@TestInfo({"LPD-86116", "LPD-86506", "LPD-102486", "LPD-103053"})
 	public void testExportImportAssetListEntry() throws Exception {
 		_testExportImportAssetListEntryWithNonexistentClassName();
 		_testExportImportAssetListEntryWithNonexistentClassNames();
+		_testExportImportAssetListEntryWithOnlyNonexistentClassNameIds();
 		_testExportImportAssetListEntryWithSegmentsEntry();
 		_testExportImportAssetListEntryWithStaleAnyAssetTypeClassName();
 	}
@@ -216,9 +216,9 @@ public class AssetListEntryStagedModelDataHandlerTest
 					new long[] {assetEntryClassNameId, nonexistentClassNameId})
 			).buildString());
 
-		Assert.assertTrue(
-			GetterUtil.getBoolean(
-				unicodeProperties.getProperty("anyAssetType")));
+		Assert.assertEquals(
+			String.valueOf(nonexistentClassNameId),
+			unicodeProperties.getProperty("anyAssetType"));
 		Assert.assertEquals(
 			String.valueOf(assetEntryClassNameId),
 			unicodeProperties.getProperty("classNameIds"));
@@ -227,9 +227,11 @@ public class AssetListEntryStagedModelDataHandlerTest
 	private void _testExportImportAssetListEntryWithNonexistentClassNames()
 		throws Exception {
 
+		long nonexistentClassNameId = RandomTestUtil.randomLong();
+
 		UnicodeProperties unicodeProperties = _exportImportAssetListEntry(
 			UnicodePropertiesBuilder.put(
-				"anyAssetType", String.valueOf(RandomTestUtil.randomLong())
+				"anyAssetType", String.valueOf(nonexistentClassNameId)
 			).put(
 				"classNameIds",
 				StringUtil.merge(
@@ -238,10 +240,32 @@ public class AssetListEntryStagedModelDataHandlerTest
 					})
 			).buildString());
 
-		Assert.assertTrue(
-			GetterUtil.getBoolean(
-				unicodeProperties.getProperty("anyAssetType")));
+		Assert.assertEquals(
+			String.valueOf(nonexistentClassNameId),
+			unicodeProperties.getProperty("anyAssetType"));
 		Assert.assertNull(unicodeProperties.getProperty("classNameIds"));
+	}
+
+	private void _testExportImportAssetListEntryWithOnlyNonexistentClassNameIds()
+		throws Exception {
+
+		String classNameIds = StringUtil.merge(
+			new long[] {
+				RandomTestUtil.randomLong(), RandomTestUtil.randomLong()
+			});
+
+		UnicodeProperties unicodeProperties = _exportImportAssetListEntry(
+			UnicodePropertiesBuilder.put(
+				"anyAssetType", Boolean.FALSE.toString()
+			).put(
+				"classNameIds", classNameIds
+			).buildString());
+
+		Assert.assertEquals(
+			Boolean.FALSE.toString(),
+			unicodeProperties.getProperty("anyAssetType"));
+		Assert.assertEquals(
+			classNameIds, unicodeProperties.getProperty("classNameIds"));
 	}
 
 	private void _testExportImportAssetListEntryWithSegmentsEntry()
@@ -287,16 +311,18 @@ public class AssetListEntryStagedModelDataHandlerTest
 	private void _testExportImportAssetListEntryWithStaleAnyAssetTypeClassName()
 		throws Exception {
 
+		long nonexistentClassNameId = RandomTestUtil.randomLong();
+
 		UnicodeProperties unicodeProperties = _exportImportAssetListEntry(
 			UnicodePropertiesBuilder.put(
-				"anyAssetType", String.valueOf(RandomTestUtil.randomLong())
+				"anyAssetType", String.valueOf(nonexistentClassNameId)
 			).put(
 				"anyAssetTypeClassName", AssetEntry.class.getName()
 			).buildString());
 
-		Assert.assertTrue(
-			GetterUtil.getBoolean(
-				unicodeProperties.getProperty("anyAssetType")));
+		Assert.assertEquals(
+			String.valueOf(nonexistentClassNameId),
+			unicodeProperties.getProperty("anyAssetType"));
 		Assert.assertNull(
 			unicodeProperties.getProperty("anyAssetTypeClassName"));
 	}
