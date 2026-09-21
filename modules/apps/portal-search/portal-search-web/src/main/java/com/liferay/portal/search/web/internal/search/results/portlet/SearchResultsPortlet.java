@@ -219,6 +219,8 @@ public class SearchResultsPortlet extends MVCPortlet {
 
 		SearchRequest searchRequest = searchResponse.getRequest();
 
+		searchResultsPortletDisplayContext.setAccurateCountLimit(
+			searchRequest.getTrackTotalHitsLimit());
 		searchResultsPortletDisplayContext.setKeywords(
 			GetterUtil.getString(searchRequest.getQueryString()));
 		searchResultsPortletDisplayContext.setRenderNothing(
@@ -255,6 +257,10 @@ public class SearchResultsPortlet extends MVCPortlet {
 			searchResultsPortletPreferences.isShowPagination());
 		searchResultsPortletDisplayContext.setTotalHits(
 			searchResponse.getTotalHits());
+		searchResultsPortletDisplayContext.setTotalHitsApproximate(
+			_isTotalHitsApproximate(
+				searchResponse.getTotalHits(),
+				searchRequest.getTrackTotalHitsLimit()));
 
 		return searchResultsPortletDisplayContext;
 	}
@@ -438,6 +444,16 @@ public class SearchResultsPortlet extends MVCPortlet {
 
 		return HttpComponentsUtil.removeParameter(
 			_portal.getCurrentURL(renderRequest), paginationStartParameterName);
+	}
+
+	private boolean _isTotalHitsApproximate(
+		int totalHits, Integer accurateCountLimit) {
+
+		if ((accurateCountLimit != null) && (totalHits >= accurateCountLimit)) {
+			return true;
+		}
+
+		return false;
 	}
 
 	@Reference
