@@ -143,6 +143,14 @@ public class SearchResultsPortletTest {
 		_testTotalHitsApproximate(true, 0, 0);
 	}
 
+	@Test
+	public void testTotalHitsVisible() throws Exception {
+		_testTotalHitsVisible(true, null);
+		_testTotalHitsVisible(true, 1);
+		_testTotalHitsVisible(true, 1000);
+		_testTotalHitsVisible(false, 0);
+	}
+
 	protected void render() throws IOException, PortletException {
 		_searchResultsPortlet.render(_renderRequest, _renderResponse);
 	}
@@ -467,6 +475,28 @@ public class SearchResultsPortletTest {
 			searchResultsPortletDisplayContext.isTotalHitsApproximate());
 		Assert.assertEquals(
 			totalHits, searchResultsPortletDisplayContext.getTotalHits());
+	}
+
+	private void _testTotalHitsVisible(
+			boolean expectedTotalHitsVisible, Integer trackTotalHitsLimit)
+		throws Exception {
+
+		_renderRequest = _createRenderRequest();
+
+		Mockito.doReturn(
+			trackTotalHitsLimit
+		).when(
+			_searchRequest
+		).getTrackTotalHitsLimit();
+
+		render();
+
+		SearchResultsPortletDisplayContext searchResultsPortletDisplayContext =
+			_getDisplayContext();
+
+		Assert.assertEquals(
+			expectedTotalHitsVisible,
+			searchResultsPortletDisplayContext.isTotalHitsVisible());
 	}
 
 	private static MockedStatic<ConfigurationProviderUtil>

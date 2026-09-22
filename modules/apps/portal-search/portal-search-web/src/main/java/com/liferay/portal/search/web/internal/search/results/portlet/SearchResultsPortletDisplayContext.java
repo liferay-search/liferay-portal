@@ -118,6 +118,14 @@ public class SearchResultsPortletDisplayContext implements Serializable {
 		return _totalHitsApproximate;
 	}
 
+	public boolean isTotalHitsVisible() {
+		if ((_accurateCountLimit == null) || (_accurateCountLimit > 0)) {
+			return true;
+		}
+
+		return false;
+	}
+
 	public void setAccurateCountLimit(Integer accurateCountLimit) {
 		_accurateCountLimit = accurateCountLimit;
 	}
