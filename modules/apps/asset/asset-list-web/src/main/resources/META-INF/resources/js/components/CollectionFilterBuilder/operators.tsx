@@ -5,6 +5,32 @@
 
 import type {FilterOperator, FilterProperty} from './types';
 
+/**
+ * Tags, categories, and keywords describe every item type. Each one
+ * also resolves to a single AssetEntryQuery slot per operator and
+ * quantifier pair. ConditionBuilder reads the names below to stop
+ * a combination being used twice.
+ */
+export const ASSET_FIELDS: FilterProperty[] = [
+	{
+		label: Liferay.Language.get('tags'),
+		name: 'assetTags',
+		type: 'asset-tags',
+	},
+	{
+		label: Liferay.Language.get('categories'),
+		name: 'assetCategories',
+		type: 'asset-categories',
+	},
+	{
+		label: Liferay.Language.get('keywords'),
+		name: 'keywords',
+		type: 'text',
+	},
+];
+
+export const ASSET_FIELD_NAMES = new Set(ASSET_FIELDS.map(({name}) => name));
+
 // Booleans use an implicit `eq` operator (auto-set when the field is selected
 // in ConditionBuilder) and render their value as a single Is True / Is False
 // picker via DefaultValueInput. No explicit operator picker is needed.
