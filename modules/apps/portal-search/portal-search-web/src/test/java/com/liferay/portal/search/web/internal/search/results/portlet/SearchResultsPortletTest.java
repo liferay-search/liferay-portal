@@ -133,6 +133,24 @@ public class SearchResultsPortletTest {
 			String.valueOf(searchContainer.getIteratorURL()));
 	}
 
+	@Test
+	public void testTotalHitsApproximate() throws Exception {
+		_testTotalHitsApproximate(false, null, 0);
+		_testTotalHitsApproximate(false, null, RandomTestUtil.randomInt());
+		_testTotalHitsApproximate(false, 1000, 999);
+		_testTotalHitsApproximate(true, 1000, 1000);
+		_testTotalHitsApproximate(true, 1000, 1001);
+		_testTotalHitsApproximate(true, 0, 0);
+	}
+
+	@Test
+	public void testTotalHitsVisible() throws Exception {
+		_testTotalHitsVisible(true, null);
+		_testTotalHitsVisible(true, 1);
+		_testTotalHitsVisible(true, 1000);
+		_testTotalHitsVisible(false, 0);
+	}
+
 	protected void render() throws IOException, PortletException {
 		_searchResultsPortlet.render(_renderRequest, _renderResponse);
 	}
@@ -423,6 +441,62 @@ public class SearchResultsPortletTest {
 		).fetchUser(
 			Mockito.anyLong()
 		);
+	}
+
+	private void _testTotalHitsApproximate(
+			boolean expectedTotalHitsApproximate, Integer trackTotalHitsLimit,
+			int totalHits)
+		throws Exception {
+
+		_renderRequest = _createRenderRequest();
+
+		Mockito.doReturn(
+			trackTotalHitsLimit
+		).when(
+			_searchRequest
+		).getTrackTotalHitsLimit();
+
+		Mockito.doReturn(
+			totalHits
+		).when(
+			_searchResponse
+		).getTotalHits();
+
+		render();
+
+		SearchResultsPortletDisplayContext searchResultsPortletDisplayContext =
+			_getDisplayContext();
+
+		Assert.assertEquals(
+			trackTotalHitsLimit,
+			searchResultsPortletDisplayContext.getAccurateCountLimit());
+		Assert.assertEquals(
+			expectedTotalHitsApproximate,
+			searchResultsPortletDisplayContext.isTotalHitsApproximate());
+		Assert.assertEquals(
+			totalHits, searchResultsPortletDisplayContext.getTotalHits());
+	}
+
+	private void _testTotalHitsVisible(
+			boolean expectedTotalHitsVisible, Integer trackTotalHitsLimit)
+		throws Exception {
+
+		_renderRequest = _createRenderRequest();
+
+		Mockito.doReturn(
+			trackTotalHitsLimit
+		).when(
+			_searchRequest
+		).getTrackTotalHitsLimit();
+
+		render();
+
+		SearchResultsPortletDisplayContext searchResultsPortletDisplayContext =
+			_getDisplayContext();
+
+		Assert.assertEquals(
+			expectedTotalHitsVisible,
+			searchResultsPortletDisplayContext.isTotalHitsVisible());
 	}
 
 	private static MockedStatic<ConfigurationProviderUtil>

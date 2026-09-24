@@ -5,6 +5,8 @@
  */
 --%>
 
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+
 <%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet" %>
 
 <%@ taglib uri="http://liferay.com/tld/aui" prefix="aui" %><%@
@@ -12,7 +14,9 @@ taglib uri="http://liferay.com/tld/frontend" prefix="liferay-frontend" %><%@
 taglib uri="http://liferay.com/tld/portlet" prefix="liferay-portlet" %><%@
 taglib uri="http://liferay.com/tld/template" prefix="liferay-template" %>
 
-<%@ page import="com.liferay.portal.kernel.util.Constants" %><%@
+<%@ page import="com.liferay.petra.string.StringPool" %><%@
+page import="com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil" %><%@
+page import="com.liferay.portal.kernel.util.Constants" %><%@
 page import="com.liferay.portal.search.web.internal.result.display.context.SearchResultSummaryDisplayContext" %><%@
 page import="com.liferay.portal.search.web.internal.search.results.configuration.SearchResultsPortletInstanceConfiguration" %><%@
 page import="com.liferay.portal.search.web.internal.search.results.portlet.SearchResultsPortletDisplayContext" %><%@
@@ -69,6 +73,39 @@ SearchResultsPortletPreferences searchResultsPortletPreferences = new SearchResu
 			<aui:input helpMessage="display-selected-result-in-context-help" label="display-selected-result-in-context" name="<%= PortletPreferencesJspUtil.getInputName(SearchResultsPortletPreferences.PREFERENCE_KEY_VIEW_IN_CONTEXT) %>" type="checkbox" value="<%= searchResultsPortletPreferences.isViewInContext() %>" />
 
 			<aui:input helpMessage="display-results-in-document-form-help" label="display-results-in-document-form" name="<%= PortletPreferencesJspUtil.getInputName(SearchResultsPortletPreferences.PREFERENCE_KEY_DISPLAY_IN_DOCUMENT_FORM) %>" type="checkbox" value="<%= searchResultsPortletPreferences.isDisplayInDocumentForm() %>" />
+
+			<c:if test='<%= FeatureFlagManagerUtil.isEnabled("LPD-98858") %>'>
+				<aui:input helpMessage="enable-result-count-accuracy-threshold-help" label="enable-result-count-accuracy-threshold" name="<%= PortletPreferencesJspUtil.getInputName(SearchResultsPortletPreferences.PREFERENCE_KEY_ACCURATE_COUNT_LIMIT_ENABLED) %>" type="checkbox" value="<%= searchResultsPortletPreferences.isAccurateCountLimitEnabled() %>" />
+
+				<div class="<%= !searchResultsPortletPreferences.isAccurateCountLimitEnabled() ? "hide" : StringPool.BLANK %>" id="<portlet:namespace />accurateCountLimitContainer">
+					<aui:input label="result-count-accuracy-threshold" min="0" name="<%= PortletPreferencesJspUtil.getInputName(SearchResultsPortletPreferences.PREFERENCE_KEY_ACCURATE_COUNT_LIMIT) %>" type="number" value="<%= searchResultsPortletPreferences.getAccurateCountLimit() %>">
+						<aui:validator name="min">0</aui:validator>
+					</aui:input>
+				</div>
+
+				<aui:script>
+					var accurateCountLimitEnabledCheckbox = document.getElementById(
+						'<portlet:namespace />accurateCountLimitEnabled'
+					);
+
+					Liferay.Util.toggleBoxes(
+						'<portlet:namespace />accurateCountLimitEnabled',
+						'<portlet:namespace />accurateCountLimitContainer'
+					);
+
+					Liferay.Util.toggleDisabled(
+						'#<portlet:namespace />accurateCountLimit',
+						!accurateCountLimitEnabledCheckbox.checked
+					);
+
+					accurateCountLimitEnabledCheckbox.addEventListener('change', function (event) {
+						Liferay.Util.toggleDisabled(
+							'#<portlet:namespace />accurateCountLimit',
+							!event.target.checked
+						);
+					});
+				</aui:script>
+			</c:if>
 
 			<aui:input label="pagination-start-parameter-name" name="<%= PortletPreferencesJspUtil.getInputName(SearchResultsPortletPreferences.PREFERENCE_KEY_PAGINATION_START_PARAMETER_NAME) %>" value="<%= searchResultsPortletPreferences.getPaginationStartParameterName() %>" />
 

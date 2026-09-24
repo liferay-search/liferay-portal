@@ -41,6 +41,10 @@ public class SearchResultsPortletDisplayContext implements Serializable {
 					WebKeys.THEME_DISPLAY));
 	}
 
+	public Integer getAccurateCountLimit() {
+		return _accurateCountLimit;
+	}
+
 	public long getDisplayStyleGroupId() {
 		if (_displayStyleGroupId != 0) {
 			return _displayStyleGroupId;
@@ -110,6 +114,22 @@ public class SearchResultsPortletDisplayContext implements Serializable {
 		return _showPagination;
 	}
 
+	public boolean isTotalHitsApproximate() {
+		return _totalHitsApproximate;
+	}
+
+	public boolean isTotalHitsVisible() {
+		if ((_accurateCountLimit == null) || (_accurateCountLimit > 0)) {
+			return true;
+		}
+
+		return false;
+	}
+
+	public void setAccurateCountLimit(Integer accurateCountLimit) {
+		_accurateCountLimit = accurateCountLimit;
+	}
+
 	public void setDocuments(List<Document> documents) {
 		_documents = documents;
 	}
@@ -152,6 +172,10 @@ public class SearchResultsPortletDisplayContext implements Serializable {
 		_totalHits = totalHits;
 	}
 
+	public void setTotalHitsApproximate(boolean totalHitsApproximate) {
+		_totalHitsApproximate = totalHitsApproximate;
+	}
+
 	public List<SearchResultSummaryDisplayContext>
 		translateSearchResultSummaryDisplayContexts(List<Document> documents) {
 
@@ -161,6 +185,7 @@ public class SearchResultsPortletDisplayContext implements Serializable {
 				getSearchResultSummaryDisplayContext(document)));
 	}
 
+	private Integer _accurateCountLimit;
 	private long _displayStyleGroupId;
 	private List<Document> _documents;
 	private final HttpServletRequest _httpServletRequest;
@@ -175,5 +200,6 @@ public class SearchResultsPortletDisplayContext implements Serializable {
 	private boolean _showEmptyResultMessage;
 	private boolean _showPagination;
 	private int _totalHits;
+	private boolean _totalHitsApproximate;
 
 }
