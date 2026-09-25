@@ -13,6 +13,9 @@ public interface SearchResultsPortletPreferences {
 	public static final String PREFERENCE_KEY_ACCURATE_COUNT_LIMIT =
 		"accurateCountLimit";
 
+	public static final String PREFERENCE_KEY_ACCURATE_COUNT_LIMIT_ENABLED =
+		"accurateCountLimitEnabled";
+
 	public static final String PREFERENCE_KEY_DISPLAY_IN_DOCUMENT_FORM =
 		"displayInDocumentForm";
 
@@ -53,6 +56,8 @@ public interface SearchResultsPortletPreferences {
 	public String getPaginationDeltaParameterName();
 
 	public String getPaginationStartParameterName();
+
+	public boolean isAccurateCountLimitEnabled();
 
 	public boolean isDisplayInDocumentForm();
 

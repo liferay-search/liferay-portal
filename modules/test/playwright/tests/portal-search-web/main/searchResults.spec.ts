@@ -8,6 +8,7 @@ import {createReadStream} from 'fs';
 import path from 'path';
 
 import {dataApiHelpersTest} from '../../../fixtures/dataApiHelpersTest';
+import {featureFlagsTest} from '../../../fixtures/featureFlagsTest';
 import {isolatedSiteTest} from '../../../fixtures/isolatedSiteTest';
 import {loginTest} from '../../../fixtures/loginTest';
 import {pageEditorPagesTest} from '../../../fixtures/pageEditorPagesTest';
@@ -358,6 +359,112 @@ test.describe('Multiple Widgets on a Page', () => {
 			).toHaveText('60 Entries');
 		});
 	});
+});
+
+const approximateCountsTest = mergeTests(
+	test,
+	featureFlagsTest({'LPD-98858': {enabled: true}})
+);
+
+approximateCountsTest.describe('Result Count Accuracy Threshold', () => {
+	approximateCountsTest(
+		'Configures the result count accuracy threshold',
+		{tag: '@LPD-100860'},
+		async ({apiHelpers, page, searchPage, site}) => {
+			await test.step('Build a search page on the site', async () => {
+				const siteLayout =
+					await apiHelpers.jsonWebServicesLayout.addLayout({
+						groupId: site.id,
+						options: {type: 'portlet'},
+						title: getRandomString(),
+					});
+
+				await page.goto(
+					`/web${site.friendlyUrlPath}${siteLayout.friendlyURL}`
+				);
+
+				await searchPage.addPortlet('Search Results', 'Search');
+			});
+
+			const enableThresholdCheckbox = searchPage.modalIFrame.getByLabel(
+				'Enable Result Count Accuracy Threshold'
+			);
+			const thresholdInput = searchPage.modalIFrame.getByRole(
+				'spinbutton',
+				{name: 'Result Count Accuracy Threshold'}
+			);
+
+			await test.step('Verify the threshold is disabled and hidden by default', async () => {
+				await searchPage.openSearchPortletConfiguration(
+					'Search Results'
+				);
+
+				await expect(enableThresholdCheckbox).not.toBeChecked();
+				await expect(thresholdInput).toBeHidden();
+			});
+
+			await test.step('Enable the threshold and verify it defaults to 1000', async () => {
+				await searchPage.selectPortletConfigurationsCheckbox([
+					{
+						label: 'Enable Result Count Accuracy Threshold',
+						value: true,
+					},
+				]);
+
+				await expect(thresholdInput).toBeVisible();
+				await expect(thresholdInput).toBeEnabled();
+				await expect(thresholdInput).toHaveValue('1000');
+			});
+
+			await test.step('Type an invalid value, disable the threshold and save', async () => {
+				await thresholdInput.fill('-1');
+
+				await searchPage.selectPortletConfigurationsCheckbox([
+					{
+						label: 'Enable Result Count Accuracy Threshold',
+						value: false,
+					},
+				]);
+
+				await expect(thresholdInput).toBeHidden();
+
+				await searchPage.savePortletConfiguration();
+			});
+
+			await test.step('Verify the invalid value was not stored', async () => {
+				await searchPage.openSearchPortletConfiguration(
+					'Search Results'
+				);
+
+				await expect(enableThresholdCheckbox).not.toBeChecked();
+
+				await searchPage.selectPortletConfigurationsCheckbox([
+					{
+						label: 'Enable Result Count Accuracy Threshold',
+						value: true,
+					},
+				]);
+
+				await expect(thresholdInput).toHaveValue('1000');
+			});
+
+			await test.step('Change the threshold and save', async () => {
+				await thresholdInput.fill('0');
+
+				await searchPage.savePortletConfiguration();
+			});
+
+			await test.step('Verify the new threshold value is kept', async () => {
+				await searchPage.openSearchPortletConfiguration(
+					'Search Results'
+				);
+
+				await expect(enableThresholdCheckbox).toBeChecked();
+				await expect(thresholdInput).toBeVisible();
+				await expect(thresholdInput).toHaveValue('0');
+			});
+		}
+	);
 });
 
 test.describe('Search Paginator', () => {
