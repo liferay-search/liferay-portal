@@ -148,41 +148,6 @@ public class AssetListEntryExportImportContentProcessor
 			}
 		}
 
-		for (Map.Entry<String, String> entry : unicodeProperties.entrySet()) {
-			String key = entry.getKey();
-
-			if (StringUtil.startsWith(key, "queryName") &&
-				Objects.equals(entry.getValue(), "assetCategories")) {
-
-				String index = key.substring(9);
-
-				String queryValues = unicodeProperties.getProperty(
-					"queryValues" + index);
-
-				if (Validator.isNull(queryValues)) {
-					continue;
-				}
-
-				long[] categoryIds = GetterUtil.getLongValues(
-					queryValues.split(","));
-
-				for (long categoryId : categoryIds) {
-					AssetCategory assetCategory =
-						_assetCategoryLocalService.fetchAssetCategory(
-							categoryId);
-
-					if (assetCategory == null) {
-						continue;
-					}
-
-					StagedModelDataHandlerUtil.exportReferenceStagedModel(
-						portletDataContext, stagedModel,
-						_assetCategoryLocalService.getCategory(categoryId),
-						PortletDataContext.REFERENCE_TYPE_DEPENDENCY);
-				}
-			}
-		}
-
 		JSONArray filtersJSONArray = _toFiltersJSONArray(
 			unicodeProperties.getProperty("filters"));
 
