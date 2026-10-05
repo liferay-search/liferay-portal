@@ -415,32 +415,6 @@ public class AssetListEntryExportImportContentProcessor
 			String key = entry.getKey();
 			String value = entry.getValue();
 
-			if (StringUtil.startsWith(key, "queryName") &&
-				Objects.equals(value, "assetCategories")) {
-
-				String index = key.substring(9);
-
-				String queryValues = unicodeProperties.getProperty(
-					"queryValues" + index);
-
-				if (Validator.isNull(queryValues)) {
-					continue;
-				}
-
-				long[] newCategoryIds = new long[0];
-
-				for (long categoryId :
-						GetterUtil.getLongValues(queryValues.split(","))) {
-
-					newCategoryIds = ArrayUtil.append(
-						newCategoryIds,
-						MapUtil.getLong(categoryIds, categoryId, categoryId));
-				}
-
-				unicodeProperties.setProperty(
-					"queryValues" + index, StringUtil.merge(newCategoryIds));
-			}
-
 			if (StringUtil.startsWith(key, "orderByColumn") &&
 				StringUtil.startsWith(value, "ddm__keyword__")) {
 
