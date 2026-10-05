@@ -211,14 +211,6 @@ public class AssetListEntryStagedModelDataHandlerTest
 		).build();
 	}
 
-	private long _getImportedAssetCategoryId(AssetCategory assetCategory) {
-		AssetCategory importedAssetCategory =
-			_assetCategoryLocalService.fetchAssetCategoryByUuidAndGroupId(
-				assetCategory.getUuid(), liveGroup.getGroupId());
-
-		return importedAssetCategory.getCategoryId();
-	}
-
 	private void _testExportImportAssetListEntryWithFiltersCategories()
 		throws Exception {
 
@@ -251,10 +243,14 @@ public class AssetListEntryStagedModelDataHandlerTest
 		JSONArray filtersJSONArray = _jsonFactory.createJSONArray(
 			unicodeProperties.getProperty("filters"));
 
+		AssetCategory importedAssetCategory =
+			_assetCategoryLocalService.fetchAssetCategoryByUuidAndGroupId(
+				assetCategory.getUuid(), liveGroup.getGroupId());
+
 		Assert.assertEquals(
 			filtersJSONArray.toString(), 1, filtersJSONArray.length());
 		Assert.assertEquals(
-			String.valueOf(_getImportedAssetCategoryId(assetCategory)),
+			String.valueOf(importedAssetCategory.getCategoryId()),
 			JSONUtil.getValueAsString(
 				filtersJSONArray, "JSONObject/0", "JSONArray/value",
 				"JSONObject/0", "Object/value"));
@@ -263,31 +259,26 @@ public class AssetListEntryStagedModelDataHandlerTest
 	private void _testExportImportAssetListEntryWithLegacyQueryRules()
 		throws Exception {
 
-		AssetVocabulary assetVocabulary = AssetTestUtil.addVocabulary(
-			stagingGroup.getGroupId());
-
-		AssetCategory assetCategory = AssetTestUtil.addCategory(
-			stagingGroup.getGroupId(), assetVocabulary.getVocabularyId());
-
 		String assetTagName = RandomTestUtil.randomString();
+		String keyword = RandomTestUtil.randomString();
 
 		UnicodeProperties unicodeProperties = _exportImportAssetListEntry(
 			UnicodePropertiesBuilder.put(
-				"queryAndOperator0", "true"
+				"queryAndOperator0", "false"
 			).put(
-				"queryAndOperator1", "false"
+				"queryAndOperator1", "true"
 			).put(
 				"queryContains0", "true"
 			).put(
 				"queryContains1", "true"
 			).put(
-				"queryName0", "assetCategories"
+				"queryName0", "assetTags"
 			).put(
-				"queryName1", "assetTags"
+				"queryName1", "keywords"
 			).put(
-				"queryValues0", String.valueOf(assetCategory.getCategoryId())
+				"queryValues0", assetTagName
 			).put(
-				"queryValues1", assetTagName
+				"queryValues1", keyword
 			).buildString());
 
 		for (String key : unicodeProperties.keySet()) {
@@ -300,15 +291,22 @@ public class AssetListEntryStagedModelDataHandlerTest
 		Assert.assertEquals(
 			filtersJSONArray.toString(), 2, filtersJSONArray.length());
 		Assert.assertEquals(
-			String.valueOf(_getImportedAssetCategoryId(assetCategory)),
+			"assetTags",
+			JSONUtil.getValueAsString(
+				filtersJSONArray, "JSONObject/0", "Object/propertyName"));
+		Assert.assertEquals(
+			assetTagName,
 			JSONUtil.getValueAsString(
 				filtersJSONArray, "JSONObject/0", "JSONArray/value",
 				"JSONObject/0", "Object/value"));
 		Assert.assertEquals(
-			assetTagName,
+			"keywords",
 			JSONUtil.getValueAsString(
-				filtersJSONArray, "JSONObject/1", "JSONArray/value",
-				"JSONObject/0", "Object/value"));
+				filtersJSONArray, "JSONObject/1", "Object/propertyName"));
+		Assert.assertEquals(
+			keyword,
+			JSONUtil.getValueAsString(
+				filtersJSONArray, "JSONObject/1", "Object/value"));
 	}
 
 	private void _testExportImportAssetListEntryWithNonexistentClassName()
