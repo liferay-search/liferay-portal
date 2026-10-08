@@ -9,6 +9,7 @@ import com.liferay.object.model.ObjectEntryTable;
 import com.liferay.object.service.ObjectEntryLocalService;
 import com.liferay.petra.sql.dsl.DSLQueryFactoryUtil;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.search.Field;
@@ -194,8 +195,12 @@ public class BrokenLinkAssetSearcher {
 		).query(
 			booleanQuery
 		).withSearchContext(
-			searchContext -> searchContext.setAttribute(
-				Field.STATUS, WorkflowConstants.STATUS_ANY)
+			searchContext -> {
+				searchContext.setAttribute(
+					Field.STATUS, WorkflowConstants.STATUS_ANY);
+				searchContext.setEnd(QueryUtil.ALL_POS);
+				searchContext.setStart(QueryUtil.ALL_POS);
+			}
 		);
 	}
 

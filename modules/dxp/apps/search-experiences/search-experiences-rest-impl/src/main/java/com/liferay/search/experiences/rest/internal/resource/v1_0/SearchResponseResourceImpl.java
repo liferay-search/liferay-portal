@@ -105,6 +105,8 @@ public class SearchResponseResourceImpl extends BaseSearchResponseResourceImpl {
 						contextHttpServletRequest.getRemoteAddr());
 					searchContext.setAttribute(
 						"search.experiences.scope.group.id", _getGroupId());
+					searchContext.setEnd(pagination.getEndPosition());
+					searchContext.setStart(pagination.getStartPosition());
 					searchContext.setTimeZone(contextUser.getTimeZone());
 					searchContext.setUserId(contextUser.getUserId());
 				}

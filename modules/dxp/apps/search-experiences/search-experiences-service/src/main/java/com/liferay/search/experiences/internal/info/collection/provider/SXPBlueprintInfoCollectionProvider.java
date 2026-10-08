@@ -117,6 +117,9 @@ public abstract class SXPBlueprintInfoCollectionProvider<T>
 			pagination.getEnd() - pagination.getStart()
 		).withSearchContext(
 			searchContext -> {
+				searchContext.setEnd(pagination.getEnd());
+				searchContext.setStart(pagination.getStart());
+
 				CategoriesInfoFilter categoriesInfoFilter =
 					collectionQuery.getInfoFilter(CategoriesInfoFilter.class);
 

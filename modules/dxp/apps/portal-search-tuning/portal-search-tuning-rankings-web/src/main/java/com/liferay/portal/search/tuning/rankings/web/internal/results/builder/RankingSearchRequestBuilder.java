@@ -67,6 +67,8 @@ public class RankingSearchRequestBuilder {
 				}
 
 				searchContext.setCompanyId(_companyId);
+				searchContext.setEnd(_from + _size);
+				searchContext.setStart(_from);
 
 				if (!Validator.isBlank(_sxpBlueprintExternalReferenceCode)) {
 					searchContext.setAttribute(

@@ -212,6 +212,7 @@ public class SXPBlueprintSuggestionsContributor
 					searchContext1.getAttribute(
 						SearchContextAttributes.ATTRIBUTE_KEY_EMPTY_SEARCH));
 				searchContext2.setCompanyId(searchContext1.getCompanyId());
+				searchContext2.setEnd(size);
 				searchContext2.setGroupIds(searchContext1.getGroupIds());
 
 				if (FeatureFlagManagerUtil.isEnabled("LPD-35128")) {
@@ -221,6 +222,7 @@ public class SXPBlueprintSuggestionsContributor
 
 				searchContext2.setKeywords(searchContext1.getKeywords());
 				searchContext2.setLocale(searchContext1.getLocale());
+				searchContext2.setStart(0);
 				searchContext2.setTimeZone(searchContext1.getTimeZone());
 				searchContext2.setUserId(searchContext1.getUserId());
 			}

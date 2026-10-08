@@ -137,9 +137,11 @@ public class BasicSuggestionsContributor implements SuggestionsContributor {
 						ATTRIBUTE_KEY_CONTRIBUTE_TUNING_RANKINGS,
 					Boolean.TRUE);
 				searchContext2.setCompanyId(searchContext1.getCompanyId());
+				searchContext2.setEnd(size);
 				searchContext2.setGroupIds(searchContext1.getGroupIds());
 				searchContext2.setKeywords(searchContext1.getKeywords());
 				searchContext2.setLocale(searchContext1.getLocale());
+				searchContext2.setStart(0);
 				searchContext2.setTimeZone(searchContext1.getTimeZone());
 				searchContext2.setUserId(searchContext1.getUserId());
 			});
