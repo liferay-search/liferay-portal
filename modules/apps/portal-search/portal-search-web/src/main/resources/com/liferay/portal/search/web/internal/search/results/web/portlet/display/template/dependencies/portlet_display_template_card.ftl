@@ -1,8 +1,25 @@
+<#assign totalHitsLabel = searchContainer.getTotal() />
+
+<#if !searchResultsPortletDisplayContext.isTotalHitsExact()>
+	<#assign totalHitsLabel = languageUtil.format(locale, "x-plus", [totalHitsLabel], false) />
+</#if>
+
 <div class="c-mb-4 c-mt-4 search-total-label">
 	<#if searchContainer.getTotal() == 1>
-		${languageUtil.format(locale, "x-result-for-x", [searchContainer.getTotal(), "<strong>" + htmlUtil.escape(searchResultsPortletDisplayContext.getKeywords()) + "</strong>"], false)}
+		${languageUtil.format(locale, "x-result-for-x", [totalHitsLabel, "<strong>" + htmlUtil.escape(searchResultsPortletDisplayContext.getKeywords()) + "</strong>"], false)}
 	<#else>
-		${languageUtil.format(locale, "x-results-for-x", [searchContainer.getTotal(), "<strong>" + htmlUtil.escape(searchResultsPortletDisplayContext.getKeywords()) + "</strong>"], false)}
+		${languageUtil.format(locale, "x-results-for-x", [totalHitsLabel, "<strong>" + htmlUtil.escape(searchResultsPortletDisplayContext.getKeywords()) + "</strong>"], false)}
+	</#if>
+
+	<#if !searchResultsPortletDisplayContext.isTotalHitsExact()>
+		<span
+			aria-label="${languageUtil.get(locale, 'approximate-result-count-help')}"
+			class="c-ml-1 inline-item lfr-portal-tooltip text-secondary"
+			tabindex="0"
+			title="${languageUtil.get(locale, 'approximate-result-count-help')}"
+		>
+			<@clay["icon"] symbol="info-circle" />
+		</span>
 	</#if>
 </div>
 
