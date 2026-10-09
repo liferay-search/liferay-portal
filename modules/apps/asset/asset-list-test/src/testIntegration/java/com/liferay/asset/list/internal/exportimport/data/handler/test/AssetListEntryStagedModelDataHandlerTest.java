@@ -14,20 +14,25 @@ import com.liferay.asset.list.model.AssetListEntrySegmentsEntryRel;
 import com.liferay.asset.list.service.AssetListEntryLocalService;
 import com.liferay.asset.list.service.AssetListEntrySegmentsEntryRelLocalService;
 import com.liferay.asset.list.test.util.AssetListTestUtil;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.test.util.DDMStructureTestUtil;
 import com.liferay.exportimport.kernel.lar.ExportImportThreadLocal;
 import com.liferay.exportimport.kernel.lar.StagedModelDataHandlerUtil;
 import com.liferay.exportimport.test.util.lar.BaseStagedModelDataHandlerTestCase;
+import com.liferay.journal.model.JournalArticle;
 import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.StagedModel;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
+import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.test.TestInfo;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
+import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.UnicodePropertiesBuilder;
@@ -64,8 +69,11 @@ public class AssetListEntryStagedModelDataHandlerTest
 		new LiferayIntegrationTestRule();
 
 	@Test
-	@TestInfo({"LPD-86116", "LPD-86506", "LPD-102486", "LPD-103053"})
+	@TestInfo(
+		{"LPD-86116", "LPD-86506", "LPD-102486", "LPD-103053", "LPD-106967"}
+	)
 	public void testExportImportAssetListEntry() throws Exception {
+		_testExportImportAssetListEntryWithAnyClassType();
 		_testExportImportAssetListEntryWithNonexistentClassName();
 		_testExportImportAssetListEntryWithNonexistentClassNames();
 		_testExportImportAssetListEntryWithOnlyNonexistentClassNameIds();
@@ -134,6 +142,20 @@ public class AssetListEntryStagedModelDataHandlerTest
 		};
 	}
 
+	private AssetListEntry _addAssetListEntry(String typeSettings)
+		throws Exception {
+
+		AssetListEntry assetListEntry = (AssetListEntry)addStagedModel(
+			stagingGroup, Collections.emptyMap());
+
+		_assetListEntrySegmentsEntryRelLocalService.
+			updateAssetListEntrySegmentsEntryRelTypeSettings(
+				assetListEntry.getAssetListEntryId(),
+				SegmentsEntryConstants.ID_DEFAULT, typeSettings);
+
+		return assetListEntry;
+	}
+
 	private SegmentsEntry _addSegmentsEntryByFirstName(
 			String firstName, long groupId)
 		throws Exception {
@@ -176,28 +198,86 @@ public class AssetListEntryStagedModelDataHandlerTest
 	private UnicodeProperties _exportImportAssetListEntry(String typeSettings)
 		throws Exception {
 
-		AssetListEntry assetListEntry = (AssetListEntry)addStagedModel(
-			stagingGroup, Collections.emptyMap());
-
-		_assetListEntrySegmentsEntryRelLocalService.
-			updateAssetListEntrySegmentsEntryRelTypeSettings(
-				assetListEntry.getAssetListEntryId(),
-				SegmentsEntryConstants.ID_DEFAULT, typeSettings);
+		AssetListEntry assetListEntry = _addAssetListEntry(typeSettings);
 
 		exportImportStagedModel(assetListEntry);
+
+		return _getImportedTypeSettingsUnicodeProperties(assetListEntry);
+	}
+
+	private UnicodeProperties _getImportedTypeSettingsUnicodeProperties(
+			AssetListEntry assetListEntry)
+		throws Exception {
 
 		AssetListEntry importedAssetListEntry = (AssetListEntry)getStagedModel(
 			assetListEntry.getUuid(), liveGroup);
 
-		AssetListEntrySegmentsEntryRel importedAssetListEntrySegmentsEntryRel =
+		AssetListEntrySegmentsEntryRel assetListEntrySegmentsEntryRel =
 			_assetListEntrySegmentsEntryRelLocalService.
 				fetchAssetListEntrySegmentsEntryRel(
 					importedAssetListEntry.getAssetListEntryId(),
 					SegmentsEntryConstants.ID_DEFAULT);
 
 		return UnicodePropertiesBuilder.load(
-			importedAssetListEntrySegmentsEntryRel.getTypeSettings()
+			assetListEntrySegmentsEntryRel.getTypeSettings()
 		).build();
+	}
+
+	private void _testExportImportAssetListEntryWithAnyClassType()
+		throws Exception {
+
+		DDMStructure ddmStructure = DDMStructureTestUtil.addStructure(
+			stagingGroup.getGroupId(), JournalArticle.class.getName());
+
+		ServiceContext serviceContext =
+			ServiceContextTestUtil.getServiceContext(liveGroup.getGroupId());
+
+		serviceContext.setUuid(ddmStructure.getUuid());
+
+		DDMStructure importedDDMStructure = DDMStructureTestUtil.addStructure(
+			liveGroup.getGroupId(), JournalArticle.class.getName(), 0,
+			ddmStructure.getDDMForm(), LocaleUtil.getSiteDefault(),
+			serviceContext);
+
+		Assert.assertNotEquals(
+			ddmStructure.getStructureId(),
+			importedDDMStructure.getStructureId());
+
+		AssetListEntry assetListEntry = _addAssetListEntry(
+			UnicodePropertiesBuilder.put(
+				"anyAssetType",
+				String.valueOf(
+					_classNameLocalService.getClassNameId(
+						JournalArticle.class.getName()))
+			).put(
+				"anyClassTypeJournalArticleAssetRendererFactory",
+				String.valueOf(ddmStructure.getStructureId())
+			).buildString());
+
+		exportStagedModel(assetListEntry);
+
+		try (SafeCloseable safeCloseable = initImportWithSafeCloseable(
+				stagingGroup, liveGroup)) {
+
+			Map<Long, Long> ddmStructureIds =
+				(Map<Long, Long>)portletDataContext.getNewPrimaryKeysMap(
+					DDMStructure.class);
+
+			ddmStructureIds.put(
+				ddmStructure.getStructureId(),
+				importedDDMStructure.getStructureId());
+
+			StagedModelDataHandlerUtil.importStagedModel(
+				portletDataContext, readExportedStagedModel(assetListEntry));
+		}
+
+		UnicodeProperties unicodeProperties =
+			_getImportedTypeSettingsUnicodeProperties(assetListEntry);
+
+		Assert.assertEquals(
+			String.valueOf(importedDDMStructure.getStructureId()),
+			unicodeProperties.getProperty(
+				"anyClassTypeJournalArticleAssetRendererFactory"));
 	}
 
 	private void _testExportImportAssetListEntryWithNonexistentClassName()
