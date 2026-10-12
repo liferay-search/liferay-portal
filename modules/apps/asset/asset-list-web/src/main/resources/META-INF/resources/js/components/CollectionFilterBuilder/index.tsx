@@ -4,11 +4,12 @@
  */
 
 import {uuidv4} from 'frontend-js-web';
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 
 import useTypeProperties from '../../hooks/useTypeProperties';
 import {ConditionBuilder} from './ConditionBuilder';
 import {Config, initializeConfig} from './config';
+import getValueError from './getValueError';
 import normalizeDateTime from './normalizeDateTime';
 import {ASSET_FIELDS, RELATIVE_DATE_VALUES} from './operators';
 import {getFilterPropertyKey} from './types';
@@ -129,18 +130,32 @@ export default function CollectionFilterBuilder({
 		[propertiesWithAssetFields]
 	);
 
+	const getConditionProperty = (condition: Omit<FilterCondition, 'id'>) =>
+		propertiesMap.get(
+			getFilterPropertyKey(
+				condition.objectDefinitionExternalReferenceCode,
+				condition.propertyName
+			)
+		);
+
+	const getConditionError = (condition: FilterCondition) =>
+		getValueError(
+			getConditionProperty(condition),
+			condition.operatorName,
+			condition.value
+		);
+
+	const hasInvalidValue = conditions.some(getConditionError);
+
+	const inputRef = useRef<HTMLInputElement>(null);
+
 	const filterValuesAndOmitID = (conditions: FilterCondition[]) =>
 		conditions
-			.map(({id: _id, ...props}) => {
-				const property = propertiesMap.get(
-					getFilterPropertyKey(
-						props.objectDefinitionExternalReferenceCode,
-						props.propertyName
-					)
-				);
-
-				return {...props, value: serializeValue(property, props.value)};
-			})
+			.filter((condition) => !getConditionError(condition))
+			.map(({id: _id, ...props}) => ({
+				...props,
+				value: serializeValue(getConditionProperty(props), props.value),
+			}))
 			.filter(({operatorName, propertyName, value}) => {
 				if (!operatorName || !propertyName || !value) {
 					return false;
@@ -185,6 +200,31 @@ export default function CollectionFilterBuilder({
 		};
 	}, [namespace]);
 
+	useEffect(() => {
+		if (!hasInvalidValue) {
+			return;
+		}
+
+		const handleSubmitForm = (event: {
+			action?: string;
+			form: {getDOM: () => HTMLElement};
+			preventDefault: () => void;
+		}) => {
+			if (
+				!event.action &&
+				event.form.getDOM() === inputRef.current?.form
+			) {
+				event.preventDefault();
+			}
+		};
+
+		Liferay.on('submitForm', handleSubmitForm);
+
+		return () => {
+			Liferay.detach('submitForm', handleSubmitForm);
+		};
+	}, [hasInvalidValue]);
+
 	return (
 		<>
 			<ConditionBuilder
@@ -196,6 +236,7 @@ export default function CollectionFilterBuilder({
 
 			<input
 				name={`${namespace}TypeSettingsProperties--filters--`}
+				ref={inputRef}
 				type="hidden"
 				value={JSON.stringify(filterValuesAndOmitID(conditions))}
 			/>
