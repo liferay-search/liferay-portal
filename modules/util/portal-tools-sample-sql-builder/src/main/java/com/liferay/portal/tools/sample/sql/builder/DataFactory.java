@@ -1414,12 +1414,7 @@ public class DataFactory {
 			Boolean.FALSE.toString()
 		).build();
 
-		if (index == 1) {
-			map.put("queryAndOperator0", Boolean.TRUE.toString());
-			map.put("queryContains0", Boolean.TRUE.toString());
-			map.put("queryName0", "assetTags");
-		}
-		else {
+		if (index != 1) {
 			String assetPublisherQueryName = "assetCategories";
 
 			if ((index % 2) == 0) {
@@ -1458,19 +1453,34 @@ public class DataFactory {
 
 			String[] assetPublisherQueryValues = (String[])tuple.getObject(0);
 
-			map.put("queryAndOperator0", Boolean.FALSE.toString());
-			map.put("queryAndOperator1", Boolean.FALSE.toString());
-			map.put("queryContains0", Boolean.TRUE.toString());
-			map.put("queryContains1", Boolean.FALSE.toString());
-			map.put("queryName0", assetPublisherQueryName);
-			map.put("queryName1", assetPublisherQueryName);
 			map.put(
-				"queryValues0",
-				StringBundler.concat(
-					assetPublisherQueryValues[0], StringPool.COMMA,
-					assetPublisherQueryValues[1], StringPool.COMMA,
-					assetPublisherQueryValues[2]));
-			map.put("queryValues1", assetPublisherQueryValues[3]);
+				"filters",
+				JSONUtil.putAll(
+					JSONUtil.put(
+						"operatorName", "contains"
+					).put(
+						"propertyName", assetPublisherQueryName
+					).put(
+						"quantifier", "any"
+					).put(
+						"value",
+						JSONUtil.putAll(
+							JSONUtil.put("value", assetPublisherQueryValues[0]),
+							JSONUtil.put("value", assetPublisherQueryValues[1]),
+							JSONUtil.put("value", assetPublisherQueryValues[2]))
+					),
+					JSONUtil.put(
+						"operatorName", "not-contains"
+					).put(
+						"propertyName", assetPublisherQueryName
+					).put(
+						"quantifier", "any"
+					).put(
+						"value",
+						JSONUtil.putAll(
+							JSONUtil.put("value", assetPublisherQueryValues[3]))
+					)
+				).toString());
 		}
 
 		UnicodeProperties unicodeProperties = UnicodePropertiesBuilder.create(
