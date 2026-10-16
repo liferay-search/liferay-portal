@@ -58,6 +58,8 @@ public class InfoPanelMVCResourceCommand extends BaseMVCResourceCommand {
 			SearchContext searchContext = new SearchContext();
 
 			searchContext.setAttribute("faroProjectId", faroProjectIds[0]);
+			searchContext.setEnd(1);
+			searchContext.setStart(0);
 
 			Hits hits = indexer.search(searchContext);
 

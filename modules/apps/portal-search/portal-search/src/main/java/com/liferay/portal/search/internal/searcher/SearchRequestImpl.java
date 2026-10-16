@@ -386,6 +386,8 @@ public class SearchRequestImpl implements SearchRequest, Serializable {
 
 	public void setFrom(Integer from) {
 		_from = from;
+
+		_syncSearchContextStartAndEnd();
 	}
 
 	public void setGroupByRequests(GroupByRequest... groupByRequests) {
@@ -476,6 +478,8 @@ public class SearchRequestImpl implements SearchRequest, Serializable {
 
 	public void setSize(Integer size) {
 		_size = size;
+
+		_syncSearchContextStartAndEnd();
 	}
 
 	public void setSorts(Sort... sorts) {
@@ -513,6 +517,18 @@ public class SearchRequestImpl implements SearchRequest, Serializable {
 	private Boolean _fetchSource;
 	private String[] _fetchSourceExcludes;
 	private String[] _fetchSourceIncludes;
+
+	private void _syncSearchContextStartAndEnd() {
+		if ((_size == null) || (_size == 0)) {
+			return;
+		}
+
+		int start = GetterUtil.getInteger(_from);
+
+		_searchContext.setEnd(start + _size);
+		_searchContext.setStart(start);
+	}
+
 	private Integer _from;
 	private final List<GroupByRequest> _groupByRequests = new ArrayList<>();
 	private Highlight _highlight;

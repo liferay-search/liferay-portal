@@ -9,6 +9,7 @@ import com.liferay.asset.kernel.AssetRendererFactoryRegistryUtil;
 import com.liferay.asset.kernel.model.AssetRenderer;
 import com.liferay.asset.kernel.model.AssetRendererFactory;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
@@ -165,8 +166,10 @@ public class SearchOmniSearchResultProvider
 				OmniSearchConstants.MAX_ENTRIES_PER_SECTION
 			).withSearchContext(
 				searchContext -> {
+					searchContext.setEnd(QueryUtil.ALL_POS);
 					searchContext.setGroupIds(new long[0]);
 					searchContext.setLocale(themeDisplay.getLocale());
+					searchContext.setStart(QueryUtil.ALL_POS);
 					searchContext.setUserId(themeDisplay.getUserId());
 				}
 			).build());

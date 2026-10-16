@@ -366,9 +366,11 @@ public class DefaultSearchResultPermissionFilter
 		SearchRequestBuilder searchRequestBuilder =
 			_searchRequestBuilderFactory.builder(searchContext);
 
-		searchRequestBuilder.from(searchContext.getStart());
-		searchRequestBuilder.size(
-			searchContext.getEnd() - searchContext.getStart());
+		int start = searchContext.getStart();
+		int size = searchContext.getEnd() - start;
+
+		searchRequestBuilder.from(start);
+		searchRequestBuilder.size(size);
 	}
 
 	private void _updateSearchHits(Hits hits, SearchContext searchContext) {
