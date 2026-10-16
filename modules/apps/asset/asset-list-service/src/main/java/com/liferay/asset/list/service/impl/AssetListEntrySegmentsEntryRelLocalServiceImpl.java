@@ -6,6 +6,7 @@
 package com.liferay.asset.list.service.impl;
 
 import com.liferay.asset.list.constants.AssetListEntryTypeConstants;
+import com.liferay.asset.list.internal.util.AssetListFiltersUpgradeUtil;
 import com.liferay.asset.list.model.AssetListEntrySegmentsEntryRel;
 import com.liferay.asset.list.model.AssetListEntrySegmentsEntryRelTable;
 import com.liferay.asset.list.model.AssetListEntryTable;
@@ -21,6 +22,7 @@ import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 
 import java.util.Collections;
@@ -63,7 +65,8 @@ public class AssetListEntrySegmentsEntryRelLocalServiceImpl
 		assetListEntrySegmentsEntryRel.setAssetListEntryId(assetListEntryId);
 		assetListEntrySegmentsEntryRel.setPriority(priority);
 		assetListEntrySegmentsEntryRel.setSegmentsEntryId(segmentsEntryId);
-		assetListEntrySegmentsEntryRel.setTypeSettings(typeSettings);
+		assetListEntrySegmentsEntryRel.setTypeSettings(
+			_toUpgradedTypeSettings(typeSettings));
 
 		return assetListEntrySegmentsEntryRelPersistence.update(
 			assetListEntrySegmentsEntryRel);
@@ -257,7 +260,8 @@ public class AssetListEntrySegmentsEntryRelLocalServiceImpl
 				assetListEntryId, segmentsEntryId);
 
 		assetListEntrySegmentsEntryRel.setModifiedDate(new Date());
-		assetListEntrySegmentsEntryRel.setTypeSettings(typeSettings);
+		assetListEntrySegmentsEntryRel.setTypeSettings(
+			_toUpgradedTypeSettings(typeSettings));
 
 		return assetListEntrySegmentsEntryRelPersistence.update(
 			assetListEntrySegmentsEntryRel);
@@ -285,6 +289,12 @@ public class AssetListEntrySegmentsEntryRelLocalServiceImpl
 			updateAssetListEntrySegmentsEntryRel(
 				assetListEntrySegmentsEntryRel);
 		}
+	}
+
+	private String _toUpgradedTypeSettings(String typeSettings) {
+		return GetterUtil.getString(
+			AssetListFiltersUpgradeUtil.toUpgradedTypeSettings(typeSettings),
+			typeSettings);
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
