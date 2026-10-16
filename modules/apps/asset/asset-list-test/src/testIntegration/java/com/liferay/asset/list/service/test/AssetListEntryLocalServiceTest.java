@@ -11,6 +11,9 @@ import com.liferay.asset.list.exception.DuplicateAssetListEntryExternalReference
 import com.liferay.asset.list.model.AssetListEntry;
 import com.liferay.asset.list.service.AssetListEntryLocalService;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
@@ -18,9 +21,12 @@ import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
+import com.liferay.portal.kernel.util.UnicodeProperties;
+import com.liferay.portal.kernel.util.UnicodePropertiesBuilder;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
+import com.liferay.segments.constants.SegmentsEntryConstants;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -76,6 +82,51 @@ public class AssetListEntryLocalServiceTest {
 
 		_addAssetListEntry(externalReferenceCode);
 		_addAssetListEntry(externalReferenceCode);
+	}
+
+	@Test
+	public void testAddDynamicAssetListEntryWithLegacyQueryRules()
+		throws Exception {
+
+		String keyword = RandomTestUtil.randomString();
+
+		AssetListEntry assetListEntry =
+			_assetListEntryLocalService.addDynamicAssetListEntry(
+				RandomTestUtil.randomString(), TestPropsValues.getUserId(),
+				_group.getGroupId(), RandomTestUtil.randomString(),
+				UnicodePropertiesBuilder.put(
+					"queryAndOperator0", "true"
+				).put(
+					"queryContains0", "true"
+				).put(
+					"queryName0", "keywords"
+				).put(
+					"queryValues0", keyword
+				).buildString(),
+				ServiceContextTestUtil.getServiceContext(
+					_group.getGroupId(), TestPropsValues.getUserId()));
+
+		UnicodeProperties unicodeProperties = UnicodePropertiesBuilder.fastLoad(
+			assetListEntry.getTypeSettings(SegmentsEntryConstants.ID_DEFAULT)
+		).build();
+
+		for (String key : unicodeProperties.keySet()) {
+			Assert.assertFalse(key, key.startsWith("query"));
+		}
+
+		JSONArray filtersJSONArray = JSONFactoryUtil.createJSONArray(
+			unicodeProperties.getProperty("filters"));
+
+		Assert.assertEquals(
+			filtersJSONArray.toString(), 1, filtersJSONArray.length());
+		Assert.assertEquals(
+			"keywords",
+			JSONUtil.getValueAsString(
+				filtersJSONArray, "JSONObject/0", "Object/propertyName"));
+		Assert.assertEquals(
+			keyword,
+			JSONUtil.getValueAsString(
+				filtersJSONArray, "JSONObject/0", "Object/value"));
 	}
 
 	@Test
