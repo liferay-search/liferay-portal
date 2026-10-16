@@ -8,7 +8,6 @@ package com.liferay.asset.list.internal.upgrade.v3_1_0.test;
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.asset.list.model.AssetListEntry;
 import com.liferay.asset.list.model.AssetListEntrySegmentsEntryRel;
-import com.liferay.asset.list.service.AssetListEntryLocalService;
 import com.liferay.asset.list.service.AssetListEntrySegmentsEntryRelLocalService;
 import com.liferay.asset.list.test.util.AssetListTestUtil;
 import com.liferay.petra.string.StringPool;
@@ -339,14 +338,17 @@ public class AssetListEntrySegmentsEntryRelTypeSettingsUpgradeProcessTest {
 			String typeSettings)
 		throws Exception {
 
-		_assetListEntryLocalService.updateAssetListEntryTypeSettings(
-			_assetListEntry.getAssetListEntryId(),
-			SegmentsEntryConstants.ID_DEFAULT, typeSettings);
+		AssetListEntrySegmentsEntryRel assetListEntrySegmentsEntryRel =
+			_assetListEntrySegmentsEntryRelLocalService.
+				getAssetListEntrySegmentsEntryRel(
+					_assetListEntry.getAssetListEntryId(),
+					SegmentsEntryConstants.ID_DEFAULT);
+
+		assetListEntrySegmentsEntryRel.setTypeSettings(typeSettings);
 
 		return _assetListEntrySegmentsEntryRelLocalService.
-			getAssetListEntrySegmentsEntryRel(
-				_assetListEntry.getAssetListEntryId(),
-				SegmentsEntryConstants.ID_DEFAULT);
+			updateAssetListEntrySegmentsEntryRel(
+				assetListEntrySegmentsEntryRel);
 	}
 
 	private static final String _CLASS_NAME =
@@ -355,9 +357,6 @@ public class AssetListEntrySegmentsEntryRelTypeSettingsUpgradeProcessTest {
 
 	@DeleteAfterTestRun
 	private AssetListEntry _assetListEntry;
-
-	@Inject
-	private AssetListEntryLocalService _assetListEntryLocalService;
 
 	@Inject
 	private AssetListEntrySegmentsEntryRelLocalService

@@ -16,12 +16,17 @@ import com.liferay.asset.list.test.util.AssetListTestUtil;
 import com.liferay.asset.test.util.AssetTestUtil;
 import com.liferay.asset.test.util.asset.renderer.factory.TestAssetRendererFactory;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.transaction.Propagation;
+import com.liferay.portal.kernel.util.UnicodeProperties;
+import com.liferay.portal.kernel.util.UnicodePropertiesBuilder;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
@@ -80,6 +85,24 @@ public class AssetListEntrySegmentsEntryRelServiceTest {
 		Assert.assertEquals(
 			assetListEntry.getAssetListEntryId(),
 			assetListEntrySegmentsEntryRelLocal.getAssetListEntryId());
+	}
+
+	@Test
+	public void testAddAssetListEntrySegmentsEntryRelWithLegacyQueryRules()
+		throws Exception {
+
+		AssetListEntry assetListEntry = AssetListTestUtil.addAssetListEntry(
+			_group.getGroupId());
+
+		String keyword = RandomTestUtil.randomString();
+
+		AssetListEntrySegmentsEntryRel assetListEntrySegmentsEntryRel =
+			AssetListTestUtil.addAssetListEntrySegmentsEntryRel(
+				_group.getGroupId(), assetListEntry, RandomTestUtil.nextLong(),
+				_getLegacyQueryRulesTypeSettings(keyword));
+
+		_assertKeywordsFilter(
+			keyword, assetListEntrySegmentsEntryRel.getTypeSettings());
 	}
 
 	@Test
@@ -228,6 +251,30 @@ public class AssetListEntrySegmentsEntryRelServiceTest {
 	}
 
 	@Test
+	public void testUpdateAssetListEntrySegmentsEntryRelTypeSettingsWithLegacyQueryRules()
+		throws Exception {
+
+		AssetListEntry assetListEntry = AssetListTestUtil.addAssetListEntry(
+			_group.getGroupId());
+
+		AssetListEntrySegmentsEntryRel assetListEntrySegmentsEntryRel =
+			AssetListTestUtil.addAssetListEntrySegmentsEntryRel(
+				_group.getGroupId(), assetListEntry);
+
+		String keyword = RandomTestUtil.randomString();
+
+		assetListEntrySegmentsEntryRel =
+			_assetListEntrySegmentsEntryRelLocalService.
+				updateAssetListEntrySegmentsEntryRelTypeSettings(
+					assetListEntrySegmentsEntryRel.getAssetListEntryId(),
+					assetListEntrySegmentsEntryRel.getSegmentsEntryId(),
+					_getLegacyQueryRulesTypeSettings(keyword));
+
+		_assertKeywordsFilter(
+			keyword, assetListEntrySegmentsEntryRel.getTypeSettings());
+	}
+
+	@Test
 	public void testUpdateVariations() throws Exception {
 		AssetListEntry assetListEntry = AssetListTestUtil.addAssetListEntry(
 			_group.getGroupId());
@@ -280,6 +327,33 @@ public class AssetListEntrySegmentsEntryRelServiceTest {
 			0, updatedAssetListEntrySegmentsEntryRel3.getPriority());
 	}
 
+	private void _assertKeywordsFilter(String keyword, String typeSettings)
+		throws Exception {
+
+		UnicodeProperties unicodeProperties = UnicodePropertiesBuilder.fastLoad(
+			typeSettings
+		).build();
+
+		for (String key : unicodeProperties.keySet()) {
+			Assert.assertFalse(key, key.startsWith("query"));
+		}
+
+		JSONArray filtersJSONArray = JSONFactoryUtil.createJSONArray(
+			unicodeProperties.getProperty("filters"));
+
+		Assert.assertEquals(
+			filtersJSONArray.toString(), 1, filtersJSONArray.length());
+
+		JSONObject filterJSONObject = filtersJSONArray.getJSONObject(0);
+
+		Assert.assertEquals(
+			"contains", filterJSONObject.getString("operatorName"));
+		Assert.assertEquals(
+			"keywords", filterJSONObject.getString("propertyName"));
+		Assert.assertEquals("all", filterJSONObject.getString("quantifier"));
+		Assert.assertEquals(keyword, filterJSONObject.getString("value"));
+	}
+
 	private void _assertSameAssetListEntrySegmentsEntryRel(
 		AssetListEntrySegmentsEntryRel assetListEntrySegmentsEntryRel1,
 		AssetListEntrySegmentsEntryRel assetListEntrySegmentsEntryRel2) {
@@ -301,6 +375,18 @@ public class AssetListEntrySegmentsEntryRelServiceTest {
 		Assert.assertEquals(
 			assetListEntrySegmentsEntryRel1.getUuid(),
 			assetListEntrySegmentsEntryRel2.getUuid());
+	}
+
+	private String _getLegacyQueryRulesTypeSettings(String keyword) {
+		return UnicodePropertiesBuilder.put(
+			"queryAndOperator0", "true"
+		).put(
+			"queryContains0", "true"
+		).put(
+			"queryName0", "keywords"
+		).put(
+			"queryValues0", keyword
+		).buildString();
 	}
 
 	@Inject
