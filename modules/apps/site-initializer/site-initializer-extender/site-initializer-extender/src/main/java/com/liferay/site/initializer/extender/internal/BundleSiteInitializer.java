@@ -1644,11 +1644,18 @@ public class BundleSiteInitializer implements SiteInitializer {
 				orderByJSONObject.getString("value"));
 		}
 
+		JSONArray filtersJSONArray = unicodePropertiesJSONObject.getJSONArray(
+			"filters");
+
+		if (filtersJSONArray == null) {
+			filtersJSONArray = _jsonFactory.createJSONArray();
+		}
+
 		String[] assetTagNames = JSONUtil.toStringArray(
 			assetListJSONObject.getJSONArray("assetTagNames"));
 
-		for (int i = 0; i < assetTagNames.length; i++) {
-			map.put("queryValues" + i, assetTagNames[i]);
+		if (ArrayUtil.isNotEmpty(assetTagNames)) {
+			Map<String, String> queryMap = new HashMap<>();
 
 			Object[] queryObjects = JSONUtil.toObjectArray(
 				unicodePropertiesJSONObject.getJSONArray("query"));
@@ -1656,10 +1663,40 @@ public class BundleSiteInitializer implements SiteInitializer {
 			for (Object queryObject : queryObjects) {
 				JSONObject queryJSONObject = (JSONObject)queryObject;
 
-				map.put(
+				queryMap.put(
 					queryJSONObject.getString("key"),
 					queryJSONObject.getString("value"));
 			}
+
+			String operatorName = "not-contains";
+
+			if (GetterUtil.getBoolean(queryMap.get("queryContains"), true)) {
+				operatorName = "contains";
+			}
+
+			String quantifier = "any";
+
+			if (GetterUtil.getBoolean(queryMap.get("queryAndOperator"))) {
+				quantifier = "all";
+			}
+
+			filtersJSONArray.put(
+				JSONUtil.put(
+					"operatorName", operatorName
+				).put(
+					"propertyName", "assetTags"
+				).put(
+					"quantifier", quantifier
+				).put(
+					"value",
+					JSONUtil.toJSONArray(
+						assetTagNames,
+						assetTagName -> JSONUtil.put("value", assetTagName))
+				));
+		}
+
+		if (!JSONUtil.isEmpty(filtersJSONArray)) {
+			map.put("filters", filtersJSONArray.toString());
 		}
 
 		if (assetListEntry == null) {
