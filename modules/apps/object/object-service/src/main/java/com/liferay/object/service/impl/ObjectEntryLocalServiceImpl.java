@@ -2257,6 +2257,7 @@ public class ObjectEntryLocalServiceImpl
 					"objectDefinitionId",
 					objectDefinition.getObjectDefinitionId());
 				searchContext.setCompanyId(objectDefinition.getCompanyId());
+				searchContext.setEnd(QueryUtil.ALL_POS);
 
 				if (objectScopeProvider.isGroupAware()) {
 					searchContext.setGroupIds(new long[] {groupId});
@@ -2266,6 +2267,7 @@ public class ObjectEntryLocalServiceImpl
 				}
 
 				searchContext.setKeywords(keywords);
+				searchContext.setStart(QueryUtil.ALL_POS);
 			}
 		);
 
