@@ -7,6 +7,8 @@ package com.liferay.portal.search.internal.background.task;
 
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
+import com.liferay.petra.function.UnsafeRunnable;
+import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.backgroundtask.BackgroundTaskExecutor;
@@ -22,6 +24,7 @@ import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.search.SearchEngineHelper;
 import com.liferay.portal.kernel.search.background.task.ReindexBackgroundTaskConstants;
 import com.liferay.portal.kernel.search.background.task.ReindexStatusMessageSenderUtil;
+import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.search.engine.adapter.SearchEngineAdapter;
 import com.liferay.portal.search.index.ConcurrentReindexManager;
@@ -30,12 +33,15 @@ import com.liferay.portal.search.index.SyncReindexManager;
 import com.liferay.portal.search.internal.SearchEngineInitializer;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
@@ -102,6 +108,27 @@ public class ReindexPortalBackgroundTaskExecutor
 			_completeSearchEngineInitializers(
 				companyIds, executionMode, searchEngineInitializers);
 		}
+		catch (Exception exception1) {
+			ConcurrentReindexManager concurrentReindexManager =
+				_concurrentReindexManagerSnapshot.get();
+
+			if ((concurrentReindexManager != null) &&
+				Objects.equals(executionMode, "concurrent")) {
+
+				_companyLocalService.forEachCompanyId(
+					companyId -> {
+						try {
+							concurrentReindexManager.deleteNextIndex(companyId);
+						}
+						catch (Exception exception2) {
+							exception1.addSuppressed(exception2);
+						}
+					},
+					companyIds);
+			}
+
+			throw exception1;
+		}
 	}
 
 	private void _completeSearchEngineInitializers(
@@ -114,7 +141,9 @@ public class ReindexPortalBackgroundTaskExecutor
 			long companyId = searchEngineInitializer.getCompanyId();
 
 			try {
-				searchEngineInitializer.complete();
+				_companyLocalService.forEachCompanyId(
+					curCompanyId -> searchEngineInitializer.complete(),
+					new long[] {companyId});
 			}
 			finally {
 				ReindexStatusMessageSenderUtil.sendStatusMessage(
@@ -131,56 +160,82 @@ public class ReindexPortalBackgroundTaskExecutor
 		}
 	}
 
+	private SearchEngineInitializer _prepareSearchEngineInitializer(
+			long backgroundTaskId, long companyId, long[] companyIds,
+			String executionMode, ExecutorService executorService,
+			List<Indexer<?>> indexers)
+		throws Exception {
+
+		try (SafeCloseable safeCloseable =
+				BackgroundTaskThreadLocal.setBackgroundTaskIdWithSafeCloseable(
+					backgroundTaskId)) {
+
+			AtomicReference<SearchEngineInitializer>
+				searchEngineInitializerAtomicReference =
+					new AtomicReference<>();
+
+			_companyLocalService.forEachCompanyId(
+				curCompanyId -> {
+					ReindexStatusMessageSenderUtil.sendStatusMessage(
+						ReindexBackgroundTaskConstants.PORTAL_START, companyId,
+						companyIds);
+
+					if (_log.isInfoEnabled()) {
+						_log.info(
+							StringBundler.concat(
+								"Start reindexing company ", companyId,
+								" with execution mode ", executionMode));
+					}
+
+					searchEngineInitializerAtomicReference.set(
+						new SearchEngineInitializer(
+							companyId, _concurrentReindexManagerSnapshot.get(),
+							executionMode, executorService, _indexNameBuilder,
+							indexers, _jsonFactory, _searchEngineAdapter,
+							_syncReindexManagerSnapshot.get()));
+				},
+				new long[] {companyId});
+
+			return searchEngineInitializerAtomicReference.get();
+		}
+	}
+
 	private List<SearchEngineInitializer> _prepareSearchEngineInitializers(
 			long backgroundTaskId, long[] companyIds, String executionMode,
 			ExecutorService executorService)
 		throws Exception {
 
-		List<Future<SearchEngineInitializer>> futures = new ArrayList<>();
+		List<Callable<SearchEngineInitializer>> callables = new ArrayList<>();
 
 		for (long companyId : companyIds) {
 			List<Indexer<?>> indexers = _serviceTrackerMap.getService(
 				companyId == CompanyConstants.SYSTEM);
 
-			futures.add(
-				executorService.submit(
-					() -> {
-						try (SafeCloseable safeCloseable =
-								BackgroundTaskThreadLocal.
-									setBackgroundTaskIdWithSafeCloseable(
-										backgroundTaskId)) {
-
-							ReindexStatusMessageSenderUtil.sendStatusMessage(
-								ReindexBackgroundTaskConstants.PORTAL_START,
-								companyId, companyIds);
-
-							if (_log.isInfoEnabled()) {
-								_log.info(
-									StringBundler.concat(
-										"Start reindexing company ", companyId,
-										" with execution mode ",
-										executionMode));
-							}
-
-							return new SearchEngineInitializer(
-								companyId,
-								_concurrentReindexManagerSnapshot.get(),
-								executionMode, executorService,
-								_indexNameBuilder, indexers, _jsonFactory,
-								_searchEngineAdapter,
-								_syncReindexManagerSnapshot.get());
-						}
-					}));
+			callables.add(
+				() -> _prepareSearchEngineInitializer(
+					backgroundTaskId, companyId, companyIds, executionMode,
+					executorService, indexers));
 		}
 
-		List<SearchEngineInitializer> searchEngineInitializers =
-			new ArrayList<>();
+		return TransformUtil.unsafeTransform(
+			executorService.invokeAll(callables), Future::get);
+	}
 
-		for (Future<SearchEngineInitializer> future : futures) {
-			searchEngineInitializers.add(future.get());
+	private Void _reindex(
+			long backgroundTaskId,
+			List<UnsafeRunnable<Exception>> unsafeRunnables)
+		throws Exception {
+
+		try (SafeCloseable safeCloseable =
+				BackgroundTaskThreadLocal.setBackgroundTaskIdWithSafeCloseable(
+					backgroundTaskId)) {
+
+			for (UnsafeRunnable<Exception> unsafeRunnable : unsafeRunnables) {
+				unsafeRunnable.run();
+			}
 		}
 
-		return searchEngineInitializers;
+		return null;
 	}
 
 	private List<Callable<Void>> _sortReindexCallables(
@@ -189,7 +244,8 @@ public class ReindexPortalBackgroundTaskExecutor
 
 		List<Callable<Void>> callables = new ArrayList<>();
 		Map<Callable<Void>, Long> callableCounts = new HashMap<>();
-		List<Callable<Void>> smallCallables = new ArrayList<>();
+		List<UnsafeRunnable<Exception>> smallUnsafeRunnables =
+			new ArrayList<>();
 
 		for (SearchEngineInitializer searchEngineInitializer :
 				searchEngineInitializers) {
@@ -203,26 +259,16 @@ public class ReindexPortalBackgroundTaskExecutor
 				Indexer<?> indexer = entry.getKey();
 				long count = entry.getValue();
 
-				if (count <= _SMALL_INDEXER_THRESHOLD) {
-					smallCallables.add(
-						() -> {
-							searchEngineInitializer.reindexIndexer(indexer);
+				UnsafeRunnable<Exception> unsafeRunnable =
+					() -> searchEngineInitializer.reindexIndexer(indexer);
 
-							return null;
-						});
+				if (count <= _SMALL_INDEXER_THRESHOLD) {
+					smallUnsafeRunnables.add(unsafeRunnable);
 				}
 				else {
-					Callable<Void> callable = () -> {
-						try (SafeCloseable safeCloseable =
-								BackgroundTaskThreadLocal.
-									setBackgroundTaskIdWithSafeCloseable(
-										backgroundTaskId)) {
-
-							searchEngineInitializer.reindexIndexer(indexer);
-						}
-
-						return null;
-					};
+					Callable<Void> callable = () -> _reindex(
+						backgroundTaskId,
+						Collections.singletonList(unsafeRunnable));
 
 					callables.add(callable);
 					callableCounts.put(callable, count);
@@ -234,21 +280,9 @@ public class ReindexPortalBackgroundTaskExecutor
 			(callable1, callable2) -> Long.compare(
 				callableCounts.get(callable2), callableCounts.get(callable1)));
 
-		if (!smallCallables.isEmpty()) {
+		if (!smallUnsafeRunnables.isEmpty()) {
 			callables.add(
-				() -> {
-					try (SafeCloseable safeCloseable =
-							BackgroundTaskThreadLocal.
-								setBackgroundTaskIdWithSafeCloseable(
-									backgroundTaskId)) {
-
-						for (Callable<Void> callable : smallCallables) {
-							callable.call();
-						}
-					}
-
-					return null;
-				});
+				() -> _reindex(backgroundTaskId, smallUnsafeRunnables));
 		}
 
 		return callables;
@@ -267,6 +301,9 @@ public class ReindexPortalBackgroundTaskExecutor
 		_syncReindexManagerSnapshot = new Snapshot<>(
 			ReindexPortalBackgroundTaskExecutor.class, SyncReindexManager.class,
 			null, true);
+
+	@Reference
+	private CompanyLocalService _companyLocalService;
 
 	@Reference
 	private IndexNameBuilder _indexNameBuilder;

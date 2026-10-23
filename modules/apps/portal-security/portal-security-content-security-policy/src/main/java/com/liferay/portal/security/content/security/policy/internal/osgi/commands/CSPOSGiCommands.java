@@ -32,18 +32,6 @@ public class CSPOSGiCommands implements OSGiCommands {
 	public void resetCompanyConfiguration(long companyId)
 		throws ConfigurationException {
 
-		ContentSecurityPolicyConfiguration contentSecurityPolicyConfiguration =
-			_configurationProvider.getCompanyConfiguration(
-				ContentSecurityPolicyConfiguration.class, companyId);
-
-		if (contentSecurityPolicyConfiguration == null) {
-			System.out.println(
-				"There is no company level content security policy " +
-					"configuration for company " + companyId);
-
-			return;
-		}
-
 		_configurationProvider.deleteCompanyConfiguration(
 			ContentSecurityPolicyConfiguration.class, companyId);
 	}
@@ -53,37 +41,12 @@ public class CSPOSGiCommands implements OSGiCommands {
 
 		Group group = _groupLocalService.fetchGroup(groupId);
 
-		ContentSecurityPolicyConfiguration contentSecurityPolicyConfiguration =
-			_configurationProvider.getGroupConfiguration(
-				ContentSecurityPolicyConfiguration.class, group.getCompanyId(),
-				groupId);
-
-		if (contentSecurityPolicyConfiguration == null) {
-			System.out.println(
-				"There is no group level content security policy " +
-					"configuration for group " + groupId);
-
-			return;
-		}
-
 		_configurationProvider.deleteGroupConfiguration(
 			ContentSecurityPolicyConfiguration.class, group.getCompanyId(),
 			groupId);
 	}
 
 	public void resetSystemConfiguration() throws ConfigurationException {
-		ContentSecurityPolicyConfiguration contentSecurityPolicyConfiguration =
-			_configurationProvider.getSystemConfiguration(
-				ContentSecurityPolicyConfiguration.class);
-
-		if (contentSecurityPolicyConfiguration == null) {
-			System.out.println(
-				"There is no system level content security policy " +
-					"configuration");
-
-			return;
-		}
-
 		_configurationProvider.deleteSystemConfiguration(
 			ContentSecurityPolicyConfiguration.class);
 	}

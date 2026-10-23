@@ -1,0 +1,35 @@
+import com.liferay.gradle.plugins.patcher.PatchTask
+
+apply plugin: "com.liferay.patcher"
+
+task patch(type: PatchTask)
+
+copyPatchOriginalLibClasses {
+	doLast {
+		File file = file("classes/META-INF/versions")
+
+		if (file.exists()) {
+			delete(file)
+		}
+	}
+}
+
+dependencies {
+	compileOnly group: "commons-fileupload", name: "commons-fileupload", transitive: false, version: "1.6.0"
+	compileOnly group: "commons-io", name: "commons-io", version: "2.19.0"
+	compileOnly group: "javax.servlet", name: "javax.servlet-api", version: "3.0.1"
+}
+
+jarSources {
+	mustRunAfter patch
+}
+
+patch {
+	ext {
+		autoClean = false
+	}
+
+	fileNames "org/apache/commons/fileupload/FileUploadBase.java"
+	fileNames "org/apache/commons/fileupload/servlet/ServletRequestContext.java"
+	originalLibModuleName = "commons-fileupload"
+}

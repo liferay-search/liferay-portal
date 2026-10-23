@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
-import {DEFAULT_LANGUAGE} from './constants';
+import {DEFAULT_LANGUAGE, DEFAULT_ROLE_TYPE} from './constants';
 
 export function parseActions(node) {
 	const actions = {};
@@ -25,13 +25,57 @@ export function parseActions(node) {
 	return actions;
 }
 
+function getReassignmentUsers(entries) {
+	const users = [];
+
+	let pendingUser = null;
+
+	for (const entry of entries) {
+		if (entry['user-external-reference-code']) {
+			pendingUser = {...entry};
+
+			users.push(pendingUser);
+		}
+		else if (pendingUser) {
+			Object.assign(pendingUser, entry);
+
+			pendingUser = null;
+		}
+		else {
+			users.push(entry);
+		}
+	}
+
+	return users;
+}
+
+function isRoleById(keys) {
+	return (
+		keys.includes('role-external-reference-code') ||
+		keys.includes('role-id')
+	);
+}
+
+function isUserById(user) {
+	return user['user-external-reference-code'] || user['user-id'];
+}
+
+function parseRoleId(value) {
+	const roleId = parseInt(value, 10);
+
+	return Number.isNaN(roleId) ? undefined : roleId;
+}
+
 export function parseAssignments(node) {
 	const assignments = {};
 	const autoCreateValues = [];
 	const roleNames = [];
 	const roleTypes = [];
+	const typeUser = isUserById(node.assignments[0])
+		? 'user-id'
+		: Object.keys(node.assignments[0])[0];
+	const userExternalReferenceCodes = [];
 	const users = [];
-	const typeUser = Object.keys(node.assignments[0])[0];
 
 	node.assignments.forEach((item) => {
 		const itemKeys = Object.keys(item);
@@ -40,18 +84,21 @@ export function parseAssignments(node) {
 			assignments.assignmentType = ['resourceActions'];
 			assignments.resourceAction = item['resource-action'];
 		}
-		else if (itemKeys.includes('role-id')) {
+		else if (isRoleById(itemKeys)) {
 			assignments.assignmentType = ['roleId'];
 			assignments.roleExternalReferenceCode =
 				item['role-external-reference-code']?.[0];
-			assignments.roleId = parseInt(item['role-id'], 10);
+			assignments.roleId = parseRoleId(item['role-id']);
 			assignments.roleType = item['role-type']?.[0];
 		}
-		else if (itemKeys.includes('role-type')) {
+		else if (
+			itemKeys.includes('role-type') ||
+			itemKeys.includes('name')
+		) {
 			assignments.assignmentType = ['roleType'];
 			autoCreateValues.push(item['auto-create']);
 			roleNames.push(item.name);
-			roleTypes.push(item['role-type']);
+			roleTypes.push(item['role-type'] ?? [DEFAULT_ROLE_TYPE]);
 		}
 		else if (itemKeys.includes('script')) {
 			assignments.assignmentType = ['scriptedAssignment'];
@@ -61,13 +108,16 @@ export function parseAssignments(node) {
 		else if (itemKeys.includes('user')) {
 			assignments.assignmentType = ['user'];
 		}
+		else if (isUserById(item)) {
+			assignments.assignmentType = ['user'];
+			userExternalReferenceCodes.push(
+				item['user-external-reference-code']
+			);
+			users.push(item['user-id']);
+		}
 		else if (itemKeys.includes('email-address')) {
 			assignments.assignmentType = ['user'];
 			users.push(item['email-address']);
-		}
-		else if (itemKeys.includes('user-id')) {
-			assignments.assignmentType = ['user'];
-			users.push(item['user-id']);
 		}
 		else if (itemKeys.includes('screen-name')) {
 			assignments.assignmentType = ['user'];
@@ -80,6 +130,7 @@ export function parseAssignments(node) {
 			assignments.emailAddress = users;
 		}
 		if (typeUser === 'user-id') {
+			assignments.userExternalReferenceCode = userExternalReferenceCodes;
 			assignments.userId = users;
 		}
 		if (typeUser === 'screen-name') {
@@ -106,7 +157,16 @@ export function parseReassignments(node) {
 				item['resource-actions'][0]['resource-action'];
 		}
 		else if (item['roles']) {
-			if (item['roles'][0]['role']?.['name']) {
+			if (isRoleById(Object.keys(item['roles'][0]['role'] ?? {}))) {
+				assignments.assignmentType = ['roleId'];
+				assignments.roleExternalReferenceCode =
+					item['roles'][0]['role']?.['role-external-reference-code'];
+				assignments.roleId = parseRoleId(
+					item['roles'][0]['role']?.['role-id']
+				);
+				assignments.roleType = item['roles'][0]['role']?.['role-type'];
+			}
+			else {
 				assignments.assignmentType = ['roleType'];
 
 				assignments.autoCreate = [];
@@ -121,19 +181,10 @@ export function parseReassignments(node) {
 						item['roles'][index]?.['role']?.['name']
 					);
 					assignments.roleType.push(
-						item['roles'][index]?.['role']?.['role-type']
+						item['roles'][index]?.['role']?.['role-type'] ??
+							DEFAULT_ROLE_TYPE
 					);
 				}
-			}
-			else {
-				assignments.assignmentType = ['roleId'];
-				assignments.roleExternalReferenceCode =
-					item['roles'][0]['role']?.['role-external-reference-code'];
-				assignments.roleId = parseInt(
-					item['roles'][0]['role']?.['role-id'],
-					10
-				);
-				assignments.roleType = item['roles'][0]['role']?.['role-type'];
 			}
 		}
 		else if (item['scripted-assignment']) {
@@ -145,21 +196,23 @@ export function parseReassignments(node) {
 		else if (item['user'] !== undefined) {
 			assignments.assignmentType = ['user'];
 
-			const usersLength = item['user']?.length;
-
 			const emailAddress = [];
 			const screenName = [];
+			const userExternalReferenceCode = [];
 			const userId = [];
 
-			for (let i = 0; i < usersLength; i++) {
-				if (item['user'][i]?.['email-address']) {
-					emailAddress.push(item['user'][i]?.['email-address']);
+			for (const user of getReassignmentUsers(item['user'])) {
+				if (isUserById(user)) {
+					userExternalReferenceCode.push(
+						user['user-external-reference-code']
+					);
+					userId.push(user['user-id']);
 				}
-				else if (item['user'][0]?.['screen-name']) {
-					screenName.push(item['user'][i]?.['screen-name']);
+				else if (user['email-address']) {
+					emailAddress.push(user['email-address']);
 				}
-				else if (item['user'][0]?.['user-id']) {
-					userId.push(item['user'][i]?.['user-id']);
+				else if (user['screen-name']) {
+					screenName.push(user['screen-name']);
 				}
 			}
 
@@ -172,6 +225,8 @@ export function parseReassignments(node) {
 			}
 
 			if (userId.length) {
+				assignments.userExternalReferenceCode =
+					userExternalReferenceCode;
 				assignments.userId = userId;
 			}
 		}
@@ -263,7 +318,34 @@ export function parseNotifications(node) {
 		}
 
 		if (item['user']) {
-			if (item['user'].some((item) => item['email-address'])) {
+			if (item['user'].some(isUserById)) {
+				const userExternalReferenceCode = [];
+				const userId = [];
+
+				item['user'].forEach((item) => {
+					userExternalReferenceCode.push(
+						item['user-external-reference-code']
+					);
+					userId.push(item['user-id']);
+				});
+
+				if (item.receptionType) {
+					notifications.recipients[index].push({
+						assignmentType: ['user'],
+						receptionType: [receptionType],
+						userExternalReferenceCode,
+						userId,
+					});
+				}
+				else {
+					notifications.recipients[index].push({
+						assignmentType: ['user'],
+						userExternalReferenceCode,
+						userId,
+					});
+				}
+			}
+			else if (item['user'].some((item) => item['email-address'])) {
 				const emailAddress = [];
 
 				item['user'].forEach((item) => {
@@ -284,30 +366,7 @@ export function parseNotifications(node) {
 					});
 				}
 			}
-
-			if (item['user'].some((item) => item['user-id'])) {
-				const userId = [];
-
-				item['user'].forEach((item) => {
-					userId.push(item['user-id']);
-				});
-
-				if (item.receptionType) {
-					notifications.recipients[index].push({
-						assignmentType: ['user'],
-						receptionType: [receptionType],
-						userId,
-					});
-				}
-				else {
-					notifications.recipients[index].push({
-						assignmentType: ['user'],
-						userId,
-					});
-				}
-			}
-
-			if (item['user'].some((item) => item['screen-name'])) {
+			else if (item['user'].some((item) => item['screen-name'])) {
 				const screenName = [];
 
 				item['user'].forEach((item) => {
@@ -331,9 +390,17 @@ export function parseNotifications(node) {
 		}
 		else if (item['recipients'] && item['recipients'][0]?.['user']) {
 			const emailAddress = [];
+			const userExternalReferenceCode = [];
+			const userId = [];
 
 			item['recipients'].forEach((item) => {
-				if (item['user']?.['email-address']) {
+				if (item['user'] && isUserById(item['user'])) {
+					userExternalReferenceCode.push(
+						item['user']['user-external-reference-code']
+					);
+					userId.push(item['user']['user-id']);
+				}
+				else if (item['user']?.['email-address']) {
 					emailAddress.push(item['user']['email-address']);
 				}
 			});
@@ -353,17 +420,45 @@ export function parseNotifications(node) {
 					});
 				}
 			}
+
+			if (userId.length) {
+				if (receptionType) {
+					notifications.recipients[index].push({
+						assignmentType: ['user'],
+						receptionType: [receptionType],
+						userExternalReferenceCode,
+						userId,
+					});
+				}
+				else {
+					notifications.recipients[index].push({
+						assignmentType: ['user'],
+						userExternalReferenceCode,
+						userId,
+					});
+				}
+			}
 		}
 
 		const roles = item['recipients']?.[0]?.['roles'];
 
-		if (
-			(item['role-name'] || roles?.['name']) &&
-			(item['role-type'] || roles?.['role-type'])
-		) {
+		const roleByIdRecipient = Boolean(
+			item['role-external-reference-code'] ||
+				item['role-id'] ||
+				roles?.['role'] ||
+				roles?.['role-external-reference-code'] ||
+				roles?.['role-id']
+		);
+
+		if (!roleByIdRecipient && (item['role-name'] || roles?.['name'])) {
 			const autoCreate = item['auto-create'] || roles?.['auto-create'];
 			const roleName = item['role-name'] || roles?.['name'];
-			const roleType = item['role-type'] || roles?.['role-type'];
+			const roleType =
+				item['role-type'] ||
+				roles?.['role-type'] ||
+				(Array.isArray(roleName)
+					? roleName.map(() => DEFAULT_ROLE_TYPE)
+					: DEFAULT_ROLE_TYPE);
 
 			if (receptionType) {
 				notifications.recipients[index].push({
@@ -384,19 +479,14 @@ export function parseNotifications(node) {
 			}
 		}
 
-		if (
-			item['role-id'] ||
-			(item['recipients'] &&
-				(item['recipients'][0]?.['roles']?.['role'] ||
-					item['recipients'][0]?.['roles']?.['role-id']))
-		) {
+		if (roleByIdRecipient) {
 			const roleExternalReferenceCode =
 				item['role-external-reference-code']?.[0] ||
 				roles?.['role-external-reference-code']?.[0];
 			const roleId = item['role-id']
 				? item['role-id'][0]
-				: item['recipients'][0]['roles']['role'] ||
-					item['recipients'][0]['roles']['role-id'];
+				: item['recipients']?.[0]?.['roles']?.['role'] ||
+					item['recipients']?.[0]?.['roles']?.['role-id'];
 			const roleType =
 				item['role-type']?.[0] || roles?.['role-type']?.[0];
 

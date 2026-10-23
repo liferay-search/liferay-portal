@@ -6,6 +6,7 @@
 package com.liferay.portal.security.auth;
 
 import com.liferay.petra.concurrent.DCLSingleton;
+import com.liferay.petra.reflect.ReflectionUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.petra.url.pattern.mapper.URLPatternMapper;
@@ -151,6 +152,20 @@ public class AuthVerifierPipeline {
 		return _createGuestVerificationResult(accessControlContext);
 	}
 
+	private static AuthVerifierResult _createGuestVerificationResult(
+			AccessControlContext accessControlContext)
+		throws PortalException {
+
+		AuthVerifierResult authVerifierResult = new AuthVerifierResult();
+
+		authVerifierResult.setState(AuthVerifierResult.State.UNSUCCESSFUL);
+		authVerifierResult.setUserId(
+			UserLocalServiceUtil.getGuestUserId(
+				PortalUtil.getCompanyId(accessControlContext.getRequest())));
+
+		return authVerifierResult;
+	}
+
 	private static List<AuthVerifierConfiguration> _filterSupremeAuthVerifier(
 		List<AuthVerifierConfiguration> authVerifierConfigurations) {
 
@@ -167,24 +182,6 @@ public class AuthVerifierPipeline {
 		}
 
 		return authVerifierConfigurations;
-	}
-
-	private AuthVerifierResult _createGuestVerificationResult(
-			AccessControlContext accessControlContext)
-		throws PortalException {
-
-		AuthVerifierResult authVerifierResult = new AuthVerifierResult();
-
-		authVerifierResult.setState(AuthVerifierResult.State.UNSUCCESSFUL);
-
-		HttpServletRequest httpServletRequest =
-			accessControlContext.getRequest();
-
-		authVerifierResult.setUserId(
-			UserLocalServiceUtil.getGuestUserId(
-				PortalUtil.getCompanyId(httpServletRequest)));
-
-		return authVerifierResult;
 	}
 
 	private String _fixLegacyURLPattern(String urlPattern) {
@@ -442,10 +439,10 @@ public class AuthVerifierPipeline {
 			if ((user != null) &&
 				!_isUserAuthSuccessful(accessControlContext, user)) {
 
-				long userId = authVerifierResult.getUserId();
-
 				if (_log.isDebugEnabled()) {
 					Class<?> authVerifierClass = authVerifier.getClass();
+
+					long userId = authVerifierResult.getUserId();
 
 					if (!user.isActive()) {
 						_log.debug(
@@ -469,12 +466,13 @@ public class AuthVerifierPipeline {
 					}
 				}
 
-				authVerifierResult = new AuthVerifierResult();
-
-				authVerifierResult.setState(
-					AuthVerifierResult.State.UNSUCCESSFUL);
-
-				authVerifierResult.setUserId(userId);
+				try {
+					authVerifierResult = _createGuestVerificationResult(
+						accessControlContext);
+				}
+				catch (PortalException portalException) {
+					ReflectionUtil.throwException(portalException);
+				}
 			}
 
 			Map<String, Object> settings = _mergeSettings(

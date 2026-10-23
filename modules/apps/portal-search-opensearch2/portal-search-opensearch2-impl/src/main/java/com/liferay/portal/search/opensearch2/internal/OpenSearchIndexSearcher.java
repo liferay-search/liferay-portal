@@ -5,12 +5,15 @@
 
 package com.liferay.portal.search.opensearch2.internal;
 
+import com.liferay.petra.reflect.ReflectionUtil;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.configuration.module.configuration.ConfigurationProvider;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.search.SearchPaginationUtil;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.module.configuration.ConfigurationException;
 import com.liferay.portal.kernel.search.BaseIndexSearcher;
 import com.liferay.portal.kernel.search.Document;
 import com.liferay.portal.kernel.search.Hits;
@@ -44,9 +47,9 @@ import com.liferay.portal.search.hits.SearchHits;
 import com.liferay.portal.search.index.IndexNameBuilder;
 import com.liferay.portal.search.legacy.searcher.SearchRequestBuilderFactory;
 import com.liferay.portal.search.legacy.searcher.SearchResponseBuilderFactory;
+import com.liferay.portal.search.opensearch2.configuration.DeepPaginationConfiguration;
 import com.liferay.portal.search.opensearch2.constants.OpenSearchSearchContextAttributes;
 import com.liferay.portal.search.opensearch2.internal.configuration.OpenSearchConfigurationWrapper;
-import com.liferay.portal.search.opensearch2.internal.deep.pagination.configuration.DeepPaginationConfigurationWrapper;
 import com.liferay.portal.search.opensearch2.internal.util.JsonpUtil;
 import com.liferay.portal.search.opensearch2.internal.util.SetterUtil;
 import com.liferay.portal.search.pit.PointInTime;
@@ -133,18 +136,20 @@ public class OpenSearchIndexSearcher extends BaseIndexSearcher {
 
 			Hits hits = null;
 
-			if (FeatureFlagManagerUtil.isEnabled("LPS-172416") &&
-				_deepPaginationConfigurationWrapper.isEnableDeepPagination(
-					searchContext.getCompanyId())) {
+			DeepPaginationConfiguration deepPaginationConfiguration =
+				_getDeepPaginationConfiguration(searchContext.getCompanyId());
 
-				hits = _searchWithDeepPagination(
+			if (deepPaginationConfiguration == null) {
+				hits = _search(
 					end, query, searchContext, searchRequest,
 					searchResponseBuilder, start);
 			}
 			else {
-				hits = _search(
-					end, query, searchContext, searchRequest,
-					searchResponseBuilder, start);
+				hits = _searchWithDeepPagination(
+					end,
+					deepPaginationConfiguration.pointInTimeKeepAliveSeconds(),
+					query, searchContext, searchRequest, searchResponseBuilder,
+					start);
 			}
 
 			hits.setStart(stopWatch.getStartTime());
@@ -349,7 +354,8 @@ public class OpenSearchIndexSearcher extends BaseIndexSearcher {
 	}
 
 	private PointInTime _createPointInTime(
-		SearchContext searchContext, SearchRequest searchRequest) {
+		int pointInTimeKeepAliveSeconds, SearchContext searchContext,
+		SearchRequest searchRequest) {
 
 		OpenPointInTimeRequest openPointInTimeRequest =
 			new OpenPointInTimeRequest(1);
@@ -364,22 +370,21 @@ public class OpenSearchIndexSearcher extends BaseIndexSearcher {
 			openPointInTimeResponse.pitId());
 
 		pointInTime.setKeepAlive(
-			_validatePointInTimeKeepAliveSeconds(
-				_deepPaginationConfigurationWrapper.
-					getPointInTimeKeepAliveSeconds()));
+			_validatePointInTimeKeepAliveSeconds(pointInTimeKeepAliveSeconds));
 
 		return pointInTime;
 	}
 
 	private SearchSearchRequest _createSearchSearchRequestWithDeepPagination(
-		Query query, SearchContext searchContext, SearchRequest searchRequest,
-		int start) {
+		int pointInTimeKeepAliveSeconds, Query query,
+		SearchContext searchContext, SearchRequest searchRequest, int start) {
 
 		SearchSearchRequest searchSearchRequest = createSearchSearchRequest(
 			query, searchContext, searchRequest);
 
 		searchSearchRequest.setPointInTime(
-			_createPointInTime(searchContext, searchRequest));
+			_createPointInTime(
+				pointInTimeKeepAliveSeconds, searchContext, searchRequest));
 
 		if (ArrayUtil.isEmpty(searchContext.getSorts()) &&
 			ListUtil.isEmpty(searchRequest.getSorts())) {
@@ -420,6 +425,37 @@ public class OpenSearchIndexSearcher extends BaseIndexSearcher {
 		}
 
 		return searchSearchRequest;
+	}
+
+	private DeepPaginationConfiguration _getDeepPaginationConfiguration(
+		long companyId) {
+
+		if (!FeatureFlagManagerUtil.isEnabled(companyId, "LPS-172416")) {
+			return null;
+		}
+
+		try {
+			DeepPaginationConfiguration deepPaginationConfiguration =
+				_configurationProvider.getSystemConfiguration(
+					DeepPaginationConfiguration.class);
+
+			if (deepPaginationConfiguration.enableDeepPagination()) {
+				return deepPaginationConfiguration;
+			}
+
+			deepPaginationConfiguration =
+				_configurationProvider.getCompanyConfiguration(
+					DeepPaginationConfiguration.class, companyId);
+
+			if (deepPaginationConfiguration.enableDeepPagination()) {
+				return deepPaginationConfiguration;
+			}
+
+			return null;
+		}
+		catch (ConfigurationException configurationException) {
+			return ReflectionUtil.throwException(configurationException);
+		}
 	}
 
 	private String _getExceptionMessage(RuntimeException runtimeException) {
@@ -637,13 +673,14 @@ public class OpenSearchIndexSearcher extends BaseIndexSearcher {
 	}
 
 	private Hits _searchWithDeepPagination(
-		int end, Query query, SearchContext searchContext,
-		SearchRequest searchRequest,
+		int end, int pointInTimeKeepAliveSeconds, Query query,
+		SearchContext searchContext, SearchRequest searchRequest,
 		SearchResponseBuilder searchResponseBuilder, int start) {
 
 		SearchSearchRequest searchSearchRequest =
 			_createSearchSearchRequestWithDeepPagination(
-				query, searchContext, searchRequest, start);
+				pointInTimeKeepAliveSeconds, query, searchContext,
+				searchRequest, start);
 
 		SearchSearchResponse searchSearchResponse = null;
 
@@ -791,8 +828,7 @@ public class OpenSearchIndexSearcher extends BaseIndexSearcher {
 		OpenSearchIndexSearcher.class);
 
 	@Reference
-	private DeepPaginationConfigurationWrapper
-		_deepPaginationConfigurationWrapper;
+	private ConfigurationProvider _configurationProvider;
 
 	@Reference
 	private IndexNameBuilder _indexNameBuilder;

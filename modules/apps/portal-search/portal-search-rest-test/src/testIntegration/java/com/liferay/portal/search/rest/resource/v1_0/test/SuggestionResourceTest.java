@@ -6,6 +6,8 @@
 package com.liferay.portal.search.rest.resource.v1_0.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.document.library.kernel.model.DLFolderConstants;
+import com.liferay.document.library.kernel.service.DLAppLocalService;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.test.util.JournalTestUtil;
 import com.liferay.layout.test.util.LayoutTestUtil;
@@ -16,11 +18,15 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
+import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
+import com.liferay.portal.kernel.util.ContentTypes;
+import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.HttpComponentsUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
@@ -31,6 +37,8 @@ import com.liferay.portal.search.rest.client.dto.v1_0.SuggestionsContributorConf
 import com.liferay.portal.search.rest.client.dto.v1_0.SuggestionsContributorResults;
 import com.liferay.portal.search.rest.client.pagination.Page;
 import com.liferay.portal.test.rule.Inject;
+import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
+import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
 import com.liferay.search.experiences.model.SXPBlueprint;
 import com.liferay.search.experiences.service.SXPBlueprintLocalService;
 
@@ -42,6 +50,8 @@ import java.util.Locale;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -50,6 +60,13 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Arquillian.class)
 public class SuggestionResourceTest extends BaseSuggestionResourceTestCase {
+
+	@ClassRule
+	@Rule
+	public static final AggregateTestRule aggregateTestRule =
+		new AggregateTestRule(
+			new LiferayIntegrationTestRule(),
+			PermissionCheckerMethodTestRule.INSTANCE);
 
 	@Before
 	@Override
@@ -75,10 +92,24 @@ public class SuggestionResourceTest extends BaseSuggestionResourceTestCase {
 		_testPostSuggestionsPageWithBasicSuggestionsContributorWithEverythingScope();
 		_testPostSuggestionsPageWithBasicSuggestionsContributorWithGroupERCScope();
 		_testPostSuggestionsPageWithBasicSuggestionsContributorWithSearchResultsPortlet();
+		_testPostSuggestionsPageWithBasicSuggestionsContributorWithSearchResultsPortletWithViewInContext();
+		_testPostSuggestionsPageWithBasicSuggestionsContributorWithSearchResultsPortletWithoutViewInContext();
+		_testPostSuggestionsPageWithBasicSuggestionsContributorWithSearchResultsPortletWithoutViewInContextWithLayout();
 		_testPostSuggestionsPageWithBasicSuggestionsContributorWithThisSiteScope();
 		_testPostSuggestionsPageWithSXPBlueprintSuggestionsContributor();
 		_testPostSuggestionsPageWithSXPBlueprintSuggestionsContributorWithGroupERCScope();
 		_testPostSuggestionsPageWithSXPBlueprintSuggestionsContributorWithSearchExperiencesAttributes();
+	}
+
+	private FileEntry _addFileEntry() throws Exception {
+		String title = RandomTestUtil.randomString();
+
+		return _dlAppLocalService.addFileEntry(
+			null, TestPropsValues.getUserId(), testGroup.getGroupId(),
+			DLFolderConstants.DEFAULT_PARENT_FOLDER_ID, title + ".txt",
+			ContentTypes.TEXT_PLAIN, title, StringPool.BLANK, StringPool.BLANK,
+			StringPool.BLANK, RandomTestUtil.randomBytes(), null, null, null,
+			_serviceContext);
 	}
 
 	private void _assertSuggestionContributorResults(
@@ -133,6 +164,37 @@ public class SuggestionResourceTest extends BaseSuggestionResourceTestCase {
 
 		Assert.assertEquals(
 			Arrays.toString(expectedTexts), String.valueOf(texts));
+	}
+
+	private String _getAssetURL(Layout destinationLayout, String search)
+		throws Exception {
+
+		Page<SuggestionsContributorResults> suggestionsPage =
+			_postSuggestionsPage(
+				"http://localhost:" + PortalUtil.getPortalServerPort(false) +
+					"/web/guest/home",
+				destinationLayout.getFriendlyURL(), null, "q",
+				_layout.getPlid(), null, search,
+				new SuggestionsContributorConfiguration[] {
+					new SuggestionsContributorConfiguration() {
+						{
+							contributorName = "basic";
+							displayGroupName = "Suggestions";
+						}
+					}
+				});
+
+		SuggestionsContributorResults suggestionsContributorResults =
+			suggestionsPage.fetchFirstItem();
+
+		Suggestion[] suggestions =
+			suggestionsContributorResults.getSuggestions();
+
+		JSONObject suggestionAttributesJSONObject =
+			JSONFactoryUtil.createJSONObject(
+				String.valueOf(suggestions[0].getAttributes()));
+
+		return suggestionAttributesJSONObject.getString("assetURL");
 	}
 
 	private Page<SuggestionsContributorResults> _postSuggestionsPage(
@@ -360,6 +422,78 @@ public class SuggestionResourceTest extends BaseSuggestionResourceTestCase {
 		Assert.assertTrue(assetURL, assetURL.contains(searchResultsPortletId));
 	}
 
+	private void _testPostSuggestionsPageWithBasicSuggestionsContributorWithSearchResultsPortletWithViewInContext()
+		throws Exception {
+
+		LayoutTestUtil.addPortletToLayout(
+			LayoutTestUtil.addTypePortletLayout(testGroup),
+			"com_liferay_document_library_web_portlet_DLPortlet");
+
+		Layout destinationLayout = LayoutTestUtil.addTypePortletLayout(
+			testGroup);
+
+		LayoutTestUtil.addPortletToLayout(
+			destinationLayout,
+			"com_liferay_portal_search_web_search_results_portlet_" +
+				"SearchResultsPortlet");
+
+		FileEntry fileEntry = _addFileEntry();
+
+		String assetURL = _getAssetURL(destinationLayout, fileEntry.getTitle());
+
+		Assert.assertTrue(assetURL.contains("find_file_entry"));
+	}
+
+	private void _testPostSuggestionsPageWithBasicSuggestionsContributorWithSearchResultsPortletWithoutViewInContext()
+		throws Exception {
+
+		LayoutTestUtil.addPortletToLayout(
+			LayoutTestUtil.addTypePortletLayout(testGroup),
+			"com_liferay_document_library_web_portlet_DLPortlet");
+
+		Layout destinationLayout = LayoutTestUtil.addTypePortletLayout(
+			testGroup);
+
+		String searchResultsPortletId = LayoutTestUtil.addPortletToLayout(
+			destinationLayout,
+			"com_liferay_portal_search_web_search_results_portlet_" +
+				"SearchResultsPortlet",
+			HashMapBuilder.put(
+				"viewInContext", new String[] {"false"}
+			).build());
+
+		FileEntry fileEntry = _addFileEntry();
+
+		String assetURL = _getAssetURL(destinationLayout, fileEntry.getTitle());
+
+		Assert.assertFalse(assetURL.contains("find_file_entry"));
+		Assert.assertTrue(assetURL.contains(searchResultsPortletId));
+		Assert.assertTrue(assetURL.contains("view_content.jsp"));
+	}
+
+	private void _testPostSuggestionsPageWithBasicSuggestionsContributorWithSearchResultsPortletWithoutViewInContextWithLayout()
+		throws Exception {
+
+		Layout destinationLayout = LayoutTestUtil.addTypePortletLayout(
+			testGroup);
+
+		LayoutTestUtil.addPortletToLayout(
+			destinationLayout,
+			"com_liferay_portal_search_web_search_results_portlet_" +
+				"SearchResultsPortlet",
+			HashMapBuilder.put(
+				"viewInContext", new String[] {"false"}
+			).build());
+
+		Layout layout = LayoutTestUtil.addTypePortletLayout(testGroup);
+
+		String assetURL = _getAssetURL(
+			destinationLayout, layout.getName(_locale));
+
+		Assert.assertFalse(assetURL.contains("view_content.jsp"));
+		Assert.assertTrue(assetURL.contains(layout.getFriendlyURL(_locale)));
+	}
+
 	private void _testPostSuggestionsPageWithBasicSuggestionsContributorWithThisSiteScope()
 		throws Exception {
 
@@ -507,6 +641,9 @@ public class SuggestionResourceTest extends BaseSuggestionResourceTestCase {
 			suggestionsDisplayGroupGroupName, page,
 			_journalArticle.getTitle(_locale));
 	}
+
+	@Inject
+	private DLAppLocalService _dlAppLocalService;
 
 	private JournalArticle _journalArticle;
 	private Layout _layout;

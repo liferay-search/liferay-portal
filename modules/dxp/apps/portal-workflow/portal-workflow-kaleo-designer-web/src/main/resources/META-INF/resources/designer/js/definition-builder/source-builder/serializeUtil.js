@@ -211,10 +211,16 @@ function appendXMLAssignments(
 				buffer.push(createTagWithEscapedContent('roleType', roleType));
 			}
 
-			buffer.push(
-				createTagWithEscapedContent('roleId', dataAssignments.roleId),
-				xmlRole.close
-			);
+			if (dataAssignments.roleId) {
+				buffer.push(
+					createTagWithEscapedContent(
+						'roleId',
+						dataAssignments.roleId
+					)
+				);
+			}
+
+			buffer.push(xmlRole.close);
 
 			buffer.push(xmlRoles.close);
 		}
@@ -337,10 +343,22 @@ function appendXMLAssignments(
 			) {
 				const xmlUser = XMLUtil.createObj('user');
 
-				dataAssignments.userId.forEach((item) => {
+				dataAssignments.userId.forEach((item, index) => {
 					buffer.push(xmlUser.open);
 
-					if (item !== '') {
+					const userExternalReferenceCode =
+						dataAssignments.userExternalReferenceCode?.[index];
+
+					if (userExternalReferenceCode) {
+						buffer.push(
+							createTagWithEscapedContent(
+								'userExternalReferenceCode',
+								userExternalReferenceCode
+							)
+						);
+					}
+
+					if (item) {
 						buffer.push(
 							createTagWithEscapedContent('userId', item)
 						);

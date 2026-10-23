@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author Michael Hashimoto
@@ -218,12 +219,24 @@ public class JUnitBatchBuildTestrayCaseResult
 	}
 
 	public String getMethodStatus(String testName) {
-		List<TestReport> testReportList = getTestReports();
+		List<TestClassReport> testClassReports = getTestClassReports();
 
-		for (TestReport testReport : testReportList) {
-			String testReportName = testReport.getTestName();
+		if (testClassReports == null) {
+			return null;
+		}
 
-			if (testReportName.equals(testName)) {
+		for (TestClassReport testClassReport : testClassReports) {
+			String testClassName = testClassReport.getTestClassName();
+
+			if (testClassName.equals("junit.framework.TestSuite") &&
+				!testName.equals(getName())) {
+
+				continue;
+			}
+
+			TestReport testReport = testClassReport.getTestReport(testName);
+
+			if (testReport != null) {
 				return testReport.getStatus();
 			}
 		}
@@ -365,35 +378,7 @@ public class JUnitBatchBuildTestrayCaseResult
 			return null;
 		}
 
-		_testClassReports = new ArrayList<>();
-
-		for (TestClassReport testClassReport :
-				downstreamBuildReport.getTestClassReports()) {
-
-			String testClassName = testClassReport.getTestClassName();
-
-			if (testClassName.equals(getName()) ||
-				testClassName.startsWith(getName() + "$")) {
-
-				_testClassReports.add(testClassReport);
-
-				continue;
-			}
-
-			if (!testClassName.equals("junit.framework.TestSuite")) {
-				continue;
-			}
-
-			for (TestReport testReport : testClassReport.getTestReports()) {
-				String testName = testReport.getTestName();
-
-				if (testName.equals(getName())) {
-					_testClassReports.add(testClassReport);
-
-					break;
-				}
-			}
-		}
+		_testClassReports = _getTestClassReports(downstreamBuildReport);
 
 		return _testClassReports;
 	}
@@ -443,6 +428,64 @@ public class JUnitBatchBuildTestrayCaseResult
 		}
 
 		super.initBuildReport();
+
+		TopLevelBuildReport topLevelBuildReport = getTopLevelBuildReport();
+
+		for (DownstreamBuildReport downstreamBuildReport :
+				topLevelBuildReport.getDownstreamBuildReports()) {
+
+			if (!Objects.equals(
+					downstreamBuildReport.getAxisName(), getAxisName())) {
+
+				continue;
+			}
+
+			List<TestClassReport> testClassReports = _getTestClassReports(
+				downstreamBuildReport);
+
+			if (!testClassReports.isEmpty()) {
+				setBuildReport(downstreamBuildReport);
+
+				return;
+			}
+		}
+	}
+
+	private List<TestClassReport> _getTestClassReports(
+		DownstreamBuildReport downstreamBuildReport) {
+
+		String name = getName();
+		List<TestClassReport> testClassReports = new ArrayList<>();
+
+		for (TestClassReport testClassReport :
+				downstreamBuildReport.getTestClassReports()) {
+
+			String testClassName = testClassReport.getTestClassName();
+
+			if (testClassName.equals(name) ||
+				testClassName.startsWith(name + "$")) {
+
+				testClassReports.add(testClassReport);
+
+				continue;
+			}
+
+			if (!testClassName.equals("junit.framework.TestSuite")) {
+				continue;
+			}
+
+			for (TestReport testReport : testClassReport.getTestReports()) {
+				String testName = testReport.getTestName();
+
+				if (testName.equals(name)) {
+					testClassReports.add(testClassReport);
+
+					break;
+				}
+			}
+		}
+
+		return testClassReports;
 	}
 
 	private boolean _isTestClassReportsFailing() {

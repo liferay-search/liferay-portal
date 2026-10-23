@@ -3,9 +3,14 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
-import ClayButton from '@clayui/button';
-import ClayForm, {ClayCheckbox, ClayInput} from '@clayui/form';
-import {useFormik} from 'formik';
+import ClayButton, {ClayButtonWithIcon} from '@clayui/button';
+import ClayForm, {
+	ClayCheckbox,
+	ClayInput,
+	ClayRadio,
+	ClayRadioGroup,
+} from '@clayui/form';
+import {setNestedObjectValues, useFormik} from 'formik';
 import {openModal, openToast, useId} from 'frontend-js-components-web';
 import {navigate} from 'frontend-js-web';
 import React, {useState} from 'react';
@@ -24,7 +29,7 @@ import {
 	validate,
 } from '../../common/components/forms/validations';
 import SpaceService from '../../common/services/SpaceService';
-import {LogoColor, Space} from '../../common/types/Space';
+import {LogoColor, MapProviderKey, Space} from '../../common/types/Space';
 import {ERC_MAX_LENGTH} from '../../common/utils/constants';
 import focusInvalidElement from '../../common/utils/focusInvalidElement';
 import SpaceBaseFields from './SpaceBaseFields';
@@ -34,11 +39,15 @@ const MINUTES_PER_DAY = 1440;
 
 export default function SpaceGeneralSettings({
 	backURL,
+	companyGoogleMapsAPIKey,
+	companyMapProviderKey,
 	groupId,
 	setSpace,
 	space,
 }: {
 	backURL?: string;
+	companyGoogleMapsAPIKey?: string;
+	companyMapProviderKey?: MapProviderKey;
 	groupId: string;
 	setSpace?: React.Dispatch<React.SetStateAction<any>>;
 	space: Space;
@@ -47,6 +56,7 @@ export default function SpaceGeneralSettings({
 	const [initialFriendlyURL, setInitialFriendlyURL] = useState(
 		space.friendlyURL ?? ''
 	);
+	const [showGoogleMapsAPIKey, setShowGoogleMapsAPIKey] = useState(false);
 
 	const id = useId();
 
@@ -57,6 +67,7 @@ export default function SpaceGeneralSettings({
 		handleSubmit,
 		setFieldError,
 		setFieldValue,
+		setTouched,
 		submitForm,
 		touched,
 		values,
@@ -65,7 +76,15 @@ export default function SpaceGeneralSettings({
 			description: space.description,
 			erc: initialERC,
 			friendlyURL: initialFriendlyURL,
+			googleMapsAPIKey:
+				space.settings?.googleMapsAPIKey ||
+				companyGoogleMapsAPIKey ||
+				'',
 			logoColor: space.settings?.logoColor as LogoColor,
+			mapProviderKey:
+				space.settings?.mapProviderKey ??
+				companyMapProviderKey ??
+				'OpenStreetMap',
 			name: space.name,
 			sharingEnabled: space.settings?.sharingEnabled ?? false,
 			trashEnabled: space.settings?.trashEnabled ?? true,
@@ -80,7 +99,9 @@ export default function SpaceGeneralSettings({
 				description,
 				erc,
 				friendlyURL,
+				googleMapsAPIKey,
 				logoColor = 'outline-0',
+				mapProviderKey,
 				name,
 				sharingEnabled,
 				trashEnabled,
@@ -100,6 +121,15 @@ export default function SpaceGeneralSettings({
 						trashEnabled,
 						trashEntriesMaxAge:
 							Number(trashEntriesMaxAge) * MINUTES_PER_DAY,
+						...(Liferay.FeatureFlags['LPD-11388']
+							? {
+									googleMapsAPIKey:
+										mapProviderKey === 'GoogleMaps'
+											? googleMapsAPIKey
+											: '',
+									mapProviderKey,
+								}
+							: {}),
 					},
 				}
 			);
@@ -134,6 +164,13 @@ export default function SpaceGeneralSettings({
 				const updatedSpace = data as Space;
 
 				setFieldValue('friendlyURL', updatedSpace.friendlyURL ?? '');
+				setFieldValue(
+					'googleMapsAPIKey',
+					updatedSpace.settings?.googleMapsAPIKey ||
+						companyGoogleMapsAPIKey ||
+						''
+				);
+				setShowGoogleMapsAPIKey(false);
 
 				if (setSpace) {
 					setSpace(updatedSpace);
@@ -154,6 +191,10 @@ export default function SpaceGeneralSettings({
 									)
 								: undefined,
 					],
+					googleMapsAPIKey:
+						values.mapProviderKey === 'GoogleMaps'
+							? [required]
+							: [],
 					name: [
 						required,
 						nonNumeric,
@@ -170,8 +211,10 @@ export default function SpaceGeneralSettings({
 			),
 	});
 
-	const onSave = () => {
+	const onSave = async () => {
 		if (Object.keys(errors).length) {
+			await setTouched(setNestedObjectValues(errors, true));
+
 			focusInvalidElement();
 
 			return;
@@ -369,6 +412,132 @@ export default function SpaceGeneralSettings({
 					)}
 				</>
 			</SpacePanel>
+
+			{Liferay.FeatureFlags['LPD-11388'] && (
+				<SpacePanel title={Liferay.Language.get('location-provider')}>
+					<>
+						<p className="mb-4">
+							{Liferay.Language.get(
+								'choose-the-map-provider-used-by-location-fields-on-assets-in-this-space'
+							)}
+						</p>
+
+						<ClayForm.Group>
+							<label id={`${id}mapProviderKey`}>
+								{Liferay.Language.get('provider')}
+							</label>
+
+							<ClayRadioGroup
+								aria-labelledby={`${id}mapProviderKey`}
+								name="mapProviderKey"
+								onChange={(value) =>
+									setFieldValue('mapProviderKey', value)
+								}
+								role="radiogroup"
+								value={values.mapProviderKey}
+							>
+								<ClayRadio
+									label={Liferay.Language.get(
+										'openstreetmap'
+									)}
+									value="OpenStreetMap"
+								>
+									<div className="font-weight-normal form-text mb-1 mt-0">
+										{Liferay.Language.get(
+											'no-api-key-is-required.-this-option-uses-the-public-openstreetmap-tile-service'
+										)}
+									</div>
+								</ClayRadio>
+
+								<ClayRadio
+									label={Liferay.Language.get('google-maps')}
+									value="GoogleMaps"
+								>
+									<div className="font-weight-normal form-text mb-1 mt-0">
+										{Liferay.Language.get(
+											'a-google-maps-api-key-with-billing-enabled-is-required'
+										)}
+									</div>
+								</ClayRadio>
+							</ClayRadioGroup>
+
+							{values.mapProviderKey === 'GoogleMaps' && (
+								<FieldWrapper
+									className="ml-4"
+									errorMessage={
+										touched.googleMapsAPIKey
+											? (errors?.googleMapsAPIKey as string)
+											: undefined
+									}
+									feedbackId={`feedback-${id}googleMapsAPIKey`}
+									fieldId={`${id}googleMapsAPIKey`}
+									helpMessage={Liferay.Language.get(
+										'enable-the-geocoding-api,-maps-javascript-api,-and-places-api-for-this-key-in-google-cloud'
+									)}
+									label={Liferay.Language.get('api-key')}
+									required
+								>
+									<ClayInput.Group>
+										<ClayInput.GroupItem>
+											<ClayInput
+												aria-describedby={`feedback-${id}googleMapsAPIKey`}
+												autoComplete="new-password"
+												data-1p-ignore
+												id={`${id}googleMapsAPIKey`}
+												insetAfter
+												name="googleMapsAPIKey"
+												onBlur={handleBlur}
+												onChange={handleChange}
+												placeholder={Liferay.Language.get(
+													'enter-your-google-maps-api-key'
+												)}
+												required
+												type={
+													showGoogleMapsAPIKey
+														? 'text'
+														: 'password'
+												}
+												value={values.googleMapsAPIKey}
+											/>
+
+											<ClayInput.GroupInsetItem
+												after
+												tag="span"
+											>
+												<ClayButtonWithIcon
+													aria-label={Liferay.Util.sub(
+														showGoogleMapsAPIKey
+															? Liferay.Language.get(
+																	'hide-x'
+																)
+															: Liferay.Language.get(
+																	'show-x'
+																),
+														Liferay.Language.get(
+															'google-maps-api-key'
+														)
+													)}
+													displayType="unstyled"
+													onClick={() =>
+														setShowGoogleMapsAPIKey(
+															!showGoogleMapsAPIKey
+														)
+													}
+													symbol={
+														showGoogleMapsAPIKey
+															? 'hidden'
+															: 'view'
+													}
+												/>
+											</ClayInput.GroupInsetItem>
+										</ClayInput.GroupItem>
+									</ClayInput.Group>
+								</FieldWrapper>
+							)}
+						</ClayForm.Group>
+					</>
+				</SpacePanel>
+			)}
 
 			<ClayButton.Group className="mt-2" spaced>
 				<ClayButton onClick={onSave}>

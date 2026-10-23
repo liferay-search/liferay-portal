@@ -3216,7 +3216,7 @@
 			</library>
 			<library>
 				<file-name>com.liferay.portal.search.elasticsearch8.sidecar.agent.jar!asm.jar</file-name>
-				<version>9.7</version>
+				<version>9.11.1</version>
 				<project-name>org.objectweb.asm</project-name>
 				<project-url>http://asm.ow2.org</project-url>
 				<licenses>
@@ -5680,7 +5680,7 @@
 			</library>
 			<library>
 				<file-name>com.liferay.shared.dependencies.apache.commons.jar!org.apache.commons.fileupload.jar</file-name>
-				<version>1.5.LIFERAY-PATCHED-2.JAKARTA-LIFERAY-PATCHED-1</version>
+				<version>1.6.0.LIFERAY-PATCHED-1.JAKARTA-LIFERAY-PATCHED-1</version>
 				<project-name>Apache Commons FileUpload Jakarta</project-name>
 				<project-url>https://commons.apache.org/proper/commons-fileupload/</project-url>
 				<licenses>
@@ -5763,7 +5763,7 @@
 			</library>
 			<library>
 				<file-name>com.liferay.shared.dependencies.asm.jar!asm-analysis.jar</file-name>
-				<version>9.7</version>
+				<version>9.11.1</version>
 				<project-name>org.objectweb.asm.tree.analysis</project-name>
 				<project-url>http://asm.ow2.org</project-url>
 				<licenses>
@@ -5775,7 +5775,7 @@
 			</library>
 			<library>
 				<file-name>com.liferay.shared.dependencies.asm.jar!asm-commons.jar</file-name>
-				<version>9.7</version>
+				<version>9.11.1</version>
 				<project-name>org.objectweb.asm.commons</project-name>
 				<project-url>http://asm.ow2.org</project-url>
 				<licenses>
@@ -5787,7 +5787,7 @@
 			</library>
 			<library>
 				<file-name>com.liferay.shared.dependencies.asm.jar!asm-tree.jar</file-name>
-				<version>9.7</version>
+				<version>9.11.1</version>
 				<project-name>org.objectweb.asm.tree</project-name>
 				<project-url>http://asm.ow2.org</project-url>
 				<licenses>
@@ -5799,7 +5799,7 @@
 			</library>
 			<library>
 				<file-name>com.liferay.shared.dependencies.asm.jar!asm-util.jar</file-name>
-				<version>9.7</version>
+				<version>9.11.1</version>
 				<project-name>org.objectweb.asm.util</project-name>
 				<project-url>http://asm.ow2.org</project-url>
 				<licenses>
@@ -5811,7 +5811,7 @@
 			</library>
 			<library>
 				<file-name>com.liferay.shared.dependencies.asm.jar!asm.jar</file-name>
-				<version>9.7</version>
+				<version>9.11.1</version>
 				<project-name>org.objectweb.asm</project-name>
 				<project-url>http://asm.ow2.org</project-url>
 				<licenses>
@@ -7954,7 +7954,7 @@
 			</library>
 			<library>
 				<file-name>lib/development/asm-commons.jar</file-name>
-				<version>9.7</version>
+				<version>9.11.1</version>
 				<project-name>ASM</project-name>
 				<project-url>http://asm.ow2.io</project-url>
 				<licenses>
@@ -7966,7 +7966,7 @@
 			</library>
 			<library>
 				<file-name>lib/development/asm-tree.jar</file-name>
-				<version>9.7</version>
+				<version>9.11.1</version>
 				<project-name>ASM</project-name>
 				<project-url>http://asm.ow2.io</project-url>
 				<licenses>
@@ -7978,7 +7978,7 @@
 			</library>
 			<library>
 				<file-name>lib/development/asm.jar</file-name>
-				<version>9.7</version>
+				<version>9.11.1</version>
 				<project-name>ASM</project-name>
 				<project-url>http://asm.ow2.io</project-url>
 				<licenses>
@@ -8063,7 +8063,7 @@
 			</library>
 			<library>
 				<file-name>lib/development/catalina-ha.jar</file-name>
-				<version>10.1.59</version>
+				<version>10.1.61</version>
 				<project-name>Tomcat</project-name>
 				<project-url>http://tomcat.apache.org</project-url>
 				<licenses>
@@ -8075,7 +8075,7 @@
 			</library>
 			<library>
 				<file-name>lib/development/catalina.jar</file-name>
-				<version>10.1.59</version>
+				<version>10.1.61</version>
 				<project-name>Tomcat</project-name>
 				<project-url>http://tomcat.apache.org</project-url>
 				<licenses>
@@ -8761,7 +8761,7 @@
 			</library>
 			<library>
 				<file-name>lib/development/tomcat-annotations-api.jar</file-name>
-				<version>10.1.59</version>
+				<version>10.1.61</version>
 				<project-name>Tomcat</project-name>
 				<project-url>http://tomcat.apache.org</project-url>
 				<licenses>
@@ -8773,7 +8773,7 @@
 			</library>
 			<library>
 				<file-name>lib/development/tomcat-api.jar</file-name>
-				<version>10.1.59</version>
+				<version>10.1.61</version>
 				<project-name>Tomcat</project-name>
 				<project-url>http://tomcat.apache.org</project-url>
 				<licenses>
@@ -8785,7 +8785,7 @@
 			</library>
 			<library>
 				<file-name>lib/development/tomcat-coyote.jar</file-name>
-				<version>10.1.59</version>
+				<version>10.1.61</version>
 				<project-name>Tomcat</project-name>
 				<project-url>http://tomcat.apache.org</project-url>
 				<licenses>
@@ -8797,7 +8797,7 @@
 			</library>
 			<library>
 				<file-name>lib/development/tomcat-el-api.jar</file-name>
-				<version>10.1.59</version>
+				<version>10.1.61</version>
 				<project-name>Tomcat</project-name>
 				<project-url>http://tomcat.apache.org</project-url>
 				<licenses>
@@ -8809,7 +8809,7 @@
 			</library>
 			<library>
 				<file-name>lib/development/tomcat-jasper-el.jar</file-name>
-				<version>10.1.59</version>
+				<version>10.1.61</version>
 				<project-name>Tomcat</project-name>
 				<project-url>http://tomcat.apache.org</project-url>
 				<licenses>
@@ -8821,7 +8821,7 @@
 			</library>
 			<library>
 				<file-name>lib/development/tomcat-jasper.jar</file-name>
-				<version>10.1.59</version>
+				<version>10.1.61</version>
 				<project-name>Tomcat</project-name>
 				<project-url>http://tomcat.apache.org</project-url>
 				<licenses>
@@ -8833,7 +8833,7 @@
 			</library>
 			<library>
 				<file-name>lib/development/tomcat-jsp-api.jar</file-name>
-				<version>10.1.59</version>
+				<version>10.1.61</version>
 				<project-name>Tomcat</project-name>
 				<project-url>http://tomcat.apache.org</project-url>
 				<licenses>
@@ -8845,7 +8845,7 @@
 			</library>
 			<library>
 				<file-name>lib/development/tomcat-juli.jar</file-name>
-				<version>10.1.59</version>
+				<version>10.1.61</version>
 				<project-name>Tomcat</project-name>
 				<project-url>http://tomcat.apache.org</project-url>
 				<licenses>
@@ -8857,7 +8857,7 @@
 			</library>
 			<library>
 				<file-name>lib/development/tomcat-servlet-api.jar</file-name>
-				<version>10.1.59</version>
+				<version>10.1.61</version>
 				<project-name>Tomcat</project-name>
 				<project-url>http://tomcat.apache.org</project-url>
 				<licenses>
@@ -8869,7 +8869,7 @@
 			</library>
 			<library>
 				<file-name>lib/development/tomcat-tribes.jar</file-name>
-				<version>10.1.59</version>
+				<version>10.1.61</version>
 				<project-name>Tomcat</project-name>
 				<project-url>http://tomcat.apache.org</project-url>
 				<licenses>
@@ -8881,7 +8881,7 @@
 			</library>
 			<library>
 				<file-name>lib/development/tomcat-util-scan.jar</file-name>
-				<version>10.1.59</version>
+				<version>10.1.61</version>
 				<project-name>Tomcat</project-name>
 				<project-url>http://tomcat.apache.org</project-url>
 				<licenses>
@@ -8893,7 +8893,7 @@
 			</library>
 			<library>
 				<file-name>lib/development/tomcat-util.jar</file-name>
-				<version>10.1.59</version>
+				<version>10.1.61</version>
 				<project-name>Tomcat</project-name>
 				<project-url>http://tomcat.apache.org</project-url>
 				<licenses>
@@ -8905,7 +8905,7 @@
 			</library>
 			<library>
 				<file-name>lib/development/tomcat-websocket-api.jar</file-name>
-				<version>10.1.59</version>
+				<version>10.1.61</version>
 				<project-name>Tomcat</project-name>
 				<project-url>http://tomcat.apache.org</project-url>
 				<licenses>

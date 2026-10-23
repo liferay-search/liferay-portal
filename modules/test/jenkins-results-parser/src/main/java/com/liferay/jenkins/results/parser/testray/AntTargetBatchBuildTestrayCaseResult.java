@@ -19,7 +19,6 @@ import com.liferay.jenkins.results.parser.test.clazz.group.AxisTestClassGroup;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author Michael Hashimoto
@@ -240,19 +239,8 @@ public class AntTargetBatchBuildTestrayCaseResult
 			return _testClassReport;
 		}
 
-		String testClassName = _getTestClassName();
-
-		for (TestClassReport testClassReport :
-				downstreamBuildReport.getTestClassReports()) {
-
-			if (!Objects.equals(
-					testClassName, testClassReport.getTestClassName())) {
-
-				continue;
-			}
-
-			_testClassReport = testClassReport;
-		}
+		_testClassReport = downstreamBuildReport.getTestClassReport(
+			_getTestClassName());
 
 		return _testClassReport;
 	}
@@ -311,13 +299,7 @@ public class AntTargetBatchBuildTestrayCaseResult
 			return _antTargetTestReport;
 		}
 
-		for (TestReport testReport : testClassReport.getTestReports()) {
-			if (Objects.equals(antTargetName, testReport.getTestName())) {
-				_antTargetTestReport = testReport;
-
-				break;
-			}
-		}
+		_antTargetTestReport = testClassReport.getTestReport(antTargetName);
 
 		return _antTargetTestReport;
 	}
