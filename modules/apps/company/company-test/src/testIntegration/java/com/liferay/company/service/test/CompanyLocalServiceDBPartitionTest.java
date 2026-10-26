@@ -6,6 +6,8 @@
 package com.liferay.company.service.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.asset.list.model.AssetListEntryUsage;
+import com.liferay.asset.list.service.AssetListEntryUsageLocalService;
 import com.liferay.company.service.test.util.CompanyLocalServiceTestUtil;
 import com.liferay.counter.kernel.model.Counter;
 import com.liferay.counter.kernel.service.CounterLocalService;
@@ -27,6 +29,7 @@ import com.liferay.layout.util.structure.LayoutStructure;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.service.ObjectDefinitionLocalService;
 import com.liferay.object.test.util.ObjectDefinitionTestUtil;
+import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.io.unsync.UnsyncByteArrayInputStream;
 import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
@@ -96,6 +99,7 @@ import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.ProxyUtil;
+import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.util.TreeMapBuilder;
@@ -136,6 +140,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -1360,23 +1365,40 @@ public class CompanyLocalServiceDBPartitionTest
 
 				String data = copiedLayoutContentVersion.getData();
 
-				Assert.assertTrue(
-					data.contains(
+				for (SXPBlueprint sxpBlueprint :
+						Arrays.asList(sxpBlueprint1, sxpBlueprint2)) {
+
+					Assert.assertTrue(
+						data.contains(
+							_fetchInfoCollectionProviderKey(
+								copiedCompanyId,
+								sxpBlueprint.getExternalReferenceCode())));
+					Assert.assertFalse(
+						data.contains(
+							StringBundler.concat(
+								StringPool.UNDERLINE,
+								TestPropsValues.getCompanyId(),
+								StringPool.UNDERLINE,
+								sxpBlueprint.getExternalReferenceCode())));
+				}
+
+				List<AssetListEntryUsage> assetListEntryUsages =
+					_assetListEntryUsageLocalService.
+						getAssetEntryListUsagesByPlid(layout.getPlid());
+
+				Assert.assertEquals(
+					assetListEntryUsages.toString(),
+					SetUtil.fromArray(
 						_fetchInfoCollectionProviderKey(
 							copiedCompanyId,
-							sxpBlueprint1.getExternalReferenceCode())));
-				Assert.assertTrue(
-					data.contains(
+							sxpBlueprint1.getExternalReferenceCode()),
 						_fetchInfoCollectionProviderKey(
 							copiedCompanyId,
-							sxpBlueprint2.getExternalReferenceCode())));
-				Assert.assertFalse(
-					data.contains(
-						StringBundler.concat(
-							StringPool.UNDERLINE,
-							TestPropsValues.getCompanyId(),
-							StringPool.UNDERLINE,
-							sxpBlueprint1.getExternalReferenceCode())));
+							sxpBlueprint2.getExternalReferenceCode())),
+					SetUtil.fromList(
+						TransformUtil.transform(
+							assetListEntryUsages,
+							AssetListEntryUsage::getKey)));
 			}
 
 			companyLocalService.deleteCompany(copiedCompanyId);
@@ -2250,6 +2272,9 @@ public class CompanyLocalServiceDBPartitionTest
 	private static BundleContext _bundleContext;
 	private static long _defaultCompanyId;
 	private static SafeCloseable _safeCloseable;
+
+	@Inject
+	private AssetListEntryUsageLocalService _assetListEntryUsageLocalService;
 
 	@Inject
 	private AuditEventLocalService _auditEventLocalService;
