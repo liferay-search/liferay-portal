@@ -6,6 +6,8 @@
 package com.liferay.search.experiences.company.service.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.asset.list.model.AssetListEntryUsage;
+import com.liferay.asset.list.service.AssetListEntryUsageLocalService;
 import com.liferay.info.collection.provider.InfoCollectionProvider;
 import com.liferay.info.item.InfoItemServiceRegistry;
 import com.liferay.info.list.provider.item.selector.criterion.InfoListProviderItemSelectorReturnType;
@@ -20,6 +22,7 @@ import com.liferay.layout.util.structure.LayoutStructure;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.service.ObjectDefinitionLocalService;
 import com.liferay.object.test.util.ObjectDefinitionTestUtil;
+import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
@@ -40,6 +43,7 @@ import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
+import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.test.rule.FeatureFlag;
@@ -50,6 +54,7 @@ import com.liferay.portal.test.rule.TransactionalTestRule;
 import com.liferay.search.experiences.model.SXPBlueprint;
 import com.liferay.search.experiences.service.SXPBlueprintLocalService;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -246,23 +251,40 @@ public class CompanyLocalServiceDBPartitionSXPBlueprintTest
 
 				String data = copiedLayoutContentVersion.getData();
 
-				Assert.assertTrue(
-					data.contains(
+				for (SXPBlueprint sxpBlueprint :
+						Arrays.asList(sxpBlueprint1, sxpBlueprint2)) {
+
+					Assert.assertTrue(
+						data.contains(
+							_fetchInfoCollectionProviderKey(
+								copiedCompanyId,
+								sxpBlueprint.getExternalReferenceCode())));
+					Assert.assertFalse(
+						data.contains(
+							StringBundler.concat(
+								StringPool.UNDERLINE,
+								TestPropsValues.getCompanyId(),
+								StringPool.UNDERLINE,
+								sxpBlueprint.getExternalReferenceCode())));
+				}
+
+				List<AssetListEntryUsage> assetListEntryUsages =
+					_assetListEntryUsageLocalService.
+						getAssetEntryListUsagesByPlid(layout.getPlid());
+
+				Assert.assertEquals(
+					assetListEntryUsages.toString(),
+					SetUtil.fromArray(
 						_fetchInfoCollectionProviderKey(
 							copiedCompanyId,
-							sxpBlueprint1.getExternalReferenceCode())));
-				Assert.assertTrue(
-					data.contains(
+							sxpBlueprint1.getExternalReferenceCode()),
 						_fetchInfoCollectionProviderKey(
 							copiedCompanyId,
-							sxpBlueprint2.getExternalReferenceCode())));
-				Assert.assertFalse(
-					data.contains(
-						StringBundler.concat(
-							StringPool.UNDERLINE,
-							TestPropsValues.getCompanyId(),
-							StringPool.UNDERLINE,
-							sxpBlueprint1.getExternalReferenceCode())));
+							sxpBlueprint2.getExternalReferenceCode())),
+					SetUtil.fromList(
+						TransformUtil.transform(
+							assetListEntryUsages,
+							AssetListEntryUsage::getKey)));
 			}
 
 			companyLocalService.deleteCompany(copiedCompanyId);
@@ -382,6 +404,9 @@ public class CompanyLocalServiceDBPartitionSXPBlueprintTest
 	}
 
 	private static SafeCloseable _safeCloseable;
+
+	@Inject
+	private AssetListEntryUsageLocalService _assetListEntryUsageLocalService;
 
 	@Inject
 	private GroupLocalService _groupLocalService;
