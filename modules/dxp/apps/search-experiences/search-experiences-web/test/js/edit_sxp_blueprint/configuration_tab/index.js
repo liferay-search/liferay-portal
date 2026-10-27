@@ -92,4 +92,52 @@ describe('Configuration', () => {
 
 		getByText('enable-as-a-collection-provider-with-return-type-asset');
 	});
+
+	describe('missing type reference warning', () => {
+		const className = 'com.liferay.object.model.ObjectDefinition#A1B2';
+
+		function renderWarning({collectionProvider = true, searchableTypes}) {
+			return renderBuilder({
+				frameworkConfig: {
+					clauseContributorsExcludes: [],
+					clauseContributorsIncludes: ['*'],
+					collectionProvider,
+					collectionProviderType: className,
+					searchableAssetTypes: [className],
+				},
+				searchableTypes,
+			});
+		}
+
+		it('renders when the object definition type is missing', () => {
+			const {getByText} = renderWarning({searchableTypes: []});
+
+			getByText('missing-type-reference-collection-provider-warning');
+		});
+
+		it('does not render when the object definition type exists', () => {
+			const {queryByText} = renderWarning({
+				searchableTypes: [{className, displayName: 'Object'}],
+			});
+
+			expect(
+				queryByText(
+					'missing-type-reference-collection-provider-warning'
+				)
+			).not.toBeInTheDocument();
+		});
+
+		it('does not render when the collection provider is disabled', () => {
+			const {queryByText} = renderWarning({
+				collectionProvider: false,
+				searchableTypes: [],
+			});
+
+			expect(
+				queryByText(
+					'missing-type-reference-collection-provider-warning'
+				)
+			).not.toBeInTheDocument();
+		});
+	});
 });
