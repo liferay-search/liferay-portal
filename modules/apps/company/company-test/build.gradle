@@ -2,10 +2,17 @@ dependencies {
 	testIntegrationImplementation group: "com.liferay", name: "org.apache.felix.configadmin", version: "1.9.26.LIFERAY-PATCHED-2"
 	testIntegrationImplementation group: "com.liferay.portal", name: "com.liferay.portal.impl", version: "default"
 	testIntegrationImplementation project(":apps:asset:asset-link-api")
+	testIntegrationImplementation project(":apps:asset:asset-list-api")
 	testIntegrationImplementation project(":apps:change-tracking:change-tracking-test-util")
 	testIntegrationImplementation project(":apps:dynamic-data-mapping:dynamic-data-mapping-api")
 	testIntegrationImplementation project(":apps:expando:expando-api")
+	testIntegrationImplementation project(":apps:info:info-api")
+	testIntegrationImplementation project(":apps:info:info-list-provider-item-selector-api")
+	testIntegrationImplementation project(":apps:journal:journal-api")
 	testIntegrationImplementation project(":apps:layout:layout-api")
+	testIntegrationImplementation project(":apps:layout:layout-content-api")
+	testIntegrationImplementation project(":apps:layout:layout-page-template-api")
+	testIntegrationImplementation project(":apps:layout:layout-test-util")
 	testIntegrationImplementation project(":apps:object:object-api")
 	testIntegrationImplementation project(":apps:object:object-test-util")
 	testIntegrationImplementation project(":apps:portal-configuration:portal-configuration-test-util")

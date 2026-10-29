@@ -40,6 +40,14 @@ public abstract class SXPBlueprintInfoCollectionProvider<T>
 	implements FilteredInfoCollectionProvider<T>,
 			   SingleFormVariationInfoCollectionProvider<T> {
 
+	public static String getKey(
+		String className, long companyId, String externalReferenceCode) {
+
+		return StringBundler.concat(
+			className, StringPool.UNDERLINE, companyId, StringPool.UNDERLINE,
+			externalReferenceCode);
+	}
+
 	public SXPBlueprintInfoCollectionProvider(
 		AssetHelper assetHelper, Searcher searcher,
 		SearchRequestBuilderFactory searchRequestBuilderFactory,
@@ -69,9 +77,8 @@ public abstract class SXPBlueprintInfoCollectionProvider<T>
 
 	@Override
 	public String getKey() {
-		return StringBundler.concat(
-			SXPBlueprint.class.getName(), StringPool.UNDERLINE,
-			sxpBlueprint.getCompanyId(), StringPool.UNDERLINE,
+		return getKey(
+			SXPBlueprint.class.getName(), sxpBlueprint.getCompanyId(),
 			sxpBlueprint.getExternalReferenceCode());
 	}
 
