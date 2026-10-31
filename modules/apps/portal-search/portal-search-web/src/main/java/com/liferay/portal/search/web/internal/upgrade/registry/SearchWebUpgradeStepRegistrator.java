@@ -7,6 +7,7 @@ package com.liferay.portal.search.web.internal.upgrade.registry;
 
 import com.liferay.asset.kernel.service.AssetVocabularyLocalService;
 import com.liferay.portal.configuration.persistence.upgrade.ConfigurationUpgradeStepFactory;
+import com.liferay.portal.kernel.model.Release;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.search.configuration.SemanticSearchConfiguration;
 import com.liferay.portal.search.web.constants.SearchBarPortletKeys;
@@ -119,5 +120,10 @@ public class SearchWebUpgradeStepRegistrator implements UpgradeStepRegistrator {
 
 	@Reference
 	private GroupLocalService _groupLocalService;
+
+	@Reference(
+		target = "(&(release.bundle.symbolic.name=com.liferay.dynamic.data.mapping.service)(release.schema.version>=0.0.2))"
+	)
+	private Release _release;
 
 }
