@@ -218,23 +218,17 @@ public class SearchUtil {
 
 		searchContext.setBooleanClauses(new BooleanClause[] {booleanClause});
 
+		int start = QueryUtil.ALL_POS;
 		int end = QueryUtil.ALL_POS;
 
 		if (pagination != null) {
+			start = pagination.getStartPosition();
 			end = pagination.getEndPosition();
 		}
 
 		searchContext.setEnd(end);
-
 		searchContext.setKeywords(keywords);
 		searchContext.setSorts(sorts);
-
-		int start = QueryUtil.ALL_POS;
-
-		if (pagination != null) {
-			start = pagination.getStartPosition();
-		}
-
 		searchContext.setStart(start);
 
 		PermissionChecker permissionChecker =
