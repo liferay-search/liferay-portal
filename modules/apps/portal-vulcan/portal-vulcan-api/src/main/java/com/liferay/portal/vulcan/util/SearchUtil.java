@@ -9,6 +9,7 @@ import com.liferay.petra.function.UnsafeConsumer;
 import com.liferay.petra.function.UnsafeFunction;
 import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.portal.kernel.dao.orm.QueryDefinition;
+import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.model.BaseModel;
 import com.liferay.portal.kernel.search.BooleanClause;
 import com.liferay.portal.kernel.search.BooleanClauseOccur;
@@ -217,16 +218,18 @@ public class SearchUtil {
 
 		searchContext.setBooleanClauses(new BooleanClause[] {booleanClause});
 
+		int start = QueryUtil.ALL_POS;
+		int end = QueryUtil.ALL_POS;
+
 		if (pagination != null) {
-			searchContext.setEnd(pagination.getEndPosition());
+			start = pagination.getStartPosition();
+			end = pagination.getEndPosition();
 		}
 
+		searchContext.setEnd(end);
 		searchContext.setKeywords(keywords);
 		searchContext.setSorts(sorts);
-
-		if (pagination != null) {
-			searchContext.setStart(pagination.getStartPosition());
-		}
+		searchContext.setStart(start);
 
 		PermissionChecker permissionChecker =
 			PermissionThreadLocal.getPermissionChecker();
