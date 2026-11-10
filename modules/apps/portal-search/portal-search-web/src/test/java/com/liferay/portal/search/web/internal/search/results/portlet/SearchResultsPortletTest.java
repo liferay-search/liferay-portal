@@ -9,6 +9,7 @@ import com.liferay.asset.kernel.service.AssetEntryLocalService;
 import com.liferay.asset.util.AssetRendererFactoryLookup;
 import com.liferay.portal.configuration.module.configuration.ConfigurationProviderUtil;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
+import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.portlet.LiferayPortletConfig;
 import com.liferay.portal.kernel.search.Document;
@@ -35,6 +36,7 @@ import com.liferay.portal.search.web.internal.display.context.PortletURLFactory;
 import com.liferay.portal.search.web.portlet.shared.search.PortletSharedSearchRequest;
 import com.liferay.portal.search.web.portlet.shared.search.PortletSharedSearchResponse;
 import com.liferay.portal.search.web.search.request.SearchSettings;
+import com.liferay.portal.test.rule.FeatureFlag;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
 import com.liferay.portal.util.PortalImpl;
 
@@ -109,6 +111,12 @@ public class SearchResultsPortletTest {
 		render();
 
 		_assertDisplayContextDocuments(document);
+	}
+
+	@FeatureFlag("LPD-114635")
+	@Test
+	public void testGetCurWhenPastTotalHits() throws Exception {
+		_testGetCurWhenPastTotalHits(4, 5, 15, 6, 25);
 	}
 
 	@Test
@@ -362,7 +370,7 @@ public class SearchResultsPortletTest {
 			PortalUtil.class, "_portal", new PortalImpl());
 	}
 
-	private void _setUpPortletSharedSearchResponse() {
+	private void _setUpPortletSharedSearchResponse() throws Exception {
 		Mockito.doReturn(
 			null
 		).when(
@@ -397,8 +405,12 @@ public class SearchResultsPortletTest {
 			_portletSharedSearchResponse
 		).getSearchSettings();
 
+		ThemeDisplay themeDisplay = new ThemeDisplay();
+
+		themeDisplay.setCompany(Mockito.mock(Company.class));
+
 		Mockito.doReturn(
-			new ThemeDisplay()
+			themeDisplay
 		).when(
 			_portletSharedSearchResponse
 		).getThemeDisplay(
@@ -430,6 +442,49 @@ public class SearchResultsPortletTest {
 		).fetchUser(
 			Mockito.anyLong()
 		);
+	}
+
+	private void _testGetCurWhenPastTotalHits(
+			int expectedCur, int delta, int from, int start, int totalHits)
+		throws Exception {
+
+		Mockito.doReturn(
+			String.valueOf(delta)
+		).when(
+			_portletSharedSearchResponse
+		).getParameter(
+			"delta", _renderRequest
+		);
+
+		Mockito.doReturn(
+			String.valueOf(start)
+		).when(
+			_portletSharedSearchResponse
+		).getParameter(
+			"start", _renderRequest
+		);
+
+		Mockito.doReturn(
+			from
+		).when(
+			_searchRequest
+		).getFrom();
+
+		Mockito.doReturn(
+			totalHits
+		).when(
+			_searchResponse
+		).getTotalHits();
+
+		render();
+
+		SearchResultsPortletDisplayContext searchResultsPortletDisplayContext =
+			_getDisplayContext();
+
+		SearchContainer<Document> searchContainer =
+			searchResultsPortletDisplayContext.getSearchContainer();
+
+		Assert.assertEquals(expectedCur, searchContainer.getCur());
 	}
 
 	private void _testTotalHitsExact(
