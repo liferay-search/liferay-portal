@@ -116,7 +116,7 @@ public class SearchResultsPortletTest {
 	@FeatureFlag("LPD-114635")
 	@Test
 	public void testGetCurWhenPastTotalHits() throws Exception {
-		_testGetCurWhenPastTotalHits(4, 5, 15, 6, 25);
+		_testGetCurWhenPastTotalHits(5, 4, 15, 6, 25);
 	}
 
 	@Test
@@ -445,7 +445,7 @@ public class SearchResultsPortletTest {
 	}
 
 	private void _testGetCurWhenPastTotalHits(
-			int expectedCur, int delta, int from, int start, int totalHits)
+			int delta, int expectedCur, int from, int start, int totalHits)
 		throws Exception {
 
 		Mockito.doReturn(
