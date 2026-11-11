@@ -83,9 +83,11 @@ public class SearchResultsPortletSharedSearchContributorTest {
 			false, 10,
 			_createPortletSharedSearchSettings("5", "4", searchRequestBuilder));
 
+		PortletSharedSearchSettings portletSharedSearchSettings =
+			_createPortletSharedSearchSettings("5", "4", searchRequestBuilder);
+
 		PortletPreferences portletPreferences = Mockito.mock(
 			PortletPreferences.class);
-
 		String federatedSearchKey = RandomTestUtil.randomString();
 
 		Mockito.doReturn(
@@ -96,9 +98,6 @@ public class SearchResultsPortletSharedSearchContributorTest {
 			SearchResultsPortletPreferences.PREFERENCE_KEY_FEDERATED_SEARCH_KEY,
 			StringPool.BLANK
 		);
-
-		PortletSharedSearchSettings portletSharedSearchSettings =
-			_createPortletSharedSearchSettings("5", "4", searchRequestBuilder);
 
 		Mockito.doReturn(
 			portletPreferences
