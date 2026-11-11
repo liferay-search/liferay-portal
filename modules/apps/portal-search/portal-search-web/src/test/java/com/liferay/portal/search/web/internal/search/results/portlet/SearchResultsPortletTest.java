@@ -151,9 +151,9 @@ public class SearchResultsPortletTest {
 	@FeatureFlag("LPD-114635")
 	@Test
 	public void testIsPaginationStartAdjusted() throws Exception {
-		_testIsPaginationStartAdjusted(true, 15, 6);
 		_testIsPaginationStartAdjusted(false, 0, 0);
 		_testIsPaginationStartAdjusted(false, 15, 4);
+		_testIsPaginationStartAdjusted(true, 15, 6);
 	}
 
 	@Test
