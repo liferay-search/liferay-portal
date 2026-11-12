@@ -874,6 +874,7 @@
 						"mapping": {
 							"analyzer": "arabic",
 							"search_analyzer": "liferay_analyzer_ar",
+							"search_quote_analyzer": "arabic",
 							"term_vector": "with_positions_offsets",
 							"type": "text"
 						},
@@ -899,6 +900,7 @@
 						"mapping": {
 							"analyzer": "catalan",
 							"search_analyzer": "liferay_analyzer_ca",
+							"search_quote_analyzer": "catalan",
 							"term_vector": "with_positions_offsets",
 							"type": "text"
 						},
@@ -936,6 +938,7 @@
 						"mapping": {
 							"analyzer": "german",
 							"search_analyzer": "liferay_analyzer_de",
+							"search_quote_analyzer": "german",
 							"term_vector": "with_positions_offsets",
 							"type": "text"
 						},
@@ -961,6 +964,7 @@
 						"mapping": {
 							"analyzer": "english",
 							"search_analyzer": "liferay_analyzer_en",
+							"search_quote_analyzer": "english",
 							"term_vector": "with_positions_offsets",
 							"type": "text"
 						},
@@ -974,6 +978,7 @@
 						"mapping": {
 							"analyzer": "spanish",
 							"search_analyzer": "liferay_analyzer_es",
+							"search_quote_analyzer": "spanish",
 							"term_vector": "with_positions_offsets",
 							"type": "text"
 						},
@@ -1023,6 +1028,7 @@
 						"mapping": {
 							"analyzer": "finnish",
 							"search_analyzer": "liferay_analyzer_fi",
+							"search_quote_analyzer": "finnish",
 							"term_vector": "with_positions_offsets",
 							"type": "text"
 						},
@@ -1036,6 +1042,7 @@
 						"mapping": {
 							"analyzer": "french",
 							"search_analyzer": "liferay_analyzer_fr",
+							"search_quote_analyzer": "french",
 							"term_vector": "with_positions_offsets",
 							"type": "text"
 						},
@@ -1073,6 +1080,7 @@
 						"mapping": {
 							"analyzer": "hungarian",
 							"search_analyzer": "liferay_analyzer_hu",
+							"search_quote_analyzer": "hungarian",
 							"term_vector": "with_positions_offsets",
 							"type": "text"
 						},
@@ -1110,6 +1118,7 @@
 						"mapping": {
 							"analyzer": "italian",
 							"search_analyzer": "liferay_analyzer_it",
+							"search_quote_analyzer": "italian",
 							"term_vector": "with_positions_offsets",
 							"type": "text"
 						},
@@ -1123,6 +1132,7 @@
 						"mapping": {
 							"analyzer": "kuromoji",
 							"search_analyzer": "liferay_analyzer_ja",
+							"search_quote_analyzer": "kuromoji",
 							"term_vector": "with_positions_offsets",
 							"type": "text"
 						},
@@ -1160,6 +1170,7 @@
 						"mapping": {
 							"analyzer": "dutch",
 							"search_analyzer": "liferay_analyzer_nl",
+							"search_quote_analyzer": "dutch",
 							"term_vector": "with_positions_offsets",
 							"type": "text"
 						},
@@ -1197,6 +1208,7 @@
 						"mapping": {
 							"analyzer": "portuguese",
 							"search_analyzer": "liferay_analyzer_pt_PT",
+							"search_quote_analyzer": "portuguese",
 							"term_vector": "with_positions_offsets",
 							"type": "text"
 						},
@@ -1210,6 +1222,7 @@
 						"mapping": {
 							"analyzer": "brazilian",
 							"search_analyzer": "liferay_analyzer_pt_BR",
+							"search_quote_analyzer": "brazilian",
 							"term_vector": "with_positions_offsets",
 							"type": "text"
 						},
@@ -1246,6 +1259,7 @@
 						"mapping": {
 							"analyzer": "swedish",
 							"search_analyzer": "liferay_analyzer_sv",
+							"search_quote_analyzer": "swedish",
 							"term_vector": "with_positions_offsets",
 							"type": "text"
 						},
@@ -1283,6 +1297,7 @@
 						"mapping": {
 							"analyzer": "smartcn",
 							"search_analyzer": "liferay_analyzer_zh",
+							"search_quote_analyzer": "smartcn",
 							"term_vector": "with_positions_offsets",
 							"type": "text"
 						},
