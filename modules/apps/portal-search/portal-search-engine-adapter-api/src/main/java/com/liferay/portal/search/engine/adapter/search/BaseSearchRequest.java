@@ -71,6 +71,10 @@ public abstract class BaseSearchRequest extends CrossClusterRequest {
 		return _explain;
 	}
 
+	public Integer getFacetSampleSize() {
+		return _facetSampleSize;
+	}
+
 	public Map<String, Facet> getFacets() {
 		return _facets;
 	}
@@ -203,6 +207,10 @@ public abstract class BaseSearchRequest extends CrossClusterRequest {
 		_explain = explain;
 	}
 
+	public void setFacetSampleSize(Integer facetSampleSize) {
+		_facetSampleSize = facetSampleSize;
+	}
+
 	public void setHighlight(Highlight highlight) {
 		_highlight = highlight;
 	}
@@ -281,6 +289,7 @@ public abstract class BaseSearchRequest extends CrossClusterRequest {
 	private boolean _basicFacetSelection;
 	private final List<ComplexQueryPart> _complexQueryParts = new ArrayList<>();
 	private Boolean _explain;
+	private Integer _facetSampleSize;
 	private final Map<String, Facet> _facets = new LinkedHashMap<>();
 	private Highlight _highlight;
 	private boolean _includeResponseString;
