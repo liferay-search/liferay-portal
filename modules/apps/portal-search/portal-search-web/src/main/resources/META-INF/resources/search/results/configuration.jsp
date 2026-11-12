@@ -75,9 +75,14 @@ SearchResultsPortletPreferences searchResultsPortletPreferences = new SearchResu
 
 			<%
 			boolean limitResultCountAccuracyFeatureFlagEnabled = searchResultsPortletDisplayContext.isLimitResultCountAccuracyFeatureFlagEnabled();
+			boolean maximumSearchDepthFeatureFlagEnabled = searchResultsPortletDisplayContext.isMaximumSearchDepthFeatureFlagEnabled();
 
 			String limitResultCountAccuracyHelpMessage = LanguageUtil.format(request, "limit-result-count-accuracy-help", SearchResultsPortletSharedSearchContributor.RESULT_COUNT_ACCURACY_LIMIT, false);
 			String limitResultCountAccuracyInputName = SearchResultsPortletPreferences.PREFERENCE_KEY_LIMIT_RESULT_COUNT_ACCURACY;
+
+			if (maximumSearchDepthFeatureFlagEnabled) {
+				limitResultCountAccuracyHelpMessage = LanguageUtil.get(request, "limit-result-count-accuracy-maximum-search-depth-help");
+			}
 
 			if (limitResultCountAccuracyFeatureFlagEnabled) {
 				limitResultCountAccuracyInputName = PortletPreferencesJspUtil.getInputName(limitResultCountAccuracyInputName);
@@ -88,6 +93,23 @@ SearchResultsPortletPreferences searchResultsPortletPreferences = new SearchResu
 			%>
 
 			<aui:input disabled="<%= !limitResultCountAccuracyFeatureFlagEnabled %>" helpMessage="<%= limitResultCountAccuracyHelpMessage %>" label="limit-result-count-accuracy" name="<%= limitResultCountAccuracyInputName %>" type="checkbox" value="<%= searchResultsPortletDisplayContext.isLimitResultCountAccuracy() %>" />
+
+			<%
+			String maximumSearchDepthHelpMessage = LanguageUtil.get(request, "maximum-search-depth-help");
+			String maximumSearchDepthInputName = SearchResultsPortletPreferences.PREFERENCE_KEY_MAXIMUM_SEARCH_DEPTH;
+
+			if (!maximumSearchDepthFeatureFlagEnabled) {
+				maximumSearchDepthHelpMessage += StringPool.SPACE + LanguageUtil.format(request, "instance-settings-enable-feature-flag-help", LanguageUtil.get(request, "feature.flag.LPD-114635.title"), false);
+			}
+			else {
+				maximumSearchDepthInputName = PortletPreferencesJspUtil.getInputName(maximumSearchDepthInputName);
+			}
+			%>
+
+			<aui:input disabled="<%= !maximumSearchDepthFeatureFlagEnabled %>" helpMessage="<%= maximumSearchDepthHelpMessage %>" label="maximum-search-depth" name="<%= maximumSearchDepthInputName %>" type="number" value="<%= searchResultsPortletDisplayContext.getMaximumSearchDepth() %>">
+				<aui:validator name="digits" />
+				<aui:validator name="min">1</aui:validator>
+			</aui:input>
 
 			<aui:input label="pagination-start-parameter-name" name="<%= PortletPreferencesJspUtil.getInputName(SearchResultsPortletPreferences.PREFERENCE_KEY_PAGINATION_START_PARAMETER_NAME) %>" value="<%= searchResultsPortletPreferences.getPaginationStartParameterName() %>" />
 
