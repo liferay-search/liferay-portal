@@ -91,6 +91,16 @@ public interface SearchRequestBuilder {
 	 */
 	public SearchRequestBuilder explain(boolean explain);
 
+	/**
+	 * Sets the number of top scoring documents per shard that facet counts
+	 * are computed on.
+	 *
+	 * @param  facetSampleSize the facet sample size, or <code>null</code> to
+	 *         compute facets on every matching document
+	 * @return the search request builder
+	 */
+	public SearchRequestBuilder facetSampleSize(Integer facetSampleSize);
+
 	public SearchRequestBuilder federatedSearchKey(String federatedSearchKey);
 
 	public SearchRequestBuilder fetchSource(boolean fetchSource);
