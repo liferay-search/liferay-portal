@@ -333,6 +333,7 @@ public class CommonSearchRequestBuilderAssembler {
 
 		_facetTranslator.translate(
 			baseSearchRequest.isBasicFacetSelection(),
+			baseSearchRequest.getFacetSampleSize(),
 			baseSearchRequest.getFacets(), baseSearchRequest.getQuery71(),
 			searchRequestBuilder);
 	}
