@@ -386,6 +386,8 @@ public class SearchResultsPortletSharedSearchContributorTest {
 				null, null, _createSearchRequestBuilder()));
 
 		Assert.assertEquals(
+			expectedTrackTotalHitsLimit, searchRequest.getFacetSampleSize());
+		Assert.assertEquals(
 			expectedTrackTotalHitsLimit,
 			searchRequest.getTrackTotalHitsLimit());
 	}
@@ -407,6 +409,8 @@ public class SearchResultsPortletSharedSearchContributorTest {
 
 		SearchRequest searchRequest = searchRequestBuilder.build();
 
+		Assert.assertEquals(
+			Integer.valueOf(100), searchRequest.getFacetSampleSize());
 		Assert.assertEquals(
 			Integer.valueOf(100), searchRequest.getTrackTotalHitsLimit());
 	}
