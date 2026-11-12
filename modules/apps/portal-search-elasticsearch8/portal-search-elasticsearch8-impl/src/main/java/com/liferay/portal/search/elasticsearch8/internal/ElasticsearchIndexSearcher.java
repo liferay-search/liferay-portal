@@ -407,6 +407,16 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 		return message;
 	}
 
+	private Integer _getFacetSampleSize(Integer facetSampleSize) {
+		if (facetSampleSize == null) {
+			return null;
+		}
+
+		return Math.min(
+			facetSampleSize,
+			_elasticsearchConfigurationWrapper.trackTotalHitsLimit());
+	}
+
 	private String[] _getIndexes(
 		SearchRequest searchRequest, SearchContext searchContext) {
 
@@ -534,6 +544,8 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 		baseSearchRequest.addComplexQueryParts(
 			searchRequest.getComplexQueryParts());
 		baseSearchRequest.setExplain(searchRequest.isExplain());
+		baseSearchRequest.setFacetSampleSize(
+			_getFacetSampleSize(searchRequest.getFacetSampleSize()));
 		baseSearchRequest.setHighlight(searchRequest.getHighlight());
 		baseSearchRequest.setIncludeResponseString(
 			searchRequest.isIncludeResponseString());
