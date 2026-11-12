@@ -119,14 +119,14 @@ public class SynonymSearchTest {
 		for (Map.Entry<Locale, String> entry : _synonymsMap.entrySet()) {
 			String[] parts = StringUtil.split(entry.getValue());
 
-			_assertSearch(parts[0], 2, entry.getKey());
+			_assertSearch(2, parts[0], entry.getKey());
 		}
 	}
 
 	@Test
 	public void testSearchQuotedPhraseWithSynonymAfterStopword() {
-		_assertSearch("\"perseguido pelo bichano\"", 0, LocaleUtil.BRAZIL);
-		_assertSearch("\"perseguido pelo gato\"", 1, LocaleUtil.BRAZIL);
+		_assertSearch(0, "\"perseguido pelo bichano\"", LocaleUtil.BRAZIL);
+		_assertSearch(1, "\"perseguido pelo gato\"", LocaleUtil.BRAZIL);
 	}
 
 	private static void _addJournalArticle(Map<Locale, String> localeStringMap)
@@ -192,7 +192,7 @@ public class SynonymSearchTest {
 	}
 
 	private void _assertSearch(
-		String keyword, int expectedCount, Locale locale) {
+		int expectedCount, String keyword, Locale locale) {
 
 		String localizedFieldName = Field.getLocalizedName(locale, Field.TITLE);
 
