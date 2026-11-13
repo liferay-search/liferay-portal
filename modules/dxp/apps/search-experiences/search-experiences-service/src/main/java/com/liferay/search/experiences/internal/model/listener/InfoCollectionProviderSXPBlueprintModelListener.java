@@ -244,6 +244,12 @@ public class InfoCollectionProviderSXPBlueprintModelListener
 		return assetSubtypeIdentifier.getClassName();
 	}
 
+	private String _getUpdateSQL(String columnName, String tableName) {
+		return StringBundler.concat(
+			"update ", tableName, " set ", columnName, " = replace(replace(",
+			columnName, ", ?, ?), ?, ?) where ", columnName, " like ?");
+	}
+
 	private boolean _isCollectionProvider(SXPBlueprint sxpBlueprint) {
 		if (!JSONUtil.isJSONObject(sxpBlueprint.getConfigurationJSON())) {
 			return false;
@@ -279,15 +285,7 @@ public class InfoCollectionProviderSXPBlueprintModelListener
 			try (PreparedStatement preparedStatement =
 					connection.prepareStatement(
 						SQLTransformer.transform(
-							StringBundler.concat(
-								"update ",
-								PropsValues.
-									DATABASE_PARTITION_SCHEMA_NAME_PREFIX,
-								toCompanyId, StringPool.PERIOD, entry.getKey(),
-								" set ", entry.getValue(),
-								" = replace(replace(", entry.getValue(),
-								", ?, ?), ?, ?) where ", entry.getValue(),
-								" like ?")))) {
+							_getUpdateSQL(entry.getValue(), entry.getKey())))) {
 
 				preparedStatement.setString(
 					1,
