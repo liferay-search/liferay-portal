@@ -152,16 +152,18 @@ public class InfoCollectionProviderSXPBlueprintModelListener
 	protected void activate(BundleContext bundleContext) {
 		_bundleContext = bundleContext;
 
-		_serviceRegistration = bundleContext.registerService(
-			PortalInstanceLifecycleListener.class,
-			new InfoCollectionProviderPortalInstanceLifecycleListener(), null);
+		_portalInstanceLifecycleListenerServiceRegistration =
+			bundleContext.registerService(
+				PortalInstanceLifecycleListener.class,
+				new InfoCollectionProviderPortalInstanceLifecycleListener(),
+				null);
 	}
 
 	@Deactivate
 	protected void deactivate() {
 		_deactivated = true;
 
-		_serviceRegistration.unregister();
+		_portalInstanceLifecycleListenerServiceRegistration.unregister();
 
 		Set<Long> companyIds = _serviceRegistrations.keySet();
 
@@ -400,14 +402,15 @@ public class InfoCollectionProviderSXPBlueprintModelListener
 	@Reference
 	private ObjectEntryLocalService _objectEntryLocalService;
 
+	private ServiceRegistration<PortalInstanceLifecycleListener>
+		_portalInstanceLifecycleListenerServiceRegistration;
+
 	@Reference
 	private SearchRequestBuilderFactory _searchRequestBuilderFactory;
 
 	@Reference
 	private Searcher _searcher;
 
-	private ServiceRegistration<PortalInstanceLifecycleListener>
-		_serviceRegistration;
 	private final Map<Long, Map<Long, ServiceRegistration<?>>>
 		_serviceRegistrations = new ConcurrentHashMap<>();
 
