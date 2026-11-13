@@ -70,7 +70,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.osgi.framework.BundleContext;
@@ -165,9 +164,10 @@ public class InfoCollectionProviderSXPBlueprintModelListener
 
 		_portalInstanceLifecycleListenerServiceRegistration.unregister();
 
-		Set<Long> companyIds = _serviceRegistrations.keySet();
-
-		companyIds.forEach(this::_unregisterServiceRegistrations);
+		_serviceRegistrations.keySet(
+		).forEach(
+			this::_unregisterServiceRegistrations
+		);
 	}
 
 	private InfoCollectionProvider<?> _createInfoCollectionProvider(
