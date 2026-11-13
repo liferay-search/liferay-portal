@@ -101,6 +101,20 @@ public class InfoCollectionProviderSXPBlueprintModelListenerTest {
 		Assert.assertNotNull(_getInfoCollectionProvider(_sxpBlueprint));
 	}
 
+	@Test
+	public void testOnAfterUpdate() throws Exception {
+		_modelListener.onAfterUpdate(_copiedSXPBlueprint, _copiedSXPBlueprint);
+
+		try {
+			Assert.assertNotNull(
+				_getInfoCollectionProvider(_copiedSXPBlueprint));
+			Assert.assertNotNull(_getInfoCollectionProvider(_sxpBlueprint));
+		}
+		finally {
+			_modelListener.onAfterRemove(_copiedSXPBlueprint);
+		}
+	}
+
 	private InfoCollectionProvider<?> _getInfoCollectionProvider(
 		SXPBlueprint sxpBlueprint) {
 
