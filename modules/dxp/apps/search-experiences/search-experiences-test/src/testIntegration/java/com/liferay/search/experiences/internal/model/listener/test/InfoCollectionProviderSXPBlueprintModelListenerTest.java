@@ -83,8 +83,8 @@ public class InfoCollectionProviderSXPBlueprintModelListenerTest {
 
 		try {
 			Assert.assertNotNull(
-				_getInfoCollectionProvider(_copiedSXPBlueprint));
-			Assert.assertNotNull(_getInfoCollectionProvider(_sxpBlueprint));
+				_fetchInfoCollectionProvider(_copiedSXPBlueprint));
+			Assert.assertNotNull(_fetchInfoCollectionProvider(_sxpBlueprint));
 		}
 		finally {
 			_modelListener.onAfterRemove(_copiedSXPBlueprint);
@@ -97,8 +97,8 @@ public class InfoCollectionProviderSXPBlueprintModelListenerTest {
 
 		_modelListener.onAfterRemove(_copiedSXPBlueprint);
 
-		Assert.assertNull(_getInfoCollectionProvider(_copiedSXPBlueprint));
-		Assert.assertNotNull(_getInfoCollectionProvider(_sxpBlueprint));
+		Assert.assertNull(_fetchInfoCollectionProvider(_copiedSXPBlueprint));
+		Assert.assertNotNull(_fetchInfoCollectionProvider(_sxpBlueprint));
 	}
 
 	@Test
@@ -107,15 +107,15 @@ public class InfoCollectionProviderSXPBlueprintModelListenerTest {
 
 		try {
 			Assert.assertNotNull(
-				_getInfoCollectionProvider(_copiedSXPBlueprint));
-			Assert.assertNotNull(_getInfoCollectionProvider(_sxpBlueprint));
+				_fetchInfoCollectionProvider(_copiedSXPBlueprint));
+			Assert.assertNotNull(_fetchInfoCollectionProvider(_sxpBlueprint));
 		}
 		finally {
 			_modelListener.onAfterRemove(_copiedSXPBlueprint);
 		}
 	}
 
-	private InfoCollectionProvider<?> _getInfoCollectionProvider(
+	private InfoCollectionProvider<?> _fetchInfoCollectionProvider(
 		SXPBlueprint sxpBlueprint) {
 
 		return _infoItemServiceRegistry.getInfoItemService(
