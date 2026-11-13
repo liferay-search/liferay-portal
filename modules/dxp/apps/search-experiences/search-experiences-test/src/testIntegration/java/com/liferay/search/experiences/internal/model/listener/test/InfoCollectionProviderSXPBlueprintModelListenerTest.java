@@ -75,6 +75,9 @@ public class InfoCollectionProviderSXPBlueprintModelListenerTest {
 		_copiedSXPBlueprint.setCompanyId(RandomTestUtil.randomLong());
 		_copiedSXPBlueprint.setConfigurationJSON(
 			_sxpBlueprint.getConfigurationJSON());
+		_copiedSXPBlueprint.setTitleMap(
+			Collections.singletonMap(
+				LocaleUtil.US, RandomTestUtil.randomString()));
 	}
 
 	@Test
@@ -82,9 +85,8 @@ public class InfoCollectionProviderSXPBlueprintModelListenerTest {
 		_modelListener.onAfterCreate(_copiedSXPBlueprint);
 
 		try {
-			Assert.assertNotNull(
-				_fetchInfoCollectionProvider(_copiedSXPBlueprint));
-			Assert.assertNotNull(_fetchInfoCollectionProvider(_sxpBlueprint));
+			_assertInfoCollectionProvider(_copiedSXPBlueprint);
+			_assertInfoCollectionProvider(_sxpBlueprint);
 		}
 		finally {
 			_modelListener.onAfterRemove(_copiedSXPBlueprint);
@@ -113,6 +115,18 @@ public class InfoCollectionProviderSXPBlueprintModelListenerTest {
 		finally {
 			_modelListener.onAfterRemove(_copiedSXPBlueprint);
 		}
+	}
+
+	private void _assertInfoCollectionProvider(SXPBlueprint sxpBlueprint) {
+		InfoCollectionProvider<?> infoCollectionProvider =
+			_fetchInfoCollectionProvider(sxpBlueprint);
+
+		Assert.assertEquals(
+			JournalArticle.class.getName(),
+			infoCollectionProvider.getCollectionItemClassName());
+		Assert.assertEquals(
+			sxpBlueprint.getTitle(LocaleUtil.US),
+			infoCollectionProvider.getLabel(LocaleUtil.US));
 	}
 
 	private InfoCollectionProvider<?> _fetchInfoCollectionProvider(
