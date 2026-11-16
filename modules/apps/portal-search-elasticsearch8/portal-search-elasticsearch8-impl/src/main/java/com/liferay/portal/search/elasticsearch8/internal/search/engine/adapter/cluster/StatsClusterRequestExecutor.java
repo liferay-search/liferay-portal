@@ -6,22 +6,23 @@
 package com.liferay.portal.search.elasticsearch8.internal.search.engine.adapter.cluster;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch.cluster.ClusterStatsRequest;
-import co.elastic.clients.elasticsearch.cluster.ClusterStatsResponse;
-import co.elastic.clients.elasticsearch.cluster.ElasticsearchClusterClient;
-import co.elastic.clients.elasticsearch.cluster.stats.ClusterFileSystem;
-import co.elastic.clients.elasticsearch.cluster.stats.ClusterNodes;
+import co.elastic.clients.json.JsonpDeserializer;
+import co.elastic.clients.transport.ElasticsearchTransport;
+import co.elastic.clients.transport.endpoints.SimpleEndpoint;
 
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.search.elasticsearch8.internal.connection.ElasticsearchClientResolver;
-import com.liferay.portal.search.elasticsearch8.internal.util.JsonpUtil;
 import com.liferay.portal.search.engine.adapter.cluster.StatsClusterRequest;
 import com.liferay.portal.search.engine.adapter.cluster.StatsClusterResponse;
 
-import java.io.IOException;
+import jakarta.json.JsonNumber;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonValue;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * @author Dylan Rebelak
@@ -38,60 +39,69 @@ public class StatsClusterRequestExecutor {
 		StatsClusterRequest statsClusterRequest) {
 
 		try {
-			ClusterStatsResponse clusterStatsResponse =
-				_getClusterStatsResponse(
-					_createClusterStatsRequest(statsClusterRequest),
-					statsClusterRequest);
+			JsonObject jsonObject = _getClusterStatsJsonObject(
+				statsClusterRequest);
 
-			ClusterNodes clusterNodes = clusterStatsResponse.nodes();
+			JsonObject nodesJsonObject = jsonObject.getJsonObject("nodes");
 
-			ClusterFileSystem clusterFileSystem = clusterNodes.fs();
+			JsonObject fsJsonObject = nodesJsonObject.getJsonObject("fs");
 
-			long availableInBytes = clusterFileSystem.availableInBytes();
-			long totalInBytes = clusterFileSystem.totalInBytes();
+			long availableInBytes = _getLong(
+				fsJsonObject, "available_in_bytes");
+			long totalInBytes = _getLong(fsJsonObject, "total_in_bytes");
 
 			return new StatsClusterResponse(
 				availableInBytes,
 				ClusterHealthStatusTranslatorUtil.translate(
-					clusterStatsResponse.status()),
-				JsonpUtil.toString(clusterStatsResponse),
-				totalInBytes - availableInBytes);
+					jsonObject.getString("status")),
+				jsonObject.toString(), totalInBytes - availableInBytes);
 		}
 		catch (Exception exception) {
 			throw new SystemException(exception);
 		}
 	}
 
-	private ClusterStatsRequest _createClusterStatsRequest(
-		StatsClusterRequest statsClusterRequest) {
-
-		ClusterStatsRequest.Builder builder = new ClusterStatsRequest.Builder();
-
-		if (ArrayUtil.isNotEmpty(statsClusterRequest.getNodeIds())) {
-			builder.nodeId(Arrays.asList(statsClusterRequest.getNodeIds()));
-		}
-
-		return builder.build();
-	}
-
-	private ClusterStatsResponse _getClusterStatsResponse(
-		ClusterStatsRequest clusterStatsRequest,
-		StatsClusterRequest statsClusterRequest) {
+	private JsonObject _getClusterStatsJsonObject(
+			StatsClusterRequest statsClusterRequest)
+		throws Exception {
 
 		ElasticsearchClient elasticsearchClient =
 			_elasticsearchClientResolver.getElasticsearchClient(
 				statsClusterRequest.getConnectionId(),
 				statsClusterRequest.isPreferLocalCluster());
 
-		ElasticsearchClusterClient elasticsearchClusterClient =
-			elasticsearchClient.cluster();
+		ElasticsearchTransport elasticsearchTransport =
+			elasticsearchClient._transport();
 
-		try {
-			return elasticsearchClusterClient.stats(clusterStatsRequest);
+		JsonValue jsonValue = elasticsearchTransport.performRequest(
+			statsClusterRequest,
+			new SimpleEndpoint<StatsClusterRequest, JsonValue>(
+				"es/cluster.stats", clusterStatsRequest -> "GET",
+				clusterStatsRequest -> _getPath(clusterStatsRequest),
+				clusterStatsRequest -> Collections.emptyMap(),
+				clusterStatsRequest -> Collections.emptyMap(),
+				clusterStatsRequest -> Collections.emptyMap(), false,
+				JsonpDeserializer.jsonValueDeserializer()),
+			null);
+
+		return jsonValue.asJsonObject();
+	}
+
+	private long _getLong(JsonObject jsonObject, String key) {
+		JsonNumber jsonNumber = jsonObject.getJsonNumber(key);
+
+		return jsonNumber.longValue();
+	}
+
+	private String _getPath(StatsClusterRequest statsClusterRequest) {
+		if (ArrayUtil.isEmpty(statsClusterRequest.getNodeIds())) {
+			return "/_cluster/stats";
 		}
-		catch (IOException ioException) {
-			throw new RuntimeException(ioException);
-		}
+
+		String nodeIds = StringUtil.merge(
+			statsClusterRequest.getNodeIds(), StringPool.COMMA);
+
+		return "/_cluster/stats/nodes/" + nodeIds;
 	}
 
 	private final ElasticsearchClientResolver _elasticsearchClientResolver;

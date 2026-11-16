@@ -1,0 +1,735 @@
+{
+	"_nodes": {
+		"failed": 0,
+		"successful": 1,
+		"total": 1
+	},
+	"ccs": {
+		"_search": {
+			"clients": {
+			},
+			"clusters": {
+			},
+			"failure_reasons": {
+			},
+			"features": {
+			},
+			"remotes_per_search_avg": 0.0,
+			"remotes_per_search_max": 0,
+			"skipped": 0,
+			"success": 0,
+			"took": {
+				"avg": 0,
+				"max": 0,
+				"p90": 0
+			},
+			"took_mrt_false": {
+				"avg": 0,
+				"max": 0,
+				"p90": 0
+			},
+			"took_mrt_true": {
+				"avg": 0,
+				"max": 0,
+				"p90": 0
+			},
+			"total": 0
+		}
+	},
+	"cluster_name": "LiferayElasticsearchCluster",
+	"cluster_uuid": "c96cagKcTKeI38aTzIhfJg",
+	"indices": {
+		"analysis": {
+			"analyzer_types": [
+				{
+					"count": 40,
+					"index_count": 2,
+					"name": "custom"
+				}
+			],
+			"built_in_analyzers": [
+				{
+					"count": 6,
+					"index_count": 2,
+					"name": "1_10_ngram"
+				},
+				{
+					"count": 14,
+					"index_count": 2,
+					"name": "arabic"
+				},
+				{
+					"count": 15,
+					"index_count": 2,
+					"name": "brazilian"
+				},
+				{
+					"count": 14,
+					"index_count": 2,
+					"name": "catalan"
+				},
+				{
+					"count": 14,
+					"index_count": 2,
+					"name": "dutch"
+				},
+				{
+					"count": 2,
+					"index_count": 2,
+					"name": "email_lowercase"
+				},
+				{
+					"count": 20,
+					"index_count": 2,
+					"name": "english"
+				},
+				{
+					"count": 14,
+					"index_count": 2,
+					"name": "finnish"
+				},
+				{
+					"count": 14,
+					"index_count": 2,
+					"name": "french"
+				},
+				{
+					"count": 16,
+					"index_count": 2,
+					"name": "german"
+				},
+				{
+					"count": 14,
+					"index_count": 2,
+					"name": "hungarian"
+				},
+				{
+					"count": 8,
+					"index_count": 2,
+					"name": "keyword_lowercase"
+				},
+				{
+					"count": 14,
+					"index_count": 2,
+					"name": "kuromoji"
+				},
+				{
+					"count": 13,
+					"index_count": 1,
+					"name": "liferay_analyzer_ar"
+				},
+				{
+					"count": 13,
+					"index_count": 1,
+					"name": "liferay_analyzer_ca"
+				},
+				{
+					"count": 15,
+					"index_count": 1,
+					"name": "liferay_analyzer_de"
+				},
+				{
+					"count": 19,
+					"index_count": 1,
+					"name": "liferay_analyzer_en"
+				},
+				{
+					"count": 15,
+					"index_count": 1,
+					"name": "liferay_analyzer_es"
+				},
+				{
+					"count": 13,
+					"index_count": 1,
+					"name": "liferay_analyzer_fi"
+				},
+				{
+					"count": 13,
+					"index_count": 1,
+					"name": "liferay_analyzer_fr"
+				},
+				{
+					"count": 13,
+					"index_count": 1,
+					"name": "liferay_analyzer_hu"
+				},
+				{
+					"count": 13,
+					"index_count": 1,
+					"name": "liferay_analyzer_ja"
+				},
+				{
+					"count": 13,
+					"index_count": 1,
+					"name": "liferay_analyzer_nl"
+				},
+				{
+					"count": 14,
+					"index_count": 1,
+					"name": "liferay_analyzer_pt_BR"
+				},
+				{
+					"count": 13,
+					"index_count": 1,
+					"name": "liferay_analyzer_sv"
+				},
+				{
+					"count": 13,
+					"index_count": 1,
+					"name": "liferay_analyzer_zh"
+				},
+				{
+					"count": 6,
+					"index_count": 2,
+					"name": "reverse_keyword_lowercase"
+				},
+				{
+					"count": 14,
+					"index_count": 2,
+					"name": "smartcn"
+				},
+				{
+					"count": 16,
+					"index_count": 2,
+					"name": "spanish"
+				},
+				{
+					"count": 14,
+					"index_count": 2,
+					"name": "swedish"
+				},
+				{
+					"count": 2,
+					"index_count": 2,
+					"name": "text_whitespace_lowercase"
+				}
+			],
+			"built_in_char_filters": [
+			],
+			"built_in_filters": [
+				{
+					"count": 2,
+					"index_count": 2,
+					"name": "arabic_normalization"
+				},
+				{
+					"count": 4,
+					"index_count": 2,
+					"name": "cjk_width"
+				},
+				{
+					"count": 2,
+					"index_count": 2,
+					"name": "decimal_digit"
+				},
+				{
+					"count": 2,
+					"index_count": 2,
+					"name": "german_normalization"
+				},
+				{
+					"count": 2,
+					"index_count": 2,
+					"name": "ja_stop"
+				},
+				{
+					"count": 2,
+					"index_count": 2,
+					"name": "kuromoji_baseform"
+				},
+				{
+					"count": 2,
+					"index_count": 2,
+					"name": "kuromoji_part_of_speech"
+				},
+				{
+					"count": 2,
+					"index_count": 2,
+					"name": "kuromoji_stemmer"
+				},
+				{
+					"count": 40,
+					"index_count": 2,
+					"name": "lowercase"
+				},
+				{
+					"count": 2,
+					"index_count": 2,
+					"name": "reverse"
+				}
+			],
+			"built_in_tokenizers": [
+				{
+					"count": 6,
+					"index_count": 2,
+					"name": "keyword"
+				},
+				{
+					"count": 2,
+					"index_count": 2,
+					"name": "kuromoji_tokenizer"
+				},
+				{
+					"count": 2,
+					"index_count": 2,
+					"name": "smartcn_tokenizer"
+				},
+				{
+					"count": 26,
+					"index_count": 2,
+					"name": "standard"
+				},
+				{
+					"count": 2,
+					"index_count": 2,
+					"name": "uax_url_email"
+				},
+				{
+					"count": 2,
+					"index_count": 2,
+					"name": "whitespace"
+				}
+			],
+			"char_filter_types": [
+			],
+			"filter_types": [
+				{
+					"count": 6,
+					"index_count": 2,
+					"name": "elision"
+				},
+				{
+					"count": 2,
+					"index_count": 2,
+					"name": "ngram"
+				},
+				{
+					"count": 28,
+					"index_count": 2,
+					"name": "stemmer"
+				},
+				{
+					"count": 2,
+					"index_count": 2,
+					"name": "stemmer_override"
+				},
+				{
+					"count": 28,
+					"index_count": 2,
+					"name": "stop"
+				},
+				{
+					"count": 30,
+					"index_count": 2,
+					"name": "synonym_graph"
+				}
+			],
+			"synonyms": {
+				"inline": {
+					"count": 30,
+					"index_count": 2
+				}
+			},
+			"tokenizer_types": [
+			]
+		},
+		"completion": {
+			"size_in_bytes": 0
+		},
+		"count": 18,
+		"dense_vector": {
+			"value_count": 0
+		},
+		"docs": {
+			"count": 1383,
+			"deleted": 205,
+			"total_size_in_bytes": 2358771
+		},
+		"fielddata": {
+			"evictions": 0,
+			"global_ordinals": {
+				"build_time_in_millis": 0
+			},
+			"memory_size_in_bytes": 0
+		},
+		"mappings": {
+			"field_types": [
+				{
+					"count": 2,
+					"index_count": 2,
+					"name": "binary",
+					"script_count": 0
+				},
+				{
+					"count": 26,
+					"index_count": 9,
+					"name": "boolean",
+					"script_count": 0
+				},
+				{
+					"count": 55,
+					"index_count": 18,
+					"name": "date",
+					"script_count": 0
+				},
+				{
+					"count": 8,
+					"index_count": 2,
+					"name": "double",
+					"script_count": 0
+				},
+				{
+					"count": 13,
+					"index_count": 8,
+					"name": "float",
+					"script_count": 0
+				},
+				{
+					"count": 2,
+					"index_count": 2,
+					"name": "geo_point",
+					"script_count": 0
+				},
+				{
+					"count": 83,
+					"index_count": 1,
+					"name": "icu_collation_keyword",
+					"script_count": 0
+				},
+				{
+					"count": 22,
+					"index_count": 6,
+					"name": "integer",
+					"script_count": 0
+				},
+				{
+					"count": 461,
+					"index_count": 18,
+					"name": "keyword",
+					"script_count": 0
+				},
+				{
+					"count": 120,
+					"index_count": 16,
+					"name": "long",
+					"script_count": 0
+				},
+				{
+					"count": 7,
+					"index_count": 4,
+					"name": "nested",
+					"script_count": 0
+				},
+				{
+					"count": 2,
+					"index_count": 1,
+					"name": "scaled_float",
+					"script_count": 0
+				},
+				{
+					"count": 340,
+					"index_count": 11,
+					"name": "text",
+					"script_count": 0
+				}
+			],
+			"runtime_field_types": [
+			],
+			"source_modes": {
+				"stored": 18
+			},
+			"total_deduplicated_field_count": 1127,
+			"total_deduplicated_mapping_size_in_bytes": 16613,
+			"total_field_count": 1141
+		},
+		"query_cache": {
+			"cache_count": 0,
+			"cache_size": 0,
+			"evictions": 0,
+			"hit_count": 0,
+			"memory_size_in_bytes": 0,
+			"miss_count": 0,
+			"total_count": 0
+		},
+		"search": {
+			"queries": {
+				"bool": 198,
+				"exists": 26,
+				"match": 6,
+				"match_phrase": 6,
+				"match_phrase_prefix": 6,
+				"term": 198,
+				"terms": 26,
+				"wildcard": 5
+			},
+			"rescorers": {
+			},
+			"retrievers": {
+			},
+			"sections": {
+				"_source": 136,
+				"fields": 136,
+				"query": 198,
+				"suggest": 6
+			},
+			"total": 204
+		},
+		"segments": {
+			"count": 17,
+			"doc_values_memory_in_bytes": 0,
+			"file_sizes": {
+			},
+			"fixed_bit_set_memory_in_bytes": 328,
+			"index_writer_memory_in_bytes": 0,
+			"max_unsafe_auto_id_timestamp": -1,
+			"memory_in_bytes": 0,
+			"norms_memory_in_bytes": 0,
+			"points_memory_in_bytes": 0,
+			"stored_fields_memory_in_bytes": 0,
+			"term_vectors_memory_in_bytes": 0,
+			"terms_memory_in_bytes": 0,
+			"version_map_memory_in_bytes": 0
+		},
+		"shards": {
+			"index": {
+				"primaries": {
+					"avg": 1.0,
+					"max": 1,
+					"min": 1
+				},
+				"replication": {
+					"avg": 0.0,
+					"max": 0.0,
+					"min": 0.0
+				},
+				"shards": {
+					"avg": 1.0,
+					"max": 1,
+					"min": 1
+				}
+			},
+			"primaries": 18,
+			"replication": 0.0,
+			"total": 18
+		},
+		"sparse_vector": {
+			"value_count": 0
+		},
+		"store": {
+			"reserved_in_bytes": 0,
+			"size_in_bytes": 2423492,
+			"total_data_set_size_in_bytes": 2423492
+		},
+		"versions": [
+			{
+				"index_count": 18,
+				"primary_shard_count": 18,
+				"total_primary_bytes": 2423492,
+				"version": "8.19.9-8.19.23"
+			}
+		]
+	},
+	"nodes": {
+		"count": {
+			"coordinating_only": 0,
+			"data": 1,
+			"data_cold": 0,
+			"data_content": 0,
+			"data_frozen": 0,
+			"data_hot": 0,
+			"data_warm": 0,
+			"index": 0,
+			"ingest": 1,
+			"master": 1,
+			"ml": 0,
+			"remote_cluster_client": 0,
+			"search": 0,
+			"total": 1,
+			"transform": 0,
+			"voting_only": 0
+		},
+		"discovery_types": {
+			"single-node": 1
+		},
+		"fs": {
+			"available_in_bytes": 192573853696,
+			"free_in_bytes": 192573857792,
+			"total_in_bytes": 994610155520
+		},
+		"indexing_pressure": {
+			"memory": {
+				"current": {
+					"all_in_bytes": 0,
+					"combined_coordinating_and_primary_in_bytes": 0,
+					"coordinating_in_bytes": 0,
+					"primary_in_bytes": 0,
+					"replica_in_bytes": 0
+				},
+				"limit_in_bytes": 0,
+				"total": {
+					"all_in_bytes": 0,
+					"combined_coordinating_and_primary_in_bytes": 0,
+					"coordinating_in_bytes": 0,
+					"coordinating_rejections": 0,
+					"primary_document_rejections": 0,
+					"primary_in_bytes": 0,
+					"primary_rejections": 0,
+					"replica_in_bytes": 0,
+					"replica_rejections": 0
+				}
+			}
+		},
+		"ingest": {
+			"number_of_pipelines": 1,
+			"processor_stats": {
+				"set": {
+					"count": 1288,
+					"current": 0,
+					"failed": 0,
+					"time_in_millis": 41
+				}
+			}
+		},
+		"jvm": {
+			"max_uptime_in_millis": 16001128,
+			"mem": {
+				"heap_max_in_bytes": 2147483648,
+				"heap_used_in_bytes": 703453392
+			},
+			"threads": 96,
+			"versions": [
+				{
+					"bundled_jdk": true,
+					"count": 1,
+					"using_bundled_jdk": false,
+					"version": "21.0.13.0.3",
+					"vm_name": "OpenJDK 64-Bit Server VM",
+					"vm_vendor": "Azul Systems, Inc.",
+					"vm_version": "21.0.13.0.3+1-LTS"
+				}
+			]
+		},
+		"network_types": {
+			"http_types": {
+				"netty4": 1
+			},
+			"transport_types": {
+				"netty4": 1
+			}
+		},
+		"os": {
+			"allocated_processors": 18,
+			"architectures": [
+				{
+					"arch": "aarch64",
+					"count": 1
+				}
+			],
+			"available_processors": 18,
+			"mem": {
+				"adjusted_total_in_bytes": 68719476736,
+				"free_in_bytes": 3320823808,
+				"free_percent": 5,
+				"total_in_bytes": 68719476736,
+				"used_in_bytes": 65398652928,
+				"used_percent": 95
+			},
+			"names": [
+				{
+					"count": 1,
+					"name": "Mac OS X"
+				}
+			],
+			"pretty_names": [
+				{
+					"count": 1,
+					"pretty_name": "Mac OS X"
+				}
+			]
+		},
+		"packaging_types": [
+			{
+				"count": 1,
+				"flavor": "default",
+				"type": "tar"
+			}
+		],
+		"plugins": [
+			{
+				"classname": "org.elasticsearch.plugin.analysis.kuromoji.AnalysisKuromojiPlugin",
+				"description": "The Japanese (kuromoji) Analysis plugin integrates Lucene kuromoji analysis module into elasticsearch.",
+				"elasticsearch_version": "8.19.23",
+				"extended_plugins": [
+				],
+				"has_native_controller": false,
+				"is_official": true,
+				"java_version": "17",
+				"licensed": false,
+				"name": "analysis-kuromoji",
+				"version": "8.19.23"
+			},
+			{
+				"classname": "org.elasticsearch.plugin.analysis.smartcn.AnalysisSmartChinesePlugin",
+				"description": "Smart Chinese Analysis plugin integrates Lucene Smart Chinese analysis module into elasticsearch.",
+				"elasticsearch_version": "8.19.23",
+				"extended_plugins": [
+				],
+				"has_native_controller": false,
+				"is_official": true,
+				"java_version": "17",
+				"licensed": false,
+				"name": "analysis-smartcn",
+				"version": "8.19.23"
+			},
+			{
+				"classname": "org.elasticsearch.plugin.analysis.icu.AnalysisICUPlugin",
+				"description": "The ICU Analysis plugin integrates the Lucene ICU module into Elasticsearch, adding ICU-related analysis components.",
+				"elasticsearch_version": "8.19.23",
+				"extended_plugins": [
+				],
+				"has_native_controller": false,
+				"is_official": true,
+				"java_version": "17",
+				"licensed": false,
+				"name": "analysis-icu",
+				"version": "8.19.23"
+			},
+			{
+				"classname": "org.elasticsearch.plugin.analysis.stempel.AnalysisStempelPlugin",
+				"description": "The Stempel (Polish) Analysis plugin integrates Lucene stempel (polish) analysis module into elasticsearch.",
+				"elasticsearch_version": "8.19.23",
+				"extended_plugins": [
+				],
+				"has_native_controller": false,
+				"is_official": true,
+				"java_version": "17",
+				"licensed": false,
+				"name": "analysis-stempel",
+				"version": "8.19.23"
+			}
+		],
+		"process": {
+			"cpu": {
+				"percent": 0
+			}
+		},
+		"versions": [
+			"8.19.23"
+		]
+	},
+	"repositories": {
+	},
+	"snapshots": {
+		"current_counts": {
+			"cleanups": 0,
+			"concurrent_operations": 0,
+			"shard_snapshots": 0,
+			"snapshot_deletions": 0,
+			"snapshots": 0
+		},
+		"repositories": {
+		}
+	},
+	"status": "green",
+	"timestamp": 1794326317003
+}
