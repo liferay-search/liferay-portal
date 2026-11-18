@@ -29,12 +29,15 @@ public class MostViewedContentRecommendationIndexReindexer
 	implements IndexReindexer {
 
 	@Override
+	public boolean isEnabled(long companyId) {
+		return FeatureFlagManagerUtil.isEnabled(companyId, "LRAC-14771");
+	}
+
+	@Override
 	public void reindex(long companyId, ExecutionMode executionMode)
 		throws Exception {
 
-		if (!FeatureFlagManagerUtil.isEnabled(companyId, "LRAC-14771") ||
-			(companyId == CompanyConstants.SYSTEM)) {
-
+		if (companyId == CompanyConstants.SYSTEM) {
 			return;
 		}
 
