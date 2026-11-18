@@ -73,6 +73,7 @@ plugins.security.disabled: true</echo>
 			replace="2g"
 		/>
 
+		<get-testcase-property if:set="env.JENKINS_HOME" property.name="opensearch.multiple.connections" />
 		<get-testcase-property if:set="env.JENKINS_HOME" property.name="opensearch.security.enabled" />
 
 		<if>
@@ -215,6 +216,54 @@ username="admin"</echo>
 
 		<echo file="${liferay.home}/osgi/configs/com.liferay.portal.search.opensearch2.configuration.OpenSearchConfiguration.config">remoteClusterConnectionId="REMOTE"</echo>
 
+		<if>
+			<istrue value="${opensearch.multiple.connections}" />
+			<then>
+				<delete dir="${opensearch.dir}-2" />
+
+				<copy
+					todir="${opensearch.dir}-2"
+				>
+					<fileset
+						dir="${opensearch.dir}"
+					/>
+				</copy>
+
+				<chmod
+					maxparallel="10"
+					perm="a+rwx"
+					type="both"
+				>
+					<fileset
+						dir="${opensearch.dir}-2"
+					/>
+				</chmod>
+
+				<echo file="${opensearch.dir}-2/config/opensearch.yml">cluster.name: LiferayOpenSearchClusterTwo
+discovery.type: single-node
+http.port: 9202
+indices.query.bool.max_clause_count: 4096
+plugins.security.disabled: true
+transport.port: 9500-9600</echo>
+
+				<echo file="${liferay.home}/osgi/configs/com.liferay.portal.search.opensearch2.configuration.OpenSearchConnectionConfiguration-connection2.config">active="true"
+connectionId="connection2"
+networkHostAddresses=["http://localhost:9202"]</echo>
+
+				<exec dir="${opensearch.dir}-2/bin" executable="/bin/bash" osfamily="unix">
+					<arg value="-c" />
+					<arg if:set="env.JENKINS_HOME" value="sudo -H -u shutdown bash -c './opensearch -d -p pid-opensearch'" />
+					<arg unless:set="env.JENKINS_HOME" value="./opensearch -d -p pid-opensearch" />
+				</exec>
+
+				<waitfor maxwait="120" maxwaitunit="second" timeoutproperty="opensearch.second.server.not.started">
+					<socket port="9202" server="localhost" />
+				</waitfor>
+
+				<fail if="opensearch.second.server.not.started" message="OpenSearch server on port 9202 failed to initialize." />
+			</then>
+		</if>
+
 		<lstopwatch action="start" name="start.opensearch.node" />
 
 		<exec dir="${opensearch.dir}/bin" executable="/bin/bash" osfamily="unix">
@@ -248,6 +297,16 @@ username="admin"</echo>
 			<else>
 				<echo>The OpenSearch server in ${opensearch.dir} has already been stopped</echo>
 			</else>
+		</if>
+
+		<if>
+			<available file="${opensearch.dir}-2/pid-opensearch" />
+			<then>
+				<exec dir="${opensearch.dir}-2" executable="/bin/bash" osfamily="unix">
+					<arg value="-c" />
+					<arg value="pkill -F pid-opensearch" />
+				</exec>
+			</then>
 		</if>
 
 		<print-files dir="${opensearch.dir}/logs/" exclude="*_*" include="LiferayOpenSearchCluster*.log" />
