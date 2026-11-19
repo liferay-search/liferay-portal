@@ -7,6 +7,8 @@ package com.liferay.portal.search.web.internal.upgrade.registry;
 
 import com.liferay.asset.kernel.service.AssetVocabularyLocalService;
 import com.liferay.portal.configuration.persistence.upgrade.ConfigurationUpgradeStepFactory;
+import com.liferay.portal.kernel.language.Language;
+import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.search.configuration.SemanticSearchConfiguration;
 import com.liferay.portal.search.web.constants.SearchBarPortletKeys;
@@ -25,6 +27,7 @@ import com.liferay.portal.search.web.internal.upgrade.v1_0_0.UpgradePortletPrefe
 import com.liferay.portal.search.web.internal.upgrade.v2_0_0.SearchPortletUpgradeProcess;
 import com.liferay.portal.search.web.internal.upgrade.v2_1_0.CategoryFacetPortletUpgradeProcess;
 import com.liferay.portal.search.web.internal.upgrade.v2_1_2.DateFacetDDMTemplateUpgradeProcess;
+import com.liferay.portal.search.web.internal.upgrade.v2_1_3.SearchLayoutPageTemplateEntryExternalReferenceCodeUpgradeProcess;
 import com.liferay.portal.search.web.internal.user.facet.constants.UserFacetPortletKeys;
 import com.liferay.portal.upgrade.registry.UpgradeStepRegistrator;
 import com.liferay.portlet.display.template.upgrade.BaseUpgradePortletPreferences;
@@ -109,15 +112,26 @@ public class SearchWebUpgradeStepRegistrator implements UpgradeStepRegistrator {
 
 		registry.register(
 			"2.1.1", "2.1.2", new DateFacetDDMTemplateUpgradeProcess());
+
+		registry.register(
+			"2.1.2", "2.1.3",
+			new SearchLayoutPageTemplateEntryExternalReferenceCodeUpgradeProcess(
+				_companyLocalService, _language));
 	}
 
 	@Reference
 	private AssetVocabularyLocalService _assetVocabularyLocalService;
 
 	@Reference
+	private CompanyLocalService _companyLocalService;
+
+	@Reference
 	private ConfigurationUpgradeStepFactory _configurationUpgradeStepFactory;
 
 	@Reference
 	private GroupLocalService _groupLocalService;
+
+	@Reference
+	private Language _language;
 
 }
