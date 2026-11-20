@@ -101,11 +101,42 @@ export class SearchPage {
 
 		await categoryPanel.getByText(portletName, {exact: true}).click();
 
+		// The widget is rendered before the layout is saved, so wait for the
+		// save to finish or a following reload can lose the widget
+
+		const updateLayoutResponsePromise = this.page.waitForResponse(
+			(response) =>
+				response.request().method() === 'POST' &&
+				response.url().includes('/portal/update_layout')
+		);
+
 		await categoryPanel
 			.locator('li')
 			.filter({hasText: new RegExp(`^${portletName}$`)})
 			.getByLabel('Add Content')
 			.click();
+
+		expect((await updateLayoutResponsePromise).ok()).toBe(true);
+	}
+
+	async assertSearchParameter(name: string, values: (number | string)[]) {
+		await expect
+			.poll(() =>
+				new URL(this.page.url()).searchParams.getAll(name).sort()
+			)
+			.toEqual(values.map(String).sort());
+	}
+
+	async assertSearchResults(keyword: string, titles: string[]) {
+		await expect(this.searchResultsTotalLabel).toHaveText(
+			`${titles.length} ${titles.length === 1 ? 'Result' : 'Results'} for ${keyword}`
+		);
+
+		for (const title of titles) {
+			await expect(
+				this.searchResults.getByRole('link', {exact: true, name: title})
+			).toBeVisible();
+		}
 	}
 
 	async fillPortletConfigurationsInput(
@@ -129,6 +160,15 @@ export class SearchPage {
 				`xpath=//div[contains(.,'${type}') and contains(@class, 'panel-group')]`
 			)
 			.getByRole('checkbox', {name: searchFacetTerm});
+	}
+
+	getSearchFacetClearButton(searchFacetTerm: string | RegExp): Locator {
+		return this.page
+			.locator('.search-facet')
+			.filter({
+				has: this.page.getByRole('checkbox', {name: searchFacetTerm}),
+			})
+			.getByRole('button', {name: /Clear/});
 	}
 
 	async getSearchFacetLink(
