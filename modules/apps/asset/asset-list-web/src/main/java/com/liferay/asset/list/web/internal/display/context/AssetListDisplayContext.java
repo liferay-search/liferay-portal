@@ -41,7 +41,6 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.CompanyConstants;
 import com.liferay.portal.kernel.model.Group;
-import com.liferay.portal.kernel.model.GroupConstants;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.portlet.SearchDisplayStyleUtil;
@@ -292,7 +291,7 @@ public class AssetListDisplayContext {
 	public int getAssetListEntryUsageCount(AssetListEntry assetListEntry) {
 		Group group = _themeDisplay.getScopeGroup();
 
-		if (group.getType() == GroupConstants.TYPE_DEPOT) {
+		if (group.isCompany() || group.isDepot()) {
 			return AssetListEntryUsageLocalServiceUtil.
 				getCompanyAssetListEntryUsagesCount(
 					_themeDisplay.getCompanyId(),
