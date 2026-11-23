@@ -59,6 +59,18 @@ public class SearchResultsPortletSharedSearchContributorTest {
 		_testContribute(paginationDelta, String.valueOf(paginationDelta));
 	}
 
+	@FeatureFlags(
+		featureFlags = {
+			@FeatureFlag(enable = false, value = "LPD-64988"),
+			@FeatureFlag("LPD-98858")
+		}
+	)
+	@Test
+	public void testContributeFacetSampleSizeWithMultipleWidgets() {
+		_testContributeFacetSampleSizeWithMultipleWidgets(false, true);
+		_testContributeFacetSampleSizeWithMultipleWidgets(true, false);
+	}
+
 	@FeatureFlag("LPD-64988")
 	@Test
 	public void testContributeMaximumSearchDepth() {
@@ -326,6 +338,29 @@ public class SearchResultsPortletSharedSearchContributorTest {
 
 		Assert.assertEquals(
 			Integer.valueOf(expectedPaginationDelta), searchRequest.getSize());
+	}
+
+	private void _testContributeFacetSampleSizeWithMultipleWidgets(
+		boolean limitResultCountAccuracy1, boolean limitResultCountAccuracy2) {
+
+		SearchRequestBuilder searchRequestBuilder =
+			_createSearchRequestBuilder();
+
+		_contribute(
+			limitResultCountAccuracy1, RandomTestUtil.randomInt(),
+			_createPortletSharedSearchSettings(
+				null, null, searchRequestBuilder));
+		_contribute(
+			limitResultCountAccuracy2, RandomTestUtil.randomInt(),
+			_createPortletSharedSearchSettings(
+				null, null, searchRequestBuilder));
+
+		SearchRequest searchRequest = searchRequestBuilder.build();
+
+		Assert.assertEquals(
+			Integer.valueOf(10000), searchRequest.getFacetSampleSize());
+		Assert.assertEquals(
+			Integer.valueOf(10000), searchRequest.getTrackTotalHitsLimit());
 	}
 
 	private void _testContributeMaximumSearchDepth(
