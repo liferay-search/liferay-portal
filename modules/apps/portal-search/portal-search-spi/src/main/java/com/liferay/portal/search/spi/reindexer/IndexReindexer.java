@@ -13,6 +13,10 @@ import com.liferay.portal.kernel.util.Validator;
  */
 public interface IndexReindexer {
 
+	public default boolean isEnabled(long companyId) {
+		return true;
+	}
+
 	public void reindex(long companyId, ExecutionMode executionMode)
 		throws Exception;
 

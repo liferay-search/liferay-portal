@@ -148,16 +148,26 @@ public class SearchAdminPortlet extends MVCPortlet {
 			Map<String, List<String>> indexReindexerClassNamesMap =
 				new TreeMap<>();
 
+			long companyId = _portal.getCompanyId(renderRequest);
+
 			for (String category : _serviceTrackerMap.keySet()) {
 				List<String> categoryClassNames = new ArrayList<>();
 
 				for (IndexReindexer indexReindexer :
 						_serviceTrackerMap.getService(category)) {
 
+					if (!indexReindexer.isEnabled(companyId)) {
+						continue;
+					}
+
 					Class<? extends IndexReindexer> clazz =
 						indexReindexer.getClass();
 
 					categoryClassNames.add(clazz.getName());
+				}
+
+				if (categoryClassNames.isEmpty()) {
+					continue;
 				}
 
 				Collections.sort(categoryClassNames);

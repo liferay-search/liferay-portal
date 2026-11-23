@@ -43,6 +43,19 @@ public class MostViewedContentRecommendationIndexReindexerTest {
 		new LiferayIntegrationTestRule();
 
 	@Test
+	public void testIsEnabled() throws Exception {
+		Assert.assertTrue(
+			_indexReindexer.isEnabled(TestPropsValues.getCompanyId()));
+	}
+
+	@FeatureFlag(enable = false, value = "LRAC-14771")
+	@Test
+	public void testIsEnabledWhenFeatureFlagIsDisabled() throws Exception {
+		Assert.assertFalse(
+			_indexReindexer.isEnabled(TestPropsValues.getCompanyId()));
+	}
+
+	@Test
 	public void testReindex() throws Exception {
 		_addMostViewedContentRecommendation();
 

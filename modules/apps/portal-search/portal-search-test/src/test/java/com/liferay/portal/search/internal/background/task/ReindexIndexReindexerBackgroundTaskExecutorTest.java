@@ -42,6 +42,18 @@ public class ReindexIndexReindexerBackgroundTaskExecutorTest {
 		_reindexIndexReindexerBackgroundTaskExecutor =
 			new ReindexIndexReindexerBackgroundTaskExecutor();
 
+		Mockito.when(
+			_indexReindexer1.isEnabled(Mockito.anyLong())
+		).thenReturn(
+			true
+		);
+
+		Mockito.when(
+			_indexReindexer2.isEnabled(Mockito.anyLong())
+		).thenReturn(
+			true
+		);
+
 		Collection<IndexReindexer> indexReindexers = Arrays.asList(
 			_indexReindexer1, _indexReindexer2);
 
@@ -113,6 +125,34 @@ public class ReindexIndexReindexerBackgroundTaskExecutorTest {
 
 		_verifyIndexerCalledOnceForEachCompany(_indexReindexer1);
 		_verifyIndexerCalledOnceForEachCompany(_indexReindexer2);
+	}
+
+	@Test
+	public void testReindexAllClassesWithDisabledIndexReindexer()
+		throws Exception {
+
+		Mockito.when(
+			_indexReindexer2.isEnabled(_COMPANY_IDS[0])
+		).thenReturn(
+			false
+		);
+
+		_reindexIndexReindexerBackgroundTaskExecutor.reindex(
+			"", _COMPANY_IDS, _EXECUTION_MODE);
+
+		_verifyIndexerCalledOnceForEachCompany(_indexReindexer1);
+
+		Mockito.verify(
+			_indexReindexer2, Mockito.never()
+		).reindex(
+			_COMPANY_IDS[0], _EXECUTION_MODE
+		);
+
+		Mockito.verify(
+			_indexReindexer2
+		).reindex(
+			_COMPANY_IDS[1], _EXECUTION_MODE
+		);
 	}
 
 	@Test

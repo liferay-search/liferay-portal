@@ -5,6 +5,7 @@
 
 package com.liferay.portal.search.spi.reindexer;
 
+import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
 
 import org.junit.Assert;
@@ -21,6 +22,15 @@ public class IndexReindexerTest {
 	@Rule
 	public static final LiferayUnitTestRule liferayUnitTestRule =
 		LiferayUnitTestRule.INSTANCE;
+
+	@Test
+	public void testIsEnabled() {
+		IndexReindexer indexReindexer = (companyId, executionMode) -> {
+		};
+
+		Assert.assertTrue(
+			indexReindexer.isEnabled(RandomTestUtil.randomLong()));
+	}
 
 	@Test
 	public void testParseExecutionModeDefaultsToFull() {

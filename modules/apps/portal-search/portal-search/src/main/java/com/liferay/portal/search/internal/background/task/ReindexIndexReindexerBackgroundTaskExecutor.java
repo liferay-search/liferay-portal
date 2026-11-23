@@ -14,6 +14,7 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.search.background.task.ReindexBackgroundTaskConstants;
 import com.liferay.portal.kernel.search.background.task.ReindexStatusMessageSender;
 import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.spi.reindexer.IndexReindexer;
 import com.liferay.portal.search.spi.reindexer.IndexReindexerRegistry;
@@ -55,8 +56,9 @@ public class ReindexIndexReindexerBackgroundTaskExecutor
 				Class<?> clazz = indexReindexer.getClass();
 
 				_reindex(
-					clazz.getName(), companyIds, executionMode, indexReindexer,
-					null, null);
+					clazz.getName(),
+					ArrayUtil.filter(companyIds, indexReindexer::isEnabled),
+					executionMode, indexReindexer, null, null);
 			}
 		}
 		else {
