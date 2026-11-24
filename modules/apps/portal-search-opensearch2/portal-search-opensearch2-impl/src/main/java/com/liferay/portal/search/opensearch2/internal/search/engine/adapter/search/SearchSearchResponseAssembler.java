@@ -125,6 +125,10 @@ public class SearchSearchResponseAssembler
 			openSearchAggregationResultsTranslator.translate(aggregates);
 
 		for (AggregationResult aggregationResult : aggregationResults) {
+			if (aggregationResult == null) {
+				continue;
+			}
+
 			searchSearchResponse.addAggregationResult(aggregationResult);
 		}
 	}
