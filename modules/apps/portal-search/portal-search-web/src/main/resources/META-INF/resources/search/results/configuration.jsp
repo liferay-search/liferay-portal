@@ -10,7 +10,8 @@
 <%@ taglib uri="http://liferay.com/tld/aui" prefix="aui" %><%@
 taglib uri="http://liferay.com/tld/frontend" prefix="liferay-frontend" %><%@
 taglib uri="http://liferay.com/tld/portlet" prefix="liferay-portlet" %><%@
-taglib uri="http://liferay.com/tld/template" prefix="liferay-template" %>
+taglib uri="http://liferay.com/tld/template" prefix="liferay-template" %><%@
+taglib uri="http://liferay.com/tld/ui" prefix="liferay-ui" %>
 
 <%@ page import="com.liferay.petra.string.StringPool" %><%@
 page import="com.liferay.portal.kernel.language.LanguageUtil" %><%@
@@ -45,6 +46,10 @@ SearchResultsPortletPreferences searchResultsPortletPreferences = new SearchResu
 	<aui:input name="redirect" type="hidden" value="<%= configurationRenderURL %>" />
 
 	<liferay-frontend:edit-form-body>
+		<liferay-ui:error key="<%= SearchResultsPortletPreferences.PREFERENCE_KEY_MAXIMUM_SEARCH_DEPTH %>">
+			<liferay-ui:message arguments="<%= errorException %>" key="the-maximum-search-depth-must-be-less-than-or-equal-to-the-max-result-window-x" />
+		</liferay-ui:error>
+
 		<liferay-frontend:fieldset
 			collapsible="<%= true %>"
 			label="display-settings"
