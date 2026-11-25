@@ -19,25 +19,31 @@ import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
+import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.test.TestInfo;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
+import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.HttpComponentsUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.PropsValues;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.URLCodec;
 import com.liferay.portal.search.rest.client.dto.v1_0.Suggestion;
 import com.liferay.portal.search.rest.client.dto.v1_0.SuggestionsContributorConfiguration;
 import com.liferay.portal.search.rest.client.dto.v1_0.SuggestionsContributorResults;
 import com.liferay.portal.search.rest.client.pagination.Page;
+import com.liferay.portal.search.rest.client.problem.Problem;
+import com.liferay.portal.search.rest.client.resource.v1_0.SuggestionResource;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
@@ -84,6 +90,7 @@ public class SuggestionResourceTest extends BaseSuggestionResourceTestCase {
 
 	@Override
 	@Test
+	@TestInfo("LPD-106880")
 	public void testPostSuggestionsPage() throws Exception {
 		_testPostSuggestionsPageWithBasicSuggestionsContributor();
 		_testPostSuggestionsPageWithBasicSuggestionsContributorWithAssetSearchSummary();
@@ -97,6 +104,7 @@ public class SuggestionResourceTest extends BaseSuggestionResourceTestCase {
 		_testPostSuggestionsPageWithBasicSuggestionsContributorWithSearchResultsPortletWithoutViewInContextWithLayout();
 		_testPostSuggestionsPageWithBasicSuggestionsContributorWithThisSiteScope();
 		_testPostSuggestionsPageWithSuggestionsSizeLimit();
+		_testPostSuggestionsPageWithoutViewPermission();
 	}
 
 	private FileEntry _addFileEntry() throws Exception {
@@ -597,6 +605,51 @@ public class SuggestionResourceTest extends BaseSuggestionResourceTestCase {
 		}
 
 		_assertSuggestionsCounts(new int[] {3}, search, new int[] {3});
+	}
+
+	private void _testPostSuggestionsPageWithoutViewPermission()
+		throws Exception {
+
+		User user = UserTestUtil.addUser(
+			testCompany, PropsValues.DEFAULT_ADMIN_PASSWORD);
+
+		SuggestionResource userSuggestionResource = SuggestionResource.builder(
+		).authentication(
+			user.getEmailAddress(), PropsValues.DEFAULT_ADMIN_PASSWORD
+		).endpoint(
+			testCompany.getVirtualHostname(),
+			PortalUtil.getPortalServerPort(false), "http"
+		).locale(
+			LocaleUtil.getDefault()
+		).build();
+
+		Layout layout = LayoutTestUtil.addTypePortletLayout(testGroup, true);
+
+		for (long plid :
+				new long[] {layout.getPlid(), RandomTestUtil.nextLong()}) {
+
+			try {
+				userSuggestionResource.postSuggestionsPage(
+					null, null, null, RandomTestUtil.randomString(), plid, null,
+					RandomTestUtil.randomString(),
+					new SuggestionsContributorConfiguration[] {
+						new SuggestionsContributorConfiguration() {
+							{
+								contributorName = "basic";
+								displayGroupName =
+									RandomTestUtil.randomString();
+							}
+						}
+					});
+
+				Assert.fail();
+			}
+			catch (Problem.ProblemException problemException) {
+				Problem problem = problemException.getProblem();
+
+				Assert.assertEquals("FORBIDDEN", problem.getStatus());
+			}
+		}
 	}
 
 	@Inject

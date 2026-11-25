@@ -15,8 +15,11 @@ import com.liferay.portal.kernel.portlet.LiferayRenderRequest;
 import com.liferay.portal.kernel.portlet.PortletConfigFactoryUtil;
 import com.liferay.portal.kernel.portlet.PortletInstanceFactoryUtil;
 import com.liferay.portal.kernel.search.SearchContext;
+import com.liferay.portal.kernel.security.auth.PrincipalException;
+import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.service.LayoutLocalService;
+import com.liferay.portal.kernel.service.LayoutService;
 import com.liferay.portal.kernel.service.PortletLocalService;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.HttpComponentsUtil;
@@ -99,7 +102,13 @@ public class SuggestionResourceImpl extends BaseSuggestionResourceImpl {
 			}
 		}
 
-		Layout layout = _layoutLocalService.getLayout(plid);
+		if (_layoutLocalService.fetchLayout(plid) == null) {
+			throw new PrincipalException.MustHavePermission(
+				PermissionThreadLocal.getPermissionChecker(),
+				Layout.class.getName(), plid, ActionKeys.VIEW);
+		}
+
+		Layout layout = _layoutService.getLayout(plid);
 
 		if (Validator.isNotNull(destinationFriendlyURL)) {
 			if (!StringUtil.startsWith(
@@ -291,6 +300,9 @@ public class SuggestionResourceImpl extends BaseSuggestionResourceImpl {
 
 	@Reference
 	private LayoutLocalService _layoutLocalService;
+
+	@Reference
+	private LayoutService _layoutService;
 
 	@Reference
 	private Portal _portal;
