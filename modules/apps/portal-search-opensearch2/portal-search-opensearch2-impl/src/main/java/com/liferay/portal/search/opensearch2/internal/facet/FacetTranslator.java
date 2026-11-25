@@ -103,10 +103,10 @@ public class FacetTranslator {
 				}
 
 				containerBuilder = _getSamplerContainerBuilder(
-					facetSampleSize,
 					HashMapBuilder.put(
 						facetName, containerBuilder.build()
-					).build());
+					).build(),
+					facetSampleSize);
 			}
 
 			Aggregation.Builder.ContainerBuilder postProcessContainerBuilder =
@@ -125,7 +125,7 @@ public class FacetTranslator {
 			Aggregation.Builder.ContainerBuilder containerBuilder =
 				postProcessAggregation(
 					_getSamplerContainerBuilder(
-						facetSampleSize, sampledAggregations),
+						sampledAggregations, facetSampleSize),
 					facetProcessorContext, FacetUtil.SAMPLER_AGGREGATION_NAME);
 
 			searchRequestBuilder.aggregations(
@@ -194,7 +194,7 @@ public class FacetTranslator {
 	}
 
 	private Aggregation.Builder.ContainerBuilder _getSamplerContainerBuilder(
-		int facetSampleSize, Map<String, Aggregation> aggregations) {
+		Map<String, Aggregation> aggregations, int facetSampleSize) {
 
 		return new Aggregation.Builder(
 		).sampler(

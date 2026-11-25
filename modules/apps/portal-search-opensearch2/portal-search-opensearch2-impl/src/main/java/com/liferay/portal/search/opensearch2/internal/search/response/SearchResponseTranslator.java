@@ -73,8 +73,8 @@ public class SearchResponseTranslator {
 		hits.setSearchTime((float)(searchResponse.took() / 1000.0));
 
 		_updateFacetCollectors(
-			searchSearchRequest.getFacetSampleSize(),
-			searchSearchRequest.getFacets(), searchResponse);
+			searchSearchRequest.getFacets(),
+			searchSearchRequest.getFacetSampleSize(), searchResponse);
 
 		_updateGroupedHits(
 			searchSearchRequest.getAlternateUidFieldName(), hits,
@@ -243,7 +243,7 @@ public class SearchResponseTranslator {
 	}
 
 	private void _updateFacetCollectors(
-		Integer facetSampleSize, Map<String, Facet> facets,
+		Map<String, Facet> facets, Integer facetSampleSize,
 		SearchResponse<JsonData> searchResponse) {
 
 		Map<String, Aggregate> aggregations = searchResponse.aggregations();

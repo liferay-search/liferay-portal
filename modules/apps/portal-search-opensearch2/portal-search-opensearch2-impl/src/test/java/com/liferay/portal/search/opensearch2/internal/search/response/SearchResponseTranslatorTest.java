@@ -123,20 +123,20 @@ public class SearchResponseTranslatorTest {
 
 		return Aggregate.of(
 			aggregate -> aggregate.filter(
-				filterAggregate -> filterAggregate.docCount(
-					3
-				).aggregations(
+				filterAggregate -> filterAggregate.aggregations(
 					name, subaggregate
+				).docCount(
+					3
 				)));
 	}
 
 	private Aggregate _createSamplerAggregate() {
 		return Aggregate.of(
 			aggregate -> aggregate.sampler(
-				samplerAggregate -> samplerAggregate.docCount(
-					3
-				).aggregations(
+				samplerAggregate -> samplerAggregate.aggregations(
 					_FIELD_NAME, _createTermsAggregate()
+				).docCount(
+					3
 				)));
 	}
 
@@ -176,10 +176,10 @@ public class SearchResponseTranslatorTest {
 					buckets -> buckets.array(
 						Collections.singletonList(
 							StringTermsBucket.of(
-								stringTermsBucket -> stringTermsBucket.key(
-									_TERM
-								).docCount(
+								stringTermsBucket -> stringTermsBucket.docCount(
 									3
+								).key(
+									_TERM
 								))))
 				).docCountErrorUpperBound(
 					0L
@@ -194,12 +194,11 @@ public class SearchResponseTranslatorTest {
 
 		ReflectionTestUtil.invoke(
 			new SearchResponseTranslator(), "_updateFacetCollectors",
-			new Class<?>[] {Integer.class, Map.class, SearchResponse.class},
-			facetSampleSize,
+			new Class<?>[] {Map.class, Integer.class, SearchResponse.class},
 			HashMapBuilder.put(
 				_FIELD_NAME, facet
 			).build(),
-			searchResponse);
+			facetSampleSize, searchResponse);
 	}
 
 	private static final String _FIELD_NAME = "assetTagNames";
