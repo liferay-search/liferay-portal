@@ -58,6 +58,7 @@ public class SearchRequestImpl implements SearchRequest, Serializable {
 		_emptySearchEnabled = searchRequestImpl._emptySearchEnabled;
 		_excludeContributors.addAll(searchRequestImpl._excludeContributors);
 		_explain = searchRequestImpl._explain;
+		_facetSampleSize = searchRequestImpl._facetSampleSize;
 		_federatedSearchKey = searchRequestImpl._federatedSearchKey;
 		_federatedSearchRequestsMap.putAll(
 			searchRequestImpl._federatedSearchRequestsMap);
@@ -168,6 +169,11 @@ public class SearchRequestImpl implements SearchRequest, Serializable {
 	@Override
 	public List<String> getExcludeContributors() {
 		return Collections.unmodifiableList(_excludeContributors);
+	}
+
+	@Override
+	public Integer getFacetSampleSize() {
+		return _facetSampleSize;
 	}
 
 	@Override
@@ -376,6 +382,10 @@ public class SearchRequestImpl implements SearchRequest, Serializable {
 		_explain = explain;
 	}
 
+	public void setFacetSampleSize(Integer facetSampleSize) {
+		_facetSampleSize = facetSampleSize;
+	}
+
 	public void setFederatedSearchKey(String federatedSearchKey) {
 		_federatedSearchKey = federatedSearchKey;
 	}
@@ -548,6 +558,7 @@ public class SearchRequestImpl implements SearchRequest, Serializable {
 	private boolean _emptySearchEnabled;
 	private final List<String> _excludeContributors = new ArrayList<>();
 	private boolean _explain;
+	private Integer _facetSampleSize;
 	private String _federatedSearchKey;
 	private final Map<String, SearchRequest> _federatedSearchRequestsMap =
 		new LinkedHashMap<>();

@@ -8,6 +8,8 @@ package com.liferay.portal.search.elasticsearch8.internal.search.response;
 import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch._types.aggregations.Aggregate;
 import co.elastic.clients.elasticsearch._types.aggregations.Buckets;
+import co.elastic.clients.elasticsearch._types.aggregations.FilterAggregate;
+import co.elastic.clients.elasticsearch._types.aggregations.SamplerAggregate;
 import co.elastic.clients.elasticsearch._types.aggregations.StringTermsAggregate;
 import co.elastic.clients.elasticsearch._types.aggregations.StringTermsBucket;
 import co.elastic.clients.elasticsearch._types.aggregations.TopHitsAggregate;
@@ -48,6 +50,7 @@ import com.liferay.portal.search.stats.StatsRequest;
 import com.liferay.portal.search.stats.StatsRequestBuilder;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -68,7 +71,9 @@ public class SearchResponseTranslator {
 
 		hits.setSearchTime((float)(responseBody.took() / 1000.0));
 
-		_updateFacetCollectors(searchSearchRequest.getFacets(), responseBody);
+		_updateFacetCollectors(
+			searchSearchRequest.getFacets(),
+			searchSearchRequest.getFacetSampleSize(), responseBody);
 
 		_updateGroupedHits(
 			searchSearchRequest.getAlternateUidFieldName(), hits,
@@ -241,12 +246,36 @@ public class SearchResponseTranslator {
 	}
 
 	private void _updateFacetCollectors(
-		Map<String, Facet> facets, ResponseBody<JsonData> responseBody) {
+		Map<String, Facet> facets, Integer facetSampleSize,
+		ResponseBody<JsonData> responseBody) {
 
 		Map<String, Aggregate> aggregations = responseBody.aggregations();
 
 		if (aggregations == null) {
 			return;
+		}
+
+		if ((facetSampleSize != null) &&
+			aggregations.containsKey(FacetUtil.SAMPLER_AGGREGATION_NAME)) {
+
+			Aggregate aggregate = aggregations.get(
+				FacetUtil.SAMPLER_AGGREGATION_NAME);
+
+			if (aggregate.isFilter()) {
+				FilterAggregate filterAggregate = aggregate.filter();
+
+				Map<String, Aggregate> filterAggregations =
+					filterAggregate.aggregations();
+
+				aggregate = filterAggregations.get(
+					FacetUtil.SAMPLER_AGGREGATION_NAME);
+			}
+
+			SamplerAggregate samplerAggregate = aggregate.sampler();
+
+			aggregations = new HashMap<>(aggregations);
+
+			aggregations.putAll(samplerAggregate.aggregations());
 		}
 
 		for (Facet facet : facets.values()) {

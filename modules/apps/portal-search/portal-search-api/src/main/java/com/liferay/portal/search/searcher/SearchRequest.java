@@ -42,6 +42,15 @@ public interface SearchRequest {
 
 	public List<String> getExcludeContributors();
 
+	/**
+	 * Provides the number of top scoring documents per shard that facet
+	 * counts are computed on.
+	 *
+	 * @return the facet sample size, or <code>null</code> if facets are
+	 *         computed on every matching document
+	 */
+	public Integer getFacetSampleSize();
+
 	public String getFederatedSearchKey();
 
 	public List<SearchRequest> getFederatedSearchRequests();

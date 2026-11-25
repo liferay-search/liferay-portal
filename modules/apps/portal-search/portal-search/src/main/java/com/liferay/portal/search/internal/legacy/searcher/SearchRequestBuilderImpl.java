@@ -238,6 +238,15 @@ public class SearchRequestBuilderImpl implements SearchRequestBuilder {
 	}
 
 	@Override
+	public SearchRequestBuilder facetSampleSize(Integer facetSampleSize) {
+		_withSearchRequestImpl(
+			searchRequestImpl -> searchRequestImpl.setFacetSampleSize(
+				facetSampleSize));
+
+		return this;
+	}
+
+	@Override
 	public SearchRequestBuilder federatedSearchKey(String federatedSearchKey) {
 		_withSearchRequestImpl(
 			searchRequestImpl -> searchRequestImpl.setFederatedSearchKey(

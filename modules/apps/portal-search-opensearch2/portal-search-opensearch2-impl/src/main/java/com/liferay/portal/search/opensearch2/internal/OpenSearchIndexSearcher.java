@@ -467,6 +467,16 @@ public class OpenSearchIndexSearcher extends BaseIndexSearcher {
 		return message;
 	}
 
+	private Integer _getFacetSampleSize(Integer facetSampleSize) {
+		if (facetSampleSize == null) {
+			return null;
+		}
+
+		return Math.min(
+			facetSampleSize,
+			_openSearchConfigurationWrapper.trackTotalHitsLimit());
+	}
+
 	private String[] _getIndexes(
 		SearchContext searchContext, SearchRequest searchRequest) {
 
@@ -580,6 +590,8 @@ public class OpenSearchIndexSearcher extends BaseIndexSearcher {
 		baseSearchRequest.addComplexQueryParts(
 			searchRequest.getComplexQueryParts());
 		baseSearchRequest.setExplain(searchRequest.isExplain());
+		baseSearchRequest.setFacetSampleSize(
+			_getFacetSampleSize(searchRequest.getFacetSampleSize()));
 		baseSearchRequest.setHighlight(searchRequest.getHighlight());
 		baseSearchRequest.setIncludeResponseString(
 			searchRequest.isIncludeResponseString());

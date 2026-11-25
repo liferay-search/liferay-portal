@@ -148,7 +148,11 @@ public class SearchResultsPortletSharedSearchContributor
 			searchResultsPortletInstanceConfiguration.
 				limitResultCountAccuracy()) {
 
-			searchRequestBuilder.trackTotalHitsLimit(resultCountAccuracyLimit);
+			searchRequestBuilder.facetSampleSize(
+				resultCountAccuracyLimit
+			).trackTotalHitsLimit(
+				resultCountAccuracyLimit
+			);
 		}
 
 		int paginationStart = GetterUtil.getInteger(
