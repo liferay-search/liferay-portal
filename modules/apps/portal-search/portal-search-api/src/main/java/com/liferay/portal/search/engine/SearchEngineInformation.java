@@ -21,6 +21,8 @@ public interface SearchEngineInformation {
 
 	public int[] getEmbeddingVectorDimensions();
 
+	public int getIndexMaxResultWindow();
+
 	public String getNodesString();
 
 	public String getVendorString();

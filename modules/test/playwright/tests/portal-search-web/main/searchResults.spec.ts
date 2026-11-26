@@ -993,11 +993,18 @@ for (const reactPaginatorEnabled of [false, true]) {
 							5
 						);
 
-						await expect(
-							searchPage.searchResultsPaginationDescription
-						).toHaveText(
-							`Showing 1 to 5 of ${getSearchResultsTotal(5)} entries.`
-						);
+						if (reactPaginatorEnabled) {
+							await expect(
+								searchPage.searchResultsPaginationDescription
+							).toBeHidden();
+						}
+						else {
+							await expect(
+								searchPage.searchResultsPaginationDescription
+							).toHaveText(
+								`Showing 1 to 5 of ${getSearchResultsTotal(5)} entries.`
+							);
+						}
 					});
 				}
 			);

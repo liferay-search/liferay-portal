@@ -92,6 +92,11 @@ public class SolrSearchEngineInformation implements SearchEngineInformation {
 	}
 
 	@Override
+	public int getIndexMaxResultWindow() {
+		return Integer.MAX_VALUE;
+	}
+
+	@Override
 	public String getNodesString() {
 		try {
 			StringBundler sb = new StringBundler(5);

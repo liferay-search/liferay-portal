@@ -8,10 +8,12 @@ package com.liferay.portal.search.web.internal.search.results.portlet.shared.sea
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.configuration.module.configuration.ConfigurationProvider;
 import com.liferay.portal.kernel.model.Layout;
+import com.liferay.portal.kernel.module.service.Snapshot;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.PropsValues;
+import com.liferay.portal.search.engine.SearchEngineInformation;
 import com.liferay.portal.search.internal.legacy.searcher.SearchRequestBuilderImpl;
 import com.liferay.portal.search.internal.searcher.SearchRequestBuilderFactoryImpl;
 import com.liferay.portal.search.searcher.SearchRequest;
@@ -45,6 +47,29 @@ public class SearchResultsPortletSharedSearchContributorTest {
 
 	@Before
 	public void setUp() {
+		Snapshot<SearchEngineInformation> searchEngineInformationSnapshot =
+			Mockito.mock(Snapshot.class);
+
+		SearchEngineInformation searchEngineInformation = Mockito.mock(
+			SearchEngineInformation.class);
+
+		Mockito.doAnswer(
+			invocationOnMock -> _indexMaxResultWindow
+		).when(
+			searchEngineInformation
+		).getIndexMaxResultWindow();
+
+		Mockito.doReturn(
+			searchEngineInformation
+		).when(
+			searchEngineInformationSnapshot
+		).get();
+
+		ReflectionTestUtil.setFieldValue(
+			SearchResultsPortletSharedSearchContributor.class,
+			"_searchEngineInformationSnapshot",
+			searchEngineInformationSnapshot);
+
 		_themeDisplay.setLayout(_layout);
 	}
 
@@ -128,6 +153,19 @@ public class SearchResultsPortletSharedSearchContributorTest {
 
 	@FeatureFlag("LPD-64988")
 	@Test
+	public void testContributeMaximumSearchDepthWithIndexMaxResultWindow() {
+		_indexMaxResultWindow = 90;
+
+		_testContributeMaximumSearchDepth(80, 10, 100, "5");
+		_testContributeMaximumSearchDepth(80, 10, 100, "6");
+
+		_indexMaxResultWindow = 100;
+
+		_testContributeMaximumSearchDepth(80, 10, 90, "5");
+	}
+
+	@FeatureFlag("LPD-64988")
+	@Test
 	public void testContributeMaximumSearchDepthWithMultipleWidgets() {
 		_testContributeMaximumSearchDepthWithMultipleWidgets(40, 10, 100, 50);
 		_testContributeMaximumSearchDepthWithMultipleWidgets(40, 10, 50, 100);
@@ -154,6 +192,22 @@ public class SearchResultsPortletSharedSearchContributorTest {
 			null, false, RandomTestUtil.randomInt());
 		_testContributeTrackTotalHitsLimit(
 			null, true, RandomTestUtil.randomInt());
+	}
+
+	@FeatureFlags(
+		featureFlags = {@FeatureFlag("LPD-64988"), @FeatureFlag("LPD-98858")}
+	)
+	@Test
+	public void testContributeTrackTotalHitsLimitWithIndexMaxResultWindow() {
+		_indexMaxResultWindow = 50;
+
+		_testContributeTrackTotalHitsLimit(50, true, 100);
+		_testContributeTrackTotalHitsLimit(50, true, Integer.MAX_VALUE);
+		_testContributeTrackTotalHitsLimit(null, false, 100);
+
+		_indexMaxResultWindow = 200;
+
+		_testContributeTrackTotalHitsLimit(100, true, 100);
 	}
 
 	@FeatureFlags(
@@ -413,6 +467,7 @@ public class SearchResultsPortletSharedSearchContributorTest {
 
 	private static final String _PORTLET_ID = RandomTestUtil.randomString();
 
+	private int _indexMaxResultWindow = Integer.MAX_VALUE;
 	private final Layout _layout = Mockito.mock(Layout.class);
 	private final ThemeDisplay _themeDisplay = new ThemeDisplay();
 

@@ -472,6 +472,11 @@ public class DDMIndexerImplTest {
 						return new int[0];
 					}
 
+					@Override
+					public int getIndexMaxResultWindow() {
+						return Integer.MAX_VALUE;
+					}
+
 					public String getNodesString() {
 						return null;
 					}

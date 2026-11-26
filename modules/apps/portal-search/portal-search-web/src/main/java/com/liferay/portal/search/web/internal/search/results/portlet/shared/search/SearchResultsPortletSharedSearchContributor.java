@@ -9,11 +9,13 @@ import com.liferay.portal.configuration.module.configuration.ConfigurationProvid
 import com.liferay.portal.kernel.dao.search.SearchPaginationUtil;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.module.configuration.ConfigurationException;
+import com.liferay.portal.kernel.module.service.Snapshot;
 import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.PropsValues;
 import com.liferay.portal.search.constants.SearchContextAttributes;
+import com.liferay.portal.search.engine.SearchEngineInformation;
 import com.liferay.portal.search.searcher.SearchRequestBuilder;
 import com.liferay.portal.search.searcher.SearchRequestBuilderFactory;
 import com.liferay.portal.search.web.constants.SearchResultsPortletKeys;
@@ -137,6 +139,15 @@ public class SearchResultsPortletSharedSearchContributor
 					Integer.MAX_VALUE),
 				searchResultsPortletInstanceConfiguration.maximumSearchDepth());
 
+			SearchEngineInformation searchEngineInformation =
+				_searchEngineInformationSnapshot.get();
+
+			if (searchEngineInformation != null) {
+				maximumSearchDepth = Math.min(
+					maximumSearchDepth,
+					searchEngineInformation.getIndexMaxResultWindow());
+			}
+
 			resultCountAccuracyLimit = maximumSearchDepth;
 
 			searchContext.setAttribute(
@@ -176,6 +187,11 @@ public class SearchResultsPortletSharedSearchContributor
 
 	private static final String _ATTRIBUTE_KEY_MAXIMUM_SEARCH_DEPTH =
 		"searchResults.maximumSearchDepth";
+
+	private static final Snapshot<SearchEngineInformation>
+		_searchEngineInformationSnapshot = new Snapshot<>(
+			SearchResultsPortletSharedSearchContributor.class,
+			SearchEngineInformation.class, null, true);
 
 	@Reference
 	private ConfigurationProvider _configurationProvider;

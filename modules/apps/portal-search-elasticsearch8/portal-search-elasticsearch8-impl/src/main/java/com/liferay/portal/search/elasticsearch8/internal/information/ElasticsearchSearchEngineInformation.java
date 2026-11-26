@@ -143,6 +143,11 @@ public class ElasticsearchSearchEngineInformation
 	}
 
 	@Override
+	public int getIndexMaxResultWindow() {
+		return elasticsearchConfigurationWrapper.indexMaxResultWindow();
+	}
+
+	@Override
 	public String getNodesString() {
 		try {
 			String clusterNodesString = _getClusterNodesString(
