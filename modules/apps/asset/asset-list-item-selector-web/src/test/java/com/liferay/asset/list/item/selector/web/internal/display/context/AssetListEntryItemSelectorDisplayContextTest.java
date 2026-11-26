@@ -8,14 +8,18 @@ package com.liferay.asset.list.item.selector.web.internal.display.context;
 import com.liferay.asset.list.model.AssetListEntry;
 import com.liferay.asset.list.service.AssetListEntryAudienceEntryRelLocalServiceUtil;
 import com.liferay.asset.list.service.AssetListEntrySegmentsEntryRelLocalServiceUtil;
+import com.liferay.asset.list.service.AssetListEntryUsageLocalServiceUtil;
 import com.liferay.info.item.InfoItemServiceRegistry;
 import com.liferay.info.item.provider.InfoItemFormProvider;
 import com.liferay.info.search.InfoSearchClassMapperRegistry;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
+import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
+import com.liferay.portal.kernel.test.TestInfo;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
 
@@ -40,6 +44,121 @@ public class AssetListEntryItemSelectorDisplayContextTest {
 	@Rule
 	public static final LiferayUnitTestRule liferayUnitTestRule =
 		LiferayUnitTestRule.INSTANCE;
+
+	@Test
+	@TestInfo("LPD-116888")
+	public void testGetAssetListEntryUsageCount() {
+		AssetListEntry assetListEntry = Mockito.mock(AssetListEntry.class);
+
+		Mockito.when(
+			assetListEntry.getAssetListEntryId()
+		).thenReturn(
+			_ASSET_LIST_ENTRY_ID
+		);
+
+		HttpServletRequest httpServletRequest = Mockito.mock(
+			HttpServletRequest.class);
+
+		ThemeDisplay themeDisplay = Mockito.mock(ThemeDisplay.class);
+
+		Group group = Mockito.mock(Group.class);
+
+		Mockito.when(
+			themeDisplay.getCompanyId()
+		).thenReturn(
+			_COMPANY_ID
+		);
+
+		Mockito.when(
+			themeDisplay.getScopeGroup()
+		).thenReturn(
+			group
+		);
+
+		Mockito.when(
+			themeDisplay.getScopeGroupId()
+		).thenReturn(
+			_GROUP_ID
+		);
+
+		Mockito.when(
+			httpServletRequest.getAttribute(WebKeys.THEME_DISPLAY)
+		).thenReturn(
+			themeDisplay
+		);
+
+		try (MockedStatic<AssetListEntryUsageLocalServiceUtil>
+				assetListEntryUsageLocalServiceUtilMockedStatic =
+					Mockito.mockStatic(
+						AssetListEntryUsageLocalServiceUtil.class);
+			MockedStatic<PortalUtil> portalUtilMockedStatic =
+				Mockito.mockStatic(PortalUtil.class)) {
+
+			portalUtilMockedStatic.when(
+				() -> PortalUtil.getClassNameId(AssetListEntry.class)
+			).thenReturn(
+				_CLASS_NAME_ID
+			);
+
+			assetListEntryUsageLocalServiceUtilMockedStatic.when(
+				() ->
+					AssetListEntryUsageLocalServiceUtil.
+						getAssetListEntryUsagesCount(
+							_GROUP_ID, _CLASS_NAME_ID,
+							String.valueOf(_ASSET_LIST_ENTRY_ID))
+			).thenReturn(
+				1
+			);
+
+			assetListEntryUsageLocalServiceUtilMockedStatic.when(
+				() ->
+					AssetListEntryUsageLocalServiceUtil.
+						getCompanyAssetListEntryUsagesCount(
+							_COMPANY_ID, _CLASS_NAME_ID,
+							String.valueOf(_ASSET_LIST_ENTRY_ID))
+			).thenReturn(
+				3
+			);
+
+			AssetListEntryItemSelectorDisplayContext
+				assetListEntryItemSelectorDisplayContext =
+					new AssetListEntryItemSelectorDisplayContext(
+						httpServletRequest, null, null, null, null, null);
+
+			Assert.assertEquals(
+				1,
+				assetListEntryItemSelectorDisplayContext.
+					getAssetListEntryUsageCount(assetListEntry));
+
+			Mockito.when(
+				group.isCompany()
+			).thenReturn(
+				true
+			);
+
+			Assert.assertEquals(
+				3,
+				assetListEntryItemSelectorDisplayContext.
+					getAssetListEntryUsageCount(assetListEntry));
+
+			Mockito.when(
+				group.isCompany()
+			).thenReturn(
+				false
+			);
+
+			Mockito.when(
+				group.isDepot()
+			).thenReturn(
+				true
+			);
+
+			Assert.assertEquals(
+				3,
+				assetListEntryItemSelectorDisplayContext.
+					getAssetListEntryUsageCount(assetListEntry));
+		}
+	}
 
 	@Test
 	public void testGetAssetListEntryVariationsCount() {
@@ -207,6 +326,10 @@ public class AssetListEntryItemSelectorDisplayContextTest {
 	private static final long _ASSET_LIST_ENTRY_ID =
 		RandomTestUtil.randomLong();
 
+	private static final long _CLASS_NAME_ID = RandomTestUtil.randomLong();
+
 	private static final long _COMPANY_ID = RandomTestUtil.randomLong();
+
+	private static final long _GROUP_ID = RandomTestUtil.randomLong();
 
 }
