@@ -14,6 +14,7 @@ import com.liferay.asset.kernel.service.AssetEntryLocalService;
 import com.liferay.asset.list.constants.AssetListConstants;
 import com.liferay.asset.list.constants.AssetListEntryTypeConstants;
 import com.liferay.asset.list.constants.AssetListPortletKeys;
+import com.liferay.asset.list.exception.NoSuchEntryException;
 import com.liferay.asset.list.model.AssetListEntry;
 import com.liferay.asset.list.model.AssetListEntryAssetEntryRel;
 import com.liferay.asset.list.model.AssetListEntryAudienceEntryRel;
@@ -29,6 +30,7 @@ import com.liferay.audiences.service.AudiencesEntryLocalService;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.test.util.DDMStructureTestUtil;
 import com.liferay.exportimport.kernel.lar.ExportImportThreadLocal;
+import com.liferay.exportimport.kernel.lar.PortletDataException;
 import com.liferay.exportimport.kernel.lar.StagedModelDataHandlerUtil;
 import com.liferay.exportimport.test.util.lar.BaseStagedModelDataHandlerTestCase;
 import com.liferay.journal.constants.JournalFolderConstants;
@@ -104,6 +106,13 @@ public class AssetListEntryStagedModelDataHandlerTest
 		_testExportImportAssetListEntryWithOnlyNonexistentClassNameIds();
 		_testExportImportAssetListEntryWithSegmentsEntry();
 		_testExportImportAssetListEntryWithStaleAnyAssetTypeClassName();
+	}
+
+	@Test
+	@TestInfo("LPD-117788")
+	public void testImportStagedModelWithOtherGroup() throws Exception {
+		_testImportStagedModelWithOtherGroupAssetEntryRel();
+		_testImportStagedModelWithOtherGroupSegmentsEntryRel();
 	}
 
 	@Override
@@ -701,6 +710,87 @@ public class AssetListEntryStagedModelDataHandlerTest
 			unicodeProperties.getProperty("anyAssetType"));
 		Assert.assertNull(
 			unicodeProperties.getProperty("anyAssetTypeClassName"));
+	}
+
+	private void _testImportStagedModelWithOtherGroupAssetEntryRel()
+		throws Exception {
+
+		AssetListEntry assetListEntry = AssetListTestUtil.addAssetListEntry(
+			stagingGroup.getGroupId());
+
+		JournalArticle journalArticle = JournalTestUtil.addArticle(
+			stagingGroup.getGroupId(),
+			JournalFolderConstants.DEFAULT_PARENT_FOLDER_ID);
+
+		AssetEntry assetEntry = _assetEntryLocalService.getEntry(
+			JournalArticle.class.getName(),
+			journalArticle.getResourcePrimKey());
+
+		_assetListEntryLocalService.addAssetEntrySelections(
+			assetListEntry.getAssetListEntryId(),
+			new long[] {assetEntry.getEntryId()},
+			SegmentsEntryConstants.ID_DEFAULT,
+			ServiceContextTestUtil.getServiceContext(
+				stagingGroup.getGroupId()));
+
+		List<AssetListEntryAssetEntryRel> assetListEntryAssetEntryRels =
+			_assetListEntryAssetEntryRelLocalService.
+				getAssetListEntryAssetEntryRels(
+					assetListEntry.getAssetListEntryId(),
+					SegmentsEntryConstants.ID_DEFAULT, QueryUtil.ALL_POS,
+					QueryUtil.ALL_POS);
+
+		AssetListEntryAssetEntryRel assetListEntryAssetEntryRel =
+			assetListEntryAssetEntryRels.get(0);
+
+		exportStagedModel(assetListEntry);
+
+		try (SafeCloseable safeCloseable = initImportWithSafeCloseable(
+				stagingGroup, liveGroup)) {
+
+			PortletDataException portletDataException = Assert.assertThrows(
+				PortletDataException.class,
+				() -> StagedModelDataHandlerUtil.importStagedModel(
+					portletDataContext,
+					readExportedStagedModel(assetListEntryAssetEntryRel)));
+
+			Assert.assertTrue(
+				portletDataException.getCause() instanceof
+					NoSuchEntryException);
+		}
+	}
+
+	private void _testImportStagedModelWithOtherGroupSegmentsEntryRel()
+		throws Exception {
+
+		AssetListEntry assetListEntry = (AssetListEntry)addStagedModel(
+			stagingGroup, Collections.emptyMap());
+
+		User user = TestPropsValues.getUser();
+
+		SegmentsEntry segmentsEntry = _addSegmentsEntryByFirstName(
+			user.getFirstName(), stagingGroup.getGroupId());
+
+		AssetListEntrySegmentsEntryRel assetListEntrySegmentsEntryRel =
+			AssetListTestUtil.addAssetListEntrySegmentsEntryRel(
+				stagingGroup.getGroupId(), assetListEntry,
+				segmentsEntry.getSegmentsEntryId());
+
+		exportStagedModel(assetListEntry);
+
+		try (SafeCloseable safeCloseable = initImportWithSafeCloseable(
+				stagingGroup, liveGroup)) {
+
+			PortletDataException portletDataException = Assert.assertThrows(
+				PortletDataException.class,
+				() -> StagedModelDataHandlerUtil.importStagedModel(
+					portletDataContext,
+					readExportedStagedModel(assetListEntrySegmentsEntryRel)));
+
+			Assert.assertTrue(
+				portletDataException.getCause() instanceof
+					NoSuchEntryException);
+		}
 	}
 
 	@Inject
