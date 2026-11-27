@@ -175,6 +175,16 @@ public class SearchLayoutFactory {
 				_getSearchDescriptionLocalizationMap(), true,
 				new ServiceContext());
 
+		LayoutPageTemplateEntry layoutPageTemplateEntry =
+			_layoutPageTemplateEntryLocalService.
+				getFirstLayoutPageTemplateEntry(
+					layoutPrototype.getLayoutPrototypeId());
+
+		layoutPageTemplateEntry.setExternalReferenceCode("L_SEARCH");
+
+		_layoutPageTemplateEntryLocalService.updateLayoutPageTemplateEntry(
+			layoutPageTemplateEntry);
+
 		Layout layout = layoutPrototype.getLayout();
 
 		LayoutTypePortlet layoutTypePortlet =
