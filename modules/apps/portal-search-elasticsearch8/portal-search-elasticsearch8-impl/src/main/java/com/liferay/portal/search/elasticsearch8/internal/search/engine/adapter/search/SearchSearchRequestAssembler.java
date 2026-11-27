@@ -300,19 +300,25 @@ public class SearchSearchRequestAssembler {
 			return;
 		}
 
-		SourceConfig.Builder sourceConfigBuilder = new SourceConfig.Builder();
+		if (!GetterUtil.getBoolean(
+				searchSearchRequest.getFetchSource(), true)) {
 
-		sourceConfigBuilder.fetch(
-			GetterUtil.getBoolean(searchSearchRequest.getFetchSource(), true));
+			searchRequestBuilder.source(
+				SourceConfig.of(sourceConfig -> sourceConfig.fetch(false)));
 
-		sourceConfigBuilder.filter(
-			sourceFilter -> sourceFilter.excludes(
-				ListUtil.fromArray(searchSearchRequest.getFetchSourceExcludes())
-			).includes(
-				ListUtil.fromArray(searchSearchRequest.getFetchSourceIncludes())
-			));
+			return;
+		}
 
-		searchRequestBuilder.source(sourceConfigBuilder.build());
+		searchRequestBuilder.source(
+			SourceConfig.of(
+				sourceConfig -> sourceConfig.filter(
+					sourceFilter -> sourceFilter.excludes(
+						ListUtil.fromArray(
+							searchSearchRequest.getFetchSourceExcludes())
+					).includes(
+						ListUtil.fromArray(
+							searchSearchRequest.getFetchSourceIncludes())
+					))));
 	}
 
 	private void _setStats(

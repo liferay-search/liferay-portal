@@ -9,6 +9,7 @@ import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.search.GroupBy;
 import com.liferay.portal.kernel.search.Stats;
 import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.search.engine.adapter.search.SearchSearchRequest;
@@ -99,19 +100,25 @@ public class SearchSearchRequestAssembler {
 			return;
 		}
 
-		SourceConfig.Builder sourceConfigBuilder = new SourceConfig.Builder();
+		if (!GetterUtil.getBoolean(
+				searchSearchRequest.getFetchSource(), true)) {
 
-		SetterUtil.setNotNullBoolean(
-			sourceConfigBuilder::fetch, searchSearchRequest.getFetchSource());
+			searchRequestBuilder.source(
+				SourceConfig.of(sourceConfig -> sourceConfig.fetch(false)));
 
-		sourceConfigBuilder.filter(
-			sourceFilter -> sourceFilter.excludes(
-				ListUtil.fromArray(searchSearchRequest.getFetchSourceExcludes())
-			).includes(
-				ListUtil.fromArray(searchSearchRequest.getFetchSourceIncludes())
-			));
+			return;
+		}
 
-		searchRequestBuilder.source(sourceConfigBuilder.build());
+		searchRequestBuilder.source(
+			SourceConfig.of(
+				sourceConfig -> sourceConfig.filter(
+					sourceFilter -> sourceFilter.excludes(
+						ListUtil.fromArray(
+							searchSearchRequest.getFetchSourceExcludes())
+					).includes(
+						ListUtil.fromArray(
+							searchSearchRequest.getFetchSourceIncludes())
+					))));
 	}
 
 	private void _setFields(

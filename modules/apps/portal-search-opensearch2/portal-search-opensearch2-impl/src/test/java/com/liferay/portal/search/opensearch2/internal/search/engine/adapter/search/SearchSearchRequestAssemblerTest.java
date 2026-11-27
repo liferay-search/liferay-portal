@@ -29,6 +29,8 @@ import org.opensearch.client.opensearch._types.query_dsl.MatchPhraseQuery;
 import org.opensearch.client.opensearch._types.query_dsl.Query;
 import org.opensearch.client.opensearch.core.SearchRequest;
 import org.opensearch.client.opensearch.core.search.Highlight;
+import org.opensearch.client.opensearch.core.search.SourceConfig;
+import org.opensearch.client.opensearch.core.search.SourceFilter;
 
 /**
  * @author Olivia Yu
@@ -39,6 +41,98 @@ public class SearchSearchRequestAssemblerTest {
 	@Rule
 	public static final LiferayUnitTestRule liferayUnitTestRule =
 		LiferayUnitTestRule.INSTANCE;
+
+	@Test
+	public void testFetchSourceEmptyIncludesAndExcludes() {
+		SearchSearchRequest searchSearchRequest = _createSearchSearchRequest();
+
+		searchSearchRequest.setFetchSourceExcludes(new String[0]);
+		searchSearchRequest.setFetchSourceIncludes(new String[0]);
+
+		_assertSourceFilter(
+			Collections.emptyList(), Collections.emptyList(),
+			_assemble(searchSearchRequest));
+	}
+
+	@Test
+	public void testFetchSourceFalse() {
+		SearchSearchRequest searchSearchRequest = _createSearchSearchRequest();
+
+		searchSearchRequest.setFetchSource(false);
+
+		_assertFetchSourceFalse(_assemble(searchSearchRequest));
+	}
+
+	@Test
+	public void testFetchSourceFalseWithIncludesAndExcludes() {
+		SearchSearchRequest searchSearchRequest = _createSearchSearchRequest();
+
+		searchSearchRequest.setFetchSource(false);
+		searchSearchRequest.setFetchSourceExcludes(
+			new String[] {RandomTestUtil.randomString()});
+		searchSearchRequest.setFetchSourceIncludes(
+			new String[] {RandomTestUtil.randomString()});
+
+		_assertFetchSourceFalse(_assemble(searchSearchRequest));
+	}
+
+	@Test
+	public void testFetchSourceIncludesAndExcludes() {
+		SearchSearchRequest searchSearchRequest = _createSearchSearchRequest();
+
+		String fetchSourceExclude = RandomTestUtil.randomString();
+
+		searchSearchRequest.setFetchSourceExcludes(
+			new String[] {fetchSourceExclude});
+
+		String fetchSourceInclude = RandomTestUtil.randomString();
+
+		searchSearchRequest.setFetchSourceIncludes(
+			new String[] {fetchSourceInclude});
+
+		_assertSourceFilter(
+			Collections.singletonList(fetchSourceExclude),
+			Collections.singletonList(fetchSourceInclude),
+			_assemble(searchSearchRequest));
+	}
+
+	@Test
+	public void testFetchSourceTrue() {
+		SearchSearchRequest searchSearchRequest = _createSearchSearchRequest();
+
+		searchSearchRequest.setFetchSource(true);
+
+		_assertSourceFilter(
+			Collections.emptyList(), Collections.emptyList(),
+			_assemble(searchSearchRequest));
+	}
+
+	@Test
+	public void testFetchSourceTrueWithIncludesAndExcludes() {
+		SearchSearchRequest searchSearchRequest = _createSearchSearchRequest();
+
+		searchSearchRequest.setFetchSource(true);
+
+		String fetchSourceExclude = RandomTestUtil.randomString();
+
+		searchSearchRequest.setFetchSourceExcludes(
+			new String[] {fetchSourceExclude});
+
+		String fetchSourceInclude = RandomTestUtil.randomString();
+
+		searchSearchRequest.setFetchSourceIncludes(
+			new String[] {fetchSourceInclude});
+
+		_assertSourceFilter(
+			Collections.singletonList(fetchSourceExclude),
+			Collections.singletonList(fetchSourceInclude),
+			_assemble(searchSearchRequest));
+	}
+
+	@Test
+	public void testFetchSourceUnset() {
+		_assertFetchSourceFalse(_assemble(_createSearchSearchRequest()));
+	}
 
 	@Test
 	public void testHighlightEnabledCarriesHighlightQuery() {
@@ -92,6 +186,13 @@ public class SearchSearchRequestAssemblerTest {
 		return searchRequestBuilder.build();
 	}
 
+	private void _assertFetchSourceFalse(SearchRequest searchRequest) {
+		SourceConfig sourceConfig = searchRequest.source();
+
+		Assert.assertEquals(SourceConfig.Kind.Fetch, sourceConfig._kind());
+		Assert.assertFalse(sourceConfig.fetch());
+	}
+
 	private void _assertHighlightQuery(SearchRequest searchRequest) {
 		Query query = searchRequest.query();
 
@@ -112,6 +213,20 @@ public class SearchSearchRequestAssemblerTest {
 		Assert.assertTrue(
 			String.valueOf(highlightQuery),
 			_countMatchQueries(highlightQuery) > 0);
+	}
+
+	private void _assertSourceFilter(
+		List<String> expectedExcludes, List<String> expectedIncludes,
+		SearchRequest searchRequest) {
+
+		SourceConfig sourceConfig = searchRequest.source();
+
+		Assert.assertEquals(SourceConfig.Kind.Filter, sourceConfig._kind());
+
+		SourceFilter sourceFilter = sourceConfig.filter();
+
+		Assert.assertEquals(expectedExcludes, sourceFilter.excludes());
+		Assert.assertEquals(expectedIncludes, sourceFilter.includes());
 	}
 
 	private int _countMatchQueries(Query query) {
