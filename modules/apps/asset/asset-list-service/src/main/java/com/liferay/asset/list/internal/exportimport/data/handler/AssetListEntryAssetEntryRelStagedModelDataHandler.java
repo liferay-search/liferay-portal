@@ -7,8 +7,10 @@ package com.liferay.asset.list.internal.exportimport.data.handler;
 
 import com.liferay.asset.kernel.model.AssetEntry;
 import com.liferay.asset.kernel.service.AssetEntryLocalService;
+import com.liferay.asset.list.exception.NoSuchEntryException;
 import com.liferay.asset.list.model.AssetListEntry;
 import com.liferay.asset.list.model.AssetListEntryAssetEntryRel;
+import com.liferay.asset.list.service.AssetListEntryLocalService;
 import com.liferay.asset.util.StagingAssetEntryHelper;
 import com.liferay.exportimport.data.handler.base.BaseStagedModelDataHandler;
 import com.liferay.exportimport.kernel.lar.ExportImportPathUtil;
@@ -126,6 +128,16 @@ public class AssetListEntryAssetEntryRelStagedModelDataHandler
 			assetListEntryAssetEntryRel.getAssetListEntryId(),
 			assetListEntryAssetEntryRel.getAssetListEntryId());
 
+		AssetListEntry assetListEntry =
+			_assetListEntryLocalService.getAssetListEntry(assetListEntryId);
+
+		if (assetListEntry.getGroupId() !=
+				portletDataContext.getScopeGroupId()) {
+
+			throw new NoSuchEntryException(
+				"No asset list entry exists with ID " + assetListEntryId);
+		}
+
 		AssetListEntryAssetEntryRel importedAssetListEntryAssetEntryRel =
 			(AssetListEntryAssetEntryRel)assetListEntryAssetEntryRel.clone();
 
@@ -193,6 +205,9 @@ public class AssetListEntryAssetEntryRelStagedModelDataHandler
 
 	@Reference
 	private AssetEntryLocalService _assetEntryLocalService;
+
+	@Reference
+	private AssetListEntryLocalService _assetListEntryLocalService;
 
 	@Reference
 	private GroupLocalService _groupLocalService;

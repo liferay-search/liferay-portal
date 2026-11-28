@@ -5,8 +5,10 @@
 
 package com.liferay.asset.list.internal.exportimport.data.handler;
 
+import com.liferay.asset.list.exception.NoSuchEntryException;
 import com.liferay.asset.list.model.AssetListEntry;
 import com.liferay.asset.list.model.AssetListEntrySegmentsEntryRel;
+import com.liferay.asset.list.service.AssetListEntryLocalService;
 import com.liferay.exportimport.content.processor.ExportImportContentProcessor;
 import com.liferay.exportimport.data.handler.base.BaseStagedModelDataHandler;
 import com.liferay.exportimport.kernel.lar.ExportImportPathUtil;
@@ -146,6 +148,16 @@ public class AssetListEntrySegmentsEntryRelStagedModelDataHandler
 			assetListEntrySegmentsEntryRel.getAssetListEntryId(),
 			assetListEntrySegmentsEntryRel.getAssetListEntryId());
 
+		AssetListEntry assetListEntry =
+			_assetListEntryLocalService.getAssetListEntry(assetListEntryId);
+
+		if (assetListEntry.getGroupId() !=
+				portletDataContext.getScopeGroupId()) {
+
+			throw new NoSuchEntryException(
+				"No asset list entry exists with ID " + assetListEntryId);
+		}
+
 		Map<Long, Long> segmentsEntryIds =
 			(Map<Long, Long>)portletDataContext.getNewPrimaryKeysMap(
 				SegmentsEntry.class);
@@ -214,6 +226,9 @@ public class AssetListEntrySegmentsEntryRelStagedModelDataHandler
 	)
 	private volatile ExportImportContentProcessor<String>
 		_assetListEntryExportImportContentProcessor;
+
+	@Reference
+	private AssetListEntryLocalService _assetListEntryLocalService;
 
 	@Reference
 	private GroupLocalService _groupLocalService;
