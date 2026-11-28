@@ -21,6 +21,103 @@ definition {
 	}
 
 	@priority = 5
+	test MultipleConnectionsSmokeTest {
+		property opensearch.multiple.connections = "true";
+		property search.environment.suite.exclude = "true";
+		property test.liferay.virtual.instance = "false";
+		property test.run.type = "single";
+
+		SearchAdministration.openSearchAdmin();
+
+		AssertTextEquals(
+			locator1 = "SearchAdmin#ACTIVE_CONNECTION_COUNT",
+			value1 = 2);
+
+		AssertTextEquals.assertPartialText(
+			key_connectionId = "REMOTE",
+			locator1 = "SearchAdmin#CLUSTER_NAME",
+			value1 = "LiferayOpenSearchCluster");
+
+		AssertTextEquals.assertPartialText(
+			key_connectionId = "connection2",
+			locator1 = "SearchAdmin#CLUSTER_NAME",
+			value1 = "LiferayOpenSearchClusterTwo");
+
+		JSONWebcontent.addWebContent(
+			content = "WC Content",
+			groupName = "Guest",
+			title = "apple");
+
+		SearchPage.openSearchPage(searchTerm = "apple");
+
+		SearchResults.viewSearchResults(
+			searchAssetTitle = "apple",
+			searchAssetType = "Web Content Article");
+
+		var portalHostname = PropsUtil.get("portal.hostname");
+
+		var curlSecondConnection = '''
+			http://${portalHostname}:9202/connection2_index/_doc/1?pretty \
+				-H 'Content-Type: application/json' \
+				-d '{"connection2_field" : "multiple connections is cool"}'
+		''';
+
+		com.liferay.poshi.runner.util.JSONCurlUtil.post(${curlSecondConnection});
+
+		var portalURL = PropsUtil.get("portal.url");
+
+		JSONLayout.addPublicLayout(
+			groupName = "Guest",
+			layoutName = "Multiple Connections Page");
+
+		JSONLayout.updateLayoutTemplateOfPublicLayout(
+			groupName = "Guest",
+			layoutName = "Multiple Connections Page",
+			layoutTemplate = "3 Columns");
+
+		SearchPage.addWidgets(
+			layoutName = "Multiple Connections Page",
+			searchPortletList = "Custom Filter");
+
+		SearchPage.addWidgets(
+			column = 2,
+			layoutName = "Multiple Connections Page",
+			searchPortletList = "Search Results");
+
+		SearchPage.addWidgets(
+			column = 3,
+			layoutName = "Multiple Connections Page",
+			searchPortletList = "Search Options");
+
+		SearchPage.addWidgets(
+			column = 3,
+			layoutName = "Multiple Connections Page",
+			searchPortletList = "Low Level Search Options");
+
+		Navigator.openSpecificURL(url = "${portalURL}/web/guest/multiple-connections-page");
+
+		SearchPage.configureSearchOptions(allowEmptySearches = "true");
+
+		SearchPage.configureCustomFilter(
+			filterField = "connection2_field",
+			filterQueryType = "Match",
+			filterValue = "cool",
+			occur = "must");
+
+		SearchResults.configureSearchResults(fieldsToDisplay = "connection2_field");
+
+		SearchPage.configureLowLevelSearchOptions(
+			connectionId = "connection2",
+			indexes = "connection2_index");
+
+		Refresh();
+
+		AssertElementPresent(
+			key_searchAssetTitle = "multiple connections is cool",
+			locator1 = "SearchPage#RESULT_TITLE");
+	}
+
+	@priority = 5
 	test SSLSmokeTest {
 		property opensearch.security.enabled = "true";
 		property portal.acceptance = "true";
